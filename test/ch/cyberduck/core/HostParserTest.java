@@ -241,4 +241,22 @@ public class HostParserTest extends AbstractTestCase {
         assertEquals("u", host.getCredentials().getUsername());
         assertEquals("p", host.getCredentials().getPassword());
     }
+
+    @Test
+    public void testParseColonInPath() {
+        final Host host = HostParser.parse("rackspace://cdn.duck.sh/duck-4.6.2.16174:16179M.pkg");
+        assertEquals("cdn.duck.sh", host.getHostname());
+        assertEquals(Protocol.Type.swift, host.getProtocol().getType());
+        assertEquals(443, host.getPort());
+        assertEquals("/duck-4.6.2.16174:16179M.pkg", host.getDefaultPath());
+    }
+
+    @Test
+    public void testParseColonInPathPlusPort() {
+        final Host host = HostParser.parse("rackspace://cdn.duck.sh:444/duck-4.6.2.16174:16179M.pkg");
+        assertEquals("cdn.duck.sh", host.getHostname());
+        assertEquals(Protocol.Type.swift, host.getProtocol().getType());
+        assertEquals(444, host.getPort());
+        assertEquals("/duck-4.6.2.16174:16179M.pkg", host.getDefaultPath());
+    }
 }
