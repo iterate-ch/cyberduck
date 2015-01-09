@@ -24,6 +24,7 @@ import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 
 import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.Option;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -34,6 +35,12 @@ public class TerminalOptionsInputValidator {
     private Console console = new Console();
 
     public boolean validate(final CommandLine input) {
+        for(Option o : input.getOptions()) {
+            if(o.getArgs() != o.getValuesList().size()) {
+                console.printf("%s %s\n", "Missing argument for option", o.getLongOpt());
+                return false;
+            }
+        }
         final TerminalAction action = TerminalActionFinder.get(input);
         if(null == action) {
             console.printf("%s\n", "Missing argument");
