@@ -36,6 +36,9 @@ public class TerminalOptionsInputValidator {
 
     public boolean validate(final CommandLine input) {
         for(Option o : input.getOptions()) {
+            if(Option.UNINITIALIZED == o.getArgs()) {
+                continue;
+            }
             if(o.getArgs() != o.getValuesList().size()) {
                 console.printf("%s %s\n", "Missing argument for option", o.getLongOpt());
                 return false;
