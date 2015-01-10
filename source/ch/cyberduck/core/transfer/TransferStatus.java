@@ -110,6 +110,9 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     private Map<String, String> parameters
             = Collections.emptyMap();
 
+    private Map<String, String> metadata
+            = Collections.emptyMap();
+
     public boolean isComplete() {
         return complete.get();
     }
@@ -327,6 +330,19 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
 
     public TransferStatus parameters(final Map<String, String> parameters) {
         this.parameters = parameters;
+        return this;
+    }
+
+    public Map<String, String> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(final Map<String, String> metadata) {
+        this.metadata = metadata;
+    }
+
+    public TransferStatus metadata(final Map<String, String> metadata) {
+        this.metadata = metadata;
         return this;
     }
 

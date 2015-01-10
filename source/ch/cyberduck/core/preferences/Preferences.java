@@ -397,6 +397,10 @@ public abstract class Preferences {
         defaults.put("queue.upload.permissions.folder.default", String.valueOf(755));
 
         defaults.put("queue.upload.timestamp.change", String.valueOf(false));
+        /**
+         * Keep existing headers
+         */
+        defaults.put("queue.upload.file.metadata.change", String.valueOf(false));
 
         defaults.put("queue.upload.skip.enable", String.valueOf(true));
         defaults.put("queue.upload.skip.regex.default",

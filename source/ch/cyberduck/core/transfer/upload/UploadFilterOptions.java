@@ -35,6 +35,8 @@ public final class UploadFilterOptions {
 
     public boolean timestamp;
 
+    public boolean metadata;
+
     /**
      * Create temporary filename with an UUID and rename when upload is complete
      */
@@ -46,6 +48,7 @@ public final class UploadFilterOptions {
         acl = preferences.getBoolean("queue.upload.permissions.change");
         timestamp = preferences.getBoolean("queue.upload.timestamp.change");
         temporary = preferences.getBoolean("queue.upload.file.temporary");
+        metadata = preferences.getBoolean("queue.upload.file.metadata.change");
     }
 
     public UploadFilterOptions(final boolean permissions, final boolean timestamp, final boolean temporary) {
@@ -68,6 +71,11 @@ public final class UploadFilterOptions {
 
     public UploadFilterOptions withTemporary(boolean enabled) {
         temporary = enabled;
+        return this;
+    }
+
+    public UploadFilterOptions withMetadata(boolean enabled) {
+        metadata = enabled;
         return this;
     }
 }
