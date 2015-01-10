@@ -66,13 +66,13 @@ public abstract class NSData extends NSObject {
          * Original signature : <code>dataWithContentsOfFile(NSString*, NSUInteger, NSError**)</code><br>
          * <i>from NSDataCreation native declaration : :60</i>
          */
-        NSData dataWithContentsOfFile_options_error(com.sun.jna.Pointer path, int readOptionsMask, ObjCObjectByReference errorPtr);
+        NSData dataWithContentsOfFile_options_error(String path, int readOptionsMask, ObjCObjectByReference errorPtr);
 
         /**
          * Original signature : <code>dataWithContentsOfURL(NSURL*, NSUInteger, NSError**)</code><br>
          * <i>from NSDataCreation native declaration : :61</i>
          */
-        NSData dataWithContentsOfURL_options_error(com.sun.jna.Pointer url, int readOptionsMask, ObjCObjectByReference errorPtr);
+        NSData dataWithContentsOfURL_options_error(NSURL url, int readOptionsMask, ObjCObjectByReference errorPtr);
 
         /**
          * Original signature : <code>dataWithContentsOfFile(NSString*)</code><br>
@@ -203,13 +203,13 @@ public abstract class NSData extends NSObject {
      * Original signature : <code>initWithContentsOfFile(NSString*, NSUInteger, NSError**)</code><br>
      * <i>from NSDataCreation native declaration : :72</i>
      */
-    public abstract NSData initWithContentsOfFile_options_error(com.sun.jna.Pointer path, int readOptionsMask, ObjCObjectByReference errorPtr);
+    public abstract NSData initWithContentsOfFile_options_error(String path, int readOptionsMask, ObjCObjectByReference errorPtr);
 
     /**
      * Original signature : <code>initWithContentsOfURL(NSURL*, NSUInteger, NSError**)</code><br>
      * <i>from NSDataCreation native declaration : :73</i>
      */
-    public abstract NSData initWithContentsOfURL_options_error(com.sun.jna.Pointer url, int readOptionsMask, ObjCObjectByReference errorPtr);
+    public abstract NSData initWithContentsOfURL_options_error(NSURL url, int readOptionsMask, ObjCObjectByReference errorPtr);
 
     /**
      * Original signature : <code>initWithContentsOfFile(NSString*)</code><br>
