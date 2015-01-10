@@ -51,6 +51,7 @@ import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
+import ch.cyberduck.core.threading.ThreadPool;
 
 import org.apache.log4j.Logger;
 
@@ -79,6 +80,9 @@ public class SwiftSession extends HttpSession<Client> {
 
     protected Map<Region, AccountInfo> accounts
             = new HashMap<Region, AccountInfo>();
+
+    private final ThreadPool threadFactory
+            = new ThreadPool(5, "accounts");
 
     public SwiftSession(final Host h) {
         super(h);
@@ -136,18 +140,23 @@ public class SwiftSession extends HttpSession<Client> {
                 }
                 cancel.verify();
             }
-            for(Region region : client.getRegions()) {
-                try {
-                    final AccountInfo info = client.getAccountInfo(region);
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Signing key is %s", info.getTempUrlKey()));
+            threadFactory.execute(new Runnable() {
+                @Override
+                public void run() {
+                    for(Region region : client.getRegions()) {
+                        try {
+                            final AccountInfo info = client.getAccountInfo(region);
+                            if(log.isInfoEnabled()) {
+                                log.info(String.format("Signing key is %s", info.getTempUrlKey()));
+                            }
+                            accounts.put(region, info);
+                        }
+                        catch(IOException e) {
+                            log.warn(String.format("Failure loading account info for region %s", region));
+                        }
                     }
-                    accounts.put(region, info);
                 }
-                catch(IOException e) {
-                    log.warn(String.format("Failure loading account info for region %s", region));
-                }
-            }
+            });
         }
         catch(GenericException e) {
             throw new SwiftExceptionMappingService().map(e);
