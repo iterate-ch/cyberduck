@@ -111,19 +111,20 @@ public class Terminal {
 
     protected static void open(final String[] args, final Preferences defaults) {
         final Options options = TerminalOptionsBuilder.options();
+        final Console console = new Console();
         try {
             final CommandLineParser parser = new PosixParser();
             final CommandLine input = parser.parse(options, args);
             final Terminal terminal = new Terminal(defaults, options, input);
             switch(terminal.execute()) {
                 case success:
+                    console.printf("\n");
                     System.exit(0);
                 case failure:
                     System.exit(1);
             }
         }
         catch(ParseException e) {
-            final Console console = new Console();
             console.printf("%s\n", e.getMessage());
             console.printf("Try '%s' for more options.\n", "duck --help");
             System.exit(1);
