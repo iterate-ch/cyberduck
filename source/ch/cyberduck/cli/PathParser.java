@@ -54,7 +54,13 @@ public class PathParser {
                     return new Path(host.getDefaultPath(), EnumSet.of(detector.detect(host.getDefaultPath())));
                 }
                 else {
-                    final Path container = new Path(host.getHostname(), EnumSet.of(Path.Type.volume, Path.Type.directory));
+                    final Path container;
+                    if(StringUtils.isBlank(host.getHostname())) {
+                        container = new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory));
+                    }
+                    else {
+                        container = new Path(host.getHostname(), EnumSet.of(Path.Type.volume, Path.Type.directory));
+                    }
                     final String key = host.getDefaultPath();
                     if(String.valueOf(Path.DELIMITER).equals(PathNormalizer.normalize(key))) {
                         return container;

@@ -77,9 +77,16 @@ public class TerminalOptionsInputValidator {
             }
         }
         final Host host = HostParser.parse(uri);
-        if(StringUtils.isBlank(host.getHostname())) {
-            console.printf("Missing hostname in URI %s\n", uri);
-            return false;
+        switch(host.getProtocol().getType()) {
+            case s3:
+            case googlestorage:
+            case swift:
+                break;
+            default:
+                if(StringUtils.isBlank(host.getHostname())) {
+                    console.printf("Missing hostname in URI %s\n", uri);
+                    return false;
+                }
         }
         if(StringUtils.isBlank(host.getDefaultPath())) {
             console.printf("Missing path in URI %s\n", uri);

@@ -38,4 +38,10 @@ public class TerminalOptionsInputValidatorTest extends AbstractTestCase {
         final String uri = "rackspace://cdn.duck.sh/duck-4.6.2.16174:16179M.pkg";
         assertTrue(new TerminalOptionsInputValidator().validate(uri));
     }
+
+    @Test
+    public void testListContainers() throws Exception {
+        assertTrue(new TerminalOptionsInputValidator().validate("rackspace:///"));
+        assertFalse(new TerminalOptionsInputValidator().validate("rackspace://"));
+    }
 }

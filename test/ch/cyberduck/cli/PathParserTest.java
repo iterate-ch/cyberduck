@@ -69,4 +69,11 @@ public class PathParserTest extends AbstractTestCase {
                 new PathParser(input).parse("rackspace://u@cdn.cyberduck.ch/"));
     }
 
+    @Test
+    public void testParseRackspaceRoot() throws Exception {
+        final CommandLineParser parser = new BasicParser();
+        final CommandLine input = parser.parse(new Options(), new String[]{});
+        assertEquals(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)),
+                new PathParser(input).parse("rackspace:///"));
+    }
 }
