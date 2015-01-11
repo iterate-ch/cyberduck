@@ -1752,6 +1752,12 @@ lib/1.7.0-u40-b30.jre/Contents/Info.plist -text svneol=unset#application/xml
 lib/1.7.0-u40-b30.jre/Contents/MacOS/libjli.dylib -text
 lib/ActiveButtons.dll -text
 lib/ActiveButtons.pdb -text
+lib/AquaticPrime.framework/AquaticPrime -text
+lib/AquaticPrime.framework/Resources -text
+lib/AquaticPrime.framework/Versions/A/AquaticPrime -text
+lib/AquaticPrime.framework/Versions/A/Resources/English.lproj/InfoPlist.strings -text svneol=unset#text/utf-16
+lib/AquaticPrime.framework/Versions/A/Resources/Info.plist -text
+lib/AquaticPrime.framework/Versions/Current -text
 lib/AutomaticUpdater.dll -text
 lib/CustomOpenFileFolderDialog.dll -text
 lib/ExceptionReporter.WinForms.dll -text
@@ -1919,7 +1925,6 @@ lib/jsch.agentproxy.sshj-0.0.9.jar -text
 lib/jsch.agentproxy.usocket-jna-0.0.9.jar -text
 lib/jul-to-slf4j-1.7.1.jar -text
 lib/jzlib-1.1.3.jar -text svneol=unset#application/zip
-lib/libAquaticPrime.a -text
 lib/libjdns_sd.dylib -text
 lib/libjnidispatch.32.so -text svneol=unset#application/x-sharedlib
 lib/libjnidispatch.64.so -text

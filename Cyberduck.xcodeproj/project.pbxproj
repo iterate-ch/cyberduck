@@ -22,7 +22,7 @@
 		4704C3B41664FD0F00B17020 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */; };
 		470912ED0C36FCE00049FBCE /* Prompt.nib in Resources */ = {isa = PBXBuildFile; fileRef = 470912EB0C36FCE00049FBCE /* Prompt.nib */; };
 		47121FF71611F94000E2547D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 47121FF61611F94000E2547D /* main.m */; };
-		4714591713B492CD00F1A9D2 /* libAquaticPrime.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4773D6B00F9C86A7004658BD /* libAquaticPrime.a */; };
+		4713643E1A6337C700AB2FBF /* AquaticPrime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4713643D1A6337C700AB2FBF /* AquaticPrime.framework */; };
 		4716C5F50872BA9900938886 /* Command.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4716C5EF0872BA9800938886 /* Command.nib */; };
 		4718C1EF107A9F12006FDEFA /* SystemConfigurationReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = 4718C1ED107A9F12006FDEFA /* SystemConfigurationReachability.h */; };
 		4718C1F0107A9F12006FDEFA /* SystemConfigurationReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 4718C1EE107A9F12006FDEFA /* SystemConfigurationReachability.m */; };
@@ -35,7 +35,6 @@
 		471F77AF180439B500A4C196 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */; };
 		471F77B718043A0300A4C196 /* FoundationProgressIconService.h in Headers */ = {isa = PBXBuildFile; fileRef = 471F77B418043A0300A4C196 /* FoundationProgressIconService.h */; };
 		471F77B918043A0300A4C196 /* FoundationProgressIconService.m in Sources */ = {isa = PBXBuildFile; fileRef = 471F77B518043A0300A4C196 /* FoundationProgressIconService.m */; };
-		472938A00F9DBC420086605D /* AquaticPrime.h in Headers */ = {isa = PBXBuildFile; fileRef = 4729389C0F9DBC420086605D /* AquaticPrime.h */; };
 		472938A10F9DBC420086605D /* License.h in Headers */ = {isa = PBXBuildFile; fileRef = 4729389D0F9DBC420086605D /* License.h */; };
 		472938A30F9DBC420086605D /* License.m in Sources */ = {isa = PBXBuildFile; fileRef = 4729389F0F9DBC420086605D /* License.m */; };
 		4732BDA813182C7F00CBC46B /* Download.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4732BD8613182C7F00CBC46B /* Download.strings */; };
@@ -229,7 +228,6 @@
 		47C88FEF17269A54001A746A /* IOKitSleepPreventer.h in Headers */ = {isa = PBXBuildFile; fileRef = 47C88FED17269A54001A746A /* IOKitSleepPreventer.h */; };
 		47C88FF017269A54001A746A /* IOKitSleepPreventer.m in Sources */ = {isa = PBXBuildFile; fileRef = 47C88FEE17269A54001A746A /* IOKitSleepPreventer.m */; };
 		47C88FF117269A71001A746A /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
-		47CB03A6177F798200A6E3B5 /* libcrypto.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 47CB03A5177F798200A6E3B5 /* libcrypto.dylib */; };
 		47CD043812DB5F2000694306 /* File.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47CD041612DB5F2000694306 /* File.strings */; };
 		47CD045B12DB5F2E00694306 /* Folder.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47CD043912DB5F2E00694306 /* Folder.strings */; };
 		47CD047E12DB5F4500694306 /* Goto.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47CD045C12DB5F4500694306 /* Goto.strings */; };
@@ -699,6 +697,7 @@
 		470FDC80099E4AC5008DE09C /* he */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = he; path = he.lproj/Status.strings; sourceTree = "<group>"; };
 		470FDC81099E4AC5008DE09C /* he */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = he; path = he.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		47121FF61611F94000E2547D /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		4713643D1A6337C700AB2FBF /* AquaticPrime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AquaticPrime.framework; path = lib/AquaticPrime.framework; sourceTree = "<group>"; };
 		4716C5F00872BA9800938886 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/Command.nib; sourceTree = "<group>"; };
 		47181E840E17D1A600568D80 /* el */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = el; path = el.lproj/Command.nib; sourceTree = "<group>"; };
 		47181E850E17D1A600568D80 /* el */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = el; path = el.lproj/Info.nib; sourceTree = "<group>"; };
@@ -794,7 +793,6 @@
 		47271DA809F4050B00136347 /* tr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = tr; path = tr.lproj/Bookmark.nib; sourceTree = "<group>"; };
 		47271DAB09F4053E00136347 /* tr */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = tr; path = tr.lproj/Crash.strings; sourceTree = "<group>"; };
 		47271DAE09F4055700136347 /* tr */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = tr; path = tr.lproj/Status.strings; sourceTree = "<group>"; };
-		4729389C0F9DBC420086605D /* AquaticPrime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AquaticPrime.h; sourceTree = "<group>"; };
 		4729389D0F9DBC420086605D /* License.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = License.h; sourceTree = "<group>"; };
 		4729389F0F9DBC420086605D /* License.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = License.m; sourceTree = "<group>"; };
 		473240070DABC00800BF67D2 /* QLPreviewPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QLPreviewPanel.h; sourceTree = "<group>"; };
@@ -842,9 +840,6 @@
 		4739EF730856981400405FD3 /* libKeychain.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libKeychain.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		4739EFB00856990900405FD3 /* libProxy.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libProxy.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		4739EFC10856991300405FD3 /* libLocal.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libLocal.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
-		473A7017182259350055C76C /* base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = base64.m; sourceTree = "<group>"; };
-		473A7018182259350055C76C /* NSData+Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Base64.h"; sourceTree = "<group>"; };
-		473A7019182259350055C76C /* NSData+Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Base64.m"; sourceTree = "<group>"; };
 		473BF0851892968E0068B4C1 /* azure.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = azure.tiff; sourceTree = "<group>"; };
 		474163A406C4F64000AC0BD2 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/Info.nib; sourceTree = "<group>"; };
 		474163A606C4F64100AC0BD2 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/Browser.nib; sourceTree = "<group>"; };
@@ -1201,7 +1196,6 @@
 		476C7C2D07F5A31800CF6032 /* sv */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sv; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
 		476C7C2E07F5A32200CF6032 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text; name = sv; path = sv.lproj/License.txt; sourceTree = "<group>"; };
 		476DEBE10629C6FB005EF4B1 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = /System/Library/Frameworks/CoreFoundation.framework; sourceTree = "<absolute>"; };
-		4773D6B00F9C86A7004658BD /* libAquaticPrime.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libAquaticPrime.a; path = lib/libAquaticPrime.a; sourceTree = "<group>"; };
 		477A104D0FD08DBA00BAD4AD /* librococoa.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = librococoa.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		477A108A0FD08DE800BAD4AD /* ProxyForJava.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProxyForJava.h; sourceTree = "<group>"; };
 		477A108B0FD08DE800BAD4AD /* ProxyForJava.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProxyForJava.m; sourceTree = "<group>"; };
@@ -1535,7 +1529,6 @@
 		47C92DB61189B6CB00EDDD00 /* sl */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = sl; path = sl.lproj/S3.strings; sourceTree = "<group>"; };
 		47C92DB91189B6CB00EDDD00 /* sl */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = sl; path = sl.lproj/Status.strings; sourceTree = "<group>"; };
 		47C92DBA1189B6CB00EDDD00 /* sl */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = sl; path = sl.lproj/Transfer.strings; sourceTree = "<group>"; };
-		47CB03A5177F798200A6E3B5 /* libcrypto.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcrypto.dylib; path = usr/lib/libcrypto.dylib; sourceTree = SDKROOT; };
 		47CD041712DB5F2000694306 /* ro */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = ro; path = ro.lproj/File.strings; sourceTree = "<group>"; };
 		47CD041812DB5F2000694306 /* pl */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/File.strings; sourceTree = "<group>"; };
 		47CD041A12DB5F2000694306 /* de */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/File.strings; sourceTree = "<group>"; };
@@ -2463,10 +2456,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				47CB03A6177F798200A6E3B5 /* libcrypto.dylib in Frameworks */,
 				474524DD1076B89700823467 /* Foundation.framework in Frameworks */,
-				4714591713B492CD00F1A9D2 /* libAquaticPrime.a in Frameworks */,
 				4704C3B11664FC8D00B17020 /* JavaNativeFoundation.framework in Frameworks */,
+				4713643E1A6337C700AB2FBF /* AquaticPrime.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2585,8 +2577,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4713643D1A6337C700AB2FBF /* AquaticPrime.framework */,
 				47D939C91A268D7F0006D4AE /* Foundation.framework */,
-				47CB03A5177F798200A6E3B5 /* libcrypto.dylib */,
 				479BF77D1725A68C006854BF /* IOKit.framework */,
 				4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */,
 				4792112812F6F4FD00E35E16 /* Sparkle.framework */,
@@ -2594,7 +2586,6 @@
 				474522C51076B68E00823467 /* ApplicationServices.framework */,
 				47022C221018663600488C19 /* CoreServices.framework */,
 				47D4148E0F0ECFBD00BAF184 /* SecurityFoundation.framework */,
-				4773D6B00F9C86A7004658BD /* libAquaticPrime.a */,
 				475D461C0D9953CD009450C4 /* SecurityInterface.framework */,
 				47983764072AD73700FA3CDB /* Security.framework */,
 				47C761EA06A88D7600B464FF /* SystemConfiguration.framework */,
@@ -2628,21 +2619,10 @@
 		4729389B0F9DBC420086605D /* aquaticprime */ = {
 			isa = PBXGroup;
 			children = (
-				4729389C0F9DBC420086605D /* AquaticPrime.h */,
 				4729389D0F9DBC420086605D /* License.h */,
 				4729389F0F9DBC420086605D /* License.m */,
 			);
 			path = aquaticprime;
-			sourceTree = "<group>";
-		};
-		473A7016182259350055C76C /* base64 */ = {
-			isa = PBXGroup;
-			children = (
-				473A7017182259350055C76C /* base64.m */,
-				473A7018182259350055C76C /* NSData+Base64.h */,
-				473A7019182259350055C76C /* NSData+Base64.m */,
-			);
-			path = base64;
 			sourceTree = "<group>";
 		};
 		474152D706C4F08A00AC0BD2 /* source */ = {
@@ -2679,7 +2659,6 @@
 			isa = PBXGroup;
 			children = (
 				47B1F212199E13C200960511 /* sparkle */,
-				473A7016182259350055C76C /* base64 */,
 				47C88FED17269A54001A746A /* IOKitSleepPreventer.h */,
 				47C88FEE17269A54001A746A /* IOKitSleepPreventer.m */,
 				47EA2444162B5C44002E23E2 /* urlhandler */,
@@ -4051,7 +4030,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				472938A00F9DBC420086605D /* AquaticPrime.h in Headers */,
 				472938A10F9DBC420086605D /* License.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -6344,10 +6322,6 @@
 					"$(inherited)",
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/lib\"",
-				);
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libPrime;
 			};
@@ -6535,10 +6509,6 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				LD_DYLIB_INSTALL_NAME = "";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/lib\"",
-				);
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libPrime;
 			};
