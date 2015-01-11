@@ -44,10 +44,6 @@
 		4739EF6B0856981300405FD3 /* Keychain.m in Sources */ = {isa = PBXBuildFile; fileRef = 4798373F072AD66D00FA3CDB /* Keychain.m */; };
 		4739EF6E0856981300405FD3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
 		4739EFAC0856990900405FD3 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47C761EA06A88D7600B464FF /* SystemConfiguration.framework */; };
-		473A701A182259350055C76C /* base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 473A7017182259350055C76C /* base64.m */; };
-		473A701B182259350055C76C /* NSData+Base64.h in Headers */ = {isa = PBXBuildFile; fileRef = 473A7018182259350055C76C /* NSData+Base64.h */; };
-		473A701C182259350055C76C /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 473A7019182259350055C76C /* NSData+Base64.m */; };
-		473A701D18225B050055C76C /* libcrypto.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 47CB03A5177F798200A6E3B5 /* libcrypto.dylib */; };
 		473BF0871892968E0068B4C1 /* azure.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 473BF0851892968E0068B4C1 /* azure.tiff */; };
 		474163C106C4F64100AC0BD2 /* Info.nib in Resources */ = {isa = PBXBuildFile; fileRef = 474163A306C4F64000AC0BD2 /* Info.nib */; };
 		474163C206C4F64100AC0BD2 /* Browser.nib in Resources */ = {isa = PBXBuildFile; fileRef = 474163A506C4F64100AC0BD2 /* Browser.nib */; };
@@ -95,6 +91,7 @@
 		475EBE9412DA462C00E5C3A2 /* ServicesMenu.strings in Resources */ = {isa = PBXBuildFile; fileRef = 475EBE7212DA462C00E5C3A2 /* ServicesMenu.strings */; };
 		4762DAC109FC42EC0034C662 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47C761EA06A88D7600B464FF /* SystemConfiguration.framework */; };
 		47652D0B1202BED200745031 /* Azure.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47652CE91202BED200745031 /* Azure.strings */; };
+		476590301A628074001F9E07 /* libcrypto.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 47CB03A5177F798200A6E3B5 /* libcrypto.dylib */; };
 		476730B716108E1300B28D35 /* add.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4767306716108E1200B28D35 /* add.tiff */; };
 		476730B816108E1300B28D35 /* addPressed.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4767306816108E1200B28D35 /* addPressed.tiff */; };
 		476730B916108E1300B28D35 /* advanced.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4767306916108E1200B28D35 /* advanced.tiff */; };
@@ -291,6 +288,8 @@
 		47F102B41628D57500923FDE /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 474522C51076B68E00823467 /* ApplicationServices.framework */; };
 		47F102CA1628D5CE00923FDE /* LaunchServicesQuarantineService.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F102BD1628D5CE00923FDE /* LaunchServicesQuarantineService.h */; };
 		47F102CE1628D5CE00923FDE /* LaunchServicesQuarantineService.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F102BF1628D5CE00923FDE /* LaunchServicesQuarantineService.m */; };
+		47F45DBD1A6282AF0081B48B /* NSData+Base64.h in Headers */ = {isa = PBXBuildFile; fileRef = 473A7018182259350055C76C /* NSData+Base64.h */; };
+		47F45DBE1A6282BC0081B48B /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 473A7019182259350055C76C /* NSData+Base64.m */; };
 		47F7AD97194ADCB2000314F1 /* KeystoreImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F7AD95194ADCB2000314F1 /* KeystoreImpl.h */; };
 		47F7AD98194ADCB2000314F1 /* KeystoreImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F7AD96194ADCB2000314F1 /* KeystoreImpl.m */; };
 		47FA2CF21A28A1B70058614E /* librococoa.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 477A104D0FD08DBA00BAD4AD /* librococoa.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -2436,6 +2435,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				476590301A628074001F9E07 /* libcrypto.dylib in Frameworks */,
 				479450BD162FF74F00FC7FF9 /* Foundation.framework in Frameworks */,
 				4797D28E162829F800340E1C /* ApplicationServices.framework in Frameworks */,
 				4704C3AC1664F96700B17020 /* JavaNativeFoundation.framework in Frameworks */,
@@ -2457,7 +2457,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				473A701D18225B050055C76C /* libcrypto.dylib in Frameworks */,
 				477A10480FD08DBA00BAD4AD /* Cocoa.framework in Frameworks */,
 				4734425B102DEABD00C04C43 /* Quartz.framework in Frameworks */,
 				4792112912F6F4FD00E35E16 /* Sparkle.framework in Frameworks */,
@@ -4019,6 +4018,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				47F45DBD1A6282AF0081B48B /* NSData+Base64.h in Headers */,
 				47C57EAC162F45F200A272BC /* FinderLocal.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4037,7 +4037,6 @@
 			files = (
 				477A11070FD08E8E00BAD4AD /* UKCrashReporter.h in Headers */,
 				477A11090FD08E8E00BAD4AD /* SNDisclosableView.h in Headers */,
-				473A701B182259350055C76C /* NSData+Base64.h in Headers */,
 				477A110C0FD08E8E00BAD4AD /* CTGradient.h in Headers */,
 				477A110D0FD08E8E00BAD4AD /* CTGradientView.h in Headers */,
 				477A110E0FD08E8E00BAD4AD /* QLPreviewPanel.h in Headers */,
@@ -4722,6 +4721,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				47F45DBE1A6282BC0081B48B /* NSData+Base64.m in Sources */,
 				47C57EAD162F45F200A272BC /* FinderLocal.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4740,7 +4740,6 @@
 			files = (
 				477A11120FD08EAB00BAD4AD /* UKCrashReporter.m in Sources */,
 				477A11140FD08EAB00BAD4AD /* SNDisclosableView.m in Sources */,
-				473A701C182259350055C76C /* NSData+Base64.m in Sources */,
 				477A11170FD08EAB00BAD4AD /* CTGradient.m in Sources */,
 				477A11180FD08EAB00BAD4AD /* CTGradientView.m in Sources */,
 				477A11190FD08EAB00BAD4AD /* UKSystemInfo.m in Sources */,
@@ -4749,7 +4748,6 @@
 				475286CA10D2CC660029363C /* CDBookmarkCell.m in Sources */,
 				475286CB10D2CC660029363C /* CDControllerCell.m in Sources */,
 				475286CC10D2CC660029363C /* CDListView.m in Sources */,
-				473A701A182259350055C76C /* base64.m in Sources */,
 				475286CD10D2CC660029363C /* CDOutlineCell.m in Sources */,
 				475286CE10D2CC660029363C /* CDOutlineView.m in Sources */,
 				47BE1F8C12369DF100E758FE /* CDTransmitImporter.m in Sources */,
