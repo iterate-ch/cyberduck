@@ -91,7 +91,6 @@
 		475EBE9412DA462C00E5C3A2 /* ServicesMenu.strings in Resources */ = {isa = PBXBuildFile; fileRef = 475EBE7212DA462C00E5C3A2 /* ServicesMenu.strings */; };
 		4762DAC109FC42EC0034C662 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47C761EA06A88D7600B464FF /* SystemConfiguration.framework */; };
 		47652D0B1202BED200745031 /* Azure.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47652CE91202BED200745031 /* Azure.strings */; };
-		476590301A628074001F9E07 /* libcrypto.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 47CB03A5177F798200A6E3B5 /* libcrypto.dylib */; };
 		476730B716108E1300B28D35 /* add.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4767306716108E1200B28D35 /* add.tiff */; };
 		476730B816108E1300B28D35 /* addPressed.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4767306816108E1200B28D35 /* addPressed.tiff */; };
 		476730B916108E1300B28D35 /* advanced.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4767306916108E1200B28D35 /* advanced.tiff */; };
@@ -288,8 +287,6 @@
 		47F102B41628D57500923FDE /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 474522C51076B68E00823467 /* ApplicationServices.framework */; };
 		47F102CA1628D5CE00923FDE /* LaunchServicesQuarantineService.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F102BD1628D5CE00923FDE /* LaunchServicesQuarantineService.h */; };
 		47F102CE1628D5CE00923FDE /* LaunchServicesQuarantineService.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F102BF1628D5CE00923FDE /* LaunchServicesQuarantineService.m */; };
-		47F45DBD1A6282AF0081B48B /* NSData+Base64.h in Headers */ = {isa = PBXBuildFile; fileRef = 473A7018182259350055C76C /* NSData+Base64.h */; };
-		47F45DBE1A6282BC0081B48B /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 473A7019182259350055C76C /* NSData+Base64.m */; };
 		47F7AD97194ADCB2000314F1 /* KeystoreImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F7AD95194ADCB2000314F1 /* KeystoreImpl.h */; };
 		47F7AD98194ADCB2000314F1 /* KeystoreImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F7AD96194ADCB2000314F1 /* KeystoreImpl.m */; };
 		47FA2CF21A28A1B70058614E /* librococoa.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 477A104D0FD08DBA00BAD4AD /* librococoa.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -2435,7 +2432,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				476590301A628074001F9E07 /* libcrypto.dylib in Frameworks */,
 				479450BD162FF74F00FC7FF9 /* Foundation.framework in Frameworks */,
 				4797D28E162829F800340E1C /* ApplicationServices.framework in Frameworks */,
 				4704C3AC1664F96700B17020 /* JavaNativeFoundation.framework in Frameworks */,
@@ -4018,7 +4014,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				47F45DBD1A6282AF0081B48B /* NSData+Base64.h in Headers */,
 				47C57EAC162F45F200A272BC /* FinderLocal.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4721,7 +4716,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				47F45DBE1A6282BC0081B48B /* NSData+Base64.m in Sources */,
 				47C57EAD162F45F200A272BC /* FinderLocal.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

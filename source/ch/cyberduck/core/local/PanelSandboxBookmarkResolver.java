@@ -130,7 +130,7 @@ public class PanelSandboxBookmarkResolver extends ProxyController implements San
                 }
                 throw new AccessDeniedException(String.format("%s", f.localizedDescription()));
             }
-            final String encoded = data.base64EncodedString();
+            final String encoded = data.base64Encoding();
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Encoded bookmark for %s as %s", file, encoded));
             }

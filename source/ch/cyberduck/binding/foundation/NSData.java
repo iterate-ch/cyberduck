@@ -32,7 +32,7 @@ public abstract class NSData extends NSObject {
     }
 
     public static NSData dataWithBase64EncodedString(String base64String) {
-        return CLASS.dataWithBase64EncodedString(base64String);
+        return CLASS.alloc().initWithBase64Encoding(base64String);
     }
 
     public interface _Class extends ObjCClass {
@@ -236,9 +236,14 @@ public abstract class NSData extends NSObject {
     public abstract NSData initWithData(NSData data);
 
     /**
-     * NSData+Base64
+     * Returns a data object initialized with the given Base-64 encoded string
      */
-    public abstract String base64EncodedString();
+    public abstract NSData initWithBase64Encoding(String base64String);
+
+    /**
+     * Create a Base-64 encoded NSString from the receiver's contents
+     */
+    public abstract String base64Encoding();
 
 }
 
