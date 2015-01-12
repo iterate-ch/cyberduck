@@ -19,6 +19,9 @@ package ch.cyberduck.cli;
  */
 
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.LoginCanceledException;
+
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -52,7 +55,11 @@ public class Console {
         if(console != null) {
             return console.readPassword(format, args);
         }
-        return this.readLine(format, args).toCharArray();
+        final String line = this.readLine(format, args);
+        if(StringUtils.isBlank(line)) {
+            throw new LoginCanceledException();
+        }
+        return line.toCharArray();
     }
 
     public void printf(final String format, String... args) {
