@@ -24,7 +24,7 @@ import org.apache.log4j.Logger;
  * @version $Id$
  */
 public abstract class HostPasswordStore implements PasswordStore {
-    private static final Logger log = Logger.getLogger(KeychainLoginService.class);
+    private static final Logger log = Logger.getLogger(HostPasswordStore.class);
 
     /**
      * @param host Hostname
