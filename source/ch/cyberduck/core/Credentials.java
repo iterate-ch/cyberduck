@@ -115,8 +115,8 @@ public class Credentials {
     /**
      * Use this to define if passwords should be added to the keychain
      *
-     * @param saved If true, the password of the login is added to the keychain uppon
-     *              successfull login
+     * @param saved If true, the password of the login is added to the keychain upon
+     *              successful login
      */
     public void setSaved(final boolean saved) {
         this.keychained = saved;
