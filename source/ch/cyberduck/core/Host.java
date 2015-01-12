@@ -232,13 +232,14 @@ public class Host implements Serializable, Comparable<Host> {
         this.configure(HostnameConfiguratorFactory.get(protocol), CredentialsConfiguratorFactory.get(protocol));
     }
 
-    protected void configure(final HostnameConfigurator hostname, final CredentialsConfigurator credentials) {
-        final int port = hostname.getPort(this.hostname);
+    protected void configure(final HostnameConfigurator hostnameConfigurator,
+                             final CredentialsConfigurator credentialsConfigurator) {
+        final int port = hostnameConfigurator.getPort(hostname);
         if(port != -1) {
             // External configuration found
             this.setPort(port);
         }
-        this.setCredentials(credentials.configure(this));
+        credentials = credentialsConfigurator.configure(this);
     }
 
     @Override
@@ -374,10 +375,6 @@ public class Host implements Serializable, Comparable<Host> {
 
     public Credentials getCredentials() {
         return credentials;
-    }
-
-    private void setCredentials(Credentials credentials) {
-        this.credentials = credentials;
     }
 
     /**
