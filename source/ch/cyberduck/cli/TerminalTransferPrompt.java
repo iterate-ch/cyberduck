@@ -55,17 +55,17 @@ public class TerminalTransferPrompt implements TransferPrompt {
         try {
             switch(transfer) {
                 case download:
-                    input = console.readLine("The local file %s already exists. Choose what action to take:\n%s\nAction %s: ",
+                    input = console.readLine("The local file %s already exists. Choose what action to take:%n%s%nAction %s: ",
                             item.local.getName(), actions, Arrays.toString(options.toArray()));
                     break;
                 case upload:
                 case move:
                 case copy:
-                    input = console.readLine("The remote file %s already exists. Choose what action to take:\n%s\nAction %s: ",
+                    input = console.readLine("The remote file %s already exists. Choose what action to take:%n%s%nAction %s: ",
                             item.remote.getName(), actions, Arrays.toString(options.toArray()));
                     break;
                 case sync:
-                    input = console.readLine("Choose what action to take:\n%s\nAction %s: ",
+                    input = console.readLine("Choose what action to take:%n%s%nAction %s: ",
                             actions, Arrays.toString(options.toArray()));
                     break;
                 default:

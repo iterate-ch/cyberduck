@@ -40,13 +40,13 @@ public class TerminalOptionsInputValidator {
                 continue;
             }
             if(o.getArgs() != o.getValuesList().size()) {
-                console.printf("%s %s\n", "Missing argument for option", o.getLongOpt());
+                console.printf("%s %s%n", "Missing argument for option", o.getLongOpt());
                 return false;
             }
         }
         final TerminalAction action = TerminalActionFinder.get(input);
         if(null == action) {
-            console.printf("%s\n", "Missing argument");
+            console.printf("%s%n", "Missing argument");
             return false;
         }
         // Validate arguments
@@ -75,7 +75,7 @@ public class TerminalOptionsInputValidator {
         if(uri.indexOf("://", 0) != -1) {
             final Protocol protocol = ProtocolFactory.forName(uri.substring(0, uri.indexOf("://", 0)));
             if(null == protocol) {
-                console.printf("Missing protocol in URI %s\n", uri);
+                console.printf("Missing protocol in URI %s%n", uri);
                 return false;
             }
         }
@@ -87,12 +87,12 @@ public class TerminalOptionsInputValidator {
                 break;
             default:
                 if(StringUtils.isBlank(host.getHostname())) {
-                    console.printf("Missing hostname in URI %s\n", uri);
+                    console.printf("Missing hostname in URI %s%n", uri);
                     return false;
                 }
         }
         if(StringUtils.isBlank(host.getDefaultPath())) {
-            console.printf("Missing path in URI %s\n", uri);
+            console.printf("Missing path in URI %s%n", uri);
             return false;
         }
         return true;
