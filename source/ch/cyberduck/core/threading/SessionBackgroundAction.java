@@ -153,7 +153,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
      * @return True if the the action had a permanent failures. Returns false if
      * there were only temporary exceptions and the action succeeded upon retry
      */
-    protected boolean hasFailed() {
+    public boolean hasFailed() {
         return failed;
     }
 
