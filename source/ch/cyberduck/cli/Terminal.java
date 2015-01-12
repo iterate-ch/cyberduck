@@ -145,6 +145,7 @@ public class Terminal {
                     console.printf("%s%n", StringUtils.EMPTY);
                     System.exit(0);
                 case failure:
+                    console.printf("%s%n", StringUtils.EMPTY);
                     System.exit(1);
             }
         }
@@ -238,7 +239,7 @@ public class Terminal {
             final StringAppender b = new StringAppender();
             b.append(e.getMessage());
             b.append(e.getDetail());
-            console.printf("%n%s%n", b.toString());
+            console.printf("%n%s", b.toString());
         }
         finally {
             this.disconnect(session);
