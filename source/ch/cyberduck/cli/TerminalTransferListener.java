@@ -27,8 +27,6 @@ import ch.cyberduck.core.transfer.TransferProgress;
  */
 public class TerminalTransferListener implements TransferListener {
 
-    private final Console console = new Console();
-
     @Override
     public void start(final Transfer transfer) {
         //
@@ -41,6 +39,6 @@ public class TerminalTransferListener implements TransferListener {
 
     @Override
     public void progress(final TransferProgress status) {
-        console.printf(status.getProgress());
+        //
     }
 }
