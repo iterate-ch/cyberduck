@@ -31,6 +31,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.net.URI;
@@ -79,6 +80,7 @@ public class SwiftUrlProviderTest extends AbstractTestCase {
     }
 
     @Test
+    @Ignore
     public void testSigned() throws Exception {
         final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                 new Credentials(properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret"))
