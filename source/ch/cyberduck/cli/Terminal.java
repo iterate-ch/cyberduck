@@ -118,15 +118,15 @@ public class Terminal {
             final Terminal terminal = new Terminal(defaults, options, input);
             switch(terminal.execute()) {
                 case success:
-                    console.printf("\n");
+                    console.printf("%n");
                     System.exit(0);
                 case failure:
                     System.exit(1);
             }
         }
         catch(ParseException e) {
-            console.printf("%s\n", e.getMessage());
-            console.printf("Try '%s' for more options.\n", "duck --help");
+            console.printf("%s%n", e.getMessage());
+            console.printf("Try '%s' for more options.%n", "duck --help");
             System.exit(1);
         }
         catch(Throwable error) {
@@ -142,14 +142,11 @@ public class Terminal {
             return Exit.success;
         }
         if(input.hasOption(TerminalAction.version.name())) {
-            console.printf("%s %s (%s)%n",
-                    preferences.getProperty("application.name"),
-                    preferences.getProperty("application.version"),
-                    preferences.getProperty("application.revision"));
+            TerminalVersionPrinter.print(preferences);
             return Exit.success;
         }
         if(!new TerminalOptionsInputValidator().validate(input)) {
-            console.printf("Try '%s' for more options.\n", "duck --help");
+            console.printf("Try '%s' for more options.%n", "duck --help");
             return Exit.failure;
         }
         this.configure(input);
@@ -219,7 +216,7 @@ public class Terminal {
             final StringAppender b = new StringAppender();
             b.append(e.getMessage());
             b.append(e.getDetail());
-            console.printf("\n%s\n", b.toString());
+            console.printf("%n%s%n", b.toString());
         }
         finally {
             this.disconnect(session);
