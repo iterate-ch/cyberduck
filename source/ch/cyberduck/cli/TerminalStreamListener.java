@@ -23,6 +23,7 @@ import ch.cyberduck.core.transfer.TransferProgress;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 
 import org.apache.commons.lang3.StringUtils;
+import org.fusesource.jansi.Ansi;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -49,7 +50,7 @@ public class TerminalStreamListener implements StreamListener {
         final TransferProgress progress = meter.getStatus();
         final BigDecimal fraction = new BigDecimal(progress.getTransferred())
                 .divide(new BigDecimal(progress.getSize()), 1, RoundingMode.DOWN);
-        console.printf("\r\033[2K[");
+        console.printf("\r%s[", Ansi.ansi().saveCursorPosition().eraseLine(Ansi.Erase.ALL).restoreCursorPosition().toString());
         int i = 0;
         for(; i <= (int) (fraction.doubleValue() * width); i++) {
             console.printf("\u25AE");

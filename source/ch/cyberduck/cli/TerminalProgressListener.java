@@ -20,6 +20,7 @@ package ch.cyberduck.cli;
 
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.StringAppender;
+import org.fusesource.jansi.Ansi;
 
 /**
  * @version $Id$
@@ -33,6 +34,6 @@ public class TerminalProgressListener implements ProgressListener {
         final StringAppender appender = new StringAppender('…');
         appender.append(message);
         // Clear the line and append message. Used instead of \r because the line width may vary
-        console.printf("\r\033[2K%s", appender.toString());
+        console.printf("\r%s%s", Ansi.ansi().saveCursorPosition().eraseLine(Ansi.Erase.ALL).restoreCursorPosition().toString(), appender.toString());
     }
 }

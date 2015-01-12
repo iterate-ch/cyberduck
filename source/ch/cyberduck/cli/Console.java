@@ -22,6 +22,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.fusesource.jansi.AnsiConsole;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -37,11 +38,15 @@ public class Console {
 
     private final java.io.Console console = System.console();
 
+    static {
+        AnsiConsole.systemInstall();
+    }
+
     public String readLine(String format, Object... args) throws ConnectionCanceledException {
         if(console != null) {
             return console.readLine(format, args);
         }
-        System.out.print(String.format(format, args));
+        this.printf(format, args);
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         try {
             return reader.readLine();
@@ -62,8 +67,8 @@ public class Console {
         return line.toCharArray();
     }
 
-    public void printf(final String format, String... args) {
-        if(console != null) {
+    public void printf(final String format, Object... args) {
+        if(console != null && !System.getProperty("os.name").startsWith("Windows")) {
             final PrintWriter writer = console.writer();
             if(Arrays.asList(args).isEmpty()) {
                 writer.print(format);
