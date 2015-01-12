@@ -142,6 +142,7 @@ public class Terminal {
             final Terminal terminal = new Terminal(defaults, options, input);
             switch(terminal.execute()) {
                 case success:
+                    console.printf("%s%n", StringUtils.EMPTY);
                     System.exit(0);
                 case failure:
                     System.exit(1);
