@@ -27,6 +27,8 @@ import ch.cyberduck.core.date.AbstractUserDateFormatter;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ListCanceledException;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.text.MessageFormat;
 
 /**
@@ -68,10 +70,12 @@ public class TerminalListProgressListener extends LimitedListProgressListener {
                             file.getName(), file.getSymlinkTarget().getAbsolute());
                 }
                 else {
-                    console.printf("%n%s%s\t%s\t%s", file.isDirectory() ? "d" : "-",
+                    console.printf("%n%s%s\t%s\t%s\t%s", file.isDirectory() ? "d" : "-",
                             file.attributes().getPermission().getSymbol(),
                             formatter.getMediumFormat(
                                     file.attributes().getModificationDate()),
+                            StringUtils.isNotBlank(file.attributes().getRegion())
+                                    ? file.attributes().getRegion() : StringUtils.EMPTY,
                             file.getName());
                 }
             }
