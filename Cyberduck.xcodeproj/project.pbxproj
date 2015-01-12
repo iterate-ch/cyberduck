@@ -210,6 +210,8 @@
 		47AF48FD199B913300A580EC /* Sftp.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47AF48FB199B913300A580EC /* Sftp.strings */; };
 		47B1F21B199E13EA00960511 /* Sandbox.h in Headers */ = {isa = PBXBuildFile; fileRef = 47B1F213199E13C200960511 /* Sandbox.h */; };
 		47B1F21C199E13F000960511 /* Sandbox.m in Sources */ = {isa = PBXBuildFile; fileRef = 47B1F215199E13C200960511 /* Sandbox.m */; };
+		47B22D5C1A63D1D00046E62F /* AquaticPrime.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4713643D1A6337C700AB2FBF /* AquaticPrime.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		47B22D5D1A63D1E80046E62F /* AquaticPrime.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4713643D1A6337C700AB2FBF /* AquaticPrime.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		47B3318C16680FF100C9FFA0 /* ftp.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47B3318B16680FF100C9FFA0 /* ftp.tiff */; };
 		47B331931668102400C9FFA0 /* s3.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47B331911668102400C9FFA0 /* s3.tiff */; };
 		47B331941668102400C9FFA0 /* swift.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47B331921668102400C9FFA0 /* swift.tiff */; };
@@ -249,15 +251,15 @@
 		47D939F41A2693440006D4AE /* libLaunchServicesFileDescriptor.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47C57EBA162F471700A272BC /* libLaunchServicesFileDescriptor.dylib */; };
 		47D939F51A2693440006D4AE /* libIOKitSleepPreventer.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47FB9C6B1725A5CC00FE33C1 /* libIOKitSleepPreventer.dylib */; };
 		47D939F61A2693440006D4AE /* libFoundationProgressService.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 471F77B3180439B500A4C196 /* libFoundationProgressService.dylib */; };
-		47D939F91A275DFE0006D4AE /* libProxy.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4739EFB00856990900405FD3 /* libProxy.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		47D939FA1A275DFE0006D4AE /* libLocal.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4739EFC10856991300405FD3 /* libLocal.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		47D939FB1A275DFE0006D4AE /* libDiagnostics.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4762DAC509FC42EC0034C662 /* libDiagnostics.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		47D939FC1A275DFE0006D4AE /* libLaunchServicesSchemeHandler.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47BEDB030B92960400141EB4 /* libLaunchServicesSchemeHandler.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		47D939FD1A275DFE0006D4AE /* libPrime.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 478CFE820F9932B3000560EF /* libPrime.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		47D939FE1A275DFE0006D4AE /* libLaunchServicesApplicationFinder.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4797D27A1628276C00340E1C /* libLaunchServicesApplicationFinder.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		47D939FF1A275DFE0006D4AE /* libLaunchServicesQuarantineService.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47F102B91628D57500923FDE /* libLaunchServicesQuarantineService.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		47D93A001A275DFE0006D4AE /* libLaunchServicesFileDescriptor.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47C57EBA162F471700A272BC /* libLaunchServicesFileDescriptor.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		47D93A011A275DFE0006D4AE /* libIOKitSleepPreventer.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47FB9C6B1725A5CC00FE33C1 /* libIOKitSleepPreventer.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		47D939F91A275DFE0006D4AE /* libProxy.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4739EFB00856990900405FD3 /* libProxy.dylib */; };
+		47D939FA1A275DFE0006D4AE /* libLocal.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4739EFC10856991300405FD3 /* libLocal.dylib */; };
+		47D939FB1A275DFE0006D4AE /* libDiagnostics.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4762DAC509FC42EC0034C662 /* libDiagnostics.dylib */; };
+		47D939FC1A275DFE0006D4AE /* libLaunchServicesSchemeHandler.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47BEDB030B92960400141EB4 /* libLaunchServicesSchemeHandler.dylib */; };
+		47D939FD1A275DFE0006D4AE /* libPrime.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 478CFE820F9932B3000560EF /* libPrime.dylib */; };
+		47D939FE1A275DFE0006D4AE /* libLaunchServicesApplicationFinder.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4797D27A1628276C00340E1C /* libLaunchServicesApplicationFinder.dylib */; };
+		47D939FF1A275DFE0006D4AE /* libLaunchServicesQuarantineService.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47F102B91628D57500923FDE /* libLaunchServicesQuarantineService.dylib */; };
+		47D93A001A275DFE0006D4AE /* libLaunchServicesFileDescriptor.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47C57EBA162F471700A272BC /* libLaunchServicesFileDescriptor.dylib */; };
+		47D93A011A275DFE0006D4AE /* libIOKitSleepPreventer.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47FB9C6B1725A5CC00FE33C1 /* libIOKitSleepPreventer.dylib */; };
 		47D93A031A27602E0006D4AE /* License.txt in Resources */ = {isa = PBXBuildFile; fileRef = 474163AF06C4F64100AC0BD2 /* License.txt */; };
 		47D93A051A2760810006D4AE /* Rackspace US.cyberduckprofile in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4718F4AA175F432400B424AD /* Rackspace US.cyberduckprofile */; };
 		47D93A061A2762A40006D4AE /* Acknowledgments.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 47911A170B84C4E8001A29AE /* Acknowledgments.rtf */; };
@@ -287,7 +289,7 @@
 		47F102CE1628D5CE00923FDE /* LaunchServicesQuarantineService.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F102BF1628D5CE00923FDE /* LaunchServicesQuarantineService.m */; };
 		47F7AD97194ADCB2000314F1 /* KeystoreImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F7AD95194ADCB2000314F1 /* KeystoreImpl.h */; };
 		47F7AD98194ADCB2000314F1 /* KeystoreImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F7AD96194ADCB2000314F1 /* KeystoreImpl.m */; };
-		47FA2CF21A28A1B70058614E /* librococoa.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 477A104D0FD08DBA00BAD4AD /* librococoa.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		47FA2CF21A28A1B70058614E /* librococoa.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 477A104D0FD08DBA00BAD4AD /* librococoa.dylib */; };
 		47FB9C641725A5CC00FE33C1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
 		47FB9C661725A5CC00FE33C1 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */; };
 		47FC190C099FB8AF0082431D /* Crash.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47FC190A099FB8AF0082431D /* Crash.strings */; };
@@ -490,6 +492,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				47B22D5C1A63D1D00046E62F /* AquaticPrime.framework in CopyFiles */,
 				47D939EA1A2693430006D4AE /* libKeychain.dylib in CopyFiles */,
 				47D939EB1A2693430006D4AE /* libProxy.dylib in CopyFiles */,
 				47D939EC1A2693430006D4AE /* libLocal.dylib in CopyFiles */,
@@ -513,6 +516,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				47B22D5D1A63D1E80046E62F /* AquaticPrime.framework in CopyFiles */,
 				47FA2CF21A28A1B70058614E /* librococoa.dylib in CopyFiles */,
 				47D939F91A275DFE0006D4AE /* libProxy.dylib in CopyFiles */,
 				47D939FA1A275DFE0006D4AE /* libLocal.dylib in CopyFiles */,
