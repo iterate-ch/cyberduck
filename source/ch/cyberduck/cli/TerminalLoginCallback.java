@@ -40,7 +40,7 @@ public class TerminalLoginCallback implements LoginCallback {
     @Override
     public void warn(final Protocol protocol, final String title, final String reason,
                      final String defaultButton, final String cancelButton, final String preference) throws ConnectionCanceledException {
-        console.printf("%s%n", reason);
+        console.printf("%n%s", reason);
         final String input = console.readLine("%s (y) or %s (n): ", defaultButton, cancelButton);
         switch(input) {
             case "y":
@@ -57,7 +57,7 @@ public class TerminalLoginCallback implements LoginCallback {
     public void prompt(final Protocol protocol, final Credentials credentials, final String title, final String reason,
                        final LoginOptions options) throws LoginCanceledException {
         credentials.setSaved(false);
-        console.printf("%s%n", reason);
+        console.printf("%n%s", reason);
         try {
             if(StringUtils.isBlank(credentials.getUsername())) {
                 final String user = console.readLine("%s: ", protocol.getUsernamePlaceholder());
@@ -69,7 +69,7 @@ public class TerminalLoginCallback implements LoginCallback {
                     credentials.setUsername(user);
                 }
             }
-            console.printf("Login as %s%n", credentials.getUsername());
+            console.printf("%nLogin as %s", credentials.getUsername());
             final char[] password = console.readPassword("%s: ", protocol.getPasswordPlaceholder());
             credentials.setPassword(String.valueOf(password));
             Arrays.fill(password, ' ');

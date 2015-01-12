@@ -35,10 +35,10 @@ public class TerminalTranscriptListener implements TranscriptListener {
     @Override
     public void log(final boolean request, final String message) {
         if(request) {
-            console.printf("%s> %s%s%n", ANSI_GREEN, message, ANSI_RESET);
+            console.printf("%n%s> %s%s", ANSI_GREEN, message, ANSI_RESET);
         }
         else {
-            console.printf("%s< %s%s%n", ANSI_RED, message, ANSI_RESET);
+            console.printf("%n%s< %s%s", ANSI_RED, message, ANSI_RESET);
         }
     }
 }

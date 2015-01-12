@@ -46,7 +46,7 @@ public class TerminalCertificateStore extends DefaultCertificateStore {
     @Override
     public boolean display(final List<X509Certificate> certificates) {
         for(X509Certificate c : certificates) {
-            console.printf("%s", c.toString());
+            console.printf("%n%s", c.toString());
         }
         return true;
     }

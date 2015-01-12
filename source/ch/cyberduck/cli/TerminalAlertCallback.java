@@ -43,7 +43,7 @@ public class TerminalAlertCallback implements AlertCallback {
         final StringAppender b = new StringAppender();
         b.append(failure.getMessage());
         b.append(failure.getDetail());
-        console.printf("%n%s%n", b.toString());
+        console.printf("%n%s", b.toString());
         return retry.getAndSet(false);
     }
 }
