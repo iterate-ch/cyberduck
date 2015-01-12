@@ -58,7 +58,7 @@ public final class Profile implements Protocol, Serializable {
     public Profile(final Protocol parent, final Deserializer dict) {
         this.parent = parent;
         this.dict = dict;
-        image = this.write(this.value("Disk"));
+        this.image = this.write(this.value("Disk"));
     }
 
     @Override
