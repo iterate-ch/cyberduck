@@ -75,9 +75,9 @@ public class SwiftContainerListService implements RootListService {
     public SwiftContainerListService(final SwiftSession session, final SwiftLocationFeature.SwiftRegion region,
                                      final boolean cdn, final boolean size) {
         this.session = session;
+        this.region = region;
         this.cdn = cdn;
         this.size = size;
-        this.region = region;
     }
 
     @Override
