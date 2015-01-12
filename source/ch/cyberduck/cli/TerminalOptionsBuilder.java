@@ -106,6 +106,12 @@ public final class TerminalOptionsBuilder {
                 .isRequired(false)
                 .create('L'));
         options.addOption(OptionBuilder
+                .withDescription("Region of bucket or container")
+                .withLongOpt(Params.region.name())
+                .hasArg(true)
+                .isRequired(false)
+                .create('r'));
+        options.addOption(OptionBuilder
                 .withDescription("Preserve permissions and modification date for transferred files")
                 .withLongOpt(Params.preserve.name())
                 .hasArg(false)
@@ -151,6 +157,7 @@ public final class TerminalOptionsBuilder {
     }
 
     public enum Params {
+        region,
         longlist,
         preserve,
         existing,

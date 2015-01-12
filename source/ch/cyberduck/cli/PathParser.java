@@ -22,6 +22,7 @@ import ch.cyberduck.core.DelimiterPathKindDetector;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathKindDetector;
 import ch.cyberduck.core.PathNormalizer;
 
@@ -50,22 +51,28 @@ public class PathParser {
             case s3:
             case googlestorage:
             case swift:
+                final PathAttributes attributes = new PathAttributes();
+                if(input.hasOption(TerminalOptionsBuilder.Params.region.name())) {
+                    attributes.setRegion(input.getOptionValue(TerminalOptionsBuilder.Params.region.name()));
+                }
                 if(StringUtils.isBlank(host.getProtocol().getDefaultHostname())) {
-                    return new Path(host.getDefaultPath(), EnumSet.of(detector.detect(host.getDefaultPath())));
+                    return new Path(host.getDefaultPath(), EnumSet.of(detector.detect(host.getDefaultPath())), attributes);
                 }
                 else {
                     final Path container;
                     if(StringUtils.isBlank(host.getHostname())) {
-                        container = new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory));
+                        container = new Path(String.valueOf(Path.DELIMITER),
+                                EnumSet.of(Path.Type.volume, Path.Type.directory), attributes);
                     }
                     else {
-                        container = new Path(host.getHostname(), EnumSet.of(Path.Type.volume, Path.Type.directory));
+                        container = new Path(host.getHostname(),
+                                EnumSet.of(Path.Type.volume, Path.Type.directory), attributes);
                     }
                     final String key = host.getDefaultPath();
                     if(String.valueOf(Path.DELIMITER).equals(PathNormalizer.normalize(key))) {
                         return container;
                     }
-                    return new Path(container, key, EnumSet.of(detector.detect(key)));
+                    return new Path(container, key, EnumSet.of(detector.detect(key)), attributes);
                 }
             default:
                 return new Path(host.getDefaultPath(), EnumSet.of(detector.detect(host.getDefaultPath())));
