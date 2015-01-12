@@ -18,7 +18,6 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.notification.NotificationService;
 
 /**
@@ -26,8 +25,7 @@ import ch.cyberduck.core.notification.NotificationService;
  */
 public class TerminalNotification implements NotificationService {
 
-    private ProgressListener output
-            = new TerminalProgressListener();
+    private Console console = new Console();
 
     @Override
     public void setup() {
@@ -41,11 +39,11 @@ public class TerminalNotification implements NotificationService {
 
     @Override
     public void notify(final String title, final String description) {
-        output.message(title);
+        console.printf("\r\033[2K%s%n", title);
     }
 
     @Override
     public void notifyWithImage(final String title, final String description, final String image) {
-        output.message(title);
+        console.printf("\r\033[2K%s%n", title);
     }
 }
