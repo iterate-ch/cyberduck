@@ -106,17 +106,23 @@ public final class TerminalOptionsBuilder {
                 .isRequired(false)
                 .create('L'));
         options.addOption(OptionBuilder
-                .withDescription("Region of bucket or container")
+                .withDescription("Location of bucket or container")
                 .withLongOpt(Params.region.name())
                 .hasArg(true)
                 .isRequired(false)
-                .create('r'));
+                .create());
         options.addOption(OptionBuilder
                 .withDescription("Preserve permissions and modification date for transferred files")
                 .withLongOpt(Params.preserve.name())
                 .hasArg(false)
                 .isRequired(false)
                 .create('P'));
+        options.addOption(OptionBuilder
+                .withDescription("Retry failed connection attempts")
+                .withLongOpt(Params.retry.name())
+                .hasArg(false)
+                .isRequired(false)
+                .create('r'));
         final StringBuilder b = new StringBuilder().append(StringUtils.LF);
         final Set<TransferAction> actions = new HashSet<TransferAction>(TransferAction.forTransfer(Transfer.Type.download));
         actions.add(TransferAction.cancel);
@@ -160,6 +166,7 @@ public final class TerminalOptionsBuilder {
         region,
         longlist,
         preserve,
+        retry,
         existing,
         verbose,
         quiet,

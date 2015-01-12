@@ -19,10 +19,12 @@ package ch.cyberduck.cli;
  */
 
 import ch.cyberduck.core.AbstractController;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.threading.AlertCallback;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.MainAction;
 
@@ -35,11 +37,19 @@ import java.util.concurrent.Future;
  */
 public class TerminalController extends AbstractController {
 
-    private TranscriptListener trancript
-            = new TerminalTranscriptListener();
+    private TranscriptListener transcript;
 
-    private ProgressListener progress
-            = new TerminalProgressListener();
+    private ProgressListener progress;
+
+    private AlertCallback alert;
+
+    public TerminalController(final AlertCallback alert,
+                              final ProgressListener progress,
+                              final TranscriptListener transcript) {
+        this.alert = alert;
+        this.transcript = transcript;
+        this.progress = progress;
+    }
 
     @Override
     public <T> Future<T> background(final BackgroundAction<T> action) {
@@ -51,9 +61,14 @@ public class TerminalController extends AbstractController {
             final StringAppender b = new StringAppender();
             b.append(e.getMessage());
             b.append(e.getDetail());
-            progress.message(b.toString());
+            this.message(b.toString());
         }
         return null;
+    }
+
+    @Override
+    public boolean alert(final Host host, final BackgroundException failure, final StringBuilder transcript) {
+        return alert.alert(host, failure, transcript);
     }
 
     @Override
@@ -68,6 +83,6 @@ public class TerminalController extends AbstractController {
 
     @Override
     public void log(final boolean request, final String message) {
-        trancript.log(request, message);
+        transcript.log(request, message);
     }
 }

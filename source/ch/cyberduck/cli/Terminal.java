@@ -18,7 +18,20 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledTranscriptListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.StringAppender;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -42,7 +55,6 @@ import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.worker.DisconnectWorker;
 import ch.cyberduck.core.worker.SessionListWorker;
-import ch.cyberduck.core.worker.SingleTransferWorker;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -71,7 +83,13 @@ public class Terminal {
 
     private final Preferences preferences;
 
+    private final TerminalController controller;
+
     private Cache<Path> cache;
+
+    private ProgressListener progress;
+
+    private TranscriptListener transcript;
 
     private enum Exit {
         success,
@@ -95,6 +113,12 @@ public class Terminal {
         }
         this.input = input;
         this.cache = new Cache<Path>();
+        this.progress = input.hasOption(TerminalOptionsBuilder.Params.quiet.name())
+                ? new DisabledListProgressListener() : new TerminalProgressListener();
+        this.transcript = input.hasOption(TerminalOptionsBuilder.Params.verbose.name())
+                ? new TerminalTranscriptListener() : new DisabledTranscriptListener();
+        this.controller = new TerminalController(new TerminalAlertCallback(input.hasOption(TerminalOptionsBuilder.Params.retry.name())),
+                progress, transcript);
         LocaleFactory.get().setDefault(Locale.getDefault().getLanguage());
     }
 
@@ -118,7 +142,6 @@ public class Terminal {
             final Terminal terminal = new Terminal(defaults, options, input);
             switch(terminal.execute()) {
                 case success:
-                    console.printf("%n");
                     System.exit(0);
                 case failure:
                     System.exit(1);
@@ -200,8 +223,6 @@ public class Terminal {
                                     new PathParser(input).parse(uri),
                                     new PathParser(input).parse(input.getOptionValues(action.name())[1]))
                     );
-                    // Connect
-                    this.connect(((CopyTransfer) transfer).getDestination());
                     break;
                 default:
                     throw new BackgroundException(LocaleFactory.localizedString("Unknown"),
@@ -235,9 +256,7 @@ public class Terminal {
         }
     }
 
-    protected Exit transfer(final Transfer transfer, final Session session) throws BackgroundException {
-        // Connect
-        this.connect(session);
+    protected Exit transfer(final Transfer transfer, final Session session) {
         // Transfer
         final TransferSpeedometer meter = new TransferSpeedometer(transfer);
         final TransferPrompt prompt;
@@ -260,31 +279,31 @@ public class Terminal {
         else {
             prompt = new TerminalTransferPrompt(transfer.getType());
         }
-        final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions().reload(true), meter,
-                prompt, new TerminalTransferErrorCallback(), new TerminalTransferItemCallback(),
-                input.hasOption(TerminalOptionsBuilder.Params.quiet.name()) ? new DisabledListProgressListener() : new TerminalProgressListener(),
-                input.hasOption(TerminalOptionsBuilder.Params.quiet.name()) ? new DisabledStreamListener() : new TerminalStreamListener(meter), new TerminalLoginCallback());
-        if(worker.run()) {
-            return Exit.success;
+        final TerminalTransferBackgroundAction action = new TerminalTransferBackgroundAction(controller, session, cache,
+                transfer, new TransferOptions().reload(true), prompt, meter,
+                input.hasOption(TerminalOptionsBuilder.Params.quiet.name())
+                        ? new DisabledStreamListener() : new TerminalStreamListener(meter))
+                .withRetry(input.hasOption(TerminalOptionsBuilder.Params.retry.name()));
+        controller.background(action);
+        if(action.hasFailed()) {
+            return Exit.failure;
         }
-        return Exit.failure;
+        return Exit.success;
     }
 
-    protected Exit list(final Session session, final Path remote, final boolean verbose) throws BackgroundException {
-        // Connect
-        this.connect(session);
-        // List
+    protected Exit list(final Session session, final Path remote, final boolean verbose) {
         final SessionListWorker worker = new SessionListWorker(session, Cache.<Path>empty(), remote,
                 new TerminalListProgressListener(verbose));
-        worker.run();
+        final TerminalBackgroundAction action = new TerminalBackgroundAction(controller, session, cache, worker)
+                .withRetry(input.hasOption(TerminalOptionsBuilder.Params.retry.name()));
+        controller.background(action);
+        if(action.hasFailed()) {
+            return Exit.failure;
+        }
         return Exit.success;
     }
 
     protected Exit edit(final Session session, final Path remote) throws BackgroundException {
-        // Connect
-        this.connect(session);
-        // Edit
-        final TerminalController controller = new TerminalController();
         final EditorFactory factory = EditorFactory.instance();
         final Application application;
         final ApplicationFinder finder = ApplicationFinderFactory.get();
@@ -335,19 +354,24 @@ public class Terminal {
         return Exit.success;
     }
 
-    protected void connect(final Session session) throws BackgroundException {
-        final TranscriptListener transcript = input.hasOption(TerminalOptionsBuilder.Params.verbose.name())
-                ? new TerminalTranscriptListener() : new DisabledTranscriptListener();
-        final ConnectionService connect = new LoginConnectionService(
-                new TerminalLoginCallback(), new TerminalHostKeyVerifier(), PasswordStoreFactory.get(),
-                input.hasOption(TerminalOptionsBuilder.Params.quiet.name()) ? new DisabledListProgressListener() : new TerminalProgressListener(), transcript);
-        connect.connect(session, cache);
-    }
-
     protected void disconnect(final Session session) {
         if(session != null) {
             final DisconnectWorker close = new DisconnectWorker(session, cache);
-            close.run();
+            final TerminalBackgroundAction action = new TerminalBackgroundAction(controller, session, cache, close) {
+                @Override
+                public void prepare() throws ConnectionCanceledException {
+                    if(!session.isConnected()) {
+                        throw new ConnectionCanceledException();
+                    }
+                    super.prepare();
+                }
+
+                @Override
+                protected boolean connect(Session session) throws BackgroundException {
+                    return false;
+                }
+            };
+            controller.background(action);
         }
     }
 }
