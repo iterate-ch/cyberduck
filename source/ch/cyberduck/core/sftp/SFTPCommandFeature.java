@@ -105,7 +105,6 @@ public class SFTPCommandFeature implements Command {
                 IOUtils.closeQuietly(stdoutReader);
                 IOUtils.closeQuietly(stderrReader);
             }
-            sess.close();
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
