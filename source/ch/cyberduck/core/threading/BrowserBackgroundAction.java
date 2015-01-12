@@ -22,9 +22,13 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.HistoryCollection;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.serializer.HostDictionary;
 
@@ -38,6 +42,12 @@ public abstract class BrowserBackgroundAction<T> extends ControllerBackgroundAct
 
     public BrowserBackgroundAction(final Controller controller, final Session<?> session, final Cache<Path> cache) {
         super(controller, session, cache);
+    }
+
+    public BrowserBackgroundAction(final Session<?> session, final Cache<Path> cache, final AlertCallback alert,
+                                   final ProgressListener progressListener, final TranscriptListener transcriptListener,
+                                   final LoginCallback prompt, final HostKeyCallback key) {
+        super(session, cache, alert, progressListener, transcriptListener, prompt, key);
     }
 
     @Override

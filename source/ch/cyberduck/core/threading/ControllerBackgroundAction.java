@@ -19,11 +19,14 @@ package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Controller;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostKeyCallbackFactory;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginCallbackFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 /**
@@ -44,6 +47,12 @@ public abstract class ControllerBackgroundAction<T> extends SessionBackgroundAct
         super(session, cache, controller, listener, controller,
                 LoginCallbackFactory.get(controller), HostKeyCallbackFactory.get(controller, session.getHost().getProtocol()));
         this.controller = controller;
+    }
+
+    public ControllerBackgroundAction(final Session<?> session, final Cache<Path> cache, final AlertCallback alert,
+                                      final ProgressListener progressListener, final TranscriptListener transcriptListener,
+                                      final LoginCallback prompt, final HostKeyCallback key) {
+        super(session, cache, alert, progressListener, transcriptListener, prompt, key);
     }
 
     @Override

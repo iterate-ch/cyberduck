@@ -19,8 +19,12 @@ package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Controller;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.worker.Worker;
 
@@ -44,6 +48,12 @@ public class WorkerBackgroundAction<T> extends BrowserBackgroundAction<Boolean> 
                                   final Worker<T> worker) {
         super(controller, session, cache);
         this.worker = worker;
+    }
+
+    public WorkerBackgroundAction(final Session<?> session, final Cache<Path> cache, final AlertCallback alert,
+                                  final ProgressListener progressListener, final TranscriptListener transcriptListener,
+                                  final LoginCallback prompt, final HostKeyCallback key) {
+        super(session, cache, alert, progressListener, transcriptListener, prompt, key);
     }
 
     @Override
