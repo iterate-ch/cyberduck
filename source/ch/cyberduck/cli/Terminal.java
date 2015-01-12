@@ -357,21 +357,7 @@ public class Terminal {
     protected void disconnect(final Session session) {
         if(session != null) {
             final DisconnectWorker close = new DisconnectWorker(session, cache);
-            final TerminalBackgroundAction action = new TerminalBackgroundAction(controller, session, cache, close) {
-                @Override
-                public void prepare() throws ConnectionCanceledException {
-                    if(!session.isConnected()) {
-                        throw new ConnectionCanceledException();
-                    }
-                    super.prepare();
-                }
-
-                @Override
-                protected boolean connect(Session session) throws BackgroundException {
-                    return false;
-                }
-            };
-            controller.background(action);
+            close.run();
         }
     }
 }
