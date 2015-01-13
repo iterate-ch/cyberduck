@@ -2044,7 +2044,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     editor = EditorFactory.instance().create(this, Session, new Application(exe, null), selected);
                 }
-                editor.open(new DisabledApplicationQuitCallback(), new DisabledTransferErrorCallback());
+                this.background(new WorkerBackgroundAction<Transfer>(this, session, editor.open(new DisabledApplicationQuitCallback(),
+                                        new DisabledTransferErrorCallback(), new DefaultEditorListener(this, Session, editor))));
             }
         }
 

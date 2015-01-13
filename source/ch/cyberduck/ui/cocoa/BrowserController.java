@@ -32,6 +32,7 @@ import ch.cyberduck.binding.foundation.NSRange;
 import ch.cyberduck.binding.foundation.NSString;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.aquaticprime.LicenseFactory;
+import ch.cyberduck.core.editor.DefaultEditorListener;
 import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -2655,12 +2656,12 @@ public class BrowserController extends WindowController
 
     protected void edit(final Editor editor) {
         editors.add(editor);
-        editor.open(new ApplicationQuitCallback() {
+        this.background(new WorkerBackgroundAction<Transfer>(this, session, editor.open(new ApplicationQuitCallback() {
             @Override
             public void callback() {
                 editors.remove(editor);
             }
-        }, new DisabledTransferErrorCallback());
+        }, new DisabledTransferErrorCallback(), new DefaultEditorListener(this, session, editor))));
     }
 
     @Action
@@ -2908,7 +2909,7 @@ public class BrowserController extends WindowController
                 public void progress(final TransferProgress status) {
                     message(status.getProgress());
                 }
-            }, this, this, transfer, new TransferOptions()) {
+            }, transfer, new TransferOptions()) {
                 @Override
                 public void finish() {
                     if(transfer.isComplete()) {
