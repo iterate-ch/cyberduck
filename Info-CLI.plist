@@ -7,7 +7,7 @@
 		<key>CFBundleExecutable</key>
 		<string>duck</string>
 		<key>CFBundleIdentifier</key>
-		<string>ch.sudo.cyberduck.cli</string>
+		<string>sh.duck</string>
 		<key>CFBundleInfoDictionaryVersion</key>
 		<string>6.0</string>
 		<key>CFBundleName</key>
