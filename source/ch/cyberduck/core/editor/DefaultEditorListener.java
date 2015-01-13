@@ -17,9 +17,13 @@ package ch.cyberduck.core.editor;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.FileWatcherListener;
+import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
+import ch.cyberduck.core.transfer.Transfer;
 
 import org.apache.log4j.Logger;
 
@@ -29,9 +33,15 @@ import org.apache.log4j.Logger;
 public class DefaultEditorListener implements FileWatcherListener {
     private static final Logger log = Logger.getLogger(DefaultEditorListener.class);
 
+    private Controller controller;
+
+    private Session session;
+
     private Editor editor;
 
-    public DefaultEditorListener(final Editor editor) {
+    public DefaultEditorListener(final Controller controller, final Session session, final Editor editor) {
+        this.controller = controller;
+        this.session = session;
         this.editor = editor;
     }
 
@@ -40,7 +50,10 @@ public class DefaultEditorListener implements FileWatcherListener {
         if(log.isInfoEnabled()) {
             log.info(String.format("File %s written", file));
         }
-        editor.save(new DisabledTransferErrorCallback());
+        controller.background(new WorkerBackgroundAction<Transfer>(controller,
+                        session,
+                        editor.save(new DisabledTransferErrorCallback()))
+        );
     }
 
     @Override
@@ -56,7 +69,9 @@ public class DefaultEditorListener implements FileWatcherListener {
         if(log.isInfoEnabled()) {
             log.info(String.format("File %s created", file));
         }
-        editor.save(new DisabledTransferErrorCallback());
+        controller.background(new WorkerBackgroundAction<Transfer>(controller,
+                        session,
+                        editor.save(new DisabledTransferErrorCallback()))
+        );
     }
-
 }

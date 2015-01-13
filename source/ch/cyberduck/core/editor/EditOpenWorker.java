@@ -26,6 +26,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
+import ch.cyberduck.core.local.FileWatcherListener;
 import ch.cyberduck.core.transfer.DisabledTransferItemCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.DownloadTransfer;
@@ -61,10 +62,13 @@ public class EditOpenWorker extends Worker<Transfer> {
 
     private ProgressListener listener;
 
+    private FileWatcherListener watcher;
+
     public EditOpenWorker(final AbstractEditor editor, final Session session,
                           final TransferErrorCallback callback,
                           final ApplicationQuitCallback quit,
-                          final ProgressListener listener) {
+                          final ProgressListener listener,
+                          final FileWatcherListener watcher) {
         this.editor = editor;
         this.session = session;
         this.callback = callback;
@@ -77,6 +81,7 @@ public class EditOpenWorker extends Worker<Transfer> {
             }
         };
         this.listener = listener;
+        this.watcher = watcher;
     }
 
     @Override
@@ -98,7 +103,7 @@ public class EditOpenWorker extends Worker<Transfer> {
             log.warn(String.format("File size changed for %s", file));
         }
         try {
-            editor.edit(quit);
+            editor.edit(quit, watcher);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);

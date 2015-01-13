@@ -18,15 +18,16 @@ package ch.cyberduck.core.editor;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.io.watchservice.NIOEventWatchService;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationLauncher;
 import ch.cyberduck.core.local.FileWatcher;
+import ch.cyberduck.core.local.FileWatcherListener;
 
 import org.apache.log4j.Logger;
 
@@ -35,31 +36,32 @@ import java.io.IOException;
 /**
  * @version $Id$
  */
-public class DefaultWatchEditor extends ControllerBackgroundEditor {
+public class DefaultWatchEditor extends AbstractEditor {
     private static final Logger log = Logger.getLogger(DefaultWatchEditor.class);
 
     private FileWatcher monitor
             = new FileWatcher(new NIOEventWatchService());
 
-    public DefaultWatchEditor(final Controller controller,
+    public DefaultWatchEditor(final Application application,
                               final Session session,
-                              final Application application,
-                              final Path path) {
-        super(controller, session, application, path);
+                              final Path file,
+                              final ProgressListener listener) {
+        super(application, session, file, listener);
     }
 
-    public DefaultWatchEditor(final Controller controller,
+    public DefaultWatchEditor(final Application application,
                               final Session session,
+                              final Path file,
                               final ApplicationLauncher launcher,
                               final ApplicationFinder finder,
-                              final Application application,
-                              final Path path) {
-        super(controller, session, launcher, finder, application, path);
+                              final ProgressListener listener) {
+        super(application, session, file, launcher, finder, listener);
     }
 
-    public void watch(final Local local) throws IOException {
+    @Override
+    protected void watch(final Local local, final FileWatcherListener listener) throws IOException {
         try {
-            monitor.register(local, new DefaultEditorListener(this)).await();
+            monitor.register(local, listener).await();
         }
         catch(InterruptedException e) {
             throw new IOException(String.format("Failure monitoring file %s", local), e);

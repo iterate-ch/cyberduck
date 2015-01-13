@@ -27,57 +27,41 @@ using Path = ch.cyberduck.core.Path;
 
 namespace Ch.Cyberduck.Core.Editor
 {
-    public class SystemWatchEditor : ControllerBackgroundEditor
+    public class SystemWatchEditor : AbstractEditor
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (SystemWatchEditor).FullName);
+        private static readonly Logger Log = Logger.getLogger(typeof(SystemWatchEditor).FullName);
         private FileSystemWatcher _watcher;
 
-        public SystemWatchEditor(Controller controller, Session session, Application application, Path path)
-            : base(controller, session, application, path)
+        public SystemWatchEditor(ProgressListener listener, Session session, Application application, Path file)
+            : base(application, session, file, listener)
         {
         }
 
-        protected override void watch(ch.cyberduck.core.Local local)
+        protected override void watch(ch.cyberduck.core.Local file, FileWatcherListener listener)
         {
             _watcher = new FileSystemWatcher();
-            _watcher.Path = local.getParent().getAbsolute();
-            _watcher.Filter = local.getName();
+            _watcher.Path = file.getParent().getAbsolute();
+            _watcher.Filter = file.getName();
             _watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite | NotifyFilters.FileName |
                                     NotifyFilters.DirectoryName;
-            RegisterHandlers();
+            _watcher.Changed += delegate {
+                Log.debug("HasChanged:" + e.FullPath);
+                listener.fileWritten(file);
+            };
+            _watcher.Renamed += delegate {
+                Log.debug(String.Format("HasRenamed: from {0} to {1}", e.OldFullPath, e.FullPath));
+                listener.fileWritten(file);
+            };
             // Begin watching.
             _watcher.EnableRaisingEvents = true;
-        }
-
-        private void HasRenamed(object sender, RenamedEventArgs e)
-        {
-            Log.debug(String.Format("HasRenamed: from {0} to {1}", e.OldFullPath, e.FullPath));
-            save(new DisabledTransferErrorCallback());
-        }
-
-        private void HasChanged(object sender, FileSystemEventArgs e)
-        {
-            Log.debug("HasChanged:" + e.FullPath);
-            save(new DisabledTransferErrorCallback());
         }
 
         public override void delete()
         {
             _watcher.EnableRaisingEvents = false;
-            RemoveHandlers();
-            base.delete();
-        }
-
-        private void RegisterHandlers()
-        {
-            _watcher.Changed += HasChanged;
-            _watcher.Renamed += HasRenamed;
-        }
-
-        private void RemoveHandlers()
-        {
             _watcher.Changed -= HasChanged;
             _watcher.Renamed -= HasRenamed;
+            base.delete();
         }
     }
 }

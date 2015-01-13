@@ -18,13 +18,14 @@ package ch.cyberduck.core.editor;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.io.watchservice.FSEventWatchService;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.FileWatcher;
+import ch.cyberduck.core.local.FileWatcherListener;
 
 import org.apache.log4j.Logger;
 
@@ -35,7 +36,7 @@ import java.io.IOException;
  *
  * @version $Id$
  */
-public class FSEventWatchEditor extends ControllerBackgroundEditor {
+public class FSEventWatchEditor extends AbstractEditor {
     private static final Logger log = Logger.getLogger(FSEventWatchEditor.class);
 
     private FileWatcher monitor
@@ -44,18 +45,17 @@ public class FSEventWatchEditor extends ControllerBackgroundEditor {
     /**
      * With custom editor for file type.
      *
-     * @param controller  Browser
      * @param application Editor application
      * @param file        Remote file
      */
-    public FSEventWatchEditor(final Controller controller, final Session session,
-                              final Application application, final Path file) {
-        super(controller, session, application, file);
+    public FSEventWatchEditor(final Application application, final Session session,
+                              final Path file, final ProgressListener listener) {
+        super(application, session, file, listener);
     }
 
-    public void watch(final Local local) throws IOException {
+    public void watch(final Local local, final FileWatcherListener listener) throws IOException {
         try {
-            monitor.register(local, new DefaultEditorListener(this)).await();
+            monitor.register(local, listener).await();
         }
         catch(InterruptedException e) {
             throw new IOException(String.format("Failure monitoring file %s", local), e);

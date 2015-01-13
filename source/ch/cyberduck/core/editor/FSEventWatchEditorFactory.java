@@ -18,8 +18,8 @@ package ch.cyberduck.core.editor;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
@@ -86,7 +86,7 @@ public class FSEventWatchEditorFactory extends EditorFactory {
     }
 
     @Override
-    public Editor create(final Controller c, final Session session, final Application application, final Path file) {
-        return new FSEventWatchEditor(c, session, application, file);
+    public Editor create(final ProgressListener listener, final Session session, final Application application, final Path file) {
+        return new FSEventWatchEditor(application, session, file, listener);
     }
 }

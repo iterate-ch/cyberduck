@@ -18,10 +18,10 @@ package ch.cyberduck.core.editor;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
@@ -97,21 +97,21 @@ public abstract class EditorFactory extends Factory<EditorFactory> {
     }
 
     /**
-     * @param c    Controller
+     * @param listener    Controller
      * @param path File to edit
      * @return New editor instance for the given file type.
      */
-    public Editor create(final Controller c, final Session session, final Path path) {
-        return this.create(c, session, this.getEditor(path.getName()), path);
+    public Editor create(final ProgressListener listener, final Session session, final Path path) {
+        return this.create(listener, session, this.getEditor(path.getName()), path);
     }
 
     /**
-     * @param c           Controller
+     * @param listener           Controller
      * @param application The application bundle identifier of the editor to use
      * @param path        File to edit
      * @return New editor instance for the given file type.
      */
-    public abstract Editor create(Controller c, Session session, Application application, Path path);
+    public abstract Editor create(ProgressListener listener, Session session, Application application, Path path);
 
     /**
      * Determine the default editor set

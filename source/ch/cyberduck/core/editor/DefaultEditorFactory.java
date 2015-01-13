@@ -18,8 +18,8 @@ package ch.cyberduck.core.editor;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.Application;
 
@@ -37,7 +37,7 @@ public class DefaultEditorFactory extends EditorFactory {
     }
 
     @Override
-    public Editor create(final Controller c, final Session session, final Application application, final Path file) {
-        return new DefaultWatchEditor(c, session, application, file);
+    public Editor create(final ProgressListener listener, final Session session, final Application application, final Path file) {
+        return new DefaultWatchEditor(application, session, file, listener);
     }
 }

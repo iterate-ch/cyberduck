@@ -32,6 +32,7 @@ import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.ApplicationLauncher;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
+import ch.cyberduck.core.local.FileWatcherListener;
 import ch.cyberduck.core.local.LocalTrashFactory;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -89,15 +90,15 @@ public abstract class AbstractEditor implements Editor {
                           final Session session,
                           final Path file,
                           final ProgressListener listener) {
-        this(ApplicationLauncherFactory.get(), ApplicationFinderFactory.get(),
-                application, session, file, listener);
+        this(application, session, file, ApplicationLauncherFactory.get(), ApplicationFinderFactory.get(),
+                listener);
     }
 
-    public AbstractEditor(final ApplicationLauncher launcher,
-                          final ApplicationFinder finder,
-                          final Application application,
+    public AbstractEditor(final Application application,
                           final Session session,
                           final Path file,
+                          final ApplicationLauncher launcher,
+                          final ApplicationFinder finder,
                           final ProgressListener listener) {
         this.applicationLauncher = launcher;
         this.applicationFinder = finder;
@@ -112,16 +113,6 @@ public abstract class AbstractEditor implements Editor {
         this.session = session;
         this.listener = listener;
     }
-
-    /**
-     * @param background Download transfer
-     */
-    protected abstract void open(Worker<Transfer> background);
-
-    /**
-     * @param background Upload transfer
-     */
-    protected abstract void save(Worker<Transfer> background);
 
     public Path getRemote() {
         return remote;
@@ -160,7 +151,8 @@ public abstract class AbstractEditor implements Editor {
      * Open the file in the parent directory
      */
     @Override
-    public void open(final ApplicationQuitCallback quit, final TransferErrorCallback error) {
+    public Worker<Transfer> open(final ApplicationQuitCallback quit, final TransferErrorCallback error,
+                                 final FileWatcherListener listener) {
         final Worker<Transfer> worker = new EditOpenWorker(this, session, error,
                 new ApplicationQuitCallback() {
                     @Override
@@ -168,7 +160,7 @@ public abstract class AbstractEditor implements Editor {
                         quit.callback();
                         delete();
                     }
-                }, listener) {
+                }, this.listener, listener) {
             @Override
             public void cleanup(final Transfer download) {
                 // Save checksum before edit
@@ -184,7 +176,7 @@ public abstract class AbstractEditor implements Editor {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Download file for edit %s", local));
         }
-        this.open(worker);
+        return worker;
     }
 
     /**
@@ -192,11 +184,11 @@ public abstract class AbstractEditor implements Editor {
      *
      * @param quit Callback
      */
-    protected void edit(final ApplicationQuitCallback quit) throws IOException {
+    protected void edit(final ApplicationQuitCallback quit, final FileWatcherListener listener) throws IOException {
         if(!applicationFinder.isInstalled(application)) {
             log.warn(String.format("No editor application configured for %s", local));
             if(applicationLauncher.open(local)) {
-                this.watch(local);
+                this.watch(local, listener);
             }
             else {
                 throw new IOException(String.format("Failed to open default application for %s",
@@ -204,7 +196,7 @@ public abstract class AbstractEditor implements Editor {
             }
         }
         else if(applicationLauncher.open(local, application, quit)) {
-            this.watch(local);
+            this.watch(local, listener);
         }
         else {
             throw new IOException(String.format("Failed to open application %s for %s",
@@ -212,13 +204,13 @@ public abstract class AbstractEditor implements Editor {
         }
     }
 
-    protected abstract void watch(Local local) throws IOException;
+    protected abstract void watch(Local local, FileWatcherListener listener) throws IOException;
 
     /**
      * Upload changes to server if checksum of local file has changed since last edit.
      */
     @Override
-    public void save(final TransferErrorCallback error) {
+    public Worker<Transfer> save(final TransferErrorCallback error) {
         // If checksum still the same no need for save
         final String current;
         try {
@@ -228,7 +220,7 @@ public abstract class AbstractEditor implements Editor {
         }
         catch(BackgroundException e) {
             log.warn(String.format("Error computing checksum for %s", local));
-            return;
+            return Worker.empty();
         }
         if(StringUtils.equals(checksum, current)) {
             if(log.isInfoEnabled()) {
@@ -245,8 +237,9 @@ public abstract class AbstractEditor implements Editor {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Upload changes for %s", local));
             }
-            this.save(worker);
+            return worker;
         }
+        return Worker.empty();
     }
 
     @Override
