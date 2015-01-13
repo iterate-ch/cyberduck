@@ -29,6 +29,5 @@ public interface AlertCallback {
     /**
      * @return True if action should be repeated
      */
-    boolean alert(Host host,
-                  BackgroundException failure, StringBuilder transcript);
+    boolean alert(Host host, BackgroundException failure, StringBuilder transcript);
 }
