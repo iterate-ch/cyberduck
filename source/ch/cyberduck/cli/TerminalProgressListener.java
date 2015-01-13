@@ -29,8 +29,6 @@ import org.fusesource.jansi.Ansi;
  */
 public class TerminalProgressListener implements ProgressListener {
 
-    private final Ansi ansi = Ansi.ansi();
-
     private final Console console = new Console();
 
     @Override
@@ -41,7 +39,7 @@ public class TerminalProgressListener implements ProgressListener {
         final StringAppender appender = new StringAppender('…');
         appender.append(message);
         // Clear the line and append message. Used instead of \r because the line width may vary
-        console.printf("\r%s%s", ansi
+        console.printf("\r%s%s", Ansi.ansi()
                 .saveCursorPosition()
                 .eraseLine(Ansi.Erase.ALL)
                 .restoreCursorPosition(), appender);

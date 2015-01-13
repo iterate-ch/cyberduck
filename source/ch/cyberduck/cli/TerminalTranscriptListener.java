@@ -27,17 +27,15 @@ import org.fusesource.jansi.Ansi;
  */
 public class TerminalTranscriptListener implements TranscriptListener {
 
-    private final Ansi ansi = Ansi.ansi();
-
     private final Console console = new Console();
 
     @Override
     public void log(final boolean request, final String message) {
         if(request) {
-            console.printf("%n%s> %s%s", ansi.fg(Ansi.Color.GREEN), message, ansi.reset());
+            console.printf("%n%s> %s%s", Ansi.ansi().fg(Ansi.Color.GREEN), message, Ansi.ansi().reset());
         }
         else {
-            console.printf("%n%s< %s%s", ansi.fg(Ansi.Color.RED), message, ansi.reset());
+            console.printf("%n%s< %s%s", Ansi.ansi().fg(Ansi.Color.RED), message, Ansi.ansi().reset());
         }
     }
 }

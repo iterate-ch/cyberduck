@@ -27,8 +27,6 @@ import org.fusesource.jansi.Ansi;
  */
 public class TerminalNotification implements NotificationService {
 
-    private final Ansi ansi = Ansi.ansi();
-
     private Console console = new Console();
 
     @Override
@@ -43,7 +41,7 @@ public class TerminalNotification implements NotificationService {
 
     @Override
     public void notify(final String title, final String description) {
-        console.printf("\r%s%s%n", ansi
+        console.printf("\r%s%s%n", Ansi.ansi()
                 .saveCursorPosition()
                 .eraseLine(Ansi.Erase.ALL)
                 .restoreCursorPosition(), title);
@@ -51,7 +49,7 @@ public class TerminalNotification implements NotificationService {
 
     @Override
     public void notifyWithImage(final String title, final String description, final String image) {
-        console.printf("\r%s%s%n", ansi
+        console.printf("\r%s%s%n", Ansi.ansi()
                 .saveCursorPosition()
                 .eraseLine(Ansi.Erase.ALL)
                 .restoreCursorPosition(), title);
