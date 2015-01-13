@@ -208,8 +208,10 @@ public class Host implements Serializable, Comparable<Host> {
         this.hostname = hostname;
         this.port = port;
         this.credentials.setUsername(credentials.getUsername());
-        this.credentials.setPassword(credentials.getPassword());
         this.credentials.setIdentity(credentials.getIdentity());
+        if(!credentials.isAnonymousLogin()) {
+            this.credentials.setPassword(credentials.getPassword());
+        }
     }
 
     /**
@@ -223,8 +225,10 @@ public class Host implements Serializable, Comparable<Host> {
         this.port = port;
         this.defaultpath = defaultpath;
         this.credentials.setUsername(credentials.getUsername());
-        this.credentials.setPassword(credentials.getPassword());
         this.credentials.setIdentity(credentials.getIdentity());
+        if(!credentials.isAnonymousLogin()) {
+            this.credentials.setPassword(credentials.getPassword());
+        }
     }
 
     /**
@@ -436,7 +440,7 @@ public class Host implements Serializable, Comparable<Host> {
 
     /**
      * Sets the name for this host. Also reverts the nickname if no custom nickname is set.
-     * <p/>
+     * <p>
      * Configures credentials according to new hostname.
      *
      * @param hostname Server
