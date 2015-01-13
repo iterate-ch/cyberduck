@@ -28,6 +28,7 @@ import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.exception.LoginCanceledException;
 
 import org.apache.commons.cli.CommandLine;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @version $Id$
@@ -43,16 +44,19 @@ public class TerminalLoginService extends KeychainLoginService {
 
     @Override
     public void validate(final Host bookmark, final String message, final LoginOptions options) throws LoginCanceledException {
+        final Credentials credentials = bookmark.getCredentials();
         if(input.hasOption(TerminalOptionsBuilder.Params.username.name())) {
-            final Credentials credentials = bookmark.getCredentials();
             credentials.setUsername(input.getOptionValue(TerminalOptionsBuilder.Params.username.name()));
         }
         if(input.hasOption(TerminalOptionsBuilder.Params.password.name())) {
-            final Credentials credentials = bookmark.getCredentials();
             credentials.setPassword(input.getOptionValue(TerminalOptionsBuilder.Params.password.name()));
         }
         if(input.hasOption(TerminalOptionsBuilder.Params.identity.name())) {
             bookmark.getCredentials().setIdentity(LocalFactory.get(input.getOptionValue(TerminalOptionsBuilder.Params.identity.name())));
+        }
+        if(StringUtils.isNotBlank(credentials.getUsername())
+                && StringUtils.isNotBlank(credentials.getPassword())) {
+            return;
         }
         super.validate(bookmark, message, options);
     }
