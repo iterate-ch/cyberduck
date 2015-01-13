@@ -20,10 +20,14 @@ package ch.cyberduck.cli;
 
 import ch.cyberduck.core.notification.NotificationService;
 
+import org.fusesource.jansi.Ansi;
+
 /**
  * @version $Id$
  */
 public class TerminalNotification implements NotificationService {
+
+    private final Ansi ansi = Ansi.ansi();
 
     private Console console = new Console();
 
@@ -39,11 +43,17 @@ public class TerminalNotification implements NotificationService {
 
     @Override
     public void notify(final String title, final String description) {
-        console.printf("\r\033[2K%s%n", title);
+        console.printf("\r%s%s%n", ansi
+                .saveCursorPosition()
+                .eraseLine(Ansi.Erase.ALL)
+                .restoreCursorPosition().toString(), title);
     }
 
     @Override
     public void notifyWithImage(final String title, final String description, final String image) {
-        console.printf("\r\033[2K%s%n", title);
+        console.printf("\r%s%s%n", ansi
+                .saveCursorPosition()
+                .eraseLine(Ansi.Erase.ALL)
+                .restoreCursorPosition().toString(), title);
     }
 }
