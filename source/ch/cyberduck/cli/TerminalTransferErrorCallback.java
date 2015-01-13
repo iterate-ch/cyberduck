@@ -35,7 +35,7 @@ public class TerminalTransferErrorCallback implements TransferErrorCallback {
         final StringAppender appender = new StringAppender('…');
         appender.append(failure.getMessage());
         appender.append(failure.getDetail());
-        console.printf(appender.toString());
+        console.printf("%n%s", appender.toString());
         final String input = console.readLine(" %s? (y/n): ", LocaleFactory.localizedString("Continue", "Credentials"));
         switch(input) {
             case "y":

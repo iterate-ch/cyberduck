@@ -85,7 +85,7 @@ public class TerminalCertificateStore extends DefaultCertificateStore {
     private boolean callback(final String hostname, final String message) {
         final String input;
         try {
-            input = console.readLine("%s. (y/n): ", message);
+            input = console.readLine("%n%s (y/n): ", message);
         }
         catch(ConnectionCanceledException e) {
             return false;

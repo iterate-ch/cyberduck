@@ -97,7 +97,7 @@ public class TerminalListProgressListener extends LimitedListProgressListener {
     private boolean prompt(final ListCanceledException e) {
         final String input;
         try {
-            input = console.readLine("%s %s? (y/n): ",
+            input = console.readLine("%n%s %s? (y/n): ",
                     MessageFormat.format(LocaleFactory.localizedString("Continue listing directory with more than {0} files.", "Alert"), e.getChunk().size()),
                     LocaleFactory.localizedString("Continue", "Credentials"));
         }
