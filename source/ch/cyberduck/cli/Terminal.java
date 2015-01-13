@@ -42,7 +42,6 @@ import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.threading.LoggingUncaughtExceptionHandler;
 import ch.cyberduck.core.threading.SessionBackgroundAction;
 import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
@@ -76,10 +75,6 @@ import java.util.concurrent.ExecutionException;
  */
 public class Terminal {
     private static final Logger log = Logger.getLogger(Terminal.class);
-
-    static {
-        Thread.setDefaultUncaughtExceptionHandler(new LoggingUncaughtExceptionHandler());
-    }
 
     private final Preferences preferences;
 
@@ -162,6 +157,13 @@ public class Terminal {
 
     protected Exit execute() {
         final Console console = new Console();
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(final Thread t, final Throwable e) {
+                console.printf("Uncaught failure with error message %s. Quitting application…", e.getMessage());
+                System.exit(1);
+            }
+        });
         if(input.hasOption(TerminalAction.help.name())) {
             TerminalHelpPrinter.print(options);
             return Exit.success;
@@ -175,13 +177,6 @@ public class Terminal {
             return Exit.failure;
         }
         this.configure(input);
-        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-            @Override
-            public void uncaughtException(final Thread t, final Throwable e) {
-                console.printf("Uncaught failure with error message %s. Quitting application…", e.getMessage());
-                System.exit(1);
-            }
-        });
         Session session = null;
         try {
             final TerminalAction action = TerminalActionFinder.get(input);
