@@ -77,8 +77,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (_edit)
                 {
                     _file.attributes().setSize(0L);
-                    Editor editor = EditorFactory.instance().create(BrowserController, BrowserController.Session, _file);
-                    editor.open(new DisabledApplicationQuitCallback(), new DisabledTransferErrorCallback());
+                    Editor editor = EditorFactory.instance().create(BrowserController, session, _file);
+                    BrowserController.edit(editor);
                 }
                 return true;
             }
