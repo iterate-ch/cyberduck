@@ -28,6 +28,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ListCanceledException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.fusesource.jansi.Ansi;
 
 import java.text.MessageFormat;
 
@@ -63,24 +64,29 @@ public class TerminalListProgressListener extends LimitedListProgressListener {
             final Path file = list.get(i);
             if(l) {
                 if(file.isSymbolicLink()) {
-                    console.printf("%nl%s\t%s\t%s -> %s",
+                    console.printf("%n%sl%s\t%s\t%s -> %s%s",
+                            Ansi.ansi().bold(),
                             file.attributes().getPermission().getSymbol(),
                             formatter.getMediumFormat(
                                     file.attributes().getModificationDate()),
-                            file.getName(), file.getSymlinkTarget().getAbsolute());
+                            file.getName(), file.getSymlinkTarget().getAbsolute(),
+                            Ansi.ansi().reset());
                 }
                 else {
-                    console.printf("%n%s%s\t%s\t%s\t%s", file.isDirectory() ? "d" : "-",
+                    console.printf("%n%s%s%s\t%s\t%s\t%s%s",
+                            Ansi.ansi().bold(),
+                            file.isDirectory() ? "d" : "-",
                             file.attributes().getPermission().getSymbol(),
                             formatter.getMediumFormat(
                                     file.attributes().getModificationDate()),
                             StringUtils.isNotBlank(file.attributes().getRegion())
                                     ? file.attributes().getRegion() : StringUtils.EMPTY,
-                            file.getName());
+                            file.getName(),
+                            Ansi.ansi().reset());
                 }
             }
             else {
-                console.printf("%n%s", file.getName());
+                console.printf("%n%s%s%s", Ansi.ansi().bold(), file.getName(), Ansi.ansi().reset());
             }
         }
         size += list.size() - size;
