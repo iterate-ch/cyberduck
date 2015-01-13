@@ -43,6 +43,7 @@ import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.LoggingUncaughtExceptionHandler;
+import ch.cyberduck.core.threading.SessionBackgroundAction;
 import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
@@ -68,6 +69,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @version $Id$
@@ -205,11 +207,11 @@ public class Terminal {
                             new ArrayList<TransferItem>(new SingleTransferItemFinder().find(input, action, remote)));
                     break;
                 case copy:
-                    transfer = new CopyTransfer(host,
-                            new UriParser(input).parse(input.getOptionValues(action.name())[1]),
+                    final String target = input.getOptionValues(action.name())[1];
+                    transfer = new CopyTransfer(host, new UriParser(input).parse(target),
                             Collections.singletonMap(
-                                    new PathParser(input).parse(uri),
-                                    new PathParser(input).parse(input.getOptionValues(action.name())[1]))
+                                    remote, new PathParser(input).parse(target)
+                            )
                     );
                     break;
                 default:
@@ -269,7 +271,7 @@ public class Terminal {
                 transfer, new TransferOptions().reload(true), prompt, meter,
                 input.hasOption(TerminalOptionsBuilder.Params.quiet.name())
                         ? new DisabledStreamListener() : new TerminalStreamListener(meter));
-        controller.background(action);
+        this.execute(action);
         if(action.hasFailed()) {
             return Exit.failure;
         }
@@ -282,7 +284,7 @@ public class Terminal {
         final TerminalBackgroundAction action = new TerminalBackgroundAction(
                 new TerminalLoginService(input, new TerminalLoginCallback()), controller,
                 session, cache, worker);
-        controller.background(action);
+        this.execute(action);
         if(action.hasFailed()) {
             return Exit.failure;
         }
@@ -318,7 +320,7 @@ public class Terminal {
             }
         }, new DisabledTransferErrorCallback(), new DefaultEditorListener(controller, session, editor))
         );
-        controller.background(action);
+        this.execute(action);
         if(action.hasFailed()) {
             return Exit.failure;
         }
@@ -336,6 +338,22 @@ public class Terminal {
         if(session != null) {
             final DisconnectWorker close = new DisconnectWorker(session, cache);
             close.run();
+        }
+    }
+
+    protected <T> boolean execute(SessionBackgroundAction<T> action) {
+        try {
+            controller.background(action).get();
+            if(action.hasFailed()) {
+                return false;
+            }
+            return true;
+        }
+        catch(InterruptedException e) {
+            return false;
+        }
+        catch(ExecutionException e) {
+            return false;
         }
     }
 }
