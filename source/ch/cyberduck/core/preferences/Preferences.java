@@ -54,6 +54,7 @@ import ch.cyberduck.core.serializer.impl.dd.PlistWriter;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.serializer.impl.dd.TransferPlistReader;
 import ch.cyberduck.core.threading.DisabledActionOperationBatcher;
+import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
@@ -1078,6 +1079,7 @@ public abstract class Preferences {
         defaults.put("factory.certificatestore.class", DisabledCertificateStore.class.getName());
         defaults.put("factory.logincallback.class", DisabledLoginCallback.class.getName());
         defaults.put("factory.hostkeycallback.class", DisabledHostKeyCallback.class.getName());
+        defaults.put("factory.transfererrorcallback.class", DisabledTransferErrorCallback.class.getName());
         defaults.put("factory.temporaryfiles.class", TemporaryFileService.class.getName());
         defaults.put("factory.touch.class", DefaultLocalTouchFeature.class.getName());
         defaults.put("factory.autorelease.class", DisabledActionOperationBatcher.class.getName());
