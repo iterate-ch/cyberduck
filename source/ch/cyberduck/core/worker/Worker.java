@@ -71,4 +71,13 @@ public abstract class Worker<T> {
     public T initialize() {
         return null;
     }
+
+    public static <T> Worker<T> empty() {
+        return new Worker<T>() {
+            @Override
+            public T run() throws BackgroundException {
+                return null;
+            }
+        };
+    }
 }
