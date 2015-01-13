@@ -21,6 +21,7 @@ package ch.cyberduck.cli;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.StringAppender;
 
+import org.apache.commons.lang3.StringUtils;
 import org.fusesource.jansi.Ansi;
 
 /**
@@ -34,6 +35,9 @@ public class TerminalProgressListener implements ProgressListener {
 
     @Override
     public void message(final String message) {
+        if(StringUtils.isBlank(message)) {
+            return;
+        }
         final StringAppender appender = new StringAppender('…');
         appender.append(message);
         // Clear the line and append message. Used instead of \r because the line width may vary
