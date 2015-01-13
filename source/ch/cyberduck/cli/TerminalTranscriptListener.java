@@ -20,25 +20,24 @@ package ch.cyberduck.cli;
 
 import ch.cyberduck.core.TranscriptListener;
 
+import org.fusesource.jansi.Ansi;
+
 /**
  * @version $Id$
  */
 public class TerminalTranscriptListener implements TranscriptListener {
 
-    private final Console console = new Console();
+    private final Ansi ansi = Ansi.ansi();
 
-    public static final String ANSI_RED = "\u001B[31m";
-    public static final String ANSI_GREEN = "\u001B[32m";
-    public static final String ANSI_BLUE = "\u001B[34m";
-    public static final String ANSI_RESET = "\u001B[0m";
+    private final Console console = new Console();
 
     @Override
     public void log(final boolean request, final String message) {
         if(request) {
-            console.printf("%n%s> %s%s", ANSI_GREEN, message, ANSI_RESET);
+            console.printf("%n%s> %s%s", ansi.fg(Ansi.Color.GREEN).toString(), message, ansi.reset());
         }
         else {
-            console.printf("%n%s< %s%s", ANSI_RED, message, ANSI_RESET);
+            console.printf("%n%s< %s%s", ansi.fg(Ansi.Color.RED).toString(), message, ansi.reset());
         }
     }
 }

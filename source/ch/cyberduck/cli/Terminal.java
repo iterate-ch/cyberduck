@@ -19,11 +19,9 @@ package ch.cyberduck.cli;
  */
 
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
@@ -32,6 +30,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.editor.DefaultEditorListener;
 import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -45,10 +44,10 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.LoggingUncaughtExceptionHandler;
 import ch.cyberduck.core.transfer.CopyTransfer;
+import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
-import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
@@ -69,7 +68,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @version $Id$
@@ -117,8 +115,8 @@ public class Terminal {
                 ? new DisabledListProgressListener() : new TerminalProgressListener();
         this.transcript = input.hasOption(TerminalOptionsBuilder.Params.verbose.name())
                 ? new TerminalTranscriptListener() : new DisabledTranscriptListener();
-        this.controller = new TerminalController(new TerminalAlertCallback(input.hasOption(TerminalOptionsBuilder.Params.retry.name())),
-                progress, transcript);
+        this.preferences.setProperty("connection.retry", input.hasOption(TerminalOptionsBuilder.Params.retry.name()) ? 1 : 0);
+        this.controller = new TerminalController(progress, transcript);
         LocaleFactory.get().setDefault(Locale.getDefault().getLanguage());
     }
 
@@ -190,17 +188,6 @@ public class Terminal {
             }
             final String uri = input.getOptionValue(action.name());
             final Host host = new UriParser(input).parse(uri);
-            if(input.hasOption(TerminalOptionsBuilder.Params.username.name())) {
-                final Credentials credentials = host.getCredentials();
-                credentials.setUsername(input.getOptionValue(TerminalOptionsBuilder.Params.username.name()));
-            }
-            if(input.hasOption(TerminalOptionsBuilder.Params.password.name())) {
-                final Credentials credentials = host.getCredentials();
-                credentials.setPassword(input.getOptionValue(TerminalOptionsBuilder.Params.password.name()));
-            }
-            if(input.hasOption(TerminalOptionsBuilder.Params.identity.name())) {
-                host.getCredentials().setIdentity(LocalFactory.get(input.getOptionValue(TerminalOptionsBuilder.Params.identity.name())));
-            }
             session = SessionFactory.create(host);
             final Path remote = new PathParser(input).parse(uri);
             switch(action) {
@@ -218,8 +205,7 @@ public class Terminal {
                             new ArrayList<TransferItem>(new SingleTransferItemFinder().find(input, action, remote)));
                     break;
                 case copy:
-                    transfer = new CopyTransfer(
-                            host,
+                    transfer = new CopyTransfer(host,
                             new UriParser(input).parse(input.getOptionValues(action.name())[1]),
                             Collections.singletonMap(
                                     new PathParser(input).parse(uri),
@@ -281,11 +267,11 @@ public class Terminal {
         else {
             prompt = new TerminalTransferPrompt(transfer.getType());
         }
-        final TerminalTransferBackgroundAction action = new TerminalTransferBackgroundAction(controller, session, cache,
+        final TerminalTransferBackgroundAction action = new TerminalTransferBackgroundAction(controller,
+                new TerminalLoginService(input, new TerminalLoginCallback()), session, cache,
                 transfer, new TransferOptions().reload(true), prompt, meter,
                 input.hasOption(TerminalOptionsBuilder.Params.quiet.name())
-                        ? new DisabledStreamListener() : new TerminalStreamListener(meter))
-                .withRetry(input.hasOption(TerminalOptionsBuilder.Params.retry.name()));
+                        ? new DisabledStreamListener() : new TerminalStreamListener(meter));
         controller.background(action);
         if(action.hasFailed()) {
             return Exit.failure;
@@ -296,8 +282,9 @@ public class Terminal {
     protected Exit list(final Session session, final Path remote, final boolean verbose) {
         final SessionListWorker worker = new SessionListWorker(session, Cache.<Path>empty(), remote,
                 new TerminalListProgressListener(verbose));
-        final TerminalBackgroundAction action = new TerminalBackgroundAction(controller, session, cache, worker)
-                .withRetry(input.hasOption(TerminalOptionsBuilder.Params.retry.name()));
+        final TerminalBackgroundAction action = new TerminalBackgroundAction(
+                new TerminalLoginService(input, new TerminalLoginCallback()), controller,
+                session, cache, worker);
         controller.background(action);
         if(action.hasFailed()) {
             return Exit.failure;
@@ -325,28 +312,20 @@ public class Terminal {
         }
         final Editor editor = factory.create(controller, session, application, remote);
         final CountDownLatch lock = new CountDownLatch(1);
-        final AtomicBoolean failed = new AtomicBoolean();
-        final TransferErrorCallback error = new TransferErrorCallback() {
-            @Override
-            public boolean prompt(final BackgroundException failure) throws BackgroundException {
-                final StringAppender appender = new StringAppender();
-                appender.append(failure.getMessage());
-                appender.append(failure.getDetail());
-                System.err.println(appender.toString());
-                failed.set(true);
-                return false;
-            }
-        };
-        editor.open(new ApplicationQuitCallback() {
+        final TerminalBackgroundAction<Transfer> action = new TerminalBackgroundAction<Transfer>(
+                new TerminalLoginService(input, new TerminalLoginCallback()),
+                controller, session, cache, editor.open(new ApplicationQuitCallback() {
             @Override
             public void callback() {
                 lock.countDown();
             }
-        }, error);
-        if(failed.get()) {
+        }, new DisabledTransferErrorCallback(), new DefaultEditorListener(controller, session, editor))
+        );
+        controller.background(action);
+        if(action.hasFailed()) {
             return Exit.failure;
         }
-        controller.message("Close the editor application to exit…");
+        progress.message("Close the editor application to exit…");
         try {
             lock.await();
         }

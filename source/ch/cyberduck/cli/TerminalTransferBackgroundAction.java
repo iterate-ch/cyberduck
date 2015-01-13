@@ -34,7 +34,8 @@ import ch.cyberduck.core.transfer.TransferSpeedometer;
  */
 public class TerminalTransferBackgroundAction<T> extends TransferBackgroundAction {
 
-    public TerminalTransferBackgroundAction(final TerminalController controller, final LoginService login,
+    public TerminalTransferBackgroundAction(final TerminalController controller,
+                                            final LoginService login,
                                             final Session<?> session,
                                             final Cache<Path> cache,
                                             final Transfer transfer,
@@ -42,7 +43,7 @@ public class TerminalTransferBackgroundAction<T> extends TransferBackgroundActio
                                             final TransferPrompt prompt,
                                             final TransferSpeedometer meter,
                                             final StreamListener listener) {
-        super(controller, login, session, cache,
+        super(login, controller, session, cache,
                 new TerminalTransferListener(), controller, controller, transfer, options,
                 prompt, new TerminalTransferErrorCallback(), meter, listener);
     }

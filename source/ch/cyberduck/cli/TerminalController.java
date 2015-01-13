@@ -19,12 +19,10 @@ package ch.cyberduck.cli;
  */
 
 import ch.cyberduck.core.AbstractController;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.threading.AlertCallback;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.MainAction;
 
@@ -41,12 +39,8 @@ public class TerminalController extends AbstractController {
 
     private ProgressListener progress;
 
-    private AlertCallback alert;
-
-    public TerminalController(final AlertCallback alert,
-                              final ProgressListener progress,
+    public TerminalController(final ProgressListener progress,
                               final TranscriptListener transcript) {
-        this.alert = alert;
         this.transcript = transcript;
         this.progress = progress;
     }
@@ -64,11 +58,6 @@ public class TerminalController extends AbstractController {
             this.message(b.toString());
         }
         return null;
-    }
-
-    @Override
-    public boolean alert(final Host host, final BackgroundException failure, final StringBuilder transcript) {
-        return alert.alert(host, failure, transcript);
     }
 
     @Override
