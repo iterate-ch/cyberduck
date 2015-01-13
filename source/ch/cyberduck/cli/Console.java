@@ -37,11 +37,11 @@ import java.util.Arrays;
  */
 public class Console {
 
-    private final java.io.Console console = System.console();
+    private final java.io.Console console
+            = System.console();
 
-    static {
-        AnsiConsole.systemInstall();
-    }
+    private final PrintStream out
+            = AnsiConsole.out();
 
     public String readLine(String format, Object... args) throws ConnectionCanceledException {
         if(console != null) {
@@ -85,8 +85,7 @@ public class Console {
                     return;
             }
         }
-        final PrintStream writer = System.out;
-        writer.printf(format, args);
-        writer.flush();
+        out.printf(format, args);
+        out.flush();
     }
 }
