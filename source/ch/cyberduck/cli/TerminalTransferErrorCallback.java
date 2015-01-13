@@ -32,10 +32,14 @@ public class TerminalTransferErrorCallback implements TransferErrorCallback {
 
     @Override
     public boolean prompt(final BackgroundException failure) throws BackgroundException {
-        final StringAppender appender = new StringAppender('…');
+        final StringAppender appender = new StringAppender();
         appender.append(failure.getMessage());
         appender.append(failure.getDetail());
         console.printf("%n%s", appender.toString());
+        return this.print(failure);
+    }
+
+    private boolean print(final BackgroundException failure) throws BackgroundException {
         final String input = console.readLine(" %s? (y/n): ", LocaleFactory.localizedString("Continue", "Credentials"));
         switch(input) {
             case "y":
@@ -44,7 +48,7 @@ public class TerminalTransferErrorCallback implements TransferErrorCallback {
                 throw failure;
             default:
                 console.printf("Please type 'y' or 'n'");
-                return this.prompt(failure);
+                return this.print(failure);
         }
     }
 }
