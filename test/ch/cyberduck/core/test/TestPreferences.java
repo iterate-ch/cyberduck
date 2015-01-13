@@ -27,13 +27,6 @@ import ch.cyberduck.core.preferences.TemporarySupportDirectoryFinder;
  */
 public class TestPreferences extends MemoryPreferences {
     @Override
-    protected void setFactories() {
-        super.setFactories();
-
-        defaults.put("factory.supportdirectoryfinder.class", TemporarySupportDirectoryFinder.class.getName());
-    }
-
-    @Override
     protected void setDefaults() {
         super.setDefaults();
 
