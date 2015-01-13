@@ -18,8 +18,8 @@ package ch.cyberduck.core.editor;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractController;
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
@@ -27,13 +27,10 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.test.Depends;
-import ch.cyberduck.core.threading.BackgroundAction;
-import ch.cyberduck.core.threading.MainAction;
 
 import org.junit.Test;
 
 import java.util.EnumSet;
-import java.util.concurrent.Future;
 
 import static org.junit.Assert.assertEquals;
 
@@ -48,22 +45,8 @@ public class FSEventWatchEditorTest extends AbstractTestCase {
         final Path path = new Path("/f1/f2/t.txt", EnumSet.of(Path.Type.file));
         path.attributes().setDuplicate(true);
         path.attributes().setVersionId("1");
-        final FSEventWatchEditor editor = new FSEventWatchEditor(new AbstractController() {
-            @Override
-            public <T> Future<T> background(final BackgroundAction<T> runnable) {
-                return null;
-            }
-
-            @Override
-            public void invoke(final MainAction runnable) {
-                //
-            }
-
-            @Override
-            public void invoke(final MainAction runnable, final boolean wait) {
-                //
-            }
-        }, new FTPSession(new Host("h")), new Application("com.apple.TextEdit", null), path);
+        final FSEventWatchEditor editor = new FSEventWatchEditor(new Application("com.apple.TextEdit", null),
+                new FTPSession(new Host("h")), path, new DisabledListProgressListener());
         assertEquals(new Application("com.apple.TextEdit", null), editor.getApplication());
         assertEquals("t.txt", editor.getRemote().getName());
         final Local local = editor.getLocal();
@@ -77,12 +60,8 @@ public class FSEventWatchEditorTest extends AbstractTestCase {
     public void testSymlinkTarget() throws Exception {
         final Path file = new Path("/f1/f2/s.txt", EnumSet.of(Path.Type.file, Path.Type.symboliclink));
         file.setSymlinkTarget(new Path("/f1/f2/t.txt", EnumSet.of(Path.Type.file)));
-        final FSEventWatchEditor editor = new FSEventWatchEditor(new AbstractController() {
-            @Override
-            public void invoke(final MainAction runnable, final boolean wait) {
-                //
-            }
-        }, new FTPSession(new Host("h")), new Application("com.apple.TextEdit", null), file);
+        final FSEventWatchEditor editor = new FSEventWatchEditor(new Application("com.apple.TextEdit", null),
+                new FTPSession(new Host("h")), file, new DisabledListProgressListener());
         assertEquals(new Path("/f1/f2/t.txt", EnumSet.of(Path.Type.file)), editor.getRemote());
     }
 }

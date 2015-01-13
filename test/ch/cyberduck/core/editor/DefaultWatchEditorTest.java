@@ -18,16 +18,16 @@ package ch.cyberduck.core.editor;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AbstractController;
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.core.local.DisabledApplicationQuitCallback;
+import ch.cyberduck.core.local.DisabledFileWatcherListener;
 import ch.cyberduck.core.test.NullSession;
-import ch.cyberduck.core.threading.MainAction;
 
 import org.junit.Test;
 
@@ -40,38 +40,23 @@ public class DefaultWatchEditorTest extends AbstractTestCase {
 
     @Test(expected = FileNotFoundException.class)
     public void testNotfound() throws Exception {
-        final DefaultWatchEditor editor = new DefaultWatchEditor(new AbstractController() {
-            @Override
-            public void invoke(final MainAction runnable, final boolean wait) {
-                //
-            }
-        }, new NullSession(new Host("h")),
-                null, new Path("/remote", EnumSet.of(Path.Type.file)));
-        editor.watch(new Local(System.getProperty("java.io.tmpdir") + "/notfound", UUID.randomUUID().toString()));
+        final DefaultWatchEditor editor = new DefaultWatchEditor(null, new NullSession(new Host("h")),
+                new Path("/remote", EnumSet.of(Path.Type.file)), new DisabledListProgressListener());
+        editor.watch(new Local(System.getProperty("java.io.tmpdir") + "/notfound", UUID.randomUUID().toString()), new DisabledFileWatcherListener());
     }
 
     @Test(expected = IOException.class)
     public void testEditNullApplicationNoFile() throws Exception {
-        final DefaultWatchEditor editor = new DefaultWatchEditor(new AbstractController() {
-            @Override
-            public void invoke(final MainAction runnable, final boolean wait) {
-                //
-            }
-        }, new NullSession(new Host("h")),
-                Application.notfound, new Path("/remote", EnumSet.of(Path.Type.file)));
-        editor.edit(new DisabledApplicationQuitCallback());
+        final DefaultWatchEditor editor = new DefaultWatchEditor(Application.notfound, new NullSession(new Host("h")),
+                new Path("/remote", EnumSet.of(Path.Type.file)), new DisabledListProgressListener());
+        editor.edit(new DisabledApplicationQuitCallback(), new DisabledFileWatcherListener());
     }
 
     @Test(expected = IOException.class)
     public void testEditNullApplication() throws Exception {
-        final DefaultWatchEditor editor = new DefaultWatchEditor(new AbstractController() {
-            @Override
-            public void invoke(final MainAction runnable, final boolean wait) {
-                //
-            }
-        }, new NullSession(new Host("h")),
-                Application.notfound, new Path("/remote.txt", EnumSet.of(Path.Type.file)));
+        final DefaultWatchEditor editor = new DefaultWatchEditor(Application.notfound, new NullSession(new Host("h")),
+                new Path("/remote.txt", EnumSet.of(Path.Type.file)), new DisabledListProgressListener());
         new DefaultLocalTouchFeature().touch(editor.getLocal());
-        editor.edit(new DisabledApplicationQuitCallback());
+        editor.edit(new DisabledApplicationQuitCallback(), new DisabledFileWatcherListener());
     }
 }
