@@ -18,6 +18,7 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 
@@ -68,20 +69,24 @@ public class Console {
     }
 
     public void printf(final String format, Object... args) {
-        if(console != null && !System.getProperty("os.name").startsWith("Windows")) {
-            final PrintWriter writer = console.writer();
-            if(Arrays.asList(args).isEmpty()) {
-                writer.print(format);
+        if(console != null) {
+            switch(Factory.Platform.getDefault()) {
+                case windows:
+                    break;
+                default:
+                    final PrintWriter writer = console.writer();
+                    if(Arrays.asList(args).isEmpty()) {
+                        writer.print(format);
+                    }
+                    else {
+                        writer.printf(format, args);
+                    }
+                    writer.flush();
+                    return;
             }
-            else {
-                writer.printf(format, args);
-            }
-            writer.flush();
         }
-        else {
-            final PrintStream writer = System.out;
-            writer.printf(format, args);
-            writer.flush();
-        }
+        final PrintStream writer = System.out;
+        writer.printf(format, args);
+        writer.flush();
     }
 }
