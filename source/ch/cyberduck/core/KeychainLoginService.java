@@ -20,6 +20,7 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.CancelCallback;
 
@@ -33,6 +34,9 @@ import java.text.MessageFormat;
  */
 public class KeychainLoginService implements LoginService {
     private static final Logger log = Logger.getLogger(KeychainLoginService.class);
+
+    private final Preferences preferences
+            = PreferencesFactory.get();
 
     private LoginCallback controller;
 
@@ -110,7 +114,7 @@ public class KeychainLoginService implements LoginService {
                 || credentials.isPublicKeyAuthentication()) {
             // Lookup password if missing. Always lookup password for public key authentication. See #5754.
             if(StringUtils.isNotBlank(credentials.getUsername())) {
-                if(PreferencesFactory.get().getBoolean("connection.login.useKeychain")) {
+                if(preferences.getBoolean("connection.login.useKeychain")) {
                     final String password = keychain.find(bookmark);
                     if(StringUtils.isBlank(password)) {
                         if(!credentials.isPublicKeyAuthentication()) {
@@ -152,7 +156,7 @@ public class KeychainLoginService implements LoginService {
             }
         }
         else {
-            if(PreferencesFactory.get().getBoolean("connection.login.useKeychain")) {
+            if(preferences.getBoolean("connection.login.useKeychain")) {
                 final String password = keychain.find(bookmark);
                 if(StringUtils.isNotBlank(password)) {
                     credentials.setPassword(password);
