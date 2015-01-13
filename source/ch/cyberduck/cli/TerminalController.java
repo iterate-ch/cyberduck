@@ -19,16 +19,11 @@ package ch.cyberduck.cli;
  */
 
 import ch.cyberduck.core.AbstractController;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.MainAction;
-
-import org.apache.commons.lang3.concurrent.ConcurrentUtils;
-
-import java.util.concurrent.Future;
 
 /**
  * @version $Id$
@@ -46,23 +41,13 @@ public class TerminalController extends AbstractController {
     }
 
     @Override
-    public <T> Future<T> background(final BackgroundAction<T> action) {
-        try {
-            action.prepare();
-            return ConcurrentUtils.constantFuture(action.call());
-        }
-        catch(BackgroundException e) {
-            final StringAppender b = new StringAppender();
-            b.append(e.getMessage());
-            b.append(e.getDetail());
-            this.message(b.toString());
-        }
-        return null;
+    public void invoke(final MainAction runnable, final boolean wait) {
+        runnable.run();
     }
 
     @Override
-    public void invoke(final MainAction runnable, final boolean wait) {
-        runnable.run();
+    public boolean alert(final Host host, final BackgroundException failure, final StringBuilder transcript) {
+        return new TerminalAlertCallback().alert(host, failure, transcript);
     }
 
     @Override

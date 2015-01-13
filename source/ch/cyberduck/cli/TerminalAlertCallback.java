@@ -19,11 +19,11 @@ package ch.cyberduck.cli;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.threading.AlertCallback;
-
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @version $Id$
@@ -32,18 +32,31 @@ public class TerminalAlertCallback implements AlertCallback {
 
     private final Console console = new Console();
 
-    private AtomicBoolean retry;
-
-    public TerminalAlertCallback(final boolean retry) {
-        this.retry = new AtomicBoolean(retry);
-    }
-
     @Override
     public boolean alert(final Host host, final BackgroundException failure, final StringBuilder transcript) {
-        final StringAppender b = new StringAppender();
-        b.append(failure.getMessage());
-        b.append(failure.getDetail());
-        console.printf("%n%s", b.toString());
-        return retry.getAndSet(false);
+        final StringAppender appender = new StringAppender();
+        appender.append(failure.getMessage());
+        appender.append(failure.getDetail());
+        console.printf("%n%s", appender.toString());
+        return this.print(failure);
+    }
+
+    protected boolean print(final BackgroundException failure) {
+        final String input;
+        try {
+            input = console.readLine(" %s? (y/n): ", LocaleFactory.localizedString("Try Again", "Alert"));
+        }
+        catch(ConnectionCanceledException e) {
+            return false;
+        }
+        switch(input) {
+            case "y":
+                return true;
+            case "n":
+                return false;
+            default:
+                console.printf("Please type 'y' or 'n'");
+                return this.print(failure);
+        }
     }
 }
