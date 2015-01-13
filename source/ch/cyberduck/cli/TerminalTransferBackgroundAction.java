@@ -19,6 +19,7 @@ package ch.cyberduck.cli;
  */
 
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.LoginService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.io.StreamListener;
@@ -28,16 +29,12 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 /**
  * @version $Id$
  */
 public class TerminalTransferBackgroundAction<T> extends TransferBackgroundAction {
 
-    private AtomicBoolean retry;
-
-    public TerminalTransferBackgroundAction(final TerminalController controller,
+    public TerminalTransferBackgroundAction(final TerminalController controller, final LoginService login,
                                             final Session<?> session,
                                             final Cache<Path> cache,
                                             final Transfer transfer,
@@ -45,21 +42,8 @@ public class TerminalTransferBackgroundAction<T> extends TransferBackgroundActio
                                             final TransferPrompt prompt,
                                             final TransferSpeedometer meter,
                                             final StreamListener listener) {
-        super(controller, session, cache,
+        super(controller, login, session, cache,
                 new TerminalTransferListener(), controller, controller, transfer, options,
                 prompt, new TerminalTransferErrorCallback(), meter, listener);
-    }
-
-    public TerminalTransferBackgroundAction<T> withRetry(final boolean enabled) {
-        retry = new AtomicBoolean(enabled);
-        return this;
-    }
-
-    @Override
-    protected int retry() {
-        if(retry.getAndSet(false)) {
-            return 1;
-        }
-        return 0;
     }
 }

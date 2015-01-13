@@ -19,6 +19,7 @@ package ch.cyberduck.cli;
  */
 
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.LoginService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
@@ -26,34 +27,17 @@ import ch.cyberduck.core.worker.Worker;
 
 import org.apache.log4j.Logger;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 /**
  * @version $Id$
  */
 public class TerminalBackgroundAction<T> extends WorkerBackgroundAction<T> {
     private static final Logger log = Logger.getLogger(TerminalBackgroundAction.class);
 
-    private AtomicBoolean retry
-            = new AtomicBoolean();
-
-    public TerminalBackgroundAction(final TerminalController controller,
+    public TerminalBackgroundAction(final LoginService login,
+                                    final TerminalController controller,
                                     final Session<?> session,
                                     final Cache<Path> cache,
                                     final Worker<T> worker) {
-        super(controller, session, cache, worker);
-    }
-
-    public TerminalBackgroundAction<T> withRetry(final boolean enabled) {
-        retry = new AtomicBoolean(enabled);
-        return this;
-    }
-
-    @Override
-    protected int retry() {
-        if(retry.getAndSet(false)) {
-            return 1;
-        }
-        return 0;
+        super(login, controller, session, cache, worker);
     }
 }
