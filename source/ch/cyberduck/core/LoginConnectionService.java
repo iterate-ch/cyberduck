@@ -45,7 +45,8 @@ public class LoginConnectionService implements ConnectionService {
 
     private TranscriptListener transcript;
 
-    private Resolver resolver;
+    private Resolver resolver
+            = new Resolver();
 
     private LoginService login;
 
@@ -60,20 +61,16 @@ public class LoginConnectionService implements ConnectionService {
                                   final HostPasswordStore keychain,
                                   final ProgressListener listener,
                                   final TranscriptListener transcript) {
-        this(key,
-                new KeychainLoginService(prompt, keychain),
-                new Resolver(),
+        this(new KeychainLoginService(prompt, keychain), key,
                 listener, transcript);
     }
 
-    public LoginConnectionService(final HostKeyCallback key,
-                                  final LoginService login,
-                                  final Resolver resolver,
+    public LoginConnectionService(final LoginService login,
+                                  final HostKeyCallback key,
                                   final ProgressListener listener,
                                   final TranscriptListener transcript) {
         this.key = key;
         this.listener = listener;
-        this.resolver = resolver;
         this.login = login;
         this.transcript = transcript;
     }
