@@ -68,6 +68,11 @@ public class KeychainLoginService implements LoginService {
                     LocaleFactory.localizedString("Disconnect", "Credentials"),
                     String.format("connection.unsecure.%s", bookmark.getHostname()));
         }
+        this.authenticate(session, cache, listener, cancel, bookmark);
+    }
+
+    protected void authenticate(final Session session, final Cache<Path> cache, final ProgressListener listener,
+                                final CancelCallback cancel, final Host bookmark) throws BackgroundException {
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Authenticating as {0}", "Status"),
                 bookmark.getCredentials().getUsername()));
         try {
