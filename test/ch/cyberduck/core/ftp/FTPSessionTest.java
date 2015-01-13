@@ -189,12 +189,12 @@ public class FTPSessionTest extends AbstractTestCase {
                 throw new LoginCanceledException();
             }
         }, new DisabledPasswordStore());
-        l.login(session, Cache.<Path>empty(), new ProgressListener() {
+        l.authenticate(session, Cache.<Path>empty(), new ProgressListener() {
             @Override
             public void message(final String message) {
                 //
             }
-        }, null);
+        }, new DisabledCancelCallback());
         assertEquals(new FTPTLSProtocol(), host.getProtocol());
         assertTrue(warned.get());
     }

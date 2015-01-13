@@ -48,15 +48,9 @@ public class KeychainLoginService implements LoginService {
     }
 
     @Override
-    public void login(final Session session, final Cache<Path> cache, final ProgressListener listener,
-                      final CancelCallback cancel) throws BackgroundException {
+    public void authenticate(final Session session, final Cache<Path> cache, final ProgressListener listener,
+                             final CancelCallback cancel) throws BackgroundException {
         final Host bookmark = session.getHost();
-
-        // Obtain password from keychain or prompt
-        this.validate(bookmark,
-                MessageFormat.format(LocaleFactory.localizedString(
-                        "Login {0} with username and password", "Credentials"), bookmark.getHostname()),
-                new LoginOptions(bookmark.getProtocol()));
         if(session.alert()) {
             // Warning if credentials are sent plaintext.
             controller.warn(bookmark.getProtocol(), MessageFormat.format(LocaleFactory.localizedString("Unsecured {0} connection", "Credentials"),
@@ -68,11 +62,6 @@ public class KeychainLoginService implements LoginService {
                     LocaleFactory.localizedString("Disconnect", "Credentials"),
                     String.format("connection.unsecure.%s", bookmark.getHostname()));
         }
-        this.authenticate(session, cache, listener, cancel, bookmark);
-    }
-
-    protected void authenticate(final Session session, final Cache<Path> cache, final ProgressListener listener,
-                                final CancelCallback cancel, final Host bookmark) throws BackgroundException {
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Authenticating as {0}", "Status"),
                 bookmark.getCredentials().getUsername()));
         try {
@@ -105,6 +94,7 @@ public class KeychainLoginService implements LoginService {
         }
     }
 
+    @Override
     public void validate(final Host bookmark, final String message, final LoginOptions options) throws LoginCanceledException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Validate login credentials for %s", bookmark));

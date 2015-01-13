@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.threading.CancelCallback;
 
 /**
@@ -26,13 +27,22 @@ import ch.cyberduck.core.threading.CancelCallback;
 public interface LoginService {
 
     /**
-     * Attempts to login using the credentials provided from the login controller. Repeat failed
-     * login attempts until canceled by the user.
-     *  @param session    Session
-     * @param cache      Directory listing cache
-     * @param listener   Authentication message callback
-     * @param cancel     Cancel callback while authentication is in progress
+     * Login and prompt on failure
+     *
+     * @param session  Session
+     * @param cache    Directory listing cache
+     * @param listener Authentication message callback
+     * @param cancel   Cancel callback while authentication is in progress
      */
-    void login(Session session, Cache<Path> cache, ProgressListener listener, CancelCallback cancel)
-            throws BackgroundException;
+    void authenticate(Session session, Cache<Path> cache, ProgressListener listener,
+                      CancelCallback cancel) throws BackgroundException;
+
+    /**
+     * Obtain password from keychain or prompt panel
+     *
+     * @param bookmark Credentials
+     * @param message  Prompt message
+     * @param options  Login mechanism features
+     */
+    void validate(Host bookmark, String message, LoginOptions options) throws LoginCanceledException;
 }

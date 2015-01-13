@@ -24,12 +24,22 @@ import ch.cyberduck.core.exception.BackgroundException;
  */
 public interface ConnectionService {
 
+    /**
+     * Prompt for credentials and connect to server if not already connected
+     */
     boolean check(Session session, Cache<Path> cache)
             throws BackgroundException;
 
+    /**
+     * Prompt for credentials and connect to server if not already connected. Will disconnect first
+     * if failure was I/O error.
+     */
     boolean check(Session session, Cache<Path> cache, BackgroundException failure)
             throws BackgroundException;
 
+    /**
+     * Open connection
+     */
     void connect(Session session, Cache<Path> cache)
             throws BackgroundException;
 

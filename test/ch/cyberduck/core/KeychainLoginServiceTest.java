@@ -29,7 +29,7 @@ public class KeychainLoginServiceTest extends AbstractTestCase {
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         LoginService l = new KeychainLoginService(new DisabledLoginCallback(), new DisabledPasswordStore());
-        l.login(session, Cache.<Path>empty(), new ProgressListener() {
+        l.authenticate(session, Cache.<Path>empty(), new ProgressListener() {
             int i = 0;
 
             @Override
@@ -45,19 +45,14 @@ public class KeychainLoginServiceTest extends AbstractTestCase {
                 }
                 i++;
             }
-        }, null);
+        }, new DisabledCancelCallback());
     }
 
 
     @Test(expected = LoginCanceledException.class)
     public void testCancel() throws Exception {
         LoginService l = new KeychainLoginService(new DisabledLoginCallback(), new DisabledPasswordStore());
-        l.login(new FTPSession(new Host(new FTPProtocol(), "h")), Cache.<Path>empty(), new ProgressListener() {
-            @Override
-            public void message(final String message) {
-                //
-            }
-        }, null);
+        l.validate(new Host(new FTPProtocol(), "h"), "", new LoginOptions());
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -77,12 +72,12 @@ public class KeychainLoginServiceTest extends AbstractTestCase {
             }
         }, new DisabledPasswordStore());
         try {
-            l.login(session, Cache.<Path>empty(), new ProgressListener() {
+            l.authenticate(session, Cache.<Path>empty(), new ProgressListener() {
                 @Override
                 public void message(final String message) {
                     //
                 }
-            }, null);
+            }, new DisabledCancelCallback());
             fail();
         }
         catch(LoginCanceledException e) {

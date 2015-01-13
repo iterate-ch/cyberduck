@@ -93,6 +93,12 @@ public class LoginConnectionService implements ConnectionService {
             // Connection already open
             return false;
         }
+        final Host bookmark = session.getHost();
+        // Obtain password from keychain or prompt
+        login.validate(bookmark,
+                MessageFormat.format(LocaleFactory.localizedString(
+                        "Login {0} with username and password", "Credentials"), bookmark.getHostname()),
+                new LoginOptions(bookmark.getProtocol()));
         this.connect(session, cache);
         return true;
     }
@@ -155,7 +161,7 @@ public class LoginConnectionService implements ConnectionService {
         bookmark.setTimestamp(new Date());
 
         try {
-            this.login(session, cache);
+            this.authenticate(session, cache);
         }
         catch(BackgroundException e) {
             this.close(session, cache);
@@ -163,9 +169,9 @@ public class LoginConnectionService implements ConnectionService {
         }
     }
 
-    private void login(final Session session, final Cache<Path> cache) throws BackgroundException {
+    private void authenticate(final Session session, final Cache<Path> cache) throws BackgroundException {
         try {
-            login.login(session, cache, listener, new CancelCallback() {
+            login.authenticate(session, cache, listener, new CancelCallback() {
                 @Override
                 public void verify() throws ConnectionCanceledException {
                     if(canceled.get()) {
@@ -177,7 +183,7 @@ public class LoginConnectionService implements ConnectionService {
         catch(LoginFailureException e) {
             if(session.isConnected()) {
                 // Next attempt with updated credentials
-                this.login(session, cache);
+                this.authenticate(session, cache);
             }
             else {
                 // Reconnect and next attempt with updated credentials
