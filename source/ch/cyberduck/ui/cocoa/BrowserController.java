@@ -1612,15 +1612,15 @@ public class BrowserController extends WindowController
     private AbstractTableDelegate<Host> bookmarkTableDelegate;
 
     public void setBookmarkTable(NSTableView view) {
-        this.bookmarkTable = view;
-        this.bookmarkTable.setSelectionHighlightStyle(NSTableView.NSTableViewSelectionHighlightStyleSourceList);
-        this.bookmarkTable.setDataSource((this.bookmarkModel = new BookmarkTableDataSource(this)).id());
+        bookmarkTable = view;
+        bookmarkTable.setSelectionHighlightStyle(NSTableView.NSTableViewSelectionHighlightStyleSourceList);
+        bookmarkTable.setDataSource((this.bookmarkModel = new BookmarkTableDataSource(this)).id());
         {
             NSTableColumn c = bookmarkTableColumnFactory.create(BookmarkTableDataSource.Column.icon.name());
             c.headerCell().setStringValue(StringUtils.EMPTY);
             c.setResizingMask(NSTableColumn.NSTableColumnNoResizing);
             c.setDataCell(imageCellPrototype);
-            this.bookmarkTable.addTableColumn(c);
+            bookmarkTable.addTableColumn(c);
         }
         {
             NSTableColumn c = bookmarkTableColumnFactory.create(BookmarkTableDataSource.Column.bookmark.name());
@@ -1628,7 +1628,7 @@ public class BrowserController extends WindowController
             c.setMinWidth(150);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setDataCell(BookmarkCell.bookmarkCell());
-            this.bookmarkTable.addTableColumn(c);
+            bookmarkTable.addTableColumn(c);
         }
         {
             NSTableColumn c = bookmarkTableColumnFactory.create(BookmarkTableDataSource.Column.status.name());
@@ -1639,9 +1639,9 @@ public class BrowserController extends WindowController
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setDataCell(imageCellPrototype);
             c.dataCell().setAlignment(NSText.NSCenterTextAlignment);
-            this.bookmarkTable.addTableColumn(c);
+            bookmarkTable.addTableColumn(c);
         }
-        this.bookmarkTable.setDelegate((this.bookmarkTableDelegate = new AbstractTableDelegate<Host>(
+        bookmarkTable.setDelegate((bookmarkTableDelegate = new AbstractTableDelegate<Host>(
                 bookmarkTable.tableColumnWithIdentifier(BookmarkTableDataSource.Column.bookmark.name())
         ) {
             @Override
@@ -1746,7 +1746,7 @@ public class BrowserController extends WindowController
             }
         }).id());
         // receive drag events from types
-        this.bookmarkTable.registerForDraggedTypes(NSArray.arrayWithObjects(
+        bookmarkTable.registerForDraggedTypes(NSArray.arrayWithObjects(
                 NSPasteboard.URLPboardType,
                 NSPasteboard.StringPboardType,
                 NSPasteboard.FilenamesPboardType, //accept bookmark files dragged from the Finder
@@ -1757,26 +1757,26 @@ public class BrowserController extends WindowController
 
         final int size = preferences.getInteger("bookmark.icon.size");
         if(BookmarkCell.SMALL_BOOKMARK_SIZE == size) {
-            this.bookmarkTable.setRowHeight(new CGFloat(18));
+            bookmarkTable.setRowHeight(new CGFloat(18));
         }
         else if(BookmarkCell.MEDIUM_BOOKMARK_SIZE == size) {
-            this.bookmarkTable.setRowHeight(new CGFloat(45));
+            bookmarkTable.setRowHeight(new CGFloat(45));
         }
         else {
-            this.bookmarkTable.setRowHeight(new CGFloat(70));
+            bookmarkTable.setRowHeight(new CGFloat(70));
         }
 
         // setting appearance attributes()
-        this.bookmarkTable.setUsesAlternatingRowBackgroundColors(preferences.getBoolean("browser.alternatingRows"));
-        this.bookmarkTable.setGridStyleMask(NSTableView.NSTableViewGridNone);
+        bookmarkTable.setUsesAlternatingRowBackgroundColors(preferences.getBoolean("browser.alternatingRows"));
+        bookmarkTable.setGridStyleMask(NSTableView.NSTableViewGridNone);
 
         // selection properties
-        this.bookmarkTable.setAllowsMultipleSelection(true);
-        this.bookmarkTable.setAllowsEmptySelection(true);
-        this.bookmarkTable.setAllowsColumnResizing(false);
-        this.bookmarkTable.setAllowsColumnSelection(false);
-        this.bookmarkTable.setAllowsColumnReordering(false);
-        this.bookmarkTable.sizeToFit();
+        bookmarkTable.setAllowsMultipleSelection(true);
+        bookmarkTable.setAllowsEmptySelection(true);
+        bookmarkTable.setAllowsColumnResizing(false);
+        bookmarkTable.setAllowsColumnSelection(false);
+        bookmarkTable.setAllowsColumnReordering(false);
+        bookmarkTable.sizeToFit();
     }
 
     @Outlet
@@ -3021,9 +3021,9 @@ public class BrowserController extends WindowController
 
     /**
      * NSService
-     * <p/>
+     * <p>
      * Indicates whether the receiver can send and receive the specified pasteboard types.
-     * <p/>
+     * <p>
      * Either sendType or returnType—but not both—may be empty. If sendType is empty,
      * the service doesn’t require input from the application requesting the service.
      * If returnType is empty, the service doesn’t return data.
@@ -3050,7 +3050,7 @@ public class BrowserController extends WindowController
 
     /**
      * NSService
-     * <p/>
+     * <p>
      * Reads data from the pasteboard and uses it to replace the current selection.
      *
      * @param pboard Pasteboard
@@ -3062,7 +3062,7 @@ public class BrowserController extends WindowController
 
     /**
      * NSService
-     * <p/>
+     * <p>
      * Writes the current selection to the pasteboard.
      *
      * @param pboard Pasteboard
