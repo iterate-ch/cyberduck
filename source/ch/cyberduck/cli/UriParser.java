@@ -44,6 +44,9 @@ public class UriParser {
                 if(StringUtils.isNotBlank(host.getProtocol().getDefaultHostname())) {
                     host.setHostname(host.getProtocol().getDefaultHostname());
                 }
+                if(input.hasOption(TerminalOptionsBuilder.Params.region.name())) {
+                    host.setRegion(input.getOptionValue(TerminalOptionsBuilder.Params.region.name()));
+                }
         }
         host.setDefaultPath(new PathParser(input).parse(uri).getParent().getAbsolute());
         return host;

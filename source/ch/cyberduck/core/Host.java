@@ -38,6 +38,8 @@ public class Host implements Serializable, Comparable<Host> {
      */
     private Protocol protocol;
 
+    private String region;
+
     /**
      * The port number to connect to
      *
@@ -554,7 +556,14 @@ public class Host implements Serializable, Comparable<Host> {
     }
 
     public String getRegion() {
-        return protocol.getRegion();
+        if(StringUtils.isBlank(region)) {
+            return protocol.getRegion();
+        }
+        return region;
+    }
+
+    public void setRegion(final String region) {
+        this.region = region;
     }
 
     /**
