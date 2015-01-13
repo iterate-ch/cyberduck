@@ -40,6 +40,6 @@ public class TerminalProgressListener implements ProgressListener {
         console.printf("\r%s%s", ansi
                 .saveCursorPosition()
                 .eraseLine(Ansi.Erase.ALL)
-                .restoreCursorPosition().toString(), appender.toString());
+                .restoreCursorPosition(), appender);
     }
 }

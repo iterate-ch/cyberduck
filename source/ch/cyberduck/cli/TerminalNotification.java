@@ -46,7 +46,7 @@ public class TerminalNotification implements NotificationService {
         console.printf("\r%s%s%n", ansi
                 .saveCursorPosition()
                 .eraseLine(Ansi.Erase.ALL)
-                .restoreCursorPosition().toString(), title);
+                .restoreCursorPosition(), title);
     }
 
     @Override
@@ -54,6 +54,6 @@ public class TerminalNotification implements NotificationService {
         console.printf("\r%s%s%n", ansi
                 .saveCursorPosition()
                 .eraseLine(Ansi.Erase.ALL)
-                .restoreCursorPosition().toString(), title);
+                .restoreCursorPosition(), title);
     }
 }

@@ -55,7 +55,7 @@ public class TerminalStreamListener implements StreamListener {
         console.printf("\r%s[", ansi
                 .saveCursorPosition()
                 .eraseLine(Ansi.Erase.ALL)
-                .restoreCursorPosition().toString());
+                .restoreCursorPosition());
         int i = 0;
         for(; i <= (int) (fraction.doubleValue() * width); i++) {
             console.printf("\u25AE");
