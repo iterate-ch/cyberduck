@@ -324,7 +324,6 @@ public class Terminal {
         if(action.hasFailed()) {
             return Exit.failure;
         }
-        progress.message("Close the editor application to exit…");
         try {
             lock.await();
         }
