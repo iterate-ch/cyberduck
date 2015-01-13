@@ -20,7 +20,6 @@ package ch.cyberduck.core.sftp.openssh;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultCredentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.ProtocolFactory;
@@ -42,7 +41,7 @@ public class OpenSSHCredentialsConfiguratorTest extends AbstractTestCase {
         OpenSSHCredentialsConfigurator c = new OpenSSHCredentialsConfigurator(
                 new OpenSshConfig(
                         new Local("test/ch/cyberduck/core/sftp", "openssh/config")));
-        Credentials credentials = new DefaultCredentials("user", " ");
+        Credentials credentials = new Credentials("user", " ");
         credentials.setIdentity(new NullLocal("t"));
         assertEquals("t", c.configure(new Host(new SFTPProtocol(), "t", credentials)).getIdentity().getName());
     }

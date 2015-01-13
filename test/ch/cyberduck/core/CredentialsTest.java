@@ -17,14 +17,14 @@ public class CredentialsTest extends AbstractTestCase {
 
     @Test
     public void testEquals() {
-        assertEquals(new DefaultCredentials("a", "b"), new DefaultCredentials("a", "b"));
-        assertNotSame(new DefaultCredentials("a", "b"), new DefaultCredentials("a", "c"));
-        assertFalse(new DefaultCredentials("a", "b").equals(new DefaultCredentials("a", "c")));
+        assertEquals(new Credentials("a", "b"), new Credentials("a", "b"));
+        assertNotSame(new Credentials("a", "b"), new Credentials("a", "c"));
+        assertFalse(new Credentials("a", "b").equals(new Credentials("a", "c")));
     }
 
     @Test
     public void testSetIdentity() throws Exception {
-        Credentials c = new DefaultCredentials();
+        Credentials c = new Credentials();
         c.setIdentity(new Local("~/.ssh/unknown.rsa"));
         assertFalse(c.isPublicKeyAuthentication());
         final Local t = new Local(PreferencesFactory.get().getProperty("tmp.dir"), "id_rsa");
@@ -36,20 +36,20 @@ public class CredentialsTest extends AbstractTestCase {
 
     @Test
     public void testAnonymous() throws Exception {
-        Credentials c = new DefaultCredentials("anonymous", "");
+        Credentials c = new Credentials("anonymous", "");
         assertEquals("cyberduck@example.net", c.getPassword());
     }
 
     @Test
     public void testDefault() throws Exception {
-        Credentials c = new DefaultCredentials();
+        Credentials c = new Credentials();
         assertEquals(null, c.getUsername());
         assertEquals(null, c.getPassword());
     }
 
     @Test
     public void testValidateEmpty() throws Exception {
-        Credentials c = new DefaultCredentials("user", "");
+        Credentials c = new Credentials("user", "");
         assertTrue(c.validate(new FTPProtocol(), new LoginOptions()));
         assertFalse(c.validate(new DAVProtocol(), new LoginOptions()));
         assertTrue(c.validate(new SFTPProtocol(), new LoginOptions()));
@@ -57,7 +57,7 @@ public class CredentialsTest extends AbstractTestCase {
 
     @Test
     public void testValidateBlank() throws Exception {
-        Credentials c = new DefaultCredentials("user", " ");
+        Credentials c = new Credentials("user", " ");
         assertTrue(c.validate(new FTPProtocol(), new LoginOptions()));
         assertTrue(c.validate(new DAVProtocol(), new LoginOptions()));
         assertTrue(c.validate(new SFTPProtocol(), new LoginOptions()));
