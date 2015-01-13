@@ -85,7 +85,12 @@ public class Console {
                     return;
             }
         }
-        out.printf(format, args);
+        if(Arrays.asList(args).isEmpty()) {
+            out.printf(format);
+        }
+        else {
+            out.printf(format, args);
+        }
         out.flush();
     }
 }
