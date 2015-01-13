@@ -32,7 +32,7 @@ namespace Ch.Cyberduck.Core.Editor
         private static readonly Logger Log = Logger.getLogger(typeof(SystemWatchEditor).FullName);
         private FileSystemWatcher _watcher;
 
-        public SystemWatchEditor(ProgressListener listener, Session session, Application application, Path file)
+        public SystemWatchEditor(Application application, Session session, Path file, ProgressListener listener)
             : base(application, session, file, listener)
         {
         }
@@ -44,11 +44,13 @@ namespace Ch.Cyberduck.Core.Editor
             _watcher.Filter = file.getName();
             _watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite | NotifyFilters.FileName |
                                     NotifyFilters.DirectoryName;
-            _watcher.Changed += delegate {
+            _watcher.Changed += delegate(object sender, FileSystemEventArgs e)
+            {
                 Log.debug("HasChanged:" + e.FullPath);
                 listener.fileWritten(file);
             };
-            _watcher.Renamed += delegate {
+            _watcher.Renamed += delegate(object sender, RenamedEventArgs e)
+            {
                 Log.debug(String.Format("HasRenamed: from {0} to {1}", e.OldFullPath, e.FullPath));
                 listener.fileWritten(file);
             };
@@ -59,8 +61,7 @@ namespace Ch.Cyberduck.Core.Editor
         public override void delete()
         {
             _watcher.EnableRaisingEvents = false;
-            _watcher.Changed -= HasChanged;
-            _watcher.Renamed -= HasRenamed;
+            _watcher.Dispose();
             base.delete();
         }
     }
