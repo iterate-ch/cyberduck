@@ -152,6 +152,7 @@ public class TerminalPreferences extends MemoryPreferences {
         }
         defaults.put("local.normalize.prefix", String.valueOf(true));
         defaults.put("queue.download.folder", WorkingDirectoryFinderFactory.get().find().getAbsolute());
+        defaults.put("connection.login.name", System.getProperty("user.name"));
     }
 
     @Override
