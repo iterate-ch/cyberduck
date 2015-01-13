@@ -35,8 +35,7 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
                 assertEquals(Session.State.opening, session.getState());
                 return true;
             }
-        },
-                new DisabledPasswordStore(),
+        }, new DisabledPasswordStore(),
                 new ProgressListener() {
                     @Override
                     public void message(final String message) {
@@ -72,8 +71,7 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
                 }
                 )
         );
-        final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(),
+        final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(),
                 new ProgressListener() {
                     @Override
                     public void message(final String message) {
@@ -85,8 +83,7 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
 
     @Test(expected = ConnectionCanceledException.class)
     public void testNoHostname() throws Exception {
-        final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(),
+        final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(),
                 new ProgressListener() {
                     @Override
                     public void message(final String message) {
@@ -98,8 +95,7 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
 
     @Test(expected = ConnectionCanceledException.class)
     public void testCheckReconnect() throws Exception {
-        final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(),
+        final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(),
                 new ProgressListener() {
                     @Override
                     public void message(final String message) {

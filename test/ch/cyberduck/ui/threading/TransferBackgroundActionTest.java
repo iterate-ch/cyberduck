@@ -24,7 +24,6 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
@@ -39,8 +38,6 @@ import ch.cyberduck.core.test.NullLocal;
 import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.core.threading.TransferBackgroundAction;
 import ch.cyberduck.core.transfer.CopyTransfer;
-import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
-import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAdapter;
@@ -112,7 +109,7 @@ public class TransferBackgroundActionTest extends AbstractTestCase {
             public void progress(final TransferProgress status) {
                 //
             }
-        }, controller, new DisabledTranscriptListener(), t, new TransferOptions(), new DisabledTransferPrompt(), new DisabledTransferErrorCallback());
+        }, t, new TransferOptions());
         action.prepare();
         action.call();
         assertTrue(t.getDestination().isConnected());
@@ -169,7 +166,7 @@ public class TransferBackgroundActionTest extends AbstractTestCase {
             public void progress(final TransferProgress status) {
                 //
             }
-        }, controller, new DisabledTranscriptListener(), t, new TransferOptions(), new DisabledTransferPrompt(), new DisabledTransferErrorCallback());
+        }, t, new TransferOptions());
         action.prepare();
         action.call();
         action.finish();
@@ -194,9 +191,8 @@ public class TransferBackgroundActionTest extends AbstractTestCase {
         final SFTPSession session = new SFTPSession(host);
         final TransferOptions options = new TransferOptions();
         final TransferBackgroundAction action = new TransferBackgroundAction(controller, session, Cache.empty(), new TransferAdapter(),
-                new DisabledProgressListener(), new DisabledTranscriptListener(),
                 new DownloadTransfer(host, Collections.singletonList(new TransferItem(new Path("/home/test", EnumSet.of(Path.Type.file)), new NullLocal("/t")))),
-                options, new DisabledTransferPrompt(), new DisabledTransferErrorCallback()) {
+                options) {
             @Override
             protected boolean connect(final Session session) throws BackgroundException {
                 return false;
@@ -230,9 +226,8 @@ public class TransferBackgroundActionTest extends AbstractTestCase {
         final AtomicBoolean paused = new AtomicBoolean();
         final AtomicBoolean retry = new AtomicBoolean();
         final TransferBackgroundAction action = new TransferBackgroundAction(controller, session, Cache.empty(), new TransferAdapter(),
-                new DisabledProgressListener(), new DisabledTranscriptListener(),
                 new DownloadTransfer(host, Collections.singletonList(new TransferItem(new Path("/home/test", EnumSet.of(Path.Type.file)), new NullLocal("/t")))),
-                options, new DisabledTransferPrompt(), new DisabledTransferErrorCallback()) {
+                options) {
             @Override
             protected boolean connect(final Session session) throws BackgroundException {
                 throw new ConnectionRefusedException("d", new SocketException());
