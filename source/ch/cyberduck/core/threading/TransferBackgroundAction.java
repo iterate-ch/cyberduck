@@ -18,12 +18,10 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Controller;
-import ch.cyberduck.core.HostKeyCallbackFactory;
-import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.KeychainLoginService;
 import ch.cyberduck.core.LoginCallbackFactory;
-import ch.cyberduck.core.LoginConnectionService;
+import ch.cyberduck.core.LoginService;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
@@ -84,8 +82,6 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
 
     private AbstractTransferWorker worker;
 
-    private ConnectionService connection;
-
     private TransferPrompt prompt;
 
     private NotificationService growl = NotificationServiceFactory.get();
@@ -94,9 +90,22 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
                                     final Session session,
                                     final Cache cache,
                                     final TransferListener listener,
+                                    final Transfer transfer,
+                                    final TransferOptions options) {
+        this(controller, session, cache, listener, controller, controller, transfer, options,
+                TransferPromptControllerFactory.get(controller, transfer, session),
+                TransferErrorCallbackControllerFactory.get(controller),
+                new TransferSpeedometer(transfer), new DisabledStreamListener());
+    }
+
+    public TransferBackgroundAction(final Controller controller,
+                                    final Session session,
+                                    final Cache cache,
+                                    final TransferListener listener,
                                     final ProgressListener progress,
                                     final TranscriptListener transcript,
-                                    final Transfer transfer, final TransferOptions options) {
+                                    final Transfer transfer,
+                                    final TransferOptions options) {
         this(controller, session, cache, listener, progress, transcript, transfer, options,
                 TransferPromptControllerFactory.get(controller, transfer, session),
                 TransferErrorCallbackControllerFactory.get(controller),
@@ -109,7 +118,8 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
                                     final TransferListener listener,
                                     final ProgressListener progress,
                                     final TranscriptListener transcript,
-                                    final Transfer transfer, final TransferOptions options,
+                                    final Transfer transfer,
+                                    final TransferOptions options,
                                     final TransferPrompt prompt,
                                     final TransferErrorCallback error) {
         this(controller, session, cache, listener, progress, transcript, transfer, options, prompt, error,
@@ -122,16 +132,30 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
                                     final TransferListener listener,
                                     final ProgressListener progress,
                                     final TranscriptListener transcript,
-                                    final Transfer transfer, final TransferOptions options,
+                                    final Transfer transfer,
+                                    final TransferOptions options,
                                     final TransferPrompt prompt,
                                     final TransferErrorCallback error,
                                     final TransferSpeedometer meter,
-                                    final StreamListener streamListener) {
-        super(controller, session, cache, progress);
-        final LoginCallback login = LoginCallbackFactory.get(controller);
-        this.connection = new LoginConnectionService(login,
-                HostKeyCallbackFactory.get(controller, transfer.getHost().getProtocol()),
-                PasswordStoreFactory.get(), progress, transcript);
+                                    final StreamListener stream) {
+        this(new KeychainLoginService(LoginCallbackFactory.get(controller), PasswordStoreFactory.get()), controller,
+                session, cache, listener, progress, transcript, transfer, options, prompt, error, meter, stream);
+    }
+
+    public TransferBackgroundAction(final LoginService login,
+                                    final Controller controller,
+                                    final Session session,
+                                    final Cache cache,
+                                    final TransferListener listener,
+                                    final ProgressListener progress,
+                                    final TranscriptListener transcript,
+                                    final Transfer transfer,
+                                    final TransferOptions options,
+                                    final TransferPrompt prompt,
+                                    final TransferErrorCallback error,
+                                    final TransferSpeedometer meter,
+                                    final StreamListener stream) {
+        super(login, controller, session, cache);
         this.meter = meter;
         this.transfer = transfer.withCache(cache);
         this.options = options;
@@ -139,11 +163,11 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
         this.prompt = prompt;
         if(PreferencesFactory.get().getInteger("queue.session.pool.size") == 1) {
             this.worker = new SingleTransferWorker(session, transfer, options,
-                    meter, prompt, error, this, progress, streamListener, login);
+                    meter, prompt, error, this, progress, stream, LoginCallbackFactory.get(controller));
         }
         else {
             this.worker = new ConcurrentTransferWorker(connection, transfer, options,
-                    meter, prompt, error, this, login, progress, streamListener);
+                    meter, prompt, error, this, LoginCallbackFactory.get(controller), progress, stream);
         }
     }
 

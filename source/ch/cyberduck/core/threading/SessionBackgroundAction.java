@@ -24,6 +24,7 @@ import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
+import ch.cyberduck.core.LoginService;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
@@ -74,7 +75,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     private TranscriptListener transcriptListener;
 
-    private ConnectionService connection;
+    protected ConnectionService connection;
 
     private final FailureDiagnostics<Exception> diagnostics
             = new DefaultFailureDiagnostics();
@@ -88,17 +89,32 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     public SessionBackgroundAction(final Session<?> session,
                                    final Cache<Path> cache,
                                    final AlertCallback alert,
-                                   final ProgressListener progressListener,
-                                   final TranscriptListener transcriptListener,
+                                   final ProgressListener progress,
+                                   final TranscriptListener transcript,
                                    final LoginCallback prompt,
                                    final HostKeyCallback key) {
+        this.connection = new LoginConnectionService(prompt, key, PasswordStoreFactory.get(),
+                progress, transcript);
         this.session = session;
         this.cache = cache;
         this.alert = alert;
-        this.progressListener = progressListener;
-        this.transcriptListener = transcriptListener;
-        this.connection = new LoginConnectionService(prompt, key,
-                PasswordStoreFactory.get(), progressListener, transcriptListener);
+        this.progressListener = progress;
+        this.transcriptListener = transcript;
+    }
+
+    public SessionBackgroundAction(final LoginService login,
+                                   final Session<?> session,
+                                   final Cache<Path> cache,
+                                   final AlertCallback alert,
+                                   final ProgressListener progress,
+                                   final TranscriptListener transcript,
+                                   final HostKeyCallback key) {
+        this.connection = new LoginConnectionService(login, key, progress, transcript);
+        this.session = session;
+        this.cache = cache;
+        this.alert = alert;
+        this.progressListener = progress;
+        this.transcriptListener = transcript;
     }
 
     public BackgroundException getException() {
