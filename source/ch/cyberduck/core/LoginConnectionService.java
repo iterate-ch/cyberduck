@@ -110,8 +110,6 @@ public class LoginConnectionService implements ConnectionService {
         }
         if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
             this.close(session, cache);
-            this.connect(session, cache);
-            return true;
         }
         return this.check(session, cache);
     }
