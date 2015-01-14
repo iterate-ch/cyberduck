@@ -4,7 +4,7 @@ import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.ftp.FTPClient;
+import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ssl.CertificateStoreX509TrustManager;
 import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
@@ -27,8 +27,8 @@ import static org.junit.Assert.assertTrue;
 public class LoginConnectionServiceTest extends AbstractTestCase {
 
     @Test(expected = BackgroundException.class)
-    public void testCheckUnknown() throws Exception {
-        final FTPSession session = new FTPSession(new Host("unknownhost.local"));
+    public void testConnectDnsFailure() throws Exception {
+        final FTPSession session = new FTPSession(new Host(new FTPProtocol(), "unknownhost.local", new Credentials("user", "")));
         final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new HostKeyCallback() {
             @Override
             public boolean verify(final String hostname, final int port, final PublicKey key) throws ConnectionCanceledException {
@@ -36,12 +36,7 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
                 return true;
             }
         }, new DisabledPasswordStore(),
-                new ProgressListener() {
-                    @Override
-                    public void message(final String message) {
-                        //
-                    }
-                },
+                new DisabledProgressListener(),
                 new DisabledTranscriptListener());
         try {
             s.check(session, Cache.<Path>empty());
@@ -72,63 +67,34 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
                 )
         );
         final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(),
-                new ProgressListener() {
-                    @Override
-                    public void message(final String message) {
-                        //
-                    }
-                }, new DisabledTranscriptListener());
+                new DisabledProgressListener(), new DisabledTranscriptListener());
         s.check(session, Cache.<Path>empty());
     }
 
     @Test(expected = ConnectionCanceledException.class)
     public void testNoHostname() throws Exception {
         final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(),
-                new ProgressListener() {
-                    @Override
-                    public void message(final String message) {
-                        //
-                    }
-                }, new DisabledTranscriptListener());
+                new DisabledProgressListener(), new DisabledTranscriptListener());
         s.check(new FTPSession(new Host("")), Cache.<Path>empty());
     }
 
     @Test(expected = ConnectionCanceledException.class)
     public void testCheckReconnect() throws Exception {
         final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(),
-                new ProgressListener() {
-                    @Override
-                    public void message(final String message) {
-                        //
-                    }
-                }, new DisabledTranscriptListener());
-        final AtomicBoolean connected = new AtomicBoolean();
+                new DisabledProgressListener(), new DisabledTranscriptListener());
         final AtomicBoolean disconnected = new AtomicBoolean();
         try {
-            final FTPSession session = new FTPSession(new Host("")) {
+            final FTPSession session = new FTPSession(new Host(new FTPProtocol(), "", new Credentials("user", ""))) {
                 @Override
                 public void interrupt() throws BackgroundException {
                     disconnected.set(true);
                     super.interrupt();
-                }
-
-                @Override
-                public FTPClient connect(final HostKeyCallback key) throws BackgroundException {
-                    connected.set(true);
-                    return null;
-                }
-
-                @Override
-                public boolean isConnected() {
-                    // Previously connected
-                    return true;
                 }
             };
             s.check(session, Cache.<Path>empty(), new BackgroundException("m", new SocketException("m")));
         }
         finally {
             assertTrue(disconnected.get());
-            assertTrue(connected.get());
         }
     }
 }
