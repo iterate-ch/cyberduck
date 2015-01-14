@@ -45,6 +45,7 @@ public class SingleTransferItemFinder implements TransferItemFinder {
                 case download:
                     return new DownloadTransferItemFinder().find(input, action, remote);
                 case upload:
+                case synchronize:
                     return new UploadTransferItemFinder().find(input, action, remote);
             }
         }
