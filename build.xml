@@ -372,7 +372,6 @@
         <property name="sonar.jdbc.username" value="sonar"/>
         <property name="sonar.jdbc.password" value="sonar"/>
         <property name="sonar.jdbc.driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="sonar.dynamicAnalysis" value="reuseReports"/>
         <property name="sonar.core.codeCoveragePlugin" value="jacoco"/>
         <property name="sonar.jacoco.reportPath" value="${build}/jacoco.exec"/>
         <property name="sonar.jacoco.antTargets" value="test"/>
