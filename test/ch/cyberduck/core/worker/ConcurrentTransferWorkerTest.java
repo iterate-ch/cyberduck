@@ -17,22 +17,10 @@ package ch.cyberduck.core.worker;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.DisabledTranscriptListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LoginConnectionService;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.test.NullLocal;
@@ -66,7 +54,7 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
 
     @Test(expected = BackgroundException.class)
     public void testBorrowDnsFailure() throws Exception {
-        final Transfer t = new UploadTransfer(new Host("unknownhostname"),
+        final Transfer t = new UploadTransfer(new Host(new FTPProtocol(), "unknownhostname", new Credentials("u", "p")),
                 new Path("/t", EnumSet.of(Path.Type.directory)),
                 new NullLocal("l"));
         final LoginConnectionService connection = new LoginConnectionService(new DisabledLoginCallback(),
