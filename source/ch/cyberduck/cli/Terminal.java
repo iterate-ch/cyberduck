@@ -330,7 +330,7 @@ public class Terminal {
 
     protected void disconnect(final Session session) {
         if(session != null) {
-            final DisconnectWorker close = new DisconnectWorker(session, cache);
+            final DisconnectWorker close = new DisconnectWorker(session);
             close.run();
         }
     }

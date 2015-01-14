@@ -3058,7 +3058,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly CallbackDelegate _callback;
 
                 public InnerDisconnectWorker(BrowserController controller, CallbackDelegate callback)
-                    : base(controller.Session, controller.Cache)
+                    : base(controller.Session)
                 {
                     _callback = callback;
                 }

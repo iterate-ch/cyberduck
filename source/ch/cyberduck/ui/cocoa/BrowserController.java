@@ -3511,7 +3511,7 @@ public class BrowserController extends WindowController
             c.window().close();
         }
         if(session != null) {
-            this.background(new WorkerBackgroundAction<Void>(this, session, cache, new DisconnectWorker(session, cache)) {
+            this.background(new WorkerBackgroundAction<Void>(this, session, cache, new DisconnectWorker(session)) {
                 @Override
                 public void prepare() throws ConnectionCanceledException {
                     if(!session.isConnected()) {

@@ -17,7 +17,6 @@ package ch.cyberduck.core.worker;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -35,7 +34,7 @@ public class DisconnectWorker extends Worker<Void> {
 
     private Session<?> session;
 
-    public DisconnectWorker(final Session<?> session, final Cache cache) {
+    public DisconnectWorker(final Session<?> session) {
         this.session = session;
     }
 
