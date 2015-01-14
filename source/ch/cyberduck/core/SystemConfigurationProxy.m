@@ -26,11 +26,11 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_usePa
 
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_findNative(JNIEnv *env, jobject this, jstring target)
 {
-    NSString *uri = [[Proxy find:JNFJavaToNSString(env, target)] UTF8String];
+    NSString *uri = [Proxy find:JNFJavaToNSString(env, target)];
     if(nil == uri) {
         return NULL;
     }
-	return (*env)->NewStringUTF(env, uri);
+	return (*env)->NewStringUTF(env, [uri UTF8String]);
 }
 
 @implementation Proxy
@@ -63,7 +63,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_findNa
                 CFRelease(proxyConfigurations);
                 continue;
             }
-            CFErrorRef error = NULL;
+            NSError* error;
             // Obtain from URL for automatic proxy configuration
             NSString *pacScript = [NSString stringWithContentsOfURL:[NSURL URLWithString:pacLocation] encoding:NSUTF8StringEncoding error:&error];
             if(error) {
@@ -71,8 +71,9 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_findNa
                 CFRelease(proxyConfigurations);
                 continue;
             }
+            CFErrorRef err = NULL;
             // Executes a proxy auto configuration script to determine the best proxy to use to retrieve a specified URL
-            NSArray *pacProxies = (NSArray*)CFNetworkCopyProxiesForAutoConfigurationScript((CFStringRef)pacScript, (CFURLRef)[NSURL URLWithString:targetURL], &error);
+            NSArray *pacProxies = (NSArray*)CFNetworkCopyProxiesForAutoConfigurationScript((CFStringRef)pacScript, (CFURLRef)[NSURL URLWithString:targetURL], &err);
             if(error) {
                 CFRelease(error);
                 CFRelease(proxyConfigurations);
