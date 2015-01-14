@@ -50,7 +50,7 @@ public class GotoController extends AlertController {
 
     private Cache<Path> cache;
 
-    private class FolderComboboxModel extends ProxyController implements NSComboBox.DataSource {
+    private final class FolderComboboxModel extends ProxyController implements NSComboBox.DataSource {
 
         private Path workdir;
 

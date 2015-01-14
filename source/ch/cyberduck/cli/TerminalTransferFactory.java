@@ -32,7 +32,11 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public class TerminalTransferFactory {
+public final class TerminalTransferFactory {
+
+    private TerminalTransferFactory() {
+        //
+    }
 
     public static Transfer create(final TerminalAction type, final Host host, final List<TransferItem> items) throws BackgroundException {
         final Transfer transfer;

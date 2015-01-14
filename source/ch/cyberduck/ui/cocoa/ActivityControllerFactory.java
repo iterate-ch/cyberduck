@@ -22,11 +22,15 @@ import ch.cyberduck.binding.application.NSApplication;
 /**
  * @version $Id$
  */
-public class ActivityControllerFactory {
+public final class ActivityControllerFactory {
 
     private static ActivityController shared = null;
 
-    public static ActivityController instance() {
+    private ActivityControllerFactory() {
+        //
+    }
+
+    public static ActivityController get() {
         synchronized(NSApplication.sharedApplication()) {
             if(null == shared) {
                 shared = new ActivityController();

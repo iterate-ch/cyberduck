@@ -24,6 +24,10 @@ package ch.cyberduck.ui.cocoa.quicklook;
  */
 public final class QuickLookFactory {
 
+    private QuickLookFactory() {
+        //
+    }
+
     public static QuickLook get() {
         return new QuartzQuickLook();
     }

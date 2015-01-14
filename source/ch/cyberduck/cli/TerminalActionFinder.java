@@ -23,7 +23,12 @@ import org.apache.commons.cli.CommandLine;
 /**
  * @version $Id$
  */
-public class TerminalActionFinder {
+public final class TerminalActionFinder {
+
+    private TerminalActionFinder() {
+        //
+    }
+
     public static TerminalAction get(final CommandLine input) {
         for(TerminalAction action : TerminalAction.values()) {
             if(input.hasOption(action.name())) {

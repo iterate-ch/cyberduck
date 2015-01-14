@@ -544,7 +544,7 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Action
     public void showActivityWindowClicked(final ID sender) {
-        ActivityController c = ActivityControllerFactory.instance();
+        ActivityController c = ActivityControllerFactory.get();
         if(c.isVisible()) {
             c.window().close();
         }
