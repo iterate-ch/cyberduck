@@ -373,7 +373,6 @@ namespace Ch.Cyberduck.Ui.Controller
             });
             metadata.Add("Pragma", () => AddMetadataItem("Pragma", String.Empty, true));
             metadata.Add("Content-Type", () => AddMetadataItem("Content-Type", String.Empty, true));
-            metadata.Add("Content-Encoding", () => AddMetadataItem("Content-Encoding", String.Empty, true));
             metadata.Add("x-amz-website-redirect-location",
                 () => AddMetadataItem("x-amz-website-redirect-location", String.Empty, true));
 
