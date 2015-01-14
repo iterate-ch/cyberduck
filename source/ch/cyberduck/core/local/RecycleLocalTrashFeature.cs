@@ -16,6 +16,7 @@
 // yves@cyberduck.ch
 // 
 
+using ch.cyberduck.core.exception;
 using ch.cyberduck.core.local.features;
 using Microsoft.VisualBasic.FileIO;
 
@@ -27,13 +28,18 @@ namespace Ch.Cyberduck.Core.Local
         {
             if (file.exists())
             {
-                if (file.isFile())
-                {
-                    FileSystem.DeleteFile(file.getAbsolute(), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+                try {
+                    if (file.isFile())
+                    {
+                        FileSystem.DeleteFile(file.getAbsolute(), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+                    }
+                    else if (file.isDirectory())
+                    {
+                        FileSystem.DeleteDirectory(file.getAbsolute(), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+                    }
                 }
-                else if (file.isDirectory())
-                {
-                    FileSystem.DeleteDirectory(file.getAbsolute(), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+                catch(System.Exception e) {
+                    throw new AccessDeniedException(e.Message);
                 }
             }
         }
