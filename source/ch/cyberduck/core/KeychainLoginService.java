@@ -102,6 +102,7 @@ public class KeychainLoginService implements LoginService {
         final Credentials credentials = bookmark.getCredentials();
         if(credentials.isPublicKeyAuthentication()) {
             if(!credentials.getIdentity().attributes().getPermission().isReadable()) {
+                log.warn(String.format("Prompt to select identity file not readable %s", credentials.getIdentity()));
                 credentials.setIdentity(controller.select(credentials.getIdentity()));
             }
         }
@@ -142,6 +143,8 @@ public class KeychainLoginService implements LoginService {
                 }
             }
             else {
+                log.warn(String.format("Prompt for username to connect to %s", bookmark));
+                // Ask for username
                 final StringAppender appender = new StringAppender();
                 appender.append(message);
                 appender.append(LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"));
@@ -154,6 +157,9 @@ public class KeychainLoginService implements LoginService {
             if(preferences.getBoolean("connection.login.useKeychain")) {
                 final String password = keychain.find(bookmark);
                 if(StringUtils.isNotBlank(password)) {
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Fetched password from keychain for %s", bookmark));
+                    }
                     credentials.setPassword(password);
                     // No need to reinsert found password to the keychain.
                     credentials.setSaved(false);
