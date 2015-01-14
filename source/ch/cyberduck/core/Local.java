@@ -41,6 +41,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
 import java.util.EnumSet;
 
@@ -152,6 +153,9 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
             // the absolute path is the path through the link, whereas the canonical path
             // is the path the link references.
             return LocalFactory.get(Paths.get(this.getAbsolute()).toRealPath().toString());
+        }
+        catch(InvalidPathException e) {
+            throw new NotfoundException(String.format("Resolving symlink target for %s failed", path), e);
         }
         catch(IOException e) {
             throw new NotfoundException(String.format("Resolving symlink target for %s failed", path), e);
