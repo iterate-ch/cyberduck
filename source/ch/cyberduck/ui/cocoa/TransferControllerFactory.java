@@ -31,7 +31,7 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 /**
  * @version $Id$
  */
-public class TransferControllerFactory {
+public final class TransferControllerFactory {
 
     private static TransferController shared = null;
 
