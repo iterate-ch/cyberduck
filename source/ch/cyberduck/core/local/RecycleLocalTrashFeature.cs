@@ -27,7 +27,14 @@ namespace Ch.Cyberduck.Core.Local
         {
             if (file.exists())
             {
-                FileSystem.DeleteFile(file.getAbsolute(), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+                if (file.isFile())
+                {
+                    FileSystem.DeleteFile(file.getAbsolute(), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+                }
+                else if (file.isDirectory())
+                {
+                    FileSystem.DeleteDirectory(file.getAbsolute(), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+                }
             }
         }
     }
