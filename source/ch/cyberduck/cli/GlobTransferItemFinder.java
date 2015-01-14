@@ -27,8 +27,10 @@ import ch.cyberduck.core.transfer.TransferItem;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.nio.file.FileSystems;
+import java.nio.file.InvalidPathException;
 import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.util.EnumSet;
@@ -39,6 +41,7 @@ import java.util.Set;
  * @version $Id$
  */
 public class GlobTransferItemFinder implements TransferItemFinder {
+    private static final Logger log = Logger.getLogger(GlobTransferItemFinder.class);
 
     @Override
     public Set<TransferItem> find(final CommandLine input, final TerminalAction action, final Path remote) throws AccessDeniedException {
@@ -53,7 +56,13 @@ public class GlobTransferItemFinder implements TransferItemFinder {
                     for(Local file : directory.list(new Filter<String>() {
                         @Override
                         public boolean accept(final String file) {
-                            return matcher.matches(Paths.get(file));
+                            try {
+                                return matcher.matches(Paths.get(file));
+                            }
+                            catch(InvalidPathException e) {
+                                log.warn(String.format("Failure obtaining path for file %s", file));
+                            }
+                            return false;
                         }
                     })) {
                         items.add(new TransferItem(new Path(remote, file.getName(), EnumSet.of(Path.Type.file)), file));
