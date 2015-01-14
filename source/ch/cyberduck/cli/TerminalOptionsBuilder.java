@@ -39,22 +39,22 @@ public final class TerminalOptionsBuilder {
 
     public static Options options() {
         final Options options = new Options();
-        options.addOption(OptionBuilder.withArgName("username")
+        options.addOption(OptionBuilder
                 .withDescription("Username")
                 .withLongOpt(Params.username.name())
-                .hasArg(true)
+                .hasArg(true).withArgName("username")
                 .isRequired(false)
                 .create('u'));
-        options.addOption(OptionBuilder.withArgName("password")
+        options.addOption(OptionBuilder
                 .withDescription("Password")
                 .withLongOpt(Params.password.name())
-                .hasArg(true)
+                .hasArg(true).withArgName("password")
                 .isRequired(false)
                 .create('p'));
-        options.addOption(OptionBuilder.withArgName("private key file")
+        options.addOption(OptionBuilder
                 .withDescription("Selects a file from which the identity (private key) for public key authentication is read")
                 .withLongOpt(Params.identity.name())
-                .hasArg(true)
+                .hasArg(true).withArgName("private key file")
                 .isRequired(false)
                 .create('i'));
         options.addOption(OptionBuilder
@@ -108,7 +108,7 @@ public final class TerminalOptionsBuilder {
         options.addOption(OptionBuilder
                 .withDescription("Location of bucket or container")
                 .withLongOpt(Params.region.name())
-                .hasArg(true)
+                .hasArg(true).withArgName("location")
                 .isRequired(false)
                 .create());
         options.addOption(OptionBuilder
