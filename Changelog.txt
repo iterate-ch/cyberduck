@@ -5,6 +5,7 @@ Changelog. Last modified: $Date$
 
 4.6.2 [https://trac.cyberduck.io/milestone/4.6.2]
 - [Bugfix] Crash opening preferences when default editor is no longer installed (Mac) (#8402)
+- [Bugfix] Crash reading proxy settings (Mac) (#8414
 - [Bugfix] No minimum size set for windows (Mac) (#8446)
 - [Bugfix] AWS Signature Version 4 for presigned temporary URLs (S3) (#8386)
 - [Bugfix] Transfer incomplete message uploading folder (S3) (#8432)
