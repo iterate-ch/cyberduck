@@ -166,7 +166,34 @@ public class SFTPSessionTest extends AbstractTestCase {
     }
 
     @Test(expected = LoginCanceledException.class)
-    public void testNoValidCredentials() throws Exception {
+    public void testConnectNoValidCredentials() throws Exception {
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch");
+        final Session session = new SFTPSession(host);
+        final AtomicBoolean change = new AtomicBoolean();
+        final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
+            @Override
+            public void prompt(Protocol protocol, Credentials credentials,
+                               String title, String reason, LoginOptions options)
+                    throws LoginCanceledException {
+                assertEquals("Login failed", title);
+                assertEquals("Login test.cyberduck.ch with username and password. Please contact your web hosting service provider for assistance.", reason);
+                credentials.setUsername("u");
+                change.set(true);
+                throw new LoginCanceledException();
+            }
+        }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
+                new DisabledProgressListener(), new DisabledTranscriptListener());
+        try {
+            login.connect(session, Cache.<Path>empty());
+        }
+        catch(LoginCanceledException e) {
+            assertTrue(change.get());
+            throw e;
+        }
+    }
+
+    @Test(expected = LoginCanceledException.class)
+    public void testValidateNoValidCredentials() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch");
         final Session session = new SFTPSession(host);
         final AtomicBoolean change = new AtomicBoolean();
@@ -184,7 +211,7 @@ public class SFTPSessionTest extends AbstractTestCase {
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
                 new DisabledProgressListener(), new DisabledTranscriptListener());
         try {
-            login.connect(session, Cache.<Path>empty());
+            login.check(session, Cache.<Path>empty());
         }
         catch(LoginCanceledException e) {
             assertTrue(change.get());
