@@ -51,6 +51,9 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_findNa
     NSEnumerator *enumerator = [proxyConfigurations objectEnumerator];
     NSDictionary *proxyConfiguration;
     while((proxyConfiguration = [enumerator nextObject]) != nil) {
+        if(![proxyConfiguration respondsToSelector:@selector(objectForKey:)]) {
+            continue;
+        }
         // Every proxy dictionary has an entry for kCFProxyTypeKey
         if([[proxyConfiguration objectForKey:(NSString *)kCFProxyTypeKey] isEqualToString:(NSString *)kCFProxyTypeNone]) {
             return nil;
@@ -106,6 +109,9 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_findNa
 + (NSString*)evaluate:(NSDictionary *) dict
 {
     if(nil == dict) {
+        return nil;
+    }
+    if(![dict respondsToSelector:@selector(objectForKey:)]) {
         return nil;
     }
     if(nil == [dict objectForKey:(NSString *)kCFProxyTypeKey]) {
