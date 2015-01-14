@@ -6,6 +6,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.test.Depends;
 import ch.cyberduck.core.test.NullLocal;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import static org.junit.Assert.assertTrue;
  * @version $Id$
  */
 @Depends(platform = Factory.Platform.Name.mac)
+@Ignore
 public class QuartzQuickLookTest extends AbstractTestCase {
 
     @Test
