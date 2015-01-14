@@ -2618,6 +2618,8 @@ source/ch/cyberduck/core/ssl/DefaultX509KeyManager.java -text
 source/ch/cyberduck/core/ssl/HostnameVerifier.cs -text
 source/ch/cyberduck/core/ssl/SSLSession.java -text
 source/ch/cyberduck/core/urlhandler/LaunchServicesSchemeHandler.m -text
+source/ch/cyberduck/core/worker/WriteEncryptionWorker.java -text
+source/ch/cyberduck/core/worker/WriteRedundancyWorker.java -text
 source/ch/cyberduck/properties/Settings.Designer.cs -text
 source/ch/cyberduck/properties/Settings.cs -text
 source/ch/cyberduck/properties/Settings.settings -text

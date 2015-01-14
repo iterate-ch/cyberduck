@@ -44,6 +44,7 @@ using java.util;
 using org.apache.commons.lang3;
 using org.apache.log4j;
 using StructureMap;
+using Boolean = java.lang.Boolean;
 using Object = System.Object;
 using String = System.String;
 using StringBuilder = System.Text.StringBuilder;
@@ -812,7 +813,8 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (ToggleS3Settings(false))
             {
-                _controller.Background(new SetStorageClassBackgroundAction(_controller, this));
+                Redundancy feature = (Redundancy)_controller.Session.getFeature(typeof(Redundancy));
+                _controller.Background(new SetStorageClassBackgroundAction(_controller, this, _files, feature, View.StorageClass));
             }
         }
 
@@ -820,7 +822,9 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (ToggleS3Settings(false))
             {
-                _controller.Background(new SetEncryptionBackgroundAction(_controller, this));
+                Encryption feature = (Encryption)_controller.Session.getFeature(typeof(Encryption));
+                String encryption = View.Encryption ? (string) feature.getAlgorithms().iterator().next() : null;
+                _controller.Background(new SetEncryptionBackgroundAction(_controller, this, _files, feature, encryption));
             }
         }
 
@@ -2405,82 +2409,57 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class SetEncryptionBackgroundAction : BrowserControllerBackgroundAction
+        private class SetEncryptionBackgroundAction : WorkerBackgroundAction
         {
-            private readonly BrowserController _controller;
-            private readonly InfoController _infoController;
-
-            public SetEncryptionBackgroundAction(BrowserController controller, InfoController infoController)
-                : base(controller)
+            public SetEncryptionBackgroundAction(BrowserController controller, InfoController infoController, IList<Path> files, Encryption feature, String algorithm)
+                : base(controller, controller.Session, controller.Cache, new InnerWriteEncryptionWorker(controller, infoController, Utils.ConvertToJavaList(files), feature, algorithm))
             {
-                _infoController = infoController;
-                _controller = controller;
             }
 
-            public override object run()
+            private class InnerWriteEncryptionWorker : WriteEncryptionWorker
             {
-                Encryption feature = (Encryption) BrowserController.Session.getFeature(typeof (Encryption));
+                private readonly InfoController _infoController;
 
-
-                S3Session session = (S3Session) _controller.Session;
-                foreach (Path next in _infoController._files)
+                public InnerWriteEncryptionWorker(BrowserController controller, InfoController infoController, List files,
+                    Encryption feature, String algorithm)
+                    : base(
+                        controller.Session, feature, files, algorithm, true, controller)
                 {
-                    if (next.isFile())
-                    {
-                        feature.setEncryption(next,
-                            _infoController.View.Encryption ? (string) feature.getAlgorithms().iterator().next() : null);
-                    }
+                    _infoController = infoController;
                 }
-                return true;
-            }
 
-            public override void cleanup()
-            {
-                base.cleanup();
-                _infoController.ToggleS3Settings(true);
-                _infoController.InitS3();
-            }
-
-            public override string getActivity()
-            {
-                return String.Format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
-                    toString(Utils.ConvertToJavaList(_infoController.Files)));
+                public override void cleanup(object obj)
+                {
+                    _infoController.ToggleS3Settings(true);
+                    _infoController.InitS3();
+                }
             }
         }
 
-        private class SetStorageClassBackgroundAction : BrowserControllerBackgroundAction
+        private class SetStorageClassBackgroundAction : WorkerBackgroundAction
         {
-            private readonly InfoController _infoController;
-            private readonly String _storageClass;
-
-            public SetStorageClassBackgroundAction(BrowserController controller, InfoController infoController)
-                : base(controller)
+            public SetStorageClassBackgroundAction(BrowserController controller, InfoController infoController,  IList<Path> files, Redundancy feature, String redundancy)
+                : base(controller, controller.Session, controller.Cache, new InnerWriteRedundancyWorker(controller, infoController, Utils.ConvertToJavaList(files), feature, redundancy))
             {
-                _infoController = infoController;
-                _storageClass = _infoController.View.StorageClass;
             }
 
-            public override object run()
+            private class InnerWriteRedundancyWorker : WriteRedundancyWorker
             {
-                Redundancy feature = (Redundancy) BrowserController.Session.getFeature(typeof (Redundancy));
-                foreach (Path next in _infoController._files)
+                private readonly InfoController _infoController;
+
+                public InnerWriteRedundancyWorker(BrowserController controller, InfoController infoController, List files,
+                    Redundancy feature, String redundancy)
+                    : base(
+                        controller.Session, feature, files, redundancy, true, controller)
                 {
-                    feature.setClass(next, _storageClass);
+                    _infoController = infoController;
                 }
-                return true;
-            }
 
-            public override void cleanup()
-            {
-                base.cleanup();
-                _infoController.ToggleS3Settings(true);
-                _infoController.InitS3();
-            }
-
-            public override string getActivity()
-            {
-                return String.Format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
-                    toString(Utils.ConvertToJavaList(_infoController.Files)));
+                public override void cleanup(object obj)
+                {
+                    _infoController.ToggleS3Settings(true);
+                    _infoController.InitS3();
+                }
             }
         }
 

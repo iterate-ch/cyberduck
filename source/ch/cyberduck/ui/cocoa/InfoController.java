@@ -65,8 +65,10 @@ import ch.cyberduck.core.worker.ReadMetadataWorker;
 import ch.cyberduck.core.worker.ReadPermissionWorker;
 import ch.cyberduck.core.worker.ReadSizeWorker;
 import ch.cyberduck.core.worker.WriteAclWorker;
+import ch.cyberduck.core.worker.WriteEncryptionWorker;
 import ch.cyberduck.core.worker.WriteMetadataWorker;
 import ch.cyberduck.core.worker.WritePermissionWorker;
+import ch.cyberduck.core.worker.WriteRedundancyWorker;
 import ch.cyberduck.ui.cocoa.threading.BrowserControllerBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
@@ -364,29 +366,19 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void storageClassPopupClicked(final NSPopUpButton sender) {
         if(this.toggleS3Settings(false)) {
-            this.background(new BrowserControllerBackgroundAction(controller) {
-                @Override
-                public Boolean run() throws BackgroundException {
-                    final Redundancy feature = controller.getSession().getFeature(Redundancy.class);
-                    for(Path next : files) {
-                        feature.setClass(next, sender.selectedItem().representedObject());
-                    }
-                    return true;
-                }
-
-                @Override
-                public void cleanup() {
-                    super.cleanup();
-                    toggleS3Settings(true);
-                    initS3();
-                }
-
-                @Override
-                public String getActivity() {
-                    return MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
-                            this.toString(files));
-                }
-            });
+            final Redundancy feature = controller.getSession().getFeature(Redundancy.class);
+            final String redundancy = sender.selectedItem().representedObject();
+            this.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
+                            new WriteRedundancyWorker(controller.getSession(), feature,
+                                    files, redundancy, true, controller) {
+                                @Override
+                                public void cleanup(final Boolean v) {
+                                    toggleS3Settings(true);
+                                    initS3();
+                                }
+                            }
+                    )
+            );
         }
     }
 
@@ -402,32 +394,20 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void encryptionButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
-            this.background(new BrowserControllerBackgroundAction(controller) {
-                @Override
-                public Boolean run() throws BackgroundException {
-                    final Encryption feature = controller.getSession().getFeature(Encryption.class);
-                    for(Path next : files) {
-                        if(next.isFile()) {
-                            feature.setEncryption(next, encryptionButton.state() == NSCell.NSOnState ?
-                                    feature.getAlgorithms().iterator().next() : null);
-                        }
-                    }
-                    return true;
-                }
-
-                @Override
-                public void cleanup() {
-                    super.cleanup();
-                    toggleS3Settings(true);
-                    initS3();
-                }
-
-                @Override
-                public String getActivity() {
-                    return MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
-                            this.toString(files));
-                }
-            });
+            final Encryption feature = controller.getSession().getFeature(Encryption.class);
+            final String algorithm = encryptionButton.state() == NSCell.NSOnState ?
+                    feature.getAlgorithms().iterator().next() : null;
+            this.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
+                            new WriteEncryptionWorker(controller.getSession(), feature,
+                                    files, algorithm, true, controller) {
+                                @Override
+                                public void cleanup(final Boolean v) {
+                                    toggleS3Settings(true);
+                                    initS3();
+                                }
+                            }
+                    )
+            );
         }
     }
 
