@@ -69,6 +69,9 @@ public class Console {
     }
 
     public void printf(final String format, Object... args) {
+        if(StringUtils.isBlank(format)) {
+            return;
+        }
         if(console != null) {
             switch(Factory.Platform.getDefault()) {
                 case windows:
