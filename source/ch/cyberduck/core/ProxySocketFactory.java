@@ -85,7 +85,7 @@ public class ProxySocketFactory extends SocketFactory {
         final String target = hostnameCallback.getTarget();
         if(log.isInfoEnabled()) {
             log.info(String.format("Use target hostname %s determined from callback %s for proxy configuration",
-                    hostnameCallback, target));
+                    target, hostnameCallback));
         }
         final Socket socket = this.factory(target).createSocket();
         configurator.configure(socket);
