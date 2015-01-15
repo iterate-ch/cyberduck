@@ -48,7 +48,7 @@ public class Console {
             return console.readLine(format, args);
         }
         this.printf(format, args);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         try {
             return reader.readLine();
         }
