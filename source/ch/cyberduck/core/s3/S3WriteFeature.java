@@ -161,6 +161,9 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
         for(Map.Entry<String, String> m : metadata.entrySet()) {
             object.addMetadata(m.getKey(), m.getValue());
         }
+        for(Map.Entry<String, String> m : status.getMetadata().entrySet()) {
+            object.addMetadata(m.getKey(), m.getValue());
+        }
         return object;
     }
 

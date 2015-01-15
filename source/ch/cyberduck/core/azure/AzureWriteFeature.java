@@ -91,7 +91,10 @@ public class AzureWriteFeature implements Write {
             final CloudBlockBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
                     .getBlockBlobReference(containerService.getKey(file));
             blob.getProperties().setContentType(status.getMime());
-            blob.setMetadata(new HashMap<String, String>(metadata));
+            final HashMap<String, String> headers = new HashMap<>();
+            headers.putAll(metadata); // Default
+            headers.putAll(status.getMetadata()); // Previous
+            blob.setMetadata(headers);
             final BlobRequestOptions options = new BlobRequestOptions();
             options.setRetryPolicyFactory(new RetryNoRetry());
             options.setStoreBlobContentMD5(preferences.getBoolean("azure.upload.md5"));

@@ -39,6 +39,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -101,10 +102,13 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
             @Override
             public StorageObject call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
+                    final HashMap<String, String> headers = new HashMap<>();
+                    headers.putAll(metadata); // Default
+                    headers.putAll(status.getMetadata()); // Previous
                     final String checksum = session.getClient().storeObject(
                             new SwiftRegionService(session).lookup(file),
                             containerService.getContainer(file).getName(), containerService.getKey(file),
-                            entity, metadata, null);
+                            entity, headers, null);
                     final StorageObject stored = new StorageObject(containerService.getKey(file));
                     stored.setMd5sum(checksum);
                     stored.setSize(status.getLength());
