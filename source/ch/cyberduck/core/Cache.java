@@ -172,4 +172,12 @@ public class Cache<T extends Referenceable> {
         }
         impl.clear();
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Cache{");
+        sb.append("size=").append(impl.size());
+        sb.append('}');
+        return sb.toString();
+    }
 }
