@@ -47,6 +47,7 @@ public class LaunchServicesApplicationFinderTest extends AbstractTestCase {
     public void testFindByFilename() throws Exception {
         ApplicationFinder f = new LaunchServicesApplicationFinder();
         assertEquals(new Application("com.apple.Preview", "Preview"), f.find("file.png"));
+        assertEquals(Application.notfound, f.find("file.txt_"));
     }
 
     @Test
