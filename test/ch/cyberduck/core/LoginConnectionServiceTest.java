@@ -4,10 +4,15 @@ import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPSession;
+import ch.cyberduck.core.sftp.SFTPProtocol;
+import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.ssl.CertificateStoreX509TrustManager;
 import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
+import ch.cyberduck.core.threading.CancelCallback;
 
 import org.junit.Test;
 
@@ -18,8 +23,9 @@ import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import net.schmizz.sshj.SSHClient;
+
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -95,6 +101,62 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
         }
         finally {
             assertTrue(disconnected.get());
+        }
+    }
+
+    @Test(expected = LoginCanceledException.class)
+    public void testPasswordChange() throws Exception {
+        final AtomicBoolean connected = new AtomicBoolean();
+        final AtomicBoolean keychain = new AtomicBoolean();
+        final AtomicBoolean prompt = new AtomicBoolean();
+        final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback() {
+            @Override
+            public void prompt(final Protocol protocol, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                // New password entered
+                credentials.setPassword("b");
+                prompt.set(true);
+            }
+        }, new DisabledHostKeyCallback(), new DisabledPasswordStore() {
+            @Override
+            public String find(final Host host) {
+                keychain.set(true);
+                // Old password stored
+                return "a";
+            }
+        }, new DisabledProgressListener(), new DisabledTranscriptListener());
+        final Host host = new Host(new SFTPProtocol(), "localhost", new Credentials("user", ""));
+        final Session session = new SFTPSession(host) {
+
+            @Override
+            public SSHClient connect(final HostKeyCallback key) throws BackgroundException {
+                connected.set(true);
+                return null;
+            }
+
+            @Override
+            public boolean isConnected() {
+                return connected.get();
+            }
+
+            @Override
+            public void login(final PasswordStore p, final LoginCallback l, final CancelCallback cancel, final Cache<Path> cache) throws BackgroundException {
+                if(prompt.get()) {
+                    assertEquals("b", host.getCredentials().getPassword());
+                    throw new LoginCanceledException();
+                }
+                if(keychain.get()) {
+                    assertFalse(prompt.get());
+                    assertEquals("a", host.getCredentials().getPassword());
+                    throw new LoginFailureException("f");
+                }
+            }
+        };
+        try {
+            s.check(session, Cache.<Path>empty());
+        }
+        finally {
+            assertTrue(keychain.get());
+            assertTrue(prompt.get());
         }
     }
 }
