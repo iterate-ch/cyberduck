@@ -5,6 +5,7 @@ A command line interface (CLI) version is now available from https://duck.sh/ fo
 - [Bugfix] AWS Signature Version 4 for presigned temporary URLs (S3) (#8386)
 - [Bugfix] Transfer incomplete message uploading folder (S3) (#8432)
 - [Bugfix] Failure using updated password (#8463)
+- [Bugfix] Retain custom metadata when overwriting files (S3, OpenStack Swift) (#8469)
 
 4.6.1 [https://trac.cyberduck.io/milestone/4.6.1]
 - [Bugfix] Uploads to buckets in eu-central-1 (S3) (#8375)
