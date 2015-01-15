@@ -43,7 +43,6 @@ import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.aquaticprime.Donation;
 import ch.cyberduck.core.aquaticprime.License;
 import ch.cyberduck.core.aquaticprime.LicenseFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -570,51 +569,49 @@ public class MainController extends BundleController implements NSApplication.De
             }
             else if("cyberducklicense".equals(f.getExtension())) {
                 final License l = LicenseFactory.get(f);
-                if(l instanceof Donation) {
-                    if(l.verify()) {
-                        try {
-                            f.copy(LocalFactory.get(preferences.getProperty("application.support.path"), f.getName()));
-                        }
-                        catch(AccessDeniedException e) {
-                            log.warn(e.getMessage());
-                        }
-                        final NSAlert alert = NSAlert.alert(
-                                l.toString(),
-                                LocaleFactory.localizedString("Thanks for your support! Your contribution helps to further advance development to make Cyberduck even better.", "License")
-                                        + "\n\n"
-                                        + LocaleFactory.localizedString("Your donation key has been copied to the Application Support folder.", "License"),
-                                LocaleFactory.localizedString("Continue", "License"), //default
-                                null, //other
-                                null
-                        );
-                        alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
-                        if(this.alert(alert) == SheetCallback.DEFAULT_OPTION) {
-                            for(BrowserController c : MainController.getBrowsers()) {
-                                c.removeDonateWindowTitle();
-                            }
-                            this.updateLicenseMenu();
-                        }
+                if(l.verify()) {
+                    try {
+                        f.copy(LocalFactory.get(preferences.getProperty("application.support.path"), f.getName()));
                     }
-                    else {
-                        final NSAlert alert = NSAlert.alert(
-                                LocaleFactory.localizedString("Not a valid donation key", "License"),
-                                LocaleFactory.localizedString("This donation key does not appear to be valid.", "License"),
-                                LocaleFactory.localizedString("Continue", "License"), //default
-                                null, //other
-                                null);
-                        alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
-                        alert.setShowsHelp(true);
-                        alert.setDelegate(new ProxyController() {
-                            public boolean alertShowHelp(NSAlert alert) {
-                                StringBuilder site = new StringBuilder(preferences.getProperty("website.help"));
-                                site.append("/").append("faq");
-                                BrowserLauncherFactory.get().open(site.toString());
-                                return true;
-                            }
+                    catch(AccessDeniedException e) {
+                        log.warn(e.getMessage());
+                    }
+                    final NSAlert alert = NSAlert.alert(
+                            l.toString(),
+                            LocaleFactory.localizedString("Thanks for your support! Your contribution helps to further advance development to make Cyberduck even better.", "License")
+                                    + "\n\n"
+                                    + LocaleFactory.localizedString("Your donation key has been copied to the Application Support folder.", "License"),
+                            LocaleFactory.localizedString("Continue", "License"), //default
+                            null, //other
+                            null
+                    );
+                    alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
+                    if(this.alert(alert) == SheetCallback.DEFAULT_OPTION) {
+                        for(BrowserController c : MainController.getBrowsers()) {
+                            c.removeDonateWindowTitle();
+                        }
+                        this.updateLicenseMenu();
+                    }
+                }
+                else {
+                    final NSAlert alert = NSAlert.alert(
+                            LocaleFactory.localizedString("Not a valid donation key", "License"),
+                            LocaleFactory.localizedString("This donation key does not appear to be valid.", "License"),
+                            LocaleFactory.localizedString("Continue", "License"), //default
+                            null, //other
+                            null);
+                    alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
+                    alert.setShowsHelp(true);
+                    alert.setDelegate(new ProxyController() {
+                        public boolean alertShowHelp(NSAlert alert) {
+                            StringBuilder site = new StringBuilder(preferences.getProperty("website.help"));
+                            site.append("/").append("faq");
+                            BrowserLauncherFactory.get().open(site.toString());
+                            return true;
+                        }
 
-                        }.id());
-                        this.alert(alert);
-                    }
+                    }.id());
+                    this.alert(alert);
                 }
                 return true;
             }
