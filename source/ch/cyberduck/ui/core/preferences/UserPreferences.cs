@@ -374,7 +374,6 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             defaults.put("factory.symlink.class", typeof (NullLocalSymlinkFeature).AssemblyQualifiedName);
             defaults.put("factory.terminalservice.class", typeof (SshTerminalService).AssemblyQualifiedName);
             defaults.put("factory.editorfactory.class", typeof (SystemWatchEditorFactory).AssemblyQualifiedName);
-            defaults.put("factory.licensefactory.class", typeof (WindowsLicenseFactory).AssemblyQualifiedName);
             defaults.put("factory.notification.class", typeof (ToolstripNotificationService).AssemblyQualifiedName);
             if (Cyberduck.Core.Utils.IsWin7OrLater)
             {

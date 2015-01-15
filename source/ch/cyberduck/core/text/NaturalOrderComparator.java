@@ -31,7 +31,7 @@ public class NaturalOrderComparator implements Comparator<String>, java.io.Seria
     private Collator collator = new NaturalOrderCollator();
 
     @Override
-    public int compare(String s1, String s2) {
+    public int compare(final String s1, final String s2) {
         return collator.compare(s1, s2);
     }
 }

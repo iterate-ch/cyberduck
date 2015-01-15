@@ -312,9 +312,6 @@ public class UserDefaultsPreferences extends Preferences {
         if(null == Updater.getFeed()) {
             defaults.put("factory.licensefactory.class", ReceiptFactory.class.getName());
         }
-        else {
-            defaults.put("factory.licensefactory.class", DonationKeyFactory.class.getName());
-        }
         if(!Factory.Platform.osversion.matches("10\\.(5|6|7).*")) {
             defaults.put("factory.notification.class", NotificationCenter.class.getName());
         }

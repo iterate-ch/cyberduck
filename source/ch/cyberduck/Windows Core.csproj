@@ -97,9 +97,6 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="core\aquaticprime\LicenseImpl.cs" />
-    <Compile Include="core\aquaticprime\LicenseVerifier.cs" />
-    <Compile Include="core\aquaticprime\WindowsLicenseFactory.cs" />
     <Compile Include="core\AtomicBoolean.cs" />
     <Compile Include="core\collections\IndexedLinkedList.cs" />
     <Compile Include="core\collections\LRUCache.cs" />

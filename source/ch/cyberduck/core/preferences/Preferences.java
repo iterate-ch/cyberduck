@@ -31,7 +31,7 @@ import ch.cyberduck.core.DisabledTerminalService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.aquaticprime.DisabledLicenseFactory;
+import ch.cyberduck.core.aquaticprime.DonationKeyFactory;
 import ch.cyberduck.core.date.DefaultUserDateFormatter;
 import ch.cyberduck.core.formatter.DecimalSizeFormatter;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
@@ -605,6 +605,24 @@ public abstract class Preferences {
         defaults.put("s3.upload.expect-continue", String.valueOf(true));
 
         /**
+         * Transfer thresholds for qloudsonic.io
+         */
+        defaults.put("s3.download.udt.threshold", String.valueOf(100L * 1024L * 1024L));
+        defaults.put("s3.upload.udt.threshold", String.valueOf(100L * 1024L * 1024L));
+        /**
+         * Proxy list qloudsonic.io
+         */
+        defaults.put("qloudsonic.proxy.us-east-1", "https://us-east-1.qloudsonic.io");
+        defaults.put("qloudsonic.proxy.eu-west-1", "https://eu-west-1.qloudsonic.io");
+        defaults.put("qloudsonic.proxy.eu-central-1", "https://eu-central-1.qloudsonic.io");
+        defaults.put("qloudsonic.proxy.us-west-1", "https://us-west-1.qloudsonic.io");
+        defaults.put("qloudsonic.proxy.us-west-2", "https://us-west-2.qloudsonic.io");
+        defaults.put("qloudsonic.proxy.ap-southeast-1", "https://ap-southeast-1.qloudsonic.io");
+        defaults.put("qloudsonic.proxy.ap-southeast-2", "https://ap-southeast-2.qloudsonic.io");
+        defaults.put("qloudsonic.proxy.ap-northeast-1", "https://ap-northeast-1.qloudsonic.io");
+        defaults.put("qloudsonic.proxy.sa-east-1", "https://sa-east-1.qloudsonic.io");
+
+        /**
          * A prefix to apply to log file names
          */
         defaults.put("s3.logging.prefix", "logs/");
@@ -1103,7 +1121,7 @@ public abstract class Preferences {
         defaults.put("factory.rendezvous.class", DisabledRendezvous.class.getName());
         defaults.put("factory.trash.class", DefaultLocalTrashFeature.class.getName());
         defaults.put("factory.symlink.class", NullLocalSymlinkFeature.class.getName());
-        defaults.put("factory.licensefactory.class", DisabledLicenseFactory.class.getName());
+        defaults.put("factory.licensefactory.class", DonationKeyFactory.class.getName());
         defaults.put("factory.badgelabeler.class", DisabledApplicationBadgeLabeler.class.getName());
         defaults.put("factory.filedescriptor.class", NullFileDescriptor.class.getName());
         defaults.put("factory.terminalservice.class", DisabledTerminalService.class.getName());

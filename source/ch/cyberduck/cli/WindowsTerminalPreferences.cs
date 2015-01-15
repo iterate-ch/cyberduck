@@ -42,7 +42,6 @@ namespace Ch.Cyberduck.Cli
             defaults.put("application.bookmarks.path", Path.Combine(ApplicationPath, "bookmarks"));
             defaults.put("application.profiles.path", Path.Combine(ApplicationPath, "profiles"));
 
-            defaults.put("factory.licensefactory.class", typeof (WindowsLicenseFactory).AssemblyQualifiedName);
             defaults.put("factory.locale.class", typeof (DictionaryLocale).AssemblyQualifiedName);
             defaults.put("factory.supportdirectoryfinder.class",
                 typeof (RoamingSupportDirectoryFinder).AssemblyQualifiedName);

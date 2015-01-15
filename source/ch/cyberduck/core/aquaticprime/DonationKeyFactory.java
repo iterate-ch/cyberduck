@@ -46,7 +46,7 @@ public class DonationKeyFactory extends LicenseFactory {
 
     @Override
     protected License open(final Local file) {
-        return new Donation(file);
+        return new DonationKey(file);
     }
 
     @Override

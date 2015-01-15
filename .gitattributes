@@ -1752,12 +1752,6 @@ lib/1.7.0-u40-b30.jre/Contents/Info.plist -text svneol=unset#application/xml
 lib/1.7.0-u40-b30.jre/Contents/MacOS/libjli.dylib -text
 lib/ActiveButtons.dll -text
 lib/ActiveButtons.pdb -text
-lib/AquaticPrime.framework/AquaticPrime -text
-lib/AquaticPrime.framework/Resources -text
-lib/AquaticPrime.framework/Versions/A/AquaticPrime -text
-lib/AquaticPrime.framework/Versions/A/Resources/English.lproj/InfoPlist.strings -text svneol=unset#text/utf-16
-lib/AquaticPrime.framework/Versions/A/Resources/Info.plist -text
-lib/AquaticPrime.framework/Versions/Current -text
 lib/AutomaticUpdater.dll -text
 lib/CustomOpenFileFolderDialog.dll -text
 lib/ExceptionReporter.WinForms.dll -text
@@ -2580,9 +2574,6 @@ source/ch/cyberduck/core/SystemConfigurationReachability.m -text
 source/ch/cyberduck/core/SystemProxy.cs -text
 source/ch/cyberduck/core/TcpReachability.cs -text
 source/ch/cyberduck/core/Utils.cs -text
-source/ch/cyberduck/core/aquaticprime/LicenseImpl.cs -text
-source/ch/cyberduck/core/aquaticprime/LicenseVerifier.cs -text
-source/ch/cyberduck/core/aquaticprime/WindowsLicenseFactory.cs -text
 source/ch/cyberduck/core/collections/IndexedLinkedList.cs -text
 source/ch/cyberduck/core/collections/LRUCache.cs -text
 source/ch/cyberduck/core/date/AbstractUserDateFormatter.java -text
@@ -2944,6 +2935,7 @@ sv.lproj/Support.strings -text svneol=unset#text/utf-16
 sv.lproj/Transfer.strings -text svneol=unset#text/utf-16
 test/ch/cyberduck/Test.csproj -text
 test/ch/cyberduck/core/aquaticprime/Info.plist -text
+test/ch/cyberduck/core/aquaticprime/test.cyberducklicense -text
 test/ch/cyberduck/core/history/mirror.switch.ch[!!-~]–[!!-~]FTP.duck -text
 test/ch/cyberduck/core/importer/FlashFXP-Sites.dat -text
 test/ch/cyberduck/core/importer/com.fetchsoftworks.Fetch.Shortcuts.plist -text

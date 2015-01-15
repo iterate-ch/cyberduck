@@ -128,7 +128,6 @@ public class TerminalPreferences extends MemoryPreferences {
                 defaults.put("application.bookmarks.path", String.format("%s/Bookmarks", resources.getAbsolute()));
                 defaults.put("application.profiles.path", String.format("%s/Profiles", resources.getAbsolute()));
 
-                defaults.put("factory.licensefactory.class", DonationKeyFactory.class.getName());
                 break;
             }
             case windows: {

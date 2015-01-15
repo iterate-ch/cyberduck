@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Email</key>
+	<string>test@cyberduck.io</string>
+	<key>Name</key>
+	<string>Test</string>
+	<key>Product</key>
+	<string>Cyberduck</string>
+	<key>Timestamp</key>
+	<string>2014-08-19T16:31:15.368274</string>
+	<key>Transaction</key>
+	<string>3d4d06d0-27be-11e4-8a03-123143079e6c</string>
+	<key>Signature</key>
+	<data>KEvUnSkC66AQhk7JfSXMT16AC6Xjr/bWAMzmPBX57Vo9J+/HvVrcD1DMbwU+1v2RJdHWkUwPP79H
+Sx/n0vcQsI+OiPLP4xgwSs50rB1Ba5AzYvrJzfVTpGv36PemlDn13BTQiJU/iILXDiInKIijx3RV
+ocxyAa62S+sRcsJkp0E=
+</data>
+</dict>
+</plist>
