@@ -25,7 +25,6 @@ using System.Text.RegularExpressions;
 using ch.cyberduck.core;
 using ch.cyberduck.core.local;
 using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Core.Aquaticprime;
 using Ch.Cyberduck.Core.Editor;
 using Ch.Cyberduck.Core.I18n;
 using Ch.Cyberduck.Core.Local;
