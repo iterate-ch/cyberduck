@@ -1,6 +1,7 @@
 A command line interface (CLI) version is now available from https://duck.sh/ for Windows, Linux & Mac.
 
 4.6.2 [https://trac.cyberduck.io/milestone/4.6.2]
+- [Feature] Recursively change storage class and encryption (S3) (#8421)
 - [Bugfix] AWS Signature Version 4 for presigned temporary URLs (S3) (#8386)
 - [Bugfix] Transfer incomplete message uploading folder (S3) (#8432)
 - [Bugfix] Failure using updated password (#8463)
