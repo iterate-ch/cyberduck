@@ -18,12 +18,12 @@ package ch.cyberduck.core.local;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.library.Native;
 import ch.cyberduck.binding.application.NSWorkspace;
 import ch.cyberduck.binding.foundation.NSBundle;
 import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.binding.foundation.NSObject;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.library.Native;
 
 import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.io.FilenameUtils;
@@ -126,13 +126,13 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
             }
             final String path = this.findForType(extension);
             if(StringUtils.isEmpty(path)) {
-                defaultApplicationCache.put(extension, null);
+                defaultApplicationCache.put(extension, Application.notfound);
             }
             else {
                 final NSBundle bundle = NSBundle.bundleWithPath(path);
                 if(null == bundle) {
                     log.error(String.format("Loading bundle %s failed", path));
-                    defaultApplicationCache.put(extension, null);
+                    defaultApplicationCache.put(extension, Application.notfound);
                 }
                 else {
                     defaultApplicationCache.put(extension, this.getDescription(bundle.bundleIdentifier()));
@@ -179,7 +179,7 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
                     NSDictionary dict = app.infoDictionary();
                     if(null == dict) {
                         log.error(String.format("Loading application dictionary for bundle %s failed", path));
-                        applicationNameCache.put(search, null);
+                        applicationNameCache.put(search, Application.notfound);
                         return null;
                     }
                     else {
