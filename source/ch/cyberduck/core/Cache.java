@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -105,7 +106,7 @@ public class Cache<T extends Referenceable> {
      * Remove the cached directory listing for this path
      *
      * @param reference Reference to the path in cache.
-     * @return The previuosly cached directory listing
+     * @return The previously cached directory listing
      */
     public AttributedList<T> remove(final PathReference reference) {
         return impl.remove(reference);
@@ -114,9 +115,8 @@ public class Cache<T extends Referenceable> {
     /**
      * @param reference Absolute path
      * @return An empty list if no cached file listing is available
-     * @throws java.util.ConcurrentModificationException
-     *          If the caller is iterating of the cache himself
-     *          and requests a new filter here.
+     * @throws java.util.ConcurrentModificationException If the caller is iterating of the cache himself
+     *                                                   and requests a new filter here.
      */
     public AttributedList<T> get(final PathReference reference) {
         AttributedList<T> children = impl.get(reference);
@@ -128,7 +128,8 @@ public class Cache<T extends Referenceable> {
     }
 
     public boolean isHidden(final Path file) {
-        return this.get(file.getParent().getReference()).attributes().getHidden().contains(file);
+        final List<?> hidden = this.get(file.getParent().getReference()).attributes().getHidden();
+        return hidden.contains(file);
     }
 
     /**
