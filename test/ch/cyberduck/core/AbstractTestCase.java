@@ -31,6 +31,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -38,6 +39,7 @@ import org.junit.runner.RunWith;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.Security;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
@@ -59,6 +61,7 @@ import static org.junit.Assert.assertNotNull;
 public class AbstractTestCase {
 
     static {
+        Security.insertProviderAt(new BouncyCastleProvider(), 1);
         BasicConfigurator.configure();
     }
 
