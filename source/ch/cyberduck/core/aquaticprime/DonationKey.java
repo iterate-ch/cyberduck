@@ -108,7 +108,7 @@ public class DonationKey extends AbstractLicense implements LicenseVerifier {
             final KeySpec spec = new RSAPublicKeySpec(modulus, exponent);
 
             final PublicKey rsa = KeyFactory.getInstance("RSA").generatePublic(spec);
-            final Cipher rsaCipher = Cipher.getInstance("RSA");
+            final Cipher rsaCipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
             rsaCipher.init(Cipher.DECRYPT_MODE, rsa);
             final MessageDigest sha1Digest = MessageDigest.getInstance("SHA1");
             valid = Arrays.equals(rsaCipher.doFinal(signaturebytes), sha1Digest.digest(plainbytes));
