@@ -213,7 +213,7 @@ public class MainController extends BundleController implements NSApplication.De
      * Set name of key in menu item
      */
     private void updateLicenseMenu() {
-        License key = LicenseFactory.find();
+        final License key = LicenseFactory.find();
         if(null == Updater.getFeed() && key.isReceipt()) {
             this.applicationMenu.removeItemAtIndex(new NSInteger(5));
             this.applicationMenu.removeItemAtIndex(new NSInteger(4));
@@ -1264,7 +1264,7 @@ public class MainController extends BundleController implements NSApplication.De
                     }
                 }
                 else {
-                    browser.unmount();
+                    browser.windowShouldClose(browser.window());
                 }
             }
         }
