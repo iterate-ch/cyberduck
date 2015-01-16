@@ -3493,11 +3493,11 @@ public class BrowserController extends WindowController
                 for(Editor e : list) {
                     e.delete();
                 }
-                list.clear();
-                cache.clear();
                 window.setTitle(preferences.getProperty("application.name"));
                 window.setRepresentedFilename(StringUtils.EMPTY);
                 disconnected.run();
+                list.clear();
+                cache.clear();
             }
         });
     }
