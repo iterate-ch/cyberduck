@@ -24,7 +24,7 @@ public class DonationKeyTest extends AbstractTestCase {
     }
 
     @Test
-    public void testVerify() throws Exception {
+    public void testVerifyFailure() throws Exception {
         final Local f = new Local("test/ch/cyberduck/core/aquaticprime/test.cyberducklicense");
         DonationKey r = new DonationKey(f);
         assertFalse(r.verify());
