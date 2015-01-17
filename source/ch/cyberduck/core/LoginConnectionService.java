@@ -120,7 +120,6 @@ public class LoginConnectionService implements ConnectionService {
                     session.getHost().getHostname()));
             // Close the underlying socket first
             session.interrupt();
-            cache.clear();
         }
         catch(BackgroundException e) {
             log.warn(String.format("Ignore failure closing connection %s", e.getMessage()));
