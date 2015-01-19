@@ -120,6 +120,7 @@
     <Compile Include="core\NativeMethods.cs" />
     <Compile Include="core\OSVersion.cs" />
     <Compile Include="core\preferences\RoamingSupportDirectoryFinder.cs" />
+    <Compile Include="core\preferences\AssemblyApplicationResourcesFinder.cs" />
     <Compile Include="core\preferences\SettingsDictionary.cs" />
     <Compile Include="core\Rendezvous.cs" />
     <Compile Include="core\RFC2253.cs" />
