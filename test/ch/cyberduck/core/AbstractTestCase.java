@@ -23,7 +23,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.impl.dd.PlistDeserializer;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.test.PlatformAwareClassRunner;
-import ch.cyberduck.core.test.TestPreferences;
 import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.ActionOperationBatcherFactory;
 
@@ -87,7 +86,7 @@ public class AbstractTestCase {
     @BeforeClass
     public static void setup() {
         Locale.setDefault(Locale.ENGLISH);
-        PreferencesFactory.set(new TestPreferences());
+        PreferencesFactory.set(new MemoryPreferences());
         ProtocolFactory.register();
         final ProfilePlistReader reader = new ProfilePlistReader(new DeserializerFactory(PlistDeserializer.class.getName()));
         final Profile profile = reader.read(
