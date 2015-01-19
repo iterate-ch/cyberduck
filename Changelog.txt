@@ -3,6 +3,9 @@ http://cyberduck.io/
 
 Changelog. Last modified: $Date$
 
+4.6.4 [https://trac.cyberduck.io/milestone/4.6.4]
+- [Bugfix] No localizations (Windows) (#8497)
+
 4.6.3 [https://trac.cyberduck.io/milestone/4.6.3]
 - [Bugfix] Occasional failure verifying donation keys
 
