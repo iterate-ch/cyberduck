@@ -1116,6 +1116,7 @@ public abstract class Preferences {
             defaults.put(String.format("factory.transferpromptcallback.%s.class", t.name()), DisabledTransferPrompt.class.getName());
         }
         defaults.put("factory.supportdirectoryfinder.class", TemporarySupportDirectoryFinder.class.getName());
+        defaults.put("factory.applicationresourcesfinder.class", TemporaryApplicationResourcesFinder.class.getName());
         defaults.put("factory.workingdirectory.class", DefaultWorkingDirectoryFinder.class.getName());
         defaults.put("factory.locale.class", DisabledLocale.class.getName());
         defaults.put("factory.local.class", Local.class.getName());
