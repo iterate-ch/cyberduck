@@ -21,9 +21,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using ch.cyberduck.core;
-using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.i18n;
+using ch.cyberduck.core.preferences;
 using org.apache.log4j;
 
 namespace Ch.Cyberduck.Core.I18n
@@ -67,17 +66,16 @@ namespace Ch.Cyberduck.Core.I18n
         {
             Log.debug("Caching bundle " + bundle);
             string language = PreferencesFactory.get().getProperty("application.language");
-            Assembly asm = Assembly.GetExecutingAssembly();
+            Assembly asm = Utils.Me();
             // the dots apparently come from the relative path in the msbuild file
             Stream stream =
-                asm.GetManifestResourceStream(string.Format("Ch.Cyberduck..........{0}.lproj.{1}.strings", language,
-                                                            bundle));
+                asm.GetManifestResourceStream(string.Format("Core..........{0}.lproj.{1}.strings", language, bundle));
             if (null == stream)
             {
                 stream =
                     asm.GetManifestResourceStream(
                         string.Format(
-                            "Ch.Cyberduck..........lib.Sparkle.framework.Versions.A.Resources.{0}.lproj.Sparkle.strings",
+                            "Core..........lib.Sparkle.framework.Versions.A.Resources.{0}.lproj.Sparkle.strings",
                             language));
             }
             if (null != stream)

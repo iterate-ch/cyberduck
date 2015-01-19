@@ -322,9 +322,6 @@
       <DependentUpon>TransferPromptForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <!-- add localizations -->
-    <EmbeddedResource Include="../../../*.lproj/*.strings;../../../*.lproj/*.txt" />
-    <EmbeddedResource Include="../../../lib/Sparkle.framework/Versions/A/Resources/*.lproj/Sparkle.strings" />
     <EmbeddedResource Include="ui\winforms\UpdateForm.resx">
       <DependentUpon>UpdateForm.cs</DependentUpon>
     </EmbeddedResource>

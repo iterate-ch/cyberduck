@@ -138,6 +138,9 @@
     <Compile Include="core\TcpReachability.cs" />
     <Compile Include="core\Utils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <!-- add localizations -->
+    <EmbeddedResource Include="../../../*.lproj/*.strings;../../../*.lproj/*.txt" />
+    <EmbeddedResource Include="../../../lib/Sparkle.framework/Versions/A/Resources/*.lproj/Sparkle.strings" />	
   </ItemGroup>
   <ItemGroup>
     <Folder Include="core\urlhandler\" />

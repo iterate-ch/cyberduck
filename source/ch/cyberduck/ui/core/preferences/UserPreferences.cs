@@ -140,10 +140,10 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
 
         public override List applicationLocales()
         {
-            Assembly asm = Assembly.GetExecutingAssembly();
+            Assembly asm = Cyberduck.Core.Utils.Me();
             string[] names = asm.GetManifestResourceNames();
             // the dots apparently come from the relative path in the msbuild file
-            Regex regex = new Regex("Ch.Cyberduck\\.\\.\\.\\.\\.\\.\\.\\.\\.\\.([^\\..]*).lproj\\.Localizable\\.strings");
+            Regex regex = new Regex("Core\\.\\.\\.\\.\\.\\.\\.\\.\\.\\.([^\\..]*).lproj\\.Localizable\\.strings");
             List<string> distinctNames = new List<string>();
             foreach (var name in names)
             {

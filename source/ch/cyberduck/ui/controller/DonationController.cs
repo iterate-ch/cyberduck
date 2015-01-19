@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -19,19 +19,16 @@
 using System;
 using System.Reflection;
 using System.Windows.Forms;
-using Ch.Cyberduck.Core;
-using StructureMap;
 using ch.cyberduck.core;
-using ch.cyberduck.core.preferences;
-using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.local;
+using ch.cyberduck.core.preferences;
+using StructureMap;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
     public class DonationController : WindowController<IDonationView>
     {
-        public DonationController()
-            : this(ObjectFactory.GetInstance<IDonationView>())
+        public DonationController() : this(ObjectFactory.GetInstance<IDonationView>())
         {
         }
 
@@ -45,16 +42,18 @@ namespace Ch.Cyberduck.Ui.Controller
             int uses = PreferencesFactory.get().getInteger("uses");
             View.Title = LocaleFactory.localizedString("Please Donate", "Donate") + " (" + uses + ")";
             View.NeverShowDonation =
-                Assembly.GetExecutingAssembly().GetName().Version.ToString().Equals(
-                    PreferencesFactory.get().getProperty("donate.reminder"));
+                Assembly.GetExecutingAssembly()
+                    .GetName()
+                    .Version.ToString()
+                    .Equals(PreferencesFactory.get().getProperty("donate.reminder"));
             if (DialogResult.OK == View.ShowDialog())
             {
                 BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.donate"));
             }
             if (View.NeverShowDonation)
             {
-                PreferencesFactory.get().setProperty("donate.reminder",
-                                                   Assembly.GetExecutingAssembly().GetName().Version.ToString());
+                PreferencesFactory.get()
+                    .setProperty("donate.reminder", Assembly.GetExecutingAssembly().GetName().Version.ToString());
             }
             // Remeber this reminder date
             PreferencesFactory.get().setProperty("donate.reminder.date", DateTime.Now.Ticks);

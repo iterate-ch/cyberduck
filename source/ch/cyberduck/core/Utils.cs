@@ -23,6 +23,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using ch.cyberduck.core;
 using ch.cyberduck.core.local;
 using java.util;
@@ -77,6 +78,11 @@ namespace Ch.Cyberduck.Core
             }
 
             return String.IsNullOrEmpty(value.Trim());
+        }
+
+        public static Assembly Me()
+        {
+            return Assembly.GetExecutingAssembly();
         }
 
         public static bool IsNotBlank(string value)
