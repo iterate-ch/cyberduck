@@ -29,21 +29,15 @@ namespace Ch.Cyberduck.Cli
 {
     internal class WindowsTerminalPreferences : TerminalPreferences
     {
-        private static string ApplicationPath
-        {
-            get { return Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location); }
-        }
-
         protected override void setFactories()
         {
             base.setFactories();
 
-            defaults.put("application.bookmarks.path", Path.Combine(ApplicationPath, "bookmarks"));
-            defaults.put("application.profiles.path", Path.Combine(ApplicationPath, "profiles"));
-
             defaults.put("factory.locale.class", typeof (DictionaryLocale).AssemblyQualifiedName);
             defaults.put("factory.supportdirectoryfinder.class",
                 typeof (RoamingSupportDirectoryFinder).AssemblyQualifiedName);
+            defaults.put("factory.applicationresourcesfinder.class",
+                typeof (AssemblyApplicationResourcesFinder).AssemblyQualifiedName);
             defaults.put("factory.editorfactory.class", typeof (SystemWatchEditorFactory).AssemblyQualifiedName);
             defaults.put("factory.applicationlauncher.class", typeof (WindowsApplicationLauncher).AssemblyQualifiedName);
             defaults.put("factory.applicationfinder.class", typeof (RegistryApplicationFinder).AssemblyQualifiedName);

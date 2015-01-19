@@ -43,7 +43,7 @@ namespace Ch.Cyberduck.Core.I18n
             {
                 lock (this)
                 {
-                    ReadBundleIntoCache(table);
+                    load(table);
                 }
                 //try again
                 if (!_cache.TryGetValue(table, out bundle))
@@ -62,7 +62,7 @@ namespace Ch.Cyberduck.Core.I18n
             PreferencesFactory.get().setProperty("application.language", language);
         }
 
-        private void ReadBundleIntoCache(string bundle)
+        private void load(string bundle)
         {
             Log.debug("Caching bundle " + bundle);
             string language = PreferencesFactory.get().getProperty("application.language");

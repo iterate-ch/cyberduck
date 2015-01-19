@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.preferences;
+package ch.cyberduck.core.preferences;
 
 /*
  *  Copyright (c) 2005 David Kocher. All rights reserved.
@@ -35,10 +35,9 @@ import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.RendezvousResponder;
 import ch.cyberduck.core.SystemConfigurationProxy;
 import ch.cyberduck.core.SystemConfigurationReachability;
-import ch.cyberduck.core.aquaticprime.DonationKeyFactory;
 import ch.cyberduck.core.aquaticprime.ReceiptFactory;
 import ch.cyberduck.core.editor.FSEventWatchEditorFactory;
-import ch.cyberduck.core.i18n.BundleLocale;
+import ch.cyberduck.core.i18n.RegexLocale;
 import ch.cyberduck.core.local.FileManagerWorkingDirectoryFinder;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
@@ -51,8 +50,6 @@ import ch.cyberduck.core.local.WorkspaceIconService;
 import ch.cyberduck.core.local.WorkspaceRevealService;
 import ch.cyberduck.core.local.WorkspaceSymlinkFeature;
 import ch.cyberduck.core.local.WorkspaceTrashFeature;
-import ch.cyberduck.core.preferences.ApplicationSupportDirectoryFinder;
-import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.resources.NSImageIconCache;
 import ch.cyberduck.core.serializer.impl.jna.HostPlistReader;
 import ch.cyberduck.core.serializer.impl.jna.PlistDeserializer;
@@ -273,9 +270,10 @@ public class UserDefaultsPreferences extends Preferences {
         super.setFactories();
 
         defaults.put("factory.supportdirectoryfinder.class", ApplicationSupportDirectoryFinder.class.getName());
+        defaults.put("factory.applicationresourcesfinder.class", BundleApplicationResourcesFinder.class.getName());
         defaults.put("factory.autorelease.class", AutoreleaseActionOperationBatcher.class.getName());
         defaults.put("factory.local.class", FinderLocal.class.getName());
-        defaults.put("factory.locale.class", BundleLocale.class.getName());
+        defaults.put("factory.locale.class", RegexLocale.class.getName());
         defaults.put("factory.dateformatter.class", UserDefaultsDateFormatter.class.getName());
         defaults.put("factory.passwordstore.class", Keychain.class.getName());
         defaults.put("factory.certificatestore.class", Keychain.class.getName());

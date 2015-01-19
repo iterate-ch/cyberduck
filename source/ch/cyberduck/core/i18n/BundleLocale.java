@@ -36,7 +36,7 @@ public class BundleLocale implements Locale {
     private NSBundle bundle
             = new BundleApplicationResourcesFinder().bundle();
 
-    private static Map<String, String> cache
+    private Map<String, String> cache
             = Collections.<String, String>synchronizedMap(new LRUMap(1000));
 
     @Override

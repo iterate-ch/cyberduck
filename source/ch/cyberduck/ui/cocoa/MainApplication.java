@@ -18,13 +18,13 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.application.NSApplication;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.ui.preferences.UserDefaultsPreferences;
+import ch.cyberduck.core.preferences.UserDefaultsPreferences;
 import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.core.threading.LoggingUncaughtExceptionHandler;
-import ch.cyberduck.binding.application.NSApplication;
 
 import org.apache.log4j.Logger;
 

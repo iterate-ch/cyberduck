@@ -102,6 +102,10 @@
                 <fx:fileset dir="${home}" type="data">
                     <include name="profiles/Rackspace US.cyberduckprofile"/>
                 </fx:fileset>
+                <!-- Localizations -->
+                <fx:fileset dir="${home}" type="data">
+                    <include name="*.lproj/*.strings"/>
+                </fx:fileset>
             </fx:resources>
         </fx:deploy>
     </target>

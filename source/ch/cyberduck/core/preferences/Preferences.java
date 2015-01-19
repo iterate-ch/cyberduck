@@ -242,6 +242,10 @@ public abstract class Preferences {
         defaults.put("application.support.path", support);
         defaults.put("application.receipt.path", support);
 
+        final Local resources = ApplicationResourcesFinderFactory.get().find();
+        defaults.put("application.bookmarks.path", String.format("%s/Bookmarks", resources.getAbsolute()));
+        defaults.put("application.profiles.path", String.format("%s/Profiles", resources.getAbsolute()));
+
         /**
          * Maximum number of directory listings to cache using a most recently used implementation
          */
@@ -902,7 +906,7 @@ public abstract class Preferences {
 
         defaults.put("ssh.authentication.agent.enable", String.valueOf(true));
 
-        defaults.put("ssh.heartbeat.seconds", String.valueOf(0));
+        defaults.put("ssh.heartbeat.seconds", String.valueOf(10));
 
         /**
          * Enable ZLIB compression

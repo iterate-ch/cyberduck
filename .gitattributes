@@ -2593,6 +2593,7 @@ source/ch/cyberduck/core/local/WindowsApplicationLauncher.cs -text
 source/ch/cyberduck/core/local/WindowsTemporaryFileService.cs -text
 source/ch/cyberduck/core/notification/NotificationServiceFactory.java -text
 source/ch/cyberduck/core/openstack/SwiftSession.java -text
+source/ch/cyberduck/core/preferences/AssemblyApplicationResourcesFinder.cs -text
 source/ch/cyberduck/core/preferences/RoamingSupportDirectoryFinder.cs -text
 source/ch/cyberduck/core/preferences/SettingsDictionary.cs -text
 source/ch/cyberduck/core/s3/S3Session.java -text

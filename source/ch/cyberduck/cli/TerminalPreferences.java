@@ -21,15 +21,13 @@ package ch.cyberduck.cli;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.IOKitSleepPreventer;
 import ch.cyberduck.core.Keychain;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.MemoryPreferences;
 import ch.cyberduck.core.SystemConfigurationProxy;
 import ch.cyberduck.core.SystemConfigurationReachability;
-import ch.cyberduck.core.aquaticprime.DonationKeyFactory;
 import ch.cyberduck.core.editor.DefaultEditorFactory;
 import ch.cyberduck.core.editor.FSEventWatchEditorFactory;
 import ch.cyberduck.core.i18n.BundleLocale;
+import ch.cyberduck.core.i18n.RegexLocale;
 import ch.cyberduck.core.local.ExecApplicationLauncher;
 import ch.cyberduck.core.local.ExecWorkingDirectoryFinder;
 import ch.cyberduck.core.local.FileManagerWorkingDirectoryFinder;
@@ -42,6 +40,7 @@ import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
 import ch.cyberduck.core.local.WorkspaceIconService;
 import ch.cyberduck.core.preferences.ApplicationSupportDirectoryFinder;
 import ch.cyberduck.core.preferences.BundleApplicationResourcesFinder;
+import ch.cyberduck.core.preferences.StaticApplicationResourcesFinder;
 import ch.cyberduck.core.preferences.UserHomeSupportDirectoryFinder;
 import ch.cyberduck.core.resources.NSImageIconCache;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
@@ -73,6 +72,7 @@ public class TerminalPreferences extends MemoryPreferences {
         switch(Factory.Platform.getDefault()) {
             case mac:
                 defaults.put("factory.supportdirectoryfinder.class", ApplicationSupportDirectoryFinder.class.getName());
+                defaults.put("factory.applicationresourcesfinder.class", BundleApplicationResourcesFinder.class.getName());
                 defaults.put("factory.locale.class", BundleLocale.class.getName());
                 defaults.put("factory.editorfactory.class", FSEventWatchEditorFactory.class.getName());
                 defaults.put("factory.applicationlauncher.class", WorkspaceApplicationLauncher.class.getName());
@@ -93,6 +93,8 @@ public class TerminalPreferences extends MemoryPreferences {
                 break;
             case linux:
                 defaults.put("factory.supportdirectoryfinder.class", UserHomeSupportDirectoryFinder.class.getName());
+                defaults.put("factory.applicationresourcesfinder.class", StaticApplicationResourcesFinder.class.getName());
+                defaults.put("factory.locale.class", RegexLocale.class.getName());
                 defaults.put("factory.applicationlauncher.class", ExecApplicationLauncher.class.getName());
                 defaults.put("factory.editorfactory.class", DefaultEditorFactory.class.getName());
                 defaults.put("factory.workingdirectory.class", ExecWorkingDirectoryFinder.class.getName());
@@ -124,10 +126,6 @@ public class TerminalPreferences extends MemoryPreferences {
                 defaults.put("connection.ssl.keystore.type", "KeychainStore");
                 defaults.put("connection.ssl.keystore.provider", "Cyberduck");
 
-                final Local resources = new BundleApplicationResourcesFinder().find();
-                defaults.put("application.bookmarks.path", String.format("%s/Bookmarks", resources.getAbsolute()));
-                defaults.put("application.profiles.path", String.format("%s/Profiles", resources.getAbsolute()));
-
                 break;
             }
             case windows: {
@@ -137,9 +135,6 @@ public class TerminalPreferences extends MemoryPreferences {
                 break;
             }
             case linux: {
-                final Local resources = LocalFactory.get("/opt/duck/app");
-                defaults.put("application.bookmarks.path", String.format("%s/bookmarks", resources.getAbsolute()));
-                defaults.put("application.profiles.path", String.format("%s/profiles", resources.getAbsolute()));
                 try {
                     final Process echo = Runtime.getRuntime().exec(new String[]{"/bin/sh", "-c", "echo ~"});
                     defaults.put("local.user.home", StringUtils.strip(IOUtils.toString(echo.getInputStream())));

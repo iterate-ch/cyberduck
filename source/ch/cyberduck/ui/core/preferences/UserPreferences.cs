@@ -345,6 +345,8 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
 
             defaults.put("factory.supportdirectoryfinder.class",
                 typeof (RoamingSupportDirectoryFinder).AssemblyQualifiedName);
+            defaults.put("factory.applicationresourcesfinder.class",
+                typeof (AssemblyApplicationResourcesFinder).AssemblyQualifiedName);
             defaults.put("factory.local.class", typeof (SystemLocal).AssemblyQualifiedName);
             defaults.put("factory.locale.class", typeof (DictionaryLocale).AssemblyQualifiedName);
             defaults.put("factory.dateformatter.class", typeof (UserDefaultsDateFormatter).AssemblyQualifiedName);
