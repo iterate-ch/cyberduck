@@ -17,6 +17,7 @@
 //
 
 using System;
+using System.Reflection;
 using ch.cyberduck.core;
 using ch.cyberduck.core.preferences;
 using Path = System.IO.Path;
