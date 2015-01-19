@@ -109,12 +109,12 @@ public class LoginConnectionService implements ConnectionService {
             return this.check(session, cache);
         }
         if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
-            this.close(session, cache);
+            this.close(session);
         }
         return this.check(session, cache);
     }
 
-    private void close(final Session session, final Cache cache) {
+    private void close(final Session session) {
         try {
             listener.message(MessageFormat.format(LocaleFactory.localizedString("Disconnecting {0}", "Status"),
                     session.getHost().getHostname()));
@@ -129,7 +129,7 @@ public class LoginConnectionService implements ConnectionService {
     @Override
     public void connect(final Session session, final Cache<Path> cache) throws BackgroundException {
         if(session.isConnected()) {
-            this.close(session, cache);
+            this.close(session);
         }
         final Host bookmark = session.getHost();
 
@@ -161,7 +161,7 @@ public class LoginConnectionService implements ConnectionService {
             this.authenticate(session, cache);
         }
         catch(BackgroundException e) {
-            this.close(session, cache);
+            this.close(session);
             throw e;
         }
     }
