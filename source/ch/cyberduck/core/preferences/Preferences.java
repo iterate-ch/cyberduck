@@ -45,6 +45,7 @@ import ch.cyberduck.core.local.DisabledQuarantineService;
 import ch.cyberduck.core.local.NullFileDescriptor;
 import ch.cyberduck.core.local.NullLocalSymlinkFeature;
 import ch.cyberduck.core.local.TemporaryFileService;
+import ch.cyberduck.core.local.WorkingDirectoryFinderFactory;
 import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.resources.DisabledIconCache;
 import ch.cyberduck.core.serializer.impl.dd.HostPlistReader;
@@ -442,6 +443,7 @@ public abstract class Preferences {
 
         defaults.put("queue.download.priority.regex", "");
 
+        defaults.put("queue.download.folder", WorkingDirectoryFinderFactory.get().find().getAbsolute());
         // Security scoped bookmark
         defaults.put("queue.download.folder.bookmark", null);
 

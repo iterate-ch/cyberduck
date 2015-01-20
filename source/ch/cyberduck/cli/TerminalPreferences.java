@@ -35,7 +35,6 @@ import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
 import ch.cyberduck.core.local.LaunchServicesFileDescriptor;
 import ch.cyberduck.core.local.LaunchServicesQuarantineService;
-import ch.cyberduck.core.local.WorkingDirectoryFinderFactory;
 import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
 import ch.cyberduck.core.local.WorkspaceIconService;
 import ch.cyberduck.core.preferences.ApplicationSupportDirectoryFinder;
@@ -145,7 +144,6 @@ public class TerminalPreferences extends MemoryPreferences {
             }
         }
         defaults.put("local.normalize.prefix", String.valueOf(true));
-        defaults.put("queue.download.folder", WorkingDirectoryFinderFactory.get().find().getAbsolute());
         defaults.put("connection.login.name", System.getProperty("user.name"));
     }
 
