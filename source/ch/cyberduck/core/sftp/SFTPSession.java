@@ -22,6 +22,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.Command;
@@ -191,7 +192,7 @@ public class SFTPSession extends Session<SSHClient> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Attempt login with %d authentication methods", methods.size()));
         }
-        LoginFailureException lastFailure = null;
+        BackgroundException lastFailure = null;
         for(SFTPAuthentication auth : methods) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Attempt authentication with credentials %s and authentication method %s", credentials, auth));
@@ -211,7 +212,7 @@ public class SFTPSession extends Session<SSHClient> {
                 throw new SFTPExceptionMappingService().map(LocaleFactory.localizedString("Login failed", "Credentials"),
                         disconnectListener.getFailure());
             }
-            catch(LoginFailureException e) {
+            catch(LoginFailureException | InteroperabilityException e) {
                 log.warn(String.format("Login failed with credentials %s and authentication method %s", credentials, auth));
                 if(!client.isConnected()) {
                     log.warn(String.format("Server disconnected after failed authentication attempt with method %s", auth));

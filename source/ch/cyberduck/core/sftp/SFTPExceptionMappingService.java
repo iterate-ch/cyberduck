@@ -104,7 +104,7 @@ public class SFTPExceptionMappingService extends AbstractExceptionMappingService
         }
         if(DisconnectReason.PROTOCOL_ERROR.equals(reason)) {
             // Too many authentication failures
-            return new LoginFailureException(failure, e);
+            return new InteroperabilityException(failure, e);
         }
         if(DisconnectReason.ILLEGAL_USER_NAME.equals(reason)) {
             return new LoginFailureException(failure, e);
