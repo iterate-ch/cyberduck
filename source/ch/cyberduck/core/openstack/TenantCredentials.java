@@ -20,6 +20,8 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.Protocol;
 
 /**
  * @version $Id$
@@ -29,5 +31,11 @@ public final class TenantCredentials extends Credentials {
     @Override
     public String getUsernamePlaceholder() {
         return LocaleFactory.localizedString("Tenant", "Mosso");
+    }
+
+    @Override
+    public boolean validate(final Protocol protocol, final LoginOptions options) {
+        // Allow empty tenant
+        return true;
     }
 }

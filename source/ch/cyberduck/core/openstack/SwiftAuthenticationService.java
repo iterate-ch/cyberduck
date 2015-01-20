@@ -109,13 +109,7 @@ public class SwiftAuthenticationService {
                 final Credentials tenantCredentials = new TenantCredentials();
                 final LoginOptions options = new LoginOptions();
                 options.password = false;
-                prompt.prompt(new SwiftProtocol() {
-                    @Override
-                    public boolean validate(Credentials credentials, LoginOptions options) {
-                        // Allow empty tenant
-                        return true;
-                    }
-                }, tenantCredentials,
+                prompt.prompt(host.getProtocol(), tenantCredentials,
                         LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
                         LocaleFactory.localizedString("Tenant Name", "Mosso"), options);
                 tenant = tenantCredentials.getUsername();
