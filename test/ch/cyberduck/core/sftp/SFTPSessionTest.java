@@ -2,7 +2,6 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Command;
@@ -122,7 +121,7 @@ public class SFTPSessionTest extends AbstractTestCase {
         }
     }
 
-    @Test(expected = BackgroundException.class)
+    @Test(expected = LoginCanceledException.class)
     public void testWorkdir() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
                 properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
