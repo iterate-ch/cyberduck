@@ -23,12 +23,14 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.StringAppender;
+import ch.cyberduck.core.TildePathExpander;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.editor.DefaultEditorListener;
 import ch.cyberduck.core.editor.Editor;
@@ -185,7 +187,8 @@ public class Terminal {
             final String uri = input.getOptionValue(action.name());
             final Host host = new UriParser(input).parse(uri);
             session = SessionFactory.create(host);
-            final Path remote = new PathParser(input).parse(uri);
+            this.connect(session);
+            final Path remote = new TildePathExpander(session).expand(new PathParser(input).parse(uri));
             switch(action) {
                 case edit:
                     return this.edit(session, remote);
@@ -227,6 +230,12 @@ public class Terminal {
             this.disconnect(session);
         }
         return Exit.failure;
+    }
+
+    protected void connect(final Session session) throws BackgroundException {
+        final LoginConnectionService connect = new LoginConnectionService(new TerminalLoginService(input,
+                new TerminalLoginCallback()), new TerminalHostKeyVerifier(), progress, transcript);
+        connect.check(session, cache);
     }
 
     protected void configure(final CommandLine input) {
