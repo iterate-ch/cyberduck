@@ -22,6 +22,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.local.IconService;
 import ch.cyberduck.core.local.IconServiceFactory;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -40,6 +41,9 @@ public class IconUpdateSreamListener extends DisabledStreamListener {
     private final IconService icon
             = IconServiceFactory.get();
 
+    private final Preferences preferences
+            = PreferencesFactory.get();
+
     // An integer between 0 and 9
     private int step = 0;
 
@@ -47,11 +51,11 @@ public class IconUpdateSreamListener extends DisabledStreamListener {
     // overhead when transferring a large amount of files
     private boolean threshold;
 
-    private boolean enabled = PreferencesFactory.get().getBoolean("queue.download.icon.update");
+    private boolean enabled = preferences.getBoolean("queue.download.icon.update");
 
     public IconUpdateSreamListener(final TransferStatus status, final Local file) {
         this.status = status;
-        this.threshold = status.getLength() > PreferencesFactory.get().getLong("queue.download.icon.threshold");
+        this.threshold = status.getLength() > preferences.getLong("queue.download.icon.threshold");
         this.file = file;
     }
 
