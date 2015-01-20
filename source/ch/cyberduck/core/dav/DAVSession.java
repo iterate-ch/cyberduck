@@ -39,7 +39,6 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
@@ -48,7 +47,6 @@ import ch.cyberduck.core.http.RedirectCallback;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
-import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -222,9 +220,6 @@ public class DAVSession extends HttpSession<DAVClient> {
 
     @Override
     public <T> T getFeature(final Class<T> type) {
-        if(type == Touch.class) {
-            return (T) new DefaultTouchFeature(this);
-        }
         if(type == Directory.class) {
             return (T) new DAVDirectoryFeature(this);
         }
