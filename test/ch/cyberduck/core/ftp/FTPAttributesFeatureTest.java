@@ -81,7 +81,7 @@ public class FTPAttributesFeatureTest extends AbstractTestCase {
     }
 
     @Test
-    public void testAttributes() throws Exception {
+    public void testAttributesDirectoryListingAccessDenied() throws Exception {
         final Host host = HostParser.parse("ftp://ftp.idmserv.com/");
         final FTPSession session = new FTPSession(host) {
             @Override
