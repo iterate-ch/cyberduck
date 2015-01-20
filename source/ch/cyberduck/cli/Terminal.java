@@ -112,7 +112,6 @@ public class Terminal {
                 ? new DisabledListProgressListener() : new TerminalProgressListener();
         this.transcript = input.hasOption(TerminalOptionsBuilder.Params.verbose.name())
                 ? new TerminalTranscriptListener() : new DisabledTranscriptListener();
-        this.preferences.setProperty("connection.retry", input.hasOption(TerminalOptionsBuilder.Params.retry.name()) ? 1 : 0);
         this.controller = new TerminalController(progress, transcript);
         LocaleFactory.get().setDefault(Locale.getDefault().getLanguage());
     }
@@ -236,6 +235,7 @@ public class Terminal {
         preferences.setProperty("queue.upload.timestamp.change", preserve);
         preferences.setProperty("queue.download.permissions.change", preserve);
         preferences.setProperty("queue.download.timestamp.change", preserve);
+        preferences.setProperty("connection.retry", input.hasOption(TerminalOptionsBuilder.Params.retry.name()) ? 1 : 0);
     }
 
     protected Exit transfer(final Transfer transfer, final Session session) {
