@@ -20,7 +20,6 @@ package ch.cyberduck.cli;
 
 import ch.cyberduck.core.DefaultCertificateStore;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import org.apache.http.conn.ssl.BrowserCompatHostnameVerifier;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
@@ -62,12 +61,12 @@ public class TerminalCertificateStore extends DefaultCertificateStore {
                 c.checkValidity();
             }
             catch(CertificateExpiredException e) {
-                return this.callback(hostname, LocaleFactory.localizedString(StringUtils.replace("The certificate for this server has expired. You might be connecting to a server that " +
+                return new TerminalPromptReader().prompt(LocaleFactory.localizedString(StringUtils.replace("The certificate for this server has expired. You might be connecting to a server that " +
                         "is pretending to be “%@” which could put your confidential information at risk. " +
                         "Would you like to connect to the server anyway?", "%@", hostname), "Keychain"));
             }
             catch(CertificateNotYetValidException e) {
-                return this.callback(hostname, LocaleFactory.localizedString(StringUtils.replace("The certificate for this server is not yet valid. You might be connecting to a server that " +
+                return new TerminalPromptReader().prompt(LocaleFactory.localizedString(StringUtils.replace("The certificate for this server is not yet valid. You might be connecting to a server that " +
                         "is pretending to be “%@” which could put your confidential information at risk. Would you like to connect to the server anyway?", "%@", hostname), "Keychain"));
             }
         }
@@ -75,29 +74,10 @@ public class TerminalCertificateStore extends DefaultCertificateStore {
             verifier.verify(hostname, certificates.get(0));
         }
         catch(SSLException e) {
-            return this.callback(hostname, LocaleFactory.localizedString(StringUtils.replace("The certificate for this server is invalid. " +
+            return new TerminalPromptReader().prompt(LocaleFactory.localizedString(StringUtils.replace("The certificate for this server is invalid. " +
                     "You might be connecting to a server that is pretending to be “%@” which could put " +
                     "your confidential information at risk. Would you like to connect to the server anyway?", "%@", hostname), "Keychain"));
         }
         return true;
-    }
-
-    private boolean callback(final String hostname, final String message) {
-        final String input;
-        try {
-            input = console.readLine("%n%s (y/n): ", message);
-        }
-        catch(ConnectionCanceledException e) {
-            return false;
-        }
-        switch(input) {
-            case "y":
-                return true;
-            case "n":
-                return false;
-            default:
-                console.printf("Please type 'y' or 'n'");
-                return this.callback(hostname, message);
-        }
     }
 }

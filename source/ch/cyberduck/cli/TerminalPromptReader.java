@@ -18,25 +18,31 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.StringAppender;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.threading.AlertCallback;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 /**
  * @version $Id$
  */
-public class TerminalAlertCallback implements AlertCallback {
+public class TerminalPromptReader {
 
     private final Console console = new Console();
 
-    @Override
-    public boolean alert(final Host host, final BackgroundException failure, final StringBuilder transcript) {
-        final StringAppender appender = new StringAppender();
-        appender.append(failure.getMessage());
-        appender.append(failure.getDetail());
-        console.printf("%n%s", appender.toString());
-        return new TerminalPromptReader().prompt(LocaleFactory.localizedString("Try Again", "Alert"));
+    public boolean prompt(final String message) {
+        final String input;
+        try {
+            input = console.readLine("%n%s (y/n): ", message);
+        }
+        catch(ConnectionCanceledException e) {
+            return false;
+        }
+        switch(input) {
+            case "y":
+                return true;
+            case "n":
+                return false;
+            default:
+                console.printf("Please type 'y' or 'n'.");
+                return this.prompt(message);
+        }
     }
 }

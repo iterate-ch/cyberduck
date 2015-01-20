@@ -36,19 +36,9 @@ public class TerminalTransferErrorCallback implements TransferErrorCallback {
         appender.append(failure.getMessage());
         appender.append(failure.getDetail());
         console.printf("%n%s", appender.toString());
-        return this.print(failure);
-    }
-
-    private boolean print(final BackgroundException failure) throws BackgroundException {
-        final String input = console.readLine(" %s? (y/n): ", LocaleFactory.localizedString("Continue", "Credentials"));
-        switch(input) {
-            case "y":
-                return true;
-            case "n":
-                throw failure;
-            default:
-                console.printf("Please type 'y' or 'n'");
-                return this.print(failure);
+        if(!new TerminalPromptReader().prompt(LocaleFactory.localizedString("Continue", "Credentials"))) {
+            throw failure;
         }
+        return true;
     }
 }

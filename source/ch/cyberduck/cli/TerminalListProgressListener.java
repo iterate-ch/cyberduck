@@ -24,7 +24,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.date.AbstractUserDateFormatter;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ListCanceledException;
 
 import org.apache.commons.lang3.StringUtils;
@@ -94,31 +93,12 @@ public class TerminalListProgressListener extends LimitedListProgressListener {
             super.chunk(folder, list);
         }
         catch(ListCanceledException e) {
-            if(!this.prompt(e)) {
+            final String message = String.format("%s %s?: ",
+                    MessageFormat.format(LocaleFactory.localizedString("Continue listing directory with more than {0} files.", "Alert"), e.getChunk().size()),
+                    LocaleFactory.localizedString("Continue", "Credentials"));
+            if(!new TerminalPromptReader().prompt(message)) {
                 throw e;
             }
         }
-    }
-
-    private boolean prompt(final ListCanceledException e) {
-        final String input;
-        try {
-            input = console.readLine("%n%s %s? (y/n): ",
-                    MessageFormat.format(LocaleFactory.localizedString("Continue listing directory with more than {0} files.", "Alert"), e.getChunk().size()),
-                    LocaleFactory.localizedString("Continue", "Credentials"));
-        }
-        catch(ConnectionCanceledException e1) {
-            return false;
-        }
-        switch(input) {
-            case "y":
-                return true;
-            case "n":
-                return false;
-            default:
-                console.printf("Please type 'y' or 'n'");
-                this.prompt(e);
-        }
-        return true;
     }
 }

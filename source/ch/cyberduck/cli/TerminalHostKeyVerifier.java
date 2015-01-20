@@ -46,37 +46,27 @@ public class TerminalHostKeyVerifier extends OpenSSHHostKeyVerifier {
 
     @Override
     protected boolean isUnknownKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
-        final String input = console.readLine("%n%s. %s %s? (y/n): ", LocaleFactory.localizedString("Unknown fingerprint", "Sftp"),
+        final String message = String.format("%s. %s %s?", LocaleFactory.localizedString("Unknown fingerprint", "Sftp"),
                 MessageFormat.format(LocaleFactory.localizedString("The fingerprint for the {1} key sent by the server is {0}.", "Sftp"),
                         new MD5ChecksumCompute().fingerprint(key),
                         KeyType.fromKey(key).name()),
                 LocaleFactory.localizedString("Continue", "Credentials"));
-        switch(input) {
-            case "y":
-                return true;
-            case "n":
-                throw new ConnectionCanceledException();
-            default:
-                console.printf("Please type 'y' or 'n'");
-                return this.isUnknownKeyAccepted(hostname, key);
+        if(!new TerminalPromptReader().prompt(message)) {
+            throw new ConnectionCanceledException();
         }
+        return true;
     }
 
     @Override
     protected boolean isChangedKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
-        final String input = console.readLine("%n%s. %s %s? (y/n): ", LocaleFactory.localizedString("Changed fingerprint", "Sftp"),
+        final String message = String.format("%s. %s %s?", LocaleFactory.localizedString("Changed fingerprint", "Sftp"),
                 MessageFormat.format(LocaleFactory.localizedString("The fingerprint for the {1} key sent by the server is {0}.", "Sftp"),
                         new MD5ChecksumCompute().fingerprint(key),
                         KeyType.fromKey(key).name()),
                 LocaleFactory.localizedString("Continue", "Credentials"));
-        switch(input) {
-            case "y":
-                return true;
-            case "n":
-                throw new ConnectionCanceledException();
-            default:
-                console.printf("Please type 'y' or 'n'");
-                return this.isChangedKeyAccepted(hostname, key);
+        if(!new TerminalPromptReader().prompt(message)) {
+            throw new ConnectionCanceledException();
         }
+        return true;
     }
 }

@@ -47,15 +47,8 @@ public class TerminalLoginCallback implements LoginCallback {
     public void warn(final Protocol protocol, final String title, final String reason,
                      final String defaultButton, final String cancelButton, final String preference) throws ConnectionCanceledException {
         console.printf("%n%s", reason);
-        final String input = console.readLine("%s (y) or %s (n): ", defaultButton, cancelButton);
-        switch(input) {
-            case "y":
-                break;
-            case "n":
-                throw new ConnectionCanceledException();
-            default:
-                console.printf("Please type 'y' or 'n'");
-                this.warn(protocol, title, reason, defaultButton, cancelButton, preference);
+        if(!new TerminalPromptReader().prompt(String.format("%s (y) or %s (n): ", defaultButton, cancelButton))) {
+            throw new ConnectionCanceledException();
         }
     }
 
