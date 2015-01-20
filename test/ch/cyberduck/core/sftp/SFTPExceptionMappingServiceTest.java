@@ -21,7 +21,7 @@ package ch.cyberduck.core.sftp;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
-import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 
 import org.junit.Test;
 
@@ -48,7 +48,7 @@ public class SFTPExceptionMappingServiceTest extends AbstractTestCase {
 
     @Test
     public void testWrapped() throws Exception {
-        assertEquals(LoginFailureException.class,
+        assertEquals(InteroperabilityException.class,
                 new SFTPExceptionMappingService().map(new TransportException(DisconnectReason.UNKNOWN, new SSHException(DisconnectReason.PROTOCOL_ERROR))).getClass());
     }
 
