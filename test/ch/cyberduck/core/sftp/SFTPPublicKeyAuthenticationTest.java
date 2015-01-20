@@ -18,7 +18,6 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import java.io.StringReader;
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
@@ -30,30 +29,24 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractTestCase {
 
     @Test
     public void testAuthenticateKeyNoPassword() throws Exception {
-        this.repeat(new Callable<Object>() {
+        final Credentials credentials = new Credentials(
+                properties.getProperty("sftp.user"), null, false
+        );
+        final Local key = new Local(System.getProperty("java.io.tmpdir"), "k");
+        credentials.setIdentity(key);
+        LocalTouchFactory.get().touch(key);
+        IOUtils.copy(new StringReader(properties.getProperty("sftp.key")), key.getOutputStream(false));
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", credentials);
+        final SFTPSession session = new SFTPSession(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        assertTrue(new SFTPPublicKeyAuthentication(session).authenticate(host, new DisabledLoginCallback() {
             @Override
-            public Object call() throws Exception {
-                final Credentials credentials = new Credentials(
-                        properties.getProperty("sftp.user"), null, false
-                );
-                final Local key = new Local(System.getProperty("java.io.tmpdir"), "k");
-                credentials.setIdentity(key);
-                LocalTouchFactory.get().touch(key);
-                IOUtils.copy(new StringReader(properties.getProperty("sftp.key")), key.getOutputStream(false));
-                final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", credentials);
-                final SFTPSession session = new SFTPSession(host);
-                session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-                assertTrue(new SFTPPublicKeyAuthentication(session).authenticate(host, new DisabledLoginCallback() {
-                    @Override
-                    public void prompt(Host bookmark, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
-                        fail();
-                    }
-                }, new DisabledCancelCallback()));
-                session.close();
-                key.delete();
-                return null;
+            public void prompt(Host bookmark, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
+                fail();
             }
-        }, 50);
+        }, new DisabledCancelCallback()));
+        session.close();
+        key.delete();
     }
 
     @Test(expected = LoginFailureException.class)
