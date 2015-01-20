@@ -28,11 +28,11 @@ public class TildeExpanderTest extends AbstractTestCase {
 
     @Test
     public void testExpand() throws Exception {
-        assertEquals("/Users/iterate/f", new TildeExpander().expand("~/f"));
+        assertEquals(System.getProperty("user.home") + "/f", new TildeExpander().expand("~/f"));
     }
 
     @Test
     public void testAbbreviate() throws Exception {
-        assertEquals("~/f", new TildeExpander().abbreviate("/Users/iterate/f"));
+        assertEquals("~/f", new TildeExpander().abbreviate(System.getProperty("user.home") + "/f"));
     }
 }
