@@ -209,10 +209,15 @@ public class SFTPSession extends Session<SSHClient> {
             catch(IllegalStateException e) {
                 log.warn(String.format("Server disconnected with %s while trying authentication method %s",
                         disconnectListener.getFailure(), auth));
-                throw new SFTPExceptionMappingService().map(LocaleFactory.localizedString("Login failed", "Credentials"),
-                        disconnectListener.getFailure());
+                try {
+                    throw new SFTPExceptionMappingService().map(LocaleFactory.localizedString("Login failed", "Credentials"),
+                            disconnectListener.getFailure());
+                }
+                catch(InteroperabilityException i) {
+                    throw new LoginFailureException(i.getMessage(), i);
+                }
             }
-            catch(LoginFailureException | InteroperabilityException e) {
+            catch(LoginFailureException e) {
                 log.warn(String.format("Login failed with credentials %s and authentication method %s", credentials, auth));
                 if(!client.isConnected()) {
                     log.warn(String.format("Server disconnected after failed authentication attempt with method %s", auth));
@@ -235,7 +240,7 @@ public class SFTPSession extends Session<SSHClient> {
         if(!client.isAuthenticated()) {
             if(client.getUserAuth().hadPartialSuccess()) {
                 final Credentials additional = new HostCredentials(host, null, null, false);
-                prompt.prompt(host.getProtocol(), additional,
+                prompt.prompt(host, additional,
                         LocaleFactory.localizedString("Partial authentication success", "Credentials"),
                         LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
                         new LoginOptions().user(false).keychain(false).publickey(false));
