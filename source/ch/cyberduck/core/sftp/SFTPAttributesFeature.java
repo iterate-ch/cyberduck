@@ -21,8 +21,10 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.shared.DefaultAttributesFeature;
 
 import java.io.IOException;
 
@@ -36,22 +38,31 @@ public class SFTPAttributesFeature implements Attributes {
 
     private SFTPSession session;
 
+    private Attributes parent;
+
     public SFTPAttributesFeature(final SFTPSession session) {
         this.session = session;
+        this.parent = new DefaultAttributesFeature(session);
     }
 
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
         try {
-            return this.convert(session.sftp().stat(file.getAbsolute()));
+            return parent.find(file);
         }
-        catch(IOException e) {
-            throw new SFTPExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+        catch(AccessDeniedException f) {
+            try {
+                return this.convert(session.sftp().stat(file.getAbsolute()));
+            }
+            catch(IOException e) {
+                throw f;
+            }
         }
     }
 
     @Override
     public Attributes withCache(Cache<Path> cache) {
+        parent.withCache(cache);
         return this;
     }
 
