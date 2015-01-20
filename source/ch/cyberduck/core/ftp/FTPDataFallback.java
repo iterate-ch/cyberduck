@@ -40,7 +40,7 @@ import java.io.IOException;
  * @version $Id$
  */
 public class FTPDataFallback {
-    private static final Logger log = Logger.getLogger(FTPSession.class);
+    private static final Logger log = Logger.getLogger(FTPDataFallback.class);
 
     private FTPSession session;
 
