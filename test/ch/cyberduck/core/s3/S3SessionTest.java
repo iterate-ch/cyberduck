@@ -133,7 +133,7 @@ public class S3SessionTest extends AbstractTestCase {
         final S3Session session = new S3Session(host);
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public void prompt(final Protocol protocol, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 if(p.get()) {
                     throw new LoginCanceledException();
                 }

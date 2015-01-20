@@ -108,7 +108,7 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
             return run.call();
         }
         catch(LoginFailureException failure) {
-            prompt.prompt(host.getProtocol(), host.getCredentials(),
+            prompt.prompt(host, host.getCredentials(),
                     LocaleFactory.localizedString("Login failed", "Credentials"), failure.getMessage(), options);
             return this.authenticated(run, prompt);
         }

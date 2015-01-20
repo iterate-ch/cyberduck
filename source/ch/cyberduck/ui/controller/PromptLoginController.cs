@@ -35,7 +35,10 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly WindowController _browser;
         private Credentials _credentials;
         private LoginOptions _options;
-        private Protocol _protocol;
+        private Host _bookmark;
+
+        private HostPasswordStore keychain
+                = PasswordStoreFactory.get();
 
         public PromptLoginController(WindowController c)
         {
@@ -70,12 +73,12 @@ namespace Ch.Cyberduck.Ui.Controller
             //Proceed nevertheless.
         }
 
-        public void prompt(Protocol protocol, Credentials credentials, String title, String reason, LoginOptions options)
+        public void prompt(Host bookmark, Credentials credentials, String title, String reason, LoginOptions options)
         {
             View = ObjectFactory.GetInstance<ILoginView>();
             InitEventHandlers();
 
-            _protocol = protocol;
+            _bookmark = bookmark;
             _credentials = credentials;
             _options = options;
 
@@ -84,7 +87,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.Username = credentials.getUsername();
             View.SavePasswordState = PreferencesFactory.get().getBoolean("connection.login.useKeychain") &&
                                      PreferencesFactory.get().getBoolean("connection.login.addKeychain");
-            View.DiskIcon = IconCache.Instance.IconForName(_protocol.disk(), 64);
+            View.DiskIcon = IconCache.Instance.IconForName(_bookmark.getProtocol().disk(), 64);
 
             Update();
 
@@ -156,9 +159,8 @@ namespace Ch.Cyberduck.Ui.Controller
             _credentials.setUsername(View.Username);
             if (Utils.IsNotBlank(_credentials.getUsername()))
             {
-                String password = PasswordStoreFactory.get()
-                    .getPassword(_protocol.getScheme(), _protocol.getDefaultPort(), _protocol.getDefaultHostname(),
-                        _credentials.getUsername());
+                String password = keychain.getPassword(_bookmark.getProtocol().getScheme(),
+                        _bookmark.getPort(), _bookmark.getHostname(), _credentials.getUsername());
                 if (Utils.IsNotBlank(password))
                 {
                     View.Password = password;
@@ -180,7 +182,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateInput()
         {
-            return _credentials.validate(_protocol, _options);
+            return _credentials.validate(_bookmark.getProtocol(), _options);
         }
 
         private void View_ChangedPrivateKey(object sender, PrivateKeyArgs e)
@@ -193,8 +195,8 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             View.UsernameEnabled = _options.user() && !_credentials.isAnonymousLogin();
             View.PasswordEnabled = _options.password() && !_credentials.isAnonymousLogin();
-            View.UsernameLabel = _protocol.getUsernamePlaceholder() + ":";
-            View.PasswordLabel = _protocol.getPasswordPlaceholder() + ":";
+            View.UsernameLabel = _credentials.getUsernamePlaceholder() + ":";
+            View.PasswordLabel = _credentials.getPasswordPlaceholder() + ":";
             {
                 bool enable = _options.isKeychain() && !_credentials.isAnonymousLogin();
                 View.SavePasswordEnabled = enable;

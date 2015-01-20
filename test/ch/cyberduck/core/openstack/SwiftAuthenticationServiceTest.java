@@ -8,7 +8,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProfileReaderFactory;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.exception.LoginCanceledException;
 
 import org.junit.Test;
@@ -88,7 +87,7 @@ public class SwiftAuthenticationServiceTest extends AbstractTestCase {
                 s.getRequest(host,
                         new DisabledLoginCallback() {
                             @Override
-                            public void prompt(final Protocol protocol, final Credentials credentials,
+                            public void prompt(final Host bookmark, final Credentials credentials,
                                                final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                                 credentials.setUsername("");
                             }
@@ -146,14 +145,14 @@ public class SwiftAuthenticationServiceTest extends AbstractTestCase {
         ));
         s.getRequest(host, new DisabledLoginCallback() {
             @Override
-            public void prompt(Protocol protocol, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
+            public void prompt(Host bookmark, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
                 credentials.setUsername("");
             }
         });
         assertEquals(":u", host.getCredentials().getUsername());
         s.getRequest(host, new DisabledLoginCallback() {
             @Override
-            public void prompt(Protocol protocol, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
+            public void prompt(Host bookmark, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
                 fail();
             }
         });

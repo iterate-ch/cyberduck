@@ -111,7 +111,7 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
         final AtomicBoolean prompt = new AtomicBoolean();
         final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public void prompt(final Protocol protocol, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 // New password entered
                 credentials.setPassword("b");
                 prompt.set(true);

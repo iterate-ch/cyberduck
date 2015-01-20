@@ -92,7 +92,7 @@ public class KeychainLoginServiceTest extends AbstractTestCase {
         final AtomicBoolean select = new AtomicBoolean(false);
         KeychainLoginService l = new KeychainLoginService(new DisabledLoginCallback() {
             @Override
-            public void prompt(Protocol protocol, Credentials credentials, String title, String reason, LoginOptions options)
+            public void prompt(Host bookmark, Credentials credentials, String title, String reason, LoginOptions options)
                     throws LoginCanceledException {
                 fail();
             }
@@ -130,7 +130,7 @@ public class KeychainLoginServiceTest extends AbstractTestCase {
         final AtomicBoolean keychain = new AtomicBoolean(false);
         KeychainLoginService l = new KeychainLoginService(new DisabledLoginCallback() {
             @Override
-            public void prompt(Protocol protocol, Credentials credentials, String title, String reason, LoginOptions options)
+            public void prompt(Host bookmark, Credentials credentials, String title, String reason, LoginOptions options)
                     throws LoginCanceledException {
                 fail();
             }

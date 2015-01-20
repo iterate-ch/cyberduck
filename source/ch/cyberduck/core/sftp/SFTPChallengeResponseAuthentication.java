@@ -111,7 +111,7 @@ public class SFTPChallengeResponseAuthentication implements SFTPAuthentication {
                         // be able to display at least 30 characters for the name and prompts.
                         final Credentials additional = new Credentials();
                         try {
-                            controller.prompt(host.getProtocol(), additional,
+                            controller.prompt(host, additional,
                                     String.format("%s. %s",
                                             LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
                                             name), message.toString(), new LoginOptions().user(false).keychain(false)

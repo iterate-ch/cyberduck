@@ -186,7 +186,7 @@ public class S3VersioningFeature implements Versioning {
     public Credentials getToken(final LoginCallback controller) throws ConnectionCanceledException {
         final Credentials credentials = new MultifactorCredentials();
         // Prompt for multi factor authentication credentials.
-        controller.prompt(session.getHost().getProtocol(), credentials,
+        controller.prompt(session.getHost(), credentials,
                 LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
                 LocaleFactory.localizedString("Multi-Factor Authentication", "S3"), new LoginOptions());
 

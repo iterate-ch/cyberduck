@@ -87,7 +87,7 @@ public class SFTPPublicKeyAuthentication implements SFTPAuthentication {
                     public char[] reqPassword(Resource<?> resource) {
                         if(StringUtils.isEmpty(host.getCredentials().getPassword())) {
                             try {
-                                prompt.prompt(host.getProtocol(), host.getCredentials(),
+                                prompt.prompt(host, host.getCredentials(),
                                         LocaleFactory.localizedString("Private key password protected", "Credentials"),
                                         String.format("%s (%s)",
                                                 LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"),

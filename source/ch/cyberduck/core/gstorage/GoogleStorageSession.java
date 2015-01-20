@@ -152,7 +152,7 @@ public class GoogleStorageSession extends S3Session {
             );
             final LoginOptions options = new LoginOptions();
             options.keychain = false;
-            controller.prompt(host.getProtocol(), host.getCredentials(),
+            controller.prompt(host, host.getCredentials(),
                     LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"), url, options);
 
             try {

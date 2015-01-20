@@ -154,7 +154,7 @@ public class CloudFrontDistributionConfiguration
             return run.call();
         }
         catch(LoginFailureException failure) {
-            prompt.prompt(session.getHost().getProtocol(), session.getHost().getCredentials(),
+            prompt.prompt(session.getHost(), session.getHost().getCredentials(),
                     LocaleFactory.localizedString("Login failed", "Credentials"), failure.getMessage(), options);
             return this.authenticated(run, prompt);
         }

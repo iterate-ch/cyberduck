@@ -18,8 +18,8 @@ public class LoginCallbackTest extends AbstractTestCase {
     public void testCheckFTP() throws Exception {
         LoginCallback c = new DisabledLoginCallback() {
             @Override
-            public void prompt(Protocol protocol, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
-                assertEquals(new FTPProtocol(), protocol);
+            public void prompt(Host bookmark, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
+                assertEquals(new FTPProtocol(), bookmark.getProtocol());
                 assertEquals("t", title);
                 assertEquals("r", reason);
                 assertTrue(options.keychain);
@@ -32,15 +32,15 @@ public class LoginCallbackTest extends AbstractTestCase {
         options.keychain = true;
         options.publickey = true;
         options.anonymous = false;
-        c.prompt(new FTPProtocol(), new Credentials(), "t", "r", options);
+        c.prompt(new Host(new FTPProtocol()), new Credentials(), "t", "r", options);
     }
 
     @Test(expected = LoginCanceledException.class)
     public void testCheckSFTP() throws Exception {
         LoginCallback c = new DisabledLoginCallback() {
             @Override
-            public void prompt(Protocol protocol, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
-                assertEquals(new SFTPProtocol(), protocol);
+            public void prompt(Host bookmark, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
+                assertEquals(new SFTPProtocol(), bookmark.getProtocol());
                 assertEquals("t", title);
                 assertEquals("r", reason);
                 assertTrue(options.keychain);
@@ -53,7 +53,7 @@ public class LoginCallbackTest extends AbstractTestCase {
         options.keychain = true;
         options.publickey = true;
         options.anonymous = false;
-        c.prompt(new SFTPProtocol(), new Credentials(), "t", "r", options);
+        c.prompt(new Host(new SFTPProtocol()), new Credentials(), "t", "r", options);
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -61,8 +61,8 @@ public class LoginCallbackTest extends AbstractTestCase {
         final Credentials user = new Credentials("t", "p");
         LoginCallback c = new DisabledLoginCallback() {
             @Override
-            public void prompt(Protocol protocol, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
-                assertEquals(new DAVProtocol(), protocol);
+            public void prompt(Host bookmark, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
+                assertEquals(new DAVProtocol(), bookmark.getProtocol());
                 assertEquals(user, credentials);
                 assertEquals("r", reason);
                 assertEquals("t", title);
@@ -72,6 +72,6 @@ public class LoginCallbackTest extends AbstractTestCase {
                 throw new LoginCanceledException();
             }
         };
-        c.prompt(new DAVProtocol(), user, "t", "r", new LoginOptions(new DAVProtocol()));
+        c.prompt(new Host(new DAVProtocol()), user, "t", "r", new LoginOptions(new DAVProtocol()));
     }
 }

@@ -36,6 +36,8 @@ import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultProviderHelpService;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
@@ -59,6 +61,9 @@ import org.rococoa.Foundation;
  */
 public final class PromptLoginController implements LoginCallback {
     private static final Logger log = Logger.getLogger(PromptLoginController.class);
+
+    private HostPasswordStore keychain
+            = PasswordStoreFactory.get();
 
     private Preferences preferences
             = PreferencesFactory.get();
@@ -100,11 +105,11 @@ public final class PromptLoginController implements LoginCallback {
     }
 
     @Override
-    public void prompt(final Protocol protocol, final Credentials credentials,
+    public void prompt(final Host bookmark, final Credentials credentials,
                        final String title, final String reason,
                        final LoginOptions options) throws LoginCanceledException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Prompt for credentials for %s", protocol));
+            log.debug(String.format("Prompt for credentials for %s", bookmark));
         }
         final SheetController sheet = new SheetController(parent) {
             @Override
@@ -121,7 +126,7 @@ public final class PromptLoginController implements LoginCallback {
 
             @Override
             public void helpButtonClicked(NSButton sender) {
-                new DefaultProviderHelpService().help(protocol);
+                new DefaultProviderHelpService().help(bookmark.getProtocol());
             }
 
             @Outlet
@@ -129,7 +134,7 @@ public final class PromptLoginController implements LoginCallback {
 
             public void setIconView(NSImageView iconView) {
                 this.iconView = iconView;
-                this.iconView.setImage(IconCacheFactory.<NSImage>get().iconNamed(protocol.disk()));
+                this.iconView.setImage(IconCacheFactory.<NSImage>get().iconNamed(bookmark.getProtocol().disk()));
             }
 
             @Outlet
@@ -173,8 +178,8 @@ public final class PromptLoginController implements LoginCallback {
             public void userFieldTextDidChange(NSNotification notification) {
                 credentials.setUsername(usernameField.stringValue());
                 if(StringUtils.isNotBlank(credentials.getUsername())) {
-                    String password = PasswordStoreFactory.get().getPassword(protocol.getScheme(), protocol.getDefaultPort(),
-                            protocol.getDefaultHostname(), credentials.getUsername());
+                    final String password = keychain.getPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
+                            bookmark.getHostname(), credentials.getUsername());
                     if(StringUtils.isNotBlank(password)) {
                         passwordField.setStringValue(password);
                         this.passFieldTextDidChange(notification);
@@ -342,7 +347,7 @@ public final class PromptLoginController implements LoginCallback {
             protected boolean validateInput() {
                 credentials.setUsername(usernameField.stringValue());
                 credentials.setPassword(passwordField.stringValue());
-                return credentials.validate(protocol, options);
+                return credentials.validate(bookmark.getProtocol(), options);
             }
 
             @Override

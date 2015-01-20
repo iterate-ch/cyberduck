@@ -12,7 +12,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.exception.LoginCanceledException;
 
 import org.junit.Test;
@@ -45,10 +44,10 @@ public class AzureSessionTest extends AbstractTestCase {
         final AzureSession session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public void prompt(Protocol protocol, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
+            public void prompt(Host bookmark, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
                 assertEquals("Server failed to authenticate the request. Make sure the value of Authorization header is formed correctly including the signature. Please contact your web hosting service provider for assistance.",
                         reason);
-                super.prompt(protocol, credentials, title, reason, options);
+                super.prompt(bookmark, credentials, title, reason, options);
             }
         }, new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, Cache.<Path>empty());
@@ -62,10 +61,10 @@ public class AzureSessionTest extends AbstractTestCase {
         final AzureSession session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public void prompt(Protocol protocol, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
+            public void prompt(Host bookmark, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
                 assertEquals("Server failed to authenticate the request. Make sure the value of Authorization header is formed correctly including the signature. Please contact your web hosting service provider for assistance.",
                         reason);
-                super.prompt(protocol, credentials, title, reason, options);
+                super.prompt(bookmark, credentials, title, reason, options);
             }
         }, new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, Cache.<Path>empty());

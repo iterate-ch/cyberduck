@@ -9,7 +9,6 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -146,7 +145,7 @@ public class GoogleStorageSessionTest extends AbstractTestCase {
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback() {
             @Override
-            public void prompt(final Protocol protocol, final Credentials credentials,
+            public void prompt(final Host bookmark, final Credentials credentials,
                                final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 assertEquals("OAuth2 Authentication", title);
                 throw new LoginCanceledException();
@@ -197,7 +196,7 @@ public class GoogleStorageSessionTest extends AbstractTestCase {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback() {
             @Override
-            public void prompt(final Protocol protocol, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 // OAuth2
                 credentials.setUsername("");
                 credentials.setPassword("");

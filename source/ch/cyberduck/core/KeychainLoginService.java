@@ -81,7 +81,7 @@ public class KeychainLoginService implements LoginService {
         catch(LoginFailureException e) {
             listener.message(LocaleFactory.localizedString("Login failed", "Credentials"));
             try {
-                controller.prompt(bookmark.getProtocol(), bookmark.getCredentials(),
+                controller.prompt(bookmark, bookmark.getCredentials(),
                         LocaleFactory.localizedString("Login failed", "Credentials"), e.getDetail(),
                         new LoginOptions(bookmark.getProtocol()));
             }
@@ -117,7 +117,7 @@ public class KeychainLoginService implements LoginService {
                             final StringAppender appender = new StringAppender();
                             appender.append(message);
                             appender.append(LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"));
-                            controller.prompt(bookmark.getProtocol(), credentials,
+                            controller.prompt(bookmark, credentials,
                                     LocaleFactory.localizedString("Login", "Login"),
                                     appender.toString(),
                                     options);
@@ -135,7 +135,7 @@ public class KeychainLoginService implements LoginService {
                         final StringAppender appender = new StringAppender();
                         appender.append(message);
                         appender.append(LocaleFactory.localizedString("The use of the Keychain is disabled in the Preferences", "Credentials"));
-                        controller.prompt(bookmark.getProtocol(), credentials,
+                        controller.prompt(bookmark, credentials,
                                 LocaleFactory.localizedString("Login", "Login"),
                                 appender.toString(), options);
                     }
@@ -148,7 +148,7 @@ public class KeychainLoginService implements LoginService {
                 final StringAppender appender = new StringAppender();
                 appender.append(message);
                 appender.append(LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"));
-                controller.prompt(bookmark.getProtocol(), credentials,
+                controller.prompt(bookmark, credentials,
                         LocaleFactory.localizedString("Login", "Login"),
                         appender.toString(), options);
             }

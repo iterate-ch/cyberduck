@@ -250,7 +250,7 @@ public class DAVSessionTest extends AbstractTestCase {
         });
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback() {
             @Override
-            public void prompt(final Protocol protocol, final Credentials credentials, final String title, final String reason,
+            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason,
                                final LoginOptions options) throws LoginCanceledException {
                 assertEquals(host.getCredentials(), credentials);
                 assertEquals("Login failed", title);
@@ -366,7 +366,7 @@ public class DAVSessionTest extends AbstractTestCase {
         final AtomicBoolean prompt = new AtomicBoolean();
         final LoginConnectionService c = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public void prompt(Protocol protocol, Credentials credentials,
+            public void prompt(Host bookmark, Credentials credentials,
                                String title, String reason, LoginOptions options) throws LoginCanceledException {
                 if(prompt.get()) {
                     fail();
@@ -422,7 +422,7 @@ public class DAVSessionTest extends AbstractTestCase {
         final LoginConnectionService c = new LoginConnectionService(
                 new DisabledLoginCallback() {
                     @Override
-                    public void prompt(Protocol protocol, Credentials credentials,
+                    public void prompt(Host bookmark, Credentials credentials,
                                        String title, String reason, LoginOptions options) throws LoginCanceledException {
                         //
                     }

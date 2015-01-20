@@ -19,9 +19,12 @@ package ch.cyberduck.cli;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -36,6 +39,9 @@ import java.util.Arrays;
 public class TerminalLoginCallback implements LoginCallback {
 
     private final Console console = new Console();
+
+    private final HostPasswordStore keychain
+            = PasswordStoreFactory.get();
 
     @Override
     public void warn(final Protocol protocol, final String title, final String reason,
@@ -54,27 +60,34 @@ public class TerminalLoginCallback implements LoginCallback {
     }
 
     @Override
-    public void prompt(final Protocol protocol, final Credentials credentials, final String title, final String reason,
+    public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason,
                        final LoginOptions options) throws LoginCanceledException {
         credentials.setSaved(false);
         console.printf("%n%s", reason);
         try {
             if(StringUtils.isBlank(credentials.getUsername())) {
-                final String user = console.readLine("%n%s: ", protocol.getUsernamePlaceholder());
+                final String user = console.readLine("%n%s: ", credentials.getUsernamePlaceholder());
                 credentials.setUsername(user);
             }
             else {
-                final String user = console.readLine("%n%s (%s): ", protocol.getUsernamePlaceholder(), credentials.getUsername());
+                final String user = console.readLine("%n%s (%s): ", credentials.getUsernamePlaceholder(), credentials.getUsername());
                 if(StringUtils.isNotBlank(user)) {
                     credentials.setUsername(user);
                 }
             }
             console.printf("Login as %s", credentials.getUsername());
-            final char[] password = console.readPassword("%n%s: ", protocol.getPasswordPlaceholder());
-            credentials.setPassword(String.valueOf(password));
-            Arrays.fill(password, ' ');
-            if(!credentials.validate(protocol, options)) {
-                this.prompt(protocol, credentials, title, reason, options);
+            final String password = keychain.getPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
+                    bookmark.getHostname(), credentials.getUsername());
+            if(StringUtils.isNotBlank(password)) {
+                credentials.setPassword(password);
+            }
+            else {
+                final char[] input = console.readPassword("%n%s: ", credentials.getPasswordPlaceholder());
+                credentials.setPassword(String.valueOf(input));
+                Arrays.fill(input, ' ');
+                if(!credentials.validate(bookmark.getProtocol(), options)) {
+                    this.prompt(bookmark, credentials, title, reason, options);
+                }
             }
         }
         catch(ConnectionCanceledException e) {

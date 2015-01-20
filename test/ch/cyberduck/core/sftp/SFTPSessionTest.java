@@ -102,7 +102,7 @@ public class SFTPSessionTest extends AbstractTestCase {
         final AtomicBoolean fail = new AtomicBoolean();
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public void prompt(Protocol protocol, Credentials credentials,
+            public void prompt(Host bookmark, Credentials credentials,
                                String title, String reason, LoginOptions options)
                     throws LoginCanceledException {
                 assertEquals("Login failed", title);
@@ -171,7 +171,7 @@ public class SFTPSessionTest extends AbstractTestCase {
         final AtomicBoolean change = new AtomicBoolean();
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public void prompt(Protocol protocol, Credentials credentials,
+            public void prompt(Host bookmark, Credentials credentials,
                                String title, String reason, LoginOptions options)
                     throws LoginCanceledException {
                 assertEquals("Login failed", title);
@@ -198,7 +198,7 @@ public class SFTPSessionTest extends AbstractTestCase {
         final AtomicBoolean change = new AtomicBoolean();
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public void prompt(Protocol protocol, Credentials credentials,
+            public void prompt(Host bookmark, Credentials credentials,
                                String title, String reason, LoginOptions options)
                     throws LoginCanceledException {
                 assertEquals("Login", title);
@@ -230,7 +230,7 @@ public class SFTPSessionTest extends AbstractTestCase {
             }
 
             @Override
-            public void prompt(Protocol protocol, Credentials credentials,
+            public void prompt(Host bookmark, Credentials credentials,
                                String title, String reason, LoginOptions options)
                     throws LoginCanceledException {
                 if(change.get()) {
