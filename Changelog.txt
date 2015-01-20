@@ -4,6 +4,7 @@ http://cyberduck.io/
 Changelog. Last modified: $Date$
 
 4.6.4 [https://trac.cyberduck.io/milestone/4.6.4]
+- [Feature] Send ignore packets to keep connection alive (SFTP)
 - [Bugfix] No localizations (Windows) (#8497)
 
 4.6.3 [https://trac.cyberduck.io/milestone/4.6.3]

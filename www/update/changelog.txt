@@ -1,6 +1,7 @@
 A command line interface (CLI) version is now available from https://duck.sh/ for Windows, Linux & Mac.
 
 4.6.4 [https://trac.cyberduck.io/milestone/4.6.4]
+- [Feature] Send ignore packets to keep connection alive (SFTP)
 - [Bugfix] No localizations (Windows) (#8497)
 
 4.6.3 [https://trac.cyberduck.io/milestone/4.6.3]
