@@ -21,19 +21,19 @@ package ch.cyberduck.core.ftp;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.shared.DefaultAttributesFeature;
 
 import org.apache.commons.net.ftp.FTPCmd;
+import org.apache.commons.net.ftp.FTPReply;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Arrays;
 
 /**
  * @version $Id$
@@ -42,46 +42,40 @@ public class FTPAttributesFeature implements Attributes {
 
     private FTPSession session;
 
-    private Cache<Path> cache
-            = Cache.empty();
+    private Attributes parent;
 
     public FTPAttributesFeature(FTPSession session) {
         this.session = session;
+        this.parent = new DefaultAttributesFeature(session);
     }
 
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
         try {
-            final List<String> list = new FTPDataFallback(session).data(file, new DataConnectionAction<List<String>>() {
-                @Override
-                public List<String> execute() throws BackgroundException {
-                    try {
-                        return session.getClient().list(FTPCmd.MLST);
-                    }
-                    catch(IOException e) {
-                        throw new FTPExceptionMappingService().map(e);
-                    }
+            return parent.find(file);
+        }
+        catch(AccessDeniedException | NotfoundException f) {
+            try {
+                if(!FTPReply.isPositiveCompletion(session.getClient().sendCommand(FTPCmd.MLST, file.getAbsolute()))) {
+                    throw f;
                 }
-            }, new DisabledProgressListener());
-            final FTPDataResponseReader reader = new FTPMlsdListResponseReader();
-            final AttributedList<Path> attributes
-                    = reader.read(file.getParent(), list, new DisabledListProgressListener());
-            if(attributes.size() == 1) {
-                return attributes.iterator().next().attributes();
+                final FTPDataResponseReader reader = new FTPMlsdListResponseReader();
+                final AttributedList<Path> attributes
+                        = reader.read(file.getParent(), Arrays.asList(session.getClient().getReplyStrings()), new DisabledListProgressListener());
+                if(attributes.size() == 1) {
+                    return attributes.iterator().next().attributes();
+                }
+                throw new NotfoundException(file.getAbsolute());
             }
-            throw new NotfoundException(file.getAbsolute());
-        }
-        catch(InteroperabilityException e) {
-            return new DefaultAttributesFeature(session).withCache(cache).find(file);
-        }
-        catch(IOException e) {
-            throw new FTPExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+            catch(IOException e) {
+                throw new FTPExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+            }
         }
     }
 
     @Override
     public Attributes withCache(Cache<Path> cache) {
-        this.cache = cache;
+        parent.withCache(cache);
         return this;
     }
 }

@@ -28,9 +28,11 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 
@@ -38,10 +40,8 @@ import org.junit.Test;
 
 import java.util.EnumSet;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 
 /**
  * @version $Id$
@@ -59,19 +59,15 @@ public class FTPAttributesFeatureTest extends AbstractTestCase {
         new FTPAttributesFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
     }
 
-    @Test
-    public void testAttributes() throws Exception {
+    @Test(expected = AccessDeniedException.class)
+    public void testAttributesUnknownCommand() throws Exception {
         final Host host = new Host(new FTPProtocol(), "test.cyberduck.ch", new Credentials(
                 properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
         ));
-        final AtomicBoolean set = new AtomicBoolean();
         final FTPSession session = new FTPSession(host) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
-                assertFalse(set.get());
-                final AttributedList<Path> list = super.list(file, listener);
-                set.set(true);
-                return list;
+                throw new AccessDeniedException("f");
             }
         };
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -82,6 +78,23 @@ public class FTPAttributesFeatureTest extends AbstractTestCase {
         assertEquals(0L, attributes.getSize());
         assertEquals("1106", attributes.getOwner());
         assertEquals(new Permission("-rw-rw-rw-"), attributes.getPermission());
+    }
+
+    @Test
+    public void testAttributes() throws Exception {
+        final Host host = HostParser.parse("ftp://ftp.idmserv.com/");
+        final FTPSession session = new FTPSession(host) {
+            @Override
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
+                throw new AccessDeniedException("f");
+            }
+        };
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final FTPAttributesFeature f = new FTPAttributesFeature(session);
+        final Path file = new Path("/incoming13/alextest", EnumSet.of(Path.Type.file));
+        final Attributes attributes = f.find(file);
+        assertEquals(8L, attributes.getSize());
     }
 
 }
