@@ -69,7 +69,7 @@ public class Console {
     }
 
     public void printf(final String format, Object... args) {
-        if(StringUtils.isBlank(format)) {
+        if(StringUtils.isEmpty(format)) {
             return;
         }
         if(console != null) {
