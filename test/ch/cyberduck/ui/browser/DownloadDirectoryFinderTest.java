@@ -37,10 +37,10 @@ public class DownloadDirectoryFinderTest extends AbstractTestCase {
         final Host host = new Host("localhost");
         assertNull(host.getDownloadFolder());
         final DownloadDirectoryFinder finder = new DownloadDirectoryFinder();
-        assertEquals(System.getProperty("java.io.tmpdir"), finder.find(host).getAbbreviatedPath());
+        assertEquals(System.getProperty("user.dir"), finder.find(host).getAbsolute());
         // Does not exist
         host.setDownloadFolder(new FinderLocal("/t"));
-        assertEquals(System.getProperty("java.io.tmpdir"), finder.find(host).getAbbreviatedPath());
+        assertEquals(System.getProperty("user.dir"), finder.find(host).getAbsolute());
         host.setDownloadFolder(new FinderLocal("~/Documents"));
         assertEquals("~/Documents", finder.find(host).getAbbreviatedPath());
     }
