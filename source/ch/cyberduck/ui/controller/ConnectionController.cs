@@ -43,13 +43,13 @@ namespace Ch.Cyberduck.Ui.Controller
         private static readonly string Default = LocaleFactory.localizedString("Default");
         private static readonly Logger Log = Logger.getLogger(typeof (ConnectionController).FullName);
         private readonly Object _syncRootReachability = new Object();
-        private readonly Timer _ticklerRechability;
+        private readonly Timer _ticklerReachability;
 
         private ConnectionController(IConnectionView view)
         {
             View = view;
 
-            _ticklerRechability = new Timer(OnReachability, null, Timeout.Infinite, Timeout.Infinite);
+            _ticklerReachability = new Timer(OnReachability, null, Timeout.Infinite, Timeout.Infinite);
 
             View.ToggleOptions += View_ToggleOptions;
             View.OptionsVisible = PreferencesFactory.get().getBoolean("connection.toggle.options");
@@ -296,7 +296,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (!string.IsNullOrEmpty(View.Hostname))
             {
                 // Delay to 2 second. When typing changes we don't have to check the reachbility for each stroke.
-                _ticklerRechability.Change(2000, Timeout.Infinite);
+                _ticklerReachability.Change(2000, Timeout.Infinite);
             }
             else
             {
