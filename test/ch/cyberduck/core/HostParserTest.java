@@ -22,6 +22,20 @@ public class HostParserTest extends AbstractTestCase {
     }
 
     @Test
+    public void testParseHostnameOnly() {
+        assertTrue(HostParser.parse("hostname").getHostname().equals("hostname"));
+        assertTrue(HostParser.parse("hostname ").getHostname().equals("hostname"));
+        assertTrue(HostParser.parse(" hostname").getHostname().equals("hostname"));
+    }
+
+    @Test
+    public void testParseHostnameOnlyRemoveTrailingSlash() {
+        assertTrue(HostParser.parse("hostname/").getHostname().equals("hostname"));
+        assertTrue(HostParser.parse("hostname//").getHostname().equals("hostname"));
+        assertTrue(HostParser.parse("/hostname").getHostname().equals(""));
+    }
+
+    @Test
     public void testParseSftp() {
         String url = "sftp://user:pass@hostname/path/to/file";
         Host h = HostParser.parse(url);
