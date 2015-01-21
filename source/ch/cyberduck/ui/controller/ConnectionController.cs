@@ -45,6 +45,9 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly Object _syncRootReachability = new Object();
         private readonly Timer _ticklerReachability;
 
+        private HostPasswordStore keychain
+                = PasswordStoreFactory.get();
+
         private ConnectionController(IConnectionView view)
         {
             View = view;
@@ -286,8 +289,10 @@ namespace Ch.Cyberduck.Ui.Controller
                     return;
                 }
                 Protocol protocol = View.SelectedProtocol;
-                View.Password = PasswordStoreFactory.get()
-                    .getPassword(protocol.getScheme(), Integer.parseInt(View.Port), View.Hostname, View.Username);
+                string password = keychain.getPassword(protocol.getScheme(), Integer.parseInt(View.Port), View.Hostname, View.Username);
+                if (Utils.IsBlank(password)) {
+                    View.Password = password;
+                }
             }
         }
 

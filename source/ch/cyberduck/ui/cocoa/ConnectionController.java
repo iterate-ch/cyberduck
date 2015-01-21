@@ -59,6 +59,9 @@ import org.rococoa.cocoa.foundation.NSSize;
 public class ConnectionController extends SheetController {
     private static Logger log = Logger.getLogger(ConnectionController.class);
 
+    private final HostPasswordStore keychain
+            = PasswordStoreFactory.get();
+
     private Preferences preferences
             = PreferencesFactory.get();
 
@@ -548,9 +551,12 @@ public class ConnectionController extends SheetController {
                 return;
             }
             final Protocol protocol = ProtocolFactory.forName(protocolPopup.selectedItem().representedObject());
-            this.updateField(this.passField, PasswordStoreFactory.get().getPassword(protocol.getScheme(),
+            final String password = keychain.getPassword(protocol.getScheme(),
                     NumberUtils.toInt(portField.stringValue(), -1),
-                    hostField.stringValue(), usernameField.stringValue()));
+                    hostField.stringValue(), usernameField.stringValue());
+            if(StringUtils.isNotBlank(password)) {
+                this.updateField(passField, password);
+            }
         }
     }
 
