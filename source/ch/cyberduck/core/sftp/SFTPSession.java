@@ -206,16 +206,19 @@ public class SFTPSession extends Session<SSHClient> {
                     continue;
                 }
             }
-            catch(IllegalStateException e) {
+            catch(IllegalStateException s) {
                 log.warn(String.format("Server disconnected with %s while trying authentication method %s",
                         disconnectListener.getFailure(), auth));
                 try {
                     throw new SFTPExceptionMappingService().map(LocaleFactory.localizedString("Login failed", "Credentials"),
                             disconnectListener.getFailure());
                 }
-                catch(InteroperabilityException i) {
-                    throw new LoginFailureException(i.getMessage(), i);
+                catch(InteroperabilityException e) {
+                    throw new LoginFailureException(e.getMessage(), e);
                 }
+            }
+            catch(InteroperabilityException e) {
+                throw new LoginFailureException(e.getMessage(), e);
             }
             catch(LoginFailureException e) {
                 log.warn(String.format("Login failed with credentials %s and authentication method %s", credentials, auth));
