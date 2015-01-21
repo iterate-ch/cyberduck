@@ -161,10 +161,10 @@ public class SFTPSession extends Session<SSHClient> {
         disconnectListener = new StateDisconnectListener();
         final Transport transport = connection.getTransport();
         transport.setDisconnectListener(disconnectListener);
+        connection.connect(HostnameConfiguratorFactory.get(host.getProtocol()).getHostname(host.getHostname()), host.getPort());
         connection.getConnection().getKeepAlive().setKeepAliveInterval(
                 preferences.getInteger("ssh.heartbeat.seconds")
         );
-        connection.connect(HostnameConfiguratorFactory.get(host.getProtocol()).getHostname(host.getHostname()), host.getPort());
         return connection;
     }
 
