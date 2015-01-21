@@ -2078,6 +2078,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             {
                 RefreshBrowser();
             }
+            if (e.KeyCode == Keys.Back && ValidateFolderUp())
+            {
+                FolderUp();
+            }
         }
 
         private void transcriptBox_KeyDown(object sender, KeyEventArgs e)
