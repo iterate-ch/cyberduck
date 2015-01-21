@@ -218,7 +218,7 @@ public class SFTPSession extends Session<SSHClient> {
                 }
             }
             catch(InteroperabilityException e) {
-                throw new LoginFailureException(e.getMessage(), e);
+                throw new LoginFailureException(e.getDetail(), e);
             }
             catch(LoginFailureException e) {
                 log.warn(String.format("Login failed with credentials %s and authentication method %s", credentials, auth));
