@@ -37,9 +37,6 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     public sealed class ConnectionController : WindowController<IConnectionView>
     {
-        private static readonly String ConnectmodeActive = LocaleFactory.localizedString("Active");
-        private static readonly String ConnectmodePassive = LocaleFactory.localizedString("Passive");
-
         private static readonly IDictionary<WindowController, ConnectionController> Controllers =
             new Dictionary<WindowController, ConnectionController>();
 
