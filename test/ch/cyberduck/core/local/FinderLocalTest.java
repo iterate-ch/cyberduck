@@ -13,6 +13,8 @@ import org.junit.Test;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
+import com.sun.tools.javac.util.StringUtils;
+
 import static org.junit.Assert.*;
 
 /**
@@ -39,6 +41,16 @@ public class FinderLocalTest extends AbstractTestCase {
         final String name = UUID.randomUUID().toString();
         FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
         l.getInputStream();
+    }
+
+    @Test
+    public void testNoCaseSensitive() throws Exception {
+        final String name = UUID.randomUUID().toString();
+        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
+        LocalTouchFactory.get().touch(l);
+        assertTrue(l.exists());
+        assertTrue(new FinderLocal(System.getProperty("java.io.tmpdir"), StringUtils.toUpperCase(name)).exists());
+        assertTrue(new FinderLocal(System.getProperty("java.io.tmpdir"), StringUtils.toLowerCase(name)).exists());
     }
 
     @Test
