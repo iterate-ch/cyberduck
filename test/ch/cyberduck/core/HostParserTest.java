@@ -23,16 +23,24 @@ public class HostParserTest extends AbstractTestCase {
 
     @Test
     public void testParseHostnameOnly() {
-        assertTrue(HostParser.parse("hostname").getHostname().equals("hostname"));
-        assertTrue(HostParser.parse("hostname ").getHostname().equals("hostname"));
-        assertTrue(HostParser.parse(" hostname").getHostname().equals("hostname"));
+        assertEquals(HostParser.parse("hostname").getHostname(), "hostname");
+        assertEquals(HostParser.parse("hostname ").getHostname(), "hostname");
+        assertEquals(HostParser.parse(" hostname").getHostname(), "hostname");
     }
 
     @Test
     public void testParseHostnameOnlyRemoveTrailingSlash() {
-        assertTrue(HostParser.parse("hostname/").getHostname().equals("hostname"));
-        assertTrue(HostParser.parse("hostname//").getHostname().equals("hostname"));
-        assertTrue(HostParser.parse("/hostname").getHostname().equals(""));
+        assertEquals(HostParser.parse("hostname/").getHostname(), "hostname");
+        assertEquals(HostParser.parse("hostname//").getHostname(), "hostname");
+        assertEquals(HostParser.parse("/hostname").getHostname(), "");
+    }
+
+    @Test
+    public void testHostnameAppendPort() {
+        assertTrue(HostParser.parse("s3.amazonaws.com:443").getHostname().equals("s3.amazonaws.com"));
+        assertTrue(HostParser.parse("s3.amazonaws.com:443/").getHostname().equals("s3.amazonaws.com"));
+        assertTrue(HostParser.parse("s3.amazonaws.com:443").getPort() == (443));
+        assertTrue(HostParser.parse("s3.amazonaws.com:443/").getPort() == (443));
     }
 
     @Test
@@ -272,5 +280,13 @@ public class HostParserTest extends AbstractTestCase {
         assertEquals(Protocol.Type.swift, host.getProtocol().getType());
         assertEquals(444, host.getPort());
         assertEquals("/duck-4.6.2.16174:16179M.pkg", host.getDefaultPath());
+    }
+
+    @Test
+    public void testInvalidPortnumber() {
+        final Host host = HostParser.parse("ftp://hostname:21a");
+        assertEquals("hostname", host.getHostname());
+        assertEquals(Protocol.Type.ftp, host.getProtocol().getType());
+        assertEquals(21, host.getPort());
     }
 }
