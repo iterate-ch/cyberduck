@@ -53,14 +53,14 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly Object _syncRootFavicon = new Object();
         private readonly Object _syncRootReachability = new Object();
         private readonly Timer _ticklerFavicon;
-        private readonly Timer _ticklerRechability;
+        private readonly Timer _ticklerReachability;
 
         private BookmarkController(IBookmarkView view, Host host)
         {
             _host = host;
             View = view;
 
-            _ticklerRechability = new Timer(OnRechability, null, Timeout.Infinite, Timeout.Infinite);
+            _ticklerReachability = new Timer(OnRechability, null, Timeout.Infinite, Timeout.Infinite);
             _ticklerFavicon = new Timer(OnFavicon, null, Timeout.Infinite, Timeout.Infinite);
 
             View.ToggleOptions += View_ToggleOptions;
@@ -93,7 +93,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         protected override void Invalidate()
         {
-            _ticklerRechability.Change(Timeout.Infinite, Timeout.Infinite);
+            _ticklerReachability.Change(Timeout.Infinite, Timeout.Infinite);
             _ticklerFavicon.Change(Timeout.Infinite, Timeout.Infinite);
             PreferencesFactory.get().setProperty("bookmark.toggle.options", View.OptionsVisible);
             BookmarkCollection.defaultCollection().removeListener(_bookmarkCollectionListener);
@@ -323,7 +323,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (Utils.IsNotBlank(_host.getHostname()))
             {
                 // Delay to 2 second. When typing changes we don't have to check the reachbility for each stroke.
-                _ticklerRechability.Change(2000, Timeout.Infinite);
+                _ticklerReachability.Change(2000, Timeout.Infinite);
             }
             else
             {
