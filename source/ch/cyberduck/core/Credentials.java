@@ -47,13 +47,14 @@ public class Credentials {
     /**
      * If the credentials should be stored in the Keychain upon successful login
      */
-    private boolean keychained;
+    private boolean keychained
+            = PreferencesFactory.get().getBoolean("connection.login.useKeychain");
 
     /**
-     * Default credentials from Preferences
+     * Default credentials
      */
     public Credentials() {
-        this(null, null, PreferencesFactory.get().getBoolean("connection.login.useKeychain"));
+        //
     }
 
     /**
@@ -61,7 +62,8 @@ public class Credentials {
      * @param password Passphrase
      */
     public Credentials(final String user, final String password) {
-        this(user, password, PreferencesFactory.get().getBoolean("connection.login.useKeychain"));
+        this.user = user;
+        this.password = password;
     }
 
     /**
@@ -70,9 +72,9 @@ public class Credentials {
      * @param save     if the credential should be added to the keychain upon successful login
      */
     public Credentials(final String user, final String password, final boolean save) {
-        this.keychained = save;
         this.user = user;
         this.password = password;
+        this.keychained = save;
     }
 
     /**
@@ -144,7 +146,7 @@ public class Credentials {
      * SSH specific
      *
      * @return true if public key authentication should be used. This is the case, if a
-     *         private key file has been specified
+     * private key file has been specified
      * @see #setIdentity
      */
     public boolean isPublicKeyAuthentication() {

@@ -26,7 +26,8 @@ public final class LoginOptions {
 
     public boolean user = true;
     public boolean password = true;
-    public boolean keychain = PreferencesFactory.get().getBoolean("connection.login.useKeychain");
+    public boolean keychain
+            = PreferencesFactory.get().getBoolean("connection.login.useKeychain");
     public boolean publickey;
     public boolean anonymous;
 
