@@ -172,7 +172,7 @@ public class ConnectionController extends SheetController {
 
         this.updateIdentity();
         this.updateURLLabel();
-
+        this.readPasswordFromKeychain();
         this.reachable();
     }
 
@@ -239,21 +239,25 @@ public class ConnectionController extends SheetController {
         for(Host h : BookmarkCollection.defaultCollection()) {
             if(BookmarkNameProvider.toString(h).equals(input)) {
                 this.hostChanged(h);
+                this.updateURLLabel();
+                this.readPasswordFromKeychain();
+                this.reachable();
                 break;
             }
         }
     }
 
     public void hostFieldTextDidChange(final NSNotification sender) {
+        final Host parsed = HostParser.parse(hostField.stringValue());
         if(ProtocolFactory.isURL(hostField.stringValue())) {
-            final Host parsed = HostParser.parse(hostField.stringValue());
             this.hostChanged(parsed);
         }
         else {
-            this.updateURLLabel();
-            this.updateIdentity();
-            this.reachable();
+            this.updateField(hostField, parsed.getHostname());
         }
+        this.updateURLLabel();
+        this.readPasswordFromKeychain();
+        this.reachable();
     }
 
     private void hostChanged(final Host host) {
@@ -266,17 +270,7 @@ public class ConnectionController extends SheetController {
         this.updateField(pathField, host.getDefaultPath());
         anonymousCheckbox.setState(host.getCredentials().isAnonymousLogin() ? NSCell.NSOnState : NSCell.NSOffState);
         this.anonymousCheckboxClicked(anonymousCheckbox);
-        if(host.getCredentials().isPublicKeyAuthentication()) {
-            pkCheckbox.setState(NSCell.NSOnState);
-            pkLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                    host.getCredentials().getIdentity().getAbbreviatedPath(), TRUNCATE_MIDDLE_ATTRIBUTES));
-        }
-        else {
-            this.updateIdentity();
-        }
-        this.updateURLLabel();
-        this.readPasswordFromKeychain();
-        this.reachable();
+        this.updateIdentity();
     }
 
     /**
@@ -560,8 +554,6 @@ public class ConnectionController extends SheetController {
         }
     }
 
-    /**
-     */
     private void updateURLLabel() {
         if(StringUtils.isNotBlank(hostField.stringValue())) {
             final Protocol protocol = ProtocolFactory.forName(protocolPopup.selectedItem().representedObject());
@@ -579,8 +571,9 @@ public class ConnectionController extends SheetController {
     }
 
     public void helpButtonClicked(final ID sender) {
-        final Protocol protocol = ProtocolFactory.forName(protocolPopup.selectedItem().representedObject());
-        new DefaultProviderHelpService().help(protocol);
+        new DefaultProviderHelpService().help(
+                ProtocolFactory.forName(protocolPopup.selectedItem().representedObject())
+        );
     }
 
     @Override

@@ -1,20 +1,20 @@
-﻿// 
+﻿//
 // Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
-// 
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-// 
+//
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
-// 
+//
 
 using System.Collections.Generic;
 using System.Media;
@@ -237,37 +237,22 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChangedServerEvent()
         {
+            Host parsed = HostParser.parse(View.Hostname);
             if (ProtocolFactory.isURL(View.Hostname))
             {
-                Host parsed = HostParser.parse(View.Hostname);
-                HostChanged(parsed);
+                View.Hostname = host.getHostname();
+                View.SelectedProtocol = host.getProtocol();
+                View.Port = host.getPort().ToString();
+                View.Username = host.getCredentials().getUsername();
+                View.Path = host.getDefaultPath();
+                View.AnonymousChecked = host.getCredentials().isAnonymousLogin();
             }
             else
             {
-                UpdateUrlLabel();
-                UpdateIdentity();
-                Reachable();
-            }
-        }
-
-        private void HostChanged(Host host)
-        {
-            View.Hostname = host.getHostname();
-            View.SelectedProtocol = host.getProtocol();
-            View.Port = host.getPort().ToString();
-            View.Username = host.getCredentials().getUsername();
-            View.Path = host.getDefaultPath();
-            View.AnonymousChecked = host.getCredentials().isAnonymousLogin();
-            if (host.getCredentials().isPublicKeyAuthentication())
-            {
-                View.PkCheckboxState = true;
-                View.PkLabel = host.getCredentials().getIdentity().toURL();
-            }
-            else
-            {
-                UpdateIdentity();
+                View.Hostname = parsed.getHostname();
             }
             UpdateUrlLabel();
+            UpdateIdentity();
             ReadPasswordFromKeychain();
             Reachable();
         }
@@ -373,8 +358,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
             UpdateIdentity();
             UpdateUrlLabel();
-
-            OnReachability(null);
+            ReadPasswordFromKeychain();
+            Reachable();
         }
 
         private void UpdateUrlLabel()
