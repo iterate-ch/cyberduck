@@ -97,8 +97,8 @@ public abstract class EditorFactory extends Factory<EditorFactory> {
     }
 
     /**
-     * @param listener    Controller
-     * @param path File to edit
+     * @param listener Controller
+     * @param path     File to edit
      * @return New editor instance for the given file type.
      */
     public Editor create(final ProgressListener listener, final Session session, final Path path) {
@@ -106,7 +106,7 @@ public abstract class EditorFactory extends Factory<EditorFactory> {
     }
 
     /**
-     * @param listener           Controller
+     * @param listener    Controller
      * @param application The application bundle identifier of the editor to use
      * @param path        File to edit
      * @return New editor instance for the given file type.
@@ -159,7 +159,7 @@ public abstract class EditorFactory extends Factory<EditorFactory> {
         // Add the application set as the default editor in the Preferences to be always
         // included in the list of available editors.
         final Application defaultEditor = this.getDefaultEditor();
-        if(Application.notfound.equals(defaultEditor)) {
+        if(applicationFinder.isInstalled(defaultEditor)) {
             if(!editors.contains(defaultEditor)) {
                 editors.add(defaultEditor);
             }
