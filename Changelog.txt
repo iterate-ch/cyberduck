@@ -6,13 +6,13 @@ Changelog. Last modified: $Date$
 4.6.4 [https://trac.cyberduck.io/milestone/4.6.4]
 - [Feature] Send ignore packets to keep connection alive (SFTP)
 - [Bugfix] No localizations (Windows) (#8497)
+- [Bugfix] Crash opening preferences when default editor is no longer installed (Mac) (#8402)
 
 4.6.3 [https://trac.cyberduck.io/milestone/4.6.3]
 - [Bugfix] Occasional failure verifying donation keys
 
 4.6.2 [https://trac.cyberduck.io/milestone/4.6.2]
 - [Feature] Recursively change storage class and encryption (S3) (#8421)
-- [Bugfix] Crash opening preferences when default editor is no longer installed (Mac) (#8402)
 - [Bugfix] Crash reading proxy settings (Mac) (#8414
 - [Bugfix] No minimum size set for windows (Mac) (#8446)
 - [Bugfix] AWS Signature Version 4 for presigned temporary URLs (S3) (#8386)
