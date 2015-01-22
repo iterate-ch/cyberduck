@@ -4215,8 +4215,14 @@ public class BrowserController extends WindowController
                 final ApplicationFinder finder = ApplicationFinderFactory.get();
                 final Application application
                         = finder.getDescription(preferences.getProperty("terminal.bundle.identifier"));
-                item.setLabel(application.getName());
-                item.setPaletteLabel(application.getName());
+                if(finder.isInstalled(application)) {
+                    item.setLabel(application.getName());
+                    item.setPaletteLabel(application.getName());
+                }
+                else {
+                    item.setLabel(LocaleFactory.localizedString("Unknown"));
+                    item.setPaletteLabel(LocaleFactory.localizedString("Unknown"));
+                }
                 item.setImage(IconCacheFactory.<NSImage>get().applicationIcon(application, 32));
                 item.setTarget(this.id());
                 item.setAction(Foundation.selector("openTerminalButtonClicked:"));
