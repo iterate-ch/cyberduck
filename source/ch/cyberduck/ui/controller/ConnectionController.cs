@@ -76,7 +76,7 @@ namespace Ch.Cyberduck.Ui.Controller
             get
             {
                 Protocol protocol = View.SelectedProtocol;
-                Host host = new Host(protocol, View.Hostname, Integer.parseInt(View.Port), View.Path);
+                Host parsed = new Host(protocol, View.Hostname, Integer.parseInt(View.Port), View.Path);
                 if (protocol.getType() == Protocol.Type.ftp)
                 {
                     host.setFTPConnectMode(View.SelectedConnectMode);
@@ -240,12 +240,12 @@ namespace Ch.Cyberduck.Ui.Controller
             Host parsed = HostParser.parse(View.Hostname);
             if (ProtocolFactory.isURL(View.Hostname))
             {
-                View.Hostname = host.getHostname();
-                View.SelectedProtocol = host.getProtocol();
-                View.Port = host.getPort().ToString();
-                View.Username = host.getCredentials().getUsername();
-                View.Path = host.getDefaultPath();
-                View.AnonymousChecked = host.getCredentials().isAnonymousLogin();
+                View.Hostname = parsed.getHostname();
+                View.SelectedProtocol = parsed.getProtocol();
+                View.Port = parsed.getPort().ToString();
+                View.Username = parsed.getCredentials().getUsername();
+                View.Path = parsed.getDefaultPath();
+                View.AnonymousChecked = parsed.getCredentials().isAnonymousLogin();
             }
             else
             {
