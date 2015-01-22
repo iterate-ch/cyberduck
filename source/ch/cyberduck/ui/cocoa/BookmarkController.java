@@ -612,16 +612,13 @@ public class BookmarkController extends WindowController {
 
     @Action
     public void hostFieldDidChange(final NSNotification sender) {
-        String input = hostField.stringValue();
+        final String input = hostField.stringValue();
+        final Host parsed = HostParser.parse(input);
+        host.setHostname(parsed.getHostname());
         if(ProtocolFactory.isURL(input)) {
-            final Host parsed = HostParser.parse(input);
             host.setProtocol(parsed.getProtocol());
             host.setPort(parsed.getPort());
-            host.setHostname(parsed.getHostname());
             host.setDefaultPath(parsed.getDefaultPath());
-        }
-        else {
-            host.setHostname(input);
         }
         this.itemChanged();
         this.init();

@@ -236,17 +236,13 @@ namespace Ch.Cyberduck.Ui.Controller
         internal void View_ChangedServerEvent()
         {
             String input = View.Hostname;
+            Host parsed = HostParser.parse(input);
+            _host.setHostname(parsed.getHostname());
             if (ProtocolFactory.isURL(input))
             {
-                Host parsed = HostParser.parse(input);
                 _host.setProtocol(parsed.getProtocol());
                 _host.setPort(parsed.getPort());
-                _host.setHostname(parsed.getHostname());
                 _host.setDefaultPath(parsed.getDefaultPath());
-            }
-            else
-            {
-                _host.setHostname(input);
             }
             ItemChanged();
             Update();
