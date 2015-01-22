@@ -79,9 +79,9 @@ namespace Ch.Cyberduck.Ui.Controller
                 Host parsed = new Host(protocol, View.Hostname, Integer.parseInt(View.Port), View.Path);
                 if (protocol.getType() == Protocol.Type.ftp)
                 {
-                    host.setFTPConnectMode(View.SelectedConnectMode);
+                    parsed.setFTPConnectMode(View.SelectedConnectMode);
                 }
-                Credentials credentials = host.getCredentials();
+                Credentials credentials = parsed.getCredentials();
                 credentials.setUsername(View.Username);
                 credentials.setPassword(View.Password);
                 credentials.setSaved(View.SavePasswordChecked);
@@ -94,13 +94,13 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 if (View.SelectedEncoding.Equals(Default))
                 {
-                    host.setEncoding(null);
+                    parsed.setEncoding(null);
                 }
                 else
                 {
-                    host.setEncoding(View.SelectedEncoding);
+                    parsed.setEncoding(View.SelectedEncoding);
                 }
-                return host;
+                return parsed;
             }
         }
 
