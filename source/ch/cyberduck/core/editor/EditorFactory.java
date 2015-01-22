@@ -120,8 +120,12 @@ public abstract class EditorFactory extends Factory<EditorFactory> {
      * Preferences or com.apple.TextEdit if not installed.
      */
     public Application getDefaultEditor() {
-        return applicationFinder.getDescription(
+        final Application application = applicationFinder.getDescription(
                 preferences.getProperty("editor.bundleIdentifier"));
+        if(applicationFinder.isInstalled(application)) {
+            return application;
+        }
+        return Application.notfound;
     }
 
     /**
