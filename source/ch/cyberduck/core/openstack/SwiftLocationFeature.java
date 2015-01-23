@@ -86,6 +86,7 @@ public class SwiftLocationFeature implements Location {
                     return new SwiftRegion(c.attributes().getRegion());
                 }
             }
+            return Location.unknown;
         }
         return new SwiftRegion(container.attributes().getRegion());
     }
