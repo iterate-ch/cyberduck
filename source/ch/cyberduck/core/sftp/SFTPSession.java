@@ -214,7 +214,7 @@ public class SFTPSession extends Session<SSHClient> {
                             disconnectListener.getFailure());
                 }
                 catch(InteroperabilityException e) {
-                    throw new LoginFailureException(e.getMessage(), e);
+                    throw new LoginFailureException(e.getDetail(), e);
                 }
             }
             catch(InteroperabilityException e) {
