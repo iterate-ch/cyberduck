@@ -124,7 +124,7 @@ public class SFTPSession extends Session<SSHClient> {
                         new NoneCompression.Factory()));
             }
             configuration.setVersion(new PreferencesUseragentProvider().get());
-            final KeepAliveProvider heartbeat = KeepAliveProvider.HEARTBEAT;
+            final KeepAliveProvider heartbeat = KeepAliveProvider.KEEP_ALIVE;
             configuration.setKeepAliveProvider(heartbeat);
             return this.connect(key, configuration);
         }
