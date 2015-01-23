@@ -59,7 +59,7 @@ public class PunycodeConverter {
                 }
             }
             catch(StringPrepParseException e) {
-                log.error(String.format("Failed to convert hostname %s to IDNA", hostname), e);
+                log.warn(String.format("Failed to convert hostname %s to IDNA", hostname), e);
             }
         }
         return StringUtils.strip(hostname);
