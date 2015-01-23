@@ -24,6 +24,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.WebUrlProvider;
@@ -120,8 +121,10 @@ public class SwiftUrlProvider implements UrlProvider {
      * @param expiry Seconds
      */
     protected DescriptiveUrlBag sign(final Region region, final Path file, final long expiry) {
-        final String path = region.getStorageUrl(
-                containerService.getContainer(file).getName(), containerService.getKey(file)).getRawPath();
+        final String path = String.format("%s%s/%s",
+                region.getStorageUrl().getRawPath(),
+                URIEncoder.encode(containerService.getContainer(file).getName()),
+                containerService.getKey(file));
         if(!accounts.containsKey(region)) {
             log.warn(String.format("No account info for region %s available required to sign temporary URL", region));
             return DescriptiveUrlBag.empty();

@@ -120,9 +120,10 @@ public class SwiftUrlProviderTest extends AbstractTestCase {
         accounts.put(region, new AccountInfo(1L, 1, "k"));
         final Path container = new Path("test w.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(container, "key", EnumSet.of(Path.Type.file));
+        final Path file2 = new Path(file, "key2", EnumSet.of(Path.Type.file));
         final SwiftUrlProvider provider = new SwiftUrlProvider(session, accounts);
-        final Iterator<DescriptiveUrl> iterator = provider.sign(region, file, 1379500716).iterator();
-        assertEquals("http://storage101.hkg1.clouddrive.com/v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test%20w.cyberduck.ch/key?temp_url_sig=0b08dd5b2b48aff5c0269cf4e3ca3afdeaf9c7a5&temp_url_expires=1379500716",
+        final Iterator<DescriptiveUrl> iterator = provider.sign(region, file2, 1379500716).iterator();
+        assertEquals("http://storage101.hkg1.clouddrive.com/v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test%20w.cyberduck.ch/key/key2?temp_url_sig=aff0f4f6260da00b7ec77ffb0dd2ebf99d5234e7&temp_url_expires=1379500716",
                 iterator.next().getUrl());
     }
 }
