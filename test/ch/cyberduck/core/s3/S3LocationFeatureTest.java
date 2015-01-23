@@ -34,7 +34,8 @@ import org.junit.Test;
 
 import java.util.EnumSet;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @version $Id$
@@ -63,7 +64,8 @@ public class S3LocationFeatureTest extends AbstractTestCase {
         ));
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        assertNull(new S3LocationFeature(session).getLocation(new Path("/dist.springframework.org", EnumSet.of(Path.Type.directory))));
+        assertEquals(Location.unknown,
+                new S3LocationFeature(session).getLocation(new Path("/dist.springframework.org", EnumSet.of(Path.Type.directory))));
         session.close();
     }
 
