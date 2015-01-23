@@ -86,11 +86,11 @@ public class S3LocationFeature implements Location {
             }
             catch(AccessDeniedException l) {
                 log.warn(String.format("Missing permission to read location for %s %s", container, e.getMessage()));
-                return null;
+                return unknown;
             }
             catch(InteroperabilityException i) {
                 log.warn(String.format("Not supported to read location for %s %s", container, e.getMessage()));
-                return null;
+                return unknown;
             }
         }
     }
