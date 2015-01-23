@@ -40,6 +40,7 @@ import ch.cyberduck.core.local.DefaultWorkingDirectoryFinder;
 import ch.cyberduck.core.local.DisabledApplicationBadgeLabeler;
 import ch.cyberduck.core.local.DisabledApplicationFinder;
 import ch.cyberduck.core.local.DisabledApplicationLauncher;
+import ch.cyberduck.core.local.DisabledBrowserLauncher;
 import ch.cyberduck.core.local.DisabledIconService;
 import ch.cyberduck.core.local.DisabledQuarantineService;
 import ch.cyberduck.core.local.NullFileDescriptor;
@@ -1134,6 +1135,7 @@ public abstract class Preferences {
         defaults.put("factory.terminalservice.class", DisabledTerminalService.class.getName());
         defaults.put("factory.applicationfinder.class", DisabledApplicationFinder.class.getName());
         defaults.put("factory.applicationlauncher.class", DisabledApplicationLauncher.class.getName());
+        defaults.put("factory.browserlauncher.class", DisabledBrowserLauncher.class.getName());
     }
 
     /**
