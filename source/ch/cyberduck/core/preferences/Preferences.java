@@ -618,15 +618,15 @@ public abstract class Preferences {
         /**
          * Proxy list qloudsonic.io
          */
-        defaults.put("qloudsonic.proxy.us-east-1", "https://us-east-1.qloudsonic.io");
-        defaults.put("qloudsonic.proxy.eu-west-1", "https://eu-west-1.qloudsonic.io");
-        defaults.put("qloudsonic.proxy.eu-central-1", "https://eu-central-1.qloudsonic.io");
-        defaults.put("qloudsonic.proxy.us-west-1", "https://us-west-1.qloudsonic.io");
-        defaults.put("qloudsonic.proxy.us-west-2", "https://us-west-2.qloudsonic.io");
-        defaults.put("qloudsonic.proxy.ap-southeast-1", "https://ap-southeast-1.qloudsonic.io");
-        defaults.put("qloudsonic.proxy.ap-southeast-2", "https://ap-southeast-2.qloudsonic.io");
-        defaults.put("qloudsonic.proxy.ap-northeast-1", "https://ap-northeast-1.qloudsonic.io");
-        defaults.put("qloudsonic.proxy.sa-east-1", "https://sa-east-1.qloudsonic.io");
+        defaults.put("qloudsonic.proxy.us-east-1", "udp://us-east-1.qloudsonic.io:8007");
+        defaults.put("qloudsonic.proxy.eu-west-1", "udp://eu-west-1.qloudsonic.io:8007");
+        defaults.put("qloudsonic.proxy.eu-central-1", "udp://eu-central-1.qloudsonic.io:8007");
+        defaults.put("qloudsonic.proxy.us-west-1", "udp://us-west-1.qloudsonic.io:8007");
+        defaults.put("qloudsonic.proxy.us-west-2", "udp://us-west-2.qloudsonic.io:8007");
+        defaults.put("qloudsonic.proxy.ap-southeast-1", "udp://ap-southeast-1.qloudsonic.io:8007");
+        defaults.put("qloudsonic.proxy.ap-southeast-2", "udp://ap-southeast-2.qloudsonic.io:8007");
+        defaults.put("qloudsonic.proxy.ap-northeast-1", "udp://ap-northeast-1.qloudsonic.io:8007");
+        defaults.put("qloudsonic.proxy.sa-east-1", "udp://sa-east-1.qloudsonic.io:8007");
 
         /**
          * A prefix to apply to log file names
