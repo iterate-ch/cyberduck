@@ -18,6 +18,8 @@ package ch.cyberduck.core.local;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
+
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -26,7 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 public class Application {
 
     public static final Application notfound
-            = new Application(null);
+            = new Application(null, LocaleFactory.localizedString("Unknown"));
 
     private String identifier;
     private String name;
