@@ -4,7 +4,7 @@ http://cyberduck.io/
 Changelog. Last modified: $Date$
 
 4.6.4 [https://trac.cyberduck.io/milestone/4.6.4]
-- [Feature] Send ignore packets to keep connection alive (SFTP)
+- [Feature] Send packets to keep connection alive (SFTP)
 - [Bugfix] No localizations (Windows) (#8497)
 - [Bugfix] Crash opening preferences when default editor is no longer installed (Mac) (#8402)
 
