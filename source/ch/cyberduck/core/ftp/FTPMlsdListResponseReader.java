@@ -115,6 +115,12 @@ public class FTPMlsdListResponseReader implements FTPDataResponseReader {
                         success = true;
                     }
                 }
+                if(name.equals(".") || name.equals("..")) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Skip %s", name));
+                    }
+                    continue;
+                }
                 if(facts.containsKey("size")) {
                     parsed.attributes().setSize(Long.parseLong(facts.get("size")));
                 }
@@ -231,7 +237,7 @@ public class FTPMlsdListResponseReader implements FTPDataResponseReader {
             file.put(filename, facts);
             return file;
         }
-        log.warn("No match for " + line);
+        log.warn(String.format("No match for %s", line));
         return null;
     }
 

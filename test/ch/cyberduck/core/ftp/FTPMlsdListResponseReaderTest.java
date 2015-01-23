@@ -275,4 +275,18 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
         new FTPMlsdListResponseReader()
                 .read(path, Arrays.asList(replies), new DisabledListProgressListener());
     }
+
+    @Test
+    public void testSkipCurrentAndParentDir() throws Exception {
+        Path directory = new Path("/", EnumSet.of(Path.Type.directory));
+        String[] replies = new String[]{
+                "type=dir;size=512;modify=20150115041252;create=20150115041212;perm=cdeflmp; .",
+                "type=dir;size=512;modify=20150115041252;create=20150115041212;perm=cdeflmp; ..",
+                "type=dir;size=512;modify=20150115041245;create=20150115041242;perm=cdeflmp; AVID",
+                "type=dir;size=512;modify=20150115041252;create=20150115041250;perm=cdeflmp; QTS"
+        };
+        final AttributedList<Path> children = new FTPMlsdListResponseReader()
+                .read(directory, Arrays.asList(replies), new DisabledListProgressListener());
+        assertEquals(2, children.size());
+    }
 }
