@@ -128,7 +128,7 @@ public final class StreamCopier {
                 final int read = in.read(buffer, 0, len);
                 if(-1 == read) {
                     if(log.isDebugEnabled()) {
-                        log.debug("End of file reached");
+                        log.debug(String.format("End of file reached with %d bytes read from stream", total));
                     }
                     progress.setComplete();
                     break;
