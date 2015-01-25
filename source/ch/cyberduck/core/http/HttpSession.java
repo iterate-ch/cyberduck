@@ -43,8 +43,6 @@ import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.auth.AuthSchemeProvider;
 import org.apache.http.client.config.AuthSchemes;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.protocol.RequestAcceptEncoding;
-import org.apache.http.client.protocol.ResponseContentEncoding;
 import org.apache.http.config.ConnectionConfig;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
@@ -151,11 +149,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                     hostnameVerifier.setTarget(((HttpHost) context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST)).getHostName());
                 }
             });
-            if(preferences.getBoolean("http.compression.enable")) {
-                builder.addInterceptorLast(new RequestAcceptEncoding());
-                builder.addInterceptorLast(new ResponseContentEncoding());
-            }
-            else {
+            if(!preferences.getBoolean("http.compression.enable")) {
                 builder.disableContentCompression();
             }
             builder.setRequestExecutor(

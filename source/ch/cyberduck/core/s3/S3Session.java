@@ -375,6 +375,13 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     }
 
     @Override
+    public HttpClientBuilder builder(final TranscriptListener transcript) {
+        final HttpClientBuilder builder = super.builder(transcript);
+        builder.disableContentCompression();
+        return builder;
+    }
+
+    @Override
     public RequestEntityRestStorageService connect(final HostKeyCallback key) throws BackgroundException {
         return new RequestEntityRestStorageService(this.configure(), this);
     }
