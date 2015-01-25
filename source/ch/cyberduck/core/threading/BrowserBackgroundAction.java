@@ -47,7 +47,7 @@ public abstract class BrowserBackgroundAction<T> extends ControllerBackgroundAct
                                    final Controller controller,
                                    final Session<?> session,
                                    final Cache<Path> cache) {
-        super(login, controller, session, cache);
+        super(login, controller, session, cache, controller, controller);
     }
 
     @Override

@@ -19,9 +19,7 @@ package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Controller;
-import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostKeyCallbackFactory;
-import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginCallbackFactory;
 import ch.cyberduck.core.LoginService;
 import ch.cyberduck.core.Path;
@@ -49,26 +47,12 @@ public abstract class ControllerBackgroundAction<T> extends SessionBackgroundAct
     public ControllerBackgroundAction(final LoginService login,
                                       final Controller controller,
                                       final Session<?> session,
-                                      final Cache<Path> cache) {
-        super(login, session, cache, controller, controller, controller,
-                HostKeyCallbackFactory.get(controller, session.getHost().getProtocol()));
-        this.controller = controller;
-    }
-
-    public ControllerBackgroundAction(final Controller controller,
-                                      final Session<?> session,
                                       final Cache<Path> cache,
-                                      final ProgressListener listener) {
-        super(session, cache, controller, listener, controller,
-                LoginCallbackFactory.get(controller),
+                                      final ProgressListener progress,
+                                      final TranscriptListener transcript) {
+        super(login, session, cache, controller, progress, controller,
                 HostKeyCallbackFactory.get(controller, session.getHost().getProtocol()));
         this.controller = controller;
-    }
-
-    public ControllerBackgroundAction(final Session<?> session, final Cache<Path> cache, final AlertCallback alert,
-                                      final ProgressListener progressListener, final TranscriptListener transcriptListener,
-                                      final LoginCallback prompt, final HostKeyCallback key) {
-        super(session, cache, alert, progressListener, transcriptListener, prompt, key);
     }
 
     @Override

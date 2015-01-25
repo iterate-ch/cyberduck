@@ -155,7 +155,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
                                     final TransferErrorCallback error,
                                     final TransferSpeedometer meter,
                                     final StreamListener stream) {
-        super(login, controller, session, cache);
+        super(login, controller, session, cache, progress, transcript);
         this.meter = meter;
         this.transfer = transfer.withCache(cache);
         this.options = options;
