@@ -7,6 +7,7 @@ Changelog. Last modified: $Date$
 - [Feature] Send packets to keep connection alive (SFTP)
 - [Bugfix] No localizations (Windows) (#8497)
 - [Bugfix] Crash opening preferences when default editor is no longer installed (Mac) (#8402)
+- [Bugfix] Downloading files with Content-Encoding metadata decompresses and truncates the content (S3) (#8263)
 
 4.6.3 [https://trac.cyberduck.io/milestone/4.6.3]
 - [Bugfix] Occasional failure verifying donation keys
