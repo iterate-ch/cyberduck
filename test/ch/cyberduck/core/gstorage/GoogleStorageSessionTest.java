@@ -129,7 +129,7 @@ public class GoogleStorageSessionTest extends AbstractTestCase {
         catch(BackgroundException e) {
 //            assertEquals("Access denied. 4082461033721 is not a valid project id spec. Please contact your web hosting service provider for assistance. Please contact your web hosting service provider for assistance.", e.getDetail());
 //            assertEquals("Invalid argument. Please contact your web hosting service provider for assistance.", e.getDetail());
-            assertEquals("Listing directory / failed.", e.getMessage());
+            assertEquals("Login failed", e.getMessage());
             throw e;
         }
     }
