@@ -30,6 +30,8 @@ import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.shared.DefaultAttributesFeature;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -54,8 +56,8 @@ public class ComparisonServiceFilter implements ComparePathFilter {
     private ProgressListener progress;
 
     public ComparisonServiceFilter(final Session<?> session, final TimeZone tz, final ProgressListener listener) {
-        this.finder = session.getFeature(Find.class);
-        this.attribute = session.getFeature(Attributes.class);
+        this.finder = new DefaultFindFeature(session);
+        this.attribute = new DefaultAttributesFeature(session);
         this.timestamp = new TimestampComparisonService(tz);
         this.size = new SizeComparisonService();
         this.checksum = new ChecksumComparisonService();

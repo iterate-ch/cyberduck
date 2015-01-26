@@ -35,15 +35,11 @@ public class DefaultFindFeature implements Find {
 
     private Session<?> session;
 
-    private Cache<Path> cache;
+    private Cache<Path> cache
+            = PathCache.empty();
 
     public DefaultFindFeature(final Session session) {
-        this(session, PathCache.empty());
-    }
-
-    public DefaultFindFeature(final Session session, final Cache<Path> cache) {
         this.session = session;
-        this.cache = cache;
     }
 
     @Override
@@ -68,7 +64,7 @@ public class DefaultFindFeature implements Find {
     }
 
     @Override
-    public Find withCache(final PathCache cache) {
+    public DefaultFindFeature withCache(final PathCache cache) {
         this.cache = cache;
         return this;
     }

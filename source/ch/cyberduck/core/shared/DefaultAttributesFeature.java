@@ -19,13 +19,14 @@ package ch.cyberduck.core.shared;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Attributes;
 
@@ -36,23 +37,29 @@ public class DefaultAttributesFeature implements Attributes {
 
     private Session<?> session;
 
-    private Cache<Path> cache;
+    private PathCache cache
+            = PathCache.empty();
 
     public DefaultAttributesFeature(final Session session) {
-        this(session, PathCache.empty());
-    }
-
-    public DefaultAttributesFeature(final Session session, final Cache<Path> cache) {
         this.session = session;
-        this.cache = cache;
     }
 
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
         final AttributedList<Path> list;
         if(!cache.containsKey(file.getParent())) {
-            list = session.list(file.getParent(), new DisabledListProgressListener());
-            cache.put(file.getParent(), list);
+            try {
+                list = session.list(file.getParent(), new DisabledListProgressListener());
+                cache.put(file.getParent(), list);
+            }
+            catch(InteroperabilityException | AccessDeniedException | NotfoundException f) {
+                // Try native implementation
+                final Attributes feature = session.getFeature(Attributes.class);
+                if(feature instanceof DefaultAttributesFeature) {
+                    throw f;
+                }
+                return feature.withCache(cache).find(file);
+            }
         }
         else {
             list = cache.get(file.getParent());
@@ -63,7 +70,7 @@ public class DefaultAttributesFeature implements Attributes {
         throw new NotfoundException(file.getAbsolute());
     }
 
-    public Attributes withCache(final PathCache cache) {
+    public DefaultAttributesFeature withCache(final PathCache cache) {
         this.cache = cache;
         return this;
     }

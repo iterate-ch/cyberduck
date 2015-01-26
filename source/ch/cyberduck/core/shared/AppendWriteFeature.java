@@ -36,8 +36,8 @@ public abstract class AppendWriteFeature implements Write {
     private Attributes attributes;
 
     protected AppendWriteFeature(final Session<?> session) {
-        this.finder = session.getFeature(Find.class);
-        this.attributes = session.getFeature(Attributes.class);
+        this.finder = new DefaultFindFeature(session);
+        this.attributes = new DefaultAttributesFeature(session);
     }
 
     protected AppendWriteFeature(final Find finder, final Attributes attributes) {

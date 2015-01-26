@@ -31,6 +31,7 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.synchronization.CachingComparisonServiceFilter;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.synchronization.ComparisonServiceFilter;
@@ -133,7 +134,7 @@ public class SyncTransfer extends Transfer {
             log.debug(String.format("Children for %s", directory));
         }
         final Set<TransferItem> children = new HashSet<TransferItem>();
-        final Find finder = session.getFeature(Find.class).withCache(cache);
+        final Find finder = new DefaultFindFeature(session).withCache(cache);
         if(finder.find(directory)) {
             children.addAll(download.list(session, directory, local, listener));
         }

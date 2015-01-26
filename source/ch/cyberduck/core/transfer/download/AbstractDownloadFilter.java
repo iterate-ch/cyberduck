@@ -39,6 +39,7 @@ import ch.cyberduck.core.local.QuarantineService;
 import ch.cyberduck.core.local.QuarantineServiceFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -77,7 +78,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         this.symlinkResolver = symlinkResolver;
         this.session = session;
         this.options = options;
-        this.attribute = session.getFeature(Attributes.class);
+        this.attribute = new DefaultAttributesFeature(session);
     }
 
     @Override

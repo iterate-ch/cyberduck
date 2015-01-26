@@ -25,6 +25,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
@@ -43,14 +44,14 @@ public class ResumeFilter extends AbstractDownloadFilter {
     public ResumeFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session) {
         super(symlinkResolver, session, new DownloadFilterOptions());
         this.read = session.getFeature(Read.class);
-        this.attribute = session.getFeature(Attributes.class);
+        this.attribute = new DefaultAttributesFeature(session);
     }
 
     public ResumeFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session,
                         final DownloadFilterOptions options, final Read read) {
         super(symlinkResolver, session, options);
         this.read = read;
-        this.attribute = session.getFeature(Attributes.class);
+        this.attribute = new DefaultAttributesFeature(session);
     }
 
     public AbstractDownloadFilter withCache(final PathCache cache) {

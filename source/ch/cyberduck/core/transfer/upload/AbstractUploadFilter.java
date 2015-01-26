@@ -41,6 +41,8 @@ import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.shared.DefaultAttributesFeature;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -83,8 +85,8 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         this.symlinkResolver = symlinkResolver;
         this.session = session;
         this.options = options.withTemporary(options.temporary && session.getFeature(Write.class).temporary());
-        this.find = session.getFeature(Find.class);
-        this.attribute = session.getFeature(Attributes.class);
+        this.find = new DefaultFindFeature(session);
+        this.attribute = new DefaultAttributesFeature(session);
     }
 
     @Override

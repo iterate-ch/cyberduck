@@ -34,6 +34,8 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.shared.DefaultAttributesFeature;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -72,8 +74,8 @@ public class CopyTransferFilter implements TransferPathFilter {
         this.destination = destination;
         this.files = files;
         this.options = options;
-        this.find = destination.getFeature(Find.class).withCache(cache);
-        this.attribute = source.getFeature(Attributes.class).withCache(cache);
+        this.find = new DefaultFindFeature(destination).withCache(cache);
+        this.attribute = new DefaultAttributesFeature(source).withCache(cache);
         this.acl = source.getFeature(AclPermission.class);
     }
 
