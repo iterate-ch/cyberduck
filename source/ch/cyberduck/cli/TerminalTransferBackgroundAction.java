@@ -32,7 +32,7 @@ import ch.cyberduck.core.transfer.TransferSpeedometer;
 /**
  * @version $Id$
  */
-public class TerminalTransferBackgroundAction<T> extends TransferBackgroundAction {
+public class TerminalTransferBackgroundAction extends TransferBackgroundAction {
 
     public TerminalTransferBackgroundAction(final TerminalController controller,
                                             final LoginService login,
