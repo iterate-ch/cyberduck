@@ -25,7 +25,6 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.http.HttpHeaders;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3Object;
@@ -80,14 +79,6 @@ public class S3ReadFeature implements Read {
             }
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Reading stream with content length %d", object.getContentLength()));
-            }
-            // Update content length
-            final Object contentLength = object.getMetadata(HttpHeaders.CONTENT_LENGTH);
-            if(contentLength != null) {
-                status.setLength(Long.parseLong(contentLength.toString()));
-            }
-            else {
-                log.warn(String.format("Unknown content length for %s", file));
             }
             return object.getDataInputStream();
         }

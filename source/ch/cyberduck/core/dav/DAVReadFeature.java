@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.github.sardine.impl.SardineException;
-import com.github.sardine.impl.io.ContentLengthInputStream;
 
 /**
  * @version $Id$
@@ -57,18 +56,8 @@ public class DAVReadFeature implements Read {
             headers.add(new BasicHeader(HttpHeaders.ACCEPT_ENCODING, "identity"));
         }
         try {
-            final ContentLengthInputStream stream = session.getClient().get(new DAVPathEncoder().encode(file),
-                    headers);
-            // Update content length
-            if(-1 == stream.getLength()) {
-                // We have Transfer-Encoding: chunked with an unknown content length
-                log.warn(String.format("Unknown content length for %s", file));
-            }
-            else {
-                // Set this here if it was missing from PROPFIND. See #7718
-                status.setLength(stream.getLength());
-            }
-            return stream;
+            return session.getClient().get(
+                    new DAVPathEncoder().encode(file), headers);
         }
         catch(SardineException e) {
             throw new DAVExceptionMappingService().map("Download {0} failed", e, file);
