@@ -46,7 +46,7 @@ public class DefaultFindFeatureTest extends AbstractTestCase {
                 count.incrementAndGet();
                 return AttributedList.emptyList();
             }
-        }, new PathCache(2));
+        }).withCache(new PathCache(2));
         assertFalse(feature.find(new Path("/t", EnumSet.of(Path.Type.directory))));
         assertEquals(1, count.get());
         assertFalse(feature.find(new Path("/t", EnumSet.of(Path.Type.directory))));
