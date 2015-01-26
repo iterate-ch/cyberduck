@@ -32,45 +32,37 @@ public class ComparisonServiceFilterTest extends AbstractTestCase {
     public void testCompareEqualResultFile() throws Exception {
         final AtomicBoolean found = new AtomicBoolean();
         final AtomicBoolean attr = new AtomicBoolean();
-        ComparisonServiceFilter s = new ComparisonServiceFilter(new NullSession(new Host("t")) {
+        final Attributes attributes = new Attributes() {
             @Override
-            public <T> T getFeature(final Class<T> type) {
-                if(type == Find.class) {
-                    return (T) new Find() {
-                        @Override
-                        public boolean find(final Path file) throws BackgroundException {
-                            found.set(true);
-                            return true;
-                        }
-
-                        @Override
-                        public Find withCache(PathCache cache) {
-                            return this;
-                        }
-                    };
-                }
-                if(type == Attributes.class) {
-                    return (T) new Attributes() {
-                        @Override
-                        public PathAttributes find(final Path file) throws BackgroundException {
-                            attr.set(true);
-                            return new PathAttributes() {
-                                @Override
-                                public String getChecksum() {
-                                    return "a";
-                                }
-                            };
-                        }
-
-                        @Override
-                        public Attributes withCache(PathCache cache) {
-                            return this;
-                        }
-                    };
-                }
-                return super.getFeature(type);
+            public PathAttributes find(final Path file) throws BackgroundException {
+                attr.set(true);
+                return new PathAttributes() {
+                    @Override
+                    public String getChecksum() {
+                        return "a";
+                    }
+                };
             }
-        }, TimeZone.getDefault(), new DisabledProgressListener());
+
+            @Override
+            public Attributes withCache(PathCache cache) {
+                return this;
+            }
+        };
+        final Find find = new Find() {
+            @Override
+            public boolean find(final Path file) throws BackgroundException {
+                found.set(true);
+                return true;
+            }
+
+            @Override
+            public Find withCache(PathCache cache) {
+                return this;
+            }
+        };
+        ComparisonServiceFilter s = new ComparisonServiceFilter(new NullSession(new Host("t")) {
+        }, TimeZone.getDefault(), new DisabledProgressListener()).withFinder(find).withAttributes(attributes);
         assertEquals(Comparison.equal, s.compare(new Path("t", EnumSet.of(Path.Type.file)), new NullLocal("t") {
             @Override
             public LocalAttributes attributes() {
@@ -94,26 +86,20 @@ public class ComparisonServiceFilterTest extends AbstractTestCase {
     @Test
     public void testCompareEqualResultDirectory() throws Exception {
         final AtomicBoolean found = new AtomicBoolean();
-        ComparisonServiceFilter s = new ComparisonServiceFilter(new NullSession(new Host("t")) {
+        final Find find = new Find() {
             @Override
-            public <T> T getFeature(final Class<T> type) {
-                if(type == Find.class) {
-                    return (T) new Find() {
-                        @Override
-                        public boolean find(final Path file) throws BackgroundException {
-                            found.set(true);
-                            return true;
-                        }
-
-                        @Override
-                        public Find withCache(PathCache cache) {
-                            return this;
-                        }
-                    };
-                }
-                return super.getFeature(type);
+            public boolean find(final Path file) throws BackgroundException {
+                found.set(true);
+                return true;
             }
-        }, TimeZone.getDefault(), new DisabledProgressListener());
+
+            @Override
+            public Find withCache(PathCache cache) {
+                return this;
+            }
+        };
+        ComparisonServiceFilter s = new ComparisonServiceFilter(new NullSession(new Host("t")) {
+        }, TimeZone.getDefault(), new DisabledProgressListener()).withFinder(find);
         assertEquals(Comparison.equal, s.compare(new Path("t", EnumSet.of(Path.Type.directory)), new NullLocal("t") {
             @Override
             public boolean exists() {
@@ -126,26 +112,20 @@ public class ComparisonServiceFilterTest extends AbstractTestCase {
     @Test
     public void testCompareLocalOnlyDirectory() throws Exception {
         final AtomicBoolean found = new AtomicBoolean();
-        ComparisonServiceFilter s = new ComparisonServiceFilter(new NullSession(new Host("t")) {
+        final Find find = new Find() {
             @Override
-            public <T> T getFeature(final Class<T> type) {
-                if(type == Find.class) {
-                    return (T) new Find() {
-                        @Override
-                        public boolean find(final Path file) throws BackgroundException {
-                            found.set(true);
-                            return false;
-                        }
-
-                        @Override
-                        public Find withCache(PathCache cache) {
-                            return this;
-                        }
-                    };
-                }
-                return super.getFeature(type);
+            public boolean find(final Path file) throws BackgroundException {
+                found.set(true);
+                return false;
             }
-        }, TimeZone.getDefault(), new DisabledProgressListener());
+
+            @Override
+            public Find withCache(PathCache cache) {
+                return this;
+            }
+        };
+        ComparisonServiceFilter s = new ComparisonServiceFilter(new NullSession(new Host("t")) {
+        }, TimeZone.getDefault(), new DisabledProgressListener()).withFinder(find);
         assertEquals(Comparison.local, s.compare(new Path("t", EnumSet.of(Path.Type.directory)), new NullLocal("t") {
             @Override
             public boolean exists() {
@@ -158,26 +138,20 @@ public class ComparisonServiceFilterTest extends AbstractTestCase {
     @Test
     public void testCompareRemoteOnlyDirectory() throws Exception {
         final AtomicBoolean found = new AtomicBoolean();
-        ComparisonServiceFilter s = new ComparisonServiceFilter(new NullSession(new Host("t")) {
+        final Find find = new Find() {
             @Override
-            public <T> T getFeature(final Class<T> type) {
-                if(type == Find.class) {
-                    return (T) new Find() {
-                        @Override
-                        public boolean find(final Path file) throws BackgroundException {
-                            found.set(true);
-                            return true;
-                        }
-
-                        @Override
-                        public Find withCache(PathCache cache) {
-                            return this;
-                        }
-                    };
-                }
-                return super.getFeature(type);
+            public boolean find(final Path file) throws BackgroundException {
+                found.set(true);
+                return true;
             }
-        }, TimeZone.getDefault(), new DisabledProgressListener());
+
+            @Override
+            public Find withCache(PathCache cache) {
+                return this;
+            }
+        };
+        ComparisonServiceFilter s = new ComparisonServiceFilter(new NullSession(new Host("t")) {
+        }, TimeZone.getDefault(), new DisabledProgressListener()).withFinder(find);
         assertEquals(Comparison.remote, s.compare(new Path("t", EnumSet.of(Path.Type.directory)), new NullLocal("t") {
             @Override
             public boolean exists() {
@@ -191,57 +165,49 @@ public class ComparisonServiceFilterTest extends AbstractTestCase {
     public void testCompareLocalResult() throws Exception {
         final AtomicBoolean found = new AtomicBoolean();
         final AtomicBoolean attr = new AtomicBoolean();
-        ComparisonServiceFilter s = new ComparisonServiceFilter(new NullSession(new Host("t")) {
+        final Find find = new Find() {
             @Override
-            public <T> T getFeature(final Class<T> type) {
-                if(type == Find.class) {
-                    return (T) new Find() {
-                        @Override
-                        public boolean find(final Path file) throws BackgroundException {
-                            found.set(true);
-                            return true;
-                        }
-
-                        @Override
-                        public Find withCache(PathCache cache) {
-                            return this;
-                        }
-                    };
-                }
-                if(type == Attributes.class) {
-                    return (T) new Attributes() {
-                        @Override
-                        public PathAttributes find(final Path file) throws BackgroundException {
-                            attr.set(true);
-                            return new PathAttributes() {
-                                @Override
-                                public String getChecksum() {
-                                    return "b";
-                                }
-
-                                @Override
-                                public long getSize() {
-                                    return 2L;
-                                }
-
-                                @Override
-                                public long getModificationDate() {
-                                    final Calendar c = Calendar.getInstance(TimeZone.getDefault());
-                                    c.set(Calendar.HOUR_OF_DAY, 0);
-                                    return c.getTimeInMillis();
-                                }
-                            };
-                        }
-
-                        @Override
-                        public Attributes withCache(PathCache cache) {
-                            return this;
-                        }
-                    };
-                }
-                return super.getFeature(type);
+            public boolean find(final Path file) throws BackgroundException {
+                found.set(true);
+                return true;
             }
-        }, TimeZone.getDefault(), new DisabledProgressListener());
+
+            @Override
+            public Find withCache(PathCache cache) {
+                return this;
+            }
+        };
+        final Attributes attributes = new Attributes() {
+            @Override
+            public PathAttributes find(final Path file) throws BackgroundException {
+                attr.set(true);
+                return new PathAttributes() {
+                    @Override
+                    public String getChecksum() {
+                        return "b";
+                    }
+
+                    @Override
+                    public long getSize() {
+                        return 2L;
+                    }
+
+                    @Override
+                    public long getModificationDate() {
+                        final Calendar c = Calendar.getInstance(TimeZone.getDefault());
+                        c.set(Calendar.HOUR_OF_DAY, 0);
+                        return c.getTimeInMillis();
+                    }
+                };
+            }
+
+            @Override
+            public Attributes withCache(PathCache cache) {
+                return this;
+            }
+        };
+        ComparisonServiceFilter s = new ComparisonServiceFilter(new NullSession(new Host("t")) {
+        }, TimeZone.getDefault(), new DisabledProgressListener()).withFinder(find).withAttributes(attributes);
         assertEquals(Comparison.local, s.compare(new Path("t", EnumSet.of(Path.Type.file)), new NullLocal("t") {
             @Override
             public LocalAttributes attributes() {
