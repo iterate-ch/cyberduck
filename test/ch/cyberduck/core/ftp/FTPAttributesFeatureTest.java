@@ -34,12 +34,11 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 
 import org.junit.Test;
 
 import java.util.EnumSet;
-import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 
@@ -48,18 +47,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class FTPAttributesFeatureTest extends AbstractTestCase {
 
-    @Test(expected = NotfoundException.class)
-    public void testNotFound() throws Exception {
-        final Host host = new Host(new FTPProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
-        ));
-        final FTPSession session = new FTPSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        new FTPAttributesFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
-    }
-
-    @Test(expected = AccessDeniedException.class)
+    @Test(expected = InteroperabilityException.class)
     public void testAttributesUnknownCommand() throws Exception {
         final Host host = new Host(new FTPProtocol(), "test.cyberduck.ch", new Credentials(
                 properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
