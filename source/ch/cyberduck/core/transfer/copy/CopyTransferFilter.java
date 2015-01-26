@@ -85,6 +85,16 @@ public class CopyTransferFilter implements TransferPathFilter {
         return this;
     }
 
+    public CopyTransferFilter withFinder(final Find finder) {
+        this.find = finder;
+        return this;
+    }
+
+    public CopyTransferFilter withAttributes(final Attributes attribute) {
+        this.attribute = attribute;
+        return this;
+    }
+
     @Override
     public boolean accept(final Path source, final Local local, final TransferStatus parent) throws BackgroundException {
         return true;

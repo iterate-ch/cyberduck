@@ -87,6 +87,11 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         return this;
     }
 
+    public AbstractDownloadFilter withAttributes(final Attributes attribute) {
+        this.attribute = attribute;
+        return this;
+    }
+
     public AbstractDownloadFilter withOptions(final DownloadFilterOptions options) {
         this.options = options;
         return this;

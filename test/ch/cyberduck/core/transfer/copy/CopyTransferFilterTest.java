@@ -42,25 +42,20 @@ public class CopyTransferFilterTest extends AbstractTestCase {
         final HashMap<Path, Path> files = new HashMap<Path, Path>();
         final Path source = new Path("a", EnumSet.of(Path.Type.directory));
         files.put(source, new Path("a", EnumSet.of(Path.Type.directory)));
-        CopyTransferFilter f = new CopyTransferFilter(new NullSession(new Host("source")), new NullSession(new Host("h")) {
+        final Find find = new Find() {
             @Override
-            public <T> T getFeature(final Class<T> type) {
-                if(type == Find.class) {
-                    return (T) new Find() {
-                        @Override
-                        public boolean find(final Path file) throws BackgroundException {
-                            return true;
-                        }
-
-                        @Override
-                        public Find withCache(PathCache cache) {
-                            return this;
-                        }
-                    };
-                }
-                return super.getFeature(type);
+            public boolean find(final Path file) throws BackgroundException {
+                return true;
             }
+
+            @Override
+            public Find withCache(PathCache cache) {
+                return this;
+            }
+        };
+        CopyTransferFilter f = new CopyTransferFilter(new NullSession(new Host("source")), new NullSession(new Host("h")) {
         }, files);
+        f.withFinder(find);
         assertTrue(f.accept(source, null, new TransferStatus().exists(true)));
         final TransferStatus status = f.prepare(source, null, new TransferStatus().exists(true));
         assertTrue(status.isExists());

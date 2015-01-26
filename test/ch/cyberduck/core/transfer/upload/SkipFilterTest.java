@@ -3,9 +3,11 @@ package ch.cyberduck.core.transfer.upload;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.test.NullLocal;
 import ch.cyberduck.core.test.NullSession;
@@ -56,6 +58,17 @@ public class SkipFilterTest extends AbstractTestCase {
     @Test
     public void testAcceptDirectory() throws Exception {
         SkipFilter f = new SkipFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host("h")));
+        f.withAttributes(new Attributes() {
+            @Override
+            public PathAttributes find(final Path file) throws BackgroundException {
+                return file.attributes();
+            }
+
+            @Override
+            public Attributes withCache(final PathCache cache) {
+                return this;
+            }
+        });
         assertTrue(f.accept(new Path("a", EnumSet.of(Path.Type.directory)), new NullLocal("a") {
             @Override
             public boolean exists() {
@@ -67,6 +80,17 @@ public class SkipFilterTest extends AbstractTestCase {
     @Test(expected = NotfoundException.class)
     public void testNotFound() throws Exception {
         SkipFilter f = new SkipFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host("h")));
+        f.withAttributes(new Attributes() {
+            @Override
+            public PathAttributes find(final Path file) throws BackgroundException {
+                return file.attributes();
+            }
+
+            @Override
+            public Attributes withCache(final PathCache cache) {
+                return this;
+            }
+        });
         assertFalse(f.accept(new Path("a", EnumSet.of(Path.Type.file)), new NullLocal("a") {
             @Override
             public boolean exists() {

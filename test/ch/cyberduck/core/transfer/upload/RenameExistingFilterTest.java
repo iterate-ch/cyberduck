@@ -95,26 +95,35 @@ public class RenameExistingFilterTest extends AbstractTestCase {
         final Path file = new Path("/t", EnumSet.of(Path.Type.file));
         final AtomicBoolean found = new AtomicBoolean();
         final AtomicInteger moved = new AtomicInteger();
+        final Find find = new Find() {
+            @Override
+            public boolean find(final Path f) throws BackgroundException {
+                if(f.equals(file)) {
+                    found.set(true);
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
+            public Find withCache(PathCache cache) {
+                return this;
+            }
+        };
+        final Attributes attributes = new Attributes() {
+            @Override
+            public PathAttributes find(final Path file) throws BackgroundException {
+                return new PathAttributes();
+            }
+
+            @Override
+            public Attributes withCache(PathCache cache) {
+                return this;
+            }
+        };
         final NullSession session = new NullSession(new Host("h")) {
             @Override
             public <T> T getFeature(final Class<T> type) {
-                if(type.equals(Find.class)) {
-                    return (T) new Find() {
-                        @Override
-                        public boolean find(final Path f) throws BackgroundException {
-                            if(f.equals(file)) {
-                                found.set(true);
-                                return true;
-                            }
-                            return false;
-                        }
-
-                        @Override
-                        public Find withCache(PathCache cache) {
-                            return this;
-                        }
-                    };
-                }
                 if(type.equals(Move.class)) {
                     return (T) new Move() {
                         @Override
@@ -133,19 +142,6 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                         @Override
                         public boolean isSupported(final Path file) {
                             return true;
-                        }
-                    };
-                }
-                if(type.equals(Attributes.class)) {
-                    return (T) new Attributes() {
-                        @Override
-                        public PathAttributes find(final Path file) throws BackgroundException {
-                            return new PathAttributes();
-                        }
-
-                        @Override
-                        public Attributes withCache(PathCache cache) {
-                            return this;
                         }
                     };
                 }
@@ -175,6 +171,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
         final UploadFilterOptions options = new UploadFilterOptions().withTemporary(true);
         final RenameExistingFilter f = new RenameExistingFilter(new DisabledUploadSymlinkResolver(), session,
                 options);
+        f.withFinder(find).withAttributes(attributes);
         assertTrue(options.temporary);
         final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus().exists(true));
         assertNotNull(status.getRename());
@@ -194,26 +191,35 @@ public class RenameExistingFilterTest extends AbstractTestCase {
         final Path file = new Path("/t", EnumSet.of(Path.Type.directory));
         final AtomicBoolean found = new AtomicBoolean();
         final AtomicBoolean moved = new AtomicBoolean();
+        final Find find = new Find() {
+            @Override
+            public boolean find(final Path f) throws BackgroundException {
+                if(f.equals(file)) {
+                    found.set(true);
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
+            public Find withCache(PathCache cache) {
+                return this;
+            }
+        };
+        final Attributes attributes = new Attributes() {
+            @Override
+            public PathAttributes find(final Path file) throws BackgroundException {
+                return new PathAttributes();
+            }
+
+            @Override
+            public Attributes withCache(PathCache cache) {
+                return this;
+            }
+        };
         final NullSession session = new NullSession(new Host("h")) {
             @Override
             public <T> T getFeature(final Class<T> type) {
-                if(type.equals(Find.class)) {
-                    return (T) new Find() {
-                        @Override
-                        public boolean find(final Path f) throws BackgroundException {
-                            if(f.equals(file)) {
-                                found.set(true);
-                                return true;
-                            }
-                            return false;
-                        }
-
-                        @Override
-                        public Find withCache(PathCache cache) {
-                            return this;
-                        }
-                    };
-                }
                 if(type.equals(Move.class)) {
                     return (T) new Move() {
                         @Override
@@ -226,19 +232,6 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                         @Override
                         public boolean isSupported(final Path file) {
                             return true;
-                        }
-                    };
-                }
-                if(type.equals(Attributes.class)) {
-                    return (T) new Attributes() {
-                        @Override
-                        public PathAttributes find(final Path file) throws BackgroundException {
-                            return new PathAttributes();
-                        }
-
-                        @Override
-                        public Attributes withCache(PathCache cache) {
-                            return this;
                         }
                     };
                 }
@@ -267,6 +260,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
         };
         final RenameExistingFilter f = new RenameExistingFilter(new DisabledUploadSymlinkResolver(), session,
                 new UploadFilterOptions().withTemporary(true));
+        f.withFinder(find).withAttributes(attributes);
         final TransferStatus status = f.prepare(file, new NullLocal("/t") {
             @Override
             public boolean isDirectory() {

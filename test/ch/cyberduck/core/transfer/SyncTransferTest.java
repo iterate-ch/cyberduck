@@ -85,7 +85,6 @@ public class SyncTransferTest extends AbstractTestCase {
         final TransferPathFilter filter = t.filter(new NullSession(new Host("t")), TransferAction.upload, new DisabledProgressListener());
         final Path test = new Path(p, "a", EnumSet.of(Path.Type.file));
         assertTrue(filter.accept(test, new NullLocal(System.getProperty("java.io.tmpdir"), "a") {
-
                     @Override
                     public boolean exists() {
                         return true;

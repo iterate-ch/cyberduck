@@ -38,43 +38,36 @@ public class RenameFilterTest extends AbstractTestCase {
         final Path file = new Path("/t", EnumSet.of(Path.Type.directory));
         final AtomicBoolean found = new AtomicBoolean();
         final AtomicBoolean moved = new AtomicBoolean();
-        final NullSession session = new NullSession(new Host("h")) {
+        final Attributes attributes = new Attributes() {
             @Override
-            public <T> T getFeature(final Class<T> type) {
-                if(type.equals(Find.class)) {
-                    return (T) new Find() {
-                        @Override
-                        public boolean find(final Path f) throws BackgroundException {
-                            if(f.equals(file)) {
-                                found.set(true);
-                                return true;
-                            }
-                            return false;
-                        }
+            public PathAttributes find(final Path file) throws BackgroundException {
+                return new PathAttributes();
+            }
 
-                        @Override
-                        public Find withCache(PathCache cache) {
-                            return this;
-                        }
-                    };
-                }
-                if(type.equals(Attributes.class)) {
-                    return (T) new Attributes() {
-                        @Override
-                        public PathAttributes find(final Path file) throws BackgroundException {
-                            return new PathAttributes();
-                        }
-
-                        @Override
-                        public Attributes withCache(PathCache cache) {
-                            return this;
-                        }
-                    };
-                }
-                return null;
+            @Override
+            public Attributes withCache(PathCache cache) {
+                return this;
             }
         };
+        final Find find = new Find() {
+            @Override
+            public boolean find(final Path f) throws BackgroundException {
+                if(f.equals(file)) {
+                    found.set(true);
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
+            public Find withCache(PathCache cache) {
+                return this;
+            }
+        };
+        final NullSession session = new NullSession(new Host("h")) {
+        };
         final RenameFilter f = new RenameFilter(new DisabledUploadSymlinkResolver(), session);
+        f.withFinder(find).withAttributes(attributes);
         final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus().exists(true));
         assertTrue(found.get());
         assertNotNull(status.getRename());

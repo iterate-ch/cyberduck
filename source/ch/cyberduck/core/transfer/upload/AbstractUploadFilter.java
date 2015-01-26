@@ -96,6 +96,16 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         return this;
     }
 
+    public AbstractUploadFilter withFinder(final Find finder) {
+        this.find = finder;
+        return this;
+    }
+
+    public AbstractUploadFilter withAttributes(final Attributes attribute) {
+        this.attribute = attribute;
+        return this;
+    }
+
     public AbstractUploadFilter withOptions(final UploadFilterOptions options) {
         this.options = options;
         return this;
