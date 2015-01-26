@@ -71,13 +71,12 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 return false;
             }
-
             if (!string.IsNullOrEmpty(t))
             {
-                if(BrowserController.Cache.get(BrowserController.Workdir).contains(new Path(BrowserController.Workdir, inputField.stringValue(), EnumSet.of(Path.Type.file)))) {
+                if(BrowserController.Cache.get(BrowserController.Workdir).contains(new Path(BrowserController.Workdir, t, EnumSet.of(Path.Type.file)))) {
                     return false;
                 }
-                if(BrowserController.Cache.get(BrowserController.Workdir).contains(new Path(BrowserController.Workdir, inputField.stringValue(), EnumSet.of(Path.Type.directory)))) {
+                if(BrowserController.Cache.get(BrowserController.Workdir).contains(new Path(BrowserController.Workdir, t, EnumSet.of(Path.Type.directory)))) {
                     return false;
                 }
                 return true;
