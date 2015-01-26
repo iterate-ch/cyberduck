@@ -22,6 +22,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -37,7 +38,7 @@ public class DefaultFindFeature implements Find {
     private Cache<Path> cache;
 
     public DefaultFindFeature(final Session session) {
-        this(session, Cache.<Path>empty());
+        this(session, PathCache.empty());
     }
 
     public DefaultFindFeature(final Session session, final Cache<Path> cache) {
@@ -52,14 +53,14 @@ public class DefaultFindFeature implements Find {
         }
         try {
             final AttributedList<Path> list;
-            if(!cache.containsKey(file.getParent().getReference())) {
+            if(!cache.containsKey(file.getParent())) {
                 list = session.list(file.getParent(), new DisabledListProgressListener());
-                cache.put(file.getParent().getReference(), list);
+                cache.put(file.getParent(), list);
             }
             else {
-                list = cache.get(file.getParent().getReference());
+                list = cache.get(file.getParent());
             }
-            return list.contains(file.getReference());
+            return list.contains(file);
         }
         catch(NotfoundException e) {
             return false;
@@ -67,7 +68,7 @@ public class DefaultFindFeature implements Find {
     }
 
     @Override
-    public Find withCache(final Cache<Path> cache) {
+    public Find withCache(final PathCache cache) {
         this.cache = cache;
         return this;
     }

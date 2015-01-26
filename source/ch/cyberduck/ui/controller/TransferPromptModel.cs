@@ -36,7 +36,7 @@ namespace Ch.Cyberduck.Ui.Controller
     public abstract class TransferPromptModel
     {
         protected static Logger log = Logger.getLogger(typeof (TransferPromptModel).FullName);
-        private readonly Cache _cache = new Cache(int.MaxValue);
+        private readonly TransferItemCache _cache = new TransferItemCache(int.MaxValue);
         private readonly TransferPromptController _controller;
         private readonly List<TransferItem> _roots = new List<TransferItem>();
         /**
@@ -86,13 +86,13 @@ namespace Ch.Cyberduck.Ui.Controller
                     Filter();
                 }
             }
-            else if (!_cache.isCached(directory.getReference()))
+            else if (!_cache.isCached(directory))
             {
                 _controller.Background(new TransferPromptListAction(this, _controller, _session, directory, Transfer,
                     _cache));
             }
             // Return list with filtered files included
-            AttributedList list = _cache.get(null == directory ? null : directory.getReference());
+            AttributedList list = _cache.get(directory);
             for (int i = 0; i < list.size(); i++)
             {
                 yield return (TransferItem) list.get(i);
@@ -213,7 +213,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private class FilterAction : WorkerBackgroundAction
         {
             public FilterAction(TransferPromptModel model, TransferPromptController controller, Session session,
-                Transfer transfer, TransferAction action, Cache cache)
+                Transfer transfer, TransferAction action, TransferItemCache cache)
                 : base(
                     controller, session,
                     new InnerTransferPromptFilterWorker(model, controller, session, transfer, action, cache))
@@ -226,7 +226,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly TransferPromptModel _model;
 
                 public InnerTransferPromptFilterWorker(TransferPromptModel model, TransferPromptController controller,
-                    Session session, Transfer transfer, TransferAction action, Cache cache)
+                    Session session, Transfer transfer, TransferAction action, TransferItemCache cache)
                     : base(session, transfer, action, cache, controller)
                 {
                     _model = model;
@@ -246,7 +246,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private class TransferPromptListAction : WorkerBackgroundAction
         {
             public TransferPromptListAction(TransferPromptModel model, TransferPromptController controller,
-                Session session, TransferItem directory, Transfer transfer, Cache cache)
+                Session session, TransferItem directory, Transfer transfer, TransferItemCache cache)
                 : base(
                     controller, session,
                     new InnerTransferPromptListWorker(model, controller, session, transfer, directory, cache))
@@ -255,12 +255,12 @@ namespace Ch.Cyberduck.Ui.Controller
 
             private class InnerTransferPromptListWorker : TransferPromptListWorker
             {
-                private readonly Cache _cache;
+                private readonly TransferItemCache _cache;
                 private readonly TransferItem _directory;
                 private readonly TransferPromptModel _model;
 
                 public InnerTransferPromptListWorker(TransferPromptModel model, TransferPromptController controller,
-                    Session session, Transfer transfer, TransferItem directory, Cache cache)
+                    Session session, Transfer transfer, TransferItem directory, TransferItemCache cache)
                     : base(session, transfer, directory.remote, directory.local, controller)
                 {
                     _model = model;
@@ -270,7 +270,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override void cleanup(object list)
                 {
-                    _cache.put(_directory.getReference(), new AttributedList((List) list));
+                    _cache.put(_directory, new AttributedList((List) list));
                     _model.Filter();
                 }
             }

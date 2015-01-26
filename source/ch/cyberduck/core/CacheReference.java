@@ -21,9 +21,6 @@ package ch.cyberduck.core;
 /**
  * @version $Id$
  */
-public interface PathReference<T> {
-
-    T unique();
-
-    String attributes();
+public interface CacheReference<T> {
+    // Marker only
 }

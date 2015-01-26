@@ -21,14 +21,5 @@ package ch.cyberduck.core;
  * @version $Id$
  */
 public interface Referenceable {
-
-    /**
-     * Default implementation returning a reference to self. You can override this
-     * if you need a different strategy to compare hashcode and equality for caching
-     * in a model.
-     *
-     * @return Reference to the path to be used in table models an file listing cache.
-     * @see ch.cyberduck.core.Cache#lookup(PathReference)
-     */
-    public abstract PathReference getReference();
+    // Marker only
 }

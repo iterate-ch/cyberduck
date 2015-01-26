@@ -19,9 +19,9 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSString;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.collections.map.LRUMap;
 
@@ -34,70 +34,45 @@ import java.util.Map;
  *
  * @version $Id$
  */
-public class NSObjectPathReference implements PathReference<NSObject> {
+public class NSObjectPathReference implements CacheReference<Path> {
 
-    private NSObject reference;
-
-    private String attributes;
-
-    private int hashcode;
-
-    private static Map<String, NSString> cache = Collections.synchronizedMap(new LRUMap(
+    private static Map<Path, NSString> cache = Collections.synchronizedMap(new LRUMap(
             PreferencesFactory.get().getInteger("browser.model.cache.size")
     ));
 
-    public NSObjectPathReference(final Path file) {
-        // Unique name
-        final DefaultPathReference d = new DefaultPathReference(file);
-        final String name = d.unique();
-        if(!cache.containsKey(name)) {
-            cache.put(name, NSString.stringWithString(name));
+    public static NSObject get(final Path file) {
+        if(!cache.containsKey(file)) {
+            cache.put(file, NSString.stringWithString(new DefaultPathReference(file).toString()));
         }
-        this.reference = cache.get(name);
-        this.attributes = d.attributes();
-        this.hashcode = name.hashCode();
+        return cache.get(file);
     }
+
+    private int hashCode;
 
     public NSObjectPathReference(final NSObject reference) {
-        this.reference = reference;
-        this.hashcode = reference.toString().hashCode();
-    }
-
-    @Override
-    public NSObject unique() {
-        return reference;
-    }
-
-    @Override
-    public String attributes() {
-        return attributes;
+        this.hashCode = reference.toString().hashCode();
     }
 
     @Override
     public int hashCode() {
-        return hashcode;
+        return hashCode;
     }
 
     @Override
-    public boolean equals(final Object o) {
-        if(this == o) {
-            return true;
-        }
-        if(o == null || getClass() != o.getClass()) {
+    public boolean equals(final Object other) {
+        if(null == other) {
             return false;
         }
-        final NSObjectPathReference that = (NSObjectPathReference) o;
-        if(hashcode != that.hashcode) {
-            return false;
+        if(other instanceof CacheReference) {
+            return this.hashCode() == other.hashCode();
         }
-        return true;
+        return false;
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("NSObjectPathReference{");
-        sb.append("reference=").append(reference);
-        sb.append(", hashcode=").append(hashcode);
+        sb.append("hashCode=").append(hashCode);
         sb.append('}');
         return sb.toString();
     }

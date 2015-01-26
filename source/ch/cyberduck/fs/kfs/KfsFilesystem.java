@@ -20,7 +20,6 @@ package ch.cyberduck.fs.kfs;
  */
 
 import ch.cyberduck.binding.ProxyController;
-import ch.cyberduck.binding.foundation.NSString;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -28,8 +27,8 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -69,7 +68,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
 
     private Session<?> session;
 
-    private Cache<Path> cache = Cache.empty();
+    private Cache<Path> cache = PathCache.empty();
 
     private RevealService reveal = RevealServiceFactory.get();
 
@@ -136,8 +135,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                             stat.size = -1;
                             return true;
                         }
-                        final Path directory = selected.getParent();
-                        final Path file = session.list(directory, new DisabledListProgressListener()).get(new NSObjectPathReference(NSString.stringWithString(path)));
+                        final Path file = new Path(path, EnumSet.of(Path.Type.file));
                         stat.type = file.isDirectory() ? KfsLibrary.kfstype_t.KFS_DIR : KfsLibrary.kfstype_t.KFS_REG;
                         if(session.getFeature(Timestamp.class) != null) {
                             stat.mtime = new KfsLibrary.kfstime(file.attributes().getModificationDate() / 1000, 0);

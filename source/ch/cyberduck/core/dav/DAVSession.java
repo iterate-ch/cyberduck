@@ -178,7 +178,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                             host, e.getResponsePhrase()));
                     cancel.verify();
                     // Possibly only HEAD requests are not allowed
-                    cache.put(home.getReference(), this.list(home, new DisabledListProgressListener()));
+                    cache.put(home, this.list(home, new DisabledListProgressListener()));
                 }
                 else if(e.getStatusCode() == HttpStatus.SC_BAD_REQUEST) {
                     if(preferences.getBoolean("webdav.basic.preemptive")) {

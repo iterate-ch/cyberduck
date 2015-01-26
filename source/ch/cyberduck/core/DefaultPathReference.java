@@ -23,7 +23,8 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * @version $Id$
  */
-public class DefaultPathReference implements PathReference<String> {
+public class
+        DefaultPathReference implements CacheReference<Path> {
 
     private Path path;
 
@@ -34,18 +35,6 @@ public class DefaultPathReference implements PathReference<String> {
         this.path = path;
     }
 
-    /**
-     * Obtain a string representation of the path that is unique for versioned files.
-     *
-     * @return The absolute path with version ID and checksum if any.
-     */
-    @Override
-    public String unique() {
-        return String.format("%s-%s%s",
-                String.valueOf(path.getType()), this.attributes(), path.getAbsolute());
-    }
-
-    @Override
     public String attributes() {
         String qualifier = StringUtils.EMPTY;
         if(StringUtils.isNotBlank(path.attributes().getRegion())) {
@@ -61,12 +50,18 @@ public class DefaultPathReference implements PathReference<String> {
 
     @Override
     public int hashCode() {
-        return this.unique().hashCode();
+        return this.toString().hashCode();
     }
 
+    /**
+     * Obtain a string representation of the path that is unique for versioned files.
+     *
+     * @return The absolute path with version ID and checksum if any.
+     */
     @Override
     public String toString() {
-        return this.unique();
+        return String.format("%s-%s%s",
+                String.valueOf(path.getType()), this.attributes(), path.getAbsolute());
     }
 
     /**
@@ -79,7 +74,7 @@ public class DefaultPathReference implements PathReference<String> {
         if(null == other) {
             return false;
         }
-        if(other instanceof PathReference) {
+        if(other instanceof CacheReference) {
             return this.hashCode() == other.hashCode();
         }
         return false;

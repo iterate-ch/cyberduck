@@ -43,8 +43,8 @@ public class FTPUnixPermissionFeatureTest extends AbstractTestCase {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature(session).touch(test);
         new FTPUnixPermissionFeature(session).setUnixPermission(test, new Permission(666));
-        assertEquals("666", session.list(home, new DisabledListProgressListener()).get(test.getReference()).attributes().getPermission().getMode());
-        new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        assertEquals("666", session.list(home, new DisabledListProgressListener()).get(test).attributes().getPermission().getMode());
+        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }
 }

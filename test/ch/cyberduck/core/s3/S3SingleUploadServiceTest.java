@@ -80,7 +80,7 @@ public class S3SingleUploadServiceTest extends AbstractTestCase {
         final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertEquals("text/plain", metadata.get("Content-Type"));
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }
 
@@ -115,7 +115,7 @@ public class S3SingleUploadServiceTest extends AbstractTestCase {
         final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertEquals("text/plain", metadata.get("Content-Type"));
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }
 
@@ -152,9 +152,9 @@ public class S3SingleUploadServiceTest extends AbstractTestCase {
                 new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(new S3FindFeature(session).find(test));
         final PathAttributes attributes = session.list(container,
-                new DisabledListProgressListener()).get(test.getReference()).attributes();
+                new DisabledListProgressListener()).get(test).attributes();
         assertEquals(random.getBytes().length, attributes.getSize());
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }
 

@@ -31,7 +31,6 @@ import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.IOKitSleepPreventer;
 import ch.cyberduck.core.Keychain;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.RendezvousResponder;
 import ch.cyberduck.core.SystemConfigurationProxy;
 import ch.cyberduck.core.SystemConfigurationReachability;
@@ -316,7 +315,6 @@ public class UserDefaultsPreferences extends Preferences {
         defaults.put("factory.iconservice.class", WorkspaceIconService.class.getName());
         defaults.put("factory.filedescriptor.class", LaunchServicesFileDescriptor.class.getName());
         defaults.put("factory.schemehandler.class", LaunchServicesSchemeHandler.class.getName());
-        defaults.put("factory.pathreference.class", NSObjectPathReference.class.getName());
         defaults.put("factory.iconcache.class", NSImageIconCache.class.getName());
         defaults.put("factory.workingdirectory.class", FileManagerWorkingDirectoryFinder.class.getName());
     }

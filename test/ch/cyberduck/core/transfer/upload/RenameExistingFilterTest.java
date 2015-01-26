@@ -2,12 +2,12 @@ package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
@@ -110,7 +110,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                         }
 
                         @Override
-                        public Find withCache(Cache<Path> cache) {
+                        public Find withCache(PathCache cache) {
                             return this;
                         }
                     };
@@ -144,7 +144,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                         }
 
                         @Override
-                        public Attributes withCache(Cache<Path> cache) {
+                        public Attributes withCache(PathCache cache) {
                             return this;
                         }
                     };
@@ -158,7 +158,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                         }
 
                         @Override
-                        public Append append(final Path file, final Long length, final Cache cache) throws BackgroundException {
+                        public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
                             fail();
                             return new Append(1L);
                         }
@@ -209,7 +209,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                         }
 
                         @Override
-                        public Find withCache(Cache<Path> cache) {
+                        public Find withCache(PathCache cache) {
                             return this;
                         }
                     };
@@ -237,7 +237,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                         }
 
                         @Override
-                        public Attributes withCache(Cache<Path> cache) {
+                        public Attributes withCache(PathCache cache) {
                             return this;
                         }
                     };
@@ -251,7 +251,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                         }
 
                         @Override
-                        public Append append(final Path file, final Long length, final Cache cache) throws BackgroundException {
+                        public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
                             fail();
                             return new Append(0L);
                         }

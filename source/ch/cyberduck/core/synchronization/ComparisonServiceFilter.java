@@ -18,11 +18,11 @@ package ch.cyberduck.core.synchronization;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -62,7 +62,7 @@ public class ComparisonServiceFilter implements ComparePathFilter {
         this.progress = listener;
     }
 
-    public ComparisonServiceFilter withCache(final Cache cache) {
+    public ComparisonServiceFilter withCache(final PathCache cache) {
         finder.withCache(cache);
         attribute.withCache(cache);
         return this;

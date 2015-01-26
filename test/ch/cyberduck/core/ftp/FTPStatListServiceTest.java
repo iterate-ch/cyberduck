@@ -61,9 +61,9 @@ public class FTPStatListServiceTest extends AbstractTestCase {
                 new CompositeFileEntryParser(Arrays.asList(new UnixFTPEntryParser())));
         final Path directory = session.workdir();
         final AttributedList<Path> list = service.list(directory, new DisabledListProgressListener());
-        assertTrue(list.contains(new Path(directory, "test", EnumSet.of(Path.Type.file)).getReference()));
+        assertTrue(list.contains(new Path(directory, "test", EnumSet.of(Path.Type.file))));
         assertEquals(new Permission(Permission.Action.read_write, Permission.Action.read_write, Permission.Action.read_write),
-                list.get(new Path(directory, "test", EnumSet.of(Path.Type.file)).getReference()).attributes().getPermission());
+                list.get(new Path(directory, "test", EnumSet.of(Path.Type.file))).attributes().getPermission());
         session.close();
     }
 

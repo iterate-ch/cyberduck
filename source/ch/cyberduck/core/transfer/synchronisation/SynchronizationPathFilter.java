@@ -18,9 +18,9 @@ package ch.cyberduck.core.transfer.synchronisation;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.synchronization.ComparePathFilter;
@@ -66,7 +66,7 @@ public class SynchronizationPathFilter implements TransferPathFilter {
     }
 
     @Override
-    public TransferPathFilter withCache(final Cache<Path> cache) {
+    public TransferPathFilter withCache(final PathCache cache) {
         downloadFilter.withCache(cache);
         uploadFilter.withCache(cache);
         return this;

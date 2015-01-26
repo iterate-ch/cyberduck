@@ -28,7 +28,7 @@ import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.NSObjectPathReference;
-import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -124,7 +124,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
 
     protected AttributedList<TransferItem> get(final TransferItem directory) {
         // Return list with filtered files included
-        return cache.get(null == directory ? null : directory.getReference());
+        return cache.get(directory);
     }
 
     public TransferStatus getStatus(final TransferItem file) {
@@ -144,12 +144,12 @@ public abstract class TransferPromptModel extends OutlineDataSource {
                 this.filter();
             }
         }
-        else if(!cache.isCached(directory.getReference())) {
-            controller.background(new WorkerBackgroundAction<List<TransferItem>>(controller, session, Cache.<Path>empty(),
+        else if(!cache.isCached(directory)) {
+            controller.background(new WorkerBackgroundAction<List<TransferItem>>(controller, session, PathCache.empty(),
                     new TransferPromptListWorker(session, transfer, directory.remote, directory.local, controller) {
                         @Override
                         public void cleanup(final List<TransferItem> list) {
-                            cache.put(directory.getReference(), new AttributedList<TransferItem>(list));
+                            cache.put(directory, new AttributedList<TransferItem>(list));
                             filter();
                         }
                     }
@@ -159,7 +159,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
     }
 
     private void filter() {
-        controller.background(new WorkerBackgroundAction<Map<TransferItem, TransferStatus>>(controller, session, Cache.<Path>empty(),
+        controller.background(new WorkerBackgroundAction<Map<TransferItem, TransferStatus>>(controller, session, PathCache.empty(),
                         new TransferPromptFilterWorker(session, transfer, action, cache, controller) {
                             @Override
                             public void cleanup(final Map<TransferItem, TransferStatus> accepted) {
@@ -223,7 +223,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
     @Override
     public NSObject outlineView_child_ofItem(final NSOutlineView view, final NSInteger index, final NSObject item) {
         final AttributedList<TransferItem> children = this.get(null == item ? null : cache.lookup(new NSObjectPathReference(item)));
-        return (NSObject) children.get(index.intValue()).getReference().unique();
+        return NSObjectPathReference.get(children.get(index.intValue()).remote);
     }
 
     @Override

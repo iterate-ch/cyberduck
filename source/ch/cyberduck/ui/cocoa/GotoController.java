@@ -69,12 +69,12 @@ public class GotoController extends AlertController {
 
         @Override
         public NSInteger numberOfItemsInComboBox(NSComboBox combo) {
-            return new NSInteger(cache.get(workdir.getReference()).filter(comparator, filter).size());
+            return new NSInteger(cache.get(workdir).filter(comparator, filter).size());
         }
 
         @Override
         public NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final NSInteger row) {
-            return NSString.stringWithString(cache.get(workdir.getReference())
+            return NSString.stringWithString(cache.get(workdir)
                     .filter(comparator, filter).get(row.intValue()).getName());
         }
     }

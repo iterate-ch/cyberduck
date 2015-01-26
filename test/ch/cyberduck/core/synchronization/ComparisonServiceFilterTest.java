@@ -1,12 +1,12 @@
 package ch.cyberduck.core.synchronization;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Find;
@@ -44,7 +44,7 @@ public class ComparisonServiceFilterTest extends AbstractTestCase {
                         }
 
                         @Override
-                        public Find withCache(Cache<Path> cache) {
+                        public Find withCache(PathCache cache) {
                             return this;
                         }
                     };
@@ -63,7 +63,7 @@ public class ComparisonServiceFilterTest extends AbstractTestCase {
                         }
 
                         @Override
-                        public Attributes withCache(Cache<Path> cache) {
+                        public Attributes withCache(PathCache cache) {
                             return this;
                         }
                     };
@@ -106,7 +106,7 @@ public class ComparisonServiceFilterTest extends AbstractTestCase {
                         }
 
                         @Override
-                        public Find withCache(Cache<Path> cache) {
+                        public Find withCache(PathCache cache) {
                             return this;
                         }
                     };
@@ -138,7 +138,7 @@ public class ComparisonServiceFilterTest extends AbstractTestCase {
                         }
 
                         @Override
-                        public Find withCache(Cache<Path> cache) {
+                        public Find withCache(PathCache cache) {
                             return this;
                         }
                     };
@@ -170,7 +170,7 @@ public class ComparisonServiceFilterTest extends AbstractTestCase {
                         }
 
                         @Override
-                        public Find withCache(Cache<Path> cache) {
+                        public Find withCache(PathCache cache) {
                             return this;
                         }
                     };
@@ -203,7 +203,7 @@ public class ComparisonServiceFilterTest extends AbstractTestCase {
                         }
 
                         @Override
-                        public Find withCache(Cache<Path> cache) {
+                        public Find withCache(PathCache cache) {
                             return this;
                         }
                     };
@@ -234,7 +234,7 @@ public class ComparisonServiceFilterTest extends AbstractTestCase {
                         }
 
                         @Override
-                        public Attributes withCache(Cache<Path> cache) {
+                        public Attributes withCache(PathCache cache) {
                             return this;
                         }
                     };

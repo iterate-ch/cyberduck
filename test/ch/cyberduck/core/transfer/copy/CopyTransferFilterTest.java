@@ -1,10 +1,10 @@
 package ch.cyberduck.core.transfer.copy;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
@@ -53,7 +53,7 @@ public class CopyTransferFilterTest extends AbstractTestCase {
                         }
 
                         @Override
-                        public Find withCache(Cache<Path> cache) {
+                        public Find withCache(PathCache cache) {
                             return this;
                         }
                     };
@@ -139,7 +139,7 @@ public class CopyTransferFilterTest extends AbstractTestCase {
                 }
                 return super.getFeature(type);
             }
-        }, files, new UploadFilterOptions().withPermission(true).withTimestamp(true), Cache.<Path>empty());
+        }, files, new UploadFilterOptions().withPermission(true).withTimestamp(true), PathCache.empty());
         final NullSession session = new NullSession(new Host("h"));
         final TransferStatus status = f.prepare(source, null, new TransferStatus());
         f.complete(source, null, new TransferOptions(), status, new DisabledProgressListener());

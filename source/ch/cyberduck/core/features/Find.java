@@ -17,8 +17,8 @@ package ch.cyberduck.core.features;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 
 /**
@@ -35,5 +35,5 @@ public interface Find {
      * Decorate with cache
      * @param cache Path cache
      */
-    Find withCache(Cache<Path> cache);
+    Find withCache(PathCache cache);
 }

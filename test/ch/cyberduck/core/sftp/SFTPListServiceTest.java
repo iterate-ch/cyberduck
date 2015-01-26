@@ -43,14 +43,14 @@ public class SFTPListServiceTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new DefaultHomeFinderService(session).find();
         final AttributedList<Path> list = new SFTPListService(session).list(home, new DisabledListProgressListener());
-        assertTrue(list.contains(new Path(home, "test", EnumSet.of(Path.Type.file)).getReference()));
+        assertTrue(list.contains(new Path(home, "test", EnumSet.of(Path.Type.file))));
         assertEquals(new Permission(Permission.Action.read_write, Permission.Action.read_write, Permission.Action.read_write),
-                list.get(new Path(home, "test", EnumSet.of(Path.Type.file)).getReference()).attributes().getPermission());
-        assertTrue(list.contains(new Path(home, "test.directory", EnumSet.of(Path.Type.file)).getReference()));
-        assertTrue(list.contains(new Path(home, "test.symlink", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink)).getReference()));
-        assertEquals(new Path(home, "test", EnumSet.of(Path.Type.file)), list.get(new Path(home, "test.symlink", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink)).getReference()).getSymlinkTarget());
-        assertTrue(list.contains(new Path(home, "test.symlink-absolute", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink)).getReference()));
-        assertEquals(new Path(home, "test", EnumSet.of(Path.Type.file)), list.get(new Path(home, "test.symlink-absolute", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink)).getReference()).getSymlinkTarget());
+                list.get(new Path(home, "test", EnumSet.of(Path.Type.file))).attributes().getPermission());
+        assertTrue(list.contains(new Path(home, "test.directory", EnumSet.of(Path.Type.file))));
+        assertTrue(list.contains(new Path(home, "test.symlink", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink))));
+        assertEquals(new Path(home, "test", EnumSet.of(Path.Type.file)), list.get(new Path(home, "test.symlink", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink))).getSymlinkTarget());
+        assertTrue(list.contains(new Path(home, "test.symlink-absolute", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink))));
+        assertEquals(new Path(home, "test", EnumSet.of(Path.Type.file)), list.get(new Path(home, "test.symlink-absolute", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink))).getSymlinkTarget());
         session.close();
     }
 
@@ -61,11 +61,11 @@ public class SFTPListServiceTest extends AbstractTestCase {
         ));
         final SFTPSession session = new SFTPSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, Cache.<Path>empty());
+                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
         final Path home = new DefaultHomeFinderService(session).find();
         final AttributedList<Path> list = new SFTPListService(session).list(home, new DisabledListProgressListener());
-        assertTrue(list.contains(new Path(home, "notfound", EnumSet.of(Path.Type.file, Path.Type.symboliclink)).getReference()));
+        assertTrue(list.contains(new Path(home, "notfound", EnumSet.of(Path.Type.file, Path.Type.symboliclink))));
         assertEquals(new Path(home, "test.symlink-invalid", EnumSet.of(Path.Type.file)),
-                list.get(new Path(home, "notfound", EnumSet.of(Path.Type.file, Path.Type.symboliclink)).getReference()).getSymlinkTarget());
+                list.get(new Path(home, "notfound", EnumSet.of(Path.Type.file, Path.Type.symboliclink))).getSymlinkTarget());
     }
 }

@@ -17,10 +17,10 @@ package ch.cyberduck.core.transfer.download;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
@@ -53,7 +53,7 @@ public class ResumeFilter extends AbstractDownloadFilter {
         this.attribute = session.getFeature(Attributes.class);
     }
 
-    public AbstractDownloadFilter withCache(final Cache<Path> cache) {
+    public AbstractDownloadFilter withCache(final PathCache cache) {
         attribute.withCache(cache);
         return super.withCache(cache);
     }

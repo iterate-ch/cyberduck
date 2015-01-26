@@ -18,7 +18,6 @@ package ch.cyberduck.core.transfer;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Host;
@@ -26,6 +25,7 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.Session;
@@ -163,7 +163,7 @@ public abstract class Transfer implements Serializable {
         this.bandwidth = bandwidth;
     }
 
-    public abstract Transfer withCache(final Cache cache);
+    public abstract Transfer withCache(final PathCache cache);
 
     public <T> T serialize(final Serializer dict) {
         dict.setStringForKey(String.valueOf(this.getType().name()), "Type");

@@ -21,7 +21,6 @@ package ch.cyberduck.core.worker;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.PathReference;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -78,7 +77,7 @@ public class TransferPromptFilterWorker extends Worker<Map<TransferItem, Transfe
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter cache %s with filter %s", cache, filter));
         }
-        for(PathReference key : cache.keySet()) {
+        for(TransferItem key : cache.keySet()) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }

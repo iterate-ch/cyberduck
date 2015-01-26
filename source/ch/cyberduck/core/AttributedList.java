@@ -25,8 +25,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A sortable list with a map to lookup values by key.
@@ -71,49 +69,8 @@ public class AttributedList<E extends Referenceable> extends ArrayList<E> {
         return attributes;
     }
 
-    /**
-     * Additional key,value table to lookup paths by reference
-     */
-    private Map<PathReference, E> references
-            = new ConcurrentHashMap<PathReference, E>();
-
-    @Override
-    public boolean add(E path) {
-        final E previous = references.put(path.getReference(), path);
-        if(null != previous) {
-            log.warn(String.format("Replacing %s with %s in file listing.", previous, path));
-        }
-        return super.add(path);
-    }
-
-    @Override
-    public boolean addAll(java.util.Collection<? extends E> c) {
-        for(E path : c) {
-            final E previous = references.put(path.getReference(), path);
-            if(null != previous) {
-                log.warn(String.format("Replacing %s with %s in file listing.", previous, path));
-            }
-        }
-        return super.addAll(c);
-    }
-
-    public E get(final PathReference reference) {
-        return references.get(reference);
-    }
-
-    public boolean contains(final PathReference reference) {
-        return references.containsKey(reference);
-    }
-
-    public int indexOf(final PathReference reference) {
-        return super.indexOf(references.get(reference));
-    }
-
-    @Override
-    public E remove(final int index) {
-        final E removed = super.remove(index);
-        references.remove(removed.getReference());
-        return removed;
+    public E get(final E reference) {
+        return super.get(this.indexOf(reference));
     }
 
     /**
@@ -135,7 +92,7 @@ public class AttributedList<E extends Referenceable> extends ArrayList<E> {
      * @param filter Filter
      * @return Unsorted filtered list
      */
-    public AttributedList<E> filter(final Filter filter) {
+    public AttributedList<E> filter(final Filter<E> filter) {
         return this.filter(null, filter);
     }
 
@@ -193,7 +150,6 @@ public class AttributedList<E extends Referenceable> extends ArrayList<E> {
      */
     @Override
     public void clear() {
-        references.clear();
         attributes.clear();
         super.clear();
     }

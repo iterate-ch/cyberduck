@@ -2,7 +2,6 @@ package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -11,6 +10,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
@@ -71,10 +71,10 @@ public class DAVFindFeatureTest extends AbstractTestCase {
 
     @Test
     public void testCacheNotFound() throws Exception {
-        final Cache cache = new Cache();
+        final PathCache cache = new PathCache(1);
         final AttributedList<Path> list = AttributedList.emptyList();
         list.attributes().addHidden(new Path("/g/gd", EnumSet.of(Path.Type.file)));
-        cache.put(new Path("/g", EnumSet.of(Path.Type.directory)).getReference(), list);
+        cache.put(new Path("/g", EnumSet.of(Path.Type.directory)), list);
         final Find finder = new DAVFindFeature(new DAVSession(new Host("t")) {
             @Override
             public DAVClient getClient() {
@@ -87,9 +87,9 @@ public class DAVFindFeatureTest extends AbstractTestCase {
 
     @Test
     public void testCacheFound() throws Exception {
-        final Cache cache = new Cache();
+        final PathCache cache = new PathCache(1);
         final AttributedList<Path> list = new AttributedList<Path>(Collections.singletonList(new Path("/g/gd", EnumSet.of(Path.Type.file))));
-        cache.put(new Path("/g", EnumSet.of(Path.Type.directory)).getReference(), list);
+        cache.put(new Path("/g", EnumSet.of(Path.Type.directory)), list);
         final Find finder = new DAVFindFeature(new DAVSession(new Host("t")) {
             @Override
             public DAVClient getClient() {

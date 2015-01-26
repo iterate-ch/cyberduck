@@ -17,9 +17,9 @@ package ch.cyberduck.core.sftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -61,7 +61,7 @@ public class SFTPAttributesFeature implements Attributes {
     }
 
     @Override
-    public Attributes withCache(Cache<Path> cache) {
+    public Attributes withCache(final PathCache cache) {
         parent.withCache(cache);
         return this;
     }

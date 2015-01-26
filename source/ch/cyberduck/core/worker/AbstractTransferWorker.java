@@ -28,6 +28,7 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SleepPreventer;
 import ch.cyberduck.core.SleepPreventerFactory;
+import ch.cyberduck.core.TransferItemCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.StreamListener;
@@ -97,7 +98,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
      * Workload
      */
     private Cache<TransferItem> cache
-            = new Cache<TransferItem>(Integer.MAX_VALUE);
+            = new TransferItemCache(Integer.MAX_VALUE);
 
     private FailureDiagnostics<Exception> diagnostics
             = new DefaultFailureDiagnostics();
@@ -243,7 +244,8 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
         if(this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
-        if(prompt.isSelected(new TransferItem(file, local))) {
+        final TransferItem item = new TransferItem(file, local);
+        if(prompt.isSelected(item)) {
             // Only prepare the path it will be actually transferred
             if(filter.accept(file, local, parent)) {
                 if(log.isInfoEnabled()) {
@@ -271,7 +273,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                                 final List<TransferItem> children
                                         = transfer.list(session, file, local, new ActionListProgressListener(AbstractTransferWorker.this, progressListener));
                                 // Put into cache for later reference when transferring
-                                cache.put(file.getReference(), new AttributedList<TransferItem>(children));
+                                cache.put(item, new AttributedList<TransferItem>(children));
                                 // Call recursively
                                 for(TransferItem f : children) {
                                     // Change download path relative to parent local folder
@@ -375,11 +377,11 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                         }
                         // Recursive
                         if(item.remote.isDirectory()) {
-                            for(TransferItem f : cache.get(item.remote.getReference())) {
+                            for(TransferItem f : cache.get(item)) {
                                 // Recursive
                                 transfer(f, filter);
                             }
-                            cache.remove(item.remote.getReference());
+                            cache.remove(item);
                         }
                         if(!status.isFailure()) {
                             // Post process of file.

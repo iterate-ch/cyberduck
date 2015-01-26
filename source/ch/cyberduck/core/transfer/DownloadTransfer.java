@@ -18,7 +18,6 @@ package ch.cyberduck.core.transfer;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Host;
@@ -27,6 +26,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
@@ -68,8 +68,8 @@ public class DownloadTransfer extends Transfer {
 
     private Comparator<Path> comparator;
 
-    private Cache<Path> cache
-            = new Cache<Path>(PreferencesFactory.get().getInteger("transfer.cache.size"));
+    private PathCache cache
+            = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
     private DownloadSymlinkResolver symlinkResolver;
 
@@ -106,7 +106,7 @@ public class DownloadTransfer extends Transfer {
     }
 
     @Override
-    public DownloadTransfer withCache(final Cache cache) {
+    public DownloadTransfer withCache(final PathCache cache) {
         this.cache = cache;
         return this;
     }
@@ -131,12 +131,12 @@ public class DownloadTransfer extends Transfer {
         }
         else {
             final AttributedList<Path> list;
-            if(cache.containsKey(directory.getReference())) {
-                list = cache.get(directory.getReference());
+            if(cache.containsKey(directory)) {
+                list = cache.get(directory);
             }
             else {
                 list = session.list(directory, listener);
-                cache.put(directory.getReference(), list);
+                cache.put(directory, list);
             }
             final List<TransferItem> children = new ArrayList<TransferItem>();
             // Return copy with filtered result only

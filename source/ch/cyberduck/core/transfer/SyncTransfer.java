@@ -18,12 +18,12 @@ package ch.cyberduck.core.transfer;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -64,8 +64,8 @@ public class SyncTransfer extends Transfer {
 
     private TransferItem item;
 
-    private Cache<Path> cache
-            = new Cache<Path>(PreferencesFactory.get().getInteger("transfer.cache.size"));
+    private PathCache cache
+            = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
     public SyncTransfer(final Host host, final TransferItem item) {
         super(host, Collections.singletonList(item),
@@ -80,7 +80,7 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
-    public Transfer withCache(final Cache cache) {
+    public Transfer withCache(final PathCache cache) {
         this.cache = cache;
         upload.withCache(cache);
         download.withCache(cache);

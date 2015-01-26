@@ -1,7 +1,6 @@
 package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -12,6 +11,7 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.StreamCopier;
@@ -53,8 +53,8 @@ public class FTPWriteFeatureTest extends AbstractTestCase {
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         IOUtils.closeQuietly(out);
         assertTrue(session.getFeature(Find.class).find(test));
-        assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
-        assertEquals(content.length, new FTPWriteFeature(session).append(test, status.getLength(), Cache.<Path>empty()).size, 0L);
+        assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
+        assertEquals(content.length, new FTPWriteFeature(session).append(test, status.getLength(), PathCache.empty()).size, 0L);
         {
             final InputStream in = new FTPReadFeature(session).read(test, new TransferStatus().length(content.length));
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
@@ -71,7 +71,7 @@ public class FTPWriteFeatureTest extends AbstractTestCase {
             System.arraycopy(content, 1, reference, 0, content.length - 1);
             assertArrayEquals(reference, buffer);
         }
-        new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }
 
@@ -96,9 +96,9 @@ public class FTPWriteFeatureTest extends AbstractTestCase {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertEquals(false, new FTPWriteFeature(session).append(
-                new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 0L, Cache.<Path>empty()).append);
+                new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 0L, PathCache.empty()).append);
         assertEquals(true, new FTPWriteFeature(session).append(
-                new Path(session.workdir(), "test", EnumSet.of(Path.Type.file)), 0L, Cache.<Path>empty()).append);
+                new Path(session.workdir(), "test", EnumSet.of(Path.Type.file)), 0L, PathCache.empty()).append);
 
     }
 }

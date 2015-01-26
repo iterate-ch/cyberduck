@@ -1,7 +1,6 @@
 package ch.cyberduck.core.azure;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -11,6 +10,7 @@ import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.logging.LoggingConfiguration;
 
 import org.junit.Test;
@@ -32,7 +32,7 @@ public class AzureLoggingFeatureTest extends AbstractTestCase {
         ));
         final AzureSession session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, Cache.<Path>empty());
+                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
         final Path container = new Path("/cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final AzureLoggingFeature feature = new AzureLoggingFeature(session);
         feature.setConfiguration(container, new LoggingConfiguration(false));

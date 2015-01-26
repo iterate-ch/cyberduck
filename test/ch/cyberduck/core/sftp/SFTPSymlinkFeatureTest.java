@@ -41,7 +41,7 @@ public class SFTPSymlinkFeatureTest extends AbstractTestCase {
         new SFTPSymlinkFeature(session).symlink(link, target.getName());
         assertTrue(new SFTPFindFeature(session).find(link));
         assertEquals(EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink),
-                session.list(new DefaultHomeFinderService(session).find(), new DisabledListProgressListener()).get(link.getReference()).getType());
+                session.list(new DefaultHomeFinderService(session).find(), new DisabledListProgressListener()).get(link).getType());
         new SFTPDeleteFeature(session).delete(Collections.singletonList(link), new DisabledLoginCallback(), new DisabledProgressListener());
         assertFalse(new SFTPFindFeature(session).find(link));
         assertTrue(new SFTPFindFeature(session).find(target));

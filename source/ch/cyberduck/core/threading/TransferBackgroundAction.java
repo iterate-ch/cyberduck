@@ -17,13 +17,12 @@ package ch.cyberduck.core.threading;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.KeychainLoginService;
 import ch.cyberduck.core.LoginCallbackFactory;
 import ch.cyberduck.core.LoginService;
 import ch.cyberduck.core.PasswordStoreFactory;
-import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
@@ -88,7 +87,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
 
     public TransferBackgroundAction(final Controller controller,
                                     final Session session,
-                                    final Cache cache,
+                                    final PathCache cache,
                                     final TransferListener listener,
                                     final Transfer transfer,
                                     final TransferOptions options) {
@@ -100,7 +99,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
 
     public TransferBackgroundAction(final Controller controller,
                                     final Session session,
-                                    final Cache cache,
+                                    final PathCache cache,
                                     final TransferListener listener,
                                     final ProgressListener progress,
                                     final TranscriptListener transcript,
@@ -114,7 +113,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
 
     public TransferBackgroundAction(final Controller controller,
                                     final Session session,
-                                    final Cache cache,
+                                    final PathCache cache,
                                     final TransferListener listener,
                                     final ProgressListener progress,
                                     final TranscriptListener transcript,
@@ -128,7 +127,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
 
     public TransferBackgroundAction(final Controller controller,
                                     final Session session,
-                                    final Cache cache,
+                                    final PathCache cache,
                                     final TransferListener listener,
                                     final ProgressListener progress,
                                     final TranscriptListener transcript,
@@ -145,7 +144,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
     public TransferBackgroundAction(final LoginService login,
                                     final Controller controller,
                                     final Session session,
-                                    final Cache cache,
+                                    final PathCache cache,
                                     final TransferListener listener,
                                     final ProgressListener progress,
                                     final TranscriptListener transcript,
@@ -181,7 +180,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
         final boolean opened = super.connect(session);
         if(transfer instanceof CopyTransfer) {
             final Session target = ((CopyTransfer) transfer).getDestination();
-            if(connection.check(target, Cache.<Path>empty())) {
+            if(connection.check(target, PathCache.empty())) {
                 // New connection opened
                 growl.notify("Connection opened", session.getHost().getHostname());
             }

@@ -27,7 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Locale;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SearchFilter implements Filter<Path> {
 
@@ -54,7 +54,7 @@ public class SearchFilter implements Filter<Path> {
         }
         if(file.isDirectory()) {
             // #471. Expanded item children may match search string
-            return cache.isCached(file.getReference());
+            return cache.isCached(file);
         }
         return false;
     }

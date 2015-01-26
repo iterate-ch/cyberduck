@@ -45,7 +45,7 @@ public class SwiftSessionTest extends AbstractTestCase {
         ));
         final SwiftSession session = new SwiftSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, Cache.<Path>empty());
+                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
         assertNotNull(session.workdir());
         assertTrue(session.isConnected());
         final Path container = new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
@@ -67,7 +67,7 @@ public class SwiftSessionTest extends AbstractTestCase {
         ));
         final SwiftSession session = new SwiftSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, Cache.<Path>empty());
+                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
         assertNotNull(session.workdir());
         assertTrue(session.isConnected());
         session.close();
@@ -99,7 +99,7 @@ public class SwiftSessionTest extends AbstractTestCase {
         ));
         final SwiftSession session = new SwiftSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, Cache.<Path>empty());
+                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
         assertNotNull(session.workdir());
         assertTrue(session.isConnected());
         session.close();
@@ -120,7 +120,7 @@ public class SwiftSessionTest extends AbstractTestCase {
         ));
         final SwiftSession session = new SwiftSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, Cache.<Path>empty());
+                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
         assertNotNull(session.workdir());
         assertTrue(session.isConnected());
         session.close();

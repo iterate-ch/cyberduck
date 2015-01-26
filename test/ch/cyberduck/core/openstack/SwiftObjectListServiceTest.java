@@ -148,20 +148,20 @@ public class SwiftObjectListServiceTest extends AbstractTestCase {
         {
             final AttributedList<Path> list = new SwiftObjectListService(session).list(container, new DisabledListProgressListener());
             assertTrue(list.contains(base));
-            assertEquals(EnumSet.of(Path.Type.file), list.get(base.getReference()).getType());
+            assertEquals(EnumSet.of(Path.Type.file), list.get(base).getType());
             final Path placeholder = new Path(container, basename, EnumSet.of(Path.Type.directory, Path.Type.placeholder));
             assertTrue(list.contains(placeholder));
-            assertEquals(EnumSet.of(Path.Type.directory, Path.Type.placeholder), list.get(placeholder.getReference()).getType());
+            assertEquals(EnumSet.of(Path.Type.directory, Path.Type.placeholder), list.get(placeholder).getType());
         }
         {
             final AttributedList<Path> list = new SwiftObjectListService(session).list(new Path(container, basename, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
             assertTrue(list.contains(child));
-            assertEquals(EnumSet.of(Path.Type.file), list.get(child.getReference()).getType());
+            assertEquals(EnumSet.of(Path.Type.file), list.get(child).getType());
         }
         {
             final AttributedList<Path> list = new SwiftObjectListService(session).list(new Path(container, basename, EnumSet.of(Path.Type.directory, Path.Type.placeholder)), new DisabledListProgressListener());
             assertTrue(list.contains(child));
-            assertEquals(EnumSet.of(Path.Type.file), list.get(child.getReference()).getType());
+            assertEquals(EnumSet.of(Path.Type.file), list.get(child).getType());
         }
         new SwiftDeleteFeature(session).delete(Arrays.asList(base, child), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();

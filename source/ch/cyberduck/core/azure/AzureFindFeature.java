@@ -19,8 +19,8 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -42,11 +42,11 @@ public class AzureFindFeature implements Find {
     private PathContainerService containerService
             = new AzurePathContainerService();
 
-    private Cache<Path> cache;
+    private PathCache cache;
 
     public AzureFindFeature(AzureSession session) {
         this.session = session;
-        this.cache = Cache.empty();
+        this.cache = PathCache.empty();
     }
 
     @Override
@@ -55,14 +55,14 @@ public class AzureFindFeature implements Find {
             return true;
         }
         final AttributedList<Path> list;
-        if(cache.containsKey(file.getParent().getReference())) {
-            list = cache.get(file.getParent().getReference());
+        if(cache.containsKey(file.getParent())) {
+            list = cache.get(file.getParent());
         }
         else {
             list = new AttributedList<Path>();
-            cache.put(file.getParent().getReference(), list);
+            cache.put(file.getParent(), list);
         }
-        if(list.contains(file.getReference())) {
+        if(list.contains(file)) {
             // Previously found
             return true;
         }
@@ -103,7 +103,7 @@ public class AzureFindFeature implements Find {
     }
 
     @Override
-    public Find withCache(final Cache<Path> cache) {
+    public Find withCache(final PathCache cache) {
         this.cache = cache;
         return this;
     }

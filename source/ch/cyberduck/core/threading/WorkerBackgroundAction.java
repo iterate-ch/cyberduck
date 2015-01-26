@@ -21,6 +21,7 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.LoginService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.worker.Worker;
@@ -38,7 +39,7 @@ public class WorkerBackgroundAction<T> extends BrowserBackgroundAction<Boolean> 
     private T result;
 
     public WorkerBackgroundAction(final Controller controller, final Session session, final Worker<T> worker) {
-        this(controller, session, Cache.<Path>empty(), worker);
+        this(controller, session, PathCache.empty(), worker);
     }
 
     public WorkerBackgroundAction(final LoginService login,

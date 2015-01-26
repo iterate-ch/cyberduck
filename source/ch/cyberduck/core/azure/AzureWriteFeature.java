@@ -18,8 +18,8 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -73,7 +73,7 @@ public class AzureWriteFeature implements Write {
     }
 
     @Override
-    public Append append(final Path file, final Long length, final Cache cache) throws BackgroundException {
+    public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
         if(finder.withCache(cache).find(file)) {
             return Write.override;
         }

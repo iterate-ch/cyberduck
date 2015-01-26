@@ -1,7 +1,6 @@
 package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
@@ -14,6 +13,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -64,7 +64,7 @@ public class DAVReadFeatureTest extends AbstractTestCase {
         final DAVSession session = new DAVSession(host);
         final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener());
-        service.connect(session, Cache.<Path>empty());
+        service.connect(session, PathCache.empty());
         final Path test = new Path("/trunk/LICENSE.txt", EnumSet.of(Path.Type.file));
         // Unknown length in status
         final TransferStatus status = new TransferStatus() {

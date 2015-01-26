@@ -31,7 +31,6 @@ import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.binding.foundation.NSNumber;
 import ch.cyberduck.binding.foundation.NSObject;
-import ch.cyberduck.binding.foundation.NSString;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -39,8 +38,8 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -79,7 +78,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
 
     private Session<?> session;
 
-    private Cache<Path> cache = Cache.empty();
+    private Cache<Path> cache = PathCache.empty();
 
     private Local mountpoint;
 
@@ -274,8 +273,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                                 NSFileManager.NSFileType);
                         return attributes;
                     }
-                    final Path directory = selected.getParent();
-                    final Path file = session.list(directory, new DisabledListProgressListener()).get(new NSObjectPathReference(NSString.stringWithString(path)));
+                    final Path file = new Path(path, EnumSet.of(Path.Type.file));
                     attributes.setObjectForKey(file.isDirectory() ? NSFileManager.NSFileTypeDirectory : NSFileManager.NSFileTypeRegular,
                             NSFileManager.NSFileType);
                     attributes.setObjectForKey(NSNumber.numberWithFloat(file.attributes().getSize()),
@@ -313,8 +311,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                     if(selected.isRoot()) {
                         return false;
                     }
-                    final Path directory = selected.getParent();
-                    final Path file = session.list(directory, new DisabledListProgressListener()).get(new NSObjectPathReference(NSString.stringWithString(path)));
+                    final Path file = new Path(path, EnumSet.of(Path.Type.file));
                     final UnixPermission unix = session.getFeature(UnixPermission.class);
                     if(unix != null) {
                         final NSObject posixNumber = attributes.objectForKey(NSFileManager.NSFilePosixPermissions);

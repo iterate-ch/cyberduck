@@ -51,8 +51,8 @@ public class S3StorageClassFeature implements Redundancy {
     public String getClass(final Path file) throws BackgroundException {
         if(file.isFile()) {
             // HEAD request does not include storage class header
-            final Path list = new S3ObjectListService(session).list(file.getParent(), new DisabledListProgressListener())
-                    .get(file.getReference());
+            final Path list = new S3ObjectListService(session).list(
+                    file.getParent(), new DisabledListProgressListener()).get(file);
             if(null == list) {
                 throw new NotfoundException(file.getAbsolute());
             }

@@ -18,9 +18,8 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LoginService;
-import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.threading.TransferBackgroundAction;
@@ -37,7 +36,7 @@ public class TerminalTransferBackgroundAction extends TransferBackgroundAction {
     public TerminalTransferBackgroundAction(final TerminalController controller,
                                             final LoginService login,
                                             final Session<?> session,
-                                            final Cache<Path> cache,
+                                            final PathCache cache,
                                             final Transfer transfer,
                                             final TransferOptions options,
                                             final TransferPrompt prompt,

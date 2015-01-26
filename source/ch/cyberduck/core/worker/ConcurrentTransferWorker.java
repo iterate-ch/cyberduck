@@ -18,11 +18,10 @@ package ch.cyberduck.core.worker;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
@@ -195,7 +194,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Activate session %s", session));
             }
-            connect.check(session, Cache.<Path>empty());
+            connect.check(session, PathCache.empty());
         }
 
         @Override

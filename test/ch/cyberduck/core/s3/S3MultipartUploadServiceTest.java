@@ -114,7 +114,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         assertTrue(status.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(random.length, session.list(container,
-                new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
+                new DisabledListProgressListener()).get(test).attributes().getSize());
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }
@@ -144,7 +144,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         assertTrue(status.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(random.length, session.list(container,
-                new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
+                new DisabledListProgressListener()).get(test).attributes().getSize());
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }
@@ -197,7 +197,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         assertTrue(append.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(random.length, session.list(container,
-                new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
+                new DisabledListProgressListener()).get(test).attributes().getSize());
         final byte[] buffer = new byte[random.length];
         final InputStream in = new S3ReadFeature(session).read(test, new TransferStatus());
         IOUtils.readFully(in, buffer);
@@ -255,7 +255,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         assertTrue(append.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(random.length, session.list(container,
-                new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
+                new DisabledListProgressListener()).get(test).attributes().getSize());
         final byte[] buffer = new byte[random.length];
         final InputStream in = new S3ReadFeature(session).read(test, new TransferStatus());
         IOUtils.readFully(in, buffer);

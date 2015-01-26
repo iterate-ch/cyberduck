@@ -19,9 +19,9 @@ package ch.cyberduck.core.dav;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -39,11 +39,11 @@ public class DAVFindFeature implements Find {
 
     private DAVSession session;
 
-    private Cache<Path> cache;
+    private PathCache cache;
 
     public DAVFindFeature(final DAVSession session) {
         this.session = session;
-        this.cache = Cache.empty();
+        this.cache = PathCache.empty();
     }
 
     @Override
@@ -52,14 +52,14 @@ public class DAVFindFeature implements Find {
             return true;
         }
         final AttributedList<Path> list;
-        if(cache.containsKey(file.getParent().getReference())) {
-            list = cache.get(file.getParent().getReference());
+        if(cache.containsKey(file.getParent())) {
+            list = cache.get(file.getParent());
         }
         else {
             list = new AttributedList<Path>();
-            cache.put(file.getParent().getReference(), list);
+            cache.put(file.getParent(), list);
         }
-        if(list.contains(file.getReference())) {
+        if(list.contains(file)) {
             // Previously found
             return true;
         }
@@ -99,7 +99,7 @@ public class DAVFindFeature implements Find {
     }
 
     @Override
-    public Find withCache(final Cache<Path> cache) {
+    public Find withCache(final PathCache cache) {
         this.cache = cache;
         return this;
     }

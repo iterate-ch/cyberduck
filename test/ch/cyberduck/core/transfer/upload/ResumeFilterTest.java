@@ -2,11 +2,11 @@ package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Find;
@@ -65,7 +65,7 @@ public class ResumeFilterTest extends AbstractTestCase {
                         }
 
                         @Override
-                        public Find withCache(Cache<Path> cache) {
+                        public Find withCache(PathCache cache) {
                             return this;
                         }
                     };
@@ -160,7 +160,7 @@ public class ResumeFilterTest extends AbstractTestCase {
             }
 
             @Override
-            public Append append(final Path file, final Long length, final Cache cache) throws BackgroundException {
+            public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
                 return new Append(length);
             }
 
@@ -204,7 +204,7 @@ public class ResumeFilterTest extends AbstractTestCase {
             }
 
             @Override
-            public Append append(final Path file, final Long length, final Cache cache) throws BackgroundException {
+            public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
                 return new Append(length - 1);
             }
 
@@ -251,7 +251,7 @@ public class ResumeFilterTest extends AbstractTestCase {
             }
 
             @Override
-            public Append append(final Path file, final Long length, final Cache cache) throws BackgroundException {
+            public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
                 return new Append(length + 1);
             }
 

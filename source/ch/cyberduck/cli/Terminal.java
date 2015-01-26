@@ -18,20 +18,7 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledTranscriptListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginConnectionService;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
-import ch.cyberduck.core.StringAppender;
-import ch.cyberduck.core.TildePathExpander;
-import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.editor.DefaultEditorListener;
 import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
@@ -82,7 +69,7 @@ public class Terminal {
 
     private final TerminalController controller;
 
-    private Cache<Path> cache;
+    private PathCache cache;
 
     private ProgressListener progress;
 
@@ -109,7 +96,7 @@ public class Terminal {
             log.info(String.format("Parsed options %s from input %s", options, input));
         }
         this.input = input;
-        this.cache = new Cache<Path>();
+        this.cache = new PathCache(preferences.getInteger("browser.cache.size"));
         this.progress = input.hasOption(TerminalOptionsBuilder.Params.quiet.name())
                 ? new DisabledListProgressListener() : new TerminalProgressListener();
         this.transcript = input.hasOption(TerminalOptionsBuilder.Params.verbose.name())
@@ -283,9 +270,9 @@ public class Terminal {
     }
 
     protected Exit list(final Session session, final Path remote, final boolean verbose) {
-        final SessionListWorker worker = new SessionListWorker(session, Cache.<Path>empty(), remote,
+        final SessionListWorker worker = new SessionListWorker(session, cache, remote,
                 new TerminalListProgressListener(verbose));
-        final TerminalBackgroundAction action = new TerminalBackgroundAction(
+        final TerminalBackgroundAction action = new TerminalBackgroundAction<AttributedList<Path>>(
                 new TerminalLoginService(input, new TerminalLoginCallback()), controller,
                 session, cache, worker);
         this.execute(action);

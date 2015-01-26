@@ -18,9 +18,9 @@ package ch.cyberduck.core.features;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 
 /**
@@ -39,5 +39,5 @@ public interface Attributes {
      * Decorate with cache
      * @param cache Path cache
      */
-    Attributes withCache(Cache<Path> cache);
+    Attributes withCache(PathCache cache);
 }

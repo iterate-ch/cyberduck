@@ -2,7 +2,6 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -12,6 +11,7 @@ import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.features.Find;
@@ -77,10 +77,10 @@ public class S3FindFeatureTest extends AbstractTestCase {
 
     @Test
     public void testCacheNotFound() throws Exception {
-        final Cache<Path> cache = new Cache<Path>();
+        final PathCache cache = new PathCache(1);
         final AttributedList<Path> list = AttributedList.emptyList();
         list.attributes().addHidden(new Path("/g/gd", EnumSet.of(Path.Type.file)));
-        cache.put(new Path("/g", EnumSet.of(Path.Type.directory)).getReference(), list);
+        cache.put(new Path("/g", EnumSet.of(Path.Type.directory)), list);
         final Find finder = new S3FindFeature(new S3Session(new Host("t")) {
             @Override
             public S3Session.RequestEntityRestStorageService getClient() {
@@ -93,9 +93,9 @@ public class S3FindFeatureTest extends AbstractTestCase {
 
     @Test
     public void testCacheFound() throws Exception {
-        final Cache<Path> cache = new Cache<Path>();
+        final PathCache cache = new PathCache(1);
         final AttributedList<Path> list = new AttributedList<Path>(Collections.singletonList(new Path("/g/gd", EnumSet.of(Path.Type.file))));
-        cache.put(new Path("/g", EnumSet.of(Path.Type.directory)).getReference(), list);
+        cache.put(new Path("/g", EnumSet.of(Path.Type.directory)), list);
         final Find finder = new S3FindFeature(new S3Session(new Host("t")) {
             @Override
             public S3Session.RequestEntityRestStorageService getClient() {
@@ -116,14 +116,15 @@ public class S3FindFeatureTest extends AbstractTestCase {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final PathAttributes attributes = new PathAttributes();
-        final Cache<Path> cache = new Cache<Path>();
-        assertTrue(new S3FindFeature(session).withCache(cache).find(new Path("/versioning.test.cyberduck.ch/test", EnumSet.of(Path.Type.file), attributes)));
-        assertNotNull(cache.lookup(new Path("/versioning.test.cyberduck.ch/test", EnumSet.of(Path.Type.file), attributes).getReference()));
+        final PathCache cache = new PathCache(1);
+        final Path f = new Path("/versioning.test.cyberduck.ch/test", EnumSet.of(Path.Type.file), attributes);
+        assertTrue(new S3FindFeature(session).withCache(cache).find(f));
+        assertTrue(cache.get(f.getParent()).contains(f));
         attributes.setVersionId("xtgd1iPdpb1L0c87oe.3KVul2rcxRyqh");
-        assertTrue(new S3FindFeature(session).withCache(cache).find(new Path("/versioning.test.cyberduck.ch/test", EnumSet.of(Path.Type.file), attributes)));
-        assertNotNull(cache.lookup(new Path("/versioning.test.cyberduck.ch/test", EnumSet.of(Path.Type.file), attributes).getReference()));
+        assertTrue(new S3FindFeature(session).withCache(cache).find(f));
+        assertTrue(cache.get(f.getParent()).contains(f));
         attributes.setVersionId(null);
-        assertNotNull(cache.lookup(new Path("/versioning.test.cyberduck.ch/test", EnumSet.of(Path.Type.file), attributes).getReference()));
+        assertTrue(cache.get(f.getParent()).contains(f));
         session.close();
     }
 }

@@ -1,19 +1,6 @@
 package ch.cyberduck.core.shared;
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Attributes;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledTranscriptListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.sftp.SFTPProtocol;
@@ -60,7 +47,7 @@ public class DefaultAttributesFeatureTest extends AbstractTestCase {
         };
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Cache cache = new Cache(1);
+        final Cache<Path> cache = new PathCache(1);
         final DefaultAttributesFeature f = new DefaultAttributesFeature(session, cache);
         final Path file = new Path(session.workdir(), "test", EnumSet.of(Path.Type.file));
         final Attributes attributes = f.find(file);
@@ -69,6 +56,6 @@ public class DefaultAttributesFeatureTest extends AbstractTestCase {
         assertEquals(new Permission("-rw-rw-rw-"), attributes.getPermission());
         // Test cache
         assertEquals(0L, f.find(file).getSize());
-        assertTrue(cache.containsKey(file.getParent().getReference()));
+        assertTrue(cache.containsKey(file.getParent()));
     }
 }

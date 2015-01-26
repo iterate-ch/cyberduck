@@ -17,13 +17,13 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -85,7 +85,7 @@ public class FTPDataFallback {
                                 new DisabledPasswordStore(),
                                 listener,
                                 new DisabledTranscriptListener()
-                        ).connect(session, Cache.<Path>empty());
+                        ).connect(session, PathCache.empty());
                     }
                     return this.fallback(action);
                 }

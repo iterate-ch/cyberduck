@@ -1,7 +1,6 @@
 package ch.cyberduck.core.azure;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -13,6 +12,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -40,7 +40,7 @@ public class AzureWriteFeatureTest extends AbstractTestCase {
         ));
         final AzureSession session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, Cache.<Path>empty());
+                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
         final TransferStatus status = new TransferStatus();
         status.setMime("text/plain");
         final byte[] content = "test".getBytes("UTF-8");
@@ -52,9 +52,9 @@ public class AzureWriteFeatureTest extends AbstractTestCase {
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         IOUtils.closeQuietly(out);
         assertTrue(new AzureFindFeature(session).find(test));
-        final PathAttributes attributes = session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes();
+        final PathAttributes attributes = session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
         assertEquals(content.length, attributes.getSize());
-        assertEquals(0L, new AzureWriteFeature(session).append(test, status.getLength(), Cache.<Path>empty()).size, 0L);
+        assertEquals(0L, new AzureWriteFeature(session).append(test, status.getLength(), PathCache.empty()).size, 0L);
         final byte[] buffer = new byte[content.length];
         final InputStream in = new AzureReadFeature(session).read(test, new TransferStatus());
         IOUtils.readFully(in, buffer);

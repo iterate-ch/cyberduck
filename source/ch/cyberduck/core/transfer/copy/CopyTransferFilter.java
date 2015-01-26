@@ -18,11 +18,11 @@ package ch.cyberduck.core.transfer.copy;
  */
 
 import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
@@ -64,11 +64,11 @@ public class CopyTransferFilter implements TransferPathFilter {
 
     public CopyTransferFilter(final Session<?> source, final Session<?> destination, final Map<Path, Path> files) {
         this(source, destination, files, new UploadFilterOptions(),
-                new Cache<Path>(PreferencesFactory.get().getInteger("transfer.cache.size")));
+                new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size")));
     }
 
     public CopyTransferFilter(final Session<?> source, final Session<?> destination,
-                              final Map<Path, Path> files, final UploadFilterOptions options, final Cache<Path> cache) {
+                              final Map<Path, Path> files, final UploadFilterOptions options, final PathCache cache) {
         this.destination = destination;
         this.files = files;
         this.options = options;
@@ -78,7 +78,7 @@ public class CopyTransferFilter implements TransferPathFilter {
     }
 
     @Override
-    public TransferPathFilter withCache(final Cache<Path> cache) {
+    public TransferPathFilter withCache(final PathCache cache) {
         attribute.withCache(cache);
         return this;
     }

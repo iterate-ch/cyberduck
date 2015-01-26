@@ -218,8 +218,8 @@ public class BrowserController extends WindowController
     /**
      * Caching files listings of previously listed directories
      */
-    private Cache<Path> cache
-            = new Cache<Path>();
+    private PathCache cache
+            = new PathCache(PreferencesFactory.get().getInteger("browser.cache.size"));
 
     private List<Editor> editors
             = new ArrayList<Editor>();
@@ -389,13 +389,12 @@ public class BrowserController extends WindowController
             model.render(browser, Collections.<Path>emptyList());
         }
         for(final Path folder : folders) {
-            final PathReference reference = folder.getReference();
             if(invalidate) {
                 // Invalidate cache
-                cache.invalidate(reference);
+                cache.invalidate(folder);
             }
             else {
-                if(cache.isCached(reference)) {
+                if(cache.isCached(folder)) {
                     model.render(browser, Collections.singletonList(folder));
                     select(selected);
                     return;
@@ -422,24 +421,24 @@ public class BrowserController extends WindowController
         }
         browser.deselectAll(null);
         for(Path path : selected) {
-            select(path.getReference(), true, true);
+            select(path, true, true);
         }
     }
 
     /**
-     * @param reference Path to select
-     * @param expand    Keep previous selection
-     * @param scroll    Scroll to selection
+     * @param file   Path to select
+     * @param expand Keep previous selection
+     * @param scroll Scroll to selection
      */
-    private void select(final PathReference reference, final boolean expand, final boolean scroll) {
+    private void select(final Path file, final boolean expand, final boolean scroll) {
         final NSTableView browser = this.getSelectedBrowserView();
         final BrowserTableDataSource model = this.getSelectedBrowserModel();
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Select row for reference %s", reference));
+            log.debug(String.format("Select row for reference %s", file));
         }
-        int row = model.indexOf(browser, reference);
+        int row = model.indexOf(browser, file);
         if(-1 == row) {
-            log.warn(String.format("Failed to find row for %s", reference));
+            log.warn(String.format("Failed to find row for %s", file));
             return;
         }
         final NSInteger index = new NSInteger(row);
@@ -2403,7 +2402,7 @@ public class BrowserController extends WindowController
     /**
      * Displays a warning dialog about already existing files
      *
-     * @param selected The files to check for existance
+     * @param selected The files to check
      */
     private void checkOverwrite(final List<Path> selected, final MainAction action) {
         StringBuilder alertText = new StringBuilder(
@@ -2413,7 +2412,7 @@ public class BrowserController extends WindowController
         boolean shouldWarn = false;
         for(iter = selected.iterator(); iter.hasNext(); ) {
             final Path item = iter.next();
-            if(cache.lookup(item.getReference()) != null) {
+            if(cache.get(item.getParent()).contains(item)) {
                 if(i < 10) {
                     alertText.append("\n").append(Character.toString('\u2022')).append(" ").append(item.getName());
                 }
@@ -3022,9 +3021,9 @@ public class BrowserController extends WindowController
 
     /**
      * NSService
-     * <p>
+     * <p/>
      * Indicates whether the receiver can send and receive the specified pasteboard types.
-     * <p>
+     * <p/>
      * Either sendType or returnType—but not both—may be empty. If sendType is empty,
      * the service doesn’t require input from the application requesting the service.
      * If returnType is empty, the service doesn’t return data.
@@ -3051,7 +3050,7 @@ public class BrowserController extends WindowController
 
     /**
      * NSService
-     * <p>
+     * <p/>
      * Reads data from the pasteboard and uses it to replace the current selection.
      *
      * @param pboard Pasteboard
@@ -3063,7 +3062,7 @@ public class BrowserController extends WindowController
 
     /**
      * NSService
-     * <p>
+     * <p/>
      * Writes the current selection to the pasteboard.
      *
      * @param pboard Pasteboard

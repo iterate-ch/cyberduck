@@ -127,7 +127,7 @@ public abstract class Session<C> implements TranscriptListener {
     public void login(final PasswordStore keychain,
                       final LoginCallback prompt, final CancelCallback cancel)
             throws BackgroundException {
-        this.login(keychain, prompt, cancel, Cache.<Path>empty());
+        this.login(keychain, prompt, cancel, PathCache.empty());
     }
 
     /**

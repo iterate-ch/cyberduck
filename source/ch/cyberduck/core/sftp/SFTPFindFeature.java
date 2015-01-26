@@ -18,8 +18,8 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
@@ -33,11 +33,11 @@ public class SFTPFindFeature implements Find {
 
     private SFTPSession session;
 
-    private Cache<Path> cache;
+    private PathCache cache;
 
     public SFTPFindFeature(final SFTPSession session) {
         this.session = session;
-        this.cache = Cache.empty();
+        this.cache = PathCache.empty();
     }
 
     @Override
@@ -46,14 +46,14 @@ public class SFTPFindFeature implements Find {
             return true;
         }
         final AttributedList<Path> list;
-        if(cache.containsKey(file.getParent().getReference())) {
-            list = cache.get(file.getParent().getReference());
+        if(cache.containsKey(file.getParent())) {
+            list = cache.get(file.getParent());
         }
         else {
             list = new AttributedList<Path>();
-            cache.put(file.getParent().getReference(), list);
+            cache.put(file.getParent(), list);
         }
-        if(list.contains(file.getReference())) {
+        if(list.contains(file)) {
             // Previously found
             return true;
         }
@@ -79,7 +79,7 @@ public class SFTPFindFeature implements Find {
     }
 
     @Override
-    public Find withCache(final Cache<Path> cache) {
+    public Find withCache(final PathCache cache) {
         this.cache = cache;
         return this;
     }

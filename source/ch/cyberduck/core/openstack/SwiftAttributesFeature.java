@@ -18,10 +18,10 @@ package ch.cyberduck.core.openstack;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
@@ -103,7 +103,7 @@ public class SwiftAttributesFeature implements Attributes {
     }
 
     @Override
-    public Attributes withCache(final Cache<Path> cache) {
+    public Attributes withCache(final PathCache cache) {
         return this;
     }
 }

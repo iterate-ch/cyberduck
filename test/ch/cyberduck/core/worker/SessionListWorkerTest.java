@@ -1,7 +1,6 @@
 package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -11,6 +10,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPSession;
 
@@ -34,9 +34,9 @@ public class SessionListWorkerTest extends AbstractTestCase {
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Cache<Path> cache = new Cache<Path>();
+        final PathCache cache = new PathCache(1);
         final SessionListWorker worker = new SessionListWorker(session, cache, new Path("/home/jenkins", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(worker.run().isEmpty());
-        assertTrue(cache.containsKey(new Path("/home/jenkins", EnumSet.of(Path.Type.directory)).getReference()));
+        assertTrue(cache.containsKey(new Path("/home/jenkins", EnumSet.of(Path.Type.directory))));
     }
 }

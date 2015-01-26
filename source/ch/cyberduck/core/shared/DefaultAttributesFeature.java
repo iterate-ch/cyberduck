@@ -23,6 +23,7 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -38,7 +39,7 @@ public class DefaultAttributesFeature implements Attributes {
     private Cache<Path> cache;
 
     public DefaultAttributesFeature(final Session session) {
-        this(session, Cache.<Path>empty());
+        this(session, PathCache.empty());
     }
 
     public DefaultAttributesFeature(final Session session, final Cache<Path> cache) {
@@ -49,20 +50,20 @@ public class DefaultAttributesFeature implements Attributes {
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
         final AttributedList<Path> list;
-        if(!cache.containsKey(file.getParent().getReference())) {
+        if(!cache.containsKey(file.getParent())) {
             list = session.list(file.getParent(), new DisabledListProgressListener());
-            cache.put(file.getParent().getReference(), list);
+            cache.put(file.getParent(), list);
         }
         else {
-            list = cache.get(file.getParent().getReference());
+            list = cache.get(file.getParent());
         }
-        if(list.contains(file.getReference())) {
-            return list.get(file.getReference()).attributes();
+        if(list.contains(file)) {
+            return list.get(file).attributes();
         }
         throw new NotfoundException(file.getAbsolute());
     }
 
-    public Attributes withCache(final Cache<Path> cache) {
+    public Attributes withCache(final PathCache cache) {
         this.cache = cache;
         return this;
     }

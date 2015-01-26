@@ -53,8 +53,8 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), status, new DisabledConnectionCallback());
         assertTrue(session.getFeature(Find.class).find(test));
-        assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize(), 0L);
-        assertEquals(content.length, new DAVWriteFeature(session).append(test, status.getLength(), Cache.<Path>empty()).size, 0L);
+        assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize(), 0L);
+        assertEquals(content.length, new DAVWriteFeature(session).append(test, status.getLength(), PathCache.empty()).size, 0L);
         {
             final byte[] buffer = new byte[content.length];
             IOUtils.readFully(new DAVReadFeature(session).read(test, new TransferStatus()), buffer);
@@ -69,7 +69,7 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
             System.arraycopy(content, 1, reference, 0, content.length - 1);
             assertArrayEquals(reference, buffer);
         }
-        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }
 
@@ -97,10 +97,10 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final DAVWriteFeature feature = new DAVWriteFeature(session);
         assertFalse(feature.append(
-                new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 0L, Cache.<Path>empty()).append);
+                new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 0L, PathCache.empty()).append);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature(session).touch(test);
-        assertTrue(feature.append(test, 0L, Cache.<Path>empty()).append);
+        assertTrue(feature.append(test, 0L, PathCache.empty()).append);
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
     }
 

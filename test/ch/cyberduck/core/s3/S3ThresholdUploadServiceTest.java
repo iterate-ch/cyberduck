@@ -1,7 +1,6 @@
 package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -14,6 +13,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -43,7 +43,7 @@ public class S3ThresholdUploadServiceTest extends AbstractTestCase {
         ));
         final S3Session session = new S3Session(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, Cache.<Path>empty());
+                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
 
         final S3ThresholdUploadService m = new S3ThresholdUploadService(session, 1L);
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -61,12 +61,12 @@ public class S3ThresholdUploadServiceTest extends AbstractTestCase {
         assertTrue(status.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
         final PathAttributes attributes = session.list(container,
-                new DisabledListProgressListener()).get(test.getReference()).attributes();
+                new DisabledListProgressListener()).get(test).attributes();
         assertEquals(random.getBytes().length, attributes.getSize());
         final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertEquals("text/plain", metadata.get("Content-Type"));
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }
 }

@@ -18,7 +18,6 @@ package ch.cyberduck.core.ftp;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -27,6 +26,7 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
@@ -170,7 +170,7 @@ public class FTPListService implements ListService {
                                 new DisabledPasswordStore(),
                                 listener,
                                 new DisabledTranscriptListener()
-                        ).connect(session, Cache.<Path>empty());
+                        ).connect(session, PathCache.empty());
                     }
                     this.remove(Command.stat);
                 }

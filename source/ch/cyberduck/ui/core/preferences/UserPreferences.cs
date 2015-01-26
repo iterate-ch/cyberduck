@@ -381,7 +381,6 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
                 defaults.put("factory.badgelabeler.class", typeof (TaskbarApplicationBadgeLabeler).AssemblyQualifiedName);
             }
             defaults.put("factory.filedescriptor.class", typeof (Win32FileDescriptor).AssemblyQualifiedName);
-            defaults.put("factory.pathreference.class", typeof (DefaultPathReference).AssemblyQualifiedName);
         }
 
         public string GetDefaultLanguage()

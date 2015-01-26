@@ -83,8 +83,8 @@ public class S3StorageClassFeatureTest extends AbstractTestCase {
         feature.setClass(test, "REDUCED_REDUNDANCY");
         assertEquals("REDUCED_REDUNDANCY", feature.getClass(test));
         assertEquals("REDUCED_REDUNDANCY", session.list(container,
-                new DisabledListProgressListener()).get(test.getReference()).attributes().getStorageClass());
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+                new DisabledListProgressListener()).get(test).attributes().getStorageClass());
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }
 }

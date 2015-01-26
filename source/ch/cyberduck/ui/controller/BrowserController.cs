@@ -71,7 +71,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly BookmarkCollection _bookmarkCollection = BookmarkCollection.defaultCollection();
         private readonly BookmarkModel _bookmarkModel;
         private readonly TreeBrowserModel _browserModel;
-        private readonly Cache _cache = new Cache();
+        private readonly PathCache _cache = new PathCache();
         private readonly ListProgressListener _limitListener;
         private readonly Navigation _navigation = new Navigation();
         private readonly IList<FileSystemWatcher> _temporaryWatcher = new List<FileSystemWatcher>();
@@ -349,7 +349,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        public Cache Cache
+        public PathCache Cache
         {
             get { return _cache; }
         }
@@ -1414,11 +1414,11 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (IsMounted())
             {
-                _cache.invalidate(Workdir.getReference());
+                _cache.invalidate(Workdir);
                 foreach (Path path in View.VisiblePaths)
                 {
                     if (null == path) continue;
-                    _cache.invalidate(path.getReference());
+                    _cache.invalidate(path);
                 }
                 ReloadData(true);
             }
@@ -1779,8 +1779,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_NewDownload()
         {
-            //todo implement
-            return;
             throw new NotImplementedException();
         }
 
@@ -2286,15 +2284,6 @@ namespace Ch.Cyberduck.Ui.Controller
             RefreshParentPaths(changed, new List<Path>());
         }
 
-        public Referenceable Lookup(PathReference reference)
-        {
-            if (IsMounted())
-            {
-                return _cache.lookup(reference);
-            }
-            return null;
-        }
-
         public override void start(BackgroundAction action)
         {
             Invoke(delegate { View.StartActivityAnimation(); });
@@ -2310,7 +2299,7 @@ namespace Ch.Cyberduck.Ui.Controller
             bool rootRefreshed = false; //prevent multiple root updates
             foreach (Path path in changed)
             {
-                _cache.invalidate(path.getParent().getReference());
+                _cache.invalidate(path.getParent());
                 if (Workdir.equals(path.getParent()))
                 {
                     if (rootRefreshed)
@@ -2789,7 +2778,7 @@ namespace Ch.Cyberduck.Ui.Controller
             for (enumerator = selected.GetEnumerator(); enumerator.MoveNext();)
             {
                 Path item = enumerator.Current;
-                if (Lookup(item.getReference()) != null)
+                if(_cache.get(item.getParent()).contains(item))
                 {
                     if (i < 10)
                     {
@@ -2990,7 +2979,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private class CustomPathFilter : SearchFilter, IModelFilter
         {
-            public CustomPathFilter(String searchString, Cache cache) : base(cache, searchString)
+            public CustomPathFilter(String searchString, PathCache cache) : base(cache, searchString)
             {
             }
 

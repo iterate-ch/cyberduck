@@ -12,6 +12,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.TransferItemCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.DisabledStreamListener;
@@ -70,7 +71,7 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
                 return true;
             }
         };
-        final Cache<TransferItem> cache = new Cache<TransferItem>(Integer.MAX_VALUE);
+        final Cache<TransferItem> cache = new TransferItemCache(Integer.MAX_VALUE);
         final Transfer t = new UploadTransfer(new Host("t"), root, local) {
             @Override
             public void transfer(final Session<?> session, final Path file, Local local,
@@ -90,7 +91,7 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
             @Override
             public void transfer(final TransferItem item, final TransferPathFilter filter) throws BackgroundException {
                 if(item.remote.equals(root)) {
-                    assertTrue(cache.containsKey(root.getReference()));
+                    assertTrue(cache.containsKey(new TransferItem(root, local)));
                 }
                 super.transfer(new TransferItem(item.remote, new NullLocal("l") {
                     @Override
@@ -100,10 +101,10 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
                         return l;
                     }
                 }), filter);
-                assertFalse(cache.containsKey(child.getReference()));
+                assertFalse(cache.containsKey(new TransferItem(child, local)));
             }
         }.run();
-        assertFalse(cache.containsKey(child.getReference()));
+        assertFalse(cache.containsKey(new TransferItem(child, local)));
     }
 
     @Test
@@ -128,7 +129,7 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
                 return true;
             }
         };
-        final Cache<TransferItem> cache = new Cache<TransferItem>(Integer.MAX_VALUE);
+        final Cache<TransferItem> cache = new TransferItemCache(Integer.MAX_VALUE);
         final Transfer t = new UploadTransfer(new Host("t"), root, local) {
             @Override
             public void transfer(final Session<?> session, final Path file, Local local,
@@ -146,7 +147,7 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
         final NullSession session = new NullSession(new Host("t")) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-                return new AttributedList<Path>(Collections.<Path>singletonList(new Path("/t", EnumSet.of(Path.Type.directory))));
+                return new AttributedList<Path>(Collections.singletonList(new Path("/t", EnumSet.of(Path.Type.directory))));
             }
         };
         new SingleTransferWorker(session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
@@ -159,13 +160,13 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
             @Override
             public void transfer(final TransferItem item, final TransferPathFilter filter) throws BackgroundException {
                 if(item.remote.equals(root)) {
-                    assertTrue(cache.containsKey(root.getReference()));
+                    assertTrue(cache.containsKey(new TransferItem(root, local)));
                 }
                 super.transfer(item, filter);
-                assertFalse(cache.containsKey(child.getReference()));
+                assertFalse(cache.containsKey(new TransferItem(child, local)));
             }
         }.run();
-        assertFalse(cache.containsKey(child.getReference()));
+        assertFalse(cache.containsKey(new TransferItem(child, local)));
         assertTrue(cache.isEmpty());
     }
 
@@ -173,13 +174,14 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
     public void testDownloadPrepareOverride() throws Exception {
         final Path child = new Path("/t/c", EnumSet.of(Path.Type.file));
         final Path root = new Path("/t", EnumSet.of(Path.Type.directory));
-        final Cache<TransferItem> cache = new Cache<TransferItem>(Integer.MAX_VALUE);
-        final Transfer t = new DownloadTransfer(new Host("t"), root, new NullLocal("l") {
+        final Cache<TransferItem> cache = new TransferItemCache(Integer.MAX_VALUE);
+        final NullLocal local = new NullLocal("l") {
             @Override
             public boolean exists() {
                 return true;
             }
-        }) {
+        };
+        final Transfer t = new DownloadTransfer(new Host("t"), root, local) {
             @Override
             public void transfer(final Session<?> session, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
@@ -211,16 +213,16 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
             @Override
             public void transfer(final TransferItem item, final TransferPathFilter filter) throws BackgroundException {
                 if(item.remote.equals(root)) {
-                    assertTrue(cache.containsKey(root.getReference()));
+                    assertTrue(cache.containsKey(new TransferItem(root, local)));
                 }
                 super.transfer(new TransferItem(item.remote, new NullLocal("l")), filter);
                 if(item.remote.equals(root)) {
-                    assertFalse(cache.containsKey(root.getReference()));
+                    assertFalse(cache.containsKey(new TransferItem(root, local)));
                 }
             }
         };
         worker.run();
-        assertFalse(cache.containsKey(child.getReference()));
+        assertFalse(cache.containsKey(new TransferItem(child, local)));
         assertTrue(cache.isEmpty());
     }
 
@@ -239,7 +241,7 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
         final NullSession session = new NullSession(new Host("t")) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-                return new AttributedList<Path>(Collections.<Path>singletonList(new Path("/t", EnumSet.of(Path.Type.directory))));
+                return new AttributedList<Path>(Collections.singletonList(new Path("/t", EnumSet.of(Path.Type.directory))));
             }
         };
         try {
@@ -249,7 +251,7 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
                     return TransferAction.overwrite;
                 }
             }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
-                    new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), Cache.<TransferItem>empty()) {
+                    new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), TransferItemCache.empty()) {
                 @Override
                 public void transfer(final TransferItem file, final TransferPathFilter filter) throws BackgroundException {
                     // Expected not found

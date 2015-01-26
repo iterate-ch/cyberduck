@@ -45,7 +45,7 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
                 new DisabledProgressListener(),
                 new DisabledTranscriptListener());
         try {
-            s.check(session, Cache.<Path>empty());
+            s.check(session, PathCache.empty());
         }
         catch(BackgroundException e) {
             assertEquals("Connection failed", e.getMessage());
@@ -74,14 +74,14 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
         );
         final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(),
                 new DisabledProgressListener(), new DisabledTranscriptListener());
-        s.check(session, Cache.<Path>empty());
+        s.check(session, PathCache.empty());
     }
 
     @Test(expected = ConnectionCanceledException.class)
     public void testNoHostname() throws Exception {
         final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(),
                 new DisabledProgressListener(), new DisabledTranscriptListener());
-        s.check(new FTPSession(new Host("")), Cache.<Path>empty());
+        s.check(new FTPSession(new Host("")), PathCache.empty());
     }
 
     @Test(expected = ConnectionCanceledException.class)
@@ -97,7 +97,7 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
                     super.interrupt();
                 }
             };
-            s.check(session, Cache.<Path>empty(), new BackgroundException("m", new SocketException("m")));
+            s.check(session, PathCache.empty(), new BackgroundException("m", new SocketException("m")));
         }
         finally {
             assertTrue(disconnected.get());
@@ -152,7 +152,7 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
             }
         };
         try {
-            s.check(session, Cache.<Path>empty());
+            s.check(session, PathCache.empty());
         }
         finally {
             assertTrue(keychain.get());

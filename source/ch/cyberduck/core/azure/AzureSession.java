@@ -130,7 +130,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
         credentials.setCredentials(new Credentials(
                 host.getCredentials().getUsername(), host.getCredentials().getPassword()));
         final Path home = new AzureHomeFinderService(this).find();
-        cache.put(home.getReference(), this.list(home, new DisabledListProgressListener()));
+        cache.put(home, this.list(home, new DisabledListProgressListener()));
     }
 
     @Override

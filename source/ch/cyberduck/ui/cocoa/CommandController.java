@@ -29,8 +29,7 @@ import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSRange;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -115,7 +114,7 @@ public class CommandController extends SheetController implements TranscriptList
         if(StringUtils.isNotBlank(command)) {
             progress.startAnimation(null);
             sender.setEnabled(false);
-            parent.background(new ControllerBackgroundAction<Void>(this, session, Cache.<Path>empty()) {
+            parent.background(new ControllerBackgroundAction<Void>(this, session, PathCache.empty()) {
                 @Override
                 public boolean alert() {
                     return false;

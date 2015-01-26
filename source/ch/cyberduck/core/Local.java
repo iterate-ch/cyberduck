@@ -294,21 +294,6 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
         return LocalFactory.get(new File(path).getParentFile().getAbsolutePath());
     }
 
-    @Override
-    public PathReference getReference() {
-        return new PathReference<Local>() {
-            @Override
-            public Local unique() {
-                return Local.this;
-            }
-
-            @Override
-            public String attributes() {
-                return StringUtils.EMPTY;
-            }
-        };
-    }
-
     /**
      * @return True if the path exists on the file system.
      */

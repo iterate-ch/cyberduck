@@ -18,7 +18,6 @@ package ch.cyberduck.core.preferences;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.DefaultPathReference;
 import ch.cyberduck.core.DisabledCertificateStore;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLocale;
@@ -1108,7 +1107,6 @@ public abstract class Preferences {
         defaults.put("factory.temporaryfiles.class", TemporaryFileService.class.getName());
         defaults.put("factory.touch.class", DefaultLocalTouchFeature.class.getName());
         defaults.put("factory.autorelease.class", DisabledActionOperationBatcher.class.getName());
-        defaults.put("factory.pathreference.class", DefaultPathReference.class.getName());
         defaults.put("factory.schemehandler.class", DisabledSchemeHandler.class.getName());
         defaults.put("factory.iconservice.class", DisabledIconService.class.getName());
         defaults.put("factory.iconcache.class", DisabledIconCache.class.getName());

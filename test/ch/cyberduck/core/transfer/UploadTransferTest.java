@@ -317,7 +317,7 @@ public class UploadTransferTest extends AbstractTestCase {
                         }
 
                         @Override
-                        public Find withCache(Cache<Path> cache) {
+                        public Find withCache(PathCache cache) {
                             return this;
                         }
                     };
@@ -344,7 +344,7 @@ public class UploadTransferTest extends AbstractTestCase {
                         }
 
                         @Override
-                        public ch.cyberduck.core.features.Attributes withCache(Cache<Path> cache) {
+                        public ch.cyberduck.core.features.Attributes withCache(PathCache cache) {
                             return this;
                         }
                     };
@@ -358,7 +358,7 @@ public class UploadTransferTest extends AbstractTestCase {
                         }
 
                         @Override
-                        public Append append(final Path file, final Long length, final Cache cache) throws BackgroundException {
+                        public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
                             fail();
                             return new Write.Append(0L);
                         }

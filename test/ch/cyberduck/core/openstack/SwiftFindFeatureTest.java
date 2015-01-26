@@ -2,7 +2,6 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -11,6 +10,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
@@ -82,9 +82,9 @@ public class SwiftFindFeatureTest extends AbstractTestCase {
 
     @Test
     public void testNoCacheNotFound() throws Exception {
-        final Cache cache = new Cache();
+        final PathCache cache = new PathCache(1);
         final AttributedList<Path> list = AttributedList.emptyList();
-        cache.put(new Path("/g", EnumSet.of(Path.Type.directory)).getReference(), list);
+        cache.put(new Path("/g", EnumSet.of(Path.Type.directory)), list);
         final AtomicBoolean b = new AtomicBoolean();
         final Find finder = new SwiftFindFeature(new SwiftMetadataFeature(new SwiftSession(new Host("t")) {
             @Override
@@ -105,10 +105,10 @@ public class SwiftFindFeatureTest extends AbstractTestCase {
 
     @Test
     public void testCacheNotFound() throws Exception {
-        final Cache cache = new Cache();
+        final PathCache cache = new PathCache(1);
         final AttributedList<Path> list = AttributedList.emptyList();
         list.attributes().addHidden(new Path("/g/gd", EnumSet.of(Path.Type.file)));
-        cache.put(new Path("/g", EnumSet.of(Path.Type.directory)).getReference(), list);
+        cache.put(new Path("/g", EnumSet.of(Path.Type.directory)), list);
         final Find finder = new SwiftFindFeature(new SwiftMetadataFeature(new SwiftSession(new Host("t")) {
             @Override
             public Client getClient() {
@@ -127,9 +127,9 @@ public class SwiftFindFeatureTest extends AbstractTestCase {
 
     @Test
     public void testCacheFound() throws Exception {
-        final Cache cache = new Cache();
+        final PathCache cache = new PathCache(1);
         final AttributedList<Path> list = new AttributedList<Path>(Collections.singletonList(new Path("/g/gd", EnumSet.of(Path.Type.file))));
-        cache.put(new Path("/g", EnumSet.of(Path.Type.directory)).getReference(), list);
+        cache.put(new Path("/g", EnumSet.of(Path.Type.directory)), list);
         final Find finder = new SwiftFindFeature(new SwiftMetadataFeature(new SwiftSession(new Host("t")) {
             @Override
             public Client getClient() {

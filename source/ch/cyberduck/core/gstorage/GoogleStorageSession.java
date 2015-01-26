@@ -187,7 +187,7 @@ public class GoogleStorageSession extends S3Session {
         try {
             // List all buckets and cache
             final Path root = new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.directory, Path.Type.volume));
-            cache.put(root.getReference(), this.list(root, new DisabledListProgressListener()));
+            cache.put(root, this.list(root, new DisabledListProgressListener()));
         }
         catch(BackgroundException e) {
             throw new LoginFailureException(e.getDetail(false), e);

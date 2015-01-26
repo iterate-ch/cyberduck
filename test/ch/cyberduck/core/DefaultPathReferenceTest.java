@@ -31,31 +31,31 @@ public class DefaultPathReferenceTest extends AbstractTestCase {
     @Test
     public void testUnique() throws Exception {
         final Path t = new Path("/", EnumSet.of(Path.Type.directory));
-        assertEquals("[directory]-/", new DefaultPathReference(t).unique());
+        assertEquals("[directory]-/", new DefaultPathReference(t).toString());
         t.attributes().setVersionId("1");
-        assertEquals("[directory]-1/", new DefaultPathReference(t).unique());
+        assertEquals("[directory]-1/", new DefaultPathReference(t).toString());
         t.attributes().setRegion("r");
-        assertEquals("[directory]-1/", new DefaultPathReference(t).unique());
+        assertEquals("[directory]-1/", new DefaultPathReference(t).toString());
         t.attributes().setVersionId(null);
-        assertEquals("[directory]-/", new DefaultPathReference(t).unique());
+        assertEquals("[directory]-/", new DefaultPathReference(t).toString());
     }
 
     @Test
     public void testUniqueSymbolicLInk() throws Exception {
         final Path t = new Path("/", EnumSet.of(Path.Type.directory, Path.Type.symboliclink));
-        assertEquals("[directory, symboliclink]-/", new DefaultPathReference(t).unique());
+        assertEquals("[directory, symboliclink]-/", new DefaultPathReference(t).toString());
     }
 
     @Test
-    public void testUniqueContainer() throws Exception {
+    public void testtoStringContainer() throws Exception {
         final Path t = new Path("/container", EnumSet.of(Path.Type.directory));
-        assertEquals("[directory]-/container", new DefaultPathReference(t).unique());
+        assertEquals("[directory]-/container", new DefaultPathReference(t).toString());
         t.attributes().setVersionId("1");
-        assertEquals("[directory]-1/container", new DefaultPathReference(t).unique());
+        assertEquals("[directory]-1/container", new DefaultPathReference(t).toString());
         t.attributes().setRegion("r");
-        assertEquals("[directory]-r1/container", new DefaultPathReference(t).unique());
+        assertEquals("[directory]-r1/container", new DefaultPathReference(t).toString());
         t.attributes().setVersionId(null);
-        assertEquals("[directory]-r/container", new DefaultPathReference(t).unique());
+        assertEquals("[directory]-r/container", new DefaultPathReference(t).toString());
     }
 
     @Test

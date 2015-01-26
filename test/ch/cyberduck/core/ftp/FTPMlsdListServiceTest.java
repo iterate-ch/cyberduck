@@ -19,7 +19,6 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -31,6 +30,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -50,7 +50,7 @@ public class FTPMlsdListServiceTest extends AbstractTestCase {
         ));
         final FTPSession session = new FTPSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, Cache.<Path>empty());
+                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
         final ListService list = new FTPMlsdListService(session);
         final Path directory = session.workdir();
         list.list(directory, new DisabledListProgressListener());
@@ -64,7 +64,7 @@ public class FTPMlsdListServiceTest extends AbstractTestCase {
         ));
         final FTPSession session = new FTPSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, Cache.<Path>empty());
+                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
         final ListService list = new FTPMlsdListService(session);
         final Path directory = session.workdir();
         list.list(directory, new DisabledListProgressListener());
@@ -79,7 +79,7 @@ public class FTPMlsdListServiceTest extends AbstractTestCase {
         host.setFTPConnectMode(FTPConnectMode.active);
         final FTPSession session = new FTPSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, Cache.<Path>empty());
+                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
         final ListService s = new FTPMlsdListService(session);
         final Path directory = session.workdir();
         final AttributedList<Path> list = s.list(directory, new DisabledListProgressListener());

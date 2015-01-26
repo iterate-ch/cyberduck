@@ -29,7 +29,7 @@ public class KeychainLoginServiceTest extends AbstractTestCase {
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         LoginService l = new KeychainLoginService(new DisabledLoginCallback(), new DisabledPasswordStore());
-        l.authenticate(session, Cache.<Path>empty(), new ProgressListener() {
+        l.authenticate(session, PathCache.empty(), new ProgressListener() {
             int i = 0;
 
             @Override
@@ -72,7 +72,7 @@ public class KeychainLoginServiceTest extends AbstractTestCase {
             }
         }, new DisabledPasswordStore());
         try {
-            l.authenticate(session, Cache.<Path>empty(), new ProgressListener() {
+            l.authenticate(session, PathCache.empty(), new ProgressListener() {
                 @Override
                 public void message(final String message) {
                     //

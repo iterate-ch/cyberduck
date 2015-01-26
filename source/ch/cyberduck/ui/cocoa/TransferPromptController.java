@@ -29,6 +29,7 @@ import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.TransferItemCache;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.preferences.Preferences;
@@ -91,7 +92,7 @@ public abstract class TransferPromptController extends SheetController
     private TransferAction action;
 
     protected Cache<TransferItem> cache
-            = new Cache<TransferItem>(Integer.MAX_VALUE);
+            = new TransferItemCache(Integer.MAX_VALUE);
 
     public TransferPromptController(final WindowController parent, final Transfer transfer, final Session session) {
         super(parent);

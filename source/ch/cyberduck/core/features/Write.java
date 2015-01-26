@@ -18,8 +18,8 @@ package ch.cyberduck.core.features;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -44,7 +44,7 @@ public interface Write {
      * @param cache  Cache
      * @return True if can append to existing file
      */
-    Append append(Path file, Long length, Cache cache) throws BackgroundException;
+    Append append(Path file, Long length, PathCache cache) throws BackgroundException;
 
     /**
      * @return True if temporary upload filename can be used

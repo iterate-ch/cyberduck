@@ -2,10 +2,10 @@ package ch.cyberduck.core.shared;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.test.NullSession;
 
 import org.junit.Test;
@@ -46,7 +46,7 @@ public class DefaultFindFeatureTest extends AbstractTestCase {
                 count.incrementAndGet();
                 return AttributedList.emptyList();
             }
-        }, new Cache(2));
+        }, new PathCache(2));
         assertFalse(feature.find(new Path("/t", EnumSet.of(Path.Type.directory))));
         assertEquals(1, count.get());
         assertFalse(feature.find(new Path("/t", EnumSet.of(Path.Type.directory))));

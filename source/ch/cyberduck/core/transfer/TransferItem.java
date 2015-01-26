@@ -19,8 +19,6 @@ package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathReference;
-import ch.cyberduck.core.PathReferenceFactory;
 import ch.cyberduck.core.Referenceable;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.serializer.Serializer;
@@ -44,11 +42,6 @@ public class TransferItem implements Referenceable, Serializable {
 
     public TransferItem getParent() {
         return new TransferItem(remote.getParent(), local.getParent());
-    }
-
-    @Override
-    public PathReference getReference() {
-        return PathReferenceFactory.get(remote);
     }
 
     @Override

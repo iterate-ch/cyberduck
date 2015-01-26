@@ -54,7 +54,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (Utils.IsNotBlank(command))
             {
                 View.StartActivityAnimation();
-                _parent.Background(new CommandControllerBackgroundAction(this, _session, Cache.empty(), command));
+                _parent.Background(new CommandControllerBackgroundAction(this, _session, PathCache.empty(), command));
             }
         }
 
@@ -64,7 +64,7 @@ namespace Ch.Cyberduck.Ui.Controller
             private readonly CommandController _controller;
             private readonly Session _session;
 
-            public CommandControllerBackgroundAction(CommandController controller, Session session, Cache cache,
+            public CommandControllerBackgroundAction(CommandController controller, Session session, PathCache cache,
                 string command) : base(controller, session, cache)
             {
                 _controller = controller;

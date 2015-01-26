@@ -17,7 +17,6 @@ package ch.cyberduck.core.transfer;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Filter;
@@ -26,6 +25,7 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
@@ -68,8 +68,8 @@ public class UploadTransfer extends Transfer {
 
     private Comparator<Local> comparator;
 
-    private Cache cache
-            = new Cache(PreferencesFactory.get().getInteger("transfer.cache.size"));
+    private PathCache cache
+            = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
     public UploadTransfer(final Host host, final Path root, final Local local) {
         this(host, Collections.singletonList(new TransferItem(root, local)));
@@ -103,7 +103,7 @@ public class UploadTransfer extends Transfer {
     }
 
     @Override
-    public Transfer withCache(final Cache cache) {
+    public Transfer withCache(final PathCache cache) {
         this.cache = cache;
         return this;
     }

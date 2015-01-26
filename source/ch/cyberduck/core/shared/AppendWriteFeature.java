@@ -18,8 +18,8 @@ package ch.cyberduck.core.shared;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
@@ -46,7 +46,7 @@ public abstract class AppendWriteFeature implements Write {
     }
 
     @Override
-    public Append append(final Path file, final Long length, final Cache cache) throws BackgroundException {
+    public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
         if(finder.withCache(cache).find(file)) {
             return new Append(attributes.withCache(cache).find(file).getSize());
         }

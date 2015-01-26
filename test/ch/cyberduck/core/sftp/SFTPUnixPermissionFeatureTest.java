@@ -60,7 +60,7 @@ public class SFTPUnixPermissionFeatureTest extends AbstractTestCase {
         final long modified = System.currentTimeMillis();
         final Path test = new Path(home, "test", EnumSet.of(Path.Type.file));
         new SFTPUnixPermissionFeature(session).setUnixOwner(test, "80");
-        assertEquals("80", session.list(home, new DisabledListProgressListener()).get(test.getReference()).attributes().getOwner());
+        assertEquals("80", session.list(home, new DisabledListProgressListener()).get(test).attributes().getOwner());
         session.close();
     }
 
@@ -79,7 +79,7 @@ public class SFTPUnixPermissionFeatureTest extends AbstractTestCase {
         final long modified = System.currentTimeMillis();
         final Path test = new Path(home, "test", EnumSet.of(Path.Type.file));
         new SFTPUnixPermissionFeature(session).setUnixGroup(test, "80");
-        assertEquals("80", session.list(home, new DisabledListProgressListener()).get(test.getReference()).attributes().getGroup());
+        assertEquals("80", session.list(home, new DisabledListProgressListener()).get(test).attributes().getGroup());
         session.close();
     }
 
@@ -98,7 +98,7 @@ public class SFTPUnixPermissionFeatureTest extends AbstractTestCase {
         final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SFTPTouchFeature(session).touch(test);
         new SFTPUnixPermissionFeature(session).setUnixPermission(test, new Permission(666));
-        assertEquals("666", session.list(home, new DisabledListProgressListener()).get(test.getReference()).attributes().getPermission().getMode());
+        assertEquals("666", session.list(home, new DisabledListProgressListener()).get(test).attributes().getPermission().getMode());
         new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }
@@ -119,19 +119,19 @@ public class SFTPUnixPermissionFeatureTest extends AbstractTestCase {
                         true, false, false));
         assertEquals(new Permission(Permission.Action.all, Permission.Action.read, Permission.Action.read,
                 true, false, false), new SFTPListService(session).list(test.getParent(), new DisabledListProgressListener()).get(
-                test.getReference()).attributes().getPermission());
+                test).attributes().getPermission());
         feature.setUnixPermission(test,
                 new Permission(Permission.Action.all, Permission.Action.read, Permission.Action.read,
                         false, true, false));
         assertEquals(new Permission(Permission.Action.all, Permission.Action.read, Permission.Action.read,
                 false, true, false), new SFTPListService(session).list(test.getParent(), new DisabledListProgressListener()).get(
-                test.getReference()).attributes().getPermission());
+                test).attributes().getPermission());
         feature.setUnixPermission(test,
                 new Permission(Permission.Action.all, Permission.Action.read, Permission.Action.read,
                         false, false, true));
         assertEquals(new Permission(Permission.Action.all, Permission.Action.read, Permission.Action.read,
                 false, false, true), new SFTPListService(session).list(test.getParent(), new DisabledListProgressListener()).get(
-                test.getReference()).attributes().getPermission());
+                test).attributes().getPermission());
         new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }

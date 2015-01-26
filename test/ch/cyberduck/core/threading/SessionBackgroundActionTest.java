@@ -19,11 +19,10 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
@@ -47,7 +46,7 @@ public class SessionBackgroundActionTest extends AbstractTestCase {
     @Test
     public void testGetExceptionCanceled() throws Exception {
         final BackgroundException failure = new BackgroundException(new RuntimeException());
-        SessionBackgroundAction a = new SessionBackgroundAction(null, Cache.<Path>empty(), new AlertCallback() {
+        SessionBackgroundAction a = new SessionBackgroundAction(null, PathCache.empty(), new AlertCallback() {
             @Override
             public boolean alert(final Host repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
                 assertEquals(failure, f);
@@ -85,7 +84,7 @@ public class SessionBackgroundActionTest extends AbstractTestCase {
     @Test
     public void testGetExceptionFailure() throws Exception {
         final BackgroundException failure = new BackgroundException(new RuntimeException());
-        SessionBackgroundAction a = new SessionBackgroundAction(new NullSession(new Host("t")), Cache.<Path>empty(), new AlertCallback() {
+        SessionBackgroundAction a = new SessionBackgroundAction(new NullSession(new Host("t")), PathCache.empty(), new AlertCallback() {
             @Override
             public boolean alert(final Host repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
                 assertEquals(failure, f);
@@ -123,7 +122,7 @@ public class SessionBackgroundActionTest extends AbstractTestCase {
     @Test
     public void testGetExceptionCancel() throws Exception {
         final BackgroundException failure = new LoginCanceledException();
-        SessionBackgroundAction a = new SessionBackgroundAction(new NullSession(new Host("t")), Cache.<Path>empty(), new AlertCallback() {
+        SessionBackgroundAction a = new SessionBackgroundAction(new NullSession(new Host("t")), PathCache.empty(), new AlertCallback() {
             @Override
             public boolean alert(final Host repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
                 assertEquals(failure, f);
@@ -161,7 +160,7 @@ public class SessionBackgroundActionTest extends AbstractTestCase {
     @Test
     public void testRetrySocket() throws Exception {
         final BackgroundException failure = new BackgroundException(new SocketTimeoutException(""));
-        SessionBackgroundAction a = new SessionBackgroundAction(new NullSession(new Host(("t"))), Cache.<Path>empty(), new AlertCallback() {
+        SessionBackgroundAction a = new SessionBackgroundAction(new NullSession(new Host(("t"))), PathCache.empty(), new AlertCallback() {
             @Override
             public boolean alert(final Host repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
                 assertEquals(failure, f);

@@ -19,10 +19,10 @@ package ch.cyberduck.core.ftp;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -74,7 +74,7 @@ public class FTPAttributesFeature implements Attributes {
     }
 
     @Override
-    public Attributes withCache(Cache<Path> cache) {
+    public Attributes withCache(final PathCache cache) {
         parent.withCache(cache);
         return this;
     }

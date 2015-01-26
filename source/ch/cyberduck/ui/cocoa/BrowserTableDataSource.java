@@ -41,7 +41,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathReference;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.UserDateFormatterFactory;
@@ -105,11 +104,11 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     public abstract void render(final NSTableView view, final List<Path> folders);
 
     protected AttributedList<Path> get(final Path directory) {
-        return cache.get(directory.getReference()).filter(controller.getComparator(), controller.getFilter());
+        return cache.get(directory).filter(controller.getComparator(), controller.getFilter());
     }
 
-    public int indexOf(NSTableView view, PathReference reference) {
-        return this.get(controller.workdir()).indexOf(reference);
+    public int indexOf(NSTableView view, Path file) {
+        return this.get(controller.workdir()).indexOf(file);
     }
 
     protected void setObjectValueForItem(final Path item, final NSObject value, final String identifier) {

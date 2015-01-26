@@ -51,9 +51,9 @@ public class DAVSessionTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertNotNull(session.workdir());
         final AttributedList<Path> list = session.list(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
-        assertNotNull(list.get(new Path("/trunk", EnumSet.of(Path.Type.directory)).getReference()));
-        assertNotNull(list.get(new Path("/branches", EnumSet.of(Path.Type.directory)).getReference()));
-        assertNotNull(list.get(new Path("/tags", EnumSet.of(Path.Type.directory)).getReference()));
+        assertNotNull(list.get(new Path("/trunk", EnumSet.of(Path.Type.directory))));
+        assertNotNull(list.get(new Path("/branches", EnumSet.of(Path.Type.directory))));
+        assertNotNull(list.get(new Path("/tags", EnumSet.of(Path.Type.directory))));
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
@@ -182,7 +182,7 @@ public class DAVSessionTest extends AbstractTestCase {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(test);
         assertTrue(session.getFeature(Find.class).find(test));
-        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         assertFalse(session.getFeature(Find.class).find(test));
         session.close();
     }
@@ -383,7 +383,7 @@ public class DAVSessionTest extends AbstractTestCase {
             }
         }, new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener());
-        c.connect(session, Cache.<Path>empty());
+        c.connect(session, PathCache.empty());
         assertTrue(prompt.get());
         assertTrue(session.isConnected());
         assertFalse(session.isSecured());
@@ -430,7 +430,7 @@ public class DAVSessionTest extends AbstractTestCase {
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
                 new DisabledProgressListener(), new DisabledTranscriptListener());
-        c.connect(session, Cache.<Path>empty());
+        c.connect(session, PathCache.empty());
     }
 
     @Test(expected = InteroperabilityException.class)
@@ -457,7 +457,7 @@ public class DAVSessionTest extends AbstractTestCase {
                 new DisabledPasswordStore(),
                 new DisabledProgressListener(), new DisabledTranscriptListener());
         try {
-            c.connect(session, Cache.<Path>empty());
+            c.connect(session, PathCache.empty());
         }
         catch(InteroperabilityException e) {
             assertEquals("Handshake failure. Unable to negotiate an acceptable set of security parameters. Please contact your web hosting service provider for assistance.", e.getDetail());
@@ -489,7 +489,7 @@ public class DAVSessionTest extends AbstractTestCase {
                 new DisabledPasswordStore(),
                 new DisabledProgressListener(), new DisabledTranscriptListener());
         try {
-            c.connect(session, Cache.<Path>empty());
+            c.connect(session, PathCache.empty());
         }
         catch(InteroperabilityException e) {
             assertEquals("Handshake failure. Unable to negotiate an acceptable set of security parameters. Please contact your web hosting service provider for assistance.", e.getDetail());

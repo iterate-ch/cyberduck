@@ -60,7 +60,7 @@ public class FTPMFMTTimestampFeatureTest extends AbstractTestCase {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature(session).touch(test);
         new FTPMFMTTimestampFeature(session).setTimestamp(test, modified);
-        assertEquals(modified, session.list(home, new DisabledListProgressListener()).get(test.getReference()).attributes().getModificationDate());
-        new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        assertEquals(modified, session.list(home, new DisabledListProgressListener()).get(test).attributes().getModificationDate());
+        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
     }
 }

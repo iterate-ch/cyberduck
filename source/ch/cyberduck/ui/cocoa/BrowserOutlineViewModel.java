@@ -18,12 +18,6 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.NSObjectPathReference;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathReference;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.binding.application.NSApplication;
 import ch.cyberduck.binding.application.NSDraggingInfo;
 import ch.cyberduck.binding.application.NSEvent;
@@ -34,6 +28,11 @@ import ch.cyberduck.binding.application.NSTableView;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSURL;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.NSObjectPathReference;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSInteger;
@@ -68,7 +67,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
                     break;
                 }
                 else {
-                    outline.reloadItem_reloadChildren((NSObject) folder.getReference().unique(), true);
+                    outline.reloadItem_reloadChildren(NSObjectPathReference.get(folder), true);
                 }
             }
         }
@@ -76,8 +75,8 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
     }
 
     @Override
-    public int indexOf(final NSTableView view, final PathReference reference) {
-        return ((NSOutlineView) view).rowForItem(((NSObjectPathReference) reference).unique()).intValue();
+    public int indexOf(final NSTableView view, final Path file) {
+        return ((NSOutlineView) view).rowForItem(NSObjectPathReference.get(file)).intValue();
     }
 
     /**
@@ -164,7 +163,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
             log.warn(String.format("Index %s out of bound for %s", index, item));
             return null;
         }
-        return (NSObject) children.get(index.intValue()).getReference().unique();
+        return NSObjectPathReference.get(children.get(index.intValue()));
     }
 
     @Override

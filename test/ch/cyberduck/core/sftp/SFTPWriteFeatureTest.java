@@ -3,7 +3,6 @@ package ch.cyberduck.core.sftp;
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -14,6 +13,7 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
@@ -57,8 +57,8 @@ public class SFTPWriteFeatureTest extends AbstractTestCase {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
         assertTrue(new SFTPFindFeature(session).find(test));
-        assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
-        assertEquals(content.length, new SFTPWriteFeature(session).append(test, status.getLength(), Cache.<Path>empty()).size, 0L);
+        assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
+        assertEquals(content.length, new SFTPWriteFeature(session).append(test, status.getLength(), PathCache.empty()).size, 0L);
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
             final InputStream in = new SFTPReadFeature(session).read(test, new TransferStatus().length(content.length));
@@ -141,8 +141,8 @@ public class SFTPWriteFeatureTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         assertEquals(false, new SFTPWriteFeature(session).append(
-                new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 0L, Cache.<Path>empty()).append);
+                new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 0L, PathCache.empty()).append);
         assertEquals(true, new SFTPWriteFeature(session).append(
-                new Path(session.workdir(), "test", EnumSet.of(Path.Type.file)), 0L, Cache.<Path>empty()).append);
+                new Path(session.workdir(), "test", EnumSet.of(Path.Type.file)), 0L, PathCache.empty()).append);
     }
 }

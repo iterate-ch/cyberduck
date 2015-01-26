@@ -89,7 +89,7 @@ public class FTPListResponseReaderTest extends AbstractTestCase {
         final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
         final AttributedList<Path> list = new FTPListResponseReader(parser).read(new Path("/", EnumSet.of(Path.Type.directory)), Collections.singletonList("-rwsrwSr-T 1 dkocher dkocher         0 Sep  6 22:27 t"), new DisabledListProgressListener()
         );
-        final Path parsed = list.get(new Path("/t", EnumSet.of(Path.Type.file)).getReference());
+        final Path parsed = list.get(new Path("/t", EnumSet.of(Path.Type.file)));
         assertNotNull(parsed);
         assertTrue(parsed.attributes().getPermission().isSticky());
         assertTrue(parsed.attributes().getPermission().isSetuid());

@@ -48,9 +48,9 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
         IOUtils.closeQuietly(out);
         Thread.sleep(1000L);
         assertTrue(new SwiftFindFeature(session).find(test));
-        final PathAttributes attributes = session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes();
+        final PathAttributes attributes = session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
         assertEquals(content.length, attributes.getSize());
-        assertEquals(0L, new SwiftWriteFeature(session).append(test, status.getLength(), Cache.<Path>empty()).size, 0L);
+        assertEquals(0L, new SwiftWriteFeature(session).append(test, status.getLength(), PathCache.empty()).size, 0L);
         final byte[] buffer = new byte[content.length];
         final InputStream in = new SwiftReadFeature(session).read(test, new TransferStatus());
         IOUtils.readFully(in, buffer);
@@ -59,7 +59,7 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
         final Map<String, String> metadata = new SwiftMetadataFeature(session).getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertEquals("text/plain", metadata.get("Content-Type"));
-        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }
 
@@ -78,7 +78,7 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
                 list.set(true);
                 return new AttributedList<Path>(Collections.<Path>emptyList());
             }
-        }, new SwiftSegmentService(session)).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 2L * 1024L * 1024L * 1024L, Cache.<Path>empty());
+        }, new SwiftSegmentService(session)).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 2L * 1024L * 1024L * 1024L, PathCache.empty());
         assertTrue(list.get());
         assertFalse(append.append);
         assertFalse(append.override);
@@ -106,7 +106,7 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
                 segment2.attributes().setSize(2L);
                 return new AttributedList<Path>(Arrays.asList(segment1, segment2));
             }
-        }, segments).append(file, 2L * 1024L * 1024L * 1024L, Cache.<Path>empty());
+        }, segments).append(file, 2L * 1024L * 1024L * 1024L, PathCache.empty());
         assertTrue(append.append);
         assertEquals(3L, append.size, 0L);
         assertTrue(list.get());
@@ -127,7 +127,7 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
             @Override
             public AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException {
                 list.set(true);
-                return new AttributedList<Path>(Collections.<Path>singletonList(file));
+                return new AttributedList<Path>(Collections.singletonList(file));
             }
         }, new SwiftSegmentService(session), new Find() {
             @Override
@@ -137,11 +137,11 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
             }
 
             @Override
-            public Find withCache(final Cache<Path> cache) {
+            public Find withCache(final PathCache cache) {
                 return this;
             }
         }
-        ).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 1024L, Cache.<Path>empty());
+        ).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 1024L, PathCache.empty());
         assertFalse(append.append);
         assertTrue(append.override);
         assertEquals(Write.override, append);
@@ -164,7 +164,7 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
             @Override
             public AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException {
                 list.set(true);
-                return new AttributedList<Path>(Collections.<Path>singletonList(file));
+                return new AttributedList<Path>(Collections.singletonList(file));
             }
         }, new SwiftSegmentService(session), new Find() {
             @Override
@@ -174,11 +174,11 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
             }
 
             @Override
-            public Find withCache(final Cache<Path> cache) {
+            public Find withCache(final PathCache cache) {
                 return this;
             }
         }
-        ).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 1024L, Cache.<Path>empty());
+        ).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 1024L, PathCache.empty());
         assertFalse(append.append);
         assertFalse(append.override);
         assertEquals(Write.notfound, append);

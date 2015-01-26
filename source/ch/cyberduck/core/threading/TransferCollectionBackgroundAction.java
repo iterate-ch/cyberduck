@@ -17,9 +17,8 @@ package ch.cyberduck.core.threading;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Controller;
-import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
@@ -56,7 +55,7 @@ public class TransferCollectionBackgroundAction extends TransferBackgroundAction
                                               final TranscriptListener transcriptListener,
                                               final Transfer transfer,
                                               final TransferOptions options) {
-        super(controller, session, new Cache<Path>(PreferencesFactory.get().getInteger("transfer.cache.size")),
+        super(controller, session, new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size")),
                 transferListener, progressListener, transcriptListener, transfer, options);
         this.transfer = transfer;
         this.session = session;

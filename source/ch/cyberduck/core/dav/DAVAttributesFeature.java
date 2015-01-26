@@ -17,10 +17,10 @@ package ch.cyberduck.core.dav;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -50,8 +50,8 @@ public class DAVAttributesFeature implements Attributes {
 
     private DAVSession session;
 
-    private Cache<Path> cache
-            = Cache.empty();
+    private PathCache cache
+            = PathCache.empty();
 
     private RFC1123DateFormatter dateParser
             = new RFC1123DateFormatter();
@@ -115,7 +115,7 @@ public class DAVAttributesFeature implements Attributes {
     }
 
     @Override
-    public Attributes withCache(final Cache<Path> cache) {
+    public Attributes withCache(final PathCache cache) {
         this.cache = cache;
         return this;
     }

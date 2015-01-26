@@ -1,7 +1,6 @@
 package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -10,6 +9,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 
@@ -34,10 +34,10 @@ public class S3WriteFeatureTest extends AbstractTestCase {
             }
 
             @Override
-            public Find withCache(final Cache<Path> cache) {
+            public Find withCache(final PathCache cache) {
                 return this;
             }
-        }).append(new Path("/p", EnumSet.of(Path.Type.file)), 0L, Cache.<Path>empty()).append);
+        }).append(new Path("/p", EnumSet.of(Path.Type.file)), 0L, PathCache.empty()).append);
     }
 
     @Test
@@ -49,7 +49,7 @@ public class S3WriteFeatureTest extends AbstractTestCase {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        assertFalse(new S3WriteFeature(session).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 10L * 1024L * 1024L, Cache.<Path>empty()).append);
+        assertFalse(new S3WriteFeature(session).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 10L * 1024L * 1024L, PathCache.empty()).append);
         session.close();
     }
 }

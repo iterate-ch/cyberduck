@@ -17,8 +17,8 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
@@ -171,7 +171,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
      * @return No Content-Range support
      */
     @Override
-    public Append append(final Path file, final Long length, final Cache cache) throws BackgroundException {
+    public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
         if(length >= preferences.getLong("s3.upload.multipart.threshold")) {
             if(preferences.getBoolean("s3.upload.multipart")) {
                 final MultipartUpload upload = multipartService.find(file);
