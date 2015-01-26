@@ -70,8 +70,15 @@ public class BackgroundException extends Exception {
      * @return Detailed message from the underlying cause.
      */
     public String getDetail() {
+        return this.getDetail(true);
+    }
+
+    public String getDetail(boolean help) {
         final StringAppender appender = new StringAppender();
-        appender.append(detail).append(this.getHelp());
+        appender.append(detail);
+        if(help) {
+            appender.append(this.getHelp());
+        }
         return appender.toString();
     }
 

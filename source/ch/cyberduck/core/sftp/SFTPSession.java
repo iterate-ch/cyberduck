@@ -214,11 +214,11 @@ public class SFTPSession extends Session<SSHClient> {
                             disconnectListener.getFailure());
                 }
                 catch(InteroperabilityException e) {
-                    throw new LoginFailureException(e.getDetail(), e);
+                    throw new LoginFailureException(e.getDetail(false), e);
                 }
             }
             catch(InteroperabilityException e) {
-                throw new LoginFailureException(e.getDetail(), e);
+                throw new LoginFailureException(e.getDetail(false), e);
             }
             catch(LoginFailureException e) {
                 log.warn(String.format("Login failed with credentials %s and authentication method %s", credentials, auth));
