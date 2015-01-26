@@ -113,7 +113,7 @@ public class S3PresignedUrlProvider {
             String secretKey = credentials.getSecretKey();
             String timestampISO8601 =
                     SignatureUtils.formatAwsFlavouredISO8601Date(now);
-            String datestampISO8601 = timestampISO8601.substring(0, 8); // TODO
+            String datestampISO8601 = timestampISO8601.substring(0, 8);
 
             // Convert seconds since epoch expiry time format into
             // seconds-unti-expiry form used by version 4.
