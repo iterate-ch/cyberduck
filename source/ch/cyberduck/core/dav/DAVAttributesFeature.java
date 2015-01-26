@@ -67,7 +67,9 @@ public class DAVAttributesFeature implements Attributes {
             catch(InvalidDateException p) {
                 log.warn(String.format("%s is not RFC 1123 format %s", headers.get(HttpHeaders.LAST_MODIFIED), p.getMessage()));
             }
-            attributes.setSize(NumberUtils.toLong(headers.get(HttpHeaders.CONTENT_LENGTH), -1));
+            if(!headers.containsKey(HttpHeaders.CONTENT_ENCODING)) {
+                attributes.setSize(NumberUtils.toLong(headers.get(HttpHeaders.CONTENT_LENGTH), -1));
+            }
             attributes.setChecksum(headers.get(HttpHeaders.CONTENT_MD5));
             attributes.setETag(headers.get(HttpHeaders.ETAG));
             return attributes;
