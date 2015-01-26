@@ -71,7 +71,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly BookmarkCollection _bookmarkCollection = BookmarkCollection.defaultCollection();
         private readonly BookmarkModel _bookmarkModel;
         private readonly TreeBrowserModel _browserModel;
-        private readonly PathCache _cache = new PathCache();
+        private readonly PathCache _cache = new PathCache(PreferencesFactory.get().getInteger("browser.cache.size"));
         private readonly ListProgressListener _limitListener;
         private readonly Navigation _navigation = new Navigation();
         private readonly IList<FileSystemWatcher> _temporaryWatcher = new List<FileSystemWatcher>();
