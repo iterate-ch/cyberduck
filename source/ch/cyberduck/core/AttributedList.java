@@ -70,7 +70,11 @@ public class AttributedList<E extends Referenceable> extends ArrayList<E> {
     }
 
     public E get(final E reference) {
-        return super.get(this.indexOf(reference));
+        final int index = this.indexOf(reference);
+        if(-1 == index) {
+            return null;
+        }
+        return super.get(index);
     }
 
     /**
