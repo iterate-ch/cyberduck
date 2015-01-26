@@ -9,6 +9,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.test.Depends;
 
 import org.apache.commons.lang3.StringUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.UUID;
@@ -106,6 +107,7 @@ public class FinderLocalTest extends AbstractTestCase {
     }
 
     @Test
+    @Ignore
     public void testBookmark() throws Exception {
         FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         assertNull(l.getBookmark());
