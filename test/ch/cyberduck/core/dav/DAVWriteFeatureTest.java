@@ -1,6 +1,19 @@
 package ch.cyberduck.core.dav;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.DisabledTranscriptListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.http.HttpUploadFeature;
@@ -9,6 +22,7 @@ import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -130,10 +144,11 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
         final ResponseOutputStream<String> out = feature.write(test, status);
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
+        IOUtils.closeQuietly(out);
         assertEquals(content.length, status.getCurrent());
         assertTrue(status.isComplete());
-        final PathAttributes attributes = new DAVAttributesFeature(session).find(test);
-        assertEquals(content.length, attributes.getSize());
+        assertEquals(content.length, new DefaultAttributesFeature(session).find(test).getSize());
+        assertEquals(-1, new DAVAttributesFeature(session).find(test).getSize());
         assertTrue(redirected.get());
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
     }
