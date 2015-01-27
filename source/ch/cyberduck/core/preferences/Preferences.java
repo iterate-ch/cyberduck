@@ -615,18 +615,6 @@ public abstract class Preferences {
          */
         defaults.put("s3.download.udt.threshold", String.valueOf(100L * 1024L * 1024L));
         defaults.put("s3.upload.udt.threshold", String.valueOf(100L * 1024L * 1024L));
-        /**
-         * Proxy list qloudsonic.io
-         */
-        defaults.put("qloudsonic.proxy.us-east-1", "udt://us-east-1.qloudsonic.io");
-        defaults.put("qloudsonic.proxy.eu-west-1", "udt://eu-west-1.qloudsonic.io");
-        defaults.put("qloudsonic.proxy.eu-central-1", "udt://eu-central-1.qloudsonic.io");
-        defaults.put("qloudsonic.proxy.us-west-1", "udt://us-west-1.qloudsonic.io");
-        defaults.put("qloudsonic.proxy.us-west-2", "udt://us-west-2.qloudsonic.io");
-        defaults.put("qloudsonic.proxy.ap-southeast-1", "udt://ap-southeast-1.qloudsonic.io");
-        defaults.put("qloudsonic.proxy.ap-southeast-2", "udt://ap-southeast-2.qloudsonic.io");
-        defaults.put("qloudsonic.proxy.ap-northeast-1", "udt://ap-northeast-1.qloudsonic.io");
-        defaults.put("qloudsonic.proxy.sa-east-1", "udt://sa-east-1.qloudsonic.io");
 
         /**
          * A prefix to apply to log file names
