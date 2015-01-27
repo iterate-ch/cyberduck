@@ -23,27 +23,26 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * @version $Id$
  */
-public class
-        DefaultPathReference implements CacheReference<Path> {
+public class DefaultPathReference implements CacheReference<Path> {
 
-    private Path path;
+    private Path file;
 
     private PathContainerService containerService
             = new PathContainerService();
 
-    public DefaultPathReference(final Path path) {
-        this.path = path;
+    public DefaultPathReference(final Path file) {
+        this.file = file;
     }
 
     public String attributes() {
         String qualifier = StringUtils.EMPTY;
-        if(StringUtils.isNotBlank(path.attributes().getRegion())) {
-            if(containerService.isContainer(path)) {
-                qualifier += path.attributes().getRegion();
+        if(StringUtils.isNotBlank(file.attributes().getRegion())) {
+            if(containerService.isContainer(file)) {
+                qualifier += file.attributes().getRegion();
             }
         }
-        if(StringUtils.isNotBlank(path.attributes().getVersionId())) {
-            qualifier += path.attributes().getVersionId();
+        if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
+            qualifier += file.attributes().getVersionId();
         }
         return qualifier;
     }
@@ -61,7 +60,7 @@ public class
     @Override
     public String toString() {
         return String.format("%s-%s%s",
-                String.valueOf(path.getType()), this.attributes(), path.getAbsolute());
+                String.valueOf(file.getType()), this.attributes(), file.getAbsolute());
     }
 
     /**
