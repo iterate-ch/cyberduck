@@ -17,15 +17,12 @@ package ch.cyberduck.core.editor;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractController;
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.local.Application;
@@ -34,19 +31,15 @@ import ch.cyberduck.core.local.DisabledApplicationQuitCallback;
 import ch.cyberduck.core.local.DisabledFileWatcherListener;
 import ch.cyberduck.core.local.FileWatcherListener;
 import ch.cyberduck.core.test.NullSession;
-import ch.cyberduck.core.threading.BackgroundAction;
-import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.concurrent.ConcurrentUtils;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.EnumSet;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
@@ -105,41 +98,13 @@ public class AbstractEditorTest extends AbstractTestCase {
                         }
                     };
                 }
-                if(type.equals(UrlProvider.class)) {
-                    return (T) new UrlProvider() {
-                        @Override
-                        public DescriptiveUrlBag toUrl(final Path file) {
-                            return new DescriptiveUrlBag();
-                        }
-                    };
-                }
                 return super.getFeature(type);
             }
         };
         final AtomicBoolean e = new AtomicBoolean();
         final Path file = new Path("/f", EnumSet.of(Path.Type.file));
         file.attributes().setSize("content".getBytes().length);
-        final AbstractController c = new AbstractController() {
-            @Override
-            public void invoke(final MainAction runnable, final boolean wait) {
-                //
-            }
-
-            @Override
-            public <T> Future<T> background(final BackgroundAction<T> action) {
-                final T run;
-                try {
-                    run = action.run();
-                    assertTrue((Boolean) run);
-                }
-                catch(BackgroundException e) {
-                    fail();
-                    return null;
-                }
-                return ConcurrentUtils.constantFuture(run);
-            }
-        };
-        final AbstractEditor editor = new AbstractEditor(new Application("com.editor"), session, file, c) {
+        final AbstractEditor editor = new AbstractEditor(new Application("com.editor"), session, file, new DisabledProgressListener()) {
             @Override
             protected void edit(final ApplicationQuitCallback quit, final FileWatcherListener listener) throws IOException {
                 e.set(true);
