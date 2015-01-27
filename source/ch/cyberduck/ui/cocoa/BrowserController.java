@@ -1948,7 +1948,7 @@ public class BrowserController extends WindowController
             if(null == selected || !selected.isDirectory()) {
                 selected = this.workdir();
             }
-            bookmark = new HostDictionary().deserialize(this.session.getHost().serialize(SerializerFactory.get()));
+            bookmark = new HostDictionary().deserialize(session.getHost().serialize(SerializerFactory.get()));
             // Make sure a new UUID is asssigned for duplicate
             bookmark.setUuid(null);
             bookmark.setDefaultPath(selected.getAbsolute());
@@ -2150,7 +2150,7 @@ public class BrowserController extends WindowController
         }
         this.setEncoding(encoding);
         if(this.isMounted()) {
-            if(this.session.getEncoding().equals(encoding)) {
+            if(session.getEncoding().equals(encoding)) {
                 return;
             }
             session.getHost().setEncoding(encoding);
@@ -2627,7 +2627,7 @@ public class BrowserController extends WindowController
 
     @Action
     public void sendCustomCommandClicked(final ID sender) {
-        SheetController sheet = new CommandController(this, this.session);
+        SheetController sheet = new CommandController(this, session);
         sheet.beginSheet();
     }
 
@@ -3453,7 +3453,7 @@ public class BrowserController extends WindowController
             if(preferences.getBoolean("browser.disconnect.confirm")) {
                 // Defer the unmount to the callback function
                 final NSAlert alert = NSAlert.alert(
-                        MessageFormat.format(LocaleFactory.localizedString("Disconnect from {0}"), this.session.getHost().getHostname()), //title
+                        MessageFormat.format(LocaleFactory.localizedString("Disconnect from {0}"), session.getHost().getHostname()), //title
                         LocaleFactory.localizedString("The connection will be closed."), // message
                         LocaleFactory.localizedString("Disconnect"), // defaultbutton
                         LocaleFactory.localizedString("Cancel"), // alternate button
@@ -3659,7 +3659,7 @@ public class BrowserController extends WindowController
         }
         else if(action.equals(Foundation.selector("encodingMenuClicked:"))) {
             if(this.isMounted()) {
-                item.setState(this.session.getEncoding().equalsIgnoreCase(
+                item.setState(session.getEncoding().equalsIgnoreCase(
                         item.title()) ? NSCell.NSOnState : NSCell.NSOffState);
             }
             else {
