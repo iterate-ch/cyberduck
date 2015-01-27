@@ -8,6 +8,8 @@ Changelog. Last modified: $Date$
 - [Bugfix] No localizations (Windows) (#8497)
 - [Bugfix] Crash opening preferences when default editor is no longer installed (Mac) (#8402)
 - [Bugfix] Downloading files with Content-Encoding metadata decompresses and truncates the content (S3) (#8263)
+- [Bugfix] Interoperability issue with MLSD replies (FTP) (#8511)
+- [Bugfix] Allow Web URL configuration for OpenStack Swift and S3 (#8516)
 
 4.6.3 [https://trac.cyberduck.io/milestone/4.6.3]
 - [Bugfix] Occasional failure verifying donation keys
