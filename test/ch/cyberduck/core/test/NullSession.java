@@ -7,8 +7,6 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ftp.FTPClient;
@@ -45,24 +43,26 @@ public class NullSession extends FTPSession {
     }
 
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-        return AttributedList.emptyList();
+        return new AttributedList<Path>() {
+            @Override
+            public boolean contains(final Object o) {
+                return true;
+            }
+
+            @Override
+            public int indexOf(final Object o) {
+                return 0;
+            }
+
+            @Override
+            public Path get(final Path reference) {
+                return reference;
+            }
+        };
     }
 
     @Override
     public <T> T getFeature(Class<T> type) {
-        if(type.equals(ch.cyberduck.core.features.Attributes.class)) {
-            return (T) new ch.cyberduck.core.features.Attributes() {
-                @Override
-                public PathAttributes find(Path file) throws BackgroundException {
-                    return file.attributes();
-                }
-
-                @Override
-                public ch.cyberduck.core.features.Attributes withCache(PathCache cache) {
-                    return this;
-                }
-            };
-        }
         return super.getFeature(type);
     }
 }
