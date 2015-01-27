@@ -140,7 +140,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                     .build());
             builder.setDefaultConnectionConfig(ConnectionConfig.custom()
                     .setBufferSize(preferences.getInteger("http.socket.buffer"))
-                    .setCharset(Charset.forName(getEncoding()))
+                    .setCharset(Charset.forName(this.getEncoding()))
                     .build());
             builder.setRetryHandler(new DisabledHttpRequestRetryHandler());
             builder.addInterceptorLast(new HttpRequestInterceptor() {
