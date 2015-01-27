@@ -34,7 +34,7 @@ public class FTPParserSelector {
         return this.getParser(system, null);
     }
 
-    public CompositeFileEntryParser getParser(final String system, TimeZone zone) {
+    public CompositeFileEntryParser getParser(final String system, final TimeZone zone) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Select parser for system %s in zone %s", system, zone));
         }
