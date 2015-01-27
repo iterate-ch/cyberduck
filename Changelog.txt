@@ -5,6 +5,7 @@ Changelog. Last modified: $Date$
 
 4.6.4 [https://trac.cyberduck.io/milestone/4.6.4]
 - [Feature] Send packets to keep connection alive (SFTP)
+- [Feature] Backspace keyboard shortcut to change to parent directory (Windows) (#8457)
 - [Bugfix] No localizations (Windows) (#8497)
 - [Bugfix] Crash opening preferences when default editor is no longer installed (Mac) (#8402)
 - [Bugfix] Downloading files with Content-Encoding metadata decompresses and truncates the content (S3) (#8263)

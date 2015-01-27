@@ -2,6 +2,7 @@ A command line interface (CLI) version is now available from https://duck.sh/ fo
 
 4.6.4 [https://trac.cyberduck.io/milestone/4.6.4]
 - [Feature] Send packets to keep connection alive (SFTP)
+- [Feature] Backspace keyboard shortcut to change to parent directory (Windows) (#8457)
 - [Bugfix] No localizations (Windows) (#8497)
 - [Bugfix] Downloading files with Content-Encoding metadata decompresses and truncates the content (S3) (#8263)
 - [Bugfix] Interoperability issue with MLSD replies (FTP) (#8511)
