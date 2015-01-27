@@ -1,20 +1,9 @@
 package ch.cyberduck.core.worker;
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.TransferItemCache;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.test.NullLocal;
@@ -31,6 +20,7 @@ import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
+import ch.cyberduck.core.transfer.download.AbstractDownloadFilter;
 
 import org.junit.Test;
 
@@ -193,6 +183,21 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
                 else {
                     assertFalse(status.isExists());
                 }
+            }
+
+            @Override
+            public AbstractDownloadFilter filter(final Session<?> session, final TransferAction action, final ProgressListener listener) {
+                return super.filter(session, action, listener).withAttributes(new Attributes() {
+                    @Override
+                    public PathAttributes find(final Path file) throws BackgroundException {
+                        return file.attributes();
+                    }
+
+                    @Override
+                    public Attributes withCache(final PathCache cache) {
+                        return this;
+                    }
+                });
             }
         };
         final NullSession session = new NullSession(new Host("t")) {

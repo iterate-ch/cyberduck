@@ -72,7 +72,12 @@ public class SyncTransferTest extends AbstractTestCase {
     public void testFilterDownload() throws Exception {
         final Path p = new Path("t", EnumSet.of(Path.Type.directory));
         Transfer t = new SyncTransfer(new Host("t"), new TransferItem(p, new NullLocal(System.getProperty("java.io.tmpdir"), "t")));
-        final TransferPathFilter filter = t.filter(new NullSession(new Host("t")), TransferAction.download, new DisabledProgressListener());
+        final TransferPathFilter filter = t.filter(new NullSession(new Host("t")) {
+            @Override
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
+                return AttributedList.emptyList();
+            }
+        }, TransferAction.download, new DisabledProgressListener());
         final Path test = new Path(p, "a", EnumSet.of(Path.Type.file));
         assertFalse(filter.accept(test, new NullLocal(System.getProperty("java.io.tmpdir"), "a"),
                 new TransferStatus().exists(true)));

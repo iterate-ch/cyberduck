@@ -1,7 +1,9 @@
 package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
@@ -57,7 +59,12 @@ public class SkipFilterTest extends AbstractTestCase {
 
     @Test
     public void testAcceptDirectory() throws Exception {
-        SkipFilter f = new SkipFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host("h")));
+        SkipFilter f = new SkipFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host("h")) {
+            @Override
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
+                return AttributedList.emptyList();
+            }
+        });
         f.withAttributes(new Attributes() {
             @Override
             public PathAttributes find(final Path file) throws BackgroundException {
@@ -79,7 +86,12 @@ public class SkipFilterTest extends AbstractTestCase {
 
     @Test(expected = NotfoundException.class)
     public void testNotFound() throws Exception {
-        SkipFilter f = new SkipFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host("h")));
+        SkipFilter f = new SkipFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host("h")) {
+            @Override
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
+                return AttributedList.emptyList();
+            }
+        });
         f.withAttributes(new Attributes() {
             @Override
             public PathAttributes find(final Path file) throws BackgroundException {
