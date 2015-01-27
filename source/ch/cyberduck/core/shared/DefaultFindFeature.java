@@ -28,10 +28,14 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+
 /**
  * @version $Id$
  */
 public class DefaultFindFeature implements Find {
+    private static final Logger log = Logger.getLogger(DefaultFindFeature.class);
 
     private Session<?> session;
 
@@ -56,7 +60,23 @@ public class DefaultFindFeature implements Find {
             else {
                 list = cache.get(file.getParent());
             }
-            return list.contains(file);
+            final boolean found = list.contains(file);
+            if(!found) {
+                switch(session.getCase()) {
+                    case insensitive:
+                        // Find for all matching filenames ignoring case
+                        for(Path f : list) {
+                            if(!f.getType().equals(file.getType())) {
+                                continue;
+                            }
+                            if(StringUtils.equalsIgnoreCase(f.getName(), file.getName())) {
+                                log.warn(String.format("Found matching file %s ignoring case", f));
+                                return true;
+                            }
+                        }
+                }
+            }
+            return found;
         }
         catch(NotfoundException e) {
             return false;

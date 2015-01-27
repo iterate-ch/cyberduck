@@ -51,6 +51,7 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPCmd;
 import org.apache.commons.net.ftp.FTPReply;
 import org.apache.log4j.Logger;
@@ -60,6 +61,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
 
 /**
@@ -80,6 +82,8 @@ public class FTPSession extends SSLSession<FTPClient> {
     private Symlink symlink;
 
     private FTPListService listService;
+
+    private Case casesensitivity = Case.sensitive;
 
     public FTPSession(final Host h) {
         super(h);
@@ -210,6 +214,11 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     @Override
+    public Case getCase() {
+        return casesensitivity;
+    }
+
+    @Override
     public boolean alert() throws BackgroundException {
         if(super.alert()) {
             // Only alert if no option to switch to TLS later is possible
@@ -263,6 +272,9 @@ public class FTPSession extends SSLSession<FTPClient> {
                 String system = null; //Unknown
                 try {
                     system = client.getSystemType();
+                    if(system.toUpperCase(Locale.ROOT).contains(FTPClientConfig.SYST_NT)) {
+                        casesensitivity = Case.insensitive;
+                    }
                 }
                 catch(IOException e) {
                     log.warn(String.format("SYST command failed %s", e.getMessage()));

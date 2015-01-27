@@ -237,6 +237,18 @@ public abstract class Session<C> implements TranscriptListener {
     }
 
     /**
+     * @return Case sensitivity of the underlying remote file system
+     */
+    public Case getCase() {
+        return Case.sensitive;
+    }
+
+    public enum Case {
+        sensitive,
+        insensitive
+    }
+
+    /**
      * @return The maximum number of concurrent connections allowed or -1 if no limit is set
      */
     public int getMaxConnections() {
@@ -273,8 +285,8 @@ public abstract class Session<C> implements TranscriptListener {
     }
 
     /**
-     * @param directory     Directory
-     * @param listener Callback
+     * @param directory Directory
+     * @param listener  Callback
      */
     public abstract AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException;
 

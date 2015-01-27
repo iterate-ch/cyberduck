@@ -10,11 +10,11 @@ import ch.cyberduck.core.test.NullSession;
 
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -51,5 +51,42 @@ public class DefaultFindFeatureTest extends AbstractTestCase {
         assertEquals(1, count.get());
         assertFalse(feature.find(new Path("/t", EnumSet.of(Path.Type.directory))));
         assertEquals(1, count.get());
+    }
+
+    @Test
+    public void testCaseInsensitive() throws Exception {
+        assertTrue(new DefaultFindFeature(new NullSession(new Host(("t"))) {
+            @Override
+            public Case getCase() {
+                return Case.insensitive;
+            }
+
+            @Override
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
+                return new AttributedList<>(Collections.singletonList(new Path("/a/B", EnumSet.of(Path.Type.file))));
+            }
+        }).find(new Path("/a/b", EnumSet.of(Path.Type.file))));
+        assertFalse(new DefaultFindFeature(new NullSession(new Host(("t"))) {
+            @Override
+            public Case getCase() {
+                return Case.insensitive;
+            }
+
+            @Override
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
+                return new AttributedList<>(Collections.singletonList(new Path("/a/B", EnumSet.of(Path.Type.directory))));
+            }
+        }).find(new Path("/a/b", EnumSet.of(Path.Type.file))));
+        assertFalse(new DefaultFindFeature(new NullSession(new Host(("t"))) {
+            @Override
+            public Case getCase() {
+                return Case.sensitive;
+            }
+
+            @Override
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
+                return new AttributedList<>(Collections.singletonList(new Path("/a/B", EnumSet.of(Path.Type.file))));
+            }
+        }).find(new Path("/a/b", EnumSet.of(Path.Type.file))));
     }
 }
