@@ -244,6 +244,11 @@ public class Terminal {
         else {
             preferences.setProperty("connection.retry", 0);
         }
+        final boolean udt = input.hasOption(TerminalOptionsBuilder.Params.udt.name());
+        if(udt) {
+            preferences.setProperty("s3.download.udt.threshold", 0L);
+            preferences.setProperty("s3.upload.udt.threshold", 0L);
+        }
     }
 
     protected Exit transfer(final Transfer transfer, final Session session) {

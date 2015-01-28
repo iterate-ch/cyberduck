@@ -123,6 +123,11 @@ public final class TerminalOptionsBuilder {
                 .hasOptionalArg()
                 .isRequired(false)
                 .create('r'));
+        options.addOption(OptionBuilder
+                .withDescription("Use UDT protocol if applicable")
+                .withLongOpt(Params.udt.name())
+                .isRequired(false)
+                .create());
         final StringBuilder b = new StringBuilder().append(StringUtils.LF);
         final Set<TransferAction> actions = new HashSet<TransferAction>(TransferAction.forTransfer(Transfer.Type.download));
         actions.add(TransferAction.cancel);
@@ -167,6 +172,7 @@ public final class TerminalOptionsBuilder {
         longlist,
         preserve,
         retry,
+        udt,
         existing,
         verbose,
         quiet,
