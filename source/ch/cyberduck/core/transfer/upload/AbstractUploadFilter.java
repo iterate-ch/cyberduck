@@ -29,6 +29,7 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UserDateFormatterFactory;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
@@ -51,6 +52,7 @@ import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -130,6 +132,19 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 // Read remote attributes
                 final PathAttributes attributes = attribute.find(file);
                 status.setRemote(attributes);
+            }
+            else {
+                // Look if there is directory or file that clashes with this upload
+                if(file.getType().contains(Path.Type.file)) {
+                    if(find.find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.directory)))) {
+                        throw new AccessDeniedException(String.format("Cannot replace folder %s with file %s", file.getAbsolute(), local.getName()));
+                    }
+                }
+                if(file.getType().contains(Path.Type.directory)) {
+                    if(find.find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.file)))) {
+                        throw new AccessDeniedException(String.format("Cannot replace file %s with folder %s", file.getAbsolute(), local.getName()));
+                    }
+                }
             }
         }
         if(local.isFile()) {

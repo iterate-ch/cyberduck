@@ -111,8 +111,17 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         final TransferStatus status = new TransferStatus();
         if(parent.isExists()) {
             if(local.exists()) {
-                // Do not attempt to create a directory that already exists
                 status.setExists(true);
+                if(file.getType().contains(Path.Type.file)) {
+                    if(local.isDirectory()) {
+                        throw new AccessDeniedException(String.format("Cannot replace folder %s with file %s", local.getAbbreviatedPath(), file.getName()));
+                    }
+                }
+                if(file.getType().contains(Path.Type.directory)) {
+                    if(local.isFile()) {
+                        throw new AccessDeniedException(String.format("Cannot replace file %s with folder %s", local.getAbbreviatedPath(), file.getName()));
+                    }
+                }
             }
         }
         final PathAttributes attributes;

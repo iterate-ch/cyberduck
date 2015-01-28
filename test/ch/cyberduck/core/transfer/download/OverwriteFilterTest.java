@@ -5,6 +5,8 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.core.test.NullLocal;
 import ch.cyberduck.core.test.NullSession;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -13,6 +15,7 @@ import ch.cyberduck.core.transfer.symlink.DisabledDownloadSymlinkResolver;
 import org.junit.Test;
 
 import java.util.EnumSet;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -81,5 +84,19 @@ public class OverwriteFilterTest extends AbstractTestCase {
         assertEquals(8L, status.getLength(), 0L);
         assertEquals(1L, status.getTimestamp(), 0L);
         assertEquals(new Permission(777), status.getPermission());
+    }
+
+    @Test(expected = AccessDeniedException.class)
+    public void testOverrideDirectoryWithFile() throws Exception {
+        final OverwriteFilter f = new OverwriteFilter(new DisabledDownloadSymlinkResolver(), new NullSession(new Host("h")));
+        f.prepare(new Path("a", EnumSet.of(Path.Type.file)), new NullLocal(System.getProperty("java.io.tmpdir")), new TransferStatus().exists(true));
+    }
+
+    @Test(expected = AccessDeniedException.class)
+    public void testOverrideFileWithDirectory() throws Exception {
+        final OverwriteFilter f = new OverwriteFilter(new DisabledDownloadSymlinkResolver(), new NullSession(new Host("h")));
+        final NullLocal l = new NullLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        new DefaultLocalTouchFeature().touch(l);
+        f.prepare(new Path("a", EnumSet.of(Path.Type.directory)), l, new TransferStatus().exists(true));
     }
 }

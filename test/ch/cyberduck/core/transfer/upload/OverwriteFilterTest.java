@@ -5,8 +5,13 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.core.openstack.SwiftSession;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.test.NullLocal;
@@ -66,7 +71,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
 
         }, new TransferStatus()));
         assertTrue(f.accept(new Path("a", EnumSet.of(Path.Type.directory)) {
-        }, new NullLocal("t") {
+                            }, new NullLocal("t") {
 
                                 @Override
                                 public boolean exists() {
@@ -152,5 +157,34 @@ public class OverwriteFilterTest extends AbstractTestCase {
         assertTrue(f.temporary.isEmpty());
         assertNull(status.getRename().local);
         assertNull(status.getRename().remote);
+    }
+
+    @Test(expected = AccessDeniedException.class)
+    public void testOverrideDirectoryWithFile() throws Exception {
+        final AbstractUploadFilter f = new OverwriteFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host("h"))).withFinder(
+                new Find() {
+                    @Override
+                    public boolean find(final Path file) throws BackgroundException {
+                        if(file.getType().contains(Path.Type.file)) {
+                            return false;
+                        }
+                        return true;
+                    }
+
+                    @Override
+                    public Find withCache(final PathCache cache) {
+                        return this;
+                    }
+                }
+        );
+        f.prepare(new Path("a", EnumSet.of(Path.Type.file)), new NullLocal(System.getProperty("java.io.tmpdir"), "f"), new TransferStatus().exists(true));
+    }
+
+    @Test(expected = AccessDeniedException.class)
+    public void testOverrideFileWithDirectory() throws Exception {
+        final OverwriteFilter f = new OverwriteFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host("h")));
+        final NullLocal l = new NullLocal(System.getProperty("java.io.tmpdir"));
+        new DefaultLocalTouchFeature().touch(l);
+        f.prepare(new Path("a", EnumSet.of(Path.Type.file)), l, new TransferStatus().exists(true));
     }
 }
