@@ -22,10 +22,16 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferAction;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @version $Id$
@@ -43,7 +49,17 @@ public class TerminalOptionsInputValidator {
                 continue;
             }
             if(o.getArgs() != o.getValuesList().size()) {
-                console.printf("%s %s%n", "Missing argument for option", o.getLongOpt());
+                console.printf("Missing argument for option %s%n", o.getLongOpt());
+                return false;
+            }
+        }
+        if(input.hasOption(TerminalOptionsBuilder.Params.existing.name())) {
+            final String arg = input.getOptionValue(TerminalOptionsBuilder.Params.existing.name());
+            if(null == TransferAction.forName(arg)) {
+                final Set<TransferAction> actions = new HashSet<TransferAction>(TransferAction.forTransfer(Transfer.Type.download));
+                actions.add(TransferAction.cancel);
+                console.printf("Invalid argument '%s' for option %s. Must be one of %s%n",
+                        arg, TerminalOptionsBuilder.Params.existing.name(), Arrays.toString(actions.toArray()));
                 return false;
             }
         }
