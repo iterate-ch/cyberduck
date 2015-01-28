@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.core.threading.ControllerMainAction;
+import ch.cyberduck.core.threading.LoggingUncaughtExceptionHandler;
 import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.core.threading.ThreadPool;
 
@@ -43,8 +44,7 @@ public abstract class AbstractController implements Controller {
     private ThreadPool concurrentExecutor;
 
     protected AbstractController() {
-        singleExecutor = new ThreadPool();
-        concurrentExecutor = new ThreadPool(Integer.MAX_VALUE);
+        this(new LoggingUncaughtExceptionHandler());
     }
 
     protected AbstractController(final Thread.UncaughtExceptionHandler handler) {
