@@ -39,6 +39,9 @@ public class TerminalOptionsInputValidator {
             if(Option.UNINITIALIZED == o.getArgs()) {
                 continue;
             }
+            if(o.hasOptionalArg()) {
+                continue;
+            }
             if(o.getArgs() != o.getValuesList().size()) {
                 console.printf("%s %s%n", "Missing argument for option", o.getLongOpt());
                 return false;

@@ -50,6 +50,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -231,7 +232,18 @@ public class Terminal {
         preferences.setProperty("queue.upload.timestamp.change", preserve);
         preferences.setProperty("queue.download.permissions.change", preserve);
         preferences.setProperty("queue.download.timestamp.change", preserve);
-        preferences.setProperty("connection.retry", input.hasOption(TerminalOptionsBuilder.Params.retry.name()) ? 1 : 0);
+        final boolean retry = input.hasOption(TerminalOptionsBuilder.Params.retry.name());
+        if(retry) {
+            if(StringUtils.isNotBlank(input.getOptionValue(TerminalOptionsBuilder.Params.retry.name()))) {
+                preferences.setProperty("connection.retry", NumberUtils.toInt(input.getOptionValue(TerminalOptionsBuilder.Params.retry.name()), 1));
+            }
+            else {
+                preferences.setProperty("connection.retry", 1);
+            }
+        }
+        else {
+            preferences.setProperty("connection.retry", 0);
+        }
     }
 
     protected Exit transfer(final Transfer transfer, final Session session) {

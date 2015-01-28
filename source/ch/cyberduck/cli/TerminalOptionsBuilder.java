@@ -120,7 +120,7 @@ public final class TerminalOptionsBuilder {
         options.addOption(OptionBuilder
                 .withDescription("Retry failed connection attempts")
                 .withLongOpt(Params.retry.name())
-                .hasArg(false)
+                .hasOptionalArg()
                 .isRequired(false)
                 .create('r'));
         final StringBuilder b = new StringBuilder().append(StringUtils.LF);
