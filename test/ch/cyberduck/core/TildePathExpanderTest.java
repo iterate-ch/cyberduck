@@ -48,8 +48,23 @@ public class TildePathExpanderTest extends AbstractTestCase {
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertEquals(new Path("/home/jenkins/f", EnumSet.of(Path.Type.file)),
-                new TildePathExpander(session).expand(new Path("~/f", EnumSet.of(Path.Type.file))));
+        final Path expanded = new TildePathExpander(session).expand(new Path("~/f", EnumSet.of(Path.Type.file)));
+        assertEquals(new Path("/home/jenkins/f", EnumSet.of(Path.Type.file)), expanded);
+        assertEquals(new Path("/home/jenkins", EnumSet.of(Path.Type.directory)), expanded.getParent());
+        session.close();
+    }
+
+    @Test
+    public void testExpandPathWithDirectory() throws Exception {
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
+                properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
+        ));
+        final SFTPSession session = new SFTPSession(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path expanded = new TildePathExpander(session).expand(new Path("/~/f/s", EnumSet.of(Path.Type.file)));
+        assertEquals(new Path("/home/jenkins/f/s", EnumSet.of(Path.Type.file)), expanded);
+        assertEquals(new Path("/home/jenkins/f", EnumSet.of(Path.Type.directory)), expanded.getParent());
         session.close();
     }
 
