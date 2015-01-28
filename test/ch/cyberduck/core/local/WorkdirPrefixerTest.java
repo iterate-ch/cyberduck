@@ -19,7 +19,6 @@ package ch.cyberduck.core.local;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Local;
 
 import org.junit.Test;
 
@@ -30,7 +29,6 @@ public class WorkdirPrefixerTest extends AbstractTestCase {
     @Test
     public void testNormalize() throws Exception {
         assertEquals(System.getProperty("user.dir") + "/n", new WorkdirPrefixer().normalize("n"));
-        assertEquals("/tmp/n", new WorkdirPrefixer(new Local("/tmp")).normalize("n"));
     }
 
     @Test

@@ -18,7 +18,6 @@ package ch.cyberduck.core.local;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -36,38 +35,19 @@ public class WorkdirPrefixer {
     private final Preferences preferences
             = PreferencesFactory.get();
 
-    private Local workdir;
-
-    public WorkdirPrefixer() {
-        this.workdir = null;
-    }
-
-    public WorkdirPrefixer(final Local workdir) {
-        this.workdir = workdir;
-    }
-
     private boolean isAbsolute(final String path) {
         return FilenameUtils.getPrefixLength(path) != 0;
     }
 
     public String normalize(final String name) {
         if(StringUtils.equals(name, ".")) {
-            if(null == workdir) {
-                return finder.find().getAbsolute();
-            }
-            return workdir.getAbsolute();
+            return finder.find().getAbsolute();
         }
         if(StringUtils.equals(name, "..")) {
-            if(null == workdir) {
-                return finder.find().getParent().getAbsolute();
-            }
-            return workdir.getParent().getAbsolute();
+            return finder.find().getParent().getAbsolute();
         }
         if(!this.isAbsolute(name)) {
-            if(null == workdir) {
-                return String.format("%s%s%s", finder.find().getAbsolute(), PreferencesFactory.get().getProperty("local.delimiter"), name);
-            }
-            return String.format("%s%s%s", workdir.getAbsolute(), preferences.getProperty("local.delimiter"), name);
+            return String.format("%s%s%s", finder.find().getAbsolute(), PreferencesFactory.get().getProperty("local.delimiter"), name);
         }
         return name;
     }
