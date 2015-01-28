@@ -29,7 +29,6 @@ import ch.cyberduck.core.editor.FSEventWatchEditorFactory;
 import ch.cyberduck.core.i18n.BundleLocale;
 import ch.cyberduck.core.i18n.RegexLocale;
 import ch.cyberduck.core.local.ExecApplicationLauncher;
-import ch.cyberduck.core.local.ExecWorkingDirectoryFinder;
 import ch.cyberduck.core.local.FileManagerWorkingDirectoryFinder;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
@@ -96,7 +95,6 @@ public class TerminalPreferences extends MemoryPreferences {
                 defaults.put("factory.locale.class", RegexLocale.class.getName());
                 defaults.put("factory.applicationlauncher.class", ExecApplicationLauncher.class.getName());
                 defaults.put("factory.editorfactory.class", DefaultEditorFactory.class.getName());
-                defaults.put("factory.workingdirectory.class", ExecWorkingDirectoryFinder.class.getName());
                 // Disable
                 defaults.put("ssh.authentication.agent.enable", String.valueOf(false));
                 break;
