@@ -42,7 +42,7 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
-        final OutputStream out = new SwiftWriteFeature(session).write(test, status);
+        final OutputStream out = new SwiftWriteFeature(session).withMetadata(Collections.singletonMap("C", "duck")).write(test, status);
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         IOUtils.closeQuietly(out);
@@ -59,6 +59,7 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
         final Map<String, String> metadata = new SwiftMetadataFeature(session).getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertEquals("text/plain", metadata.get("Content-Type"));
+        assertEquals("duck", metadata.get("X-Object-Meta-C"));
         new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }
