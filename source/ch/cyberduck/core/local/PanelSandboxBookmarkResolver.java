@@ -18,34 +18,23 @@ package ch.cyberduck.core.local;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.binding.ProxyController;
-import ch.cyberduck.binding.application.NSOpenPanel;
-import ch.cyberduck.binding.application.SheetCallback;
-import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSData;
-import ch.cyberduck.binding.foundation.NSEnumerator;
-import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.threading.DefaultMainAction;
 
 import org.apache.log4j.Logger;
 import org.rococoa.ObjCObjectByReference;
 import org.rococoa.cocoa.foundation.NSError;
-import org.rococoa.cocoa.foundation.NSInteger;
 
-import java.text.MessageFormat;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @version $Id$
  */
-public class PanelSandboxBookmarkResolver extends ProxyController implements SandboxBookmarkResolver<NSURL> {
+public class PanelSandboxBookmarkResolver implements SandboxBookmarkResolver<NSURL> {
     private static final Logger log = Logger.getLogger(PanelSandboxBookmarkResolver.class);
 
     private final Preferences preferences = PreferencesFactory.get();
@@ -85,28 +74,28 @@ public class PanelSandboxBookmarkResolver extends ProxyController implements San
     private String choose(final Local file) throws AccessDeniedException {
         final AtomicReference<String> bookmark = new AtomicReference<String>();
         log.warn(String.format("Prompt for file %s to obtain bookmark reference", file));
-        this.invoke(new DefaultMainAction() {
-            @Override
-            public void run() {
-                final NSOpenPanel panel = NSOpenPanel.openPanel();
-                panel.setCanChooseDirectories(file.isDirectory());
-                panel.setCanChooseFiles(file.isFile());
-                panel.setAllowsMultipleSelection(false);
-                panel.setMessage(MessageFormat.format(LocaleFactory.localizedString("Select the file {0}", "Credentials"), file.getAbsolute()));
-                panel.setPrompt(LocaleFactory.localizedString("Choose"));
-                final NSInteger modal = panel.runModal(file.getParent().getAbsolute(), file.getName());
-                if(modal.intValue() == SheetCallback.DEFAULT_OPTION) {
-                    final NSArray selected = panel.filenames();
-                    final NSEnumerator enumerator = selected.objectEnumerator();
-                    NSObject next;
-                    while((next = enumerator.nextObject()) != null) {
-                        final Local f = LocalFactory.get(next.toString());
-                        bookmark.set(f.getBookmark());
-                    }
-                }
-                panel.close();
-            }
-        }, true);
+//        this.invoke(new DefaultMainAction() {
+//            @Override
+//            public void run() {
+//                final NSOpenPanel panel = NSOpenPanel.openPanel();
+//                panel.setCanChooseDirectories(file.isDirectory());
+//                panel.setCanChooseFiles(file.isFile());
+//                panel.setAllowsMultipleSelection(false);
+//                panel.setMessage(MessageFormat.format(LocaleFactory.localizedString("Select the file {0}", "Credentials"), file.getAbsolute()));
+//                panel.setPrompt(LocaleFactory.localizedString("Choose"));
+//                final NSInteger modal = panel.runModal(file.getParent().getAbsolute(), file.getName());
+//                if(modal.intValue() == SheetCallback.DEFAULT_OPTION) {
+//                    final NSArray selected = panel.filenames();
+//                    final NSEnumerator enumerator = selected.objectEnumerator();
+//                    NSObject next;
+//                    while((next = enumerator.nextObject()) != null) {
+//                        final Local f = LocalFactory.get(next.toString());
+//                        bookmark.set(f.getBookmark());
+//                    }
+//                }
+//                panel.close();
+//            }
+//        }, true);
         final String data = bookmark.get();
         if(data == null) {
             throw new AccessDeniedException(String.format("Prompt for %s canceled", file));
