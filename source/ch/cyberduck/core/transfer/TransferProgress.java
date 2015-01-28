@@ -51,6 +51,10 @@ public final class TransferProgress {
         return speed;
     }
 
+    public boolean isComplete() {
+        return transferred.longValue() == size.longValue();
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("TransferProgress{");
