@@ -27,6 +27,7 @@ import org.fusesource.jansi.Ansi;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @version $Id$
@@ -36,6 +37,8 @@ public class TerminalStreamListener implements StreamListener {
     private TransferSpeedometer meter;
 
     private Console console = new Console();
+
+    private AtomicLong timestamp = new AtomicLong();
 
     /**
      * Progress bar fixed width in characters
@@ -48,6 +51,11 @@ public class TerminalStreamListener implements StreamListener {
 
     private void increment() {
         final TransferProgress progress = meter.getStatus();
+        if(System.currentTimeMillis() - timestamp.get() < 100L) {
+            if(!progress.isComplete()) {
+                return;
+            }
+        }
         final BigDecimal fraction = new BigDecimal(progress.getTransferred())
                 .divide(new BigDecimal(progress.getSize()), 1, RoundingMode.DOWN);
         console.printf("\r%s[", Ansi.ansi()
@@ -62,6 +70,7 @@ public class TerminalStreamListener implements StreamListener {
             console.printf(StringUtils.SPACE);
         }
         console.printf("] %s", progress.getProgress());
+        timestamp.set(System.currentTimeMillis());
     }
 
     @Override
