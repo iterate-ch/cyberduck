@@ -91,6 +91,16 @@ public class ResumeFilterTest extends AbstractTestCase {
             public boolean exists() {
                 return true;
             }
+
+            @Override
+            public boolean isFile() {
+                return false;
+            }
+
+            @Override
+            public boolean isDirectory() {
+                return true;
+            }
         };
         final TransferStatus status = f.prepare(p, local, new TransferStatus().exists(true));
         assertTrue(status.isExists());

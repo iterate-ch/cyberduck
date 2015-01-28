@@ -3,6 +3,7 @@ package ch.cyberduck.core.transfer;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.dav.DAVSession;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.io.DisabledStreamListener;
@@ -42,6 +43,21 @@ public class DownloadTransferTest extends AbstractTestCase {
         Transfer t = new DownloadTransfer(new Host("t"), new Path("/t", EnumSet.of(Path.Type.directory)), new NullLocal("t") {
             @Override
             public boolean exists() {
+                return true;
+            }
+
+            @Override
+            public AttributedList<Local> list(final Filter<String> filter) throws AccessDeniedException {
+                return AttributedList.emptyList();
+            }
+
+            @Override
+            public boolean isFile() {
+                return false;
+            }
+
+            @Override
+            public boolean isDirectory() {
                 return true;
             }
         });
@@ -151,7 +167,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions(),
                 new TransferSpeedometer(transfer), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback());
-        worker.prepare(test, new NullLocal(System.getProperty("java.io.tmpdir")), new TransferStatus().exists(true),
+        worker.prepare(test, new NullLocal(System.getProperty("java.io.tmpdir"), "c"), new TransferStatus().exists(true),
                 new OverwriteFilter(new DownloadSymlinkResolver(Collections.singletonList(new TransferItem(test))),
                         session)
         );
