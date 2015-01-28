@@ -51,6 +51,13 @@ public class TerminalController extends AbstractController {
     }
 
     @Override
+    protected void failure(final Exception trace, final Exception failure) {
+        trace.initCause(failure);
+        trace.printStackTrace(System.err);
+        System.exit(1);
+    }
+
+    @Override
     public void message(final String message) {
         progress.message(message);
     }
