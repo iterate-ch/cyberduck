@@ -26,7 +26,7 @@ import org.apache.log4j.Logger;
  * @version $Id$
  */
 public final class PreferencesFactory {
-    private static final Logger log = Logger.getLogger(Preferences.class);
+    private static final Logger log = Logger.getLogger(PreferencesFactory.class);
 
     private PreferencesFactory() {
         //
