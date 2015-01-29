@@ -29,6 +29,7 @@ import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.model.MultipartPart;
 import org.jets3t.service.model.MultipartUpload;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 /**
@@ -91,7 +92,7 @@ public class S3MultipartService {
             return session.getClient().multipartListParts(multipart);
         }
         catch(S3ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Upload {0} failed", e);
+            throw new ServiceExceptionMappingService().map(MessageFormat.format("Upload {0} failed", multipart.getObjectKey()), e);
         }
     }
 }
