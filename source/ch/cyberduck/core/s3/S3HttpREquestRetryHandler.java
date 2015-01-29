@@ -37,6 +37,8 @@ import java.net.ConnectException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 
+import com.barchart.udt.ExceptionUDT;
+
 /**
  * @version $Id$
  */
@@ -56,6 +58,7 @@ public class S3HttpREquestRetryHandler extends DefaultHttpRequestRetryHandler {
                         InterruptedIOException.class,
                         UnknownHostException.class,
                         ConnectException.class,
+                        ExceptionUDT.class,
                         // Not providing SSLException.class, because broken pipe failures are wrapped in SSL Exceptions.
                         // "Broken pipe".equals(ExceptionUtils.getRootCause(failure).getMessage())
                         SSLHandshakeException.class)

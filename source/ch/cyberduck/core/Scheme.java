@@ -99,6 +99,17 @@ public enum Scheme {
         public int getPort() {
             return 1935;
         }
+    },
+    udt {
+        @Override
+        public boolean isSecure() {
+            return true;
+        }
+
+        @Override
+        public int getPort() {
+            return 8007;
+        }
     };
 
     public abstract boolean isSecure();

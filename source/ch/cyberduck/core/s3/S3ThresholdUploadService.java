@@ -19,20 +19,34 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.udt.UDTExceptionMappingService;
+import ch.cyberduck.core.udt.UDTProxy;
+import ch.cyberduck.core.udt.UDTProxyProvider;
+import ch.cyberduck.core.udt.UDTTransferOption;
+import ch.cyberduck.core.udt.qloudsonic.QloudsonicProxyProvider;
+import ch.cyberduck.core.udt.qloudsonic.QloudsonicTransferOption;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
+import org.jets3t.service.Constants;
 import org.jets3t.service.model.StorageObject;
+
+import com.barchart.udt.ExceptionUDT;
 
 /**
  * @version $Id$
@@ -45,49 +59,108 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
 
     private S3Session session;
 
-    private Long multipartThreshold;
+    private Long multipartThreshold
+            = preferences.getLong("s3.upload.multipart.threshold");
+
+    private Long udtThreshold
+            = preferences.getLong("s3.upload.udt.threshold");
+
+    private UDTProxyProvider udtProxyProvider;
+
+    private UDTTransferOption udtTransferOption;
 
     public S3ThresholdUploadService(final S3Session session) {
         this.session = session;
-        this.multipartThreshold = preferences.getLong("s3.upload.multipart.threshold");
+        this.udtTransferOption = new QloudsonicTransferOption();
+        this.udtProxyProvider = new QloudsonicProxyProvider();
     }
 
     public S3ThresholdUploadService(final S3Session session, final Long multipartThreshold) {
         this.session = session;
         this.multipartThreshold = multipartThreshold;
+        this.udtTransferOption = new QloudsonicTransferOption();
+        this.udtProxyProvider = new QloudsonicProxyProvider();
+    }
+
+    public S3ThresholdUploadService(final S3Session session, final UDTTransferOption udtTransferOption) {
+        this.session = session;
+        this.udtTransferOption = udtTransferOption;
+        this.udtProxyProvider = new QloudsonicProxyProvider();
+    }
+
+    public S3ThresholdUploadService(final S3Session session, final UDTTransferOption udtTransferOption, final UDTProxyProvider udtProxyProvider) {
+        this.session = session;
+        this.udtTransferOption = udtTransferOption;
+        this.udtProxyProvider = udtProxyProvider;
     }
 
     @Override
-    public StorageObject upload(final Path file, final Local local, final BandwidthThrottle throttle,
-                                final StreamListener listener, final TransferStatus status, final ConnectionCallback prompt)
-            throws BackgroundException {
-        if(status.getLength() > multipartThreshold) {
-            if(!preferences.getBoolean("s3.upload.multipart")) {
-                // Disabled by user
-                if(status.getLength() < preferences.getLong("s3.upload.multipart.required.threshold")) {
-                    log.warn("Multipart upload is disabled with property s3.upload.multipart");
+    public StorageObject upload(final Path file, Local local, final BandwidthThrottle throttle, final StreamListener listener,
+                                final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
+        final Host bookmark = session.getHost();
+        if(bookmark.getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
+            // Only for AWS given threshold
+            if(status.getLength() > udtThreshold) {
+                // Prompt user
+                if(udtTransferOption.prompt(bookmark, status, prompt)) {
+                    final Location.Name location = session.getFeature(Location.class).getLocation(file);
+                    if(Location.unknown.equals(location)) {
+                        throw new AccessDeniedException("Cannot read bucket location");
+                    }
+                    final S3Session proxy = new UDTProxy<S3Session>(location, udtProxyProvider)
+                            .proxy(new S3Session(session.getHost()), session);
+                    final S3Session.RequestEntityRestStorageService client = proxy.open(new DisabledHostKeyCallback(), session);
+                    // Swap credentials. No login required
+                    client.setProviderCredentials(session.getClient().getProviderCredentials());
+                    final Upload<StorageObject> service = new S3MultipartUploadService(proxy);
+                    try {
+                        return service.upload(file, local, throttle, listener, status, prompt);
+                    }
+                    catch(BackgroundException e) {
+                        final Throwable cause = ExceptionUtils.getRootCause(e);
+                        if(cause instanceof ExceptionUDT) {
+                            throw new UDTExceptionMappingService().map((ExceptionUDT) cause);
+                        }
+                        throw e;
+                    }
+                }
+            }
+            if(status.getLength() > multipartThreshold) {
+                if(!preferences.getBoolean("s3.upload.multipart")) {
+                    // Disabled by user
+                    if(status.getLength() < preferences.getLong("s3.upload.multipart.required.threshold")) {
+                        log.warn("Multipart upload is disabled with property s3.upload.multipart");
+                        final S3SingleUploadService single = new S3SingleUploadService(session);
+                        return single.upload(file, local, throttle, listener, status, prompt);
+                    }
+                }
+                final S3MultipartUploadService service = new S3MultipartUploadService(session);
+                try {
+                    return service.upload(file, local, throttle, listener, status, prompt);
+                }
+                catch(NotfoundException e) {
+                    log.warn(String.format("Failure using multipart upload %s. Fallback to single upload.", e.getMessage()));
+                    final S3SingleUploadService single = new S3SingleUploadService(session);
+                    return single.upload(file, local, throttle, listener, status, prompt);
+                }
+                catch(InteroperabilityException e) {
+                    log.warn(String.format("Failure using multipart upload %s. Fallback to single upload.", e.getMessage()));
                     final S3SingleUploadService single = new S3SingleUploadService(session);
                     return single.upload(file, local, throttle, listener, status, prompt);
                 }
             }
-            final S3MultipartUploadService service = new S3MultipartUploadService(session);
-            try {
-                return service.upload(file, local, throttle, listener, status, prompt);
-            }
-            catch(NotfoundException e) {
-                log.warn(String.format("Failure using multipart upload %s. Fallback to single upload.", e.getMessage()));
-                final S3SingleUploadService single = new S3SingleUploadService(session);
-                return single.upload(file, local, throttle, listener, status, prompt);
-            }
-            catch(InteroperabilityException e) {
-                log.warn(String.format("Failure using multipart upload %s. Fallback to single upload.", e.getMessage()));
-                final S3SingleUploadService single = new S3SingleUploadService(session);
-                return single.upload(file, local, throttle, listener, status, prompt);
-            }
         }
-        else {
-            final S3SingleUploadService single = new S3SingleUploadService(session);
-            return single.upload(file, local, throttle, listener, status, prompt);
-        }
+        final S3SingleUploadService single = new S3SingleUploadService(session);
+        return single.upload(file, local, throttle, listener, status, prompt);
+    }
+
+    public S3ThresholdUploadService withMultipartThreshold(final Long threshold) {
+        this.multipartThreshold = threshold;
+        return this;
+    }
+
+    public S3ThresholdUploadService withUdtThreshold(final Long threshold) {
+        this.udtThreshold = threshold;
+        return this;
     }
 }
