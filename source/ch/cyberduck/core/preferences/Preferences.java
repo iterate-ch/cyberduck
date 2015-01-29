@@ -613,8 +613,8 @@ public abstract class Preferences {
         /**
          * Transfer thresholds for qloudsonic.io
          */
-        defaults.put("s3.download.udt.threshold", String.valueOf(100L * 1024L * 1024L));
-        defaults.put("s3.upload.udt.threshold", String.valueOf(100L * 1024L * 1024L));
+        defaults.put("s3.download.udt.threshold", String.valueOf(Long.MAX_VALUE));
+        defaults.put("s3.upload.udt.threshold", String.valueOf(Long.MAX_VALUE));
 
         /**
          * A prefix to apply to log file names
