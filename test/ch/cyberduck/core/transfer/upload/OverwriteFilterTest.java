@@ -11,7 +11,6 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.core.openstack.SwiftSession;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.test.NullLocal;
@@ -182,9 +181,22 @@ public class OverwriteFilterTest extends AbstractTestCase {
 
     @Test(expected = AccessDeniedException.class)
     public void testOverrideFileWithDirectory() throws Exception {
-        final OverwriteFilter f = new OverwriteFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host("h")));
-        final NullLocal l = new NullLocal(System.getProperty("java.io.tmpdir"));
-        new DefaultLocalTouchFeature().touch(l);
-        f.prepare(new Path("a", EnumSet.of(Path.Type.file)), l, new TransferStatus().exists(true));
+        final AbstractUploadFilter f = new OverwriteFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host("h"))).withFinder(
+                new Find() {
+                    @Override
+                    public boolean find(final Path file) throws BackgroundException {
+                        if(file.getType().contains(Path.Type.file)) {
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    @Override
+                    public Find withCache(final PathCache cache) {
+                        return this;
+                    }
+                }
+        );
+        f.prepare(new Path("a", EnumSet.of(Path.Type.directory)), new NullLocal(System.getProperty("java.io.tmpdir")), new TransferStatus().exists(true));
     }
 }
