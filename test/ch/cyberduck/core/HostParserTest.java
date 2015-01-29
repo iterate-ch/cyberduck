@@ -289,4 +289,13 @@ public class HostParserTest extends AbstractTestCase {
         assertEquals(Protocol.Type.ftp, host.getProtocol().getType());
         assertEquals(21, host.getPort());
     }
+
+    @Test
+    public void testMissingPortNumber() {
+        final Host host = HostParser.parse("ftp://hostname:~/sandbox");
+        assertEquals("hostname", host.getHostname());
+        assertEquals(Protocol.Type.ftp, host.getProtocol().getType());
+        assertEquals(21, host.getPort());
+        assertEquals("~/sandbox", host.getDefaultPath());
+    }
 }

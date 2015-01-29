@@ -110,28 +110,34 @@ public final class HostParser {
             cut = input.indexOf(':', begin);
             hostname = input.substring(begin, cut);
             begin += hostname.length() + 1;
-            try {
-                String portString;
-                if(input.indexOf(Path.DELIMITER, begin) != -1) {
-                    portString = input.substring(begin, input.indexOf(Path.DELIMITER, begin));
+            String portString;
+            if(input.indexOf(Path.DELIMITER, begin) != -1) {
+                portString = input.substring(begin, input.indexOf(Path.DELIMITER, begin));
+                try {
+                    port = Integer.parseInt(portString);
                     begin += portString.length();
-                    try {
-                        path = URLDecoder.decode(input.substring(begin, input.length()), "UTF-8");
-                    }
-                    catch(UnsupportedEncodingException e) {
-                        log.error(e.getMessage(), e);
-                    }
-                    catch(IllegalArgumentException e) {
-                        log.error(e.getMessage(), e);
-                    }
                 }
-                else {
-                    portString = input.substring(begin, input.length());
+                catch(NumberFormatException e) {
+                    log.warn("Invalid port number given");
                 }
-                port = Integer.parseInt(portString);
+                try {
+                    path = URLDecoder.decode(input.substring(begin, input.length()), "UTF-8");
+                }
+                catch(UnsupportedEncodingException e) {
+                    log.error(e.getMessage(), e);
+                }
+                catch(IllegalArgumentException e) {
+                    log.error(e.getMessage(), e);
+                }
             }
-            catch(NumberFormatException e) {
-                log.warn("Invalid port number given");
+            else {
+                portString = input.substring(begin, input.length());
+                try {
+                    port = Integer.parseInt(portString);
+                }
+                catch(NumberFormatException e) {
+                    log.warn("Invalid port number given");
+                }
             }
         }
         else if(input.indexOf(Path.DELIMITER, begin) != -1) {
