@@ -1,6 +1,7 @@
 package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Attributes;
@@ -169,6 +170,21 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
             @Override
             public boolean exists() {
                 return true;
+            }
+
+            @Override
+            public boolean isDirectory() {
+                return true;
+            }
+
+            @Override
+            public boolean isFile() {
+                return false;
+            }
+
+            @Override
+            public AttributedList<Local> list() throws AccessDeniedException {
+                return AttributedList.emptyList();
             }
         };
         final Transfer t = new DownloadTransfer(new Host("t"), root, local) {
