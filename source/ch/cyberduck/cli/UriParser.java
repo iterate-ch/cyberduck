@@ -49,6 +49,9 @@ public class UriParser {
                 }
         }
         host.setDefaultPath(new PathParser(input).parse(uri).getParent().getAbsolute());
+        if(input.hasOption(TerminalOptionsBuilder.Params.udt.name())) {
+            host.setTransfer(Host.TransferType.udt);
+        }
         return host;
     }
 }
