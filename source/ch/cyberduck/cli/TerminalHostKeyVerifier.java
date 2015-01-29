@@ -54,6 +54,7 @@ public class TerminalHostKeyVerifier extends OpenSSHHostKeyVerifier {
         if(!new TerminalPromptReader().prompt(message)) {
             throw new ConnectionCanceledException();
         }
+        this.allow(hostname, key, true);
         return true;
     }
 
@@ -67,6 +68,7 @@ public class TerminalHostKeyVerifier extends OpenSSHHostKeyVerifier {
         if(!new TerminalPromptReader().prompt(message)) {
             throw new ConnectionCanceledException();
         }
+        this.allow(hostname, key, true);
         return true;
     }
 }
