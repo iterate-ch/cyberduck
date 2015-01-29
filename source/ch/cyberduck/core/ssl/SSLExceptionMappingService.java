@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLHandshakeException;
 import java.net.SocketException;
+import java.security.GeneralSecurityException;
 import java.security.cert.CertificateException;
 
 /**
@@ -178,6 +179,10 @@ public class SSLExceptionMappingService extends AbstractExceptionMappingService<
             // Map Connection has been shutdown: javax.net.ssl.SSLException: java.net.SocketException: Broken pipe
             this.append(buffer, ExceptionUtils.getRootCause(failure).getMessage());
             return new ConnectionRefusedException(buffer.toString(), failure);
+        }
+        if(ExceptionUtils.getRootCause(failure) instanceof GeneralSecurityException) {
+            this.append(buffer, ExceptionUtils.getRootCause(failure).getMessage());
+            return new InteroperabilityException(buffer.toString(), failure);
         }
         if(failure instanceof SSLHandshakeException) {
             if(ExceptionUtils.getRootCause(failure) instanceof CertificateException) {

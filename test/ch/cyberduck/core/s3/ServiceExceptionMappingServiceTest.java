@@ -28,8 +28,10 @@ import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.ServiceException;
 import org.junit.Test;
 
+import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLHandshakeException;
 import java.net.UnknownHostException;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 
 import static org.junit.Assert.assertEquals;
@@ -122,5 +124,16 @@ public class ServiceExceptionMappingServiceTest extends AbstractTestCase {
         assertEquals("Access Denied.", new ServiceExceptionMappingService().map(new ServiceException(new S3ServiceException("m",
                         "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Error><Code>AccessDenied</Code><Message>Access Denied</Message><RequestId>D84EDAE486BD2D71</RequestId><HostId>tVNWw2hK+FVpFnWUVf2LdDM6rgtjo/cibINRUVc/HpqMZbgNTg311LSltHYvRQdX</HostId></Error>"))).getDetail()
         );
+    }
+
+    @Test
+    public void testAlgorithmFailure() {
+        assertEquals("EC AlgorithmParameters not available. Please contact your web hosting service provider for assistance.",
+                new ServiceExceptionMappingService().map(new S3ServiceException(
+                        new SSLException(
+                                new RuntimeException(
+                                        new NoSuchAlgorithmException("EC AlgorithmParameters not available")
+                                )
+                        ))).getDetail());
     }
 }
