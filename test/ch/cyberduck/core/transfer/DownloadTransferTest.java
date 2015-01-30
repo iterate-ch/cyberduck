@@ -4,6 +4,8 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.io.DisabledStreamListener;
@@ -12,6 +14,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.TransferDictionary;
 import ch.cyberduck.core.test.NullLocal;
 import ch.cyberduck.core.test.NullSession;
+import ch.cyberduck.core.transfer.download.DownloadFilterOptions;
 import ch.cyberduck.core.transfer.download.OverwriteFilter;
 import ch.cyberduck.core.transfer.download.ResumeFilter;
 import ch.cyberduck.core.transfer.symlink.DownloadSymlinkResolver;
@@ -20,6 +23,7 @@ import ch.cyberduck.core.worker.SingleTransferWorker;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collections;
@@ -237,7 +241,17 @@ public class DownloadTransferTest extends AbstractTestCase {
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), table);
         worker.prepare(test, local, new TransferStatus().exists(true),
                 new ResumeFilter(new DownloadSymlinkResolver(Collections.singletonList(new TransferItem(test))),
-                        new NullSession(new Host("h")))
+                        new NullSession(new Host("h")), new DownloadFilterOptions(), new Read() {
+                    @Override
+                    public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    @Override
+                    public boolean append(final Path file) throws BackgroundException {
+                        return true;
+                    }
+                })
         );
         final TransferStatus status = new TransferStatus();
         status.setExists(true);
