@@ -180,16 +180,16 @@ public class SSLExceptionMappingService extends AbstractExceptionMappingService<
             this.append(buffer, ExceptionUtils.getRootCause(failure).getMessage());
             return new ConnectionRefusedException(buffer.toString(), failure);
         }
-        if(ExceptionUtils.getRootCause(failure) instanceof GeneralSecurityException) {
-            this.append(buffer, ExceptionUtils.getRootCause(failure).getMessage());
-            return new InteroperabilityException(buffer.toString(), failure);
-        }
         if(failure instanceof SSLHandshakeException) {
             if(ExceptionUtils.getRootCause(failure) instanceof CertificateException) {
                 log.warn(String.format("Ignore certificate failure %s and drop connection", failure.getMessage()));
                 // Server certificate not accepted
                 return new ConnectionCanceledException(failure);
             }
+        }
+        if(ExceptionUtils.getRootCause(failure) instanceof GeneralSecurityException) {
+            this.append(buffer, ExceptionUtils.getRootCause(failure).getMessage());
+            return new InteroperabilityException(buffer.toString(), failure);
         }
         final String message = failure.getMessage();
         for(Alert alert : Alert.values()) {
