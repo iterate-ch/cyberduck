@@ -30,6 +30,7 @@ import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.LoggingHttpRequestExecutor;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.TemporaryApplicationResourcesFinder;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
@@ -57,6 +58,8 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URI;
 import java.util.List;
+
+import com.barchart.udt.ResourceUDT;
 
 /**
  * @version $Id$
@@ -105,6 +108,10 @@ public class UDTProxy<Client extends HttpSession> implements TrustManagerHostnam
         this.provider = provider;
         this.trust = trust;
         this.key = key;
+    }
+
+    static {
+        ResourceUDT.setLibraryExtractLocation(new TemporaryApplicationResourcesFinder().find().getAbsolute());
     }
 
     @Override
