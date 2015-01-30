@@ -65,7 +65,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     private boolean skipped = false;
 
     /**
-     * The number of transfered bytes. Must be less or equals size.
+     * The number of transferred bytes. Must be less or equals size.
      */
     private AtomicLong current
             = new AtomicLong(0);
@@ -225,6 +225,9 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     }
 
     public TransferStatus append(final boolean append) {
+        if(!append) {
+            current.set(0);
+        }
         this.append = append;
         return this;
     }
