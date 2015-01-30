@@ -106,6 +106,9 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Borrow session %s from pool", session));
+            }
             return session;
         }
         catch(BackgroundException e) {
@@ -121,13 +124,16 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
 
     @Override
     protected void release(final Session session) {
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Release session %s to pool", session));
+        }
         pool.returnObject(session);
     }
 
     @Override
     public void submit(final TransferCallable callable) throws BackgroundException {
         if(log.isInfoEnabled()) {
-            log.info(String.format("Submit %s", callable));
+            log.info(String.format("Submit %s to pool", callable));
         }
         completion.submit(callable);
         size.incrementAndGet();
@@ -160,6 +166,9 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
     @Override
     public void cleanup(final Boolean result) {
         try {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Close connection pool %s", pool));
+            }
             pool.close();
         }
         catch(Exception e) {
