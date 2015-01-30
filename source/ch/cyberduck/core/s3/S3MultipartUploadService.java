@@ -92,7 +92,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
 
     public S3MultipartUploadService(final S3Session session) {
         this(session, PreferencesFactory.get().getLong("s3.upload.multipart.size"),
-                Math.min(PreferencesFactory.get().getInteger("queue.maxtransfers"), PreferencesFactory.get().getInteger("s3.upload.multipart.concurrency")));
+                PreferencesFactory.get().getInteger("s3.upload.multipart.concurrency"));
     }
 
     public S3MultipartUploadService(final S3Session session, final Long partsize, final Integer concurrency) {
