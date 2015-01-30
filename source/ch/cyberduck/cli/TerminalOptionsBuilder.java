@@ -128,6 +128,11 @@ public final class TerminalOptionsBuilder {
                 .withLongOpt(Params.udt.name())
                 .isRequired(false)
                 .create());
+        options.addOption(OptionBuilder
+                .withDescription("Number of concurrent connections to use for transfers")
+                .withLongOpt(Params.parallel.name())
+                .isRequired(false)
+                .create('c'));
         final StringBuilder b = new StringBuilder().append(StringUtils.LF);
         final Set<TransferAction> actions = new HashSet<TransferAction>(TransferAction.forTransfer(Transfer.Type.download));
         actions.add(TransferAction.cancel);
@@ -173,6 +178,7 @@ public final class TerminalOptionsBuilder {
         preserve,
         retry,
         udt,
+        parallel,
         existing,
         verbose,
         quiet,

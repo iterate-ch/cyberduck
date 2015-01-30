@@ -235,7 +235,8 @@ public class Terminal {
         final boolean retry = input.hasOption(TerminalOptionsBuilder.Params.retry.name());
         if(retry) {
             if(StringUtils.isNotBlank(input.getOptionValue(TerminalOptionsBuilder.Params.retry.name()))) {
-                preferences.setProperty("connection.retry", NumberUtils.toInt(input.getOptionValue(TerminalOptionsBuilder.Params.retry.name()), 1));
+                preferences.setProperty("connection.retry",
+                        NumberUtils.toInt(input.getOptionValue(TerminalOptionsBuilder.Params.retry.name()), 1));
             }
             else {
                 preferences.setProperty("connection.retry", 1);
@@ -248,6 +249,10 @@ public class Terminal {
         if(udt) {
             preferences.setProperty("s3.download.udt.threshold", 0L);
             preferences.setProperty("s3.upload.udt.threshold", 0L);
+        }
+        if(input.hasOption(TerminalOptionsBuilder.Params.parallel.name())) {
+            preferences.setProperty("queue.session.pool.size",
+                    NumberUtils.toInt(input.getOptionValue(TerminalOptionsBuilder.Params.parallel.name()), 1));
         }
     }
 
