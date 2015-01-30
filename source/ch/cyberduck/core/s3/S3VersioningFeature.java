@@ -30,6 +30,7 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.apache.commons.collections.map.LRUMap;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3BucketVersioningStatus;
@@ -50,7 +51,7 @@ public class S3VersioningFeature implements Versioning {
             = new S3PathContainerService();
 
     private Map<Path, VersioningConfiguration> cache
-            = Collections.emptyMap();
+            = Collections.synchronizedMap(new LRUMap(10));
 
     public S3VersioningFeature(final S3Session session) {
         this.session = session;
@@ -116,6 +117,7 @@ public class S3VersioningFeature implements Versioning {
                     session.getClient().suspendBucketVersioning(container.getName());
                 }
             }
+            cache.remove(container);
         }
         catch(ServiceException e) {
             throw new ServiceExceptionMappingService().map("Failure to write attributes of {0}", e);
