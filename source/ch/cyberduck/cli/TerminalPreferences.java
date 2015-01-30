@@ -147,11 +147,15 @@ public class TerminalPreferences extends MemoryPreferences {
 
     @Override
     public String getProperty(final String property) {
-        final String system = System.getProperty(property);
-        if(null == system) {
-            return super.getProperty(property);
+        final String env = System.getenv(property);
+        if(null == env) {
+            final String system = System.getProperty(property);
+            if(null == system) {
+                return super.getProperty(property);
+            }
+            return system;
         }
-        return system;
+        return env;
     }
 
     private static final class Version {
