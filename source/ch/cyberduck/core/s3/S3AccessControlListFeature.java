@@ -40,9 +40,7 @@ import org.jets3t.service.model.S3Owner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @version $Id$
@@ -54,9 +52,6 @@ public class S3AccessControlListFeature implements AclPermission {
 
     private PathContainerService containerService
             = new S3PathContainerService();
-
-    private Map<Path, VersioningConfiguration> versioning
-            = new HashMap<Path, VersioningConfiguration>();
 
     public S3AccessControlListFeature(final S3Session session) {
         this.session = session;
@@ -74,8 +69,8 @@ public class S3AccessControlListFeature implements AclPermission {
             }
             else if(file.isFile() || file.isPlaceholder()) {
                 org.jets3t.service.acl.AccessControlList list;
-                if(session.getFeature(Versioning.class) != null
-                        && session.getFeature(Versioning.class).withCache(versioning).getConfiguration(containerService.getContainer(file)).isEnabled()) {
+                final Versioning feature = session.getFeature(Versioning.class);
+                if(feature != null && feature.getConfiguration(containerService.getContainer(file)).isEnabled()) {
                     list = session.getClient().getVersionedObjectAcl(file.attributes().getVersionId(),
                             containerService.getContainer(file).getName(), containerService.getKey(file));
                 }

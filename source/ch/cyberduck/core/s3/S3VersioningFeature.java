@@ -130,9 +130,10 @@ public class S3VersioningFeature implements Versioning {
         try {
             final S3BucketVersioningStatus status
                     = session.getClient().getBucketVersioningStatus(container.getName());
-
-            return new VersioningConfiguration(status.isVersioningEnabled(),
+            final VersioningConfiguration configuration = new VersioningConfiguration(status.isVersioningEnabled(),
                     status.isMultiFactorAuthDeleteRequired());
+            cache.put(container, configuration);
+            return configuration;
         }
         catch(ServiceException e) {
             try {
@@ -179,8 +180,7 @@ public class S3VersioningFeature implements Versioning {
      *
      * @param controller Prompt controller
      * @return MFA one time authentication password.
-     * @throws ch.cyberduck.core.exception.ConnectionCanceledException
-     *          Prompt dismissed
+     * @throws ch.cyberduck.core.exception.ConnectionCanceledException Prompt dismissed
      */
     @Override
     public Credentials getToken(final LoginCallback controller) throws ConnectionCanceledException {

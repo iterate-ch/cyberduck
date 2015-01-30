@@ -46,9 +46,6 @@ public class S3AttributesFeature implements Attributes {
     private PathContainerService containerService
             = new S3PathContainerService();
 
-    private Map<Path, VersioningConfiguration> versioning
-            = new HashMap<Path, VersioningConfiguration>();
-
     public S3AttributesFeature(final S3Session session) {
         this.session = session;
     }
@@ -77,8 +74,8 @@ public class S3AttributesFeature implements Attributes {
     protected StorageObject details(final Path file) throws BackgroundException {
         final String container = containerService.getContainer(file).getName();
         try {
-            if(session.getFeature(Versioning.class) != null
-                    && session.getFeature(Versioning.class).withCache(versioning).getConfiguration(containerService.getContainer(file)).isEnabled()) {
+            final Versioning feature = session.getFeature(Versioning.class);
+            if(feature != null && feature.getConfiguration(containerService.getContainer(file)).isEnabled()) {
                 return session.getClient().getVersionedObjectDetails(file.attributes().getVersionId(),
                         container, containerService.getKey(file));
             }

@@ -47,9 +47,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @version $Id$
@@ -61,9 +59,6 @@ public class S3ObjectListService implements ListService {
 
     private PathContainerService containerService
             = new S3PathContainerService();
-
-    private Map<Path, VersioningConfiguration> versioning
-            = new HashMap<Path, VersioningConfiguration>();
 
     public S3ObjectListService(final S3Session session) {
         this.session = session;
@@ -97,8 +92,8 @@ public class S3ObjectListService implements ListService {
             children.addAll(this.listObjects(container,
                     directory, prefix, String.valueOf(Path.DELIMITER), listener));
             if(PreferencesFactory.get().getBoolean("s3.revisions.enable")) {
-                if(session.getFeature(Versioning.class) != null
-                        && session.getFeature(Versioning.class).withCache(versioning).getConfiguration(container).isEnabled()) {
+                final Versioning feature = session.getFeature(Versioning.class);
+                if(feature != null && feature.getConfiguration(container).isEnabled()) {
                     String priorLastKey = null;
                     String priorLastVersionId = null;
                     do {

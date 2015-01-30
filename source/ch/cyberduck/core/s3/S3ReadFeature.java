@@ -30,8 +30,6 @@ import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3Object;
 
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @version $Id$
@@ -44,9 +42,6 @@ public class S3ReadFeature implements Read {
 
     private S3Session session;
 
-    private Map<Path, VersioningConfiguration> versioning
-            = new HashMap<Path, VersioningConfiguration>();
-
     public S3ReadFeature(final S3Session session) {
         this.session = session;
     }
@@ -55,8 +50,8 @@ public class S3ReadFeature implements Read {
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final S3Object object;
-            if(session.getFeature(Versioning.class) != null
-                    && session.getFeature(Versioning.class).withCache(versioning).getConfiguration(containerService.getContainer(file)).isEnabled()) {
+            final Versioning feature = session.getFeature(Versioning.class);
+            if(feature != null && feature.getConfiguration(containerService.getContainer(file)).isEnabled()) {
                 object = session.getClient().getVersionedObject(
                         file.attributes().getVersionId(),
                         containerService.getContainer(file).getName(), containerService.getKey(file),

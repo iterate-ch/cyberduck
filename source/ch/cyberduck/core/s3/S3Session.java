@@ -75,6 +75,7 @@ import org.jets3t.service.security.ProviderCredentials;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -90,6 +91,9 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
 
     private Preferences preferences
             = PreferencesFactory.get();
+
+    private Map<Path, VersioningConfiguration> versioning
+            = new HashMap<Path, VersioningConfiguration>();
 
     private S3Protocol.AuthenticationHeaderSignatureVersion authenticationHeaderSignatureVersion;
 
@@ -473,7 +477,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         if(type == Versioning.class) {
             // Only for AWS
             if(host.getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
-                return (T) new S3VersioningFeature(this);
+                return (T) new S3VersioningFeature(this).withCache(versioning);
             }
             return null;
         }
