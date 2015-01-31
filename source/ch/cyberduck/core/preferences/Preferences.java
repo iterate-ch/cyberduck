@@ -864,6 +864,10 @@ public abstract class Preferences {
          */
         defaults.put("connection.buffer", String.valueOf(8192));
         /**
+         * Always flush output stream after writing
+         */
+        defaults.put("connection.flush", String.valueOf(false));
+        /**
          * SO_SNDBUF
          */
         defaults.put("connection.buffer.send", String.valueOf(131072));

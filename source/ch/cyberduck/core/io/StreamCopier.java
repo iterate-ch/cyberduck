@@ -54,7 +54,8 @@ public final class StreamCopier {
 
     private Long limit = -1L;
 
-    private boolean keepFlushing;
+    private boolean keepFlushing
+            = PreferencesFactory.get().getBoolean("connection.flush");
 
     public StreamCopier(final StreamCancelation cancel, final StreamProgress progress) {
         this.cancel = cancel;
