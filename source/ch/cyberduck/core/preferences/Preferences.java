@@ -515,12 +515,12 @@ public abstract class Preferences {
         /**
          * HTTP routes to maximum number of connections allowed for those routes
          */
-        defaults.put("http.connections.route", String.valueOf(Integer.MAX_VALUE));
+        defaults.put("http.connections.route", String.valueOf(10));
         /**
          * Total number of connections in the pool
          */
         defaults.put("http.connections.total", String.valueOf(Integer.MAX_VALUE));
-        defaults.put("http.manager.timeout", String.valueOf(0)); // Inifinite
+        defaults.put("http.manager.timeout", String.valueOf(0)); // Infinite
         defaults.put("http.socket.buffer", String.valueOf(8192));
         defaults.put("http.credentials.charset", "ISO-8859-1");
 
