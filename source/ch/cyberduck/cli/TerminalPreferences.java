@@ -95,8 +95,6 @@ public class TerminalPreferences extends MemoryPreferences {
                 defaults.put("factory.locale.class", RegexLocale.class.getName());
                 defaults.put("factory.applicationlauncher.class", ExecApplicationLauncher.class.getName());
                 defaults.put("factory.editorfactory.class", DefaultEditorFactory.class.getName());
-                // Disable
-                defaults.put("ssh.authentication.agent.enable", String.valueOf(false));
                 break;
         }
     }
@@ -139,6 +137,7 @@ public class TerminalPreferences extends MemoryPreferences {
                 catch(IOException e) {
                     log.warn("Failure determining user home with `echo ~`");
                 }
+                defaults.put("ssh.authentication.agent.enable", String.valueOf(false));
             }
         }
         defaults.put("local.normalize.prefix", String.valueOf(true));
