@@ -82,7 +82,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
 
     public SwiftLargeObjectUploadFeature(final SwiftSession session, final Long segmentSize) {
         this(session, new SwiftObjectListService(session), new SwiftSegmentService(session), new SwiftWriteFeature(session),
-                segmentSize, Math.min(PreferencesFactory.get().getInteger("queue.maxtransfers"), PreferencesFactory.get().getInteger("openstack.upload.largeobject.concurrency")));
+                segmentSize, PreferencesFactory.get().getInteger("openstack.upload.largeobject.concurrency"));
     }
 
     public SwiftLargeObjectUploadFeature(final SwiftSession session,
@@ -174,7 +174,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
             }
             final StorageObject stored = new StorageObject(manifest);
             final String checksum = session.getClient().createSLOManifestObject(new SwiftRegionService(session).lookup(
-                    containerService.getContainer(file)),
+                            containerService.getContainer(file)),
                     containerService.getContainer(file).getName(),
                     status.getMime(),
                     containerService.getKey(file), manifest, Collections.<String, String>emptyMap());
