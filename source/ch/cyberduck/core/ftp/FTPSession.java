@@ -150,10 +150,18 @@ public class FTPSession extends SSLSession<FTPClient> {
         final int buffer = preferences.getInteger("ftp.socket.buffer");
         client.setBufferSize(buffer);
 
-        client.setReceiveBufferSize(preferences.getInteger("connection.buffer.receive"));
-        client.setSendBufferSize(preferences.getInteger("connection.buffer.send"));
-        client.setReceieveDataSocketBufferSize(preferences.getInteger("connection.buffer.receive"));
-        client.setSendDataSocketBufferSize(preferences.getInteger("connection.buffer.send"));
+        if(preferences.getInteger("connection.buffer.receive") > 0) {
+            client.setReceiveBufferSize(preferences.getInteger("connection.buffer.receive"));
+        }
+        if(preferences.getInteger("connection.buffer.send") > 0) {
+            client.setSendBufferSize(preferences.getInteger("connection.buffer.send"));
+        }
+        if(preferences.getInteger("connection.buffer.receive") > 0) {
+            client.setReceieveDataSocketBufferSize(preferences.getInteger("connection.buffer.receive"));
+        }
+        if(preferences.getInteger("connection.buffer.send") > 0) {
+            client.setSendDataSocketBufferSize(preferences.getInteger("connection.buffer.send"));
+        }
 
         client.setStrictMultilineParsing(preferences.getBoolean("ftp.parser.multiline.strict"));
     }
