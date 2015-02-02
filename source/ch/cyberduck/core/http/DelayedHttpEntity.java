@@ -60,7 +60,7 @@ public abstract class DelayedHttpEntity extends AbstractHttpEntity {
 
     public abstract long getContentLength();
 
-    public InputStream getContent() throws IOException, IllegalStateException {
+    public InputStream getContent() throws IOException {
         throw new UnsupportedOperationException("No content here");
     }
 
@@ -78,6 +78,11 @@ public abstract class DelayedHttpEntity extends AbstractHttpEntity {
     public void writeTo(final OutputStream out) throws IOException {
         try {
             stream = new FilterOutputStream(out) {
+                @Override
+                public void write(final byte[] b, final int off, final int len) throws IOException {
+                    out.write(b, off, len);
+                }
+
                 @Override
                 public void close() throws IOException {
                     try {
