@@ -23,7 +23,6 @@ import org.apache.commons.io.output.NullOutputStream;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.log4j.Logger;
 
-import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -77,10 +76,20 @@ public abstract class DelayedHttpEntity extends AbstractHttpEntity {
 
     public void writeTo(final OutputStream out) throws IOException {
         try {
-            stream = new FilterOutputStream(out) {
+            stream = new OutputStream() {
                 @Override
                 public void write(final byte[] b, final int off, final int len) throws IOException {
                     out.write(b, off, len);
+                }
+
+                @Override
+                public void write(final int b) throws IOException {
+                    out.write(b);
+                }
+
+                @Override
+                public void write(final byte[] b) throws IOException {
+                    out.write(b);
                 }
 
                 @Override
