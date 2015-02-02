@@ -128,6 +128,9 @@ public class UDTProxy<Client extends HttpSession> implements TrustManagerHostnam
             throws BackgroundException {
         // Add X-Qloudsonic-* headers
         final List<Header> headers = provider.headers();
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Obtained headers %s fro provider %s", headers, provider));
+        }
         final HttpClientBuilder builder = session.builder(transcript);
         builder.setRequestExecutor(
                 new LoggingHttpRequestExecutor(transcript) {
