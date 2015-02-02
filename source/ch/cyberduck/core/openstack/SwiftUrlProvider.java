@@ -121,10 +121,6 @@ public class SwiftUrlProvider implements UrlProvider {
      * @param expiry Seconds
      */
     protected DescriptiveUrlBag sign(final Region region, final Path file, final long expiry) {
-        final String path = String.format("%s%s/%s",
-                region.getStorageUrl().getRawPath(),
-                URIEncoder.encode(containerService.getContainer(file).getName()),
-                containerService.getKey(file));
         if(!accounts.containsKey(region)) {
             log.warn(String.format("No account info for region %s available required to sign temporary URL", region));
             return DescriptiveUrlBag.empty();
@@ -140,7 +136,10 @@ public class SwiftUrlProvider implements UrlProvider {
             log.info(String.format("Using X-Account-Meta-Temp-URL-Key header value %s to sign", info.getTempUrlKey()));
         }
         final String signature = this.sign(info.getTempUrlKey(),
-                String.format("GET\n%d\n%s", expiry, path));
+                String.format("GET\n%d\n%s", expiry, String.format("%s%s/%s",
+                        region.getStorageUrl().getRawPath(),
+                        URIEncoder.encode(containerService.getContainer(file).getName()),
+                        containerService.getKey(file))));
         //Compile the temporary URL
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
         for(Scheme scheme : Arrays.asList(Scheme.valueOf(region.getStorageUrl().getScheme()))) {
@@ -148,7 +147,8 @@ public class SwiftUrlProvider implements UrlProvider {
             list.add(new DescriptiveUrl(URI.create(String.format("%s://%s%s%s?temp_url_sig=%s&temp_url_expires=%d",
                     scheme.name(), region.getStorageUrl().getHost(),
                     port == -1 ? StringUtils.EMPTY : port == scheme.getPort() ? StringUtils.EMPTY : String.format(":%d", port),
-                    path, signature, expiry)),
+                    region.getStorageUrl(
+                            containerService.getContainer(file).getName(), containerService.getKey(file)).getRawPath(), signature, expiry)),
                     DescriptiveUrl.Type.signed,
                     MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Signed", "S3"))
                             + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
