@@ -6,5 +6,5 @@ Architecture: APPLICATION_ARCH
 Provides: APPLICATION_PACKAGE
 Description: APPLICATION_SUMMARY
 Installed-Size: APPLICATION_INSTALLED_SIZE
-Homepage: https://cyberduck.io
+Homepage: https://duck.sh
 License: GPL
