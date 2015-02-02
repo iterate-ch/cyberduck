@@ -33,8 +33,12 @@ public class DefaultSocketConfigurator implements SocketConfigurator {
 
     @Override
     public void configure(final Socket socket) throws IOException {
-        socket.setReceiveBufferSize(preferences.getInteger("connection.buffer.receive"));
-        socket.setSendBufferSize(preferences.getInteger("connection.buffer.send"));
+        if(preferences.getInteger("connection.buffer.receive") > 0) {
+            socket.setReceiveBufferSize(preferences.getInteger("connection.buffer.receive"));
+        }
+        if(preferences.getInteger("connection.buffer.send") > 0) {
+            socket.setSendBufferSize(preferences.getInteger("connection.buffer.send"));
+        }
         socket.setSoTimeout(preferences.getInteger("connection.timeout.seconds") * 1000);
     }
 }
