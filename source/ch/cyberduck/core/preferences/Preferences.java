@@ -598,6 +598,8 @@ public abstract class Preferences {
          */
         defaults.put("s3.revisions.enable", String.valueOf(true));
 
+        defaults.put("s3.upload.md5", String.valueOf(true));
+
         defaults.put("s3.upload.multipart", String.valueOf(true));
         defaults.put("s3.upload.multipart.concurrency", String.valueOf(10));
         /**

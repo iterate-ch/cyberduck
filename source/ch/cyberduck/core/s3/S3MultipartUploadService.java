@@ -268,13 +268,16 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
 
     @Override
     protected MessageDigest digest() throws IOException {
-        // Content-MD5 not set. Need to verify ourselves instead of S3
-        try {
-            return MessageDigest.getInstance("MD5");
+        MessageDigest digest = null;
+        if(PreferencesFactory.get().getBoolean("s3.upload.md5")) {
+            try {
+                digest = MessageDigest.getInstance("MD5");
+            }
+            catch(NoSuchAlgorithmException e) {
+                throw new IOException(e.getMessage(), e);
+            }
         }
-        catch(NoSuchAlgorithmException e) {
-            throw new IOException(e.getMessage(), e);
-        }
+        return digest;
     }
 
     @Override

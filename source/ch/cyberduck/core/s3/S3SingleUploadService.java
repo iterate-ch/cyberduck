@@ -30,6 +30,7 @@ import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.codec.binary.Hex;
@@ -97,13 +98,16 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
 
     @Override
     protected MessageDigest digest() throws IOException {
-        // Content-MD5 not set. Need to verify ourselves instead of S3
-        try {
-            return MessageDigest.getInstance("MD5");
+        MessageDigest digest = null;
+        if(PreferencesFactory.get().getBoolean("s3.upload.md5")) {
+            try {
+                digest = MessageDigest.getInstance("MD5");
+            }
+            catch(NoSuchAlgorithmException e) {
+                throw new IOException(e.getMessage(), e);
+            }
         }
-        catch(NoSuchAlgorithmException e) {
-            throw new IOException(e.getMessage(), e);
-        }
+        return digest;
     }
 
     @Override
