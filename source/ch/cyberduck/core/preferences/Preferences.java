@@ -872,11 +872,11 @@ public abstract class Preferences {
         /**
          * SO_SNDBUF
          */
-        defaults.put("connection.buffer.send", String.valueOf(131072));
+        defaults.put("connection.buffer.send", String.valueOf(0));
         /**
          * SO_RCVBUF
          */
-        defaults.put("connection.buffer.receive", String.valueOf(131072));
+        defaults.put("connection.buffer.receive", String.valueOf(0));
 
         defaults.put("disk.unmount.timeout", String.valueOf(2));
 
