@@ -174,6 +174,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         catch(Exception e) {
             log.warn(String.format("Failure closing connection pool %s", e.getMessage()));
         }
+        super.cleanup(result);
     }
 
     private final class SessionPool extends BasePooledObjectFactory<Session> {
