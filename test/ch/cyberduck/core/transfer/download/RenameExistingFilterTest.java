@@ -54,17 +54,26 @@ public class RenameExistingFilterTest extends AbstractTestCase {
             }
 
             @Override
+            public boolean isDirectory() {
+                return false;
+            }
+
+            @Override
+            public boolean isFile() {
+                return true;
+            }
+
+            @Override
             public void rename(final Local renamed) {
                 assertEquals(String.format("t (%s)", UserDateFormatterFactory.get().getLongFormat(System.currentTimeMillis(), false)), renamed.getName());
                 r.set(true);
             }
         };
         final Path p = new Path("t", EnumSet.of(Path.Type.file));
-        final TransferStatus status = f.prepare(p, local, new TransferStatus());
+        final TransferStatus status = f.prepare(p, local, new TransferStatus().exists(true));
         assertNull(status.getRename().local);
         assertFalse(r.get());
         f.apply(p, local, status, new DisabledProgressListener());
-        assertEquals("t", local.getName());
         assertEquals("t", local.getName());
         assertTrue(r.get());
     }
