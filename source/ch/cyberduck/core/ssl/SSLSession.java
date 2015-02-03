@@ -20,7 +20,6 @@ package ch.cyberduck.core.ssl;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.idna.PunycodeConverter;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
@@ -66,7 +65,7 @@ public abstract class SSLSession<C> extends Session<C> implements TrustManagerHo
     }
 
     public String getTarget() {
-        return new PunycodeConverter().convert(host.getHostname());
+        return new DefaultTrustManagerHostnameCallback(host).getTarget();
     }
 
     /**
