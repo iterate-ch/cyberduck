@@ -60,7 +60,13 @@ public class AzureWriteFeatureTest extends AbstractTestCase {
         IOUtils.readFully(in, buffer);
         IOUtils.closeQuietly(in);
         assertArrayEquals(content, buffer);
-        new AzureDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        final OutputStream overwrite = new AzureWriteFeature(session).write(test, new TransferStatus()
+                .length("overwrite".getBytes("UTF-8").length));
+        new StreamCopier(new TransferStatus(), new TransferStatus())
+                .transfer(new ByteArrayInputStream("overwrite".getBytes("UTF-8")), overwrite);
+        IOUtils.closeQuietly(overwrite);
+        assertEquals("overwrite".getBytes("UTF-8").length, new AzureAttributesFeature(session).find(test).getSize());
+        new AzureDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }
 }
