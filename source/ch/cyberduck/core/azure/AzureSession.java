@@ -97,6 +97,14 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
         super(h, trust, key);
     }
 
+    public AzureSession(final Host host, final X509TrustManager trust) {
+        super(host, trust);
+    }
+
+    public AzureSession(final Host h, final X509TrustManager trust, final X509KeyManager key) {
+        super(h, trust, key);
+    }
+
     static {
         HttpsURLConnection.setDefaultHostnameVerifier(verifier);
         HttpsURLConnection.setFollowRedirects(true);
