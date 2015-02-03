@@ -159,8 +159,10 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
                 }
                 throw new BackgroundException(cause);
             }
+            finally {
+                size.decrementAndGet();
+            }
         }
-        size.set(0);
     }
 
     @Override
