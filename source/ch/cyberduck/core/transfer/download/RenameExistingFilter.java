@@ -49,33 +49,24 @@ public class RenameExistingFilter extends AbstractDownloadFilter {
         super(symlinkResolver, session, options);
     }
 
-    /**
-     * Rename existing file on disk if there is a conflict.
-     */
     @Override
-    public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
-        final TransferStatus status = super.prepare(file, local, parent);
+    public void apply(final Path file, final Local local, final TransferStatus status, final ProgressListener listener)
+            throws BackgroundException {
         if(local.exists()) {
+            Local rename;
             do {
                 String proposal = MessageFormat.format(PreferencesFactory.get().getProperty("queue.download.file.rename.format"),
                         FilenameUtils.getBaseName(file.getName()),
                         UserDateFormatterFactory.get().getLongFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
                         StringUtils.isNotEmpty(file.getExtension()) ? "." + file.getExtension() : StringUtils.EMPTY);
-                status.rename(LocalFactory.get(local.getParent().getAbsolute(), proposal));
+                rename = LocalFactory.get(local.getParent().getAbsolute(), proposal);
             }
-            while(status.getRename().local.exists());
-        }
-        return status;
-    }
+            while(rename.exists());
 
-    @Override
-    public void apply(final Path file, final Local local, final TransferStatus status, final ProgressListener listener)
-            throws BackgroundException {
-        if(local.exists()) {
             if(log.isInfoEnabled()) {
-                log.info(String.format("Rename existing file %s to %s", local, status.getRename().local));
+                log.info(String.format("Rename existing file %s to %s", local, rename));
             }
-            local.rename(status.getRename().local);
+            local.rename(rename);
         }
     }
 }

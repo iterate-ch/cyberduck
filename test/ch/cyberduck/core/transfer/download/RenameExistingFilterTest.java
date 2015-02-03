@@ -61,12 +61,11 @@ public class RenameExistingFilterTest extends AbstractTestCase {
         };
         final Path p = new Path("t", EnumSet.of(Path.Type.file));
         final TransferStatus status = f.prepare(p, local, new TransferStatus());
-        assertNotNull(status.getRename().local);
+        assertNull(status.getRename().local);
         assertFalse(r.get());
         f.apply(p, local, status, new DisabledProgressListener());
         assertEquals("t", local.getName());
         assertEquals("t", local.getName());
-        assertNotEquals("t", status.getRename().local.getName());
         assertTrue(r.get());
     }
 }
