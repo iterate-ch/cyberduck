@@ -18,9 +18,9 @@ package ch.cyberduck.core.worker;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
@@ -73,19 +73,19 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
     public ConcurrentTransferWorker(final ConnectionService connect,
                                     final Transfer transfer, final TransferOptions options,
                                     final TransferSpeedometer meter, final TransferPrompt prompt, final TransferErrorCallback error,
-                                    final TransferItemCallback callback, final LoginCallback login,
+                                    final TransferItemCallback transferItemCallback, final ConnectionCallback connectionCallback,
                                     final ProgressListener progressListener, final StreamListener streamListener) {
-        this(connect, transfer, options, meter, prompt, error, callback, login, progressListener, streamListener,
+        this(connect, transfer, options, meter, prompt, error, transferItemCallback, connectionCallback, progressListener, streamListener,
                 PreferencesFactory.get().getInteger("queue.session.pool.size"));
     }
 
     public ConcurrentTransferWorker(final ConnectionService connect,
                                     final Transfer transfer, final TransferOptions options,
                                     final TransferSpeedometer meter, final TransferPrompt prompt, final TransferErrorCallback error,
-                                    final TransferItemCallback callback, final LoginCallback login,
+                                    final TransferItemCallback transferItemCallback, final ConnectionCallback connectionCallback,
                                     final ProgressListener progressListener, final StreamListener streamListener,
                                     final Integer connections) {
-        super(transfer, options, prompt, meter, error, callback, progressListener, streamListener, login);
+        super(transfer, options, prompt, meter, error, transferItemCallback, progressListener, streamListener, connectionCallback);
         this.connect = connect;
         final GenericObjectPoolConfig configuration = new GenericObjectPoolConfig();
         configuration.setJmxEnabled(false);

@@ -20,9 +20,9 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
@@ -77,12 +77,9 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
      */
     private TransferErrorCallback error;
 
-    private TransferItemCallback callback;
+    private TransferItemCallback transferItemCallback;
 
-    /**
-     * Login prompt
-     */
-    private LoginCallback login;
+    private ConnectionCallback connectionCallback;
 
     private TransferOptions options;
 
@@ -108,53 +105,61 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
     private StreamListener streamListener;
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
-                                  final TransferPrompt prompt, final TransferSpeedometer meter, final TransferErrorCallback error,
+                                  final TransferPrompt prompt, final TransferSpeedometer meter,
+                                  final TransferErrorCallback error,
                                   final TransferItemCallback callback,
-                                  final ProgressListener progressListener, final StreamListener streamListener,
-                                  final LoginCallback login) {
+                                  final ProgressListener progressListener,
+                                  final StreamListener streamListener,
+                                  final ConnectionCallback connectionCallback) {
         this.transfer = transfer;
         this.prompt = prompt;
         this.meter = meter;
         this.error = error;
-        this.login = login;
+        this.connectionCallback = connectionCallback;
         this.options = options;
         this.progressListener = progressListener;
         this.streamListener = streamListener;
-        this.callback = callback;
+        this.transferItemCallback = callback;
     }
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
-                                  final TransferPrompt prompt, final TransferSpeedometer meter, final TransferErrorCallback error,
+                                  final TransferPrompt prompt, final TransferSpeedometer meter,
+                                  final TransferErrorCallback error,
                                   final TransferItemCallback callback,
-                                  final ProgressListener progressListener, final StreamListener streamListener,
-                                  final LoginCallback login, final Cache<TransferItem> cache) {
+                                  final ProgressListener progressListener,
+                                  final StreamListener streamListener,
+                                  final ConnectionCallback connectionCallback,
+                                  final Cache<TransferItem> cache) {
         this.transfer = transfer;
         this.options = options;
         this.prompt = prompt;
         this.meter = meter;
         this.error = error;
-        this.login = login;
+        this.connectionCallback = connectionCallback;
         this.cache = cache;
         this.progressListener = progressListener;
         this.streamListener = streamListener;
-        this.callback = callback;
+        this.transferItemCallback = callback;
     }
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
-                                  final TransferPrompt prompt, final TransferSpeedometer meter, final LoginCallback login,
-                                  final TransferErrorCallback error, final TransferItemCallback callback,
-                                  final ProgressListener progressListener, final StreamListener streamListener,
+                                  final TransferPrompt prompt, final TransferSpeedometer meter,
+                                  final ConnectionCallback connectionCallback,
+                                  final TransferErrorCallback error,
+                                  final TransferItemCallback callback,
+                                  final ProgressListener progressListener,
+                                  final StreamListener streamListener,
                                   final Map<Path, TransferStatus> table) {
         this.transfer = transfer;
         this.options = options;
         this.prompt = prompt;
         this.meter = meter;
         this.error = error;
-        this.login = login;
+        this.connectionCallback = connectionCallback;
         this.table = table;
         this.progressListener = progressListener;
         this.streamListener = streamListener;
-        this.callback = callback;
+        this.transferItemCallback = callback;
     }
 
     protected abstract Session<?> borrow() throws BackgroundException;
@@ -355,8 +360,8 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                             transfer.transfer(session,
                                     status.getRename().remote != null ? status.getRename().remote : item.remote,
                                     status.getRename().local != null ? status.getRename().local : item.local,
-                                    options, status, login, progressListener, streamListener);
-                            callback.complete(item);
+                                    options, status, connectionCallback, progressListener, streamListener);
+                            transferItemCallback.complete(item);
                         }
                         catch(ConnectionCanceledException e) {
                             throw e;
