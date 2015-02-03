@@ -90,12 +90,10 @@ public class RenameExistingFilter extends AbstractUploadFilter {
     @Override
     public void complete(final Path file, final Local local, final TransferOptions options, final TransferStatus status,
                          final ProgressListener listener) throws BackgroundException {
-        if(local.isFile()) {
-            if(this.options.temporary) {
-                // If uploaded with temporary name rename existing file after upload
-                // is complete but before temporary upload is renamed
-                this.rename(file, listener);
-            }
+        if(this.options.temporary && local.isFile()) {
+            // If uploaded with temporary name rename existing file after upload
+            // is complete but before temporary upload is renamed
+            this.rename(file, listener);
         }
         super.complete(file, local, options, status, listener);
     }
