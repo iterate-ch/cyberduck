@@ -80,7 +80,8 @@ public class AzureAclPermissionFeature implements AclPermission {
     @Override
     public Acl getPermission(final Path file) throws BackgroundException {
         try {
-            final CloudBlobContainer container = session.getClient().getContainerReference(containerService.getContainer(file).getName());
+            final CloudBlobContainer container = session.getClient()
+                    .getContainerReference(containerService.getContainer(file).getName());
             final BlobContainerPermissions permissions = container.downloadPermissions();
             final Acl acl = new Acl();
             if(permissions.getPublicAccess().equals(BlobContainerPublicAccessType.BLOB)
@@ -100,9 +101,9 @@ public class AzureAclPermissionFeature implements AclPermission {
     @Override
     public void setPermission(final Path file, final Acl acl) throws BackgroundException {
         try {
-            final CloudBlobContainer container = session.getClient().getContainerReference(containerService.getContainer(file).getName());
-            final BlobContainerPermissions permissions = new BlobContainerPermissions();
-            permissions.setPublicAccess(BlobContainerPublicAccessType.OFF);
+            final CloudBlobContainer container = session.getClient()
+                    .getContainerReference(containerService.getContainer(file).getName());
+            final BlobContainerPermissions permissions = container.downloadPermissions();
             for(Acl.UserAndRole userAndRole : acl.asList()) {
                 if(userAndRole.getUser() instanceof Acl.GroupUser) {
                     if(userAndRole.getUser().getIdentifier().equals(Acl.GroupUser.EVERYONE)) {
