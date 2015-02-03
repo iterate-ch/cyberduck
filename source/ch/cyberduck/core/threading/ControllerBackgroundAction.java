@@ -19,6 +19,7 @@ package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Controller;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostKeyCallbackFactory;
 import ch.cyberduck.core.LoginCallbackFactory;
 import ch.cyberduck.core.LoginService;
@@ -49,9 +50,9 @@ public abstract class ControllerBackgroundAction<T> extends SessionBackgroundAct
                                       final Session<?> session,
                                       final Cache<Path> cache,
                                       final ProgressListener progress,
-                                      final TranscriptListener transcript) {
-        super(login, session, cache, controller, progress, controller,
-                HostKeyCallbackFactory.get(controller, session.getHost().getProtocol()));
+                                      final TranscriptListener transcript,
+                                      final HostKeyCallback key) {
+        super(login, session, cache, controller, progress, controller, key);
         this.controller = controller;
     }
 

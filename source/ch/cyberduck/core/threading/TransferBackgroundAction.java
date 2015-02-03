@@ -18,6 +18,7 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.Controller;
+import ch.cyberduck.core.HostKeyCallbackFactory;
 import ch.cyberduck.core.KeychainLoginService;
 import ch.cyberduck.core.LoginCallbackFactory;
 import ch.cyberduck.core.LoginService;
@@ -154,7 +155,8 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
                                     final TransferErrorCallback error,
                                     final TransferSpeedometer meter,
                                     final StreamListener stream) {
-        super(login, controller, session, cache, progress, transcript);
+        super(login, controller, session, cache, progress, transcript,
+                HostKeyCallbackFactory.get(controller, session.getHost().getProtocol()));
         this.meter = meter;
         this.transfer = transfer.withCache(cache);
         this.options = options;

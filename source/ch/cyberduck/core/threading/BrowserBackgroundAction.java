@@ -22,6 +22,7 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.HistoryCollection;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallbackFactory;
 import ch.cyberduck.core.LoginService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SerializerFactory;
@@ -47,7 +48,8 @@ public abstract class BrowserBackgroundAction<T> extends ControllerBackgroundAct
                                    final Controller controller,
                                    final Session<?> session,
                                    final Cache<Path> cache) {
-        super(login, controller, session, cache, controller, controller);
+        super(login, controller, session, cache, controller, controller,
+                HostKeyCallbackFactory.get(controller, session.getHost().getProtocol()));
     }
 
     @Override
