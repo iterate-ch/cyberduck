@@ -52,7 +52,7 @@ public class RenameExistingFilter extends AbstractDownloadFilter {
     @Override
     public void apply(final Path file, final Local local, final TransferStatus status, final ProgressListener listener)
             throws BackgroundException {
-        if(local.exists()) {
+        if(status.isExists()) {
             Local rename;
             do {
                 String proposal = MessageFormat.format(PreferencesFactory.get().getProperty("queue.download.file.rename.format"),
@@ -62,7 +62,6 @@ public class RenameExistingFilter extends AbstractDownloadFilter {
                 rename = LocalFactory.get(local.getParent().getAbsolute(), proposal);
             }
             while(rename.exists());
-
             if(log.isInfoEnabled()) {
                 log.info(String.format("Rename existing file %s to %s", local, rename));
             }
