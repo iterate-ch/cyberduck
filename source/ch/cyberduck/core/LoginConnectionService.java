@@ -69,9 +69,9 @@ public class LoginConnectionService implements ConnectionService {
                                   final HostKeyCallback key,
                                   final ProgressListener listener,
                                   final TranscriptListener transcript) {
+        this.login = login;
         this.key = key;
         this.listener = listener;
-        this.login = login;
         this.transcript = transcript;
     }
 
