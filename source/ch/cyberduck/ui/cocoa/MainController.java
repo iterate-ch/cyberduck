@@ -628,7 +628,8 @@ public class MainController extends BundleController implements NSApplication.De
                     final Host host = new Host(profile, profile.getDefaultHostname(), profile.getDefaultPort());
                     MainController.newDocument().addBookmark(host);
                     // Register in application support
-                    final Local profiles = LocalFactory.get(preferences.getProperty("application.support.path"), "Profiles");
+                    final Local profiles = LocalFactory.get(preferences.getProperty("application.support.path"),
+                            PreferencesFactory.get().getProperty("profiles.folder.name"));
                     try {
                         profiles.mkdir();
                         f.copy(LocalFactory.get(profiles, f.getName()));

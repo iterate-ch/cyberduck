@@ -103,7 +103,8 @@ public final class ProtocolFactory {
             }
         }
         // Load thirdparty protocols
-        final Local library = LocalFactory.get(PreferencesFactory.get().getProperty("application.support.path"), "Profiles");
+        final Local library = LocalFactory.get(PreferencesFactory.get().getProperty("application.support.path"),
+                PreferencesFactory.get().getProperty("profiles.folder.name"));
         if(library.exists()) {
             try {
                 for(Local profile : library.list().filter(new Filter<Local>() {

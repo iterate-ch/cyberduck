@@ -21,6 +21,7 @@ package ch.cyberduck.cli;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.IOKitSleepPreventer;
 import ch.cyberduck.core.Keychain;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.MemoryPreferences;
 import ch.cyberduck.core.SystemConfigurationProxy;
 import ch.cyberduck.core.SystemConfigurationReachability;
@@ -36,6 +37,7 @@ import ch.cyberduck.core.local.LaunchServicesFileDescriptor;
 import ch.cyberduck.core.local.LaunchServicesQuarantineService;
 import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
 import ch.cyberduck.core.local.WorkspaceIconService;
+import ch.cyberduck.core.preferences.ApplicationResourcesFinderFactory;
 import ch.cyberduck.core.preferences.ApplicationSupportDirectoryFinder;
 import ch.cyberduck.core.preferences.BundleApplicationResourcesFinder;
 import ch.cyberduck.core.preferences.StaticApplicationResourcesFinder;
@@ -138,6 +140,12 @@ public class TerminalPreferences extends MemoryPreferences {
                     log.warn("Failure determining user home with `echo ~`");
                 }
                 defaults.put("ssh.authentication.agent.enable", String.valueOf(false));
+                // Lowercase folder names
+                defaults.put("bookmarks.folder.name", "bookmarks");
+                defaults.put("profiles.folder.name", "profiles");
+                final Local resources = ApplicationResourcesFinderFactory.get().find();
+                defaults.put("application.bookmarks.path", String.format("%s/bookmarks", resources.getAbsolute()));
+                defaults.put("application.profiles.path", String.format("%s/profiles", resources.getAbsolute()));
             }
         }
         defaults.put("local.normalize.prefix", String.valueOf(true));
