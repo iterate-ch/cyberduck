@@ -67,11 +67,13 @@ import net.schmizz.sshj.sftp.Response;
 import net.schmizz.sshj.sftp.SFTPEngine;
 import net.schmizz.sshj.sftp.SFTPException;
 import net.schmizz.sshj.transport.DisconnectListener;
+import net.schmizz.sshj.transport.NegotiatedAlgorithms;
 import net.schmizz.sshj.transport.Transport;
 import net.schmizz.sshj.transport.compression.Compression;
 import net.schmizz.sshj.transport.compression.DelayedZlibCompression;
 import net.schmizz.sshj.transport.compression.NoneCompression;
 import net.schmizz.sshj.transport.compression.ZlibCompression;
+import net.schmizz.sshj.transport.verification.AlgorithmsVerifier;
 import net.schmizz.sshj.transport.verification.HostKeyVerifier;
 
 /**
@@ -86,6 +88,8 @@ public class SFTPSession extends Session<SSHClient> {
     private SFTPEngine sftp;
 
     private StateDisconnectListener disconnectListener;
+
+    private NegotiatedAlgorithms algorithms;
 
     public SFTPSession(final Host h) {
         super(h);
@@ -157,6 +161,13 @@ public class SFTPSession extends Session<SSHClient> {
                 catch(ChecksumException e) {
                     return false;
                 }
+            }
+        });
+        connection.addAlgorithmsVerifier(new AlgorithmsVerifier() {
+            @Override
+            public boolean verify(final NegotiatedAlgorithms negotiatedAlgorithms) {
+                algorithms = negotiatedAlgorithms;
+                return true;
             }
         });
         disconnectListener = new StateDisconnectListener();
