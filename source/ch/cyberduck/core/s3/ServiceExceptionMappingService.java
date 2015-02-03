@@ -28,6 +28,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.QuotaException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.HttpStatus;
 import org.jets3t.service.ServiceException;
 
@@ -47,15 +48,15 @@ public class ServiceExceptionMappingService extends AbstractExceptionMappingServ
         final int code = e.getResponseCode();
         if(StringUtils.isNotBlank(e.getErrorMessage())) {
             // S3 protocol message parsed from XML
-            final String message = e.getErrorMessage();
-            this.append(buffer, message);
+            this.append(buffer, e.getErrorMessage());
         }
         else {
-            if(null == e.getCause()) {
+            this.append(buffer, e.getResponseStatus());
+            if(null == ExceptionUtils.getRootCause(e)) {
                 this.append(buffer, e.getMessage());
             }
             else {
-                this.append(buffer, e.getCause().getMessage());
+                this.append(buffer, ExceptionUtils.getRootCause(e).getMessage());
             }
         }
         if(HttpStatus.SC_NOT_FOUND == code) {

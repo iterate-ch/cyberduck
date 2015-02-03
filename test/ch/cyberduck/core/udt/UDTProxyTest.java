@@ -171,8 +171,14 @@ public class UDTProxyTest extends AbstractTestCase {
         final Path test = new Path(new Path("container", EnumSet.of(Path.Type.volume)),
                 UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Upload upload = new S3SingleUploadService(session);
+        try {
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), status, new DisabledConnectionCallback());
+    }
+        catch(QuotaException e) {
+            assertEquals("Voucher -u9zTIKCXHTWPO9WA4fBsIaQ5SjEH5von not found. Please contact your web hosting service provider for assistance.", e.getDetail());
+            throw e;
+        }
     }
 
     @Test
