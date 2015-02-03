@@ -215,9 +215,6 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                     launcher.open(local);
                 }
             }
-            launcher.bounce(local);
-        }
-        if(status.isComplete()) {
             if(!Permission.EMPTY.equals(status.getPermission())) {
                 if(file.isDirectory()) {
                     // Make sure we can read & write files to directory created.
@@ -250,6 +247,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                     log.warn(e.getMessage());
                 }
             }
+            launcher.bounce(local);
         }
     }
 }
