@@ -25,7 +25,6 @@ import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
@@ -62,41 +61,22 @@ public class RenameExistingFilter extends AbstractUploadFilter {
     @Override
     public void apply(final Path file, final Local local, final TransferStatus status,
                       final ProgressListener listener) throws BackgroundException {
-        if(!options.temporary || local.isDirectory()) {
-            // Rename existing file before putting new file in place
-            if(status.isExists()) {
-                this.rename(file, listener);
+        // Rename existing file before putting new file in place
+        if(status.isExists()) {
+            Path rename;
+            do {
+                final String proposal = MessageFormat.format(PreferencesFactory.get().getProperty("queue.upload.file.rename.format"),
+                        FilenameUtils.getBaseName(file.getName()),
+                        UserDateFormatterFactory.get().getLongFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
+                        StringUtils.isNotEmpty(file.getExtension()) ? "." + file.getExtension() : StringUtils.EMPTY);
+                rename = new Path(file.getParent(), proposal, file.getType());
             }
-        }
-    }
-
-    private void rename(final Path file, final ProgressListener listener) throws BackgroundException {
-        Path renamed = file;
-        while(find.find(renamed)) {
-            final String proposal = MessageFormat.format(PreferencesFactory.get().getProperty("queue.upload.file.rename.format"),
-                    FilenameUtils.getBaseName(file.getName()),
-                    UserDateFormatterFactory.get().getLongFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
-                    StringUtils.isNotEmpty(file.getExtension()) ? "." + file.getExtension() : StringUtils.EMPTY);
-            renamed = new Path(renamed.getParent(), proposal, file.getType());
-        }
-        if(!renamed.equals(file)) {
+            while(find.find(rename));
             if(log.isInfoEnabled()) {
-                log.info(String.format("Rename existing file %s to %s", file, renamed));
+                log.info(String.format("Rename existing file %s to %s", file, rename));
             }
-            move.move(file, renamed, false, listener);
+            move.move(file, rename, false, listener);
         }
-    }
-
-    @Override
-    public void complete(final Path file, final Local local, final TransferOptions options, final TransferStatus status,
-                         final ProgressListener listener) throws BackgroundException {
-        if(this.options.temporary && local.isFile()) {
-            // If uploaded with temporary name rename existing file after upload
-            // is complete but before temporary upload is renamed
-            if(status.isExists()) {
-                this.rename(file, listener);
-            }
-        }
-        super.complete(file, local, options, status, listener);
+        super.apply(file, local, status, listener);
     }
 }
