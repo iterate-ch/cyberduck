@@ -56,6 +56,7 @@ import java.util.List;
 
 import net.schmizz.concurrent.Promise;
 import net.schmizz.keepalive.KeepAliveProvider;
+import net.schmizz.sshj.Config;
 import net.schmizz.sshj.DefaultConfig;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.common.DisconnectReason;
@@ -133,7 +134,7 @@ public class SFTPSession extends Session<SSHClient> {
         }
     }
 
-    protected SSHClient connect(final HostKeyCallback key, final DefaultConfig configuration) throws IOException {
+    protected SSHClient connect(final HostKeyCallback key, final Config configuration) throws IOException {
         final SSHClient connection = new SSHClient(configuration);
         final int timeout = this.timeout();
         connection.setTimeout(timeout);
