@@ -17,6 +17,7 @@ package ch.cyberduck.core.threading;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostKeyCallbackFactory;
@@ -140,11 +141,13 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
                                     final TransferSpeedometer meter,
                                     final StreamListener stream) {
         this(new KeychainLoginService(LoginCallbackFactory.get(controller), PasswordStoreFactory.get()),
+                LoginCallbackFactory.get(controller),
                 HostKeyCallbackFactory.get(controller, session.getHost().getProtocol()),
                 controller, session, cache, listener, progress, transcript, transfer, options, prompt, error, meter, stream);
     }
 
     public TransferBackgroundAction(final LoginService login,
+                                    final ConnectionCallback callback,
                                     final HostKeyCallback key,
                                     final Controller controller,
                                     final Session session,
@@ -166,11 +169,11 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
         this.prompt = prompt;
         if(PreferencesFactory.get().getInteger("queue.session.pool.size") == 1) {
             this.worker = new SingleTransferWorker(session, transfer, options,
-                    meter, prompt, error, this, progress, stream, LoginCallbackFactory.get(controller));
+                    meter, prompt, error, this, progress, stream, callback);
         }
         else {
             this.worker = new ConcurrentTransferWorker(connection, transfer, options,
-                    meter, prompt, error, this, LoginCallbackFactory.get(controller), progress, stream);
+                    meter, prompt, error, this, callback, progress, stream);
         }
     }
 
