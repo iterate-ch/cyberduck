@@ -36,7 +36,7 @@ import ch.cyberduck.core.SystemConfigurationProxy;
 import ch.cyberduck.core.SystemConfigurationReachability;
 import ch.cyberduck.core.aquaticprime.ReceiptFactory;
 import ch.cyberduck.core.editor.FSEventWatchEditorFactory;
-import ch.cyberduck.core.i18n.RegexLocale;
+import ch.cyberduck.core.i18n.BundleLocale;
 import ch.cyberduck.core.local.FileManagerWorkingDirectoryFinder;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
@@ -272,7 +272,7 @@ public class UserDefaultsPreferences extends Preferences {
         defaults.put("factory.applicationresourcesfinder.class", BundleApplicationResourcesFinder.class.getName());
         defaults.put("factory.autorelease.class", AutoreleaseActionOperationBatcher.class.getName());
         defaults.put("factory.local.class", FinderLocal.class.getName());
-        defaults.put("factory.locale.class", RegexLocale.class.getName());
+        defaults.put("factory.locale.class", BundleLocale.class.getName());
         defaults.put("factory.dateformatter.class", UserDefaultsDateFormatter.class.getName());
         defaults.put("factory.passwordstore.class", Keychain.class.getName());
         defaults.put("factory.certificatestore.class", Keychain.class.getName());
