@@ -93,7 +93,9 @@ public class RenameExistingFilter extends AbstractUploadFilter {
         if(this.options.temporary && local.isFile()) {
             // If uploaded with temporary name rename existing file after upload
             // is complete but before temporary upload is renamed
-            this.rename(file, listener);
+            if(status.isExists()) {
+                this.rename(file, listener);
+            }
         }
         super.complete(file, local, options, status, listener);
     }
