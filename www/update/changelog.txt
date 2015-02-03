@@ -1,42 +1,5 @@
 A command line interface (CLI) version is now available from https://duck.sh/ for Windows, Linux & Mac.
 
-4.6.4 [https://trac.cyberduck.io/milestone/4.6.4]
-- [Feature] Send packets to keep connection alive (SFTP)
-- [Feature] Backspace keyboard shortcut to change to parent directory (Windows) (#8457)
-- [Bugfix] No localizations (Windows) (#8497)
-- [Bugfix] Downloading files with Content-Encoding metadata decompresses and truncates the content (S3) (#8263)
-- [Bugfix] Interoperability issue with MLSD replies (FTP) (#8511)
-- [Bugfix] Allow Web URL configuration for OpenStack Swift and S3 (#8516)
+4.7 [https://trac.cyberduck.io/milestone/4.7]
 
-4.6.3 [https://trac.cyberduck.io/milestone/4.6.3]
-- [Bugfix] Occasional failure verifying donation keys
-
-4.6.2 [https://trac.cyberduck.io/milestone/4.6.2]
-- [Feature] Recursively change storage class and encryption (S3) (#8421)
-- [Bugfix] AWS Signature Version 4 for presigned temporary URLs (S3) (#8386)
-- [Bugfix] Transfer incomplete message uploading folder (S3) (#8432)
-- [Bugfix] Failure using updated password (#8463)
-- [Bugfix] Retain custom metadata when overwriting files (S3, OpenStack Swift) (#8469)
-
-4.6.1 [https://trac.cyberduck.io/milestone/4.6.1]
-- [Bugfix] Uploads to buckets in eu-central-1 (S3) (#8375)
-- [Bugfix] Supporting both Project ID and Project Number for login username (Google Storage) (#8352)
-- [Bugfix] Changes not uploaded when editing multiple files (Windows) (#8359, #8369)
-- [Bugfix] Failure to read attributes downloading bucket (S3) (#8388)
-- [Bugfix] Wrong timestamp in temporary URL (OpenStack Swift) (#8384)
-
-4.6 [https://trac.cyberduck.io/milestone/4.6]
-- [Feature] Customizable bookmark icon size (Windows) (#6444)
-- [Feature] Add support for buckets in region eu-central-1 (Frankfurt) (S3) (#8302)
-- [Feature] Support authentication signature version AWS4-HMAC-SHA256 (S3) (#8302)
-- [Feature] Improved error reporting on connection failures
-- [Feature] Verify MD5 checksum for multipart uploads (S3)
-- [Feature] Disabled SSLv3 (HTTP)
-- [Feature] Improved performance downloading and mirroring files
-- [Bugfix] Connecting using authentication with SSH agent (SFTP)
-- [Bugfix] Interoperability with SSH Tectia Server (SFTP) (#8166)
-- [Bugfix] Interoperability with Eucalyptus Object Storage (S3) (#8216)
-- [Bugfix] Reconnect on disconnect (#8205)
-- [Bugfix] Remember last selected directory per bookmark in upload and save panel (#8242)
-- [Bugfix] Repeat failed networking tasks by default (#8237)
-- [Bugfix] Allow connecting to accounts with a multitude of containers (OpenStack Swift) (#8198)
+- [Bugfix] Some interface items not localized (Mac) (#8538)
