@@ -279,20 +279,23 @@ public abstract class Transfer implements Serializable {
      * @param session   Session
      * @param directory The directory to list the children
      * @param local     Local directory
-     * @param listener  Listener  @return A list of child items
+     * @param listener  Listener
+     * @return A list of child items
      */
     public abstract List<TransferItem> list(Session<?> session, Path directory, Local local,
                                             ListProgressListener listener) throws BackgroundException;
 
     /**
      * The actual transfer implementation
-     *  @param session  Session
-     * @param file     Remote
-     * @param local    Local
-     * @param options  Quarantine option
-     * @param status   Transfer status
-     * @param callback Prompt
-     * @param listener Listener
+     *
+     * @param session          Session
+     * @param file             Remote
+     * @param local            Local
+     * @param options          Quarantine option
+     * @param status           Transfer status
+     * @param callback         Prompt
+     * @param progressListener Listener
+     * @param streamListener   Listener
      */
     public abstract void transfer(Session<?> session, Path file, Local local,
                                   TransferOptions options, TransferStatus status,
