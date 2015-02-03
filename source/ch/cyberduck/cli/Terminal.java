@@ -56,7 +56,6 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 
@@ -103,7 +102,6 @@ public class Terminal {
         this.transcript = input.hasOption(TerminalOptionsBuilder.Params.verbose.name())
                 ? new TerminalTranscriptListener() : new DisabledTranscriptListener();
         this.controller = new TerminalController(progress, transcript);
-        LocaleFactory.get().setDefault(Locale.getDefault().getLanguage());
     }
 
     /**

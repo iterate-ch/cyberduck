@@ -46,7 +46,8 @@ public class RegexLocale implements Locale {
     private Local resources
             = ApplicationResourcesFinderFactory.get().find();
 
-    private String locale = "en";
+    private String locale
+            = java.util.Locale.getDefault().getLanguage();
 
     private Pattern pattern
             = Pattern.compile("\"(.*)\"\\s*=\\s*\"(.*)\";");
