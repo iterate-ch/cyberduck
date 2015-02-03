@@ -18,6 +18,7 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.Controller;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostKeyCallbackFactory;
 import ch.cyberduck.core.KeychainLoginService;
 import ch.cyberduck.core.LoginCallbackFactory;
@@ -138,11 +139,13 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
                                     final TransferErrorCallback error,
                                     final TransferSpeedometer meter,
                                     final StreamListener stream) {
-        this(new KeychainLoginService(LoginCallbackFactory.get(controller), PasswordStoreFactory.get()), controller,
-                session, cache, listener, progress, transcript, transfer, options, prompt, error, meter, stream);
+        this(new KeychainLoginService(LoginCallbackFactory.get(controller), PasswordStoreFactory.get()),
+                HostKeyCallbackFactory.get(controller, session.getHost().getProtocol()),
+                controller, session, cache, listener, progress, transcript, transfer, options, prompt, error, meter, stream);
     }
 
     public TransferBackgroundAction(final LoginService login,
+                                    final HostKeyCallback key,
                                     final Controller controller,
                                     final Session session,
                                     final PathCache cache,
@@ -155,8 +158,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
                                     final TransferErrorCallback error,
                                     final TransferSpeedometer meter,
                                     final StreamListener stream) {
-        super(login, controller, session, cache, progress, transcript,
-                HostKeyCallbackFactory.get(controller, session.getHost().getProtocol()));
+        super(login, controller, session, cache, progress, transcript, key);
         this.meter = meter;
         this.transfer = transfer.withCache(cache);
         this.options = options;
