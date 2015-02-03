@@ -55,5 +55,6 @@ public class TrashFilter extends AbstractDownloadFilter {
             }
             feature.trash(local);
         }
+        super.apply(file, local, status, listener);
     }
 }

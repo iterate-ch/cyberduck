@@ -67,5 +67,6 @@ public class RenameExistingFilter extends AbstractDownloadFilter {
             }
             local.rename(rename);
         }
+        super.apply(file, local, status, listener);
     }
 }
