@@ -19,6 +19,8 @@ package ch.cyberduck.core.udt;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.aquaticprime.License;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
@@ -42,7 +44,9 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.udt.qloudsonic.MissingReceiptException;
 import ch.cyberduck.core.udt.qloudsonic.QloudsonicProxyProvider;
+import ch.cyberduck.core.udt.qloudsonic.QloudsonicTestVoucher;
 import ch.cyberduck.core.udt.qloudsonic.QloudsonicTestVoucherFinder;
+import ch.cyberduck.core.udt.qloudsonic.QloudsonicVoucherFinder;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -59,6 +63,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.UUID;
 
 import com.barchart.udt.ExceptionUDT;
@@ -140,7 +145,17 @@ public class UDTProxyTest extends AbstractTestCase {
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
         ));
         final UDTProxy<S3Session> proxy = new UDTProxy<S3Session>(new S3LocationFeature.S3Region("ap-northeast-1"),
-                new QloudsonicProxyProvider(new QloudsonicTestVoucherFinder()));
+                new QloudsonicProxyProvider(new QloudsonicVoucherFinder() {
+                    @Override
+                    public List<License> open() throws AccessDeniedException {
+                        return Collections.<License>singletonList(new QloudsonicTestVoucher() {
+                            @Override
+                            public String getValue(final String property) {
+                                return "-" + super.getValue(property);
+                            }
+                        });
+                    }
+                }));
         final S3Session session = new S3Session(host);
         proxy.proxy(session, new DisabledTranscriptListener());
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
