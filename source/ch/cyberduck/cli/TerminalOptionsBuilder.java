@@ -158,6 +158,12 @@ public final class TerminalOptionsBuilder {
                 .isRequired(false)
                 .create('q'));
         options.addOption(OptionBuilder
+                .withDescription("Assume yes for all prompts")
+                .withLongOpt(Params.assumeyes.name())
+                .hasArg(false)
+                .isRequired(false)
+                .create('y'));
+        options.addOption(OptionBuilder
                 .withDescription("Show version number and quit")
                 .withLongOpt(TerminalAction.version.name())
                 .hasArg(false)
@@ -182,6 +188,7 @@ public final class TerminalOptionsBuilder {
         existing,
         verbose,
         quiet,
+        assumeyes,
         username,
         password,
         identity,

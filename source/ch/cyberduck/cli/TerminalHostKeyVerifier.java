@@ -38,10 +38,20 @@ public class TerminalHostKeyVerifier extends OpenSSHHostKeyVerifier {
 
     private final Console console = new Console();
 
+    private TerminalPromptReader prompt;
+
     public TerminalHostKeyVerifier() {
         super(LocalFactory.get(PreferencesFactory.get().getProperty("ssh.knownhosts")).withBookmark(
                 PreferencesFactory.get().getProperty("ssh.knownhosts.bookmark")
         ));
+        this.prompt = new InteractiveTerminalPromptReader();
+    }
+
+    public TerminalHostKeyVerifier(final TerminalPromptReader prompt) {
+        super(LocalFactory.get(PreferencesFactory.get().getProperty("ssh.knownhosts")).withBookmark(
+                PreferencesFactory.get().getProperty("ssh.knownhosts.bookmark")
+        ));
+        this.prompt = prompt;
     }
 
     @Override
@@ -51,7 +61,7 @@ public class TerminalHostKeyVerifier extends OpenSSHHostKeyVerifier {
                         new MD5ChecksumCompute().fingerprint(key),
                         KeyType.fromKey(key).name()),
                 LocaleFactory.localizedString("Continue", "Credentials"));
-        if(!new TerminalPromptReader().prompt(message)) {
+        if(!prompt.prompt(message)) {
             throw new ConnectionCanceledException();
         }
         this.allow(hostname, key, true);
@@ -65,7 +75,7 @@ public class TerminalHostKeyVerifier extends OpenSSHHostKeyVerifier {
                         new MD5ChecksumCompute().fingerprint(key),
                         KeyType.fromKey(key).name()),
                 LocaleFactory.localizedString("Continue", "Credentials"));
-        if(!new TerminalPromptReader().prompt(message)) {
+        if(!prompt.prompt(message)) {
             throw new ConnectionCanceledException();
         }
         this.allow(hostname, key, true);

@@ -42,6 +42,16 @@ public class TerminalCertificateStore extends DefaultCertificateStore {
     private final X509HostnameVerifier verifier
             = new BrowserCompatHostnameVerifier();
 
+    private TerminalPromptReader prompt;
+
+    public TerminalCertificateStore() {
+        this.prompt = new InteractiveTerminalPromptReader();
+    }
+
+    public TerminalCertificateStore(final TerminalPromptReader prompt) {
+        this.prompt = prompt;
+    }
+
     @Override
     public boolean display(final List<X509Certificate> certificates) {
         for(X509Certificate c : certificates) {
@@ -61,12 +71,12 @@ public class TerminalCertificateStore extends DefaultCertificateStore {
                 c.checkValidity();
             }
             catch(CertificateExpiredException e) {
-                return new TerminalPromptReader().prompt(LocaleFactory.localizedString(StringUtils.replace("The certificate for this server has expired. You might be connecting to a server that " +
+                return prompt.prompt(LocaleFactory.localizedString(StringUtils.replace("The certificate for this server has expired. You might be connecting to a server that " +
                         "is pretending to be “%@” which could put your confidential information at risk. " +
                         "Would you like to connect to the server anyway?", "%@", hostname), "Keychain"));
             }
             catch(CertificateNotYetValidException e) {
-                return new TerminalPromptReader().prompt(LocaleFactory.localizedString(StringUtils.replace("The certificate for this server is not yet valid. You might be connecting to a server that " +
+                return prompt.prompt(LocaleFactory.localizedString(StringUtils.replace("The certificate for this server is not yet valid. You might be connecting to a server that " +
                         "is pretending to be “%@” which could put your confidential information at risk. Would you like to connect to the server anyway?", "%@", hostname), "Keychain"));
             }
         }
@@ -74,7 +84,7 @@ public class TerminalCertificateStore extends DefaultCertificateStore {
             verifier.verify(hostname, certificates.get(0));
         }
         catch(SSLException e) {
-            return new TerminalPromptReader().prompt(LocaleFactory.localizedString(StringUtils.replace("The certificate for this server is invalid. " +
+            return prompt.prompt(LocaleFactory.localizedString(StringUtils.replace("The certificate for this server is invalid. " +
                     "You might be connecting to a server that is pretending to be “%@” which could put " +
                     "your confidential information at risk. Would you like to connect to the server anyway?", "%@", hostname), "Keychain"));
         }

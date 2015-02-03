@@ -43,11 +43,21 @@ public class TerminalLoginCallback implements LoginCallback {
     private final HostPasswordStore keychain
             = PasswordStoreFactory.get();
 
+    private TerminalPromptReader prompt;
+
+    public TerminalLoginCallback() {
+        this.prompt = new InteractiveTerminalPromptReader();
+    }
+
+    public TerminalLoginCallback(final TerminalPromptReader prompt) {
+        this.prompt = prompt;
+    }
+
     @Override
     public void warn(final Protocol protocol, final String title, final String reason,
                      final String defaultButton, final String cancelButton, final String preference) throws ConnectionCanceledException {
         console.printf("%n%s", reason);
-        if(!new TerminalPromptReader().prompt(String.format("%s (y) or %s (n): ", defaultButton, cancelButton))) {
+        if(!prompt.prompt(String.format("%s (y) or %s (n): ", defaultButton, cancelButton))) {
             throw new ConnectionCanceledException();
         }
     }

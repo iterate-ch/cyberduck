@@ -45,8 +45,11 @@ public class TerminalListProgressListener extends LimitedListProgressListener {
 
     private boolean l;
 
+    private TerminalPromptReader prompt;
+
     public TerminalListProgressListener() {
         super(new TerminalProgressListener());
+        this.prompt = new InteractiveTerminalPromptReader();
     }
 
     /**
@@ -55,6 +58,17 @@ public class TerminalListProgressListener extends LimitedListProgressListener {
     public TerminalListProgressListener(final boolean l) {
         super(new TerminalProgressListener());
         this.l = l;
+    }
+
+    public TerminalListProgressListener(final TerminalPromptReader prompt) {
+        super(new TerminalProgressListener());
+        this.prompt = prompt;
+    }
+
+    public TerminalListProgressListener(final TerminalPromptReader prompt, final boolean l) {
+        super(new TerminalProgressListener());
+        this.l = l;
+        this.prompt = prompt;
     }
 
     @Override
@@ -96,7 +110,7 @@ public class TerminalListProgressListener extends LimitedListProgressListener {
             final String message = String.format("%s %s?: ",
                     MessageFormat.format(LocaleFactory.localizedString("Continue listing directory with more than {0} files.", "Alert"), e.getChunk().size()),
                     LocaleFactory.localizedString("Continue", "Credentials"));
-            if(!new TerminalPromptReader().prompt(message)) {
+            if(!prompt.prompt(message)) {
                 throw e;
             }
         }

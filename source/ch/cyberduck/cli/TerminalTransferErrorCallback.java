@@ -30,13 +30,23 @@ public class TerminalTransferErrorCallback implements TransferErrorCallback {
 
     private Console console = new Console();
 
+    private TerminalPromptReader prompt;
+
+    public TerminalTransferErrorCallback() {
+        this.prompt = new InteractiveTerminalPromptReader();
+    }
+
+    public TerminalTransferErrorCallback(final TerminalPromptReader prompt) {
+        this.prompt = prompt;
+    }
+
     @Override
     public boolean prompt(final BackgroundException failure) throws BackgroundException {
         final StringAppender appender = new StringAppender();
         appender.append(failure.getMessage());
         appender.append(failure.getDetail());
         console.printf("%n%s", appender.toString());
-        if(!new TerminalPromptReader().prompt(LocaleFactory.localizedString("Continue", "Credentials"))) {
+        if(!prompt.prompt(LocaleFactory.localizedString("Continue", "Credentials"))) {
             throw failure;
         }
         return true;

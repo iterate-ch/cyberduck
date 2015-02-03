@@ -34,10 +34,14 @@ public class TerminalController extends AbstractController {
 
     private ProgressListener progress;
 
+    private TerminalPromptReader prompt;
+
     public TerminalController(final ProgressListener progress,
-                              final TranscriptListener transcript) {
+                              final TranscriptListener transcript,
+                              final TerminalPromptReader prompt) {
         this.transcript = transcript;
         this.progress = progress;
+        this.prompt = prompt;
     }
 
     @Override
@@ -47,7 +51,7 @@ public class TerminalController extends AbstractController {
 
     @Override
     public boolean alert(final Host host, final BackgroundException failure, final StringBuilder transcript) {
-        return new TerminalAlertCallback().alert(host, failure, transcript);
+        return new TerminalAlertCallback(prompt).alert(host, failure, transcript);
     }
 
     @Override

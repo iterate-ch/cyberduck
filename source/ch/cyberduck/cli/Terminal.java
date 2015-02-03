@@ -31,6 +31,9 @@ import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.ssl.CertificateStoreX509TrustManager;
+import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
+import ch.cyberduck.core.ssl.PreferencesX509KeyManager;
 import ch.cyberduck.core.threading.SessionBackgroundAction;
 import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
@@ -69,6 +72,8 @@ public class Terminal {
 
     private final TerminalController controller;
 
+    private final TerminalPromptReader reader;
+
     private PathCache cache;
 
     private ProgressListener progress;
@@ -101,7 +106,9 @@ public class Terminal {
                 ? new DisabledListProgressListener() : new TerminalProgressListener();
         this.transcript = input.hasOption(TerminalOptionsBuilder.Params.verbose.name())
                 ? new TerminalTranscriptListener() : new DisabledTranscriptListener();
-        this.controller = new TerminalController(progress, transcript);
+        this.reader = input.hasOption(TerminalOptionsBuilder.Params.assumeyes.name())
+                ? new DisabledTerminalPromptReader() : new InteractiveTerminalPromptReader();
+        this.controller = new TerminalController(progress, transcript, reader);
     }
 
     /**
@@ -172,7 +179,12 @@ public class Terminal {
             }
             final String uri = input.getOptionValue(action.name());
             final Host host = new UriParser(input).parse(uri);
-            session = SessionFactory.create(host);
+            session = SessionFactory.create(host,
+                    new CertificateStoreX509TrustManager(
+                            new DefaultTrustManagerHostnameCallback(host),
+                            new TerminalCertificateStore(reader)
+                    ),
+                    new PreferencesX509KeyManager(new TerminalCertificateStore(reader)));
             this.connect(session);
             final Path remote = new TildePathExpander(session).expand(new PathParser(input).parse(uri));
             switch(action) {
@@ -220,7 +232,7 @@ public class Terminal {
 
     protected void connect(final Session session) throws BackgroundException {
         final LoginConnectionService connect = new LoginConnectionService(new TerminalLoginService(input,
-                new TerminalLoginCallback()), new TerminalHostKeyVerifier(), progress, transcript);
+                new TerminalLoginCallback(reader)), new TerminalHostKeyVerifier(reader), progress, transcript);
         connect.check(session, cache);
     }
 
@@ -277,8 +289,8 @@ public class Terminal {
         else {
             prompt = new TerminalTransferPrompt(transfer.getType());
         }
-        final TerminalTransferBackgroundAction action = new TerminalTransferBackgroundAction(controller,
-                new TerminalLoginService(input, new TerminalLoginCallback()), session, cache,
+        final TerminalTransferBackgroundAction action = new TerminalTransferBackgroundAction(controller, reader,
+                new TerminalLoginService(input, new TerminalLoginCallback(reader)), session, cache,
                 transfer, new TransferOptions().reload(true), prompt, meter,
                 input.hasOption(TerminalOptionsBuilder.Params.quiet.name())
                         ? new DisabledStreamListener() : new TerminalStreamListener(meter));
@@ -291,9 +303,9 @@ public class Terminal {
 
     protected Exit list(final Session session, final Path remote, final boolean verbose) {
         final SessionListWorker worker = new SessionListWorker(session, cache, remote,
-                new TerminalListProgressListener(verbose));
+                new TerminalListProgressListener(reader, verbose));
         final TerminalBackgroundAction action = new TerminalBackgroundAction<AttributedList<Path>>(
-                new TerminalLoginService(input, new TerminalLoginCallback()), controller,
+                new TerminalLoginService(input, new TerminalLoginCallback(reader)), controller,
                 session, cache, worker);
         this.execute(action);
         if(action.hasFailed()) {
@@ -323,7 +335,7 @@ public class Terminal {
         final Editor editor = factory.create(controller, session, application, remote);
         final CountDownLatch lock = new CountDownLatch(1);
         final TerminalBackgroundAction<Transfer> action = new TerminalBackgroundAction<Transfer>(
-                new TerminalLoginService(input, new TerminalLoginCallback()),
+                new TerminalLoginService(input, new TerminalLoginCallback(reader)),
                 controller, session, cache, editor.open(new ApplicationQuitCallback() {
             @Override
             public void callback() {
@@ -366,4 +378,5 @@ public class Terminal {
             return false;
         }
     }
+
 }

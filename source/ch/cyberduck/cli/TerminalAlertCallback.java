@@ -31,12 +31,22 @@ public class TerminalAlertCallback implements AlertCallback {
 
     private final Console console = new Console();
 
+    private TerminalPromptReader prompt;
+
+    public TerminalAlertCallback() {
+        this.prompt = new InteractiveTerminalPromptReader();
+    }
+
+    public TerminalAlertCallback(final TerminalPromptReader prompt) {
+        this.prompt = prompt;
+    }
+
     @Override
     public boolean alert(final Host host, final BackgroundException failure, final StringBuilder transcript) {
         final StringAppender appender = new StringAppender();
         appender.append(failure.getMessage());
         appender.append(failure.getDetail());
         console.printf("%n%s", appender.toString());
-        return new TerminalPromptReader().prompt(LocaleFactory.localizedString("Try Again", "Alert"));
+        return prompt.prompt(LocaleFactory.localizedString("Try Again", "Alert"));
     }
 }
