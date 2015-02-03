@@ -308,6 +308,10 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     }
 
     public void copy(final Local copy) throws AccessDeniedException {
+        this.copy(copy, new CopyOptions());
+    }
+
+    public void copy(final Local copy, final CopyOptions options) throws AccessDeniedException {
         if(copy.equals(this)) {
             log.warn(String.format("%s and %s are identical. Not copied.", this.getName(), copy.getName()));
         }
@@ -316,7 +320,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
             OutputStream out = null;
             try {
                 in = this.getInputStream();
-                out = copy.getOutputStream(false);
+                out = copy.getOutputStream(options.append);
                 IOUtils.copy(in, out);
             }
             catch(IOException e) {
@@ -326,6 +330,15 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
                 IOUtils.closeQuietly(in);
                 IOUtils.closeQuietly(out);
             }
+        }
+    }
+
+    public static final class CopyOptions {
+        public boolean append;
+
+        public CopyOptions append(final boolean append) {
+            this.append = append;
+            return this;
         }
     }
 
