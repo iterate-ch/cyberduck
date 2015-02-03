@@ -262,7 +262,10 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                             final TransferStatus status = filter.prepare(file, local, parent);
                             table.put(file, status);
                             // Apply filter
-                            filter.apply(file, local, status, progressListener);
+                            filter.apply(
+                                    status.getRename().remote != null ? status.getRename().remote : item.remote,
+                                    status.getRename().local != null ? status.getRename().local : item.local,
+                                    status, progressListener);
                             // Add transfer length to total bytes
                             transfer.addSize(status.getLength());
                             // Add skipped bytes
@@ -386,7 +389,10 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                         if(!status.isFailure()) {
                             // Post process of file.
                             try {
-                                filter.complete(item.remote, item.local, options, status, progressListener);
+                                filter.complete(
+                                        status.getRename().remote != null ? status.getRename().remote : item.remote,
+                                        status.getRename().local != null ? status.getRename().local : item.local,
+                                        options, status, progressListener);
                             }
                             catch(BackgroundException e) {
                                 log.warn(String.format("Ignore failure in completion filter for %s", item));
