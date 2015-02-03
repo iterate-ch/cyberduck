@@ -67,9 +67,11 @@ public class S3MoveFeature implements Move {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Received response headers for copy %s", headers));
                 }
-                session.getClient().deleteObject(containerService.getContainer(file).getName(), containerService.getKey(file));
+                session.getClient().deleteObject(
+                        containerService.getContainer(file).getName(),
+                        containerService.getKey(file));
             }
-            else if(file.isDirectory()) {
+            if(file.isDirectory()) {
                 for(Path i : session.list(file, new DisabledListProgressListener())) {
                     this.move(i, new Path(renamed, i.getName(), i.getType()), false, listener);
                 }
