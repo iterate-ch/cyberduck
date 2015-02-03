@@ -167,7 +167,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                                 file.getName(), UUID.randomUUID().toString()), file.getType());
                 status.rename(renamed);
                 // File attributes should not change after calculate the hash code of the file reference
-                temporary.put(renamed, file);
+                temporary.put(file, renamed);
             }
             status.setMime(mapping.getMime(file.getName()));
         }
@@ -265,7 +265,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             if(file.isFile()) {
                 if(this.options.temporary) {
                     final Move move = session.getFeature(Move.class);
-                    move.move(file, temporary.get(file), status.isExists(), listener);
+                    move.move(temporary.get(file), file, status.isExists(), listener);
                     temporary.remove(file);
                 }
             }
