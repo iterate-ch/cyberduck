@@ -108,7 +108,7 @@ public class Terminal {
                 ? new TerminalTranscriptListener() : new DisabledTranscriptListener();
         this.reader = input.hasOption(TerminalOptionsBuilder.Params.assumeyes.name())
                 ? new DisabledTerminalPromptReader() : new InteractiveTerminalPromptReader();
-        this.controller = new TerminalController(progress, transcript, reader);
+        this.controller = new TerminalController(progress, transcript);
     }
 
     /**

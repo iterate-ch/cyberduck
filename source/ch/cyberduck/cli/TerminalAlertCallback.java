@@ -19,7 +19,6 @@ package ch.cyberduck.cli;
  */
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.AlertCallback;
@@ -32,22 +31,13 @@ public class TerminalAlertCallback implements AlertCallback {
     private TerminalProgressListener console
             = new TerminalProgressListener();
 
-    private TerminalPromptReader prompt;
-
-    public TerminalAlertCallback() {
-        this.prompt = new InteractiveTerminalPromptReader();
-    }
-
-    public TerminalAlertCallback(final TerminalPromptReader prompt) {
-        this.prompt = prompt;
-    }
-
     @Override
     public boolean alert(final Host host, final BackgroundException failure, final StringBuilder transcript) {
         final StringAppender appender = new StringAppender();
         appender.append(failure.getMessage());
         appender.append(failure.getDetail());
         console.message(appender.toString());
-        return prompt.prompt(LocaleFactory.localizedString("Try Again", "Alert"));
+        // Never repeat
+        return false;
     }
 }
