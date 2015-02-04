@@ -28,7 +28,8 @@ import ch.cyberduck.core.transfer.TransferErrorCallback;
  */
 public class TerminalTransferErrorCallback implements TransferErrorCallback {
 
-    private Console console = new Console();
+    private TerminalProgressListener console
+            = new TerminalProgressListener();
 
     private TerminalPromptReader prompt;
 
@@ -45,7 +46,7 @@ public class TerminalTransferErrorCallback implements TransferErrorCallback {
         final StringAppender appender = new StringAppender();
         appender.append(failure.getMessage());
         appender.append(failure.getDetail());
-        console.printf("%n%s", appender.toString());
+        console.message(appender.toString());
         if(!prompt.prompt(LocaleFactory.localizedString("Continue", "Credentials"))) {
             throw failure;
         }
