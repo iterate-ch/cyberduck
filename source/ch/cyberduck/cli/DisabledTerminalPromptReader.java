@@ -20,7 +20,7 @@ package ch.cyberduck.cli;
 /**
  * @version $Id$
  */
-class DisabledTerminalPromptReader implements TerminalPromptReader {
+public class DisabledTerminalPromptReader implements TerminalPromptReader {
     @Override
     public boolean prompt(final String message) {
         return true;
