@@ -349,14 +349,14 @@ public abstract class Transfer implements Serializable {
     /**
      * @return The sum of all file lengths in this transfer.
      */
-    public long getSize() {
+    public synchronized long getSize() {
         if(null == size) {
             return 0L;
         }
         return size;
     }
 
-    public void addSize(final long bytes) {
+    public synchronized void addSize(final long bytes) {
         if(null == size) {
             // Initialize
             size = 0L;
@@ -397,7 +397,7 @@ public abstract class Transfer implements Serializable {
         this.timestamp = timestamp;
     }
 
-    public void setSize(long size) {
+    public synchronized void setSize(long size) {
         this.size = size;
     }
 
