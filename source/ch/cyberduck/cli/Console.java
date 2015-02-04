@@ -31,6 +31,7 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.concurrent.Semaphore;
 
 /**
  * @version $Id$
@@ -42,6 +43,9 @@ public class Console {
 
     private final PrintStream out
             = AnsiConsole.out();
+
+    private final Semaphore lock
+            = new Semaphore(1);
 
     public String readLine(String format, Object... args) throws ConnectionCanceledException {
         if(console != null) {
@@ -72,28 +76,37 @@ public class Console {
         if(StringUtils.isEmpty(format)) {
             return;
         }
-        if(console != null) {
-            switch(Factory.Platform.getDefault()) {
-                case windows:
-                    break;
-                default:
-                    final PrintWriter writer = console.writer();
-                    if(Arrays.asList(args).isEmpty()) {
-                        writer.print(format);
-                    }
-                    else {
-                        writer.printf(format, args);
-                    }
-                    writer.flush();
-                    return;
+        try {
+            lock.acquire();
+            if(console != null) {
+                switch(Factory.Platform.getDefault()) {
+                    case windows:
+                        break;
+                    default:
+                        final PrintWriter writer = console.writer();
+                        if(Arrays.asList(args).isEmpty()) {
+                            writer.print(format);
+                        }
+                        else {
+                            writer.printf(format, args);
+                        }
+                        writer.flush();
+                        return;
+                }
             }
+            if(Arrays.asList(args).isEmpty()) {
+                out.printf(format);
+            }
+            else {
+                out.printf(format, args);
+            }
+            out.flush();
         }
-        if(Arrays.asList(args).isEmpty()) {
-            out.printf(format);
+        catch(InterruptedException e) {
+            //
         }
-        else {
-            out.printf(format, args);
+        finally {
+            lock.release();
         }
-        out.flush();
     }
 }
