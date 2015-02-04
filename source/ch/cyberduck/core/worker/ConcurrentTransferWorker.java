@@ -45,7 +45,6 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.log4j.Logger;
 
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
@@ -65,8 +64,6 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
     private GenericObjectPool<Session> pool;
 
     private CompletionService<TransferStatus> completion;
-
-    private BlockingQueue<Future<TransferStatus>> queue;
 
     private AtomicInteger size = new AtomicInteger();
 
@@ -94,9 +91,9 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         pool = new GenericObjectPool<Session>(
                 new SessionPool(transfer.getHost()), configuration);
         pool.setBlockWhenExhausted(true);
-        queue = new LinkedBlockingQueue<Future<TransferStatus>>();
         completion = new ExecutorCompletionService<TransferStatus>(
-                Executors.newFixedThreadPool(connections, new NamedThreadFactory("transfer")), queue);
+                Executors.newFixedThreadPool(connections, new NamedThreadFactory("transfer")),
+                new LinkedBlockingQueue<Future<TransferStatus>>());
     }
 
     @Override
