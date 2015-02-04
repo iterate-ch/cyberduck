@@ -75,6 +75,13 @@ public class Console {
         if(console != null) {
             switch(Factory.Platform.getDefault()) {
                 case windows:
+                    if(Arrays.asList(args).isEmpty()) {
+                        out.printf(format);
+                    }
+                    else {
+                        out.printf(format, args);
+                    }
+                    out.flush();
                     break;
                 default:
                     final PrintWriter writer = console.writer();
@@ -85,15 +92,8 @@ public class Console {
                         writer.printf(format, args);
                     }
                     writer.flush();
-                    return;
+                    break;
             }
         }
-        if(Arrays.asList(args).isEmpty()) {
-            out.printf(format);
-        }
-        else {
-            out.printf(format, args);
-        }
-        out.flush();
     }
 }
