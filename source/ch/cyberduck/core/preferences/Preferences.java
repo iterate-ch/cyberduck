@@ -860,6 +860,8 @@ public abstract class Preferences {
         defaults.put("connection.ssl.keystore.type", null);
         defaults.put("connection.ssl.keystore.provider", null);
 
+        defaults.put("connection.ssl.securerandom", "NativePRNG");
+
         /**
          * Transfer read buffer size
          */
