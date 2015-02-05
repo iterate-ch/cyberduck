@@ -37,6 +37,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -57,14 +58,22 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
     private static final List<String> ENABLED_SSL_PROTOCOLS
             = new ArrayList<String>();
 
+    private static SecureRandom RPNG;
+
     static {
+        try {
+            RPNG = SecureRandom.getInstance("NativePRNG");
+        }
+        catch(NoSuchAlgorithmException e) {
+            log.error(String.format("Failure %s obtaining secure random NativePRNG", e.getMessage()));
+        }
         for(String protocol : PreferencesFactory.get().getProperty("connection.ssl.protocols").split(",")) {
             ENABLED_SSL_PROTOCOLS.add(protocol.trim());
         }
     }
 
     /**
-     * @param trust Verifiying trusts in system settings
+     * @param trust Verifying trusts in system settings
      */
     public CustomTrustSSLProtocolSocketFactory(final X509TrustManager trust) {
         this(trust, null);
@@ -77,7 +86,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
     public CustomTrustSSLProtocolSocketFactory(final X509TrustManager trust, final X509KeyManager key) {
         try {
             context = SSLContext.getInstance("TLS");
-            context.init(new KeyManager[]{key}, new TrustManager[]{trust}, null);
+            context.init(new KeyManager[]{key}, new TrustManager[]{trust}, RPNG);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Using SSL context with protocol %s", context.getProtocol()));
             }
