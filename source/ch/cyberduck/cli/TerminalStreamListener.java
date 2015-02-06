@@ -27,6 +27,7 @@ import org.fusesource.jansi.Ansi;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -45,6 +46,9 @@ public class TerminalStreamListener implements StreamListener {
      */
     private int width = 30;
 
+    private final Semaphore lock
+            = new Semaphore(1);
+
     public TerminalStreamListener(final TransferSpeedometer meter) {
         this.meter = meter;
     }
@@ -56,21 +60,30 @@ public class TerminalStreamListener implements StreamListener {
                 return;
             }
         }
-        final BigDecimal fraction = new BigDecimal(progress.getTransferred())
-                .divide(new BigDecimal(progress.getSize()), 1, RoundingMode.DOWN);
-        console.printf("\r%s[", Ansi.ansi()
-                .saveCursorPosition()
-                .eraseLine(Ansi.Erase.ALL)
-                .restoreCursorPosition());
-        int i = 0;
-        for(; i <= (int) (fraction.doubleValue() * width); i++) {
-            console.printf("\u25AE");
+        try {
+            lock.acquire();
+            final BigDecimal fraction = new BigDecimal(progress.getTransferred())
+                    .divide(new BigDecimal(progress.getSize()), 1, RoundingMode.DOWN);
+            console.printf("\r%s[", Ansi.ansi()
+                    .saveCursorPosition()
+                    .eraseLine(Ansi.Erase.ALL)
+                    .restoreCursorPosition());
+            int i = 0;
+            for(; i <= (int) (fraction.doubleValue() * width); i++) {
+                console.printf("\u25AE");
+            }
+            for(; i < width; i++) {
+                console.printf(StringUtils.SPACE);
+            }
+            console.printf("] %s", progress.getProgress());
+            timestamp.set(System.currentTimeMillis());
         }
-        for(; i < width; i++) {
-            console.printf(StringUtils.SPACE);
+        catch(InterruptedException e) {
+            //
         }
-        console.printf("] %s", progress.getProgress());
-        timestamp.set(System.currentTimeMillis());
+        finally {
+            lock.release();
+        }
     }
 
     @Override
