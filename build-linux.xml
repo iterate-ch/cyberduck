@@ -74,6 +74,7 @@
                 <fx:jvmarg value="-Djava.awt.headless=true"/>
                 <fx:jvmarg value="-Dsun.jnu.encoding=utf-8"/>
                 <fx:jvmarg value="-Dfile.encoding=utf-8"/>
+                <fx:jvmarg value="-Djava.security.egd=file:/dev/./urandom"/>
             </fx:platform>
             <fx:application
                     name="duck" version="${version}.${revision}"
