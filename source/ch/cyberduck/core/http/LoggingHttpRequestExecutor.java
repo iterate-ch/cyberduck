@@ -29,7 +29,6 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HttpContext;
-import org.apache.http.protocol.HttpProcessor;
 import org.apache.http.protocol.HttpRequestExecutor;
 
 import java.io.IOException;
@@ -49,12 +48,12 @@ public class LoggingHttpRequestExecutor extends HttpRequestExecutor {
     }
 
     @Override
-    public void preProcess(final HttpRequest request, final HttpProcessor processor, final HttpContext context)
-            throws HttpException, IOException {
+    public HttpResponse execute(final HttpRequest request, final HttpClientConnection conn, final HttpContext context)
+            throws IOException, HttpException {
         if(!request.containsHeader(HttpHeaders.USER_AGENT)) {
             request.addHeader(new BasicHeader(HttpHeaders.USER_AGENT, useragentProvider.get()));
         }
-        super.preProcess(request, processor, context);
+        return super.execute(request, conn, context);
     }
 
     @Override
@@ -64,12 +63,6 @@ public class LoggingHttpRequestExecutor extends HttpRequestExecutor {
             listener.log(true, header.toString());
         }
         return super.doSendRequest(request, conn, context);
-    }
-
-    @Override
-    public void postProcess(final HttpResponse response, final HttpProcessor processor, final HttpContext context)
-            throws HttpException, IOException {
-        super.postProcess(response, processor, context);
     }
 
     @Override

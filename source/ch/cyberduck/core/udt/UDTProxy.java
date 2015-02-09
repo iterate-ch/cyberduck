@@ -38,9 +38,11 @@ import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
+import org.apache.http.HttpClientConnection;
 import org.apache.http.HttpException;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
@@ -50,7 +52,6 @@ import org.apache.http.impl.conn.DefaultSchemePortResolver;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HttpContext;
-import org.apache.http.protocol.HttpProcessor;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -135,12 +136,11 @@ public class UDTProxy<Client extends HttpSession> implements TrustManagerHostnam
         builder.setRequestExecutor(
                 new LoggingHttpRequestExecutor(transcript) {
                     @Override
-                    public void preProcess(final HttpRequest request, final HttpProcessor processor, final HttpContext context)
-                            throws HttpException, IOException {
+                    public HttpResponse execute(final HttpRequest request, final HttpClientConnection conn, final HttpContext context) throws IOException, HttpException {
                         for(Header h : headers) {
                             request.addHeader(new BasicHeader(h.getName(), h.getValue()));
                         }
-                        super.preProcess(request, processor, context);
+                        return super.execute(request, conn, context);
                     }
                 }
         );
