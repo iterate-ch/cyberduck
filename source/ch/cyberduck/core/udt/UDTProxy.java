@@ -172,7 +172,7 @@ public class UDTProxy<Client extends HttpSession> implements TrustManagerHostnam
             }
         });
         registry.register(Scheme.https.toString(), new SSLConnectionSocketFactory(
-                new CustomTrustSSLProtocolSocketFactory(new KeychainX509TrustManager(session), key),
+                new CustomTrustSSLProtocolSocketFactory(trust, key),
                 hostnameVerifier
         ) {
             @Override
