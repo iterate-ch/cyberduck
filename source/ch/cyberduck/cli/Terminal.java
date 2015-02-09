@@ -293,7 +293,12 @@ public class Terminal {
                 new TerminalLoginService(input, new TerminalLoginCallback(reader)), session, cache,
                 transfer, new TransferOptions().reload(true), prompt, meter,
                 input.hasOption(TerminalOptionsBuilder.Params.quiet.name())
-                        ? new DisabledStreamListener() : new TerminalStreamListener(meter));
+                        ? new DisabledStreamListener() : new TerminalStreamListener(meter),
+                new CertificateStoreX509TrustManager(
+                        new DefaultTrustManagerHostnameCallback(session.getHost()),
+                        new TerminalCertificateStore(reader)
+                ),
+                new PreferencesX509KeyManager(new TerminalCertificateStore(reader)));
         this.execute(action);
         if(action.hasFailed()) {
             return Exit.failure;

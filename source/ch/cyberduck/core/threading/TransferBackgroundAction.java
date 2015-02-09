@@ -38,6 +38,11 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.notification.NotificationService;
 import ch.cyberduck.core.notification.NotificationServiceFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
+import ch.cyberduck.core.ssl.KeychainX509KeyManager;
+import ch.cyberduck.core.ssl.KeychainX509TrustManager;
+import ch.cyberduck.core.ssl.X509KeyManager;
+import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
@@ -143,7 +148,8 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
         this(new KeychainLoginService(LoginCallbackFactory.get(controller), PasswordStoreFactory.get()),
                 LoginCallbackFactory.get(controller),
                 HostKeyCallbackFactory.get(controller, session.getHost().getProtocol()),
-                controller, session, cache, listener, progress, transcript, transfer, options, prompt, error, meter, stream);
+                controller, session, cache, listener, progress, transcript, transfer, options, prompt, error, meter, stream,
+                new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(session.getHost())), new KeychainX509KeyManager());
     }
 
     public TransferBackgroundAction(final LoginService login,
@@ -160,7 +166,9 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
                                     final TransferPrompt prompt,
                                     final TransferErrorCallback error,
                                     final TransferSpeedometer meter,
-                                    final StreamListener stream) {
+                                    final StreamListener stream,
+                                    final X509TrustManager x509Trust,
+                                    final X509KeyManager x509Key) {
         super(login, controller, session, cache, progress, transcript, key);
         this.meter = meter;
         this.transfer = transfer.withCache(cache);
@@ -173,7 +181,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
         }
         else {
             this.worker = new ConcurrentTransferWorker(connection, transfer, options,
-                    meter, prompt, error, this, callback, progress, stream);
+                    meter, prompt, error, this, callback, progress, stream, x509Trust, x509Key);
         }
     }
 

@@ -29,6 +29,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.ssl.X509KeyManager;
+import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.NamedThreadFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
@@ -67,12 +69,18 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
 
     private AtomicInteger size = new AtomicInteger();
 
+    private X509TrustManager trust;
+
+    private X509KeyManager key;
+
     public ConcurrentTransferWorker(final ConnectionService connect,
                                     final Transfer transfer, final TransferOptions options,
                                     final TransferSpeedometer meter, final TransferPrompt prompt, final TransferErrorCallback error,
                                     final TransferItemCallback transferItemCallback, final ConnectionCallback connectionCallback,
-                                    final ProgressListener progressListener, final StreamListener streamListener) {
+                                    final ProgressListener progressListener, final StreamListener streamListener,
+                                    final X509TrustManager trust, final X509KeyManager key) {
         this(connect, transfer, options, meter, prompt, error, transferItemCallback, connectionCallback, progressListener, streamListener,
+                trust, key,
                 PreferencesFactory.get().getInteger("queue.session.pool.size"));
     }
 
@@ -81,6 +89,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
                                     final TransferSpeedometer meter, final TransferPrompt prompt, final TransferErrorCallback error,
                                     final TransferItemCallback transferItemCallback, final ConnectionCallback connectionCallback,
                                     final ProgressListener progressListener, final StreamListener streamListener,
+                                    final X509TrustManager trust, final X509KeyManager key,
                                     final Integer connections) {
         super(transfer, options, prompt, meter, error, transferItemCallback, progressListener, streamListener, connectionCallback);
         this.connect = connect;
@@ -189,7 +198,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Create new session for host %s in pool", host));
             }
-            return SessionFactory.create(host);
+            return SessionFactory.create(host, trust, key);
         }
 
         @Override
