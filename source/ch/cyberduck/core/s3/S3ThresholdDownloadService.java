@@ -97,7 +97,7 @@ public class S3ThresholdDownloadService extends DefaultDownloadFeature {
                         throw new AccessDeniedException("Cannot read bucket location");
                     }
                     final S3Session proxy = new UDTProxy<S3Session>(location, udtTransferOption.provider(), trust, key)
-                            .proxy(new S3Session(session.getHost()), session);
+                            .proxy(new S3Session(session.getHost(), trust, key), session);
                     proxy.open(new DisabledHostKeyCallback(), session);
                     // Swap credentials. No login required
                     proxy.getClient().setProviderCredentials(session.getClient().getProviderCredentials());
