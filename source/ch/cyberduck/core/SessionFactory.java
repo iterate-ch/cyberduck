@@ -81,7 +81,7 @@ public final class SessionFactory {
             case dav:
                 return new DAVSession(host, trust, key);
             case azure:
-                return new AzureSession(host);
+                return new AzureSession(host, trust, key);
             default:
                 throw new FactoryException(protocol.getType().name());
         }
