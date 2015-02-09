@@ -23,6 +23,9 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.ssl.CertificateStoreX509KeyManager;
+import ch.cyberduck.core.ssl.CertificateStoreX509TrustManager;
+import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.test.NullLocal;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferItemCallback;
@@ -54,14 +57,17 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
 
     @Test(expected = BackgroundException.class)
     public void testBorrowDnsFailure() throws Exception {
-        final Transfer t = new UploadTransfer(new Host(new FTPProtocol(), "unknownhostname", new Credentials("u", "p")),
+        final Host host = new Host(new FTPProtocol(), "unknownhostname", new Credentials("u", "p"));
+        final Transfer t = new UploadTransfer(host,
                 new Path("/t", EnumSet.of(Path.Type.directory)),
                 new NullLocal("l"));
         final LoginConnectionService connection = new LoginConnectionService(new DisabledLoginCallback(),
                 new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener());
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
                 connection, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener());
+                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(),
+                new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DisabledCertificateStore()),
+                new CertificateStoreX509KeyManager(new DisabledCertificateStore()));
         try {
             final Session<?> session = worker.borrow();
         }
@@ -74,20 +80,24 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
 
     @Test(expected = LoginCanceledException.class)
     public void testBorrowMissingLoginCredentials() throws Exception {
-        final Transfer t = new UploadTransfer(new Host("test.cyberduck.ch"),
+        final Host host = new Host("test.cyberduck.ch");
+        final Transfer t = new UploadTransfer(host,
                 new Path("/t", EnumSet.of(Path.Type.directory)),
                 new NullLocal("l"));
         final LoginConnectionService connection = new LoginConnectionService(new DisabledLoginCallback(),
                 new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener());
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
                 connection, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener());
+                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(),
+                new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DisabledCertificateStore()),
+                new CertificateStoreX509KeyManager(new DisabledCertificateStore()));
         worker.borrow();
     }
 
     @Test
     public void testBorrow() throws Exception {
-        final Transfer t = new UploadTransfer(new Host("test.cyberduck.ch"),
+        final Host host = new Host("test.cyberduck.ch");
+        final Transfer t = new UploadTransfer(host,
                 new Path("/t", EnumSet.of(Path.Type.directory)),
                 new NullLocal("l"));
         final LoginConnectionService connection = new LoginConnectionService(new DisabledLoginCallback(),
@@ -104,13 +114,17 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
         };
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
                 connection, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(), 2);
+                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(),
+                new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DisabledCertificateStore()),
+                new CertificateStoreX509KeyManager(new DisabledCertificateStore()),
+                2);
         assertNotSame(worker.borrow(), worker.borrow());
     }
 
     @Test
     public void testSessionReuse() throws Exception {
-        final Transfer t = new UploadTransfer(new Host("test.cyberduck.ch"),
+        final Host host = new Host("test.cyberduck.ch");
+        final Transfer t = new UploadTransfer(host,
                 new Path("/t", EnumSet.of(Path.Type.directory)),
                 new NullLocal("l"));
         final LoginConnectionService connection = new LoginConnectionService(new DisabledLoginCallback(),
@@ -127,7 +141,10 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
         };
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
                 connection, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(), 1);
+                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(),
+                new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DisabledCertificateStore()),
+                new CertificateStoreX509KeyManager(new DisabledCertificateStore()),
+                1);
         final Session<?> session = worker.borrow();
         worker.release(session);
         assertEquals(Session.State.closed, session.getState());
@@ -169,7 +186,8 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
         for(int i = 1; i <= files; i++) {
             list.add(new TransferItem(new Path("/t" + i, EnumSet.of(Path.Type.file)), new NullLocal("/t" + i)));
         }
-        final Transfer t = new DownloadTransfer(new Host("test.cyberduck.ch"), list
+        final Host host = new Host("test.cyberduck.ch");
+        final Transfer t = new DownloadTransfer(host, list
         ) {
 
             @Override
@@ -235,7 +253,10 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(), connections);
+                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(),
+                new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DisabledCertificateStore()),
+                new CertificateStoreX509KeyManager(new DisabledCertificateStore()),
+                connections);
 
         assertTrue(worker.run());
         lock.await();
