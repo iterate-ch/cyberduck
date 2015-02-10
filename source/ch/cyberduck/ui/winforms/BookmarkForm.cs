@@ -293,7 +293,12 @@ namespace Ch.Cyberduck.Ui.Winforms
         public string Nickname
         {
             get { return textBoxNickname.Text; }
-            set { textBoxNickname.Text = value; }
+            set
+            {
+                textBoxNickname.TextChanged -= textBoxNickname_TextChanged;
+                textBoxNickname.Text = value;
+                textBoxNickname.TextChanged += textBoxNickname_TextChanged;
+            }
         }
 
         public string URL
