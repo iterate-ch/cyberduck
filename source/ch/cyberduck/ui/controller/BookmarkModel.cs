@@ -26,9 +26,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly BrowserController _controller;
         private HostFilter _filter;
         private AbstractHostCollection _filtered;
-
         private CollectionListener _listener;
-
         private AbstractHostCollection _source = AbstractHostCollection.empty();
 
         public BookmarkModel(BrowserController controller, AbstractHostCollection source)
@@ -110,7 +108,7 @@ namespace Ch.Cyberduck.Ui.Controller
         public object GetNotes(object host)
         {
             Host h = (Host) host;
-            return Source.getComment(h);
+            return Source != null ? Source.getComment(h) : string.Empty;
         }
 
         public object GetBookmarkStatusImage(object rowobject)
