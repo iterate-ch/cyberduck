@@ -98,10 +98,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
             }
             factory = context.getSocketFactory();
         }
-        catch(NoSuchAlgorithmException e) {
-            throw new FactoryException(e.getMessage(), e);
-        }
-        catch(KeyManagementException e) {
+        catch(NoSuchAlgorithmException | KeyManagementException e) {
             throw new FactoryException(e.getMessage(), e);
         }
     }
