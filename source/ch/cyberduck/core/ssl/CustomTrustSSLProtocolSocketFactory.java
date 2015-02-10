@@ -80,13 +80,6 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
 
     /**
      * @param trust Verifying trusts in system settings
-     */
-    public CustomTrustSSLProtocolSocketFactory(final X509TrustManager trust) {
-        this(trust, null);
-    }
-
-    /**
-     * @param trust Verifying trusts in system settings
      * @param key   Key manager for client certificate selection
      */
     public CustomTrustSSLProtocolSocketFactory(final X509TrustManager trust, final X509KeyManager key) {
