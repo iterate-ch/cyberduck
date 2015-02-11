@@ -10,10 +10,10 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
-import ch.cyberduck.core.http.DisabledX509HostnameVerifier;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
+import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -248,7 +248,7 @@ public class FTPSessionTest extends AbstractTestCase {
                 properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
         ));
         final AtomicBoolean callback = new AtomicBoolean();
-        final FTPSession session = new FTPSession(host, new KeychainX509TrustManager(new DisabledX509HostnameVerifier()),
+        final FTPSession session = new FTPSession(host, new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(host)),
                 new KeychainX509KeyManager(new DisabledCertificateStore() {
                     @Override
                     public X509Certificate choose(String[] keyTypes, Principal[] issuers, String hostname, String prompt)

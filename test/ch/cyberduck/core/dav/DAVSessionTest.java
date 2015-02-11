@@ -13,9 +13,9 @@ import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
-import ch.cyberduck.core.http.DisabledX509HostnameVerifier;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
@@ -440,7 +440,7 @@ public class DAVSessionTest extends AbstractTestCase {
                 PreferencesFactory.get().getProperty("connection.login.anon.pass"))
         );
         host.setDefaultPath("/dav");
-        final DAVSession session = new DAVSession(host, new KeychainX509TrustManager(new DisabledX509HostnameVerifier()),
+        final DAVSession session = new DAVSession(host, new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(host)),
                 new KeychainX509KeyManager(new DisabledCertificateStore() {
                     @Override
                     public X509Certificate choose(String[] keyTypes, Principal[] issuers, String hostname, String prompt)
@@ -472,7 +472,7 @@ public class DAVSessionTest extends AbstractTestCase {
                 PreferencesFactory.get().getProperty("connection.login.anon.pass"))
         );
         host.setDefaultPath("/dav");
-        final DAVSession session = new DAVSession(host, new KeychainX509TrustManager(new DisabledX509HostnameVerifier()),
+        final DAVSession session = new DAVSession(host, new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(host)),
                 new KeychainX509KeyManager(new DisabledCertificateStore() {
                     @Override
                     public X509Certificate choose(String[] keyTypes, Principal[] issuers, String hostname, String prompt)

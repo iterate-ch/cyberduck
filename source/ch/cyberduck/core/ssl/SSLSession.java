@@ -25,7 +25,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import org.apache.log4j.Logger;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
-import java.io.IOException;
 import java.security.Security;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
@@ -34,7 +33,7 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public abstract class SSLSession<C> extends Session<C> implements TrustManagerHostnameCallback {
+public abstract class SSLSession<C> extends Session<C> {
     private static final Logger log = Logger.getLogger(SSLSession.class);
 
     static {
@@ -46,49 +45,10 @@ public abstract class SSLSession<C> extends Session<C> implements TrustManagerHo
 
     protected X509KeyManager key;
 
-    protected SSLSession(final Host h) {
-        super(h);
-        this.trust = new KeychainX509TrustManager(this);
-        this.key = new KeychainX509KeyManager();
-    }
-
-    protected SSLSession(final Host host, final X509TrustManager manager) {
-        super(host);
-        this.trust = manager;
-        this.key = new KeychainX509KeyManager();
-    }
-
     protected SSLSession(final Host h, final X509TrustManager trust, final X509KeyManager key) {
         super(h);
         this.trust = trust;
         this.key = key;
-    }
-
-    public String getTarget() {
-        return new DefaultTrustManagerHostnameCallback(host).getTarget();
-    }
-
-    /**
-     * @return Trust manager backed by keychain
-     */
-    public X509TrustManager getTrustManager() {
-        try {
-            return trust.init();
-        }
-        catch(IOException e) {
-            log.error(String.format("Initialization of trust store failed %s", e.getMessage()));
-        }
-        return trust;
-    }
-
-    public X509KeyManager getKeyManager() {
-        try {
-            return key.init();
-        }
-        catch(IOException e) {
-            log.error(String.format("Initialization of key store failed %s", e.getMessage()));
-        }
-        return key;
     }
 
     /**

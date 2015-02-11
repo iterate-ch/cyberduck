@@ -25,7 +25,6 @@ import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import org.apache.http.conn.ssl.BrowserCompatHostnameVerifier;
 
 import javax.net.ssl.SSLException;
-import java.io.IOException;
 import java.security.Principal;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
@@ -44,13 +43,7 @@ public class DefaultCertificateStore implements CertificateStore {
     @Override
     public X509Certificate choose(final String[] keyTypes, final Principal[] issuers,
                                   final String hostname, final String prompt) throws ConnectionCanceledException {
-        CertificateStoreX509KeyManager store;
-        try {
-            store = new KeychainX509KeyManager().init();
-        }
-        catch(IOException e) {
-            throw new ConnectionCanceledException(e);
-        }
+        CertificateStoreX509KeyManager store = new KeychainX509KeyManager().init();
         final String[] aliases = store.getClientAliases(keyTypes, issuers);
         if(null == aliases) {
             throw new ConnectionCanceledException(String.format("No certificate matching issuer %s found",

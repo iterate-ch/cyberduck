@@ -18,12 +18,12 @@ import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.identity.IdentityConfiguration;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.net.UnknownHostException;
 import java.security.PublicKey;
 import java.security.cert.CertificateException;
@@ -48,8 +48,13 @@ public class S3SessionTest extends AbstractTestCase {
         assertFalse(host.getProtocol().isSecure());
         final S3Session session = new S3Session(host, new X509TrustManager() {
             @Override
-            public X509TrustManager init() throws IOException {
+            public X509TrustManager init() {
                 return this;
+            }
+
+            @Override
+            public void verify(final String hostname, final X509Certificate[] certs) throws CertificateException {
+                throw new CertificateException();
             }
 
             @Override
@@ -67,7 +72,7 @@ public class S3SessionTest extends AbstractTestCase {
                 fail();
                 return null;
             }
-        });
+        }, new DefaultX509KeyManager());
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         assertTrue(session.isConnected());
         session.close();

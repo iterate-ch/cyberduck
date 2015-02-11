@@ -45,6 +45,8 @@ import ch.cyberduck.core.idna.PunycodeConverter;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -86,11 +88,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     private Case casesensitivity = Case.sensitive;
 
     public FTPSession(final Host h) {
-        super(h);
-    }
-
-    public FTPSession(final Host host, final X509TrustManager manager) {
-        super(host, manager);
+        super(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
     }
 
     public FTPSession(final Host h, final X509TrustManager trust, final X509KeyManager key) {
@@ -181,10 +179,10 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     @Override
-    public FTPClient connect(final HostKeyCallback key) throws BackgroundException {
+    public FTPClient connect(final HostKeyCallback callback) throws BackgroundException {
         try {
             final CustomTrustSSLProtocolSocketFactory f
-                    = new CustomTrustSSLProtocolSocketFactory(this.getTrustManager(), this.getKeyManager());
+                    = new CustomTrustSSLProtocolSocketFactory(trust.init(), key.init());
 
             final LoggingProtocolCommandListener listener = new LoggingProtocolCommandListener(this);
             final FTPClient client = new FTPClient(f, f.getSSLContext()) {

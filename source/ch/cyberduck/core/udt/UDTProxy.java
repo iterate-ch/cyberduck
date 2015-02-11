@@ -68,9 +68,6 @@ import com.barchart.udt.ResourceUDT;
 public class UDTProxy<Client extends HttpSession> implements TrustManagerHostnameCallback {
     private static final Logger log = Logger.getLogger(UDTProxy.class);
 
-    private DisabledX509HostnameVerifier hostnameVerifier
-            = new DisabledX509HostnameVerifier();
-
     private Preferences preferences
             = PreferencesFactory.get();
 
@@ -151,7 +148,16 @@ public class UDTProxy<Client extends HttpSession> implements TrustManagerHostnam
         final RegistryBuilder<ConnectionSocketFactory> registry = RegistryBuilder.create();
         registry.register(Scheme.udt.toString(), new SSLConnectionSocketFactory(
                 new CustomTrustSSLProtocolSocketFactory(trust, key),
-                hostnameVerifier
+                new DisabledX509HostnameVerifier() {
+                    @Override
+                    public boolean verify(final String host, final javax.net.ssl.SSLSession sslSession) {
+                        if(trust instanceof HttpSession.HostnameAwareTrustManager) {
+                            ((HttpSession.HostnameAwareTrustManager) trust).setTarget(host);
+                        }
+                        return true;
+                    }
+                }
+
         ) {
             @Override
             public Socket createSocket(final HttpContext context) throws IOException {
@@ -167,13 +173,16 @@ public class UDTProxy<Client extends HttpSession> implements TrustManagerHostnam
                                         final InetSocketAddress remoteAddress,
                                         final InetSocketAddress localAddress,
                                         final HttpContext context) throws IOException {
-                hostnameVerifier.setTarget(remoteAddress.getHostName());
+                if(trust instanceof HttpSession.HostnameAwareTrustManager) {
+                    ((HttpSession.HostnameAwareTrustManager) trust).setTarget(remoteAddress.getHostName());
+                }
                 return super.connectSocket(connectTimeout, socket, host, remoteAddress, localAddress, context);
             }
         });
         registry.register(Scheme.https.toString(), new SSLConnectionSocketFactory(
                 new CustomTrustSSLProtocolSocketFactory(trust, key),
-                hostnameVerifier
+                new DisabledX509HostnameVerifier()
+
         ) {
             @Override
             public Socket createSocket(HttpContext context) throws IOException {
@@ -189,7 +198,9 @@ public class UDTProxy<Client extends HttpSession> implements TrustManagerHostnam
                                         final InetSocketAddress remoteAddress,
                                         final InetSocketAddress localAddress,
                                         final HttpContext context) throws IOException {
-                hostnameVerifier.setTarget(remoteAddress.getHostName());
+                if(trust instanceof HttpSession.HostnameAwareTrustManager) {
+                    ((HttpSession.HostnameAwareTrustManager) trust).setTarget(remoteAddress.getHostName());
+                }
                 return super.connectSocket(connectTimeout, socket, host, remoteAddress, localAddress, context);
             }
         });
