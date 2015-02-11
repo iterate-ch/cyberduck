@@ -135,7 +135,6 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                     .setConnectTimeout(timeout())
                             // Sets the timeout in milliseconds used when retrieving a connection from the ClientConnectionManager
                     .setConnectionRequestTimeout(preferences.getInteger("http.manager.timeout"))
-                    .setStaleConnectionCheckEnabled(true)
                     .setSocketTimeout(timeout())
                     .build());
             builder.setDefaultConnectionConfig(ConnectionConfig.custom()
@@ -215,6 +214,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
         final PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager(registry);
         manager.setMaxTotal(preferences.getInteger("http.connections.total"));
         manager.setDefaultMaxPerRoute(preferences.getInteger("http.connections.route"));
+        manager.setValidateAfterInactivity(5000);
         return manager;
     }
 
