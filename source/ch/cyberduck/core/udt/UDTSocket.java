@@ -86,7 +86,6 @@ public class UDTSocket extends NetSocketUDT {
     public void setSoLinger(final boolean on, final int linger) throws SocketException {
         if(linger <= 0) {
             log.warn("Ignore SO_LINGER");
-            return;
         }
         else {
             super.setSoLinger(on, linger);
