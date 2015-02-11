@@ -46,7 +46,7 @@ public class AzureReadFeatureTest extends AbstractTestCase {
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
         final TransferStatus status = new TransferStatus();
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume));
-        new AzureReadFeature(session).read(new Path(container, "nosuchname", EnumSet.of(Path.Type.file)), status);
+        new AzureReadFeature(session, null).read(new Path(container, "nosuchname", EnumSet.of(Path.Type.file)), status);
     }
 
     @Test
@@ -61,7 +61,7 @@ public class AzureReadFeatureTest extends AbstractTestCase {
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature(session).touch(test);
         final byte[] content = RandomStringUtils.random(1000).getBytes();
-        final OutputStream out = new AzureWriteFeature(session).write(test, new TransferStatus().length(content.length));
+        final OutputStream out = new AzureWriteFeature(session, null).write(test, new TransferStatus().length(content.length));
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         IOUtils.closeQuietly(out);
@@ -69,7 +69,7 @@ public class AzureReadFeatureTest extends AbstractTestCase {
         status.setLength(content.length);
         status.setAppend(true);
         status.setCurrent(100L);
-        final InputStream in = new AzureReadFeature(session).read(test, status);
+        final InputStream in = new AzureReadFeature(session, null).read(test, status);
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -77,7 +77,7 @@ public class AzureReadFeatureTest extends AbstractTestCase {
         System.arraycopy(content, 100, reference, 0, content.length - 100);
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
-        new AzureDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        new AzureDeleteFeature(session, null).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }
 }

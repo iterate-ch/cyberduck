@@ -47,6 +47,8 @@ import ch.cyberduck.core.http.RedirectCallback;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -83,11 +85,7 @@ public class DAVSession extends HttpSession<DAVClient> {
             = PreferencesFactory.get();
 
     public DAVSession(final Host h) {
-        super(h);
-    }
-
-    public DAVSession(final Host host, final X509TrustManager manager) {
-        super(host, manager);
+        super(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
     }
 
     public DAVSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
@@ -95,12 +93,7 @@ public class DAVSession extends HttpSession<DAVClient> {
     }
 
     public DAVSession(final Host host, final RedirectCallback redirect) {
-        super(host);
-        this.redirect = redirect;
-    }
-
-    public DAVSession(final Host host, final X509TrustManager manager, final RedirectCallback redirect) {
-        super(host, manager);
+        super(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         this.redirect = redirect;
     }
 

@@ -23,7 +23,6 @@ import ch.cyberduck.core.LocaleFactory;
 
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
@@ -44,7 +43,7 @@ public class CertificateStoreX509TrustManager extends AbstractX509TrustManager {
     }
 
     @Override
-    public X509TrustManager init() throws IOException {
+    public X509TrustManager init() {
         return this;
     }
 
@@ -65,7 +64,11 @@ public class CertificateStoreX509TrustManager extends AbstractX509TrustManager {
     private void verify(final X509Certificate[] certs)
             throws CertificateException {
 
-        final String hostname = callback.getTarget();
+        this.verify(callback.getTarget(), certs);
+    }
+
+    @Override
+    public void verify(final String hostname, final X509Certificate[] certs) throws CertificateException {
         if(Arrays.asList(this.getAcceptedIssuers()).containsAll(Arrays.asList(certs))) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Certificate for %s previously trusted", hostname));

@@ -36,18 +36,18 @@ public class AzureMoveFeatureTest extends AbstractTestCase {
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new AzureTouchFeature(session).touch(test);
-        assertTrue(new AzureFindFeature(session).find(test));
+        new AzureTouchFeature(session, null).touch(test);
+        assertTrue(new AzureFindFeature(session, null).find(test));
         final Path target = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new AzureMoveFeature(session).move(test, target, false, new DisabledProgressListener());
-        assertFalse(new AzureFindFeature(session).find(test));
-        assertTrue(new AzureFindFeature(session).find(target));
-        new AzureDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new DisabledProgressListener());
+        new AzureMoveFeature(session, null).move(test, target, false, new DisabledProgressListener());
+        assertFalse(new AzureFindFeature(session, null).find(test));
+        assertTrue(new AzureFindFeature(session, null).find(target));
+        new AzureDeleteFeature(session, null).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new DisabledProgressListener());
     }
 
     @Test
     public void testSupport() throws Exception {
-        assertFalse(new AzureMoveFeature(null).isSupported(new Path("/c", EnumSet.of(Path.Type.directory))));
-        assertTrue(new AzureMoveFeature(null).isSupported(new Path("/c/f", EnumSet.of(Path.Type.directory))));
+        assertFalse(new AzureMoveFeature(null, null).isSupported(new Path("/c", EnumSet.of(Path.Type.directory))));
+        assertTrue(new AzureMoveFeature(null, null).isSupported(new Path("/c/f", EnumSet.of(Path.Type.directory))));
     }
 }

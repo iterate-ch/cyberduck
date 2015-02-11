@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import com.microsoft.azure.storage.AccessCondition;
+import com.microsoft.azure.storage.OperationContext;
 import com.microsoft.azure.storage.RetryNoRetry;
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.BlobRequestOptions;
@@ -43,11 +44,14 @@ public class AzureDirectoryFeature implements Directory {
 
     private AzureSession session;
 
+    private OperationContext context;
+
     private PathContainerService containerService
             = new AzurePathContainerService();
 
-    public AzureDirectoryFeature(final AzureSession session) {
+    public AzureDirectoryFeature(final AzureSession session, final OperationContext context) {
         this.session = session;
+        this.context = context;
     }
 
     @Override
@@ -63,13 +67,13 @@ public class AzureDirectoryFeature implements Directory {
             if(containerService.isContainer(file)) {
                 // Container name must be lower case.
                 final CloudBlobContainer container = session.getClient().getContainerReference(containerService.getContainer(file).getName());
-                container.create(options, null);
+                container.create(options, context);
             }
             else {
                 // Create delimiter placeholder
                 final CloudBlockBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
                         .getBlockBlobReference(containerService.getKey(file));
-                blob.upload(new ByteArrayInputStream(new byte[]{}), 0L, AccessCondition.generateEmptyCondition(), options, null);
+                blob.upload(new ByteArrayInputStream(new byte[]{}), 0L, AccessCondition.generateEmptyCondition(), options, context);
             }
         }
         catch(URISyntaxException e) {

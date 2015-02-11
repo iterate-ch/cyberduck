@@ -44,6 +44,11 @@ import ch.cyberduck.core.io.ThrottledInputStream;
 import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Serializer;
+import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
+import ch.cyberduck.core.ssl.KeychainX509KeyManager;
+import ch.cyberduck.core.ssl.KeychainX509TrustManager;
+import ch.cyberduck.core.ssl.X509KeyManager;
+import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.transfer.copy.CopyTransferFilter;
 import ch.cyberduck.core.transfer.normalizer.CopyRootPathsNormalizer;
 import ch.cyberduck.core.transfer.symlink.DownloadSymlinkResolver;
@@ -78,14 +83,23 @@ public class CopyTransfer extends Transfer {
      * @param files Source to destination mapping
      */
     public CopyTransfer(final Host host, final Host target, final Map<Path, Path> files) {
+        this(host, target, files,
+                new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(target)),
+                new KeychainX509KeyManager());
+    }
+
+    public CopyTransfer(final Host host, final Host target, final Map<Path, Path> files,
+                        final X509TrustManager trust, final X509KeyManager key) {
         this(host, target, new CopyRootPathsNormalizer().normalize(files),
-                new BandwidthThrottle(PreferencesFactory.get().getFloat("queue.download.bandwidth.bytes")));
+                new BandwidthThrottle(PreferencesFactory.get().getFloat("queue.download.bandwidth.bytes")),
+                trust, key);
     }
 
     private CopyTransfer(final Host host, final Host target,
-                         final Map<Path, Path> selected, final BandwidthThrottle bandwidth) {
+                         final Map<Path, Path> selected, final BandwidthThrottle bandwidth,
+                         final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ArrayList<TransferItem>(), bandwidth);
-        this.destination = SessionFactory.create(target);
+        this.destination = SessionFactory.create(target, trust, key);
         this.files = selected;
         for(Path source : selected.keySet()) {
             roots.add(new TransferItem(source));

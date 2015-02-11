@@ -28,6 +28,7 @@ import ch.cyberduck.core.features.Find;
 
 import java.net.URISyntaxException;
 
+import com.microsoft.azure.storage.OperationContext;
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.CloudBlobContainer;
 import com.microsoft.azure.storage.blob.CloudBlockBlob;
@@ -39,13 +40,16 @@ public class AzureFindFeature implements Find {
 
     private AzureSession session;
 
+    private OperationContext context;
+
     private PathContainerService containerService
             = new AzurePathContainerService();
 
     private PathCache cache;
 
-    public AzureFindFeature(AzureSession session) {
+    public AzureFindFeature(final AzureSession session, final OperationContext context) {
         this.session = session;
+        this.context = context;
         this.cache = PathCache.empty();
     }
 
@@ -75,12 +79,12 @@ public class AzureFindFeature implements Find {
                 final boolean found;
                 if(containerService.isContainer(file)) {
                     final CloudBlobContainer container = session.getClient().getContainerReference(containerService.getContainer(file).getName());
-                    found = container.exists();
+                    found = container.exists(null, null, context);
                 }
                 else {
                     final CloudBlockBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
                             .getBlockBlobReference(containerService.getKey(file));
-                    found = blob.exists();
+                    found = blob.exists(null, null, context);
                 }
                 if(found) {
                     list.add(file);

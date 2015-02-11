@@ -46,6 +46,9 @@ import ch.cyberduck.core.pasteboard.PathPasteboardFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
+import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
+import ch.cyberduck.core.ssl.KeychainX509KeyManager;
+import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.core.threading.ControllerMainAction;
@@ -697,7 +700,9 @@ public final class TransferController extends WindowController implements NSTool
      */
     public void start(final Transfer transfer, final TransferOptions options, final TransferCallback callback) {
         final ProgressController progress = transferTableModel.getController(transfer);
-        final Session session = SessionFactory.create(transfer.getHost());
+        final Session session = SessionFactory.create(transfer.getHost(),
+                new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(transfer.getHost())),
+                new KeychainX509KeyManager());
         final BackgroundAction action = new TransferCollectionBackgroundAction(this,
                 session,
                 new TransferListener() {

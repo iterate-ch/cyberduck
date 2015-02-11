@@ -452,6 +452,11 @@ public abstract class Preferences {
 
         defaults.put("queue.download.quarantine", String.valueOf(true));
         defaults.put("queue.download.wherefrom", String.valueOf(true));
+
+        // Segmented concurrent downloads
+        defaults.put("queue.download.segments.threshold", String.valueOf(Long.MAX_VALUE));
+        defaults.put("queue.download.segments.size", String.valueOf(20L * 1024L * 1024L));
+
         /**
          * Open completed downloads
          */

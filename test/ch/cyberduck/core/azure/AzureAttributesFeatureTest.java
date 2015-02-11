@@ -36,7 +36,7 @@ public class AzureAttributesFeatureTest extends AbstractTestCase {
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final AzureAttributesFeature f = new AzureAttributesFeature(session);
+        final AzureAttributesFeature f = new AzureAttributesFeature(session, null);
         f.find(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
     }
 
@@ -50,13 +50,13 @@ public class AzureAttributesFeatureTest extends AbstractTestCase {
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
-        new AzureTouchFeature(session).touch(test);
+        new AzureTouchFeature(session, null).touch(test);
         final String v = UUID.randomUUID().toString();
-        final AzureAttributesFeature f = new AzureAttributesFeature(session);
+        final AzureAttributesFeature f = new AzureAttributesFeature(session, null);
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
         assertEquals("1B2M2Y8AsgTpgAmY7PhCfg==", attributes.getChecksum());
-        new AzureDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        new AzureDeleteFeature(session, null).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }
 }

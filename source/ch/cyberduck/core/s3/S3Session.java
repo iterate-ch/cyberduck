@@ -45,9 +45,12 @@ import ch.cyberduck.core.iam.AmazonIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
+import ch.cyberduck.core.udt.qloudsonic.QloudsonicTransferOption;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
@@ -96,11 +99,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     private S3Protocol.AuthenticationHeaderSignatureVersion authenticationHeaderSignatureVersion;
 
     public S3Session(final Host h) {
-        super(h);
-    }
-
-    public S3Session(final Host host, final X509TrustManager manager) {
-        super(host, manager);
+        super(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
     }
 
     public S3Session(final Host host, final X509TrustManager trust, final X509KeyManager key) {
@@ -429,10 +428,10 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
             return (T) new S3WriteFeature(this);
         }
         if(type == Download.class) {
-            return (T) new S3ThresholdDownloadService(this);
+            return (T) new S3ThresholdDownloadService(this, trust, key, new QloudsonicTransferOption());
         }
         if(type == Upload.class) {
-            return (T) new S3ThresholdUploadService(this);
+            return (T) new S3ThresholdUploadService(this, trust, key, new QloudsonicTransferOption());
         }
         if(type == Directory.class) {
             return (T) new S3DirectoryFeature(this);

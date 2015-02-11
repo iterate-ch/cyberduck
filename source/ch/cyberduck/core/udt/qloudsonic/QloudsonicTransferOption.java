@@ -28,6 +28,7 @@ import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.udt.UDTProxyProvider;
 import ch.cyberduck.core.udt.UDTTransferOption;
 
 import java.util.List;
@@ -49,6 +50,11 @@ public class QloudsonicTransferOption implements UDTTransferOption {
 
     public QloudsonicTransferOption(final QloudsonicVoucherFinder voucherFinder) {
         this.voucherFinder = voucherFinder;
+    }
+
+    @Override
+    public UDTProxyProvider provider() {
+        return new QloudsonicProxyProvider(new QloudsonicVoucherFinder());
     }
 
     @Override

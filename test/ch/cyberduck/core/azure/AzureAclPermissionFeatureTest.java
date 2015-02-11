@@ -33,7 +33,7 @@ public class AzureAclPermissionFeatureTest extends AbstractTestCase {
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume, Path.Type.directory));
-        final AzureAclPermissionFeature f = new AzureAclPermissionFeature(session);
+        final AzureAclPermissionFeature f = new AzureAclPermissionFeature(session, null);
         f.getPermission(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
     }
 
@@ -46,7 +46,7 @@ public class AzureAclPermissionFeatureTest extends AbstractTestCase {
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume, Path.Type.directory));
-        final AzureAclPermissionFeature f = new AzureAclPermissionFeature(session);
+        final AzureAclPermissionFeature f = new AzureAclPermissionFeature(session, null);
         f.getPermission(container);
     }
 }

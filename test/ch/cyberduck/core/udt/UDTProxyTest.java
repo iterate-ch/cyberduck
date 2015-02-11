@@ -55,7 +55,6 @@ import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
@@ -119,8 +118,13 @@ public class UDTProxyTest extends AbstractTestCase {
         final UDTProxy<S3Session> proxy = new UDTProxy<S3Session>(new S3LocationFeature.S3Region("ap-northeast-1"),
                 new QloudsonicProxyProvider(new QloudsonicTestVoucherFinder()), new AbstractX509TrustManager() {
             @Override
-            public X509TrustManager init() throws IOException {
+            public X509TrustManager init() {
                 return this;
+            }
+
+            @Override
+            public void verify(final String hostname, final X509Certificate[] certs) throws CertificateException {
+                throw new CertificateException();
             }
 
             @Override

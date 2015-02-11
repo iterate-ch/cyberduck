@@ -48,6 +48,8 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -85,11 +87,7 @@ public class SwiftSession extends HttpSession<Client> {
             = new ThreadPool(5, "accounts");
 
     public SwiftSession(final Host h) {
-        super(h);
-    }
-
-    public SwiftSession(final Host host, final X509TrustManager manager) {
-        super(host, manager);
+        super(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
     }
 
     public SwiftSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {

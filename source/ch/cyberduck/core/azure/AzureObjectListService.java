@@ -35,6 +35,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.net.URISyntaxException;
 import java.util.EnumSet;
 
+import com.microsoft.azure.storage.OperationContext;
 import com.microsoft.azure.storage.ResultContinuation;
 import com.microsoft.azure.storage.ResultSegment;
 import com.microsoft.azure.storage.RetryNoRetry;
@@ -53,11 +54,14 @@ public class AzureObjectListService implements ListService {
 
     private AzureSession session;
 
+    private OperationContext context;
+
     private PathContainerService containerService
             = new AzurePathContainerService();
 
-    public AzureObjectListService(final AzureSession session) {
+    public AzureObjectListService(final AzureSession session, final OperationContext context) {
         this.session = session;
+        this.context = context;
     }
 
     @Override
@@ -79,7 +83,7 @@ public class AzureObjectListService implements ListService {
                 options.setRetryPolicyFactory(new RetryNoRetry());
                 result = container.listBlobsSegmented(
                         prefix, false, EnumSet.noneOf(BlobListingDetails.class),
-                        PreferencesFactory.get().getInteger("azure.listing.chunksize"), token, options, null);
+                        PreferencesFactory.get().getInteger("azure.listing.chunksize"), token, options, context);
                 for(ListBlobItem object : result.getResults()) {
                     if(new Path(object.getUri().getPath(), EnumSet.of(Path.Type.directory)).equals(directory)) {
                         continue;

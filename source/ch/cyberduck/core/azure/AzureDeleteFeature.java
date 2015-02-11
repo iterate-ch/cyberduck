@@ -32,6 +32,7 @@ import java.text.MessageFormat;
 import java.util.List;
 
 import com.microsoft.azure.storage.AccessCondition;
+import com.microsoft.azure.storage.OperationContext;
 import com.microsoft.azure.storage.RetryNoRetry;
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.BlobRequestOptions;
@@ -44,11 +45,14 @@ public class AzureDeleteFeature implements Delete {
 
     private AzureSession session;
 
+    private OperationContext context;
+
     private PathContainerService containerService
             = new AzurePathContainerService();
 
-    public AzureDeleteFeature(AzureSession session) {
+    public AzureDeleteFeature(final AzureSession session, final OperationContext context) {
         this.session = session;
+        this.context = context;
     }
 
     @Override
@@ -61,12 +65,12 @@ public class AzureDeleteFeature implements Delete {
                 options.setRetryPolicyFactory(new RetryNoRetry());
                 if(containerService.isContainer(file)) {
                     session.getClient().getContainerReference(containerService.getContainer(file).getName()).delete(
-                            AccessCondition.generateEmptyCondition(), options, null);
+                            AccessCondition.generateEmptyCondition(), options, context);
                 }
                 else {
                     session.getClient().getContainerReference(containerService.getContainer(file).getName())
                             .getBlockBlobReference(containerService.getKey(file)).delete(
-                            DeleteSnapshotsOption.INCLUDE_SNAPSHOTS, AccessCondition.generateEmptyCondition(), options, null);
+                            DeleteSnapshotsOption.INCLUDE_SNAPSHOTS, AccessCondition.generateEmptyCondition(), options, context);
                 }
             }
             catch(StorageException e) {

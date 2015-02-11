@@ -36,10 +36,7 @@ import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
-import org.apache.http.HttpException;
 import org.apache.http.HttpHost;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.auth.AuthSchemeProvider;
 import org.apache.http.client.config.AuthSchemes;
 import org.apache.http.client.config.RequestConfig;
@@ -67,6 +64,8 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.Charset;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
 /**
  * @version $Id$
@@ -74,27 +73,13 @@ import java.nio.charset.Charset;
 public abstract class HttpSession<C> extends SSLSession<C> {
     private static final Logger log = Logger.getLogger(HttpSession.class);
 
-    private DisabledX509HostnameVerifier hostnameVerifier
-            = new DisabledX509HostnameVerifier();
-
     private Preferences preferences
             = PreferencesFactory.get();
 
     private HttpClientBuilder builder;
 
-    protected HttpSession(final Host host) {
-        super(host);
-        hostnameVerifier.setTarget(host.getHostname());
-    }
-
-    protected HttpSession(final Host host, final X509TrustManager manager) {
-        super(host, manager);
-        hostnameVerifier.setTarget(host.getHostname());
-    }
-
     protected HttpSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
-        super(host, trust, key);
-        hostnameVerifier.setTarget(host.getHostname());
+        super(host, new HostnameAwareTrustManager(trust, host.getHostname()), key);
     }
 
     public HttpClientBuilder builder(final TranscriptListener transcript) {
@@ -135,7 +120,6 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                     .setConnectTimeout(timeout())
                             // Sets the timeout in milliseconds used when retrieving a connection from the ClientConnectionManager
                     .setConnectionRequestTimeout(preferences.getInteger("http.manager.timeout"))
-                    .setStaleConnectionCheckEnabled(true)
                     .setSocketTimeout(timeout())
                     .build());
             builder.setDefaultConnectionConfig(ConnectionConfig.custom()
@@ -143,12 +127,6 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                     .setCharset(Charset.forName(this.getEncoding()))
                     .build());
             builder.setRetryHandler(new DisabledHttpRequestRetryHandler());
-            builder.addInterceptorLast(new HttpRequestInterceptor() {
-                @Override
-                public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
-                    hostnameVerifier.setTarget(((HttpHost) context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST)).getHostName());
-                }
-            });
             if(!preferences.getBoolean("http.compression.enable")) {
                 builder.disableContentCompression();
             }
@@ -182,8 +160,8 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                     }
                 })
                 .register(Scheme.https.toString(), new SSLConnectionSocketFactory(
-                        new CustomTrustSSLProtocolSocketFactory(this.getTrustManager(), this.getKeyManager()),
-                        hostnameVerifier
+                        new CustomTrustSSLProtocolSocketFactory(trust.init(), key.init()),
+                        new DisabledX509HostnameVerifier()
                 ) {
                     @Override
                     public Socket createSocket(final HttpContext context) throws IOException {
@@ -202,7 +180,9 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                                                 final InetSocketAddress remoteAddress,
                                                 final InetSocketAddress localAddress,
                                                 final HttpContext context) throws IOException {
-                        hostnameVerifier.setTarget(remoteAddress.getHostName());
+                        if(trust instanceof HostnameAwareTrustManager) {
+                            ((HostnameAwareTrustManager) trust).setTarget(remoteAddress.getHostName());
+                        }
                         return super.connectSocket(connectTimeout, socket, host, remoteAddress, localAddress, context);
                     }
                 });
@@ -215,12 +195,8 @@ public abstract class HttpSession<C> extends SSLSession<C> {
         final PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager(registry);
         manager.setMaxTotal(preferences.getInteger("http.connections.total"));
         manager.setDefaultMaxPerRoute(preferences.getInteger("http.connections.route"));
+        manager.setValidateAfterInactivity(5000);
         return manager;
-    }
-
-    @Override
-    public String getTarget() {
-        return hostnameVerifier.getTarget();
     }
 
     @Override
@@ -231,4 +207,52 @@ public abstract class HttpSession<C> extends SSLSession<C> {
         return super.getFeature(type);
     }
 
+    public static final class HostnameAwareTrustManager implements X509TrustManager, TrustManagerHostnameCallback {
+        /**
+         * Target hostname of current request stored as thread local
+         */
+        private ThreadLocal<String> target
+                = new ThreadLocal<String>();
+
+        private X509TrustManager delegate;
+
+        public HostnameAwareTrustManager(final X509TrustManager delegate, final String hostname) {
+            this.delegate = delegate;
+            this.target.set(hostname);
+        }
+
+        @Override
+        public X509TrustManager init() {
+            return this;
+        }
+
+        @Override
+        public void verify(final String hostname, final X509Certificate[] certs) throws CertificateException {
+            delegate.verify(hostname, certs);
+        }
+
+        @Override
+        public void checkClientTrusted(final X509Certificate[] certs, final String s) throws CertificateException {
+            delegate.verify(target.get(), certs);
+        }
+
+        @Override
+        public void checkServerTrusted(final X509Certificate[] certs, final String s) throws CertificateException {
+            delegate.verify(target.get(), certs);
+        }
+
+        @Override
+        public X509Certificate[] getAcceptedIssuers() {
+            return delegate.getAcceptedIssuers();
+        }
+
+        @Override
+        public String getTarget() {
+            return target.get();
+        }
+
+        public void setTarget(final String target) {
+            this.target.set(target);
+        }
+    }
 }

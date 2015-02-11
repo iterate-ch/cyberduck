@@ -2048,8 +2048,9 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public void edit(Editor editor)
         {
-            this.background(new WorkerBackgroundAction(this, Session, editor.open(new DisabledApplicationQuitCallback(),
-                                    new DisabledTransferErrorCallback(), new DefaultEditorListener(this, Session, editor))));
+            this.background(new WorkerBackgroundAction(this, Session,
+                editor.open(new DisabledApplicationQuitCallback(), new DisabledTransferErrorCallback(),
+                    new DefaultEditorListener(this, Session, editor))));
         }
 
         private void UpdateEditIcon()
@@ -2470,7 +2471,9 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <returns>A session object bound to this browser controller</returns>
         private Session Init(Host host)
         {
-            Session = SessionFactory.create(host);
+            Session = SessionFactory.create(host,
+                new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(host)),
+                new KeychainX509KeyManager());
             SetWorkdir(null);
             View.SelectedEncoding = Session.getEncoding();
             View.ClearTranscript();
@@ -2778,7 +2781,7 @@ namespace Ch.Cyberduck.Ui.Controller
             for (enumerator = selected.GetEnumerator(); enumerator.MoveNext();)
             {
                 Path item = enumerator.Current;
-                if(_cache.get(item.getParent()).contains(item))
+                if (_cache.get(item.getParent()).contains(item))
                 {
                     if (i < 10)
                     {

@@ -93,10 +93,6 @@ public class GoogleStorageSession extends S3Session {
         super(h);
     }
 
-    public GoogleStorageSession(final Host host, final X509TrustManager manager) {
-        super(host, manager);
-    }
-
     public GoogleStorageSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
     }

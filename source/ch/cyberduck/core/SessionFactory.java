@@ -37,31 +37,6 @@ public final class SessionFactory {
         //
     }
 
-    public static Session create(final Host host) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Create session for %s", host));
-        }
-        final Protocol protocol = host.getProtocol();
-        switch(protocol.getType()) {
-            case ftp:
-                return new FTPSession(host);
-            case ssh:
-                return new SFTPSession(host);
-            case s3:
-                return new S3Session(host);
-            case googlestorage:
-                return new GoogleStorageSession(host);
-            case swift:
-                return new SwiftSession(host);
-            case dav:
-                return new DAVSession(host);
-            case azure:
-                return new AzureSession(host);
-            default:
-                throw new FactoryException(protocol.getType().name());
-        }
-    }
-
     public static Session create(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Create session for %s", host));
@@ -81,7 +56,7 @@ public final class SessionFactory {
             case dav:
                 return new DAVSession(host, trust, key);
             case azure:
-                return new AzureSession(host);
+                return new AzureSession(host, trust, key);
             default:
                 throw new FactoryException(protocol.getType().name());
         }

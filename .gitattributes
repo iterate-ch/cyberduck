@@ -2598,13 +2598,6 @@ source/ch/cyberduck/core/preferences/AssemblyApplicationResourcesFinder.cs -text
 source/ch/cyberduck/core/preferences/RoamingSupportDirectoryFinder.cs -text
 source/ch/cyberduck/core/preferences/SettingsDictionary.cs -text
 source/ch/cyberduck/core/s3/S3Session.java -text
-source/ch/cyberduck/core/serializer/impl/system/HostPlistReader.cs -text
-source/ch/cyberduck/core/serializer/impl/system/PlistDeserializer.cs -text
-source/ch/cyberduck/core/serializer/impl/system/PlistReader.cs -text
-source/ch/cyberduck/core/serializer/impl/system/PlistSerializer.cs -text
-source/ch/cyberduck/core/serializer/impl/system/PlistWriter.cs -text
-source/ch/cyberduck/core/serializer/impl/system/ProfilePlistReader.cs -text
-source/ch/cyberduck/core/serializer/impl/system/TransferPlistReader.cs -text
 source/ch/cyberduck/core/sparkle/Updater.java -text
 source/ch/cyberduck/core/ssl/AbstractX509TrustManager.java -text
 source/ch/cyberduck/core/ssl/DefaultX509KeyManager.java -text

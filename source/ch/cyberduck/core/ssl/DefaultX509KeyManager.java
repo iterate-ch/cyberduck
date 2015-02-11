@@ -18,6 +18,8 @@ package ch.cyberduck.core.ssl;
  *  dkocher@cyberduck.ch
  */
 
+import org.apache.log4j.Logger;
+
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import java.io.IOException;
@@ -36,12 +38,13 @@ import java.security.cert.X509Certificate;
  *
  * @version $Id$
  */
-public abstract class DefaultX509KeyManager implements X509KeyManager {
+public class DefaultX509KeyManager implements X509KeyManager {
+    private static final Logger log = Logger.getLogger(DefaultX509KeyManager.class);
 
     private javax.net.ssl.X509KeyManager manager;
 
     @Override
-    public X509KeyManager init() throws IOException {
+    public X509KeyManager init() {
         try {
             // Get the key manager factory for the default algorithm.
             final KeyManagerFactory factory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
@@ -62,19 +65,15 @@ public abstract class DefaultX509KeyManager implements X509KeyManager {
                         KeyManagerFactory.getDefaultAlgorithm()));
             }
         }
-        catch(CertificateException e) {
-            throw new IOException(e);
-        }
-        catch(UnrecoverableKeyException e) {
-            throw new IOException(e);
-        }
-        catch(NoSuchAlgorithmException e) {
-            throw new IOException(e);
-        }
-        catch(KeyStoreException e) {
-            throw new IOException(e);
+        catch(IOException | CertificateException | UnrecoverableKeyException | KeyStoreException | NoSuchAlgorithmException e) {
+            log.error(String.format("Initialization of key store failed %s", e.getMessage()));
         }
         return this;
+    }
+
+    @Override
+    public X509Certificate getCertificate(final String alias, final String[] keyTypes, final Principal[] issuers) {
+        return null;
     }
 
     @Override

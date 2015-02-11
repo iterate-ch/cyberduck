@@ -29,6 +29,7 @@ import ch.cyberduck.core.features.Attributes;
 import java.net.URISyntaxException;
 
 import com.microsoft.azure.storage.AccessCondition;
+import com.microsoft.azure.storage.OperationContext;
 import com.microsoft.azure.storage.RetryNoRetry;
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.BlobContainerProperties;
@@ -44,11 +45,14 @@ public class AzureAttributesFeature implements Attributes {
 
     private AzureSession session;
 
+    private OperationContext context;
+
     private PathContainerService containerService
             = new AzurePathContainerService();
 
-    public AzureAttributesFeature(final AzureSession session) {
+    public AzureAttributesFeature(final AzureSession session, final OperationContext context) {
         this.session = session;
+        this.context = context;
     }
 
     @Override
@@ -57,7 +61,7 @@ public class AzureAttributesFeature implements Attributes {
             if(containerService.isContainer(file)) {
                 final PathAttributes attributes = new PathAttributes();
                 final CloudBlobContainer container = session.getClient().getContainerReference(containerService.getContainer(file).getName());
-                container.downloadAttributes();
+                container.downloadAttributes(null, null, context);
                 final BlobContainerProperties properties = container.getProperties();
                 attributes.setETag(properties.getEtag());
                 attributes.setModificationDate(properties.getLastModified().getTime());
@@ -68,7 +72,7 @@ public class AzureAttributesFeature implements Attributes {
                         .getBlockBlobReference(containerService.getKey(file));
                 final BlobRequestOptions options = new BlobRequestOptions();
                 options.setRetryPolicyFactory(new RetryNoRetry());
-                blob.downloadAttributes(AccessCondition.generateEmptyCondition(), options, null);
+                blob.downloadAttributes(AccessCondition.generateEmptyCondition(), options, context);
                 final BlobProperties properties = blob.getProperties();
                 final PathAttributes attributes = new PathAttributes();
                 attributes.setSize(properties.getLength());

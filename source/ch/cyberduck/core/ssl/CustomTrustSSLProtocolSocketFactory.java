@@ -58,18 +58,21 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
     private static final List<String> ENABLED_SSL_PROTOCOLS
             = new ArrayList<String>();
 
-    private static SecureRandom RPNG;
+    private SecureRandom rpng;
 
-    static {
+    {
         final String random = PreferencesFactory.get().getProperty("connection.ssl.securerandom");
         try {
             // Obtains random numbers from the underlying native OS, without blocking to prevent
             // from excessive stalling. For example, /dev/urandom
-            RPNG = SecureRandom.getInstance(random);
+            rpng = SecureRandom.getInstance(random);
         }
         catch(NoSuchAlgorithmException e) {
             log.error(String.format("Failure %s obtaining secure random %s", e.getMessage(), random));
         }
+    }
+
+    static {
         for(String protocol : PreferencesFactory.get().getProperty("connection.ssl.protocols").split(",")) {
             ENABLED_SSL_PROTOCOLS.add(protocol.trim());
         }
@@ -77,28 +80,18 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
 
     /**
      * @param trust Verifying trusts in system settings
-     */
-    public CustomTrustSSLProtocolSocketFactory(final X509TrustManager trust) {
-        this(trust, null);
-    }
-
-    /**
-     * @param trust Verifiying trusts in system settings
      * @param key   Key manager for client certificate selection
      */
     public CustomTrustSSLProtocolSocketFactory(final X509TrustManager trust, final X509KeyManager key) {
         try {
             context = SSLContext.getInstance("TLS");
-            context.init(new KeyManager[]{key}, new TrustManager[]{trust}, RPNG);
+            context.init(new KeyManager[]{key}, new TrustManager[]{trust}, rpng);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Using SSL context with protocol %s", context.getProtocol()));
             }
             factory = context.getSocketFactory();
         }
-        catch(NoSuchAlgorithmException e) {
-            throw new FactoryException(e.getMessage(), e);
-        }
-        catch(KeyManagementException e) {
+        catch(NoSuchAlgorithmException | KeyManagementException e) {
             throw new FactoryException(e.getMessage(), e);
         }
     }

@@ -1,8 +1,8 @@
 package ch.cyberduck.core.udt;
 
 /*
- * Copyright (c) 2002-2014 David Kocher. All rights reserved.
- * http://cyberduck.io/
+ * Copyright (c) 2002-2015 David Kocher. All rights reserved.
+ * http://cyberduck.ch/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,8 +14,7 @@ package ch.cyberduck.core.udt;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * Bug fixes, suggestions and comments should be sent to:
- * feedback@cyberduck.io
+ * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
 import ch.cyberduck.core.ConnectionCallback;
@@ -26,16 +25,14 @@ import ch.cyberduck.core.transfer.TransferStatus;
 /**
  * @version $Id$
  */
-public interface UDTTransferOption {
+public class DisabledUDTTransferOption implements UDTTransferOption {
+    @Override
+    public boolean prompt(final Host bookmark, final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
+        return false;
+    }
 
-    /**
-     * @param bookmark Connection
-     * @param status   File transfer status
-     * @param prompt   Prompt
-     * @return True if the connection should be proxied
-     */
-    boolean prompt(Host bookmark, final TransferStatus status, ConnectionCallback prompt)
-            throws BackgroundException;
-
-    UDTProxyProvider provider();
+    @Override
+    public UDTProxyProvider provider() {
+        return null;
+    }
 }

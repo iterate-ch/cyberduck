@@ -11,6 +11,7 @@ import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.ssl.CertificateStoreX509TrustManager;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 import ch.cyberduck.core.threading.CancelCallback;
 
@@ -70,7 +71,7 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
                         return false;
                     }
                 }
-                )
+                ), new DefaultX509KeyManager()
         );
         final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(),
                 new DisabledProgressListener(), new DisabledTranscriptListener());

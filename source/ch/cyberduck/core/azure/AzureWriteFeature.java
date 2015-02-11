@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.microsoft.azure.storage.AccessCondition;
+import com.microsoft.azure.storage.OperationContext;
 import com.microsoft.azure.storage.RetryNoRetry;
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.BlobRequestOptions;
@@ -51,6 +52,8 @@ public class AzureWriteFeature implements Write {
 
     private AzureSession session;
 
+    private OperationContext context;
+
     private Find finder;
 
     private PathContainerService containerService
@@ -62,8 +65,9 @@ public class AzureWriteFeature implements Write {
     private Map<String, String> metadata
             = preferences.getMap("azure.metadata.default");
 
-    public AzureWriteFeature(final AzureSession session) {
+    public AzureWriteFeature(final AzureSession session, final OperationContext context) {
         this.session = session;
+        this.context = context;
         this.finder = new DefaultFindFeature(session);
     }
 
@@ -98,7 +102,7 @@ public class AzureWriteFeature implements Write {
             final BlobRequestOptions options = new BlobRequestOptions();
             options.setRetryPolicyFactory(new RetryNoRetry());
             options.setStoreBlobContentMD5(preferences.getBoolean("azure.upload.md5"));
-            return blob.openOutputStream(AccessCondition.generateEmptyCondition(), options, null);
+            return blob.openOutputStream(AccessCondition.generateEmptyCondition(), options, context);
         }
         catch(StorageException e) {
             throw new AzureExceptionMappingService().map("Upload {0} failed", e, file);

@@ -202,11 +202,16 @@ public class Terminal {
                             new ArrayList<TransferItem>(new SingleTransferItemFinder().find(input, action, remote)));
                     break;
                 case copy:
-                    final String target = input.getOptionValues(action.name())[1];
-                    transfer = new CopyTransfer(host, new UriParser(input).parse(target),
+                    final Host target = new UriParser(input).parse(input.getOptionValues(action.name())[1]);
+                    transfer = new CopyTransfer(host, target,
                             Collections.singletonMap(
-                                    remote, new PathParser(input).parse(target)
-                            )
+                                    remote, new PathParser(input).parse(input.getOptionValues(action.name())[1])
+                            ),
+                            new CertificateStoreX509TrustManager(
+                                    new DefaultTrustManagerHostnameCallback(target),
+                                    new TerminalCertificateStore(reader)
+                            ),
+                            new PreferencesX509KeyManager(new TerminalCertificateStore(reader))
                     );
                     break;
                 default:
@@ -293,7 +298,12 @@ public class Terminal {
                 new TerminalLoginService(input, new TerminalLoginCallback(reader)), session, cache,
                 transfer, new TransferOptions().reload(true), prompt, meter,
                 input.hasOption(TerminalOptionsBuilder.Params.quiet.name())
-                        ? new DisabledStreamListener() : new TerminalStreamListener(meter));
+                        ? new DisabledStreamListener() : new TerminalStreamListener(meter),
+                new CertificateStoreX509TrustManager(
+                        new DefaultTrustManagerHostnameCallback(session.getHost()),
+                        new TerminalCertificateStore(reader)
+                ),
+                new PreferencesX509KeyManager(new TerminalCertificateStore(reader)));
         this.execute(action);
         if(action.hasFailed()) {
             return Exit.failure;

@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.microsoft.azure.storage.AccessCondition;
+import com.microsoft.azure.storage.OperationContext;
 import com.microsoft.azure.storage.RetryNoRetry;
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.BlobProperties;
@@ -46,11 +47,14 @@ public class AzureMetadataFeature implements Headers {
 
     private AzureSession session;
 
+    private OperationContext context;
+
     private PathContainerService containerService
             = new AzurePathContainerService();
 
-    public AzureMetadataFeature(final AzureSession session) {
+    public AzureMetadataFeature(final AzureSession session, final OperationContext context) {
         this.session = session;
+        this.context = context;
     }
 
     @Override
@@ -65,7 +69,7 @@ public class AzureMetadataFeature implements Headers {
                 final CloudBlockBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
                         .getBlockBlobReference(containerService.getKey(file));
                 // Populates the blob properties and metadata
-                blob.downloadAttributes();
+                blob.downloadAttributes(null, null, context);
                 final Map<String, String> metadata = new HashMap<String, String>();
                 metadata.putAll(blob.getMetadata());
                 final BlobProperties properties = blob.getProperties();
@@ -94,7 +98,7 @@ public class AzureMetadataFeature implements Headers {
             if(containerService.isContainer(file)) {
                 final CloudBlobContainer container = session.getClient().getContainerReference(containerService.getContainer(file).getName());
                 container.setMetadata(new HashMap<String, String>(metadata));
-                container.uploadMetadata(AccessCondition.generateEmptyCondition(), options, null);
+                container.uploadMetadata(AccessCondition.generateEmptyCondition(), options, context);
             }
             else {
                 final CloudBlockBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
@@ -118,7 +122,7 @@ public class AzureMetadataFeature implements Headers {
                     pruned.put(m.getKey(), m.getValue());
                 }
                 blob.setMetadata(pruned);
-                blob.uploadMetadata(AccessCondition.generateEmptyCondition(), options, null);
+                blob.uploadMetadata(AccessCondition.generateEmptyCondition(), options, context);
                 blob.uploadProperties();
             }
         }

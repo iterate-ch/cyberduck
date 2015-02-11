@@ -1,14 +1,13 @@
-----------------------------------
-Building Cyberduck (Mac & Windows)
-----------------------------------
+-----------------------------------------
+Building Cyberduck (Mac, Windows & Linux)
+-----------------------------------------
 
 Prerequisites
 -------------
 
-- Java 1.5.0 SDK or later
+- Oracle Java 1.7.0 SDK or later
 - Apache Ant 1.7.1 or later
 	http://ant.apache.org/
-- Copy Ant libraries from <cyberduck-source>/lib/ext to ~/.ant/lib/*.jar
 
 Mac
 - Xcode 3.2 or later (xcodebuild) and the Mac OS X 10.5 SDK on Mac.
@@ -32,11 +31,11 @@ Compiling
 - Type 'ant' for executing the default 'build' target. Depending on the platform, build-mac.xml or build-windows.xml is included respectively for native compilation.
 - On Mac, to create an application with a bundled runtime, execute
 
-    ant -Dapp.runtime.properties.key=Runtime -Dbuild.xcodeoptions=SDKROOT=macosx
+    ant -Dbuild.xcodeoptions=SDKROOT=macosx
 
-  or to use the system installation of Java 6, build with
+- To build the CLI, execute
 
-    ant -Dapp.runtime.properties.key=Java -Dbuild.xcodeoptions=SDKROOT=macosx
+    ant cli
 
 Tagged Releases
 ---------------

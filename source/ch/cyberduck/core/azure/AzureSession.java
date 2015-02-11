@@ -48,8 +48,8 @@ import ch.cyberduck.core.http.DisabledX509HostnameVerifier;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
-import ch.cyberduck.core.ssl.KeychainX509KeyManager;
-import ch.cyberduck.core.ssl.KeychainX509TrustManager;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -62,12 +62,14 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.EnumSet;
 
-import com.microsoft.azure.storage.AuthenticationScheme;
 import com.microsoft.azure.storage.Credentials;
+import com.microsoft.azure.storage.OperationContext;
 import com.microsoft.azure.storage.ResultContinuation;
 import com.microsoft.azure.storage.ResultSegment;
 import com.microsoft.azure.storage.RetryNoRetry;
+import com.microsoft.azure.storage.SendingRequestEvent;
 import com.microsoft.azure.storage.StorageCredentialsAccountAndKey;
+import com.microsoft.azure.storage.StorageEvent;
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.BlobRequestOptions;
 import com.microsoft.azure.storage.blob.CloudBlobClient;
@@ -81,24 +83,16 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
 
     private StorageCredentialsAccountAndKey credentials;
 
-    private final static DisabledX509HostnameVerifier verifier
-            = new DisabledX509HostnameVerifier();
-
-    private final static X509TrustManager trust
-            = new KeychainX509TrustManager(verifier);
-
-    private final static X509KeyManager key
-            = new KeychainX509KeyManager();
-
     private Preferences preferences
             = PreferencesFactory.get();
 
-    public AzureSession(final Host h) {
-        super(h, trust, key);
-    }
+    private OperationContext context
+            = new OperationContext();
 
-    public AzureSession(final Host host, final X509TrustManager trust) {
-        super(host, trust);
+    private StorageEvent<SendingRequestEvent> listener;
+
+    public AzureSession(final Host h) {
+        super(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
     }
 
     public AzureSession(final Host h, final X509TrustManager trust, final X509KeyManager key) {
@@ -106,24 +100,30 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
     }
 
     static {
-        HttpsURLConnection.setDefaultHostnameVerifier(verifier);
         HttpsURLConnection.setFollowRedirects(true);
-        HttpsURLConnection.setDefaultSSLSocketFactory(new CustomTrustSSLProtocolSocketFactory(trust, key));
     }
 
     @Override
-    public CloudBlobClient connect(final HostKeyCallback key) throws BackgroundException {
+    public CloudBlobClient connect(final HostKeyCallback callback) throws BackgroundException {
         try {
             credentials = new StorageCredentialsAccountAndKey(host.getCredentials().getUsername(), StringUtils.EMPTY);
             // Client configured with no credentials
             final URI uri = new URI(String.format("%s://%s", Scheme.https, host.getHostname()));
-            verifier.setTarget(uri.getHost());
             final CloudBlobClient client = new CloudBlobClient(uri, credentials);
             client.setDirectoryDelimiter(String.valueOf(Path.DELIMITER));
-            client.setAuthenticationScheme(AuthenticationScheme.SHAREDKEYFULL);
             final BlobRequestOptions options = client.getDefaultRequestOptions();
             options.setTimeoutIntervalInMs(this.timeout());
             options.setRetryPolicyFactory(new RetryNoRetry());
+            context.getSendingRequestEventHandler().addListener(listener = new StorageEvent<SendingRequestEvent>() {
+                @Override
+                public void eventOccurred(final SendingRequestEvent event) {
+                    if(event.getConnectionObject() instanceof HttpsURLConnection) {
+                        final HttpsURLConnection connection = (HttpsURLConnection) event.getConnectionObject();
+                        connection.setSSLSocketFactory(new CustomTrustSSLProtocolSocketFactory(trust, key));
+                        connection.setHostnameVerifier(new DisabledX509HostnameVerifier());
+                    }
+                }
+            });
             return client;
         }
         catch(URISyntaxException e) {
@@ -139,6 +139,12 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
                 host.getCredentials().getUsername(), host.getCredentials().getPassword()));
         final Path home = new AzureHomeFinderService(this).find();
         cache.put(home, this.list(home, new DisabledListProgressListener()));
+    }
+
+    @Override
+    protected void disconnect() {
+        context.getSendingRequestEventHandler().removeListener(listener);
+        super.disconnect();
     }
 
     @Override
@@ -158,7 +164,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
                     options.setRetryPolicyFactory(new RetryNoRetry());
                     result = client.listContainersSegmented(null, ContainerListingDetails.NONE,
                             preferences.getInteger("azure.listing.chunksize"), token,
-                            options, null);
+                            options, context);
                     for(CloudBlobContainer container : result.getResults()) {
                         final PathAttributes attributes = new PathAttributes();
                         attributes.setETag(container.getProperties().getEtag());
@@ -174,7 +180,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
 
             }
             else {
-                return new AzureObjectListService(this).list(directory, listener);
+                return new AzureObjectListService(this, context).list(directory, listener);
             }
         }
         catch(StorageException e) {
@@ -185,43 +191,43 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
     @Override
     public <T> T getFeature(final Class<T> type) {
         if(type == Read.class) {
-            return (T) new AzureReadFeature(this);
+            return (T) new AzureReadFeature(this, context);
         }
         if(type == Write.class) {
-            return (T) new AzureWriteFeature(this);
+            return (T) new AzureWriteFeature(this, context);
         }
         if(type == Directory.class) {
-            return (T) new AzureDirectoryFeature(this);
+            return (T) new AzureDirectoryFeature(this, context);
         }
         if(type == Delete.class) {
-            return (T) new AzureDeleteFeature(this);
+            return (T) new AzureDeleteFeature(this, context);
         }
         if(type == Headers.class) {
-            return (T) new AzureMetadataFeature(this);
+            return (T) new AzureMetadataFeature(this, context);
         }
         if(type == Attributes.class) {
-            return (T) new AzureAttributesFeature(this);
+            return (T) new AzureAttributesFeature(this, context);
         }
         if(type == Logging.class) {
-            return (T) new AzureLoggingFeature(this);
+            return (T) new AzureLoggingFeature(this, context);
         }
         if(type == Home.class) {
             return (T) new AzureHomeFinderService(this);
         }
         if(type == Move.class) {
-            return (T) new AzureMoveFeature(this);
+            return (T) new AzureMoveFeature(this, context);
         }
         if(type == Copy.class) {
-            return (T) new AzureCopyFeature(this);
+            return (T) new AzureCopyFeature(this, context);
         }
         if(type == Touch.class) {
-            return (T) new AzureTouchFeature(this);
+            return (T) new AzureTouchFeature(this, context);
         }
         if(type == UrlProvider.class) {
             return (T) new AzureUrlProvider(this);
         }
         if(type == AclPermission.class) {
-            return (T) new AzureAclPermissionFeature(this);
+            return (T) new AzureAclPermissionFeature(this, context);
         }
         return super.getFeature(type);
     }

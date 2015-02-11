@@ -26,19 +26,18 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultDownloadFeature;
+import ch.cyberduck.core.ssl.X509KeyManager;
+import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.udt.DisabledUDTTransferOption;
 import ch.cyberduck.core.udt.UDTExceptionMappingService;
 import ch.cyberduck.core.udt.UDTProxy;
-import ch.cyberduck.core.udt.UDTProxyProvider;
 import ch.cyberduck.core.udt.UDTTransferOption;
-import ch.cyberduck.core.udt.qloudsonic.QloudsonicProxyProvider;
-import ch.cyberduck.core.udt.qloudsonic.QloudsonicTransferOption;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
@@ -59,30 +58,29 @@ public class S3ThresholdDownloadService extends DefaultDownloadFeature {
 
     private Long udtThreshold = preferences.getLong("s3.download.udt.threshold");
 
-    private UDTTransferOption udtTransferOption;
+    private UDTTransferOption udtTransferOption
+            = new DisabledUDTTransferOption();
 
-    private UDTProxyProvider udtProxyProvider;
+    private X509TrustManager trust;
 
-    public S3ThresholdDownloadService(final S3Session session) {
+    private X509KeyManager key;
+
+    public S3ThresholdDownloadService(final S3Session session, final X509TrustManager trust, final X509KeyManager key) {
         super(new S3ReadFeature(session));
         this.session = session;
-        this.udtTransferOption = new QloudsonicTransferOption();
-        this.udtProxyProvider = new QloudsonicProxyProvider();
+        this.trust = trust;
+        this.key = key;
     }
 
-    public S3ThresholdDownloadService(final S3Session session, final UDTTransferOption udtTransferOption) {
+    public S3ThresholdDownloadService(final S3Session session,
+                                      final X509TrustManager trust,
+                                      final X509KeyManager key,
+                                      final UDTTransferOption udtTransferOption) {
         super(new S3ReadFeature(session));
         this.session = session;
+        this.trust = trust;
+        this.key = key;
         this.udtTransferOption = udtTransferOption;
-        this.udtProxyProvider = new QloudsonicProxyProvider();
-    }
-
-    public S3ThresholdDownloadService(final Read reader, final S3Session session,
-                                      final UDTTransferOption udtTransferOption, final UDTProxyProvider udtProxyProvider) {
-        super(new S3ReadFeature(session));
-        this.session = session;
-        this.udtTransferOption = udtTransferOption;
-        this.udtProxyProvider = udtProxyProvider;
     }
 
     @Override
@@ -98,8 +96,8 @@ public class S3ThresholdDownloadService extends DefaultDownloadFeature {
                     if(Location.unknown.equals(location)) {
                         throw new AccessDeniedException("Cannot read bucket location");
                     }
-                    final S3Session proxy = new UDTProxy<S3Session>(location, udtProxyProvider)
-                            .proxy(new S3Session(session.getHost()), session);
+                    final S3Session proxy = new UDTProxy<S3Session>(location, udtTransferOption.provider(), trust, key)
+                            .proxy(new S3Session(session.getHost(), trust, key), session);
                     proxy.open(new DisabledHostKeyCallback(), session);
                     // Swap credentials. No login required
                     proxy.getClient().setProviderCredentials(session.getClient().getProviderCredentials());

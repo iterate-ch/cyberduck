@@ -58,6 +58,9 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.serializer.HostDictionary;
 import ch.cyberduck.core.sftp.SFTPSession;
+import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
+import ch.cyberduck.core.ssl.KeychainX509KeyManager;
+import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
@@ -3347,7 +3350,9 @@ public class BrowserController extends WindowController
      * @return A session object bound to this browser controller
      */
     private Session init(final Host host) {
-        session = SessionFactory.create(host);
+        session = SessionFactory.create(host,
+                new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(host)),
+                new KeychainX509KeyManager());
         transcript.clear();
         navigation.clear();
         pasteboard = PathPasteboardFactory.getPasteboard(session);

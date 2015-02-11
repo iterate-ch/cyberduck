@@ -33,13 +33,13 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.ssl.X509KeyManager;
+import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.udt.DisabledUDTTransferOption;
 import ch.cyberduck.core.udt.UDTExceptionMappingService;
 import ch.cyberduck.core.udt.UDTProxy;
-import ch.cyberduck.core.udt.UDTProxyProvider;
 import ch.cyberduck.core.udt.UDTTransferOption;
-import ch.cyberduck.core.udt.qloudsonic.QloudsonicProxyProvider;
-import ch.cyberduck.core.udt.qloudsonic.QloudsonicTransferOption;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
@@ -65,33 +65,33 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
     private Long udtThreshold
             = preferences.getLong("s3.upload.udt.threshold");
 
-    private UDTProxyProvider udtProxyProvider;
+    private UDTTransferOption udtTransferOption
+            = new DisabledUDTTransferOption();
 
-    private UDTTransferOption udtTransferOption;
+    private X509TrustManager trust;
 
-    public S3ThresholdUploadService(final S3Session session) {
+    private X509KeyManager key;
+
+    public S3ThresholdUploadService(final S3Session session, final X509TrustManager trust, final X509KeyManager key) {
         this.session = session;
-        this.udtTransferOption = new QloudsonicTransferOption();
-        this.udtProxyProvider = new QloudsonicProxyProvider();
+        this.trust = trust;
+        this.key = key;
     }
 
-    public S3ThresholdUploadService(final S3Session session, final Long multipartThreshold) {
+    public S3ThresholdUploadService(final S3Session session, final X509TrustManager trust, final X509KeyManager key,
+                                    final Long multipartThreshold) {
         this.session = session;
+        this.trust = trust;
+        this.key = key;
         this.multipartThreshold = multipartThreshold;
-        this.udtTransferOption = new QloudsonicTransferOption();
-        this.udtProxyProvider = new QloudsonicProxyProvider();
     }
 
-    public S3ThresholdUploadService(final S3Session session, final UDTTransferOption udtTransferOption) {
+    public S3ThresholdUploadService(final S3Session session, final X509TrustManager trust, final X509KeyManager key,
+                                    final UDTTransferOption udtTransferOption) {
         this.session = session;
+        this.trust = trust;
+        this.key = key;
         this.udtTransferOption = udtTransferOption;
-        this.udtProxyProvider = new QloudsonicProxyProvider();
-    }
-
-    public S3ThresholdUploadService(final S3Session session, final UDTTransferOption udtTransferOption, final UDTProxyProvider udtProxyProvider) {
-        this.session = session;
-        this.udtTransferOption = udtTransferOption;
-        this.udtProxyProvider = udtProxyProvider;
     }
 
     @Override
@@ -107,8 +107,8 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
                     if(Location.unknown.equals(location)) {
                         throw new AccessDeniedException("Cannot read bucket location");
                     }
-                    final S3Session proxy = new UDTProxy<S3Session>(location, udtProxyProvider)
-                            .proxy(new S3Session(session.getHost()), session);
+                    final S3Session proxy = new UDTProxy<S3Session>(location, udtTransferOption.provider(), trust, key)
+                            .proxy(new S3Session(session.getHost(), trust, key), session);
                     final S3Session.RequestEntityRestStorageService client = proxy.open(new DisabledHostKeyCallback(), session);
                     // Swap credentials. No login required
                     client.setProviderCredentials(session.getClient().getProviderCredentials());

@@ -48,10 +48,7 @@ public final class DefaultX509TrustManager implements X509TrustManager {
             }
             this.standardTrustManager = (X509TrustManager) trustmanagers[0];
         }
-        catch(NoSuchAlgorithmException e) {
-            throw new IOException(e);
-        }
-        catch(KeyStoreException e) {
+        catch(NoSuchAlgorithmException | KeyStoreException e) {
             throw new IOException(e);
         }
         return this;

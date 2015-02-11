@@ -23,6 +23,7 @@ using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.io;
+using ch.cyberduck.core.ssl;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.threading;
@@ -657,7 +658,9 @@ namespace Ch.Cyberduck.Ui.Controller
             public TransferBackgroundAction(TransferController controller, Transfer transfer, TransferOptions options,
                 TransferCallback callback)
                 : base(
-                    controller, SessionFactory.create(transfer.getHost()), controller.GetController(transfer),
+                    controller, SessionFactory.create(transfer.getHost(),
+                                    new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(transfer.getHost())),
+                                    new KeychainX509KeyManager()), controller.GetController(transfer),
                     controller.GetController(transfer), controller.GetController(transfer), transfer, options)
             {
                 _transfer = transfer;

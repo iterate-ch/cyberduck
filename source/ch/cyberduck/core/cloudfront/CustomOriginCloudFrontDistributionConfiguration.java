@@ -28,6 +28,11 @@ import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.s3.S3Session;
+import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
+import ch.cyberduck.core.ssl.KeychainX509KeyManager;
+import ch.cyberduck.core.ssl.KeychainX509TrustManager;
+import ch.cyberduck.core.ssl.X509KeyManager;
+import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.apache.log4j.Logger;
 
@@ -46,9 +51,23 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
 
     private TranscriptListener transcript;
 
-    public CustomOriginCloudFrontDistributionConfiguration(final Host origin, final TranscriptListener transcript) {
+    public CustomOriginCloudFrontDistributionConfiguration(final Host origin,
+                                                           final TranscriptListener transcript) {
+        this(origin,
+                new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(
+                        new Host(ProtocolFactory.S3_SSL, ProtocolFactory.S3_SSL.getDefaultHostname()))
+                ),
+                new KeychainX509KeyManager(),
+                transcript);
+    }
+
+    public CustomOriginCloudFrontDistributionConfiguration(final Host origin,
+                                                           final X509TrustManager trust,
+                                                           final X509KeyManager key,
+                                                           final TranscriptListener transcript) {
         // Configure with the same host as S3 to get the same credentials from the keychain.
-        super(new S3Session(new Host(ProtocolFactory.S3_SSL, ProtocolFactory.S3_SSL.getDefaultHostname(), origin.getCdnCredentials())));
+        super(new S3Session(new Host(ProtocolFactory.S3_SSL,
+                ProtocolFactory.S3_SSL.getDefaultHostname(), origin.getCdnCredentials()), trust, key));
         this.origin = origin;
         this.transcript = transcript;
     }

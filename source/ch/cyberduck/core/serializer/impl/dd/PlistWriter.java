@@ -27,6 +27,7 @@ import ch.cyberduck.core.serializer.Writer;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Collection;
 
 import com.dd.plist.NSArray;
@@ -47,7 +48,7 @@ public class PlistWriter<S extends Serializable> implements Writer<S> {
         }
         final String content = list.toXMLPropertyList();
         try {
-            IOUtils.write(content, file.getOutputStream(false));
+            IOUtils.write(content, file.getOutputStream(false), Charset.forName("UTF-8"));
         }
         catch(IOException e) {
             throw new AccessDeniedException(String.format("Cannot create file %s", file.getAbsolute()), e);
@@ -58,7 +59,7 @@ public class PlistWriter<S extends Serializable> implements Writer<S> {
     public void write(final S item, final Local file) throws AccessDeniedException {
         final String content = item.<NSDictionary>serialize(SerializerFactory.get()).toXMLPropertyList();
         try {
-            IOUtils.write(content, file.getOutputStream(false));
+            IOUtils.write(content, file.getOutputStream(false), Charset.forName("UTF-8"));
         }
         catch(IOException e) {
             throw new AccessDeniedException(String.format("Cannot create file %s", file.getAbsolute()), e);

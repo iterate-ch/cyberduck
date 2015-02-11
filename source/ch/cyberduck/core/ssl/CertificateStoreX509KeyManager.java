@@ -64,7 +64,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
         this.store = store;
     }
 
-    public CertificateStoreX509KeyManager init() throws IOException {
+    public CertificateStoreX509KeyManager init() {
         String type = null;
         try {
             if(null == store) {
@@ -89,7 +89,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
             store.load(null, null);
         }
         catch(Exception e) {
-            try{
+            try {
                 log.error(String.format("Could not load default store of type %s", type), e);
                 if(log.isInfoEnabled()) {
                     log.info("Load default store of default type");
@@ -97,17 +97,8 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
                 store = KeyStore.getInstance(KeyStore.getDefaultType());
                 store.load(null, null);
             }
-            catch(NoSuchAlgorithmException ex) {
-                throw new IOException(e);
-            }
-            catch(KeyStoreException ex) {
-                throw new IOException(e);
-            }
-            catch(IOException ex) {
-                throw new IOException(e);
-            }
-            catch(CertificateException ex) {
-                throw new IOException(e);
+            catch(NoSuchAlgorithmException | KeyStoreException | CertificateException | IOException ex) {
+                log.error(String.format("Initialization of key store failed %s", e.getMessage()));
             }
         }
         return this;
@@ -218,8 +209,8 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
                 final String hostname = socket.getInetAddress().getHostName();
                 selected = callback.choose(keyTypes,
                         issuers, hostname, MessageFormat.format(LocaleFactory.localizedString(
-                        "The server requires a certificate to validate your identity. Select the certificate to authenticate yourself to {0}."),
-                        hostname));
+                                        "The server requires a certificate to validate your identity. Select the certificate to authenticate yourself to {0}."),
+                                hostname));
             }
             catch(ConnectionCanceledException e) {
                 if(log.isInfoEnabled()) {
@@ -309,14 +300,8 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
                 log.warn(String.format("Alias %s is not a key entry", alias));
             }
         }
-        catch(KeyStoreException e) {
+        catch(KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException e) {
             log.error(String.format("Keystore not loaded %s", e.getMessage()));
-        }
-        catch(NoSuchAlgorithmException e) {
-            log.error(e.getMessage());
-        }
-        catch(UnrecoverableKeyException e) {
-            log.error(e.getMessage());
         }
         log.warn(String.format("No private key for alias %s", alias));
         // Return null if the alias can't be found
