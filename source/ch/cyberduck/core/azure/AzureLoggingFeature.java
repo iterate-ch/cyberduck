@@ -27,6 +27,7 @@ import java.util.EnumSet;
 
 import com.microsoft.azure.storage.LoggingOperations;
 import com.microsoft.azure.storage.LoggingProperties;
+import com.microsoft.azure.storage.OperationContext;
 import com.microsoft.azure.storage.ServiceProperties;
 import com.microsoft.azure.storage.StorageException;
 
@@ -37,14 +38,17 @@ public class AzureLoggingFeature implements Logging {
 
     private AzureSession session;
 
-    public AzureLoggingFeature(final AzureSession session) {
+    private OperationContext context;
+
+    public AzureLoggingFeature(final AzureSession session, final OperationContext context) {
         this.session = session;
+        this.context = context;
     }
 
     @Override
     public LoggingConfiguration getConfiguration(final Path container) throws BackgroundException {
         try {
-            final ServiceProperties properties = session.getClient().downloadServiceProperties();
+            final ServiceProperties properties = session.getClient().downloadServiceProperties(null, context);
             return new LoggingConfiguration(!properties.getLogging().getLogOperationTypes().isEmpty());
         }
         catch(StorageException e) {
@@ -55,7 +59,7 @@ public class AzureLoggingFeature implements Logging {
     @Override
     public void setConfiguration(final Path container, final LoggingConfiguration configuration) throws BackgroundException {
         try {
-            final ServiceProperties properties = session.getClient().downloadServiceProperties();
+            final ServiceProperties properties = session.getClient().downloadServiceProperties(null, context);
             final LoggingProperties l = new LoggingProperties();
             if(configuration.isEnabled()) {
                 l.setLogOperationTypes(EnumSet.of(LoggingOperations.DELETE, LoggingOperations.READ, LoggingOperations.WRITE));
@@ -64,7 +68,7 @@ public class AzureLoggingFeature implements Logging {
                 l.setLogOperationTypes(EnumSet.noneOf(LoggingOperations.class));
             }
             properties.setLogging(l);
-            session.getClient().uploadServiceProperties(properties);
+            session.getClient().uploadServiceProperties(properties, null, context);
         }
         catch(StorageException e) {
             throw new AzureExceptionMappingService().map("Failure to write attributes of {0}", e, container);

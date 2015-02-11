@@ -30,6 +30,7 @@ import org.apache.log4j.Logger;
 import java.net.URISyntaxException;
 
 import com.microsoft.azure.storage.AccessCondition;
+import com.microsoft.azure.storage.OperationContext;
 import com.microsoft.azure.storage.RetryNoRetry;
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.BlobRequestOptions;
@@ -43,11 +44,14 @@ public class AzureCopyFeature implements Copy {
 
     private AzureSession session;
 
+    private OperationContext context;
+
     private PathContainerService containerService
             = new AzurePathContainerService();
 
-    public AzureCopyFeature(final AzureSession session) {
+    public AzureCopyFeature(final AzureSession session, final OperationContext context) {
         this.session = session;
+        this.context = context;
     }
 
     @Override
@@ -61,7 +65,7 @@ public class AzureCopyFeature implements Copy {
             options.setRetryPolicyFactory(new RetryNoRetry());
             options.setStoreBlobContentMD5(PreferencesFactory.get().getBoolean("azure.upload.md5"));
             final String id = target.startCopyFromBlob(blob,
-                    AccessCondition.generateEmptyCondition(), AccessCondition.generateEmptyCondition(), options, null);
+                    AccessCondition.generateEmptyCondition(), AccessCondition.generateEmptyCondition(), options, context);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Started copy for %s with copy operation ID %s", copy, id));
             }

@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.microsoft.azure.storage.OperationContext;
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.BlobContainerPermissions;
 import com.microsoft.azure.storage.blob.BlobContainerPublicAccessType;
@@ -57,11 +58,14 @@ public class AzureAclPermissionFeature implements AclPermission {
 
     private AzureSession session;
 
+    private OperationContext context;
+
     private PathContainerService containerService
             = new AzurePathContainerService();
 
-    public AzureAclPermissionFeature(final AzureSession session) {
+    public AzureAclPermissionFeature(final AzureSession session, final OperationContext context) {
         this.session = session;
+        this.context = context;
     }
 
     @Override
@@ -82,7 +86,7 @@ public class AzureAclPermissionFeature implements AclPermission {
         try {
             final CloudBlobContainer container = session.getClient()
                     .getContainerReference(containerService.getContainer(file).getName());
-            final BlobContainerPermissions permissions = container.downloadPermissions();
+            final BlobContainerPermissions permissions = container.downloadPermissions(null, null, context);
             final Acl acl = new Acl();
             if(permissions.getPublicAccess().equals(BlobContainerPublicAccessType.BLOB)
                     || permissions.getPublicAccess().equals(BlobContainerPublicAccessType.CONTAINER)) {
@@ -103,7 +107,7 @@ public class AzureAclPermissionFeature implements AclPermission {
         try {
             final CloudBlobContainer container = session.getClient()
                     .getContainerReference(containerService.getContainer(file).getName());
-            final BlobContainerPermissions permissions = container.downloadPermissions();
+            final BlobContainerPermissions permissions = container.downloadPermissions(null, null, context);
             for(Acl.UserAndRole userAndRole : acl.asList()) {
                 if(userAndRole.getUser() instanceof Acl.GroupUser) {
                     if(userAndRole.getUser().getIdentifier().equals(Acl.GroupUser.EVERYONE)) {
@@ -111,7 +115,7 @@ public class AzureAclPermissionFeature implements AclPermission {
                     }
                 }
             }
-            container.uploadPermissions(permissions);
+            container.uploadPermissions(permissions, null, null, context);
         }
         catch(URISyntaxException e) {
             throw new NotfoundException(e.getMessage(), e);

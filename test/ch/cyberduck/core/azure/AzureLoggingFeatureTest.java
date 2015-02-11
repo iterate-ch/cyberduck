@@ -34,7 +34,7 @@ public class AzureLoggingFeatureTest extends AbstractTestCase {
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
         final Path container = new Path("/cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        final AzureLoggingFeature feature = new AzureLoggingFeature(session);
+        final AzureLoggingFeature feature = new AzureLoggingFeature(session, null);
         feature.setConfiguration(container, new LoggingConfiguration(false));
         assertFalse(feature.getConfiguration(container).isEnabled());
         feature.setConfiguration(container, new LoggingConfiguration(true));

@@ -36,14 +36,14 @@ public class AzureMetadataFeatureTest extends AbstractTestCase {
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
-        new AzureTouchFeature(session).touch(test);
+        new AzureTouchFeature(session, null).touch(test);
         final String v = UUID.randomUUID().toString();
-        new AzureMetadataFeature(session).setMetadata(test, Collections.<String, String>singletonMap("Test", v));
-        final Map<String, String> metadata = new AzureMetadataFeature(session).getMetadata(test);
+        new AzureMetadataFeature(session, null).setMetadata(test, Collections.<String, String>singletonMap("Test", v));
+        final Map<String, String> metadata = new AzureMetadataFeature(session, null).getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("Test"));
         assertEquals(v, metadata.get("Test"));
-        new AzureDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        new AzureDeleteFeature(session, null).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }
 
@@ -57,8 +57,8 @@ public class AzureMetadataFeatureTest extends AbstractTestCase {
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
-        new AzureTouchFeature(session).touch(test);
-        final AzureMetadataFeature service = new AzureMetadataFeature(session);
+        new AzureTouchFeature(session, null).touch(test);
+        final AzureMetadataFeature service = new AzureMetadataFeature(session, null);
         service.setMetadata(test, Collections.<String, String>singletonMap("Cache-Control",
                 "public, max-age=0"));
         final Map<String, String> metadata = service.getMetadata(test);
@@ -68,7 +68,7 @@ public class AzureMetadataFeatureTest extends AbstractTestCase {
         // Make sure content type is not deleted
         assertTrue(metadata.containsKey("Content-Type"));
         assertEquals("application/octet-stream", metadata.get("Content-Type"));
-        new AzureDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        new AzureDeleteFeature(session, null).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }
 }

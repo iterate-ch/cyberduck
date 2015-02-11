@@ -34,7 +34,7 @@ public class AzureObjectListServiceTest extends AbstractTestCase {
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume));
-        final AttributedList<Path> list = new AzureObjectListService(session).list(container, new DisabledListProgressListener());
+        final AttributedList<Path> list = new AzureObjectListService(session, null).list(container, new DisabledListProgressListener());
         assertNotNull(list);
     }
 }

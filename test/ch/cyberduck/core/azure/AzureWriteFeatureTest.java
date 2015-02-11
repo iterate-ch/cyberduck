@@ -47,26 +47,26 @@ public class AzureWriteFeatureTest extends AbstractTestCase {
         status.setLength(content.length);
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
-        final OutputStream out = new AzureWriteFeature(session).write(test, status);
+        final OutputStream out = new AzureWriteFeature(session, null).write(test, status);
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         IOUtils.closeQuietly(out);
-        assertTrue(new AzureFindFeature(session).find(test));
+        assertTrue(new AzureFindFeature(session, null).find(test));
         final PathAttributes attributes = session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
         assertEquals(content.length, attributes.getSize());
-        assertEquals(0L, new AzureWriteFeature(session).append(test, status.getLength(), PathCache.empty()).size, 0L);
+        assertEquals(0L, new AzureWriteFeature(session, null).append(test, status.getLength(), PathCache.empty()).size, 0L);
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new AzureReadFeature(session).read(test, new TransferStatus());
+        final InputStream in = new AzureReadFeature(session, null).read(test, new TransferStatus());
         IOUtils.readFully(in, buffer);
         IOUtils.closeQuietly(in);
         assertArrayEquals(content, buffer);
-        final OutputStream overwrite = new AzureWriteFeature(session).write(test, new TransferStatus()
+        final OutputStream overwrite = new AzureWriteFeature(session, null).write(test, new TransferStatus()
                 .length("overwrite".getBytes("UTF-8").length));
         new StreamCopier(new TransferStatus(), new TransferStatus())
                 .transfer(new ByteArrayInputStream("overwrite".getBytes("UTF-8")), overwrite);
         IOUtils.closeQuietly(overwrite);
-        assertEquals("overwrite".getBytes("UTF-8").length, new AzureAttributesFeature(session).find(test).getSize());
-        new AzureDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        assertEquals("overwrite".getBytes("UTF-8").length, new AzureAttributesFeature(session, null).find(test).getSize());
+        new AzureDeleteFeature(session, null).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }
 }

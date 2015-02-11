@@ -28,6 +28,8 @@ import ch.cyberduck.core.features.Move;
 
 import java.util.Collections;
 
+import com.microsoft.azure.storage.OperationContext;
+
 /**
  * @version $Id$
  */
@@ -35,11 +37,14 @@ public class AzureMoveFeature implements Move {
 
     private AzureSession session;
 
+    private OperationContext context;
+
     private PathContainerService containerService
             = new AzurePathContainerService();
 
-    public AzureMoveFeature(final AzureSession session) {
+    public AzureMoveFeature(final AzureSession session, final OperationContext context) {
         this.session = session;
+        this.context = context;
     }
 
     @Override
@@ -50,8 +55,8 @@ public class AzureMoveFeature implements Move {
     @Override
     public void move(final Path file, final Path renamed, final boolean exists, final ProgressListener listener) throws BackgroundException {
         if(file.isFile()) {
-            new AzureCopyFeature(session).copy(file, renamed);
-            new AzureDeleteFeature(session).delete(Collections.singletonList(file),
+            new AzureCopyFeature(session, context).copy(file, renamed);
+            new AzureDeleteFeature(session, context).delete(Collections.singletonList(file),
                     new DisabledLoginCallback(), listener);
         }
         else if(file.isDirectory()) {
