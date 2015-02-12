@@ -823,6 +823,8 @@ public abstract class Preferences {
         defaults.put(String.format("connection.protocol.%s.enable", ProtocolFactory.S3_SSL.getIdentifier()), String.valueOf(true));
         defaults.put(String.format("connection.protocol.%s.enable", ProtocolFactory.GOOGLESTORAGE_SSL.getIdentifier()), String.valueOf(true));
         defaults.put(String.format("connection.protocol.%s.enable", ProtocolFactory.AZURE.getIdentifier()), String.valueOf(true));
+        defaults.put(String.format("connection.protocol.%s.enable", ProtocolFactory.IRODS.getIdentifier()), String.valueOf(true));
+        defaults.put(String.format("connection.protocol.%s.enable", ProtocolFactory.IRODS_SSL.getIdentifier()), String.valueOf(true));
 
         /**
          * Socket timeout

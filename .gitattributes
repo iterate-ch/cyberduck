@@ -2584,6 +2584,8 @@ source/ch/cyberduck/core/editor/SystemWatchEditorFactory.cs -text
 source/ch/cyberduck/core/i18n/DictionaryLocale.cs -text
 source/ch/cyberduck/core/importer/CDTransmitImporter.h -text
 source/ch/cyberduck/core/importer/CDTransmitImporter.m -text
+source/ch/cyberduck/core/irods/IRODSProtocol.java -text
+source/ch/cyberduck/core/irods/IRODSSSLProtocol.java -text
 source/ch/cyberduck/core/local/DefaultBrowserLauncher.cs -text
 source/ch/cyberduck/core/local/ExplorerRevealService.cs -text
 source/ch/cyberduck/core/local/RecycleLocalTrashFeature.cs -text

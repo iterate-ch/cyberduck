@@ -86,7 +86,8 @@ public interface Protocol {
                 }
                 return false;
             }
-        };
+        },
+        irods;
 
         /**
          * Check login credentials for validity for this protocol.
