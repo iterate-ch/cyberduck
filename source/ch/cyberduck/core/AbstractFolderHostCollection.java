@@ -91,20 +91,25 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
     }
 
     protected void save(final Host bookmark) {
-        this.lock();
-        try {
-            folder.mkdir();
-            final Local f = this.getFile(bookmark);
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Save bookmark %s", f));
+        if(this.isLocked()) {
+            log.debug(String.format("Skip saving bookmark %s while loading", bookmark));
+        }
+        else {
+            this.lock();
+            try {
+                folder.mkdir();
+                final Local f = this.getFile(bookmark);
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Save bookmark %s", f));
+                }
+                writer.write(bookmark, f);
             }
-            writer.write(bookmark, f);
-        }
-        catch(AccessDeniedException e) {
-            log.warn(String.format("Failure saving item in collection %s", e.getMessage()));
-        }
-        finally {
-            this.unlock();
+            catch(AccessDeniedException e) {
+                log.warn(String.format("Failure saving item in collection %s", e.getMessage()));
+            }
+            finally {
+                this.unlock();
+            }
         }
     }
 
