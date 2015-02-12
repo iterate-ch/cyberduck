@@ -105,7 +105,7 @@ public class UDTProxyTest extends AbstractTestCase {
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
         ));
         final UDTProxy<S3Session> proxy = new UDTProxy<S3Session>(new S3LocationFeature.S3Region("ap-northeast-1"),
-                new QloudsonicProxyProvider());
+                new LocalhostProxyProvider());
         final Session session = proxy.proxy(new S3Session(host), new DisabledTranscriptListener());
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
     }
@@ -176,13 +176,29 @@ public class UDTProxyTest extends AbstractTestCase {
                 UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Upload upload = new S3SingleUploadService(session);
         try {
-        upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledStreamListener(), status, new DisabledConnectionCallback());
-    }
+            upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+                    new DisabledStreamListener(), status, new DisabledConnectionCallback());
+        }
         catch(QuotaException e) {
             assertEquals("Voucher -u9zTIKCXHTWPO9WA4fBsIaQ5SjEH5von not found. Please contact your web hosting service provider for assistance.", e.getDetail());
             throw e;
         }
+    }
+
+    @Test
+    public void testUnsecureConnection() throws Exception {
+        final Profile profile = ProfileReaderFactory.get().read(
+                new Local("profiles/S3 (HTTP).cyberduckprofile"));
+        final Host host = new Host(profile, "s3.amazonaws.com", new Credentials(
+                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+        ));
+        final UDTProxy<S3Session> proxy = new UDTProxy<S3Session>(new S3LocationFeature.S3Region("ap-northeast-1"),
+                new LocalhostProxyProvider());
+        final Session session = proxy.proxy(new S3Session(host), new DisabledTranscriptListener());
+        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(),
+                PathCache.empty());
+        session.close();
     }
 
     @Test
@@ -191,7 +207,7 @@ public class UDTProxyTest extends AbstractTestCase {
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
         ));
         final UDTProxy<S3Session> proxy = new UDTProxy<S3Session>(new S3LocationFeature.S3Region("ap-northeast-1"),
-                new QloudsonicProxyProvider(new QloudsonicTestVoucherFinder()));
+                new LocalhostProxyProvider());
         final S3Session proxied = new S3Session(host);
         proxy.proxy(proxied, new DisabledTranscriptListener());
         assertNotNull(proxied.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
@@ -245,7 +261,7 @@ public class UDTProxyTest extends AbstractTestCase {
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
         ));
         final UDTProxy<S3Session> proxy = new UDTProxy<S3Session>(new S3LocationFeature.S3Region("ap-northeast-1"),
-                new QloudsonicProxyProvider(new QloudsonicTestVoucherFinder()));
+                new LocalhostProxyProvider());
         final S3Session session = new S3Session(host);
         proxy.proxy(session, new DisabledTranscriptListener());
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
