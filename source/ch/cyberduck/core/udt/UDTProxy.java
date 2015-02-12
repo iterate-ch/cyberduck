@@ -34,6 +34,7 @@ import ch.cyberduck.core.preferences.TemporaryApplicationResourcesFinder;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
+import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -151,8 +152,8 @@ public class UDTProxy<Client extends HttpSession> implements TrustManagerHostnam
                 new DisabledX509HostnameVerifier() {
                     @Override
                     public boolean verify(final String host, final javax.net.ssl.SSLSession sslSession) {
-                        if(trust instanceof HttpSession.HostnameAwareTrustManager) {
-                            ((HttpSession.HostnameAwareTrustManager) trust).setTarget(host);
+                        if(trust instanceof ThreadLocalHostnameDelegatingTrustManager) {
+                            ((ThreadLocalHostnameDelegatingTrustManager) trust).setTarget(host);
                         }
                         return true;
                     }
@@ -173,8 +174,8 @@ public class UDTProxy<Client extends HttpSession> implements TrustManagerHostnam
                                         final InetSocketAddress remoteAddress,
                                         final InetSocketAddress localAddress,
                                         final HttpContext context) throws IOException {
-                if(trust instanceof HttpSession.HostnameAwareTrustManager) {
-                    ((HttpSession.HostnameAwareTrustManager) trust).setTarget(remoteAddress.getHostName());
+                if(trust instanceof ThreadLocalHostnameDelegatingTrustManager) {
+                    ((ThreadLocalHostnameDelegatingTrustManager) trust).setTarget(remoteAddress.getHostName());
                 }
                 return super.connectSocket(connectTimeout, socket, host, remoteAddress, localAddress, context);
             }
@@ -198,8 +199,8 @@ public class UDTProxy<Client extends HttpSession> implements TrustManagerHostnam
                                         final InetSocketAddress remoteAddress,
                                         final InetSocketAddress localAddress,
                                         final HttpContext context) throws IOException {
-                if(trust instanceof HttpSession.HostnameAwareTrustManager) {
-                    ((HttpSession.HostnameAwareTrustManager) trust).setTarget(remoteAddress.getHostName());
+                if(trust instanceof ThreadLocalHostnameDelegatingTrustManager) {
+                    ((ThreadLocalHostnameDelegatingTrustManager) trust).setTarget(remoteAddress.getHostName());
                 }
                 return super.connectSocket(connectTimeout, socket, host, remoteAddress, localAddress, context);
             }

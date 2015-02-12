@@ -32,6 +32,7 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.SSLSession;
+import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -64,8 +65,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.Charset;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 
 /**
  * @version $Id$
@@ -79,7 +78,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
     private HttpClientBuilder builder;
 
     protected HttpSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
-        super(host, new HostnameAwareTrustManager(trust, host.getHostname()), key);
+        super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
 
     public HttpClientBuilder builder(final TranscriptListener transcript) {
@@ -180,8 +179,8 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                                                 final InetSocketAddress remoteAddress,
                                                 final InetSocketAddress localAddress,
                                                 final HttpContext context) throws IOException {
-                        if(trust instanceof HostnameAwareTrustManager) {
-                            ((HostnameAwareTrustManager) trust).setTarget(remoteAddress.getHostName());
+                        if(trust instanceof ThreadLocalHostnameDelegatingTrustManager) {
+                            ((ThreadLocalHostnameDelegatingTrustManager) trust).setTarget(remoteAddress.getHostName());
                         }
                         return super.connectSocket(connectTimeout, socket, host, remoteAddress, localAddress, context);
                     }
@@ -205,54 +204,5 @@ public abstract class HttpSession<C> extends SSLSession<C> {
             return (T) new HttpUploadFeature((AbstractHttpWriteFeature<?>) this.getFeature(Write.class));
         }
         return super.getFeature(type);
-    }
-
-    public static final class HostnameAwareTrustManager implements X509TrustManager, TrustManagerHostnameCallback {
-        /**
-         * Target hostname of current request stored as thread local
-         */
-        private ThreadLocal<String> target
-                = new ThreadLocal<String>();
-
-        private X509TrustManager delegate;
-
-        public HostnameAwareTrustManager(final X509TrustManager delegate, final String hostname) {
-            this.delegate = delegate;
-            this.target.set(hostname);
-        }
-
-        @Override
-        public X509TrustManager init() {
-            return this;
-        }
-
-        @Override
-        public void verify(final String hostname, final X509Certificate[] certs) throws CertificateException {
-            delegate.verify(hostname, certs);
-        }
-
-        @Override
-        public void checkClientTrusted(final X509Certificate[] certs, final String s) throws CertificateException {
-            delegate.verify(target.get(), certs);
-        }
-
-        @Override
-        public void checkServerTrusted(final X509Certificate[] certs, final String s) throws CertificateException {
-            delegate.verify(target.get(), certs);
-        }
-
-        @Override
-        public X509Certificate[] getAcceptedIssuers() {
-            return delegate.getAcceptedIssuers();
-        }
-
-        @Override
-        public String getTarget() {
-            return target.get();
-        }
-
-        public void setTarget(final String target) {
-            this.target.set(target);
-        }
     }
 }
