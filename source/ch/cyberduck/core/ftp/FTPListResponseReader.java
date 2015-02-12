@@ -42,8 +42,15 @@ public class FTPListResponseReader implements FTPDataResponseReader {
 
     private FTPFileEntryParser parser;
 
+    private boolean lenient;
+
     public FTPListResponseReader(final FTPFileEntryParser parser) {
+        this(parser, false);
+    }
+
+    public FTPListResponseReader(final FTPFileEntryParser parser, final boolean lenient) {
         this.parser = parser;
+        this.lenient = lenient;
     }
 
     @Override
@@ -62,17 +69,19 @@ public class FTPListResponseReader implements FTPDataResponseReader {
             }
             final String name = f.getName();
             if(!success) {
-                // Workaround for #2410. STAT only returns ls of directory itself
-                // Workaround for #2434. STAT of symbolic link directory only lists the directory itself.
-                if(directory.getName().equals(name)) {
-                    log.warn(String.format("Skip %s", f.getName()));
-                    continue;
-                }
-                if(name.contains(String.valueOf(Path.DELIMITER))) {
-                    if(!name.startsWith(directory.getAbsolute() + Path.DELIMITER)) {
-                        // Workaround for #2434.
-                        log.warn(String.format("Skip listing entry with delimiter %s", name));
+                if(lenient) {
+                    // Workaround for #2410. STAT only returns ls of directory itself
+                    // Workaround for #2434. STAT of symbolic link directory only lists the directory itself.
+                    if(directory.getName().equals(name)) {
+                        log.warn(String.format("Skip %s matching parent directory name", f.getName()));
                         continue;
+                    }
+                    if(name.contains(String.valueOf(Path.DELIMITER))) {
+                        if(!name.startsWith(directory.getAbsolute() + Path.DELIMITER)) {
+                            // Workaround for #2434.
+                            log.warn(String.format("Skip %s with delimiter in name", name));
+                            continue;
+                        }
                     }
                 }
             }
