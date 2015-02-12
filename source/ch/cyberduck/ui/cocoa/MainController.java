@@ -917,13 +917,6 @@ public class MainController extends BundleController implements NSApplication.De
      */
     @Override
     public void applicationDidFinishLaunching(NSNotification notification) {
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Running version %s", NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion").toString()));
-            log.info(String.format("Running Java %s on %s", System.getProperty("java.version"), System.getProperty("os.arch")));
-            log.info(String.format("Available localizations:%s", NSBundle.mainBundle().localizations()));
-            log.info(String.format("Current locale:%s", java.util.Locale.getDefault()));
-            log.info(String.format("Native library path:%s", System.getProperty("java.library.path")));
-        }
         if(preferences.getBoolean("browser.open.untitled")) {
             MainController.newDocument();
         }
