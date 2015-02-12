@@ -130,7 +130,8 @@ updateNibFromStrings() {
 				--dictionary $language/$nib.strings $base_language/$nibfile
 	}
 	fi;
-	rm -rf $language/$nibfile.bak 
+	cp -R $language/$nibfile.bak/.svn $language/$nibfile/.svn
+	rm -rf $language/$nibfile.bak
 }
 
 udpateStringsFromNib() {
