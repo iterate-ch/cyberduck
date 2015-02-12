@@ -24,8 +24,6 @@ import ch.cyberduck.core.aquaticprime.License;
 import ch.cyberduck.core.aquaticprime.LicenseFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.udt.UDTProxyProvider;
 
 import org.apache.log4j.Logger;
@@ -42,9 +40,6 @@ public class QloudsonicProxyProvider implements UDTProxyProvider {
 
     private LicenseFactory factory;
 
-    private Preferences preferences
-            = PreferencesFactory.get();
-
     public QloudsonicProxyProvider() {
         this.factory = new QloudsonicVoucherFinder();
     }
@@ -55,7 +50,7 @@ public class QloudsonicProxyProvider implements UDTProxyProvider {
 
     @Override
     public URI find(final Location.Name region) {
-        return URI.create(String.format("udt://127.0.0.1:%d", Scheme.udt.getPort()));
+        return URI.create(String.format("udt://%s.qloudsonic.io:%d", region.getIdentifier(), Scheme.udt.getPort()));
     }
 
     @Override
