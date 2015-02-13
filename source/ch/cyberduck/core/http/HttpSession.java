@@ -74,12 +74,14 @@ public abstract class HttpSession<C> extends SSLSession<C> {
     private Preferences preferences
             = PreferencesFactory.get();
 
+    private HttpClientBuilder builder
+            = HttpClients.custom();
+
     protected HttpSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
 
     public HttpClientBuilder builder() {
-        final HttpClientBuilder builder = HttpClients.custom();
         // Always register HTTP for possible use with proxy. Contains a number of protocol properties such as the
         // default port and the socket factory to be used to create the java.net.Socket instances for the given protocol
         final Registry<ConnectionSocketFactory> registry = this.registry().build();
