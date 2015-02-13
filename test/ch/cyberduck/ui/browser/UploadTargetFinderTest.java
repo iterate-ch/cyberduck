@@ -34,15 +34,30 @@ public class UploadTargetFinderTest extends AbstractTestCase {
 
     @Test
     public void testFind() throws Exception {
-        assertEquals(new Path("/", EnumSet.of(Path.Type.directory)),
-                new UploadTargetFinder(new Path("/", EnumSet.of(Path.Type.directory))).find(null));
-        assertEquals(new Path("/", EnumSet.of(Path.Type.directory)),
-                new UploadTargetFinder(new Path("/", EnumSet.of(Path.Type.directory))).find(new Path("/", EnumSet.of(Path.Type.directory))));
         assertEquals(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)),
-                new UploadTargetFinder(new Path("/", EnumSet.of(Path.Type.directory))).find(new Path("/f", EnumSet.of(Path.Type.file))));
+                new UploadTargetFinder(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume))).find(null));
+        assertEquals(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)),
+                new UploadTargetFinder(new Path("/", EnumSet.of(Path.Type.directory)))
+                        .find(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume))));
+        assertEquals(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)),
+                new UploadTargetFinder(new Path("/", EnumSet.of(Path.Type.directory)))
+                        .find(new Path("/f", EnumSet.of(Path.Type.file))));
         assertEquals(new Path("/d", EnumSet.of(Path.Type.directory)),
-                new UploadTargetFinder(new Path("/", EnumSet.of(Path.Type.directory))).find(new Path("/d/f", EnumSet.of(Path.Type.file))));
+                new UploadTargetFinder(new Path("/", EnumSet.of(Path.Type.directory)))
+                        .find(new Path("/d/f", EnumSet.of(Path.Type.file))));
         assertEquals(new Path("/d", EnumSet.of(Path.Type.directory)),
-                new UploadTargetFinder(new Path("/", EnumSet.of(Path.Type.directory))).find(new Path("/d/f", EnumSet.of(Path.Type.directory))));
+                new UploadTargetFinder(new Path("/", EnumSet.of(Path.Type.directory)))
+                        .find(new Path("/d/f", EnumSet.of(Path.Type.directory))));
+    }
+
+    @Test
+    public void testFindContainerSelected() throws Exception {
+        final Path container = new Path("/container", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        assertEquals(container,
+                new UploadTargetFinder(new Path("/", EnumSet.of(Path.Type.directory)))
+                        .find(new Path("/container", EnumSet.of(Path.Type.directory, Path.Type.volume))));
+        assertEquals(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)),
+                new UploadTargetFinder(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)))
+                        .find(null));
     }
 }
