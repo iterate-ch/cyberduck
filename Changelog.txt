@@ -3,8 +3,9 @@ http://cyberduck.io/
 
 Changelog. Last modified: $Date$
 
-4.7 [https://trac.cyberduck.io/milestone/4.7]
+4.6.5 [https://trac.cyberduck.io/milestone/4.6.57]
 - [Bugfix] Some interface items not localized (Mac) (#8538)
+- [Bugfix] Uploading file removes shared access policy (Azure) (#8544)
 
 4.6.4 [https://trac.cyberduck.io/milestone/4.6.4]
 - [Feature] Send packets to keep connection alive (SFTP)
