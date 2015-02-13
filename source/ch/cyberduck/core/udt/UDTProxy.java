@@ -131,7 +131,7 @@ public class UDTProxy<Client extends HttpSession> implements TrustManagerHostnam
         if(log.isInfoEnabled()) {
             log.info(String.format("Obtained headers %s fro provider %s", headers, provider));
         }
-        final HttpClientBuilder builder = session.builder(transcript);
+        final HttpClientBuilder builder = session.builder();
         builder.setRequestExecutor(
                 new LoggingHttpRequestExecutor(transcript) {
                     @Override

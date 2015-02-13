@@ -124,7 +124,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
                                 }
                             },
                     new PreferencesUseragentProvider().get(), null, configuration);
-            final HttpClientBuilder builder = builder(listener);
+            final HttpClientBuilder builder = builder();
             builder.setRetryHandler(new S3HttpREquestRetryHandler(this));
             this.setHttpClient(builder.build());
         }
@@ -376,8 +376,8 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     }
 
     @Override
-    public HttpClientBuilder builder(final TranscriptListener transcript) {
-        final HttpClientBuilder builder = super.builder(transcript);
+    public HttpClientBuilder builder() {
+        final HttpClientBuilder builder = super.builder();
         builder.disableContentCompression();
         return builder;
     }

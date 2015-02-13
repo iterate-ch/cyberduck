@@ -25,7 +25,6 @@ import ch.cyberduck.core.Proxy;
 import ch.cyberduck.core.ProxyFactory;
 import ch.cyberduck.core.ProxySocketFactory;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.Preferences;
@@ -79,7 +78,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
 
-    public HttpClientBuilder builder(final TranscriptListener transcript) {
+    public HttpClientBuilder builder() {
         final HttpClientBuilder builder = HttpClients.custom();
         // Always register HTTP for possible use with proxy. Contains a number of protocol properties such as the
         // default port and the socket factory to be used to create the java.net.Socket instances for the given protocol
@@ -127,7 +126,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
             builder.disableContentCompression();
         }
         builder.setRequestExecutor(
-                new LoggingHttpRequestExecutor(transcript)
+                new LoggingHttpRequestExecutor(this)
         );
         builder.setDefaultAuthSchemeRegistry(RegistryBuilder.<AuthSchemeProvider>create()
                 .register(AuthSchemes.BASIC, new BasicSchemeFactory(
