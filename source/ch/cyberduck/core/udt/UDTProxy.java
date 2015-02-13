@@ -46,6 +46,7 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
@@ -147,39 +148,44 @@ public class UDTProxy<Client extends HttpSession> implements TrustManagerHostnam
                 new HttpHost(proxy.getHost(), proxy.getPort(), proxy.getScheme()),
                 new DefaultSchemePortResolver()));
         final RegistryBuilder<ConnectionSocketFactory> registry = RegistryBuilder.create();
-        registry.register(Scheme.udt.toString(), new SSLConnectionSocketFactory(
-                new CustomTrustSSLProtocolSocketFactory(trust, key),
-                new DisabledX509HostnameVerifier() {
-                    @Override
-                    public boolean verify(final String host, final javax.net.ssl.SSLSession sslSession) {
-                        if(trust instanceof ThreadLocalHostnameDelegatingTrustManager) {
-                            ((ThreadLocalHostnameDelegatingTrustManager) trust).setTarget(host);
+        if(session.isSecured()) {
+            registry.register(Scheme.udt.toString(), new SSLConnectionSocketFactory(
+                    new CustomTrustSSLProtocolSocketFactory(trust, key),
+                    new DisabledX509HostnameVerifier() {
+                        @Override
+                        public boolean verify(final String host, final javax.net.ssl.SSLSession sslSession) {
+                            if(trust instanceof ThreadLocalHostnameDelegatingTrustManager) {
+                                ((ThreadLocalHostnameDelegatingTrustManager) trust).setTarget(host);
+                            }
+                            return true;
                         }
-                        return true;
                     }
+
+            ) {
+                @Override
+                public Socket createSocket(final HttpContext context) throws IOException {
+                    final Socket socket = new UDTSocket();
+                    configurator.configure(socket);
+                    return socket;
                 }
 
-        ) {
-            @Override
-            public Socket createSocket(final HttpContext context) throws IOException {
-                final Socket socket = new UDTSocket();
-                configurator.configure(socket);
-                return socket;
-            }
-
-            @Override
-            public Socket connectSocket(final int connectTimeout,
-                                        final Socket socket,
-                                        final HttpHost host,
-                                        final InetSocketAddress remoteAddress,
-                                        final InetSocketAddress localAddress,
-                                        final HttpContext context) throws IOException {
-                if(trust instanceof ThreadLocalHostnameDelegatingTrustManager) {
-                    ((ThreadLocalHostnameDelegatingTrustManager) trust).setTarget(remoteAddress.getHostName());
+                @Override
+                public Socket connectSocket(final int connectTimeout,
+                                            final Socket socket,
+                                            final HttpHost host,
+                                            final InetSocketAddress remoteAddress,
+                                            final InetSocketAddress localAddress,
+                                            final HttpContext context) throws IOException {
+                    if(trust instanceof ThreadLocalHostnameDelegatingTrustManager) {
+                        ((ThreadLocalHostnameDelegatingTrustManager) trust).setTarget(remoteAddress.getHostName());
+                    }
+                    return super.connectSocket(connectTimeout, socket, host, remoteAddress, localAddress, context);
                 }
-                return super.connectSocket(connectTimeout, socket, host, remoteAddress, localAddress, context);
-            }
-        });
+            });
+        }
+        else {
+            registry.register(Scheme.udt.toString(), new PlainConnectionSocketFactory());
+        }
         registry.register(Scheme.https.toString(), new SSLConnectionSocketFactory(
                 new CustomTrustSSLProtocolSocketFactory(trust, key),
                 new DisabledX509HostnameVerifier()
