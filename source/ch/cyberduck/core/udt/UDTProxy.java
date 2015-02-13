@@ -184,7 +184,14 @@ public class UDTProxy<Client extends HttpSession> implements TrustManagerHostnam
             });
         }
         else {
-            registry.register(Scheme.udt.toString(), new PlainConnectionSocketFactory());
+            registry.register(Scheme.udt.toString(), new PlainConnectionSocketFactory() {
+                @Override
+                public Socket createSocket(final HttpContext context) throws IOException {
+                    final Socket socket = new UDTSocket();
+                    configurator.configure(socket);
+                    return socket;
+                }
+            });
         }
         registry.register(Scheme.https.toString(), new SSLConnectionSocketFactory(
                 new CustomTrustSSLProtocolSocketFactory(trust, key),
