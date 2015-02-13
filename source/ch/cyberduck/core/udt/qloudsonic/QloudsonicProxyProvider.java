@@ -50,7 +50,7 @@ public class QloudsonicProxyProvider implements UDTProxyProvider {
 
     @Override
     public URI find(final Location.Name region) {
-        return URI.create(String.format("udt://%s.qloudsonic.io:%d", region.getIdentifier(), Scheme.udt.getPort()));
+        return URI.create(String.format("%s://%s.qloudsonic.io:%d", Scheme.udt.name(), region.getIdentifier(), Scheme.udt.getPort()));
     }
 
     @Override
