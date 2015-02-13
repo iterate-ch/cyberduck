@@ -740,7 +740,7 @@ public class MainController extends BundleController implements NSApplication.De
                         files.size() == 1 ? files.iterator().next().getName()
                                 : MessageFormat.format(LocaleFactory.localizedString("{0} Files"), String.valueOf(files.size()))
                 ),
-                LocaleFactory.localizedString("Upload"),
+                LocaleFactory.localizedString("Upload", "Transfer"),
                 LocaleFactory.localizedString("Cancel"),
                 null
         )) {

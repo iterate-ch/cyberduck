@@ -765,7 +765,12 @@ public final class TransferController extends WindowController implements NSTool
     }
 
     private enum TransferToolbarItem {
-        resume,
+        resume {
+            @Override
+            public String label() {
+                return LocaleFactory.localizedString("Resume", "Transfer");
+            }
+        },
         reload,
         stop,
         remove,

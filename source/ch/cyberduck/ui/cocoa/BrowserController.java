@@ -2736,7 +2736,7 @@ public class BrowserController extends WindowController
         downloadAsPanel = NSSavePanel.savePanel();
         downloadAsPanel.setMessage(LocaleFactory.localizedString("Download the selected file to…"));
         downloadAsPanel.setNameFieldLabel(LocaleFactory.localizedString("Download As:"));
-        downloadAsPanel.setPrompt(LocaleFactory.localizedString("Download"));
+        downloadAsPanel.setPrompt(LocaleFactory.localizedString("Download", "Transfer"));
         downloadAsPanel.setCanCreateDirectories(true);
         downloadAsPanel.beginSheetForDirectory(new DownloadDirectoryFinder().find(session.getHost()).getAbsolute(),
                 this.getSelectedPath().getName(), this.window, this.id(),
@@ -2826,7 +2826,7 @@ public class BrowserController extends WindowController
         uploadPanel.setCanCreateDirectories(false);
         uploadPanel.setTreatsFilePackagesAsDirectories(true);
         uploadPanel.setAllowsMultipleSelection(true);
-        uploadPanel.setPrompt(LocaleFactory.localizedString("Upload"));
+        uploadPanel.setPrompt(LocaleFactory.localizedString("Upload", "Transfer"));
         if(uploadPanel.respondsToSelector(Foundation.selector("setShowsHiddenFiles:"))) {
             uploadPanelHiddenFilesCheckbox = NSButton.buttonWithFrame(new NSRect(0, 0));
             uploadPanelHiddenFilesCheckbox.setTitle(LocaleFactory.localizedString("Show Hidden Files"));
