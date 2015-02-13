@@ -19,16 +19,17 @@ package ch.cyberduck.core.udt.qloudsonic;
  */
 
 import ch.cyberduck.core.Header;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.aquaticprime.License;
 import ch.cyberduck.core.aquaticprime.LicenseFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Location;
+import ch.cyberduck.core.udt.UDTProtocol;
 import ch.cyberduck.core.udt.UDTProxyProvider;
 
 import org.apache.log4j.Logger;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,8 +50,8 @@ public class QloudsonicProxyProvider implements UDTProxyProvider {
     }
 
     @Override
-    public URI find(final Location.Name region) {
-        return URI.create(String.format("%s://%s.qloudsonic.io:%d", Scheme.udt.name(), region.getIdentifier(), Scheme.udt.getPort()));
+    public Host find(final Location.Name region) {
+        return new Host(new UDTProtocol(), String.format("%s.qloudsonic.io", region.getIdentifier()), Scheme.udt.getPort());
     }
 
     @Override

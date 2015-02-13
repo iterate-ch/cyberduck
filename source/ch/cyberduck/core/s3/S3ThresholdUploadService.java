@@ -38,7 +38,7 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.udt.DisabledUDTTransferOption;
 import ch.cyberduck.core.udt.UDTExceptionMappingService;
-import ch.cyberduck.core.udt.UDTProxy;
+import ch.cyberduck.core.udt.UDTProxyConfigurator;
 import ch.cyberduck.core.udt.UDTTransferOption;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -107,12 +107,13 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
                     if(Location.unknown.equals(location)) {
                         throw new AccessDeniedException("Cannot read bucket location");
                     }
-                    final S3Session proxy = new UDTProxy<S3Session>(location, udtTransferOption.provider(), trust, key)
-                            .proxy(new S3Session(session.getHost(), trust, key), session);
-                    final S3Session.RequestEntityRestStorageService client = proxy.open(new DisabledHostKeyCallback(), session);
+                    final S3Session tunneled = new S3Session(session.getHost(), trust, key);
+                    final UDTProxyConfigurator configurator = new UDTProxyConfigurator(location, udtTransferOption.provider(), trust, key);
+                    configurator.configure(tunneled);
+                    final S3Session.RequestEntityRestStorageService client = tunneled.open(new DisabledHostKeyCallback(), session);
                     // Swap credentials. No login required
                     client.setProviderCredentials(session.getClient().getProviderCredentials());
-                    final Upload<StorageObject> service = new S3MultipartUploadService(proxy);
+                    final Upload<StorageObject> service = new S3MultipartUploadService(tunneled);
                     try {
                         return service.upload(file, local, throttle, listener, status, prompt);
                     }

@@ -20,14 +20,13 @@ package ch.cyberduck.core.udt;
 
 import ch.cyberduck.core.DefaultSocketConfigurator;
 import ch.cyberduck.core.Header;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.SocketConfigurator;
-import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.http.DisabledX509HostnameVerifier;
 import ch.cyberduck.core.http.HttpSession;
-import ch.cyberduck.core.http.LoggingHttpRequestExecutor;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.TemporaryApplicationResourcesFinder;
@@ -54,12 +53,12 @@ import org.apache.http.impl.conn.DefaultSchemePortResolver;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.protocol.HttpRequestExecutor;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.URI;
 import java.util.List;
 
 import com.barchart.udt.ResourceUDT;
@@ -67,8 +66,8 @@ import com.barchart.udt.ResourceUDT;
 /**
  * @version $Id$
  */
-public class UDTProxy<Client extends HttpSession> implements TrustManagerHostnameCallback {
-    private static final Logger log = Logger.getLogger(UDTProxy.class);
+public class UDTProxyConfigurator implements TrustManagerHostnameCallback {
+    private static final Logger log = Logger.getLogger(UDTProxyConfigurator.class);
 
     private Preferences preferences
             = PreferencesFactory.get();
@@ -87,23 +86,23 @@ public class UDTProxy<Client extends HttpSession> implements TrustManagerHostnam
     private SocketConfigurator configurator
             = new DefaultSocketConfigurator();
 
-    public UDTProxy(final Location.Name location, final UDTProxyProvider provider) {
+    public UDTProxyConfigurator(final Location.Name location, final UDTProxyProvider provider) {
         this.location = location;
         this.provider = provider;
         this.trust = new KeychainX509TrustManager(this);
         this.key = new KeychainX509KeyManager();
     }
 
-    public UDTProxy(final Location.Name location, final UDTProxyProvider provider,
-                    final X509TrustManager trust) {
+    public UDTProxyConfigurator(final Location.Name location, final UDTProxyProvider provider,
+                                final X509TrustManager trust) {
         this.location = location;
         this.provider = provider;
         this.trust = trust;
         this.key = new KeychainX509KeyManager();
     }
 
-    public UDTProxy(final Location.Name location, final UDTProxyProvider provider,
-                    final X509TrustManager trust, final X509KeyManager key) {
+    public UDTProxyConfigurator(final Location.Name location, final UDTProxyProvider provider,
+                                final X509TrustManager trust, final X509KeyManager key) {
         this.location = location;
         this.provider = provider;
         this.trust = trust;
@@ -116,24 +115,23 @@ public class UDTProxy<Client extends HttpSession> implements TrustManagerHostnam
 
     @Override
     public String getTarget() {
-        return provider.find(location).getHost();
+        return provider.find(location).getHostname();
     }
 
     /**
      * Configure the HTTP Session to proxy through UDT
-     *
-     * @param session Proxy
      */
-    public Client proxy(final Client session, final TranscriptListener transcript)
+    public void configure(final HttpSession session)
             throws BackgroundException {
         // Add X-Qloudsonic-* headers
         final List<Header> headers = provider.headers();
         if(log.isInfoEnabled()) {
             log.info(String.format("Obtained headers %s fro provider %s", headers, provider));
         }
+        final Host proxy = provider.find(location);
         final HttpClientBuilder builder = session.builder();
         builder.setRequestExecutor(
-                new LoggingHttpRequestExecutor(transcript) {
+                new HttpRequestExecutor() {
                     @Override
                     public HttpResponse execute(final HttpRequest request, final HttpClientConnection conn, final HttpContext context) throws IOException, HttpException {
                         for(Header h : headers) {
@@ -143,12 +141,11 @@ public class UDTProxy<Client extends HttpSession> implements TrustManagerHostnam
                     }
                 }
         );
-        final URI proxy = provider.find(location);
         builder.setRoutePlanner(new DefaultProxyRoutePlanner(
-                new HttpHost(proxy.getHost(), proxy.getPort(), proxy.getScheme()),
+                new HttpHost(proxy.getHostname(), proxy.getPort(), proxy.getProtocol().getScheme().name()),
                 new DefaultSchemePortResolver()));
         final RegistryBuilder<ConnectionSocketFactory> registry = RegistryBuilder.create();
-        if(session.isSecured()) {
+        if(session.getHost().getProtocol().isSecure()) {
             registry.register(Scheme.udt.toString(), new SSLConnectionSocketFactory(
                     new CustomTrustSSLProtocolSocketFactory(trust, key),
                     new DisabledX509HostnameVerifier() {
@@ -222,6 +219,5 @@ public class UDTProxy<Client extends HttpSession> implements TrustManagerHostnam
         manager.setMaxTotal(preferences.getInteger("http.connections.total"));
         manager.setDefaultMaxPerRoute(preferences.getInteger("http.connections.route"));
         builder.setConnectionManager(manager);
-        return session;
     }
 }

@@ -19,9 +19,9 @@ package ch.cyberduck.core.udt;
  */
 
 import ch.cyberduck.core.Header;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.features.Location;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,8 +31,8 @@ import java.util.List;
 public class LocalhostProxyProvider implements UDTProxyProvider {
 
     @Override
-    public URI find(final Location.Name region) {
-        return URI.create("udt://localhost:8007");
+    public Host find(final Location.Name region) {
+        return new Host(new UDTProtocol(), "localhost", 8007);
     }
 
     @Override

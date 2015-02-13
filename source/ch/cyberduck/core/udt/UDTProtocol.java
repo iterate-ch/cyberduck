@@ -1,8 +1,8 @@
 package ch.cyberduck.core.udt;
 
 /*
- * Copyright (c) 2002-2014 David Kocher. All rights reserved.
- * http://cyberduck.io/
+ * Copyright (c) 2002-2015 David Kocher. All rights reserved.
+ * http://cyberduck.ch/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,26 +14,28 @@ package ch.cyberduck.core.udt;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * Bug fixes, suggestions and comments should be sent to:
- * feedback@cyberduck.io
+ * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Header;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Location;
-
-import java.util.List;
+import ch.cyberduck.core.AbstractProtocol;
+import ch.cyberduck.core.Scheme;
 
 /**
  * @version $Id$
  */
-public interface UDTProxyProvider {
+public class UDTProtocol extends AbstractProtocol {
+    @Override
+    public String getIdentifier() {
+        return "udt";
+    }
 
-    Host find(Location.Name region);
+    @Override
+    public String getDescription() {
+        return "UDP-based Data Transfer Protocol";
+    }
 
-    /**
-     * List of proprietary headers
-     */
-    List<Header> headers() throws BackgroundException;
+    @Override
+    public Scheme getScheme() {
+        return Scheme.udt;
+    }
 }
