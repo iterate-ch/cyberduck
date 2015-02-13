@@ -1647,9 +1647,18 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
+        private bool View_ValidateNewFile()
+        {
+            return IsMounted() && ((Touch) Session.getFeature(typeof (Touch))).isSupported(
+                new UploadTargetFinder(workdir).find(SelectedPath)
+            );
+        }
+
         private bool View_ValidateUpload()
         {
-            return IsMounted() && ((Touch) Session.getFeature(typeof (Touch))).isSupported(Workdir);
+            return IsMounted() && ((Touch) Session.getFeature(typeof (Touch))).isSupported(
+                new UploadTargetFinder(workdir).find(SelectedPath)
+            );
         }
 
         private void View_Upload()
@@ -1770,11 +1779,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 return ((Move) Session.getFeature(typeof (Move))).isSupported(SelectedPath);
             }
             return false;
-        }
-
-        private bool View_ValidateNewFile()
-        {
-            return IsMounted() && ((Touch) Session.getFeature(typeof (Touch))).isSupported(Workdir);
         }
 
         private void View_NewDownload()

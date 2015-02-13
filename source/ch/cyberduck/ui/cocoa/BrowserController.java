@@ -3819,6 +3819,11 @@ public class BrowserController extends WindowController
                     new UploadTargetFinder(workdir).find(this.getSelectedPath())
             );
         }
+        else if(action.equals(Foundation.selector("uploadButtonClicked:"))) {
+            return this.isBrowser() && this.isMounted() && session.getFeature(Touch.class).isSupported(
+                    new UploadTargetFinder(workdir).find(this.getSelectedPath())
+            );
+        }
         else if(action.equals(Foundation.selector("createSymlinkButtonClicked:"))) {
             return this.isBrowser() && this.isMounted() && session.getFeature(Symlink.class) != null
                     && this.getSelectionCount() == 1;
@@ -3850,9 +3855,6 @@ public class BrowserController extends WindowController
         }
         else if(action.equals(Foundation.selector("newBrowserButtonClicked:"))) {
             return this.isMounted();
-        }
-        else if(action.equals(Foundation.selector("uploadButtonClicked:"))) {
-            return this.isBrowser() && this.isMounted();
         }
         else if(action.equals(Foundation.selector("syncButtonClicked:"))) {
             return this.isBrowser() && this.isMounted();
