@@ -1650,14 +1650,14 @@ namespace Ch.Cyberduck.Ui.Controller
         private bool View_ValidateNewFile()
         {
             return IsMounted() && ((Touch) Session.getFeature(typeof (Touch))).isSupported(
-                new UploadTargetFinder(workdir).find(SelectedPath)
+                new UploadTargetFinder(Workdir).find(SelectedPath)
             );
         }
 
         private bool View_ValidateUpload()
         {
             return IsMounted() && ((Touch) Session.getFeature(typeof (Touch))).isSupported(
-                new UploadTargetFinder(workdir).find(SelectedPath)
+                new UploadTargetFinder(Workdir).find(SelectedPath)
             );
         }
 
