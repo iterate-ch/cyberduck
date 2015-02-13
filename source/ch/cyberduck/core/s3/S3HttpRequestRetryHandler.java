@@ -44,8 +44,8 @@ import com.barchart.udt.ExceptionUDT;
 /**
  * @version $Id$
  */
-public class S3HttpREquestRetryHandler extends DefaultHttpRequestRetryHandler {
-    private static final Logger log = Logger.getLogger(S3HttpREquestRetryHandler.class);
+public class S3HttpRequestRetryHandler extends DefaultHttpRequestRetryHandler {
+    private static final Logger log = Logger.getLogger(S3HttpRequestRetryHandler.class);
 
     private final JetS3tRequestAuthorizer authorizer;
 
@@ -59,11 +59,11 @@ public class S3HttpREquestRetryHandler extends DefaultHttpRequestRetryHandler {
             // "Broken pipe".equals(ExceptionUtils.getRootCause(failure).getMessage())
             SSLHandshakeException.class);
 
-    public S3HttpREquestRetryHandler(final JetS3tRequestAuthorizer authorizer) {
+    public S3HttpRequestRetryHandler(final JetS3tRequestAuthorizer authorizer) {
         this(authorizer, PreferencesFactory.get().getInteger("connection.retry"));
     }
 
-    public S3HttpREquestRetryHandler(final JetS3tRequestAuthorizer authorizer, final int retryCount) {
+    public S3HttpRequestRetryHandler(final JetS3tRequestAuthorizer authorizer, final int retryCount) {
         super(retryCount, false, exceptions);
         this.authorizer = authorizer;
     }

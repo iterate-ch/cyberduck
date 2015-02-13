@@ -19,11 +19,11 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class S3HttpREquestRetryHandlerTest extends AbstractTestCase {
+public class S3HttpRequestRetryHandlerTest extends AbstractTestCase {
 
     @Test
     public void testRetryRequest() throws Exception {
-        final S3HttpREquestRetryHandler h = new S3HttpREquestRetryHandler(new JetS3tRequestAuthorizer() {
+        final S3HttpRequestRetryHandler h = new S3HttpRequestRetryHandler(new JetS3tRequestAuthorizer() {
             @Override
             public void authorizeHttpRequest(final HttpUriRequest httpMethod, final HttpContext context) throws ServiceException {
                 //
