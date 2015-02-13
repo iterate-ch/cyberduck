@@ -19,15 +19,11 @@ package ch.cyberduck.ui.browser;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 
 /**
  * @version $Id$
  */
 public class UploadTargetFinder {
-
-    private PathContainerService containerService
-            = new PathContainerService();
 
     private Path workdir;
 
@@ -39,7 +35,7 @@ public class UploadTargetFinder {
         if(null == selected) {
             return workdir;
         }
-        if(containerService.isContainer(selected)) {
+        if(selected.getType().contains(Path.Type.volume)) {
             return selected;
         }
         return selected.getParent();
