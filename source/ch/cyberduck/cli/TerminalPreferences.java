@@ -35,6 +35,7 @@ import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
 import ch.cyberduck.core.local.LaunchServicesFileDescriptor;
 import ch.cyberduck.core.local.LaunchServicesQuarantineService;
+import ch.cyberduck.core.local.LibcWorkingDirectoryFinder;
 import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
 import ch.cyberduck.core.local.WorkspaceIconService;
 import ch.cyberduck.core.preferences.ApplicationResourcesFinderFactory;
@@ -92,6 +93,7 @@ public class TerminalPreferences extends MemoryPreferences {
             case windows:
                 break;
             case linux:
+                defaults.put("factory.workingdirectory.class", LibcWorkingDirectoryFinder.class.getName());
                 defaults.put("factory.supportdirectoryfinder.class", UserHomeSupportDirectoryFinder.class.getName());
                 defaults.put("factory.applicationresourcesfinder.class", StaticApplicationResourcesFinder.class.getName());
                 defaults.put("factory.locale.class", RegexLocale.class.getName());
