@@ -29,14 +29,14 @@ import com.sun.jna.Pointer;
  */
 public class LibcWorkingDirectoryFinder implements WorkingDirectoryFinder {
 
-    private static final C c = (C) Native.loadLibrary("c", C.class);
+    private static final CLibrary library = (CLibrary) Native.loadLibrary("c", CLibrary.class);
 
     @Override
     public Local find() {
-        return LocalFactory.get(c.getcwd(null, 0L));
+        return LocalFactory.get(library.getcwd(null, 0L));
     }
 
-    public interface C extends Library {
+    public interface CLibrary extends Library {
         public String getcwd(Pointer buffer, long size);
     }
 }
