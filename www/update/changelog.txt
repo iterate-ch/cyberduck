@@ -1,6 +1,6 @@
 A command line interface (CLI) version is now available from https://duck.sh/ for Windows, Linux & Mac.
 
 4.6.5 [https://trac.cyberduck.io/milestone/4.6.5]
-
+- [Feature] Support for China (Beijing) region (S3)
 - [Bugfix] Failure reading bookmarks (#8563)
 - [Bugfix] Uploading file removes shared access policy (Azure) (#8544)
