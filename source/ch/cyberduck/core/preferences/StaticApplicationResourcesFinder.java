@@ -20,6 +20,7 @@ package ch.cyberduck.core.preferences;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.local.DefaultWorkingDirectoryFinder;
 
 /**
  * @version $Id$
@@ -27,6 +28,6 @@ import ch.cyberduck.core.LocalFactory;
 public class StaticApplicationResourcesFinder implements ApplicationResourcesFinder {
     @Override
     public Local find() {
-        return LocalFactory.get("/opt/duck/app");
+        return LocalFactory.get(new DefaultWorkingDirectoryFinder().find(), "app");
     }
 }
