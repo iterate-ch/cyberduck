@@ -40,5 +40,3 @@ public class LibcWorkingDirectoryFinder implements WorkingDirectoryFinder {
         public String getcwd(Pointer buffer, long size);
     }
 }
-
-
