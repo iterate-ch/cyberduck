@@ -33,11 +33,11 @@ public class LibcWorkingDirectoryFinder implements WorkingDirectoryFinder {
 
     @Override
     public Local find() {
-        return LocalFactory.get(c.getcwd(null, 0));
+        return LocalFactory.get(c.getcwd(null, 0L));
     }
 
     public interface C extends Library {
-        public String getcwd(Pointer buffer, int size);
+        public String getcwd(Pointer buffer, long size);
     }
 }
 
