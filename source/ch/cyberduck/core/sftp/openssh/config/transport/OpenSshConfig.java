@@ -138,10 +138,7 @@ public class OpenSshConfig {
                     IOUtils.closeQuietly(in);
                 }
             }
-            catch(AccessDeniedException none) {
-                hosts = Collections.emptyMap();
-            }
-            catch(IOException err) {
+            catch(AccessDeniedException | IOException none) {
                 hosts = Collections.emptyMap();
             }
             lastModified = mtime;
