@@ -25,9 +25,9 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.bouncycastle.asn1.ASN1Encodable;
+import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1Set;
-import org.bouncycastle.asn1.DERInteger;
 import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.DLSequence;
 import org.bouncycastle.cert.X509CertificateHolder;
@@ -111,26 +111,26 @@ public class ReceiptVerifier implements LicenseVerifier {
                     if(next instanceof DLSequence) {
                         DLSequence sequence = (DLSequence) next;
                         ASN1Encodable type = sequence.getObjectAt(0);
-                        if(type instanceof DERInteger) {
-                            if(((DERInteger) type).getValue().intValue() == 2) {
+                        if(type instanceof ASN1Integer) {
+                            if(((ASN1Integer) type).getValue().intValue() == 2) {
                                 final ASN1Encodable value = sequence.getObjectAt(2);
                                 if(value instanceof DEROctetString) {
                                     bundleIdentifier = new String(((DEROctetString) value).getOctets(), "UTF-8");
                                 }
                             }
-                            else if(((DERInteger) type).getValue().intValue() == 3) {
+                            else if(((ASN1Integer) type).getValue().intValue() == 3) {
                                 final ASN1Encodable value = sequence.getObjectAt(2);
                                 if(value instanceof DEROctetString) {
                                     bundleVersion = new String(((DEROctetString) value).getOctets(), "UTF-8");
                                 }
                             }
-                            else if(((DERInteger) type).getValue().intValue() == 4) {
+                            else if(((ASN1Integer) type).getValue().intValue() == 4) {
                                 final ASN1Encodable value = sequence.getObjectAt(2);
                                 if(value instanceof DEROctetString) {
                                     opaque = ((DEROctetString) value).getOctets();
                                 }
                             }
-                            else if(((DERInteger) type).getValue().intValue() == 5) {
+                            else if(((ASN1Integer) type).getValue().intValue() == 5) {
                                 final ASN1Encodable value = sequence.getObjectAt(2);
                                 if(value instanceof DEROctetString) {
                                     hash = ((DEROctetString) value).getOctets();
