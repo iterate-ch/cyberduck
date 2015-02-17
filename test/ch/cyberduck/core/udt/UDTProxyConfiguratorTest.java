@@ -74,9 +74,9 @@ public class UDTProxyConfiguratorTest extends AbstractTestCase {
         final UDTProxyConfigurator proxy = new UDTProxyConfigurator(new S3LocationFeature.S3Region("ap-northeast-1"),
                 new LocalhostProxyProvider() {
                     @Override
-                    public Host find(final Location.Name region) {
+                    public Host find(final Location.Name region, final boolean tls) {
                         // No server here
-                        return new Host(new UDTProtocol(), "test.cyberduck.ch", 8007);
+                        return new Host(new UDTProtocol(), "test.cyberduck.ch", Scheme.udt.getPort());
                     }
                 });
         final S3Session tunneled = new S3Session(host);

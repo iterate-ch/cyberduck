@@ -115,20 +115,20 @@ public class UDTProxyConfigurator implements TrustManagerHostnameCallback {
 
     @Override
     public String getTarget() {
-        return provider.find(location).getHostname();
+        return provider.find(location, true).getHostname();
     }
 
     /**
      * Configure the HTTP Session to proxy through UDT
      */
-    public void configure(final HttpSession session)
-            throws BackgroundException {
+    public void configure(final HttpSession session) throws BackgroundException {
         // Add X-Qloudsonic-* headers
         final List<Header> headers = provider.headers();
         if(log.isInfoEnabled()) {
             log.info(String.format("Obtained headers %s fro provider %s", headers, provider));
         }
-        final Host proxy = provider.find(location);
+        // Run through secured proxy only if direct connection has transport security
+        final Host proxy = provider.find(location, session.getHost().getProtocol().isSecure());
         final HttpClientBuilder builder = session.builder();
         builder.setRequestExecutor(
                 new HttpRequestExecutor() {
@@ -145,8 +145,8 @@ public class UDTProxyConfigurator implements TrustManagerHostnameCallback {
                 new HttpHost(proxy.getHostname(), proxy.getPort(), proxy.getProtocol().getScheme().name()),
                 new DefaultSchemePortResolver()));
         final RegistryBuilder<ConnectionSocketFactory> registry = RegistryBuilder.create();
-        if(session.getHost().getProtocol().isSecure()) {
-            registry.register(Scheme.udt.toString(), new SSLConnectionSocketFactory(
+        if(proxy.getProtocol().isSecure()) {
+            registry.register(proxy.getProtocol().getScheme().toString(), new SSLConnectionSocketFactory(
                     new CustomTrustSSLProtocolSocketFactory(trust, key),
                     new DisabledX509HostnameVerifier() {
                         @Override
@@ -181,7 +181,7 @@ public class UDTProxyConfigurator implements TrustManagerHostnameCallback {
             });
         }
         else {
-            registry.register(Scheme.udt.toString(), new PlainConnectionSocketFactory() {
+            registry.register(proxy.getProtocol().getScheme().toString(), new PlainConnectionSocketFactory() {
                 @Override
                 public Socket createSocket(final HttpContext context) throws IOException {
                     final Socket socket = new UDTSocket();

@@ -20,6 +20,7 @@ package ch.cyberduck.core.udt;
 
 import ch.cyberduck.core.Header;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.features.Location;
 
 import java.util.ArrayList;
@@ -31,8 +32,15 @@ import java.util.List;
 public class LocalhostProxyProvider implements UDTProxyProvider {
 
     @Override
-    public Host find(final Location.Name region) {
-        return new Host(new UDTProtocol(), "localhost", 8007);
+    public Host find(final Location.Name region, final boolean tls) {
+        final Protocol protocol;
+        if(tls) {
+            protocol = new UDTTLSProtocol();
+        }
+        else {
+            protocol = new UDTProtocol();
+        }
+        return new Host(protocol, "localhost", protocol.getScheme().getPort());
     }
 
     @Override
