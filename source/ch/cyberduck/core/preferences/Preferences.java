@@ -920,6 +920,11 @@ public abstract class Preferences {
         defaults.put("ssh.compression", "zlib");
         defaults.put("ssh.subsystem.name", "sftp");
 
+        defaults.put("ssh.algorithm.cipher.blacklist", StringUtils.EMPTY);
+        defaults.put("ssh.algorithm.mac.blacklist", StringUtils.EMPTY);
+        defaults.put("ssh.algorithm.kex.blacklist", StringUtils.EMPTY);
+        defaults.put("ssh.algorithm.signature.blacklist", StringUtils.EMPTY);
+
         defaults.put("archive.default", "tar.gz");
 
         /**

@@ -66,7 +66,7 @@ public abstract class Session<C> implements TranscriptListener {
     private Preferences preferences
             = PreferencesFactory.get();
 
-    public boolean alert() throws BackgroundException {
+    public boolean alert(final ConnectionCallback callback) throws BackgroundException {
         if(host.getProtocol().isSecure()) {
             return false;
         }

@@ -81,7 +81,7 @@ public class DAVSessionTest extends AbstractTestCase {
                 PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         final DAVSession session = new DAVSession(host);
-        assertFalse(session.alert());
+        assertFalse(session.alert(new DisabledConnectionCallback()));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         assertTrue(session.isSecured());
         try {
@@ -202,11 +202,11 @@ public class DAVSessionTest extends AbstractTestCase {
     @Test
     public void testAlert() throws Exception {
         PreferencesFactory.get().setProperty("webdav.basic.preemptive", true);
-        assertTrue(new DAVSession(new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials("u", "p"))).alert());
-        assertFalse(new DAVSession(new Host(new DAVSSLProtocol(), "test.cyberduck.ch", new Credentials("u", "p"))).alert());
+        assertTrue(new DAVSession(new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials("u", "p"))).alert(new DisabledConnectionCallback()));
+        assertFalse(new DAVSession(new Host(new DAVSSLProtocol(), "test.cyberduck.ch", new Credentials("u", "p"))).alert(new DisabledConnectionCallback()));
         PreferencesFactory.get().setProperty("webdav.basic.preemptive", false);
-        assertFalse(new DAVSession(new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials("u", "p"))).alert());
-        assertFalse(new DAVSession(new Host(new DAVSSLProtocol(), "test.cyberduck.ch", new Credentials("u", "p"))).alert());
+        assertFalse(new DAVSession(new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials("u", "p"))).alert(new DisabledConnectionCallback()));
+        assertFalse(new DAVSession(new Host(new DAVSSLProtocol(), "test.cyberduck.ch", new Credentials("u", "p"))).alert(new DisabledConnectionCallback()));
     }
 
     @Test(expected = LoginFailureException.class)

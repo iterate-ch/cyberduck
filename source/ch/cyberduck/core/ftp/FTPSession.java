@@ -19,6 +19,7 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListProgressListener;
@@ -225,8 +226,8 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     @Override
-    public boolean alert() throws BackgroundException {
-        if(super.alert()) {
+    public boolean alert(final ConnectionCallback callback) throws BackgroundException {
+        if(super.alert(callback)) {
             // Only alert if no option to switch to TLS later is possible
             return !this.isTLSSupported();
         }
@@ -237,7 +238,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     public void login(final PasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
                       final Cache<Path> cache) throws BackgroundException {
         try {
-            if(super.alert() && this.isTLSSupported()) {
+            if(super.alert(prompt) && this.isTLSSupported()) {
                 // Propose protocol change if AUTH TLS is available.
                 try {
                     prompt.warn(host.getProtocol(),
