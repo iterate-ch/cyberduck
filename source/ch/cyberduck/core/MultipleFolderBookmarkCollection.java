@@ -80,7 +80,7 @@ public class MultipleFolderBookmarkCollection extends Collection<FolderBookmarkC
                     }
             );
             for(Local group : groups) {
-                this.add(new FolderBookmarkCollection(group));
+                this.add(new FolderBookmarkCollection(group, group.getName()));
             }
         }
         finally {
