@@ -72,10 +72,10 @@ public class ReceiptVerifier implements LicenseVerifier {
     @Override
     public boolean verify() {
         try {
-//            For additional security, you may verify the fingerprint of the root CA and the OIDs of the
-//            intermediate CA and signing certificate. The OID in the Certificate Policies Extension of the
-//            intermediate CA is (1 2 840 113635 100 5 6 1), and the Marker OID of the signing certificate
-//            is (1 2 840 113635 100 6 11 1).
+            // For additional security, you may verify the fingerprint of the root CA and the OIDs of the
+            // intermediate CA and signing certificate. The OID in the Certificate Policies Extension of the
+            // intermediate CA is (1 2 840 113635 100 5 6 1), and the Marker OID of the signing certificate
+            // is (1 2 840 113635 100 6 11 1).
             final CMSSignedData s = new CMSSignedData(new FileInputStream(file.getAbsolute()));
             Store certs = s.getCertificates();
             SignerInformationStore signers = s.getSignerInfos();
@@ -172,7 +172,15 @@ public class ReceiptVerifier implements LicenseVerifier {
                 // Compute the hash of the GUID
                 final MessageDigest digest = MessageDigest.getInstance("SHA-1");
                 digest.update(mac);
+                if(null == opaque) {
+                    log.error(String.format("Missing opaque string in ASN.1 set %s", asn));
+                    return false;
+                }
                 digest.update(opaque);
+                if(null == bundleIdentifier) {
+                    log.error(String.format("Missing bundle identifier in ASN.1 set %s", asn));
+                    return false;
+                }
                 digest.update(bundleIdentifier.getBytes(Charset.forName("UTF-8")));
                 final byte[] result = digest.digest();
                 if(Arrays.equals(result, hash)) {
