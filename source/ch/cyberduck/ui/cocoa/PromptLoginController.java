@@ -90,12 +90,12 @@ public final class PromptLoginController implements LoginCallback {
         alert.setShowsSuppressionButton(true);
         alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't show again", "Credentials"));
         alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
-        final StringBuilder site = new StringBuilder(PreferencesFactory.get().getProperty("website.help"));
+        final StringBuilder site = new StringBuilder(preferences.getProperty("website.help"));
         site.append("/").append(protocol.getScheme().name());
         int option = parent.alert(alert, site.toString());
         if(alert.suppressionButton().state() == NSCell.NSOnState) {
             // Never show again.
-            PreferencesFactory.get().setProperty(preference, true);
+            preferences.setProperty(preference, true);
         }
         switch(option) {
             case SheetCallback.CANCEL_OPTION:
