@@ -88,7 +88,7 @@ public class TransferCollectionTest extends AbstractTestCase {
         assertNull(transfer.getLocal());
         assertNotNull(transfer.getRoot().remote);
         assertNull(transfer.getRoot().local);
-        assertEquals("ftp://ftp.heise.de/pub/hacks/listings/1301-130.zip", transfer.getRemote());
+        assertEquals("ftp://ftp.heise.de/pub/hacks/listings/1301-130.zip", transfer.getRemote().getUrl());
         assertEquals(109648L, transfer.getSize());
         assertEquals(109648L, transfer.getTransferred());
         assertEquals("ftp.heise.de", transfer.getHost().getHostname());

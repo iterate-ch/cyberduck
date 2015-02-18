@@ -561,7 +561,7 @@ public final class TransferController extends WindowController implements NSTool
         if(1 == selected) {
             final Transfer transfer = transferTableModel.getSource().get(transferTable.selectedRow().intValue());
             // Draw text fields at the bottom
-            final String remote = transfer.getRemote();
+            final String remote = transfer.getRemote().getUrl();
             urlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(remote));
             final String local = transfer.getLocal();
             if(local != null) {

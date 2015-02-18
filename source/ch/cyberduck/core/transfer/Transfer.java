@@ -216,12 +216,12 @@ public abstract class Transfer implements Serializable {
         return roots.iterator().next();
     }
 
-    public String getRemote() {
+    public DescriptiveUrl getRemote() {
         if(this.roots.size() == 1) {
-            return new DefaultUrlProvider(host).toUrl(this.getRoot().remote).find(DescriptiveUrl.Type.provider).getUrl();
+            return new DefaultUrlProvider(host).toUrl(this.getRoot().remote).find(DescriptiveUrl.Type.provider);
         }
         else {
-            return new DefaultUrlProvider(host).toUrl(this.getRoot().remote.getParent()).find(DescriptiveUrl.Type.provider).getUrl();
+            return new DefaultUrlProvider(host).toUrl(this.getRoot().remote.getParent()).find(DescriptiveUrl.Type.provider);
         }
     }
 

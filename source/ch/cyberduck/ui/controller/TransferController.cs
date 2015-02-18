@@ -468,7 +468,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (1 == selectedTransfers.Count)
             {
                 Transfer transfer = GetTransferFromView(selectedTransfers[0]);
-                View.Url = transfer.getRemote();
+                View.Url = transfer.getRemote().getUrl();
                 //Workaround to prevent NullReferenceException
                 if (transfer.getLocal() != null)
                 {
