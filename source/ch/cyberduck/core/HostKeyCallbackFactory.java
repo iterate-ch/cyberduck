@@ -54,7 +54,8 @@ public class HostKeyCallbackFactory extends Factory<HostKeyCallback> {
                 return constructor.newInstance(c);
             }
             catch(InstantiationException | InvocationTargetException | ClassNotFoundException | IllegalAccessException e) {
-                throw new FactoryException(e.getMessage(), e);
+                log.error(String.format("Failure loading callback class %s. %s", clazz, e.getMessage()));
+                return new DisabledHostKeyCallback();
             }
         }
         return new DisabledHostKeyCallback();

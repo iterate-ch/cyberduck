@@ -19,6 +19,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
@@ -52,7 +53,8 @@ public class TransferErrorCallbackControllerFactory extends Factory<TransferErro
             return constructor.newInstance(c);
         }
         catch(InstantiationException | InvocationTargetException | ClassNotFoundException | IllegalAccessException e) {
-            throw new FactoryException(e.getMessage(), e);
+            log.error(String.format("Failure loading callback class %s. %s", clazz, e.getMessage()));
+            return new DisabledTransferErrorCallback();
         }
     }
 
