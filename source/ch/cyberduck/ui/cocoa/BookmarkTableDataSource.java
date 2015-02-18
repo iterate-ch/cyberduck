@@ -354,9 +354,11 @@ public class BookmarkTableDataSource extends ListDataSource {
         }
         else if(!pasteboard.isEmpty()) {
             view.setDropRow(row, NSTableView.NSTableViewDropAbove);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Drag operation mask is %d", info.draggingSourceOperationMask().intValue()));
+            }
             // We accept any file promise within the bounds
-            if((info.draggingSourceOperationMask().intValue() & NSDraggingInfo.NSDragOperationCopy.intValue())
-                    == NSDraggingInfo.NSDragOperationCopy.intValue()) {
+            if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
                 return NSDraggingInfo.NSDragOperationCopy;
             }
             return NSDraggingInfo.NSDragOperationMove;
@@ -456,8 +458,7 @@ public class BookmarkTableDataSource extends ListDataSource {
             return false;
         }
         else if(!pasteboard.isEmpty()) {
-            if((info.draggingSourceOperationMask().intValue() & NSDraggingInfo.NSDragOperationCopy.intValue())
-                    == NSDraggingInfo.NSDragOperationCopy.intValue()) {
+            if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
                 List<Host> duplicates = new ArrayList<Host>();
                 for(Host bookmark : pasteboard) {
                     final Host duplicate = new HostDictionary().deserialize(bookmark.serialize(SerializerFactory.get()));
