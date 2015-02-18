@@ -403,7 +403,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 }
             }
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Drag operation mas is %d", info.draggingSourceOperationMask().intValue()));
+                log.debug(String.format("Drag operation mask is %d", info.draggingSourceOperationMask().intValue()));
             }
             this.setDropRowAndDropOperation(view, destination, row);
             final List<PathPasteboard> pasteboards = PathPasteboardFactory.allPasteboards();
