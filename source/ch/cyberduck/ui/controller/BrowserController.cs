@@ -2387,6 +2387,8 @@ namespace Ch.Cyberduck.Ui.Controller
         public void SetWorkdir(Path directory, List<Path> selected)
         {
             Workdir = directory;
+            // Remove any custom file filter
+            SetPathFilter(null);
             // Change to last selected browser view
             ReloadData(Workdir != null ? selected : new List<Path>());
             SetNavigation(IsMounted());

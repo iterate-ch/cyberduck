@@ -3330,6 +3330,8 @@ public class BrowserController extends WindowController
         if(log.isDebugEnabled()) {
             log.debug(String.format("Set working directory to %s", directory));
         }
+        // Remove any custom file filter
+        this.setPathFilter(null);
         final NSTableView browser = this.getSelectedBrowserView();
         window.endEditingFor(browser);
         // Update the working directory if listing is successful
