@@ -87,6 +87,9 @@ public class BookmarkTableDataSource extends ListDataSource {
 
     private ScheduledThreadPool timerPool = new ScheduledThreadPool();
 
+    private final HostPasteboard pasteboard
+            = HostPasteboard.getPasteboard();
+
     public BookmarkTableDataSource(final BrowserController controller) {
         this.controller = controller;
     }
@@ -243,7 +246,8 @@ public class BookmarkTableDataSource extends ListDataSource {
         return new NSInteger(this.getSource().size());
     }
 
-    public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, NSInteger row) {
+    public NSObject tableView_objectValueForTableColumn_row(final NSTableView view, final NSTableColumn tableColumn,
+                                                            final NSInteger row) {
         if(row.intValue() >= this.numberOfRowsInTableView(view).intValue()) {
             return null;
         }
@@ -296,9 +300,8 @@ public class BookmarkTableDataSource extends ListDataSource {
     }
 
     @Override
-    public NSUInteger tableView_validateDrop_proposedRow_proposedDropOperation(NSTableView view,
-                                                                               NSDraggingInfo info,
-                                                                               NSInteger row, NSUInteger operation) {
+    public NSUInteger tableView_validateDrop_proposedRow_proposedDropOperation(final NSTableView view, final NSDraggingInfo info,
+                                                                               final NSInteger row, final NSUInteger operation) {
         NSPasteboard draggingPasteboard = info.draggingPasteboard();
         if(!this.getSource().allowsEdit()) {
             // Do not allow drags for non writable collections
@@ -349,10 +352,11 @@ public class BookmarkTableDataSource extends ListDataSource {
             }
             return NSDraggingInfo.NSDragOperationNone;
         }
-        else if(!HostPasteboard.getPasteboard().isEmpty()) {
+        else if(!pasteboard.isEmpty()) {
             view.setDropRow(row, NSTableView.NSTableViewDropAbove);
             // We accept any file promise within the bounds
-            if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
+            if((info.draggingSourceOperationMask().intValue() & NSDraggingInfo.NSDragOperationCopy.intValue())
+                    == NSDraggingInfo.NSDragOperationCopy.intValue()) {
                 return NSDraggingInfo.NSDragOperationCopy;
             }
             return NSDraggingInfo.NSDragOperationMove;
@@ -368,8 +372,8 @@ public class BookmarkTableDataSource extends ListDataSource {
      * Invoked by view when the mouse button is released over a table view that previously decided to allow a drop.
      */
     @Override
-    public boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSDraggingInfo info,
-                                                          NSInteger row, NSUInteger operation) {
+    public boolean tableView_acceptDrop_row_dropOperation(final NSTableView view, final NSDraggingInfo info,
+                                                          final NSInteger row, final NSUInteger operation) {
         NSPasteboard draggingPasteboard = info.draggingPasteboard();
         if(log.isDebugEnabled()) {
             log.debug(String.format("Accept drop at row %s", row));
@@ -451,10 +455,11 @@ public class BookmarkTableDataSource extends ListDataSource {
             }
             return false;
         }
-        else if(!HostPasteboard.getPasteboard().isEmpty()) {
-            if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
+        else if(!pasteboard.isEmpty()) {
+            if((info.draggingSourceOperationMask().intValue() & NSDraggingInfo.NSDragOperationCopy.intValue())
+                    == NSDraggingInfo.NSDragOperationCopy.intValue()) {
                 List<Host> duplicates = new ArrayList<Host>();
-                for(Host bookmark : HostPasteboard.getPasteboard()) {
+                for(Host bookmark : pasteboard) {
                     final Host duplicate = new HostDictionary().deserialize(bookmark.serialize(SerializerFactory.get()));
                     // Make sure a new UUID is assigned for duplicate
                     duplicate.setUuid(null);
@@ -469,7 +474,7 @@ public class BookmarkTableDataSource extends ListDataSource {
             }
             else {
                 int insert = row.intValue();
-                for(Host bookmark : HostPasteboard.getPasteboard()) {
+                for(Host bookmark : pasteboard) {
                     int previous = source.indexOf(bookmark);
                     if(previous == insert) {
                         // No need to move
@@ -485,7 +490,7 @@ public class BookmarkTableDataSource extends ListDataSource {
                     }
                     source.add(moved, bookmark);
                 }
-                for(Host bookmark : HostPasteboard.getPasteboard()) {
+                for(Host bookmark : pasteboard) {
                     int index = source.indexOf(bookmark);
                     view.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(index)), true);
                     view.scrollRowToVisible(new NSInteger(index));
@@ -501,7 +506,7 @@ public class BookmarkTableDataSource extends ListDataSource {
      * @see "http://www.cocoabuilder.com/archive/message/2005/10/5/118857"
      */
     @Override
-    public void draggedImage_endedAt_operation(NSImage image, NSPoint point, NSUInteger operation) {
+    public void draggedImage_endedAt_operation(final NSImage image, final NSPoint point, final NSUInteger operation) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Drop finished with operation %s", operation));
         }
@@ -509,7 +514,7 @@ public class BookmarkTableDataSource extends ListDataSource {
             controller.deleteBookmarkButtonClicked(null);
         }
         NSPasteboard.pasteboardWithName(NSPasteboard.DragPboard).declareTypes_owner(null, null);
-        HostPasteboard.getPasteboard().clear();
+        pasteboard.clear();
     }
 
     /**
@@ -522,7 +527,7 @@ public class BookmarkTableDataSource extends ListDataSource {
      * @see NSDraggingSource
      */
     @Override
-    public NSUInteger draggingSourceOperationMaskForLocal(boolean local) {
+    public NSUInteger draggingSourceOperationMaskForLocal(final boolean local) {
         if(local) {
             return new NSUInteger(NSDraggingInfo.NSDragOperationMove.intValue() | NSDraggingInfo.NSDragOperationCopy.intValue());
         }
@@ -539,9 +544,10 @@ public class BookmarkTableDataSource extends ListDataSource {
      * returns with true.
      */
     @Override
-    public boolean tableView_writeRowsWithIndexes_toPasteboard(NSTableView view, NSIndexSet rowIndexes, NSPasteboard pboard) {
+    public boolean tableView_writeRowsWithIndexes_toPasteboard(final NSTableView view, final NSIndexSet rowIndexes,
+                                                               final NSPasteboard pboard) {
         for(NSUInteger index = rowIndexes.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = rowIndexes.indexGreaterThanIndex(index)) {
-            HostPasteboard.getPasteboard().add(this.getSource().get(index.intValue()));
+            pasteboard.add(this.getSource().get(index.intValue()));
         }
         NSEvent event = NSApplication.sharedApplication().currentEvent();
         if(event != null) {
@@ -570,7 +576,6 @@ public class BookmarkTableDataSource extends ListDataSource {
         }
         final NSMutableArray promisedDragNames = NSMutableArray.array();
         if(null != dropDestination) {
-            final HostPasteboard pasteboard = HostPasteboard.getPasteboard();
             for(Host bookmark : pasteboard) {
                 final Local file = LocalFactory.get(dropDestination.path(),
                         String.format("%s.duck", StringUtils.replace(BookmarkNameProvider.toString(bookmark), "/", ":")));
