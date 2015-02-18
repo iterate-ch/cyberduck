@@ -22,6 +22,7 @@ using System.Windows.Forms;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using ch.cyberduck.core;
 using ch.cyberduck.core.features;
+using ch.cyberduck.core.preferences;
 using java.util;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -60,7 +61,13 @@ namespace Ch.Cyberduck.Ui.Controller
                 _workdir = workdir;
                 _symlink = symlink;
                 _link = new Path(_workdir, _symlink, EnumSet.of(AbstractPath.Type.file));
-                _target = BrowserController.SelectedPath.getName();
+                if(PreferencesFactory.get().getBoolean(
+                        String.Format("{0}.symlink.absolute", session.getHost().getProtocol().getScheme().name()))) {
+                    _target = BrowserController.SelectedPath.getAbsolute()();
+                }
+                else {
+                    _target = BrowserController.SelectedPath.getName();
+                }
             }
 
             public override object run()

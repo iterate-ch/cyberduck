@@ -569,6 +569,8 @@ public abstract class Preferences {
         defaults.put("ftp.timezone.auto", String.valueOf(false));
         defaults.put("ftp.timezone.default", TimeZone.getDefault().getID());
 
+        defaults.put("ftp.symlink.absolute", String.valueOf(false));
+
         /**
          * Authentication header version
          */
@@ -924,6 +926,8 @@ public abstract class Preferences {
         defaults.put("ssh.algorithm.mac.blacklist", StringUtils.EMPTY);
         defaults.put("ssh.algorithm.kex.blacklist", StringUtils.EMPTY);
         defaults.put("ssh.algorithm.signature.blacklist", StringUtils.EMPTY);
+
+        defaults.put("sftp.symlink.absolute", String.valueOf(false));
 
         defaults.put("archive.default", "tar.gz");
 

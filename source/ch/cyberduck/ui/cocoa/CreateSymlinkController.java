@@ -27,6 +27,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Symlink;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.ui.cocoa.threading.BrowserControllerBackgroundAction;
 
@@ -73,7 +74,13 @@ public class CreateSymlinkController extends FileController {
             public Path run() throws BackgroundException {
                 // Symlink pointing to existing file
                 final Symlink feature = session.getFeature(Symlink.class);
-                feature.symlink(link, selected.getName());
+                if(PreferencesFactory.get().getBoolean(
+                        String.format("%s.symlink.absolute", session.getHost().getProtocol().getScheme().name()))) {
+                    feature.symlink(link, selected.getAbsolute());
+                }
+                else {
+                    feature.symlink(link, selected.getName());
+                }
                 return link;
             }
 
