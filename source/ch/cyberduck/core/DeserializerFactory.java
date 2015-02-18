@@ -57,16 +57,7 @@ public class DeserializerFactory<T> extends Factory<Deserializer> {
             final Constructor<Deserializer> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name, dict.getClass());
             return constructor.newInstance(dict);
         }
-        catch(InstantiationException e) {
-            throw new FactoryException(e.getMessage(), e);
-        }
-        catch(IllegalAccessException e) {
-            throw new FactoryException(e.getMessage(), e);
-        }
-        catch(ClassNotFoundException e) {
-            throw new FactoryException(e.getMessage(), e);
-        }
-        catch(InvocationTargetException e) {
+        catch(InstantiationException | IllegalAccessException | InvocationTargetException | ClassNotFoundException e) {
             throw new FactoryException(e.getMessage(), e);
         }
     }

@@ -50,13 +50,7 @@ public abstract class Factory<T> {
             final Class<T> name = (Class<T>) Class.forName(clazz);
             return name.newInstance();
         }
-        catch(InstantiationException e) {
-            throw new FactoryException(e.getMessage(), e);
-        }
-        catch(IllegalAccessException e) {
-            throw new FactoryException(e.getMessage(), e);
-        }
-        catch(ClassNotFoundException e) {
+        catch(InstantiationException | ClassNotFoundException | IllegalAccessException e) {
             throw new FactoryException(e.getMessage(), e);
         }
     }

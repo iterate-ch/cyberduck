@@ -121,13 +121,7 @@ public abstract class LicenseFactory extends Factory<License> {
             final Class<LicenseFactory> name = (Class<LicenseFactory>) Class.forName(clazz);
             return name.newInstance().open(file);
         }
-        catch(InstantiationException e) {
-            throw new FactoryException(e.getMessage(), e);
-        }
-        catch(IllegalAccessException e) {
-            throw new FactoryException(e.getMessage(), e);
-        }
-        catch(ClassNotFoundException e) {
+        catch(InstantiationException | ClassNotFoundException | IllegalAccessException e) {
             throw new FactoryException(e.getMessage(), e);
         }
     }
@@ -150,13 +144,7 @@ public abstract class LicenseFactory extends Factory<License> {
                 }
                 return list.iterator().next();
             }
-            catch(InstantiationException e) {
-                throw new FactoryException(e.getMessage(), e);
-            }
-            catch(IllegalAccessException e) {
-                throw new FactoryException(e.getMessage(), e);
-            }
-            catch(ClassNotFoundException e) {
+            catch(InstantiationException | ClassNotFoundException | IllegalAccessException e) {
                 throw new FactoryException(e.getMessage(), e);
             }
         }

@@ -51,16 +51,7 @@ public class TransferErrorCallbackControllerFactory extends Factory<TransferErro
             }
             return constructor.newInstance(c);
         }
-        catch(InstantiationException e) {
-            throw new FactoryException(e.getMessage(), e);
-        }
-        catch(IllegalAccessException e) {
-            throw new FactoryException(e.getMessage(), e);
-        }
-        catch(ClassNotFoundException e) {
-            throw new FactoryException(e.getMessage(), e);
-        }
-        catch(InvocationTargetException e) {
+        catch(InstantiationException | InvocationTargetException | ClassNotFoundException | IllegalAccessException e) {
             throw new FactoryException(e.getMessage(), e);
         }
     }
