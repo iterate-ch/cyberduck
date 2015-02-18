@@ -542,17 +542,6 @@ public class BrowserController extends WindowController
         return this.getSelectedBrowserView().numberOfSelectedRows().intValue();
     }
 
-    private void deselectAll() {
-        if(log.isDebugEnabled()) {
-            log.debug("Deselect all files in browser");
-        }
-        final NSTableView browser = this.getSelectedBrowserView();
-        if(null == browser) {
-            return;
-        }
-        browser.deselectAll(null);
-    }
-
     @Override
     public void setWindow(NSWindow window) {
         window.setTitle(preferences.getProperty("application.name"));
