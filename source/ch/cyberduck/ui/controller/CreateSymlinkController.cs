@@ -62,7 +62,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 _symlink = symlink;
                 _link = new Path(_workdir, _symlink, EnumSet.of(AbstractPath.Type.file));
                 if(PreferencesFactory.get().getBoolean(
-                        String.Format("{0}.symlink.absolute", session.getHost().getProtocol().getScheme().name()))) {
+                        String.Format("{0}.symlink.absolute", BrowserController.Session.getHost().getProtocol().getScheme().name()))) {
                     _target = BrowserController.SelectedPath.getAbsolute()();
                 }
                 else {
