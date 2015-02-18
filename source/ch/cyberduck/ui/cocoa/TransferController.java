@@ -518,6 +518,7 @@ public final class TransferController extends WindowController implements NSTool
         // and then use the private pasteboard instead.
         this.transferTable.registerForDraggedTypes(NSArray.arrayWithObjects(
                 NSPasteboard.StringPboardType,
+                // Accept file promises made myself
                 NSPasteboard.FilesPromisePboardType));
 
         this.transferTable.setGridStyleMask(NSTableView.NSTableViewGridNone);
