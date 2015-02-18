@@ -103,6 +103,8 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         completion = new ExecutorCompletionService<TransferStatus>(
                 Executors.newFixedThreadPool(connections, new NamedThreadFactory("transfer")),
                 new LinkedBlockingQueue<Future<TransferStatus>>());
+        this.trust = trust;
+        this.key = key;
     }
 
     @Override
