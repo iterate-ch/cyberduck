@@ -1753,8 +1753,7 @@ public class BrowserController extends WindowController
                 NSPasteboard.URLPboardType,
                 NSPasteboard.StringPboardType,
                 NSPasteboard.FilenamesPboardType, //accept bookmark files dragged from the Finder
-                NSPasteboard.FilesPromisePboardType,
-                "HostPBoardType" //moving bookmarks
+                NSPasteboard.FilesPromisePboardType
         ));
         this._updateBookmarkCell();
 
