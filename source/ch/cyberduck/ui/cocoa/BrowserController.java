@@ -591,10 +591,6 @@ public class BrowserController extends WindowController
         this.logDrawer.setDelegate(this.id());
     }
 
-    public TranscriptController getTranscript() {
-        return transcript;
-    }
-
     private NSButton donateButton;
 
     public void setDonateButton(NSButton donateButton) {
