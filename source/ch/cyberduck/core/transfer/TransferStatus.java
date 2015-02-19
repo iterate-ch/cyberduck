@@ -167,7 +167,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         this.setSkip(skip.get() + bytes);
     }
 
-    public TransferStatus current(final long bytes) {
+    public TransferStatus skip(final long bytes) {
         this.setSkip(bytes);
         return this;
     }

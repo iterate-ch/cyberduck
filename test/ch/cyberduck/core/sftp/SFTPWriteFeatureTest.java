@@ -67,7 +67,7 @@ public class SFTPWriteFeatureTest extends AbstractTestCase {
         }
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 1);
-            final InputStream in = new SFTPReadFeature(session).read(test, new TransferStatus().append(true).current(1L));
+            final InputStream in = new SFTPReadFeature(session).read(test, new TransferStatus().append(true).skip(1L));
             new StreamCopier(status, status).transfer(in, buffer);
             final byte[] reference = new byte[content.length - 1];
             System.arraycopy(content, 1, reference, 0, content.length - 1);
