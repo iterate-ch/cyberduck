@@ -63,7 +63,7 @@ public class ResumeFilterTest extends AbstractTestCase {
             }
 
             @Override
-            public boolean append(final Path file) throws BackgroundException {
+            public boolean offset(final Path file) throws BackgroundException {
                 return true;
             }
         });
@@ -106,7 +106,7 @@ public class ResumeFilterTest extends AbstractTestCase {
             }
 
             @Override
-            public boolean append(final Path file) throws BackgroundException {
+            public boolean offset(final Path file) throws BackgroundException {
                 return true;
             }
         });
@@ -141,7 +141,7 @@ public class ResumeFilterTest extends AbstractTestCase {
             }
 
             @Override
-            public boolean append(final Path file) throws BackgroundException {
+            public boolean offset(final Path file) throws BackgroundException {
                 return true;
             }
         });

@@ -248,7 +248,7 @@ public class DownloadTransferTest extends AbstractTestCase {
                     }
 
                     @Override
-                    public boolean append(final Path file) throws BackgroundException {
+                    public boolean offset(final Path file) throws BackgroundException {
                         return true;
                     }
                 })

@@ -68,7 +68,7 @@ public class DAVReadFeature implements Read {
     }
 
     @Override
-    public boolean append(final Path file) {
+    public boolean offset(final Path file) {
         return true;
     }
 }

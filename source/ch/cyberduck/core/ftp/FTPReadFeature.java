@@ -89,7 +89,7 @@ public class FTPReadFeature implements Read {
     }
 
     @Override
-    public boolean append(final Path file) throws BackgroundException {
+    public boolean offset(final Path file) throws BackgroundException {
         // Where a server process supports RESTart in STREAM mode
         try {
             return session.getClient().hasFeature("REST", "STREAM");
