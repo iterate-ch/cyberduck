@@ -23,6 +23,8 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.date.ISO8601DateParser;
 import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
@@ -88,7 +90,7 @@ public class SwiftSegmentService {
                     catch(InvalidDateException e) {
                         log.warn(String.format("%s is not ISO 8601 format %s", s.getLastModified(), e.getMessage()));
                     }
-                    segment.attributes().setChecksum(s.getMd5sum());
+                    segment.attributes().setChecksum(new Checksum(HashAlgorithm.md5, s.getMd5sum()));
                     objects.add(segment);
                 }
             }

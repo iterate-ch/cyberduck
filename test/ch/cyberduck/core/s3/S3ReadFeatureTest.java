@@ -11,6 +11,7 @@ import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
@@ -62,7 +63,7 @@ public class S3ReadFeatureTest extends AbstractTestCase {
         new S3TouchFeature(session).touch(test);
         final byte[] content = RandomStringUtils.random(1000).getBytes();
         final TransferStatus status = new TransferStatus().length(content.length);
-        status.setChecksum(new TransferStatus.Checksum(HashAlgorithm.sha256,
+        status.setChecksum(new Checksum(HashAlgorithm.sha256,
                         new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content)))
         );
         final OutputStream out = new S3WriteFeature(session).write(test, status);

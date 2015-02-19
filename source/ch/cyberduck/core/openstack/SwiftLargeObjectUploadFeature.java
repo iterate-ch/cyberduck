@@ -130,7 +130,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                     log.debug(String.format("Skip segment %s", existingSegment));
                 }
                 final StorageObject stored = new StorageObject(containerService.getKey(segment));
-                stored.setMd5sum(existingSegment.attributes().getChecksum());
+                stored.setMd5sum(existingSegment.attributes().getChecksum().hash);
                 stored.setSize(existingSegment.attributes().getSize());
                 completed.add(stored);
             }

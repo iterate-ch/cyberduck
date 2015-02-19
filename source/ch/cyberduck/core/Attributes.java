@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.io.Checksum;
+
 /**
  * @version $Id$
  */
@@ -52,5 +54,5 @@ public abstract class Attributes {
 
     public abstract String getGroup();
 
-    public abstract String getChecksum();
+    public abstract Checksum getChecksum();
 }

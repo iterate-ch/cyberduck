@@ -23,6 +23,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamProgress;
@@ -455,16 +456,6 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         sb.append(", renamed=").append(rename);
         sb.append('}');
         return sb.toString();
-    }
-
-    public static final class Checksum {
-        public HashAlgorithm algorithm;
-        public String hash;
-
-        public Checksum(final HashAlgorithm algorithm, final String hash) {
-            this.algorithm = algorithm;
-            this.hash = hash;
-        }
     }
 
     public static final class Rename {

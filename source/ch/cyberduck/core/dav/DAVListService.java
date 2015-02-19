@@ -25,6 +25,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.HashAlgorithm;
 
 import java.io.IOException;
 import java.util.EnumSet;
@@ -65,7 +67,7 @@ public class DAVListService implements ListService {
                 if(resource.getContentLength() != null) {
                     attributes.setSize(resource.getContentLength());
                 }
-                attributes.setChecksum(resource.getEtag());
+                attributes.setChecksum(new Checksum(HashAlgorithm.md5, resource.getEtag()));
                 attributes.setETag(resource.getEtag());
                 children.add(new Path(directory, PathNormalizer.name(href),
                         resource.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file),

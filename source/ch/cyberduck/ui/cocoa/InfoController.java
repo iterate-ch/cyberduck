@@ -49,6 +49,7 @@ import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.identity.IdentityConfiguration;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.FileDescriptor;
@@ -1869,11 +1870,13 @@ public class InfoController extends ToolbarWindowController {
         }
         else {
             final Path file = this.getSelected();
-            if(StringUtils.isBlank(file.attributes().getChecksum())) {
+            final Checksum checksum = file.attributes().getChecksum();
+            if(checksum == null) {
                 checksumField.setStringValue(LocaleFactory.localizedString("Unknown"));
             }
             else {
-                this.updateField(checksumField, file.attributes().getChecksum(), TRUNCATE_MIDDLE_ATTRIBUTES);
+                this.updateField(checksumField, String.format("%s %s",
+                        StringUtils.upperCase(checksum.algorithm.name()), checksum.hash), TRUNCATE_MIDDLE_ATTRIBUTES);
             }
         }
     }

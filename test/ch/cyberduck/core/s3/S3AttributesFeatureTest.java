@@ -50,7 +50,7 @@ public class S3AttributesFeatureTest extends AbstractTestCase {
         final String v = UUID.randomUUID().toString();
         final PathAttributes attributes = new S3AttributesFeature(session).find(test);
         assertEquals(0L, attributes.getSize());
-        assertEquals("d41d8cd98f00b204e9800998ecf8427e", attributes.getChecksum());
+        assertEquals("d41d8cd98f00b204e9800998ecf8427e", attributes.getChecksum().hash);
         assertNotNull(attributes.getModificationDate());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();

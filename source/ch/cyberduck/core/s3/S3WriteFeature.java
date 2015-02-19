@@ -26,6 +26,7 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.ResponseOutputStream;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -138,7 +139,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
         if(StringUtils.isNotBlank(mime)) {
             object.setContentType(mime);
         }
-        final TransferStatus.Checksum checksum = status.getChecksum();
+        final Checksum checksum = status.getChecksum();
         if(null != checksum) {
             switch(checksum.algorithm) {
                 case md5:

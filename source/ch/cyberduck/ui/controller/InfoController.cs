@@ -1481,13 +1481,13 @@ namespace Ch.Cyberduck.Ui.Controller
             else
             {
                 Path file = SelectedPath;
-                if (StringUtils.isBlank(file.attributes().getChecksum()))
+                if (null == file.attributes().getChecksum())
                 {
                     View.Checksum = LocaleFactory.localizedString("Unknown");
                 }
                 else
                 {
-                    View.Checksum = file.attributes().getChecksum();
+                    View.Checksum = file.attributes().getChecksum().hash;
                 }
             }
             AttachGeneralHandlers();

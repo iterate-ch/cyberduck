@@ -43,10 +43,7 @@ public class MD5ChecksumCompute implements ChecksumCompute {
         try {
             return Hex.encodeHexString(ServiceUtils.computeMD5Hash(in));
         }
-        catch(NoSuchAlgorithmException e) {
-            throw new ChecksumException(LocaleFactory.localizedString("Checksum failure", "Error"), e.getMessage(), e);
-        }
-        catch(IOException e) {
+        catch(NoSuchAlgorithmException | IOException e) {
             throw new ChecksumException(LocaleFactory.localizedString("Checksum failure", "Error"), e.getMessage(), e);
         }
     }

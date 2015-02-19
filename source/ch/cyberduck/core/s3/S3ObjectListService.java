@@ -29,6 +29,8 @@ import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Versioning;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -143,7 +145,7 @@ public class S3ObjectListService implements ListService {
                 final EnumSet<AbstractPath.Type> types = object.isDirectoryPlaceholder()
                         ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
                 final Path file = new Path(parent, PathNormalizer.name(key), types);
-                file.attributes().setChecksum(object.getETag());
+                file.attributes().setChecksum(new Checksum(HashAlgorithm.md5, object.getETag()));
                 final Date lastmodified = object.getLastModifiedDate();
                 if(lastmodified != null) {
                     file.attributes().setModificationDate(lastmodified.getTime());

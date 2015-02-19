@@ -437,6 +437,7 @@ public abstract class Preferences {
         defaults.put("queue.download.permissions.folder.default", String.valueOf(755));
 
         defaults.put("queue.download.timestamp.change", String.valueOf(true));
+        defaults.put("queue.download.checksum", String.valueOf(false));
 
         defaults.put("queue.download.skip.enable", String.valueOf(true));
         defaults.put("queue.download.skip.regex.default",

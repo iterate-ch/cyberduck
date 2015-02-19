@@ -61,7 +61,7 @@ public class SwiftAttributesFeatureTest extends AbstractTestCase {
         final PathAttributes attributes = new SwiftAttributesFeature(session).find(test);
         assertEquals(0L, attributes.getSize());
         assertEquals(EnumSet.of(Path.Type.file), test.getType());
-        assertEquals("d41d8cd98f00b204e9800998ecf8427e", attributes.getChecksum());
+        assertEquals("d41d8cd98f00b204e9800998ecf8427e", attributes.getChecksum().hash);
         assertNotNull(attributes.getModificationDate());
         new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();

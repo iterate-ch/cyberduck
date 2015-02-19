@@ -26,6 +26,8 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Versioning;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.HashAlgorithm;
 
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
@@ -99,7 +101,7 @@ public class S3AttributesFeature implements Attributes {
         attributes.setSize(object.getContentLength());
         attributes.setModificationDate(object.getLastModifiedDate().getTime());
         attributes.setStorageClass(object.getStorageClass());
-        attributes.setChecksum(object.getETag());
+        attributes.setChecksum(new Checksum(HashAlgorithm.md5, object.getETag()));
         if(object instanceof S3Object) {
             attributes.setVersionId(((S3Object) object).getVersionId());
         }

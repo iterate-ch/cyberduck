@@ -27,6 +27,8 @@ import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.HashAlgorithm;
 
 import org.apache.log4j.Logger;
 
@@ -79,7 +81,7 @@ public class SwiftAttributesFeature implements Attributes {
                     catch(InvalidDateException e) {
                         log.warn(String.format("%s is not RFC 1123 format %s", metadata.getLastModified(), e.getMessage()));
                     }
-                    attributes.setChecksum(metadata.getETag());
+                    attributes.setChecksum(new Checksum(HashAlgorithm.md5, metadata.getETag()));
                     attributes.setETag(metadata.getETag());
                 }
                 else {

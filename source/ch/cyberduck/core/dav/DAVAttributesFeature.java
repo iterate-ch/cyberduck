@@ -25,6 +25,8 @@ import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.HashAlgorithm;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.http.HttpHeaders;
@@ -44,9 +46,6 @@ public class DAVAttributesFeature implements Attributes {
     private static final Logger log = Logger.getLogger(DAVAttributesFeature.class);
 
     private DAVSession session;
-
-    private PathCache cache
-            = PathCache.empty();
 
     private RFC1123DateFormatter dateParser
             = new RFC1123DateFormatter();
@@ -70,7 +69,7 @@ public class DAVAttributesFeature implements Attributes {
             if(!headers.containsKey(HttpHeaders.CONTENT_ENCODING)) {
                 attributes.setSize(NumberUtils.toLong(headers.get(HttpHeaders.CONTENT_LENGTH), -1));
             }
-            attributes.setChecksum(headers.get(HttpHeaders.CONTENT_MD5));
+            attributes.setChecksum(new Checksum(HashAlgorithm.md5, headers.get(HttpHeaders.CONTENT_MD5)));
             attributes.setETag(headers.get(HttpHeaders.ETAG));
             return attributes;
         }
@@ -84,7 +83,6 @@ public class DAVAttributesFeature implements Attributes {
 
     @Override
     public Attributes withCache(final PathCache cache) {
-        this.cache = cache;
         return this;
     }
 }
