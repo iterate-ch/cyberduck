@@ -529,6 +529,8 @@ public abstract class Preferences {
          * Total number of connections in the pool
          */
         defaults.put("http.connections.total", String.valueOf(Integer.MAX_VALUE));
+        defaults.put("http.connections.retry", String.valueOf(1));
+
         defaults.put("http.manager.timeout", String.valueOf(0)); // Infinite
         defaults.put("http.socket.buffer", String.valueOf(8192));
         defaults.put("http.credentials.charset", "ISO-8859-1");

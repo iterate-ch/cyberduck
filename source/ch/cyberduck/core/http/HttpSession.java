@@ -120,7 +120,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                 .setBufferSize(preferences.getInteger("http.socket.buffer"))
                 .setCharset(Charset.forName(this.getEncoding()))
                 .build());
-        builder.setRetryHandler(new DisabledHttpRequestRetryHandler());
+        builder.setRetryHandler(new ExtendedHttpRequestRetryHandler(preferences.getInteger("http.connections.retry")));
         if(!preferences.getBoolean("http.compression.enable")) {
             builder.disableContentCompression();
         }

@@ -125,7 +125,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
                             },
                     new PreferencesUseragentProvider().get(), null, configuration);
             final HttpClientBuilder builder = builder();
-            builder.setRetryHandler(new S3HttpRequestRetryHandler(this, preferences.getInteger("connection.retry")));
+            builder.setRetryHandler(new S3HttpRequestRetryHandler(this, preferences.getInteger("http.connections.retry")));
             this.setHttpClient(builder.build());
         }
 
