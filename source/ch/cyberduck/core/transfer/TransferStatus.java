@@ -30,7 +30,9 @@ import ch.cyberduck.core.io.StreamProgress;
 import org.apache.log4j.Logger;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -60,6 +62,11 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     private boolean append = false;
 
     /**
+     * This is a part of a segmented transfer
+     */
+    private boolean segment = false;
+
+    /**
      * Not accepted
      */
     private boolean rejected = false;
@@ -85,11 +92,15 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     private AtomicBoolean failure
             = new AtomicBoolean();
 
+    private CountDownLatch done
+            = new CountDownLatch(1);
+
     private Checksum checksum;
     /**
      * MIME type
      */
     private String mime;
+
     /**
      * Current remote attributes of existing file including UNIX permissions, timestamp and ACL
      */
@@ -107,11 +118,31 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      */
     private Long timestamp;
 
+
     private Map<String, String> parameters
             = Collections.emptyMap();
 
     private Map<String, String> metadata
             = Collections.emptyMap();
+
+    private List<TransferStatus> segments
+            = Collections.emptyList();
+
+    /**
+     * Await completion
+     *
+     * @return True if complete
+     */
+    public boolean await() {
+        // Lock until complete
+        try {
+            done.await();
+        }
+        catch(InterruptedException e) {
+            log.error("Failure waiting for status to complete");
+        }
+        return complete.get();
+    }
 
     public boolean isComplete() {
         return complete.get();
@@ -120,11 +151,18 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     @Override
     public void setComplete() {
         complete.set(true);
+        done.countDown();
+    }
+
+    public TransferStatus complete() {
+        this.setComplete();
+        return this;
     }
 
     public void setFailure() {
         failure.set(true);
         complete.set(false);
+        done.countDown();
     }
 
     /**
@@ -132,6 +170,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      */
     public void setCanceled() {
         canceled.set(true);
+        done.countDown();
     }
 
     /**
@@ -226,6 +265,19 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
 
     public TransferStatus append(final boolean append) {
         this.setAppend(append);
+        return this;
+    }
+
+    public boolean isSegment() {
+        return segment;
+    }
+
+    public void setSegment(final boolean segment) {
+        this.segment = segment;
+    }
+
+    public TransferStatus segment(final boolean segment) {
+        this.segment = segment;
         return this;
     }
 
@@ -346,6 +398,22 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         return this;
     }
 
+    public List<TransferStatus> getSegments() {
+        if(segments.isEmpty()) {
+            return Collections.singletonList(this);
+        }
+        return segments;
+    }
+
+    public TransferStatus withSegments(final List<TransferStatus> segments) {
+        this.segments = segments;
+        return this;
+    }
+
+    public boolean isSegmented() {
+        return !segments.isEmpty();
+    }
+
     @Override
     public boolean equals(final Object o) {
         if(this == o) {
@@ -380,6 +448,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         final StringBuilder sb = new StringBuilder("TransferStatus{");
         sb.append("exists=").append(exists);
         sb.append(", append=").append(append);
+        sb.append(", segments=").append(segments);
         sb.append(", current=").append(skip);
         sb.append(", length=").append(length);
         sb.append(", canceled=").append(canceled);

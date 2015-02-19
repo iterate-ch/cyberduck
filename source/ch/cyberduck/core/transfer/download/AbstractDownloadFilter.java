@@ -20,6 +20,7 @@ package ch.cyberduck.core.transfer.download;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
@@ -31,6 +32,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.local.ApplicationLauncher;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.IconService;
@@ -47,6 +49,9 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
 import org.apache.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @version $Id$
@@ -169,6 +174,54 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             status.setPermission(permission);
         }
         status.setAcl(attributes.getAcl());
+        if(file.isFile()) {
+            if(preferences.getInteger("queue.session.pool.size") > 1) {
+                // Make segments
+                if(status.getLength() >= preferences.getLong("queue.download.segments.threshold")
+                        && status.getLength() > preferences.getLong("queue.download.segments.size")) {
+                    final Read read = session.getFeature(Read.class);
+                    if(read.offset(file)) {
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("Split download %s into segments", local));
+                        }
+                        long remaining = status.getLength();
+                        long offset = 0;
+                        long partsize = preferences.getLong("queue.download.segments.size");
+                        final List<TransferStatus> segments = new ArrayList<TransferStatus>();
+                        for(int segmentNumber = 1; remaining > 0; segmentNumber++) {
+                            final Local renamed = LocalFactory.get(local.getParent(),
+                                    String.format("%s-%d.cyberducksegment", local.getName(), segmentNumber));
+                            boolean skip = false;
+                            // Last part can be less than 5 MB. Adjust part size.
+                            final Long length = Math.min(partsize, remaining);
+                            if(status.isAppend()) {
+                                if(log.isInfoEnabled()) {
+                                    log.info(String.format("Determine if part number %d can be skipped", segmentNumber));
+                                }
+                                if(renamed.exists()) {
+                                    if(renamed.attributes().getSize() == length) {
+                                        if(log.isInfoEnabled()) {
+                                            log.info(String.format("Skip completed segment number %d", segmentNumber));
+                                        }
+                                        skip = true;
+                                    }
+                                }
+                            }
+                            if(!skip) {
+                                segments.add(new TransferStatus()
+                                        .skip(offset)
+                                        .segment(true)
+                                        .length(length)
+                                        .rename(renamed));
+                            }
+                            remaining -= length;
+                            offset += length;
+                        }
+                        return status.withSegments(segments);
+                    }
+                }
+            }
+        }
         return status;
     }
 
@@ -196,7 +249,27 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Complete %s with status %s", file.getAbsolute(), status));
         }
+        if(status.isSegment()) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Skip completion for single segment %s", status));
+            }
+            return;
+        }
         if(status.isComplete()) {
+            if(status.isSegmented()) {
+                // Obtain ordered list of segments to reassemble
+                for(TransferStatus segment : status.getSegments()) {
+                    final Local f = segment.getRename().local;
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Append segment %s to %s", f, local));
+                    }
+                    f.copy(local, new Local.CopyOptions().append(true));
+                    f.delete();
+                }
+            }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Run completion for file %s with status %s", local, status));
+            }
             if(file.isFile()) {
                 // Remove custom icon if complete. The Finder will display the default icon for this file type
                 if(this.options.icon) {

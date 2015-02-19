@@ -43,6 +43,7 @@ public class TransferStatusTest {
         assertFalse(status.isComplete());
         status.setComplete();
         assertTrue(status.isComplete());
+        assertTrue(status.await());
     }
 
     @Test
