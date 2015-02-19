@@ -26,8 +26,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
  */
 public final class DownloadFilterOptions {
 
-    private final Preferences preferences = PreferencesFactory.get();
-
     public boolean permissions;
 
     public boolean timestamp;
@@ -36,10 +34,14 @@ public final class DownloadFilterOptions {
 
     public boolean icon;
 
+    public boolean checksum;
+
     public DownloadFilterOptions() {
+        final Preferences preferences = PreferencesFactory.get();
         permissions = preferences.getBoolean("queue.download.permissions.change");
         timestamp = preferences.getBoolean("queue.download.timestamp.change");
         wherefrom = preferences.getBoolean("queue.download.wherefrom");
         icon = preferences.getBoolean("queue.download.icon.update");
+        checksum = preferences.getBoolean("queue.download.checksum");
     }
 }

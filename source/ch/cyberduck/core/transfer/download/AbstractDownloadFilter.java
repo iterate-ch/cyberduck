@@ -21,6 +21,7 @@ import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
@@ -30,9 +31,14 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.MD5ChecksumCompute;
+import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.local.ApplicationLauncher;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.IconService;
@@ -48,8 +54,10 @@ import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -217,9 +225,14 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                             remaining -= length;
                             offset += length;
                         }
-                        return status.withSegments(segments);
+                        status.withSegments(segments);
                     }
                 }
+            }
+        }
+        if(this.options.checksum) {
+            if(attributes.getChecksum() != null) {
+                status.setChecksum(attributes.getChecksum());
             }
         }
         return status;
@@ -265,6 +278,30 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                     }
                     f.copy(local, new Local.CopyOptions().append(true));
                     f.delete();
+                }
+                if(this.options.checksum) {
+                    final Checksum checksum = status.getChecksum();
+                    if(null != checksum) {
+                        final ChecksumCompute compute;
+                        switch(checksum.algorithm) {
+                            case md5:
+                                compute = new MD5ChecksumCompute();
+                                break;
+                            case sha256:
+                                compute = new SHA256ChecksumCompute();
+                                break;
+                            default:
+                                log.warn(String.format("Unsupported checksum algorithm %s", checksum.algorithm));
+                                compute = null;
+                        }
+                        if(null != compute) {
+                            if(!StringUtils.equals(compute.compute(local.getInputStream()), checksum.hash)) {
+                                throw new ChecksumException(
+                                        MessageFormat.format(LocaleFactory.localizedString("Download {0} failed", "Error"), file.getName()),
+                                        LocaleFactory.localizedString("Checksum failure", "Error"));
+                            }
+                        }
+                    }
                 }
             }
             if(log.isDebugEnabled()) {
