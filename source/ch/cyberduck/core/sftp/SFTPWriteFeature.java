@@ -69,37 +69,20 @@ public class SFTPWriteFeature extends AppendWriteFeature {
             }
             final int maxUnconfirmedWrites
                     = (int) (status.getLength() / preferences.getInteger("connection.chunksize")) + 1;
-            final OutputStream out;
-            if(status.isAppend()) {
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Skipping %d bytes", status.getCurrent()));
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Skipping %d bytes", status.getCurrent()));
+            }
+            return handle.new RemoteFileOutputStream(status.getCurrent(), maxUnconfirmedWrites) {
+                @Override
+                public void close() throws IOException {
+                    try {
+                        super.close();
+                    }
+                    finally {
+                        handle.close();
+                    }
                 }
-                out = handle.new RemoteFileOutputStream(status.getCurrent(), maxUnconfirmedWrites) {
-                    @Override
-                    public void close() throws IOException {
-                        try {
-                            super.close();
-                        }
-                        finally {
-                            handle.close();
-                        }
-                    }
-                };
-            }
-            else {
-                out = handle.new RemoteFileOutputStream(0L, maxUnconfirmedWrites) {
-                    @Override
-                    public void close() throws IOException {
-                        try {
-                            super.close();
-                        }
-                        finally {
-                            handle.close();
-                        }
-                    }
-                };
-            }
-            return out;
+            };
         }
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map("Upload {0} failed", e, file);

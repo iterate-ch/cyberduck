@@ -46,7 +46,6 @@ public class SFTPReadFeature implements Read {
 
     @Override
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
-        InputStream in;
         try {
             final RemoteFile handle = session.sftp().open(file.getAbsolute(),
                     EnumSet.of(OpenMode.READ));
@@ -55,7 +54,7 @@ public class SFTPReadFeature implements Read {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Skipping %d bytes", status.getCurrent()));
             }
-            in = handle.new ReadAheadRemoteFileInputStream(maxUnconfirmedReads, status.getCurrent()) {
+            return handle.new ReadAheadRemoteFileInputStream(maxUnconfirmedReads, status.getCurrent()) {
                 @Override
                 public void close() throws IOException {
                     try {
@@ -66,7 +65,6 @@ public class SFTPReadFeature implements Read {
                     }
                 }
             };
-            return in;
         }
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map("Download {0} failed", e, file);
