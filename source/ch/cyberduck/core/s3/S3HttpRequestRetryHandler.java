@@ -19,62 +19,32 @@ package ch.cyberduck.core.s3;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.http.ExtendedHttpRequestRetryHandler;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpCoreContext;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.impl.rest.httpclient.JetS3tRequestAuthorizer;
-import org.jets3t.service.io.UnrecoverableIOException;
 
-import javax.net.ssl.SSLHandshakeException;
 import java.io.IOException;
-import java.io.InterruptedIOException;
-import java.net.ConnectException;
-import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.List;
-
-import com.barchart.udt.ExceptionUDT;
 
 /**
  * @version $Id$
  */
-public class S3HttpRequestRetryHandler extends DefaultHttpRequestRetryHandler {
+public class S3HttpRequestRetryHandler extends ExtendedHttpRequestRetryHandler {
     private static final Logger log = Logger.getLogger(S3HttpRequestRetryHandler.class);
 
     private final JetS3tRequestAuthorizer authorizer;
 
-    private static final List<Class<? extends IOException>> exceptions = Arrays.asList(
-            UnrecoverableIOException.class,
-            InterruptedIOException.class,
-            UnknownHostException.class,
-            ConnectException.class,
-            ExceptionUDT.class,
-            // Not providing SSLException.class, because broken pipe failures are wrapped in SSL Exceptions.
-            // "Broken pipe".equals(ExceptionUtils.getRootCause(failure).getMessage())
-            SSLHandshakeException.class);
-
-    public S3HttpRequestRetryHandler(final JetS3tRequestAuthorizer authorizer) {
-        this(authorizer, PreferencesFactory.get().getInteger("connection.retry"));
-    }
-
     public S3HttpRequestRetryHandler(final JetS3tRequestAuthorizer authorizer, final int retryCount) {
-        super(retryCount, false, exceptions);
+        super(retryCount);
         this.authorizer = authorizer;
     }
 
     @Override
     public boolean retryRequest(final IOException exception, final int executionCount, final HttpContext context) {
-        if(ExceptionUtils.getRootCause(exception) != null) {
-            if(ExceptionUtils.getRootCause(exception) instanceof RuntimeException) {
-                return false;
-            }
-        }
         if(super.retryRequest(exception, executionCount, context)) {
             final Object attribute = context.getAttribute(HttpCoreContext.HTTP_REQUEST);
             if(attribute instanceof HttpUriRequest) {
