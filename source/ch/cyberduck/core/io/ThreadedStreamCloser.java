@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @version $Id$
  */
-public class ThreadedStreamCloser {
+public class ThreadedStreamCloser implements StreamCloser {
 
     private final Preferences preferences
             = PreferencesFactory.get();
@@ -42,6 +42,7 @@ public class ThreadedStreamCloser {
     private final NamedThreadFactory threadFactory
             = new NamedThreadFactory("close");
 
+    @Override
     public void close(final InputStream in) throws ConnectionTimeoutException {
         final CountDownLatch signal = new CountDownLatch(1);
         threadFactory.newThread(new Runnable() {
@@ -61,6 +62,7 @@ public class ThreadedStreamCloser {
         }
     }
 
+    @Override
     public void close(final OutputStream out) throws ConnectionTimeoutException {
         final CountDownLatch signal = new CountDownLatch(1);
         threadFactory.newThread(new Runnable() {
