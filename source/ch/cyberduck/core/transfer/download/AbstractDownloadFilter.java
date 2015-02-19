@@ -279,6 +279,11 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                     f.copy(local, new Local.CopyOptions().append(true));
                     f.delete();
                 }
+            }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Run completion for file %s with status %s", local, status));
+            }
+            if(file.isFile()) {
                 if(this.options.checksum) {
                     final Checksum checksum = status.getChecksum();
                     if(null != checksum) {
@@ -303,11 +308,6 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                         }
                     }
                 }
-            }
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Run completion for file %s with status %s", local, status));
-            }
-            if(file.isFile()) {
                 // Remove custom icon if complete. The Finder will display the default icon for this file type
                 if(this.options.icon) {
                     icon.set(local, status);
