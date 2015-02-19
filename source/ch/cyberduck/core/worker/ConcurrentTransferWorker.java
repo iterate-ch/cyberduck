@@ -150,7 +150,8 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
     @Override
     public void await() throws BackgroundException {
         // Await termination for submitted tasks in queue
-        for(int i = 0; i < size.get(); i++) {
+        final int queued = size.get();
+        for(int i = 0; i < queued; i++) {
             try {
                 final TransferStatus status = completion.take().get();
                 if(log.isInfoEnabled()) {
