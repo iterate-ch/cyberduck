@@ -18,6 +18,8 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.application.NSAlert;
+import ch.cyberduck.binding.application.NSTextField;
 import ch.cyberduck.core.DefaultPathKindDetector;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
@@ -30,8 +32,6 @@ import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.binding.application.NSAlert;
-import ch.cyberduck.binding.application.NSTextField;
 
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.cocoa.foundation.NSRect;
@@ -79,6 +79,7 @@ public class DownloadController extends AlertController {
             final Host host = HostParser.parse(urlField.stringValue());
             final Path file = new Path(PathNormalizer.normalize(host.getDefaultPath(), true),
                     EnumSet.of(detector.detect(host.getDefaultPath())));
+            host.setDefaultPath(file.getParent().getAbsolute());
             final Transfer transfer = new DownloadTransfer(host, file,
                     LocalFactory.get(PreferencesFactory.get().getProperty("queue.download.folder"), file.getName()));
             TransferControllerFactory.get().start(transfer);
