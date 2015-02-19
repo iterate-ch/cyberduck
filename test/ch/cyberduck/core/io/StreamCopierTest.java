@@ -32,7 +32,7 @@ public class StreamCopierTest extends AbstractTestCase {
         final TransferStatus status = new TransferStatus();
         final ByteArrayOutputStream out = new ByteArrayOutputStream(bytes.length);
         new StreamCopier(status, status).withLimit((long) bytes.length).transfer(IOUtils.toInputStream(random), out);
-        assertEquals(bytes.length, status.getCurrent(), 0L);
+        assertEquals(bytes.length, status.getSkip(), 0L);
         assertArrayEquals(bytes, out.toByteArray());
         assertTrue(status.isComplete());
     }
@@ -61,7 +61,7 @@ public class StreamCopierTest extends AbstractTestCase {
             }
         }).transfer(new NullInputStream(432768L), new NullOutputStream());
         assertTrue(status.isComplete());
-        assertEquals(432768L, status.getCurrent(), 0L);
+        assertEquals(432768L, status.getSkip(), 0L);
     }
 
     @Test
@@ -89,7 +89,7 @@ public class StreamCopierTest extends AbstractTestCase {
         );
         assertTrue(write.get());
         assertTrue(status.isComplete());
-        assertEquals(5L, status.getCurrent(), 0L);
+        assertEquals(5L, status.getSkip(), 0L);
     }
 
     @Test
@@ -97,14 +97,14 @@ public class StreamCopierTest extends AbstractTestCase {
         final TransferStatus status = new TransferStatus().length(432768L);
         new StreamCopier(status, status).withLimit(432768L).transfer(new NullInputStream(432768L), new NullOutputStream());
         assertTrue(status.isComplete());
-        assertEquals(432768L, status.getCurrent(), 0L);
+        assertEquals(432768L, status.getSkip(), 0L);
     }
 
     @Test
     public void testTransferFixedLengthIncomplete() throws Exception {
         final TransferStatus status = new TransferStatus().length(432768L);
         new StreamCopier(status, status).withLimit(432767L).transfer(new NullInputStream(432768L), new NullOutputStream());
-        assertEquals(432767L, status.getCurrent(), 0L);
+        assertEquals(432767L, status.getSkip(), 0L);
         assertTrue(status.isComplete());
     }
 
@@ -112,7 +112,7 @@ public class StreamCopierTest extends AbstractTestCase {
     public void testReadNoEndofStream() throws Exception {
         final TransferStatus status = new TransferStatus().length(432768L);
         new StreamCopier(status, status).withLimit(432768L).transfer(new NullInputStream(432770L), new NullOutputStream());
-        assertEquals(432768L, status.getCurrent(), 0L);
+        assertEquals(432768L, status.getSkip(), 0L);
         assertTrue(status.isComplete());
     }
 
@@ -121,13 +121,13 @@ public class StreamCopierTest extends AbstractTestCase {
         {
             final TransferStatus status = new TransferStatus();
             new StreamCopier(status, status).withOffset(1L).transfer(new NullInputStream(432768L), new NullOutputStream());
-            assertEquals(432767L, status.getCurrent(), 0L);
+            assertEquals(432767L, status.getSkip(), 0L);
             assertTrue(status.isComplete());
         }
         {
             final TransferStatus status = new TransferStatus();
             new StreamCopier(status, status).withOffset(1L).transfer(new NullInputStream(432768L), new NullOutputStream());
-            assertEquals(432767L, status.getCurrent(), 0L);
+            assertEquals(432767L, status.getSkip(), 0L);
             assertTrue(status.isComplete());
         }
     }
@@ -177,7 +177,7 @@ public class StreamCopierTest extends AbstractTestCase {
                 exit.await();
                 assertFalse(status.isComplete());
                 assertTrue(status.isCanceled());
-                assertEquals(32768L, status.getCurrent());
+                assertEquals(32768L, status.getSkip());
                 return null;
             }
         }, 10);

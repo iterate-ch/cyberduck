@@ -27,11 +27,11 @@ public class TransferStatusTest {
     @Test
     public void testSetResume() throws Exception {
         TransferStatus status = new TransferStatus();
-        status.setCurrent(1024);
+        status.setSkip(1024);
         status.setAppend(true);
-        assertEquals(1024, status.getCurrent());
+        assertEquals(1024, status.getSkip());
         status.setAppend(false);
-        assertEquals(0, status.getCurrent());
+        assertEquals(0, status.getSkip());
     }
 
     @Test
@@ -39,7 +39,7 @@ public class TransferStatusTest {
         TransferStatus status = new TransferStatus();
         status.setLength(1L);
         assertFalse(status.isComplete());
-        status.setCurrent(1L);
+        status.setSkip(1L);
         assertFalse(status.isComplete());
         status.setComplete();
         assertTrue(status.isComplete());

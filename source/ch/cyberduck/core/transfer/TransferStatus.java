@@ -62,12 +62,12 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     /**
      * Not accepted
      */
-    private boolean skipped = false;
+    private boolean rejected = false;
 
     /**
      * The number of transferred bytes. Must be less or equals size.
      */
-    private AtomicLong current
+    private AtomicLong skip
             = new AtomicLong(0);
     /**
      * Transfer size. May be less than the file size in attributes or 0 if creating symbolic links.
@@ -148,27 +148,27 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     /**
      * @return Number of bytes transferred
      */
-    public long getCurrent() {
-        return current.get();
+    public long getSkip() {
+        return skip.get();
     }
 
     /**
-     * @param current The already transferred bytes
+     * @param skip The already transferred bytes
      */
-    public void setCurrent(final long current) {
-        this.current.set(current);
+    public void setSkip(final long skip) {
+        this.skip.set(skip);
         if(log.isInfoEnabled()) {
-            log.info(String.format("Transferred bytes set to %d bytes", current));
+            log.info(String.format("Transferred bytes set to %d bytes", skip));
         }
     }
 
     @Override
-    public void progress(final long transferred) {
-        this.setCurrent(current.get() + transferred);
+    public void progress(final long bytes) {
+        this.setSkip(skip.get() + bytes);
     }
 
-    public TransferStatus current(final long transferred) {
-        this.current.set(transferred);
+    public TransferStatus current(final long bytes) {
+        this.setSkip(bytes);
         return this;
     }
 
@@ -180,17 +180,17 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     }
 
     /**
-     * @param length Transfer content length
+     * @param bytes Transfer content length
      */
-    public void setLength(final long length) {
-        this.length = length;
+    public void setLength(final long bytes) {
+        this.length = bytes;
     }
 
     /**
-     * @param length Transfer content length
+     * @param bytes Transfer content length
      */
-    public TransferStatus length(final long length) {
-        this.length = length;
+    public TransferStatus length(final long bytes) {
+        this.setLength(bytes);
         return this;
     }
 
@@ -215,34 +215,31 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      * Mark this path with an append flag when transferred
      *
      * @param append If false, the current status is cleared
-     * @see #setCurrent(long)
+     * @see #setSkip(long)
      */
     public void setAppend(final boolean append) {
         if(!append) {
-            current.set(0);
+            skip.set(0);
         }
         this.append = append;
     }
 
     public TransferStatus append(final boolean append) {
-        if(!append) {
-            current.set(0);
-        }
-        this.append = append;
+        this.setAppend(append);
         return this;
     }
 
-    public void setSkipped(boolean skip) {
-        this.skipped = skip;
+    public void setRejected(boolean rejected) {
+        this.rejected = rejected;
     }
 
-    public TransferStatus skip(final boolean skip) {
-        this.skipped = skip;
+    public TransferStatus reject(final boolean rejected) {
+        this.setRejected(rejected);
         return this;
     }
 
-    public boolean isSkipped() {
-        return skipped;
+    public boolean isRejected() {
+        return rejected;
     }
 
     public Rename getRename() {
@@ -287,7 +284,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     }
 
     public TransferStatus checksum(final HashAlgorithm algorithm, final String hash) {
-        this.checksum = new Checksum(algorithm, hash);
+        this.setChecksum(algorithm, hash);
         return this;
     }
 
@@ -383,7 +380,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         final StringBuilder sb = new StringBuilder("TransferStatus{");
         sb.append("exists=").append(exists);
         sb.append(", append=").append(append);
-        sb.append(", current=").append(current);
+        sb.append(", current=").append(skip);
         sb.append(", length=").append(length);
         sb.append(", canceled=").append(canceled);
         sb.append(", renamed=").append(rename);

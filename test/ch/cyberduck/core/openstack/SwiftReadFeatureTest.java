@@ -74,7 +74,7 @@ public class SwiftReadFeatureTest extends AbstractTestCase {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);
-        status.setCurrent(100L);
+        status.setSkip(100L);
         final InputStream in = new SwiftReadFeature(session).read(test, status);
         assertNotNull(in);
         assertTrue(in instanceof ContentLengthInputStream);

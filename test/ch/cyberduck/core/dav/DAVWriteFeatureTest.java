@@ -145,7 +145,7 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         IOUtils.closeQuietly(out);
-        assertEquals(content.length, status.getCurrent());
+        assertEquals(content.length, status.getSkip());
         assertTrue(status.isComplete());
         assertEquals(content.length, new DefaultAttributesFeature(session).find(test).getSize());
         assertEquals(-1, new DAVAttributesFeature(session).find(test).getSize());

@@ -105,7 +105,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractTestCase {
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status, new DisabledConnectionCallback());
 
-        assertEquals(1048576 + 1048576 + 1, status.getCurrent());
+        assertEquals(1048576 + 1048576 + 1, status.getSkip());
         assertTrue(status.isComplete());
         assertFalse(status.isCanceled());
 

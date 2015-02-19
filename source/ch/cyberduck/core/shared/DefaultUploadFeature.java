@@ -59,7 +59,7 @@ public class DefaultUploadFeature implements Upload<Void> {
                 in = local.getInputStream();
                 out = writer.write(file, status);
                 new StreamCopier(status, status)
-                        .withOffset(status.getCurrent())
+                        .withOffset(status.getSkip())
                         .withLimit(status.getLength())
                         .withListener(listener)
                         .transfer(in, new ThrottledOutputStream(out, throttle));

@@ -88,7 +88,7 @@ public class ResumeFilter extends AbstractUploadFilter {
                 if(append.append && append.size <= local.attributes().getSize()) {
                     // Append to existing file
                     status.setAppend(true);
-                    status.setCurrent(append.size);
+                    status.setSkip(append.size);
                 }
             }
         }

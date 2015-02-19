@@ -70,7 +70,7 @@ public class S3ReadFeatureTest extends AbstractTestCase {
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         IOUtils.closeQuietly(out);
         status.setAppend(true);
-        status.setCurrent(100L);
+        status.setSkip(100L);
         final InputStream in = new S3ReadFeature(session).read(test, status);
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
@@ -100,7 +100,7 @@ public class S3ReadFeatureTest extends AbstractTestCase {
                 EnumSet.of(Path.Type.file)), status);
         assertNotNull(in);
         new StreamCopier(status, status).transfer(in, new NullOutputStream());
-        assertEquals(1457L, status.getCurrent());
+        assertEquals(1457L, status.getSkip());
         assertEquals(-1L, status.getLength());
         in.close();
         session.close();

@@ -67,7 +67,7 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
         final List<Header> headers = new ArrayList<Header>();
         if(status.isAppend()) {
             headers.add(new BasicHeader(HttpHeaders.CONTENT_RANGE, String.format("bytes %d-%d/%d",
-                            status.getCurrent(), status.getLength() - 1, status.getLength()))
+                            status.getSkip(), status.getLength() - 1, status.getLength()))
             );
         }
         if(expect) {
@@ -99,7 +99,7 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
 
             @Override
             public long getContentLength() {
-                return status.getLength() - status.getCurrent();
+                return status.getLength() - status.getSkip();
             }
         };
         return this.write(file, status, command);
