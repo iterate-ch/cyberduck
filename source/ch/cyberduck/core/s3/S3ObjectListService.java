@@ -145,7 +145,9 @@ public class S3ObjectListService implements ListService {
                 final EnumSet<AbstractPath.Type> types = object.isDirectoryPlaceholder()
                         ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
                 final Path file = new Path(parent, PathNormalizer.name(key), types);
-                file.attributes().setChecksum(new Checksum(HashAlgorithm.md5, object.getETag()));
+                if(StringUtils.isNotBlank(object.getETag())) {
+                    file.attributes().setChecksum(new Checksum(HashAlgorithm.md5, object.getETag()));
+                }
                 final Date lastmodified = object.getLastModifiedDate();
                 if(lastmodified != null) {
                     file.attributes().setModificationDate(lastmodified.getTime());

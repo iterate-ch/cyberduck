@@ -29,6 +29,7 @@ import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3Object;
@@ -101,7 +102,9 @@ public class S3AttributesFeature implements Attributes {
         attributes.setSize(object.getContentLength());
         attributes.setModificationDate(object.getLastModifiedDate().getTime());
         attributes.setStorageClass(object.getStorageClass());
-        attributes.setChecksum(new Checksum(HashAlgorithm.md5, object.getETag()));
+        if(StringUtils.isNotBlank(object.getETag())) {
+            attributes.setChecksum(new Checksum(HashAlgorithm.md5, object.getETag()));
+        }
         if(object instanceof S3Object) {
             attributes.setVersionId(((S3Object) object).getVersionId());
         }
