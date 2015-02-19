@@ -86,7 +86,7 @@ public class S3UrlProviderTest extends AbstractTestCase {
             }
         });
         assertTrue(provider.sign(new Path("/test.cyberduck.ch/test", EnumSet.of(Path.Type.file)), 30).getUrl().startsWith(
-                "https://test.cyberduck.ch.s3.amazonaws.com/test?AWSAccessKeyId=AKIAIUTN5UDAA36D3RLQ&Expires="));
+                "https://test.cyberduck.ch.s3.amazonaws.com/test?AWSAccessKeyId=AKIAIGNLFZ2PXC6H2UPQ&Expires="));
     }
 
     @Test
