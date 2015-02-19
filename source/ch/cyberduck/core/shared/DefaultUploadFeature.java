@@ -27,9 +27,9 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.StreamCloser;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.io.ThreadedStreamCloser;
 import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -66,7 +66,7 @@ public class DefaultUploadFeature implements Upload<Void> {
                 return null;
             }
             finally {
-                final StreamCloser c = new StreamCloser();
+                final ThreadedStreamCloser c = new ThreadedStreamCloser();
                 c.close(in);
                 c.close(out);
             }

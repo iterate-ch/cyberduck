@@ -19,6 +19,7 @@ package ch.cyberduck.core.io;
  */
 
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
+import ch.cyberduck.core.exception.StreamCloseTimeoutException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.NamedThreadFactory;
@@ -33,14 +34,17 @@ import java.util.concurrent.TimeUnit;
 /**
  * @version $Id$
  */
-public class StreamCloser {
+public class ThreadedStreamCloser {
 
     private final Preferences preferences
             = PreferencesFactory.get();
 
+    private final NamedThreadFactory threadFactory
+            = new NamedThreadFactory("close");
+
     public void close(final InputStream in) throws ConnectionTimeoutException {
         final CountDownLatch signal = new CountDownLatch(1);
-        new NamedThreadFactory("close").newThread(new Runnable() {
+        threadFactory.newThread(new Runnable() {
             @Override
             public void run() {
                 IOUtils.closeQuietly(in);
@@ -49,7 +53,7 @@ public class StreamCloser {
         }).start();
         try {
             if(!signal.await(preferences.getInteger("connection.timeout.seconds"), TimeUnit.SECONDS)) {
-                throw new ConnectionTimeoutException("Timeout closing input stream", null);
+                throw new StreamCloseTimeoutException("Timeout closing input stream", null);
             }
         }
         catch(InterruptedException e) {
@@ -59,7 +63,7 @@ public class StreamCloser {
 
     public void close(final OutputStream out) throws ConnectionTimeoutException {
         final CountDownLatch signal = new CountDownLatch(1);
-        new NamedThreadFactory("close").newThread(new Runnable() {
+        threadFactory.newThread(new Runnable() {
             @Override
             public void run() {
                 IOUtils.closeQuietly(out);
@@ -68,7 +72,7 @@ public class StreamCloser {
         }).start();
         try {
             if(!signal.await(preferences.getInteger("connection.timeout.seconds"), TimeUnit.SECONDS)) {
-                throw new ConnectionTimeoutException("Timeout closing output stream", null);
+                throw new StreamCloseTimeoutException("Timeout closing output stream", null);
             }
         }
         catch(InterruptedException e) {
