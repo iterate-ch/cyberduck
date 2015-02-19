@@ -31,7 +31,7 @@ public class StreamCopierTest extends AbstractTestCase {
         final byte[] bytes = random.getBytes();
         final TransferStatus status = new TransferStatus();
         final ByteArrayOutputStream out = new ByteArrayOutputStream(bytes.length);
-        new StreamCopier(status, status).withLimit(new Long(bytes.length)).transfer(IOUtils.toInputStream(random), out);
+        new StreamCopier(status, status).withLimit((long) bytes.length).transfer(IOUtils.toInputStream(random), out);
         assertEquals(bytes.length, status.getCurrent(), 0L);
         assertArrayEquals(bytes, out.toByteArray());
         assertTrue(status.isComplete());
@@ -94,7 +94,7 @@ public class StreamCopierTest extends AbstractTestCase {
 
     @Test
     public void testTransferFixedLength() throws Exception {
-        final TransferStatus status = new TransferStatus();
+        final TransferStatus status = new TransferStatus().length(432768L);
         new StreamCopier(status, status).withLimit(432768L).transfer(new NullInputStream(432768L), new NullOutputStream());
         assertTrue(status.isComplete());
         assertEquals(432768L, status.getCurrent(), 0L);
@@ -102,9 +102,17 @@ public class StreamCopierTest extends AbstractTestCase {
 
     @Test
     public void testTransferFixedLengthIncomplete() throws Exception {
-        final TransferStatus status = new TransferStatus();
+        final TransferStatus status = new TransferStatus().length(432768L);
         new StreamCopier(status, status).withLimit(432767L).transfer(new NullInputStream(432768L), new NullOutputStream());
         assertEquals(432767L, status.getCurrent(), 0L);
+        assertTrue(status.isComplete());
+    }
+
+    @Test
+    public void testReadNoEndofStream() throws Exception {
+        final TransferStatus status = new TransferStatus().length(432768L);
+        new StreamCopier(status, status).withLimit(432768L).transfer(new NullInputStream(432770L), new NullOutputStream());
+        assertEquals(432768L, status.getCurrent(), 0L);
         assertTrue(status.isComplete());
     }
 
@@ -145,10 +153,7 @@ public class StreamCopierTest extends AbstractTestCase {
                                         lock.await();
                                         exit.await();
                                     }
-                                    catch(InterruptedException e) {
-                                        fail(e.getMessage());
-                                    }
-                                    catch(BrokenBarrierException e) {
+                                    catch(InterruptedException | BrokenBarrierException e) {
                                         fail(e.getMessage());
                                     }
                                 }
