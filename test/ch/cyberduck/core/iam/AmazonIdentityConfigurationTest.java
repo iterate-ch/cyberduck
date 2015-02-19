@@ -5,6 +5,7 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
@@ -60,7 +61,7 @@ public class AmazonIdentityConfigurationTest extends AbstractTestCase {
         new AmazonIdentityConfiguration(host).create("u", "{}", new DisabledLoginCallback());
     }
 
-    @Test(expected = BackgroundException.class)
+    @Test(expected = ConnectionTimeoutException.class)
     public void testTimeout() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
