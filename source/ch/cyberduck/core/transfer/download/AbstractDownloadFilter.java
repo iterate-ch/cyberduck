@@ -59,7 +59,9 @@ import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @version $Id$
@@ -197,8 +199,9 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                         long partsize = preferences.getLong("queue.download.segments.size");
                         final List<TransferStatus> segments = new ArrayList<TransferStatus>();
                         for(int segmentNumber = 1; remaining > 0; segmentNumber++) {
-                            final Local renamed = LocalFactory.get(local.getParent(),
-                                    String.format("%s-%d.cyberducksegment", local.getName(), segmentNumber));
+                            final Local renamed = LocalFactory.get(
+                                    LocalFactory.get(local.getParent(), String.format("%s.cyberducksegment", local.getName())),
+                                    String.format("%s.cyberducksegment", UUID.randomUUID().toString()));
                             boolean skip = false;
                             // Last part can be less than 5 MB. Adjust part size.
                             final Long length = Math.min(partsize, remaining);
@@ -271,13 +274,17 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         if(status.isComplete()) {
             if(status.isSegmented()) {
                 // Obtain ordered list of segments to reassemble
-                for(TransferStatus segment : status.getSegments()) {
+                for(Iterator<TransferStatus> iterator = status.getSegments().iterator(); iterator.hasNext(); ) {
+                    final TransferStatus segment = iterator.next();
                     final Local f = segment.getRename().local;
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Append segment %s to %s", f, local));
                     }
                     f.copy(local, new Local.CopyOptions().append(true));
                     f.delete();
+                    if(!iterator.hasNext()) {
+                        f.getParent().delete();
+                    }
                 }
             }
             if(log.isDebugEnabled()) {
