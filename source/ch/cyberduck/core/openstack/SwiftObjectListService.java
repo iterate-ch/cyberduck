@@ -80,7 +80,6 @@ public class SwiftObjectListService implements ListService {
                     attributes.setRegion(container.attributes().getRegion());
                     if(StringUtils.isNotBlank(object.getMd5sum())) {
                         attributes.setChecksum(new Checksum(HashAlgorithm.md5, object.getMd5sum()));
-                        attributes.setETag(object.getMd5sum());
                     }
                     attributes.setSize(object.getSize());
                     final String lastModified = object.getLastModified();
