@@ -2225,7 +2225,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="transfer"></param>
         protected void transfer(Transfer transfer, IList<Path> selected)
         {
-            this.transfer(transfer, selected, Session.getMaxConnections() == 1);
+            this.transfer(transfer, selected, Session.getTransferType().equals(Host.TransferType.browser));
         }
 
         /// <summary>
