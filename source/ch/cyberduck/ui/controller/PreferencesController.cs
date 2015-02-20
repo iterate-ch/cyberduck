@@ -909,7 +909,7 @@ namespace Ch.Cyberduck.Ui.Controller
             #region Transfers - General
 
             PopulateTransferModes();
-            View.TransferMode = PreferencesFactory.get().preferences.getProperty("queue.transfer.type");
+            View.TransferMode = PreferencesFactory.get().getProperty("queue.transfer.type");
             View.TransfersToFront = PreferencesFactory.get().getBoolean("queue.window.open.transfer.start");
             View.TransfersToBack = PreferencesFactory.get().getBoolean("queue.window.open.transfer.stop");
             View.RemoveFromTransfers = PreferencesFactory.get().getBoolean("queue.removeItemWhenComplete");
