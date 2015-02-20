@@ -197,6 +197,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                         long remaining = status.getLength();
                         long offset = 0;
                         long partsize = preferences.getLong("queue.download.segments.size");
+                        // Sorted list
                         final List<TransferStatus> segments = new ArrayList<TransferStatus>();
                         for(int segmentNumber = 1; remaining > 0; segmentNumber++) {
                             final Local renamed = LocalFactory.get(
@@ -219,11 +220,15 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                                 }
                             }
                             if(!skip) {
-                                segments.add(new TransferStatus()
-                                        .skip(offset)
+                                final TransferStatus segment = new TransferStatus()
                                         .segment(true)
+                                        .skip(offset)
                                         .length(length)
-                                        .rename(renamed));
+                                        .rename(renamed);
+                                if(log.isDebugEnabled()) {
+                                    log.debug(String.format("Adding segment %s", segment));
+                                }
+                                segments.add(segment);
                             }
                             remaining -= length;
                             offset += length;
