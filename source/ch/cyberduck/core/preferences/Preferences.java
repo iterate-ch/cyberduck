@@ -27,6 +27,7 @@ import ch.cyberduck.core.DisabledProxyFinder;
 import ch.cyberduck.core.DisabledRendezvous;
 import ch.cyberduck.core.DisabledSleepPreventer;
 import ch.cyberduck.core.DisabledTerminalService;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
@@ -377,7 +378,10 @@ public abstract class Preferences {
          * The maximum number of concurrent transfers
          */
         defaults.put("queue.maxtransfers", String.valueOf(5));
-        defaults.put("queue.session.pool.size", String.valueOf(1));
+        /**
+         * Default transfer connection handling
+         */
+        defaults.put("queue.transfer.type", String.valueOf(Host.TransferType.newconnection.name()));
         /**
          * Warning when number of transfers in queue exceeds limit
          */
@@ -796,11 +800,6 @@ public abstract class Preferences {
                         "}\n"
         );
 
-        /**
-         * Maximum concurrent connections to the same host
-         * Unlimited by default
-         */
-        defaults.put("connection.host.max", String.valueOf(-1));
         /**
          * Default login name
          */

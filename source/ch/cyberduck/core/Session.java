@@ -248,11 +248,13 @@ public abstract class Session<C> implements TranscriptListener {
         insensitive
     }
 
-    /**
-     * @return The maximum number of concurrent connections allowed or -1 if no limit is set
-     */
-    public int getMaxConnections() {
-        return host.getTransfer().getMaxConnections();
+    public Host.TransferType getTransferType() {
+        switch(host.getTransfer()) {
+            case unknown:
+                return Host.TransferType.valueOf(preferences.getProperty("queue.transfer.type"));
+            default:
+                return host.getTransfer();
+        }
     }
 
     /**

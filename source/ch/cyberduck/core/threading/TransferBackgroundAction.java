@@ -37,7 +37,6 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.notification.NotificationService;
 import ch.cyberduck.core.notification.NotificationServiceFactory;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
@@ -175,13 +174,15 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
         this.options = options;
         this.listener = listener;
         this.prompt = prompt;
-        if(PreferencesFactory.get().getInteger("queue.session.pool.size") == 1) {
-            this.worker = new SingleTransferWorker(session, transfer, options,
-                    meter, prompt, error, this, progress, stream, callback);
-        }
-        else {
-            this.worker = new ConcurrentTransferWorker(connection, transfer, options,
-                    meter, prompt, error, this, callback, progress, stream, x509Trust, x509Key);
+        switch(session.getTransferType()) {
+            case concurrent:
+                this.worker = new ConcurrentTransferWorker(connection, transfer, options,
+                        meter, prompt, error, this, callback, progress, stream, x509Trust, x509Key);
+                break;
+            default:
+                this.worker = new SingleTransferWorker(session, transfer, options,
+                        meter, prompt, error, this, progress, stream, callback);
+                break;
         }
     }
 
