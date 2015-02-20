@@ -110,10 +110,10 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
     @Override
     protected Session<?> borrow() throws BackgroundException {
         try {
-            final Session session = pool.borrowObject();
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
+            final Session session = pool.borrowObject();
             if(log.isInfoEnabled()) {
                 log.info(String.format("Borrow session %s from pool", session));
             }
