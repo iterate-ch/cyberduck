@@ -3,7 +3,7 @@ http://cyberduck.io/
 
 Changelog. Last modified: $Date$
 
-4.6.5 [https://trac.cyberduck.io/milestone/4.6.57]
+4.6.5 [https://trac.cyberduck.io/milestone/4.6.5]
 - [Feature] Support for China (Beijing) region (S3)
 - [Feature] Drag bookmarks from history and Bonjour tab to default bookmarks (Mac) (#2182)
 - [Bugfix] Some interface items not localized (Mac) (#8538)
