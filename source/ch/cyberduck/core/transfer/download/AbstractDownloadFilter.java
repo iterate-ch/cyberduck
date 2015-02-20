@@ -18,6 +18,7 @@ package ch.cyberduck.core.transfer.download;
  */
 
 import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
@@ -184,7 +185,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         }
         status.setAcl(attributes.getAcl());
         if(file.isFile()) {
-            if(preferences.getInteger("queue.maxtransfers") > 1) {
+            if(session.getTransferType() == Host.TransferType.concurrent) {
                 // Make segments
                 if(status.getLength() >= preferences.getLong("queue.download.segments.threshold")
                         && status.getLength() > preferences.getLong("queue.download.segments.size")) {
