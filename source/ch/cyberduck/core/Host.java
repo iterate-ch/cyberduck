@@ -339,7 +339,7 @@ public class Host implements Serializable, Comparable<Host> {
         udt {
             @Override
             public String toString() {
-                return LocaleFactory.localizedString("Qloudsonic UDP (UDT)");
+                return LocaleFactory.localizedString("Qloudsonic (UDP-based Data Transfer Protocol)");
             }
         };
 
