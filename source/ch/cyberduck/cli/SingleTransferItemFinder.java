@@ -18,7 +18,6 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.local.WorkdirPrefixer;
@@ -39,7 +38,6 @@ public class SingleTransferItemFinder implements TransferItemFinder {
 
     @Override
     public Set<TransferItem> find(final CommandLine input, final TerminalAction action, final Path remote) {
-        final Local local;
         if(input.getOptionValues(action.name()).length == 2) {
             switch(action) {
                 case download:
