@@ -48,8 +48,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private static readonly String NullString = "null";
 
-        private static readonly string UseBrowserSession = LocaleFactory.localizedString("Use browser connection");
-        private static readonly string UseQueueSession = LocaleFactory.localizedString("Open new connection");
         private static PreferencesController _instance;
 
         private bool _downloadRegexInvalid;
@@ -749,11 +747,11 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_TransferModeChangedEvent()
         {
-            if (UseBrowserSession.Equals(View.TransferMode))
+            if (Host.TransferType.browser.toString().Equals(View.TransferMode))
             {
                 PreferencesFactory.get().setProperty("connection.host.max", 1);
             }
-            else if (UseQueueSession.Equals(View.TransferMode))
+            else
             {
                 PreferencesFactory.get().setProperty("connection.host.max", -1);
             }
@@ -1244,8 +1242,8 @@ namespace Ch.Cyberduck.Ui.Controller
         private void PopulateTransferModes()
         {
             List<string> modes = new List<string>();
-            modes.Add(UseQueueSession);
-            modes.Add(UseBrowserSession);
+            modes.Add(Host.TransferType.newconnection.toString());
+            modes.Add(Host.TransferType.browser.toString());
             View.PopulateTransferModes(modes);
         }
 

@@ -1223,21 +1223,22 @@ public class PreferencesController extends ToolbarWindowController {
         this.transferPopup = b;
         this.transferPopup.setTarget(this.id());
         this.transferPopup.setAction(Foundation.selector("transferPopupClicked:"));
-        this.transferPopup.selectItemAtIndex(
-                new NSInteger(preferences.getInteger("connection.host.max") == 1 ? TransferPopupOption.browser.ordinal() : TransferPopupOption.queue.ordinal()));
-    }
-
-    private enum TransferPopupOption {
-        queue,
-        browser
+        this.transferPopup.removeAllItems();
+        this.transferPopup.addItemWithTitle(Host.TransferType.browser.toString());
+        this.transferPopup.lastItem().setRepresentedObject(Host.TransferType.browser.name());
+        this.transferPopup.addItemWithTitle(Host.TransferType.newconnection.toString());
+        this.transferPopup.lastItem().setRepresentedObject(Host.TransferType.newconnection.name());
+        this.transferPopup.selectItemAtIndex(new NSInteger(preferences.getInteger("connection.host.max") == 1 ?
+                this.transferPopup.indexOfItemWithRepresentedObject(Host.TransferType.browser.name())
+                : this.transferPopup.indexOfItemWithRepresentedObject(Host.TransferType.newconnection.name())));
     }
 
     @Action
     public void transferPopupClicked(final NSPopUpButton sender) {
-        if(sender.indexOfSelectedItem().intValue() == TransferPopupOption.browser.ordinal()) {
+        if(Host.TransferType.valueOf(sender.selectedItem().representedObject()) == Host.TransferType.browser) {
             preferences.setProperty("connection.host.max", 1);
         }
-        else if(sender.indexOfSelectedItem().intValue() == TransferPopupOption.queue.ordinal()) {
+        else {
             preferences.setProperty("connection.host.max", -1);
         }
     }
