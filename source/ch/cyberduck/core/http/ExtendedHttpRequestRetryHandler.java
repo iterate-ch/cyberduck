@@ -23,7 +23,7 @@ import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.protocol.HttpContext;
 import org.jets3t.service.io.UnrecoverableIOException;
 
-import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLHandshakeException;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.ConnectException;
@@ -46,7 +46,7 @@ public class ExtendedHttpRequestRetryHandler extends DefaultHttpRequestRetryHand
             ExceptionUDT.class,
             // Not providing SSLException.class, because broken pipe failures are wrapped in SSL Exceptions.
             // "Broken pipe".equals(ExceptionUtils.getRootCause(failure).getMessage())
-            SSLException.class);
+            SSLHandshakeException.class);
 
     public ExtendedHttpRequestRetryHandler(final int retryCount) {
         super(retryCount, false, exceptions);
