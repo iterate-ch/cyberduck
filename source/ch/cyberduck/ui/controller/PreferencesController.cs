@@ -747,14 +747,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_TransferModeChangedEvent()
         {
-            if (Host.TransferType.browser.toString().Equals(View.TransferMode))
-            {
-                PreferencesFactory.get().setProperty("connection.host.max", 1);
-            }
-            else
-            {
-                PreferencesFactory.get().setProperty("connection.host.max", -1);
-            }
+            PreferencesFactory.get().setProperty("queue.transfer.type", View.TransferMode);
         }
 
         private void View_DefaultEncodingChangedEvent()

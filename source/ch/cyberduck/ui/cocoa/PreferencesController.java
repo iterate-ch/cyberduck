@@ -1228,19 +1228,14 @@ public class PreferencesController extends ToolbarWindowController {
         this.transferPopup.lastItem().setRepresentedObject(Host.TransferType.browser.name());
         this.transferPopup.addItemWithTitle(Host.TransferType.newconnection.toString());
         this.transferPopup.lastItem().setRepresentedObject(Host.TransferType.newconnection.name());
-        this.transferPopup.selectItemAtIndex(new NSInteger(preferences.getInteger("connection.host.max") == 1 ?
-                this.transferPopup.indexOfItemWithRepresentedObject(Host.TransferType.browser.name())
-                : this.transferPopup.indexOfItemWithRepresentedObject(Host.TransferType.newconnection.name())));
+        this.transferPopup.selectItemAtIndex(this.transferPopup.indexOfItemWithRepresentedObject(
+                preferences.getProperty("queue.transfer.type")
+        ));
     }
 
     @Action
     public void transferPopupClicked(final NSPopUpButton sender) {
-        if(Host.TransferType.valueOf(sender.selectedItem().representedObject()) == Host.TransferType.browser) {
-            preferences.setProperty("connection.host.max", 1);
-        }
-        else {
-            preferences.setProperty("connection.host.max", -1);
-        }
+        preferences.setProperty("queue.transfer.type", sender.selectedItem().representedObject());
     }
 
     @Outlet
