@@ -1224,7 +1224,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.transferPopup.setTarget(this.id());
         this.transferPopup.setAction(Foundation.selector("transferPopupClicked:"));
         this.transferPopup.removeAllItems();
-        for(String name : PreferencesFactory.get().getList("queue.transfer.type.enabled")) {
+        for(String name : preferences.getList("queue.transfer.type.enabled")) {
             final Host.TransferType t = Host.TransferType.valueOf(name);
             this.transferPopup.addItemWithTitle(t.toString());
             this.transferPopup.lastItem().setRepresentedObject(t.name());
