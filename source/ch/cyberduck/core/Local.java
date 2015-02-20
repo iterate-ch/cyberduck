@@ -316,6 +316,9 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
             log.warn(String.format("%s and %s are identical. Not copied.", this.getName(), copy.getName()));
         }
         else {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Copy to %s with options %s", copy, options));
+            }
             InputStream in = null;
             OutputStream out = null;
             try {
@@ -339,6 +342,14 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
         public CopyOptions append(final boolean append) {
             this.append = append;
             return this;
+        }
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("CopyOptions{");
+            sb.append("append=").append(append);
+            sb.append('}');
+            return sb.toString();
         }
     }
 
