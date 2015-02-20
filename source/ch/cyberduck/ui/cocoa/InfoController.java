@@ -73,7 +73,6 @@ import ch.cyberduck.core.worker.WriteRedundancyWorker;
 import ch.cyberduck.ui.cocoa.threading.BrowserControllerBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
@@ -92,6 +91,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TimeZone;
 
 /**
@@ -1917,7 +1917,7 @@ public class InfoController extends ToolbarWindowController {
                 && bucketVersioningButton.state() == NSCell.NSOnState);
         bucketLoggingButton.setEnabled(stop && enable && logging);
         bucketLoggingPopup.setEnabled(stop && enable && logging);
-        if(analytics && ObjectUtils.equals(controller.getSession().getFeature(IdentityConfiguration.class).getCredentials(
+        if(analytics && Objects.equals(controller.getSession().getFeature(IdentityConfiguration.class).getCredentials(
                 controller.getSession().getFeature(AnalyticsProvider.class).getName()), credentials)) {
             // No need to create new IAM credentials when same as session credentials
             bucketAnalyticsButton.setEnabled(false);
@@ -2451,7 +2451,7 @@ public class InfoController extends ToolbarWindowController {
                 distributionAnalyticsButton.setEnabled(false);
             }
             else {
-                if(ObjectUtils.equals(identityFeature.getCredentials(analyticsFeature.getName()), credentials)) {
+                if(Objects.equals(identityFeature.getCredentials(analyticsFeature.getName()), credentials)) {
                     // No need to create new IAM credentials when same as session credentials
                     distributionAnalyticsButton.setEnabled(false);
                 }
