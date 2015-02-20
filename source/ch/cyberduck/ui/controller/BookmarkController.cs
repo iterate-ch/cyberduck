@@ -103,7 +103,9 @@ namespace Ch.Cyberduck.Ui.Controller
         private void InitTransferModes()
         {
             List<KeyValuePair<string, Host.TransferType>> modes = new List<KeyValuePair<string, Host.TransferType>>();
-            foreach (Host.TransferType t in Host.TransferType.values())
+            Host.TransferType unknown = Host.TransferType.unknown;
+            modes.Add(new KeyValuePair<string, Host.TransferType>(unknown.toString(), unknown));
+            foreach (Host.TransferType t in PreferencesFactory.get().getList("queue.transfer.type.enabled"))
             {
                 modes.Add(new KeyValuePair<string, Host.TransferType>(t.toString(), t));
             }

@@ -381,6 +381,10 @@ public abstract class Preferences {
         /**
          * Default transfer connection handling
          */
+        defaults.put("queue.transfer.type.enabled", String.format("%s %s",
+                String.valueOf(Host.TransferType.newconnection.name()),
+                String.valueOf(Host.TransferType.browser.name())
+        ));
         defaults.put("queue.transfer.type", String.valueOf(Host.TransferType.newconnection.name()));
         /**
          * Warning when number of transfers in queue exceeds limit

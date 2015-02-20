@@ -1224,10 +1224,11 @@ public class PreferencesController extends ToolbarWindowController {
         this.transferPopup.setTarget(this.id());
         this.transferPopup.setAction(Foundation.selector("transferPopupClicked:"));
         this.transferPopup.removeAllItems();
-        this.transferPopup.addItemWithTitle(Host.TransferType.browser.toString());
-        this.transferPopup.lastItem().setRepresentedObject(Host.TransferType.browser.name());
-        this.transferPopup.addItemWithTitle(Host.TransferType.newconnection.toString());
-        this.transferPopup.lastItem().setRepresentedObject(Host.TransferType.newconnection.name());
+        for(String name : PreferencesFactory.get().getList("queue.transfer.type.enabled")) {
+            final Host.TransferType t = Host.TransferType.valueOf(name);
+            this.transferPopup.addItemWithTitle(t.toString());
+            this.transferPopup.lastItem().setRepresentedObject(t.name());
+        }
         this.transferPopup.selectItemAtIndex(this.transferPopup.indexOfItemWithRepresentedObject(
                 preferences.getProperty("queue.transfer.type")
         ));

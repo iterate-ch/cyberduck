@@ -909,9 +909,7 @@ namespace Ch.Cyberduck.Ui.Controller
             #region Transfers - General
 
             PopulateTransferModes();
-            View.TransferMode = PreferencesFactory.get().getInteger("connection.host.max") == 1
-                                    ? UseBrowserSession
-                                    : UseQueueSession;
+            View.TransferMode = PreferencesFactory.get().preferences.getProperty("queue.transfer.type");
             View.TransfersToFront = PreferencesFactory.get().getBoolean("queue.window.open.transfer.start");
             View.TransfersToBack = PreferencesFactory.get().getBoolean("queue.window.open.transfer.stop");
             View.RemoveFromTransfers = PreferencesFactory.get().getBoolean("queue.removeItemWhenComplete");
@@ -1235,8 +1233,9 @@ namespace Ch.Cyberduck.Ui.Controller
         private void PopulateTransferModes()
         {
             List<string> modes = new List<string>();
-            modes.Add(Host.TransferType.newconnection.toString());
-            modes.Add(Host.TransferType.browser.toString());
+            foreach (Host.TransferType t in PreferencesFactory.get().getList("queue.transfer.type.enabled")) {
+                modes.Add(t.toString());
+            }
             View.PopulateTransferModes(modes);
         }
 
