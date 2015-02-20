@@ -71,8 +71,8 @@ public class DAVListService implements ListService {
                 }
                 if(StringUtils.isNotBlank(resource.getEtag())) {
                     attributes.setChecksum(new Checksum(HashAlgorithm.md5, resource.getEtag()));
+                    attributes.setETag(resource.getEtag());
                 }
-                attributes.setETag(resource.getEtag());
                 children.add(new Path(directory, PathNormalizer.name(href),
                         resource.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file),
                         attributes));
