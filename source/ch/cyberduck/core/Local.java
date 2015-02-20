@@ -30,7 +30,6 @@ import ch.cyberduck.core.unicode.NFCNormalizer;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.CharUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -44,6 +43,7 @@ import java.io.OutputStream;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
 import java.util.EnumSet;
+import java.util.Objects;
 
 /**
  * @version $Id$
@@ -424,7 +424,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
             // Any other path is a child
             return true;
         }
-        if(ObjectUtils.equals(PathNormalizer.parent(this.getAbsolute(), this.getDelimiter()), PathNormalizer.parent(directory.getAbsolute(), this.getDelimiter()))) {
+        if(Objects.equals(PathNormalizer.parent(this.getAbsolute(), this.getDelimiter()), PathNormalizer.parent(directory.getAbsolute(), this.getDelimiter()))) {
             // Cannot be a child if the same parent
             return false;
         }

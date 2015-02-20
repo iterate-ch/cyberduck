@@ -20,9 +20,8 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.serializer.Serializer;
 
-import org.apache.commons.lang3.ObjectUtils;
-
 import java.util.EnumSet;
+import java.util.Objects;
 
 /**
  * @version $Id$
@@ -276,7 +275,7 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
             // Any other path is a child
             return true;
         }
-        if(ObjectUtils.equals(this.getParent(), directory.getParent())) {
+        if(Objects.equals(this.getParent(), directory.getParent())) {
             // Cannot be a child if the same parent
             return false;
         }
