@@ -184,7 +184,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         }
         status.setAcl(attributes.getAcl());
         if(file.isFile()) {
-            if(preferences.getInteger("queue.session.pool.size") > 1) {
+            if(preferences.getInteger("queue.maxtransfers") > 1) {
                 // Make segments
                 if(status.getLength() >= preferences.getLong("queue.download.segments.threshold")
                         && status.getLength() > preferences.getLong("queue.download.segments.size")) {

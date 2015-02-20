@@ -80,8 +80,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
                                     final ProgressListener progressListener, final StreamListener streamListener,
                                     final X509TrustManager trust, final X509KeyManager key) {
         this(connect, transfer, options, meter, prompt, error, transferItemCallback, connectionCallback, progressListener, streamListener,
-                trust, key,
-                PreferencesFactory.get().getInteger("queue.session.pool.size"));
+                trust, key, PreferencesFactory.get().getInteger("queue.maxtransfers"));
     }
 
     public ConcurrentTransferWorker(final ConnectionService connect,
