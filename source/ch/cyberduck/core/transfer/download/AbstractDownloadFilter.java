@@ -221,6 +221,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                             if(!skip) {
                                 final TransferStatus segment = new TransferStatus()
                                         .segment(true)
+                                        .append(true)
                                         .skip(offset)
                                         .length(length)
                                         .rename(renamed);
