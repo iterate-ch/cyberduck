@@ -26,7 +26,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
     @Test
     public void testPrepare() throws Exception {
         RenameExistingFilter f = new RenameExistingFilter(new DisabledDownloadSymlinkResolver(), new NullSession(new Host("h")));
-        final NullLocal local = new NullLocal("t") {
+        final NullLocal local = new NullLocal(System.getProperty("java.io.tmpdir"), "t") {
             @Override
             public boolean exists() {
                 return false;

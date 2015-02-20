@@ -222,7 +222,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path("/transfer/test", EnumSet.of(Path.Type.file));
         test.attributes().setSize(5L);
-        final Local local = new Local(System.getProperty("java.io.tmpdir") + "/transfer/test");
+        final Local local = new Local(System.getProperty("java.io.tmpdir") + "/transfer/" + UUID.randomUUID().toString());
         LocalTouchFactory.get().touch(local);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write("test", out);
