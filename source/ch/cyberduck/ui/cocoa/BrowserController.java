@@ -51,6 +51,7 @@ import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
+import ch.cyberduck.core.pasteboard.HostPasteboard;
 import ch.cyberduck.core.pasteboard.PathPasteboard;
 import ch.cyberduck.core.pasteboard.PathPasteboardFactory;
 import ch.cyberduck.core.preferences.Preferences;
@@ -153,6 +154,9 @@ public class BrowserController extends WindowController
      * Filter hidden files.
      */
     private static final Filter<Path> HIDDEN_FILTER = new RegexFilter();
+
+    private final BookmarkCollection bookmarks
+            = BookmarkCollection.defaultCollection();
 
     /**
      *
@@ -542,17 +546,6 @@ public class BrowserController extends WindowController
         return this.getSelectedBrowserView().numberOfSelectedRows().intValue();
     }
 
-    private void deselectAll() {
-        if(log.isDebugEnabled()) {
-            log.debug("Deselect all files in browser");
-        }
-        final NSTableView browser = this.getSelectedBrowserView();
-        if(null == browser) {
-            return;
-        }
-        browser.deselectAll(null);
-    }
-
     @Override
     public void setWindow(NSWindow window) {
         window.setTitle(preferences.getProperty("application.name"));
@@ -560,7 +553,47 @@ public class BrowserController extends WindowController
         window.setMovableByWindowBackground(true);
         window.setCollectionBehavior(window.collectionBehavior() | NSWindow.NSWindowCollectionBehavior.NSWindowCollectionBehaviorFullScreenPrimary);
         window.setContentMinSize(new NSSize(400d, 200d));
+        // Accept file promises made myself
+        window.registerForDraggedTypes(NSArray.arrayWithObject(NSPasteboard.FilesPromisePboardType));
         super.setWindow(window);
+    }
+
+    /**
+     * @return NSDragOperation
+     */
+    public NSUInteger draggingEntered(final NSDraggingInfo sender) {
+        return this.draggingUpdated(sender);
+    }
+
+    public NSUInteger draggingUpdated(final NSDraggingInfo sender) {
+        final NSPasteboard pasteboard = sender.draggingPasteboard();
+        if(pasteboard.types().indexOfObject(NSString.stringWithString(NSPasteboard.FilesPromisePboardType)) != null) {
+            final NSView hit = sender.draggingDestinationWindow().contentView().hitTest(sender.draggingLocation());
+            if(hit != null) {
+                if(hit.equals(bookmarkButton)) {
+                    if(historyButton.state() == NSCell.NSOnState
+                            || bonjourButton.state() == NSCell.NSOnState) {
+                        return NSDraggingInfo.NSDragOperationCopy;
+                    }
+                }
+            }
+        }
+        return NSDraggingInfo.NSDragOperationNone;
+    }
+
+    public boolean prepareForDragOperation(final NSDraggingInfo sender) {
+        // Continue to performDragOperation
+        return true;
+    }
+
+    public boolean performDragOperation(final NSDraggingInfo sender) {
+        for(Host bookmark : HostPasteboard.getPasteboard()) {
+            final Host duplicate = new HostDictionary().deserialize(bookmark.serialize(SerializerFactory.get()));
+            // Make sure a new UUID is assigned for duplicate
+            duplicate.setUuid(null);
+            bookmarks.add(0, duplicate);
+        }
+        return true;
     }
 
     @Outlet
@@ -589,10 +622,6 @@ public class BrowserController extends WindowController
         };
         this.logDrawer.setContentView(this.transcript.getLogView());
         this.logDrawer.setDelegate(this.id());
-    }
-
-    public TranscriptController getTranscript() {
-        return transcript;
     }
 
     private NSButton donateButton;
@@ -833,17 +862,17 @@ public class BrowserController extends WindowController
     }
 
     public void sortBookmarksByNickame(final ID sender) {
-        BookmarkCollection.defaultCollection().sortByNickname();
+        bookmarks.sortByNickname();
         this.reloadBookmarks();
     }
 
     public void sortBookmarksByHostname(final ID sender) {
-        BookmarkCollection.defaultCollection().sortByHostname();
+        bookmarks.sortByHostname();
         this.reloadBookmarks();
     }
 
     public void sortBookmarksByProtocol(final ID sender) {
-        BookmarkCollection.defaultCollection().sortByProtocol();
+        bookmarks.sortByProtocol();
         this.reloadBookmarks();
     }
 
@@ -940,7 +969,7 @@ public class BrowserController extends WindowController
         browserTabView.selectTabViewItemAtIndex(TAB_BOOKMARKS);
         final AbstractHostCollection source;
         if(bookmarkButton.state() == NSCell.NSOnState) {
-            source = BookmarkCollection.defaultCollection();
+            source = bookmarks;
         }
         else if(bonjourButton.state() == NSCell.NSOnState) {
             source = RendezvousCollection.defaultCollection();
@@ -1231,8 +1260,10 @@ public class BrowserController extends WindowController
         // receive drag events from types
         browserOutlineView.registerForDraggedTypes(NSArray.arrayWithObjects(
                 NSPasteboard.URLPboardType,
-                NSPasteboard.FilenamesPboardType, //accept files dragged from the Finder for uploading
-                NSPasteboard.FilesPromisePboardType //accept file promises made myself but then interpret them as TransferPasteboardType
+                // Accept files dragged from the Finder for uploading
+                NSPasteboard.FilenamesPboardType,
+                // Accept file promises made myself
+                NSPasteboard.FilesPromisePboardType
         ));
         // setting appearance attributes()
         this._updateBrowserAttributes(browserOutlineView);
@@ -1377,8 +1408,10 @@ public class BrowserController extends WindowController
         // receive drag events from types
         browserListView.registerForDraggedTypes(NSArray.arrayWithObjects(
                 NSPasteboard.URLPboardType,
-                NSPasteboard.FilenamesPboardType, //accept files dragged from the Finder for uploading
-                NSPasteboard.FilesPromisePboardType //accept file promises made myself but then interpret them as TransferPasteboardType
+                // Accept files dragged from the Finder for uploading
+                NSPasteboard.FilenamesPboardType,
+                // Accept file promises made myself
+                NSPasteboard.FilesPromisePboardType
         ));
         // setting appearance attributes()
         this._updateBrowserAttributes(browserListView);
@@ -1752,9 +1785,10 @@ public class BrowserController extends WindowController
         bookmarkTable.registerForDraggedTypes(NSArray.arrayWithObjects(
                 NSPasteboard.URLPboardType,
                 NSPasteboard.StringPboardType,
-                NSPasteboard.FilenamesPboardType, //accept bookmark files dragged from the Finder
-                NSPasteboard.FilesPromisePboardType,
-                "HostPBoardType" //moving bookmarks
+                // Accept bookmark files dragged from the Finder
+                NSPasteboard.FilenamesPboardType,
+                // Accept file promises made myself
+                NSPasteboard.FilesPromisePboardType
         ));
         this._updateBookmarkCell();
 
@@ -1812,22 +1846,22 @@ public class BrowserController extends WindowController
         this.quickConnectWillPopUp(null);
     }
 
-    private static class QuickConnectModel extends ProxyController implements NSComboBox.DataSource {
+    private class QuickConnectModel extends ProxyController implements NSComboBox.DataSource {
         @Override
         public NSInteger numberOfItemsInComboBox(final NSComboBox combo) {
-            return new NSInteger(BookmarkCollection.defaultCollection().size());
+            return new NSInteger(bookmarks.size());
         }
 
         @Override
         public NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final NSInteger row) {
             return NSString.stringWithString(
-                    BookmarkNameProvider.toString(BookmarkCollection.defaultCollection().get(row.intValue()))
+                    BookmarkNameProvider.toString(bookmarks.get(row.intValue()))
             );
         }
     }
 
     public void quickConnectWillPopUp(NSNotification notification) {
-        int size = BookmarkCollection.defaultCollection().size();
+        int size = bookmarks.size();
         quickConnectPopup.setNumberOfVisibleItems(size > 10 ? new NSInteger(10) : new NSInteger(size));
     }
 
@@ -1839,7 +1873,7 @@ public class BrowserController extends WindowController
         }
         input = input.trim();
         // First look for equivalent bookmarks
-        for(Host h : BookmarkCollection.defaultCollection()) {
+        for(Host h : bookmarks) {
             if(BookmarkNameProvider.toString(h).equals(input)) {
                 this.mount(h);
                 return;
@@ -2736,7 +2770,7 @@ public class BrowserController extends WindowController
         downloadAsPanel = NSSavePanel.savePanel();
         downloadAsPanel.setMessage(LocaleFactory.localizedString("Download the selected file to…"));
         downloadAsPanel.setNameFieldLabel(LocaleFactory.localizedString("Download As:"));
-        downloadAsPanel.setPrompt(LocaleFactory.localizedString("Download"));
+        downloadAsPanel.setPrompt(LocaleFactory.localizedString("Download", "Transfer"));
         downloadAsPanel.setCanCreateDirectories(true);
         downloadAsPanel.beginSheetForDirectory(new DownloadDirectoryFinder().find(session.getHost()).getAbsolute(),
                 this.getSelectedPath().getName(), this.window, this.id(),
@@ -2826,7 +2860,7 @@ public class BrowserController extends WindowController
         uploadPanel.setCanCreateDirectories(false);
         uploadPanel.setTreatsFilePackagesAsDirectories(true);
         uploadPanel.setAllowsMultipleSelection(true);
-        uploadPanel.setPrompt(LocaleFactory.localizedString("Upload"));
+        uploadPanel.setPrompt(LocaleFactory.localizedString("Upload", "Transfer"));
         if(uploadPanel.respondsToSelector(Foundation.selector("setShowsHiddenFiles:"))) {
             uploadPanelHiddenFilesCheckbox = NSButton.buttonWithFrame(new NSRect(0, 0));
             uploadPanelHiddenFilesCheckbox.setTitle(LocaleFactory.localizedString("Show Hidden Files"));
@@ -2886,7 +2920,7 @@ public class BrowserController extends WindowController
      */
     protected void transfer(final Transfer transfer, final List<Path> selected) {
         // Determine from current browser session if new connection should be opened for transfers
-        this.transfer(transfer, selected, session.getMaxConnections() == 1);
+        this.transfer(transfer, selected, session.getTransferType().equals(Host.TransferType.browser));
     }
 
     /**
@@ -3296,6 +3330,8 @@ public class BrowserController extends WindowController
         if(log.isDebugEnabled()) {
             log.debug(String.format("Set working directory to %s", directory));
         }
+        // Remove any custom file filter
+        this.setPathFilter(null);
         final NSTableView browser = this.getSelectedBrowserView();
         window.endEditingFor(browser);
         // Update the working directory if listing is successful
@@ -3819,6 +3855,11 @@ public class BrowserController extends WindowController
                     new UploadTargetFinder(workdir).find(this.getSelectedPath())
             );
         }
+        else if(action.equals(Foundation.selector("uploadButtonClicked:"))) {
+            return this.isBrowser() && this.isMounted() && session.getFeature(Touch.class).isSupported(
+                    new UploadTargetFinder(workdir).find(this.getSelectedPath())
+            );
+        }
         else if(action.equals(Foundation.selector("createSymlinkButtonClicked:"))) {
             return this.isBrowser() && this.isMounted() && session.getFeature(Symlink.class) != null
                     && this.getSelectionCount() == 1;
@@ -3850,9 +3891,6 @@ public class BrowserController extends WindowController
         }
         else if(action.equals(Foundation.selector("newBrowserButtonClicked:"))) {
             return this.isMounted();
-        }
-        else if(action.equals(Foundation.selector("uploadButtonClicked:"))) {
-            return this.isBrowser() && this.isMounted();
         }
         else if(action.equals(Foundation.selector("syncButtonClicked:"))) {
             return this.isBrowser() && this.isMounted();

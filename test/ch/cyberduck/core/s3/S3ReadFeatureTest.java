@@ -11,6 +11,7 @@ import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
@@ -62,7 +63,7 @@ public class S3ReadFeatureTest extends AbstractTestCase {
         new S3TouchFeature(session).touch(test);
         final byte[] content = RandomStringUtils.random(1000).getBytes();
         final TransferStatus status = new TransferStatus().length(content.length);
-        status.setChecksum(new TransferStatus.Checksum(HashAlgorithm.sha256,
+        status.setChecksum(new Checksum(HashAlgorithm.sha256,
                         new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content)))
         );
         final OutputStream out = new S3WriteFeature(session).write(test, status);
@@ -70,7 +71,7 @@ public class S3ReadFeatureTest extends AbstractTestCase {
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         IOUtils.closeQuietly(out);
         status.setAppend(true);
-        status.setCurrent(100L);
+        status.setSkip(100L);
         final InputStream in = new S3ReadFeature(session).read(test, status);
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
@@ -100,7 +101,7 @@ public class S3ReadFeatureTest extends AbstractTestCase {
                 EnumSet.of(Path.Type.file)), status);
         assertNotNull(in);
         new StreamCopier(status, status).transfer(in, new NullOutputStream());
-        assertEquals(1457L, status.getCurrent());
+        assertEquals(1457L, status.getSkip());
         assertEquals(-1L, status.getLength());
         in.close();
         session.close();

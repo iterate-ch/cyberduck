@@ -19,10 +19,10 @@ package ch.cyberduck.core.udt;
  */
 
 import ch.cyberduck.core.Header;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Location;
 
-import java.net.URI;
 import java.util.List;
 
 /**
@@ -30,7 +30,12 @@ import java.util.List;
  */
 public interface UDTProxyProvider {
 
-    URI find(Location.Name region);
+    /**
+     * @param region Storage region
+     * @param tls    Use transport layer security
+     * @return Proxy
+     */
+    Host find(Location.Name region, final boolean tls);
 
     /**
      * List of proprietary headers

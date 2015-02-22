@@ -19,8 +19,6 @@ package ch.cyberduck.core.udt;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.aquaticprime.License;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
@@ -44,9 +42,6 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.udt.qloudsonic.MissingReceiptException;
 import ch.cyberduck.core.udt.qloudsonic.QloudsonicProxyProvider;
-import ch.cyberduck.core.udt.qloudsonic.QloudsonicTestVoucher;
-import ch.cyberduck.core.udt.qloudsonic.QloudsonicTestVoucherFinder;
-import ch.cyberduck.core.udt.qloudsonic.QloudsonicVoucherFinder;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -57,9 +52,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -69,25 +64,26 @@ import com.barchart.udt.ExceptionUDT;
 
 import static org.junit.Assert.*;
 
-public class UDTProxyTest extends AbstractTestCase {
+public class UDTProxyConfiguratorTest extends AbstractTestCase {
 
     @Test(expected = ConnectionRefusedException.class)
     public void testConnectNoServer() throws Exception {
         final Host host = new Host(new S3Protocol(), "s3.amazonaws.com", new Credentials(
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
         ));
-        final UDTProxy<S3Session> proxy = new UDTProxy<S3Session>(new S3LocationFeature.S3Region("ap-northeast-1"),
+        final UDTProxyConfigurator proxy = new UDTProxyConfigurator(new S3LocationFeature.S3Region("ap-northeast-1"),
                 new LocalhostProxyProvider() {
                     @Override
-                    public URI find(final Location.Name region) {
+                    public Host find(final Location.Name region, final boolean tls) {
                         // No server here
-                        return URI.create("udt://test.cyberduck.ch:8007");
+                        return new Host(new UDTProtocol(), "test.cyberduck.ch", Scheme.udt.getPort());
                     }
                 });
-        final Session session = proxy.proxy(new S3Session(host), new DisabledTranscriptListener());
+        final S3Session tunneled = new S3Session(host);
+        proxy.configure(tunneled);
         try {
-            assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
-            session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(),
+            assertNotNull(tunneled.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+            tunneled.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(),
                     PathCache.empty());
         }
         catch(BackgroundException e) {
@@ -104,10 +100,11 @@ public class UDTProxyTest extends AbstractTestCase {
         final Host host = new Host(new S3Protocol(), "s3.amazonaws.com", new Credentials(
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
         ));
-        final UDTProxy<S3Session> proxy = new UDTProxy<S3Session>(new S3LocationFeature.S3Region("ap-northeast-1"),
+        final UDTProxyConfigurator proxy = new UDTProxyConfigurator(new S3LocationFeature.S3Region("ap-northeast-1"),
                 new QloudsonicProxyProvider());
-        final Session session = proxy.proxy(new S3Session(host), new DisabledTranscriptListener());
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        final S3Session tunneled = new S3Session(host);
+        proxy.configure(tunneled);
+        tunneled.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
     }
 
     @Test(expected = ConnectionCanceledException.class)
@@ -115,8 +112,8 @@ public class UDTProxyTest extends AbstractTestCase {
         final Host host = new Host(new S3Protocol(), "s3.amazonaws.com", new Credentials(
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
         ));
-        final UDTProxy<S3Session> proxy = new UDTProxy<S3Session>(new S3LocationFeature.S3Region("ap-northeast-1"),
-                new QloudsonicProxyProvider(new QloudsonicTestVoucherFinder()), new AbstractX509TrustManager() {
+        final UDTProxyConfigurator proxy = new UDTProxyConfigurator(new S3LocationFeature.S3Region("ap-northeast-1"),
+                new LocalhostProxyProvider(), new AbstractX509TrustManager() {
             @Override
             public X509TrustManager init() {
                 return this;
@@ -137,9 +134,10 @@ public class UDTProxyTest extends AbstractTestCase {
                 throw new CertificateException();
             }
         });
-        final Session session = proxy.proxy(new S3Session(host), new DisabledTranscriptListener());
-        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(),
+        final S3Session tunneled = new S3Session(host);
+        proxy.configure(tunneled);
+        assertNotNull(tunneled.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        tunneled.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(),
                 PathCache.empty());
     }
 
@@ -148,22 +146,19 @@ public class UDTProxyTest extends AbstractTestCase {
         final Host host = new Host(new S3Protocol(), "s3.amazonaws.com", new Credentials(
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
         ));
-        final UDTProxy<S3Session> proxy = new UDTProxy<S3Session>(new S3LocationFeature.S3Region("ap-northeast-1"),
-                new QloudsonicProxyProvider(new QloudsonicVoucherFinder() {
+        final UDTProxyConfigurator proxy = new UDTProxyConfigurator(new S3LocationFeature.S3Region("ap-northeast-1"),
+                new LocalhostProxyProvider() {
                     @Override
-                    public List<License> open() throws AccessDeniedException {
-                        return Collections.<License>singletonList(new QloudsonicTestVoucher() {
-                            @Override
-                            public String getValue(final String property) {
-                                return "-" + super.getValue(property);
-                            }
-                        });
+                    public List<Header> headers() {
+                        final List<Header> headers = new ArrayList<Header>();
+                        headers.add(new Header("X-Qloudsonic-Voucher", "-u9zTIKCXHTWPO9WA4fBsIaQ5SjEH5von"));
+                        return headers;
                     }
-                }));
-        final S3Session session = new S3Session(host);
-        proxy.proxy(session, new DisabledTranscriptListener());
-        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
-        assertTrue(session.isConnected());
+                });
+        final S3Session tunneled = new S3Session(host);
+        proxy.configure(tunneled);
+        assertNotNull(tunneled.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        assertTrue(tunneled.isConnected());
 
         final TransferStatus status = new TransferStatus();
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
@@ -174,11 +169,11 @@ public class UDTProxyTest extends AbstractTestCase {
         status.setLength(content.length);
         final Path test = new Path(new Path("container", EnumSet.of(Path.Type.volume)),
                 UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final Upload upload = new S3SingleUploadService(session);
+        final Upload upload = new S3SingleUploadService(tunneled);
         try {
-        upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledStreamListener(), status, new DisabledConnectionCallback());
-    }
+            upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+                    new DisabledStreamListener(), status, new DisabledConnectionCallback());
+        }
         catch(QuotaException e) {
             assertEquals("Voucher -u9zTIKCXHTWPO9WA4fBsIaQ5SjEH5von not found. Please contact your web hosting service provider for assistance.", e.getDetail());
             throw e;
@@ -186,16 +181,35 @@ public class UDTProxyTest extends AbstractTestCase {
     }
 
     @Test
-    public void testWrite() throws Exception {
-        final Host host = new Host(new S3Protocol(), "s3.amazonaws.com", new Credentials(
+    public void testUnsecureConnection() throws Exception {
+        final Profile profile = ProfileReaderFactory.get().read(
+                new Local("profiles/S3 (HTTP).cyberduckprofile"));
+        final Host host = new Host(profile, "s3.amazonaws.com", new Credentials(
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
         ));
-        final UDTProxy<S3Session> proxy = new UDTProxy<S3Session>(new S3LocationFeature.S3Region("ap-northeast-1"),
-                new QloudsonicProxyProvider(new QloudsonicTestVoucherFinder()));
-        final S3Session proxied = new S3Session(host);
-        proxy.proxy(proxied, new DisabledTranscriptListener());
-        assertNotNull(proxied.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
-        assertTrue(proxied.isConnected());
+        final UDTProxyConfigurator proxy = new UDTProxyConfigurator(new S3LocationFeature.S3Region("ap-northeast-1"),
+                new LocalhostProxyProvider());
+        final S3Session tunneled = new S3Session(host);
+        proxy.configure(tunneled);
+        assertNotNull(tunneled.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        tunneled.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(),
+                PathCache.empty());
+        tunneled.close();
+    }
+
+    @Test
+    public void testWrite() throws Exception {
+        final Profile profile = ProfileReaderFactory.get().read(
+                new Local("profiles/S3 (HTTP).cyberduckprofile"));
+        final Host host = new Host(profile, "s3.amazonaws.com", new Credentials(
+                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+        ));
+        final UDTProxyConfigurator proxy = new UDTProxyConfigurator(new S3LocationFeature.S3Region("ap-northeast-1"),
+                new LocalhostProxyProvider());
+        final S3Session tunneled = new S3Session(host);
+        proxy.configure(tunneled);
+        assertNotNull(tunneled.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        assertTrue(tunneled.isConnected());
 
         final TransferStatus status = new TransferStatus();
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
@@ -208,35 +222,30 @@ public class UDTProxyTest extends AbstractTestCase {
 
         final Path test = new Path(new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume)),
                 UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final Upload upload = new S3SingleUploadService(proxied);
+        final Upload upload = new S3SingleUploadService(tunneled);
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), status, new DisabledConnectionCallback());
-        proxied.close();
 
-        final S3Session session = new S3Session(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-
-        assertTrue(session.getFeature(Find.class).find(test));
-        assertEquals(status.getLength(), session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize(), 0L);
-        assertTrue(new S3WriteFeature(session).append(test, status.getLength(), PathCache.empty()).override);
+        assertTrue(tunneled.getFeature(Find.class).find(test));
+        assertEquals(status.getLength(), tunneled.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize(), 0L);
+        assertTrue(new S3WriteFeature(tunneled).append(test, status.getLength(), PathCache.empty()).override);
         {
             final byte[] buffer = new byte[random.getBytes().length];
-            IOUtils.readFully(new S3ReadFeature(session).read(test, new TransferStatus()), buffer);
+            IOUtils.readFully(new S3ReadFeature(tunneled).read(test, new TransferStatus()), buffer);
             assertArrayEquals(random.getBytes(), buffer);
         }
         {
             final byte[] buffer = new byte[random.getBytes().length - 1];
-            final InputStream in = new S3ReadFeature(session).read(test, new TransferStatus().length(random.getBytes().length).append(true).current(1L));
+            final InputStream in = new S3ReadFeature(tunneled).read(test, new TransferStatus().length(random.getBytes().length).append(true).skip(1L));
             IOUtils.readFully(in, buffer);
             IOUtils.closeQuietly(in);
             final byte[] reference = new byte[random.getBytes().length - 1];
             System.arraycopy(random.getBytes(), 1, reference, 0, random.getBytes().length - 1);
             assertArrayEquals(reference, buffer);
         }
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
-        session.close();
-        assertFalse(session.isConnected());
+        new S3DefaultDeleteFeature(tunneled).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        tunneled.close();
+        assertFalse(tunneled.isConnected());
     }
 
     @Test
@@ -244,26 +253,26 @@ public class UDTProxyTest extends AbstractTestCase {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
         ));
-        final UDTProxy<S3Session> proxy = new UDTProxy<S3Session>(new S3LocationFeature.S3Region("ap-northeast-1"),
-                new QloudsonicProxyProvider(new QloudsonicTestVoucherFinder()));
-        final S3Session session = new S3Session(host);
-        proxy.proxy(session, new DisabledTranscriptListener());
-        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
-        assertTrue(session.isConnected());
+        final UDTProxyConfigurator proxy = new UDTProxyConfigurator(new S3LocationFeature.S3Region("ap-northeast-1"),
+                new LocalhostProxyProvider());
+        final S3Session tunneled = new S3Session(host);
+        proxy.configure(tunneled);
+        assertNotNull(tunneled.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        assertTrue(tunneled.isConnected());
 
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session).touch(test);
+        new S3TouchFeature(tunneled).touch(test);
         final byte[] content = RandomStringUtils.random(1000).getBytes();
-        final OutputStream out = new S3WriteFeature(session).write(test, new TransferStatus().length(content.length));
+        final OutputStream out = new S3WriteFeature(tunneled).write(test, new TransferStatus().length(content.length));
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         IOUtils.closeQuietly(out);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);
-        status.setCurrent(100L);
-        final InputStream in = new S3ReadFeature(session).read(test, status);
+        status.setSkip(100L);
+        final InputStream in = new S3ReadFeature(tunneled).read(test, status);
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -271,7 +280,7 @@ public class UDTProxyTest extends AbstractTestCase {
         System.arraycopy(content, 100, reference, 0, content.length - 100);
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
-        session.close();
+        new S3DefaultDeleteFeature(tunneled).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        tunneled.close();
     }
 }

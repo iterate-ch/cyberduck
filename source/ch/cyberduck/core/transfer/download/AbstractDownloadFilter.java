@@ -18,8 +18,11 @@ package ch.cyberduck.core.transfer.download;
  */
 
 import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
@@ -29,12 +32,19 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.MD5ChecksumCompute;
+import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.local.ApplicationLauncher;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.IconService;
 import ch.cyberduck.core.local.IconServiceFactory;
+import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.local.QuarantineService;
 import ch.cyberduck.core.local.QuarantineServiceFactory;
 import ch.cyberduck.core.preferences.Preferences;
@@ -45,7 +55,13 @@ import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @version $Id$
@@ -168,6 +184,66 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             status.setPermission(permission);
         }
         status.setAcl(attributes.getAcl());
+        if(file.isFile()) {
+            if(session.getTransferType() == Host.TransferType.concurrent) {
+                // Make segments
+                if(status.getLength() >= preferences.getLong("queue.download.segments.threshold")
+                        && status.getLength() > preferences.getLong("queue.download.segments.size")) {
+                    final Read read = session.getFeature(Read.class);
+                    if(read.offset(file)) {
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("Split download %s into segments", local));
+                        }
+                        long remaining = status.getLength();
+                        long offset = 0;
+                        long partsize = preferences.getLong("queue.download.segments.size");
+                        // Sorted list
+                        final List<TransferStatus> segments = new ArrayList<TransferStatus>();
+                        for(int segmentNumber = 1; remaining > 0; segmentNumber++) {
+                            final Local renamed = LocalFactory.get(
+                                    LocalFactory.get(local.getParent(), String.format("%s.cyberducksegment", local.getName())),
+                                    String.format("%d.cyberducksegment", segmentNumber));
+                            boolean skip = false;
+                            // Last part can be less than 5 MB. Adjust part size.
+                            final Long length = Math.min(partsize, remaining);
+                            if(status.isAppend()) {
+                                if(log.isInfoEnabled()) {
+                                    log.info(String.format("Determine if part number %d can be skipped", segmentNumber));
+                                }
+                                if(renamed.exists()) {
+                                    if(renamed.attributes().getSize() == length) {
+                                        if(log.isInfoEnabled()) {
+                                            log.info(String.format("Skip completed segment number %d", segmentNumber));
+                                        }
+                                        skip = true;
+                                    }
+                                }
+                            }
+                            if(!skip) {
+                                final TransferStatus segment = new TransferStatus()
+                                        .segment(true)
+                                        .append(true)
+                                        .skip(offset)
+                                        .length(length)
+                                        .rename(renamed);
+                                if(log.isDebugEnabled()) {
+                                    log.debug(String.format("Adding segment %s", segment));
+                                }
+                                segments.add(segment);
+                            }
+                            remaining -= length;
+                            offset += length;
+                        }
+                        status.withSegments(segments);
+                    }
+                }
+            }
+        }
+        if(this.options.checksum) {
+            if(attributes.getChecksum() != null) {
+                status.setChecksum(attributes.getChecksum());
+            }
+        }
         return status;
     }
 
@@ -177,6 +253,9 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         if(file.isFile()) {
             // No icon update if disabled
             if(options.icon) {
+                if(!status.isExists()) {
+                    LocalTouchFactory.get().touch(local);
+                }
                 icon.set(local, status);
             }
         }
@@ -192,8 +271,59 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Complete %s with status %s", file.getAbsolute(), status));
         }
+        if(status.isSegment()) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Skip completion for single segment %s", status));
+            }
+            return;
+        }
         if(status.isComplete()) {
+            if(status.isSegmented()) {
+                // Obtain ordered list of segments to reassemble
+                final List<TransferStatus> segments = status.getSegments();
+                for(Iterator<TransferStatus> iterator = segments.iterator(); iterator.hasNext(); ) {
+                    final TransferStatus segment = iterator.next();
+                    final Local f = segment.getRename().local;
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Append segment %s to %s", f, local));
+                    }
+                    f.copy(local, new Local.CopyOptions().append(true));
+                    f.delete();
+                    if(!iterator.hasNext()) {
+                        f.getParent().delete();
+                    }
+                }
+            }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Run completion for file %s with status %s", local, status));
+            }
             if(file.isFile()) {
+                if(this.options.checksum) {
+                    final Checksum checksum = status.getChecksum();
+                    if(null != checksum) {
+                        final ChecksumCompute compute;
+                        switch(checksum.algorithm) {
+                            case md5:
+                                compute = new MD5ChecksumCompute();
+                                break;
+                            case sha256:
+                                compute = new SHA256ChecksumCompute();
+                                break;
+                            default:
+                                log.warn(String.format("Unsupported checksum algorithm %s", checksum.algorithm));
+                                compute = null;
+                        }
+                        if(null != compute) {
+                            final String download = compute.compute(local.getInputStream());
+                            if(!StringUtils.equals(download, checksum.hash)) {
+                                throw new ChecksumException(
+                                        MessageFormat.format(LocaleFactory.localizedString("Download {0} failed", "Error"), file.getName()),
+                                        MessageFormat.format("Mismatch between MD5 hash {0} of downloaded data and ETag {1} returned by the server",
+                                                download, checksum.hash));
+                            }
+                        }
+                    }
+                }
                 // Remove custom icon if complete. The Finder will display the default icon for this file type
                 if(this.options.icon) {
                     icon.set(local, status);

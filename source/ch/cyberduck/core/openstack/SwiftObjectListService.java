@@ -30,6 +30,8 @@ import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.date.ISO8601DateParser;
 import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -76,8 +78,9 @@ public class SwiftObjectListService implements ListService {
                     final PathAttributes attributes = new PathAttributes();
                     attributes.setOwner(container.attributes().getOwner());
                     attributes.setRegion(container.attributes().getRegion());
-                    attributes.setChecksum(object.getMd5sum());
-                    attributes.setETag(object.getMd5sum());
+                    if(StringUtils.isNotBlank(object.getMd5sum())) {
+                        attributes.setChecksum(new Checksum(HashAlgorithm.md5, object.getMd5sum()));
+                    }
                     attributes.setSize(object.getSize());
                     final String lastModified = object.getLastModified();
                     if(lastModified != null) {

@@ -87,6 +87,7 @@ public class DonationKey extends AbstractLicense implements LicenseVerifier {
         final NSData signature = (NSData) dictionary.objectForKey("Signature");
         if(null == signature) {
             log.warn(String.format("Missing key 'Signature' in dictionary %s", dictionary));
+            return false;
         }
         // Append all values
         StringBuilder values = new StringBuilder();

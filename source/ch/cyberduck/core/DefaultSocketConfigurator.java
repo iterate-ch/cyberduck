@@ -20,6 +20,8 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.net.Socket;
 
@@ -27,6 +29,7 @@ import java.net.Socket;
  * @version $Id$
  */
 public class DefaultSocketConfigurator implements SocketConfigurator {
+    private static final Logger log = Logger.getLogger(DefaultSocketConfigurator.class);
 
     private Preferences preferences
             = PreferencesFactory.get();
@@ -39,6 +42,10 @@ public class DefaultSocketConfigurator implements SocketConfigurator {
         if(preferences.getInteger("connection.buffer.send") > 0) {
             socket.setSendBufferSize(preferences.getInteger("connection.buffer.send"));
         }
-        socket.setSoTimeout(preferences.getInteger("connection.timeout.seconds") * 1000);
+        final int timeout = preferences.getInteger("connection.timeout.seconds") * 1000;
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Set timeout to %dms for socket %s", timeout, socket));
+        }
+        socket.setSoTimeout(timeout);
     }
 }

@@ -26,7 +26,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
     @Test
     public void testPrepare() throws Exception {
         RenameExistingFilter f = new RenameExistingFilter(new DisabledDownloadSymlinkResolver(), new NullSession(new Host("h")));
-        final NullLocal local = new NullLocal("t") {
+        final NullLocal local = new NullLocal(System.getProperty("java.io.tmpdir"), "t-1") {
             @Override
             public boolean exists() {
                 return false;
@@ -37,7 +37,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                 fail();
             }
         };
-        final Path p = new Path("t", EnumSet.of(Path.Type.file));
+        final Path p = new Path("t-1", EnumSet.of(Path.Type.file));
         final TransferStatus status = f.prepare(p, local, new TransferStatus());
         assertNull(status.getRename().local);
         f.apply(p, local, new TransferStatus(), new DisabledProgressListener());
@@ -47,10 +47,10 @@ public class RenameExistingFilterTest extends AbstractTestCase {
     public void testPrepareRename() throws Exception {
         final AtomicBoolean r = new AtomicBoolean();
         RenameExistingFilter f = new RenameExistingFilter(new DisabledDownloadSymlinkResolver(), new NullSession(new Host("h")));
-        final NullLocal local = new NullLocal(System.getProperty("java.io.tmpdir"), "t") {
+        final NullLocal local = new NullLocal(System.getProperty("java.io.tmpdir"), "t-2") {
             @Override
             public boolean exists() {
-                return "t".equals(this.getName());
+                return "t-2".equals(this.getName());
             }
 
             @Override
@@ -65,16 +65,16 @@ public class RenameExistingFilterTest extends AbstractTestCase {
 
             @Override
             public void rename(final Local renamed) {
-                assertEquals(String.format("t (%s)", UserDateFormatterFactory.get().getLongFormat(System.currentTimeMillis(), false)), renamed.getName());
+                assertEquals(String.format("t-2 (%s)", UserDateFormatterFactory.get().getLongFormat(System.currentTimeMillis(), false)), renamed.getName());
                 r.set(true);
             }
         };
-        final Path p = new Path("t", EnumSet.of(Path.Type.file));
+        final Path p = new Path("t-2", EnumSet.of(Path.Type.file));
         final TransferStatus status = f.prepare(p, local, new TransferStatus().exists(true));
         assertNull(status.getRename().local);
         assertFalse(r.get());
         f.apply(p, local, status, new DisabledProgressListener());
-        assertEquals("t", local.getName());
+        assertEquals("t-2", local.getName());
         assertTrue(r.get());
     }
 }

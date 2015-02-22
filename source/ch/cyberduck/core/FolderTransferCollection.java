@@ -53,11 +53,13 @@ public class FolderTransferCollection extends Collection<Transfer> {
 
     private static final long serialVersionUID = -8276371611952331966L;
 
-    private static final String PREFIX = "transfer.";
+    private static final String DEFAULT_PREFIX = "transfer.";
 
     private Writer<Transfer> writer = TransferWriterFactory.get();
 
     private Reader<Transfer> reader = TransferReaderFactory.get();
+
+    private String prefix;
 
     /**
      * Formatter for file size
@@ -70,7 +72,12 @@ public class FolderTransferCollection extends Collection<Transfer> {
     private Local folder;
 
     public FolderTransferCollection(final Local folder) {
+        this(folder, DEFAULT_PREFIX);
+    }
+
+    public FolderTransferCollection(final Local folder, final String prefix) {
         this.folder = folder;
+        this.prefix = prefix;
     }
 
     /**
@@ -193,7 +200,7 @@ public class FolderTransferCollection extends Collection<Transfer> {
         this.lock();
         try {
             for(int i = 0; i < this.size(); i++) {
-                preferences.setProperty(String.format("%s%s", PREFIX, this.get(i).getUuid()), i);
+                preferences.setProperty(String.format("%s%s", prefix, this.get(i).getUuid()), i);
             }
         }
         finally {
@@ -226,8 +233,8 @@ public class FolderTransferCollection extends Collection<Transfer> {
         Collections.sort(this, new Comparator<Transfer>() {
             @Override
             public int compare(Transfer o1, Transfer o2) {
-                return Integer.valueOf(preferences.getInteger(String.format("%s%s", PREFIX, o1.getUuid()))).compareTo(
-                        preferences.getInteger(String.format("%s%s", PREFIX, o2.getUuid()))
+                return Integer.valueOf(preferences.getInteger(String.format("%s%s", prefix, o1.getUuid()))).compareTo(
+                        preferences.getInteger(String.format("%s%s", prefix, o2.getUuid()))
                 );
             }
         });

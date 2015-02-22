@@ -49,16 +49,7 @@ public final class LocalFactory extends Factory<Local> {
             final Constructor<Local> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name, path.getClass());
             return constructor.newInstance(path);
         }
-        catch(InstantiationException e) {
-            throw new FactoryException(e.getMessage(), e);
-        }
-        catch(IllegalAccessException e) {
-            throw new FactoryException(e.getMessage(), e);
-        }
-        catch(ClassNotFoundException e) {
-            throw new FactoryException(e.getMessage(), e);
-        }
-        catch(InvocationTargetException e) {
+        catch(InstantiationException | InvocationTargetException | ClassNotFoundException | IllegalAccessException e) {
             throw new FactoryException(e.getMessage(), e);
         }
     }
@@ -73,16 +64,7 @@ public final class LocalFactory extends Factory<Local> {
             final Constructor<Local> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name, parent.getClass(), path.getClass());
             return constructor.newInstance(parent, path);
         }
-        catch(InstantiationException e) {
-            throw new FactoryException(e.getMessage(), e);
-        }
-        catch(IllegalAccessException e) {
-            throw new FactoryException(e.getMessage(), e);
-        }
-        catch(ClassNotFoundException e) {
-            throw new FactoryException(e.getMessage(), e);
-        }
-        catch(InvocationTargetException e) {
+        catch(InstantiationException | InvocationTargetException | ClassNotFoundException | IllegalAccessException e) {
             throw new FactoryException(e.getMessage(), e);
         }
     }

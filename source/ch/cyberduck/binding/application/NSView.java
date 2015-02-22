@@ -614,9 +614,9 @@ public abstract class NSView extends NSResponder {
      */
     /**
      * <i>native declaration : :249</i><br>
-     * Conversion Error : /// Original signature : <code>NSView* hitTest(null)</code><br>
-     * - (NSView*)hitTest:(null)aPoint; (Argument aPoint cannot be converted)
      */
+    public abstract NSView hitTest(NSPoint point);
+
     /**
      * <i>native declaration : :250</i><br>
      * Conversion Error : /// Original signature : <code>BOOL mouse(null, NSRect)</code><br>
@@ -1078,7 +1078,7 @@ public abstract class NSView extends NSResponder {
      * Original signature : <code>void registerForDraggedTypes(NSArray*)</code><br>
      * <i>from NSDrag native declaration : :406</i>
      */
-    public abstract void registerForDraggedTypes(NSArray newTypes);
+    public abstract void registerForDraggedTypes(NSArray types);
 
     /**
      * Original signature : <code>void unregisterDraggedTypes()</code><br>

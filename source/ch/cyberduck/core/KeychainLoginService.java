@@ -51,7 +51,7 @@ public class KeychainLoginService implements LoginService {
     public void authenticate(final Session session, final Cache<Path> cache, final ProgressListener listener,
                              final CancelCallback cancel) throws BackgroundException {
         final Host bookmark = session.getHost();
-        if(session.alert()) {
+        if(session.alert(controller)) {
             // Warning if credentials are sent plaintext.
             controller.warn(bookmark.getProtocol(), MessageFormat.format(LocaleFactory.localizedString("Unsecured {0} connection", "Credentials"),
                             bookmark.getProtocol().getName()),

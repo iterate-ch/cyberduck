@@ -28,13 +28,13 @@ import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.resources.IconCacheFactory;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.Foundation;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @version $Id$
@@ -77,7 +77,7 @@ public abstract class EditMenuDelegate extends AbstractMenuDelegate {
     @Override
     protected boolean isPopulated() {
         final Path selected = this.getEditable();
-        if(selected != null && ObjectUtils.equals(extension, selected.getExtension())) {
+        if(selected != null && Objects.equals(extension, selected.getExtension())) {
             return true;
         }
         if(selected != null) {

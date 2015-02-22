@@ -46,42 +46,25 @@ public class SFTPReadFeature implements Read {
 
     @Override
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
-        InputStream in;
         try {
             final RemoteFile handle = session.sftp().open(file.getAbsolute(),
                     EnumSet.of(OpenMode.READ));
             final int maxUnconfirmedReads
                     = (int) (status.getLength() / PreferencesFactory.get().getInteger("connection.chunksize")) + 1;
-            if(status.isAppend()) {
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Skipping %d bytes", status.getCurrent()));
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Skipping %d bytes", status.getSkip()));
+            }
+            return handle.new ReadAheadRemoteFileInputStream(maxUnconfirmedReads, status.getSkip()) {
+                @Override
+                public void close() throws IOException {
+                    try {
+                        super.close();
+                    }
+                    finally {
+                        handle.close();
+                    }
                 }
-                in = handle.new ReadAheadRemoteFileInputStream(maxUnconfirmedReads, status.getCurrent()) {
-                    @Override
-                    public void close() throws IOException {
-                        try {
-                            super.close();
-                        }
-                        finally {
-                            handle.close();
-                        }
-                    }
-                };
-            }
-            else {
-                in = handle.new ReadAheadRemoteFileInputStream(maxUnconfirmedReads, 0L) {
-                    @Override
-                    public void close() throws IOException {
-                        try {
-                            super.close();
-                        }
-                        finally {
-                            handle.close();
-                        }
-                    }
-                };
-            }
-            return in;
+            };
         }
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map("Download {0} failed", e, file);
@@ -89,7 +72,7 @@ public class SFTPReadFeature implements Read {
     }
 
     @Override
-    public boolean append(final Path file) {
+    public boolean offset(final Path file) {
         return true;
     }
 }

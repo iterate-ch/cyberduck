@@ -66,7 +66,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// </summary>
         private readonly AbstractHostCollection _sessions =
             new FolderBookmarkCollection(
-                LocalFactory.get(PreferencesFactory.get().getProperty("application.support.path"), "Sessions"));
+                LocalFactory.get(PreferencesFactory.get().getProperty("application.support.path"), "Sessions"), "session");
 
         /// <summary>
         /// Helper controller to ensure STA when running threads while launching

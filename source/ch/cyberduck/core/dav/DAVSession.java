@@ -21,6 +21,7 @@ package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
@@ -104,7 +105,7 @@ public class DAVSession extends HttpSession<DAVClient> {
 
     @Override
     public DAVClient connect(final HostKeyCallback key) throws BackgroundException {
-        final HttpClientBuilder builder = this.builder(this);
+        final HttpClientBuilder builder = this.builder();
         builder.setRedirectStrategy(new SardineRedirectStrategy() {
             @Override
             protected boolean isRedirectable(final String method) {
@@ -199,8 +200,8 @@ public class DAVSession extends HttpSession<DAVClient> {
     }
 
     @Override
-    public boolean alert() throws BackgroundException {
-        if(super.alert()) {
+    public boolean alert(final ConnectionCallback callback) throws BackgroundException {
+        if(super.alert(callback)) {
             return preferences.getBoolean("webdav.basic.preemptive");
         }
         return false;

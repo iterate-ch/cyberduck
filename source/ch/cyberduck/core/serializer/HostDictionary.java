@@ -139,9 +139,6 @@ public class HostDictionary {
                     if(1 == Integer.valueOf(connObj.toString())) {
                         bookmark.setTransfer(Host.TransferType.browser);
                     }
-                    else {
-                        bookmark.setTransfer(Host.TransferType.newconnection);
-                    }
                 }
             }
             // Legacy

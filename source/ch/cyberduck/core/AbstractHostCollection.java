@@ -107,13 +107,23 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
 
     @Override
     public void collectionItemAdded(final Host item) {
-        this.sort();
+        if(this.isLocked()) {
+            log.debug("Skip sorting bookmark collection while loading");
+        }
+        else {
+            this.sort();
+        }
         super.collectionItemAdded(item);
     }
 
     @Override
     public void collectionItemRemoved(final Host item) {
-        this.sort();
+        if(this.isLocked()) {
+            log.debug("Skip sorting bookmark collection while loading");
+        }
+        else {
+            this.sort();
+        }
         super.collectionItemRemoved(item);
     }
 

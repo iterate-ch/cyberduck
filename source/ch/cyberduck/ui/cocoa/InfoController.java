@@ -49,6 +49,7 @@ import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.identity.IdentityConfiguration;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.FileDescriptor;
@@ -72,7 +73,6 @@ import ch.cyberduck.core.worker.WriteRedundancyWorker;
 import ch.cyberduck.ui.cocoa.threading.BrowserControllerBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
@@ -91,6 +91,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TimeZone;
 
 /**
@@ -1869,11 +1870,13 @@ public class InfoController extends ToolbarWindowController {
         }
         else {
             final Path file = this.getSelected();
-            if(StringUtils.isBlank(file.attributes().getChecksum())) {
+            final Checksum checksum = file.attributes().getChecksum();
+            if(checksum == null) {
                 checksumField.setStringValue(LocaleFactory.localizedString("Unknown"));
             }
             else {
-                this.updateField(checksumField, file.attributes().getChecksum(), TRUNCATE_MIDDLE_ATTRIBUTES);
+                this.updateField(checksumField, String.format("%s %s",
+                        StringUtils.upperCase(checksum.algorithm.name()), checksum.hash), TRUNCATE_MIDDLE_ATTRIBUTES);
             }
         }
     }
@@ -1914,7 +1917,7 @@ public class InfoController extends ToolbarWindowController {
                 && bucketVersioningButton.state() == NSCell.NSOnState);
         bucketLoggingButton.setEnabled(stop && enable && logging);
         bucketLoggingPopup.setEnabled(stop && enable && logging);
-        if(analytics && ObjectUtils.equals(controller.getSession().getFeature(IdentityConfiguration.class).getCredentials(
+        if(analytics && Objects.equals(controller.getSession().getFeature(IdentityConfiguration.class).getCredentials(
                 controller.getSession().getFeature(AnalyticsProvider.class).getName()), credentials)) {
             // No need to create new IAM credentials when same as session credentials
             bucketAnalyticsButton.setEnabled(false);
@@ -2448,7 +2451,7 @@ public class InfoController extends ToolbarWindowController {
                 distributionAnalyticsButton.setEnabled(false);
             }
             else {
-                if(ObjectUtils.equals(identityFeature.getCredentials(analyticsFeature.getName()), credentials)) {
+                if(Objects.equals(identityFeature.getCredentials(analyticsFeature.getName()), credentials)) {
                     // No need to create new IAM credentials when same as session credentials
                     distributionAnalyticsButton.setEnabled(false);
                 }

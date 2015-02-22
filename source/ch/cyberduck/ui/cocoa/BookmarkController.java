@@ -41,6 +41,7 @@ import ch.cyberduck.core.ReachabilityFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
@@ -65,6 +66,8 @@ import java.util.TimeZone;
  */
 public class BookmarkController extends WindowController {
     private static Logger log = Logger.getLogger(BookmarkController.class);
+
+    private final Preferences preferences = PreferencesFactory.get();
 
     @Outlet
     private NSPopUpButton protocolPopup;
@@ -261,7 +264,7 @@ public class BookmarkController extends WindowController {
      *
      */
     private void updateFavicon() {
-        if(PreferencesFactory.get().getBoolean("bookmark.favicon.download")) {
+        if(preferences.getBoolean("bookmark.favicon.download")) {
             this.background(new AbstractBackgroundAction<Void>() {
                 @Override
                 public Void run() throws BackgroundException {
@@ -402,12 +405,14 @@ public class BookmarkController extends WindowController {
         this.transferPopup.setTarget(this.id());
         this.transferPopup.setAction(Foundation.selector("transferPopupClicked:"));
         this.transferPopup.removeAllItems();
-        for(Host.TransferType t : Host.TransferType.values()) {
+        final Host.TransferType unknown = Host.TransferType.unknown;
+        this.transferPopup.addItemWithTitle(unknown.toString());
+        this.transferPopup.lastItem().setRepresentedObject(unknown.name());
+        this.transferPopup.menu().addItem(NSMenuItem.separatorItem());
+        for(String name : preferences.getList("queue.transfer.type.enabled")) {
+            final Host.TransferType t = Host.TransferType.valueOf(name);
             this.transferPopup.addItemWithTitle(t.toString());
             this.transferPopup.lastItem().setRepresentedObject(t.name());
-            if(t.equals(Host.TransferType.unknown)) {
-                this.transferPopup.menu().addItem(NSMenuItem.separatorItem());
-            }
         }
     }
 
@@ -432,7 +437,7 @@ public class BookmarkController extends WindowController {
         // Default download folder
         this.addDownloadPath(action, new DownloadDirectoryFinder().find(host));
         this.downloadPathPopup.menu().addItem(NSMenuItem.separatorItem());
-        this.addDownloadPath(action, LocalFactory.get(PreferencesFactory.get().getProperty("queue.download.folder")));
+        this.addDownloadPath(action, LocalFactory.get(preferences.getProperty("queue.download.folder")));
         // Shortcut to the Desktop
         this.addDownloadPath(action, LocalFactory.get("~/Desktop"));
         // Shortcut to user home
@@ -532,7 +537,7 @@ public class BookmarkController extends WindowController {
 
     @Override
     public void invalidate() {
-        PreferencesFactory.get().setProperty("bookmark.toggle.options", this.toggleOptionsButton.state());
+        preferences.setProperty("bookmark.toggle.options", this.toggleOptionsButton.state());
         BookmarkCollection.defaultCollection().removeListener(bookmarkCollectionListener);
         super.invalidate();
     }
@@ -546,7 +551,7 @@ public class BookmarkController extends WindowController {
     public void awakeFromNib() {
         this.cascade();
         this.init();
-        this.setState(this.toggleOptionsButton, PreferencesFactory.get().getBoolean("bookmark.toggle.options"));
+        this.setState(this.toggleOptionsButton, preferences.getBoolean("bookmark.toggle.options"));
         this.reachable();
         this.updateFavicon();
 
@@ -685,15 +690,15 @@ public class BookmarkController extends WindowController {
     @Action
     public void anonymousCheckboxClicked(final NSButton sender) {
         if(sender.state() == NSCell.NSOnState) {
-            host.getCredentials().setUsername(PreferencesFactory.get().getProperty("connection.login.anon.name"));
+            host.getCredentials().setUsername(preferences.getProperty("connection.login.anon.name"));
         }
         if(sender.state() == NSCell.NSOffState) {
-            if(PreferencesFactory.get().getProperty("connection.login.name").equals(
-                    PreferencesFactory.get().getProperty("connection.login.anon.name"))) {
+            if(preferences.getProperty("connection.login.name").equals(
+                    preferences.getProperty("connection.login.anon.name"))) {
                 host.getCredentials().setUsername(StringUtils.EMPTY);
             }
             else {
-                host.getCredentials().setUsername(PreferencesFactory.get().getProperty("connection.login.name"));
+                host.getCredentials().setUsername(preferences.getProperty("connection.login.name"));
             }
         }
         this.itemChanged();
@@ -766,12 +771,12 @@ public class BookmarkController extends WindowController {
                 this.timezonePopup.setTitle(UTC.getID());
             }
             else {
-                if(PreferencesFactory.get().getBoolean("ftp.timezone.auto")) {
+                if(preferences.getBoolean("ftp.timezone.auto")) {
                     this.timezonePopup.setTitle(AUTO);
                 }
                 else {
                     this.timezonePopup.setTitle(
-                            TimeZone.getTimeZone(PreferencesFactory.get().getProperty("ftp.timezone.default")).getID()
+                            TimeZone.getTimeZone(preferences.getProperty("ftp.timezone.default")).getID()
                     );
                 }
             }

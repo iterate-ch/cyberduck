@@ -63,7 +63,7 @@ public class ResumeFilterTest extends AbstractTestCase {
             }
 
             @Override
-            public boolean append(final Path file) throws BackgroundException {
+            public boolean offset(final Path file) throws BackgroundException {
                 return true;
             }
         });
@@ -93,7 +93,7 @@ public class ResumeFilterTest extends AbstractTestCase {
         p.attributes().setSize(2L);
         final TransferStatus status = f.prepare(p, local, new TransferStatus());
         assertTrue(status.isAppend());
-        assertEquals(1L, status.getCurrent(), 0L);
+        assertEquals(1L, status.getSkip(), 0L);
     }
 
     @Test
@@ -106,7 +106,7 @@ public class ResumeFilterTest extends AbstractTestCase {
             }
 
             @Override
-            public boolean append(final Path file) throws BackgroundException {
+            public boolean offset(final Path file) throws BackgroundException {
                 return true;
             }
         });
@@ -141,7 +141,7 @@ public class ResumeFilterTest extends AbstractTestCase {
             }
 
             @Override
-            public boolean append(final Path file) throws BackgroundException {
+            public boolean offset(final Path file) throws BackgroundException {
                 return true;
             }
         });

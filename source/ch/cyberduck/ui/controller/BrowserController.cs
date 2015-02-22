@@ -1647,9 +1647,18 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
+        private bool View_ValidateNewFile()
+        {
+            return IsMounted() && ((Touch) Session.getFeature(typeof (Touch))).isSupported(
+                new UploadTargetFinder(Workdir).find(SelectedPath)
+            );
+        }
+
         private bool View_ValidateUpload()
         {
-            return IsMounted() && ((Touch) Session.getFeature(typeof (Touch))).isSupported(Workdir);
+            return IsMounted() && ((Touch) Session.getFeature(typeof (Touch))).isSupported(
+                new UploadTargetFinder(Workdir).find(SelectedPath)
+            );
         }
 
         private void View_Upload()
@@ -1770,11 +1779,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 return ((Move) Session.getFeature(typeof (Move))).isSupported(SelectedPath);
             }
             return false;
-        }
-
-        private bool View_ValidateNewFile()
-        {
-            return IsMounted() && ((Touch) Session.getFeature(typeof (Touch))).isSupported(Workdir);
         }
 
         private void View_NewDownload()
@@ -2221,7 +2225,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="transfer"></param>
         protected void transfer(Transfer transfer, IList<Path> selected)
         {
-            this.transfer(transfer, selected, Session.getMaxConnections() == 1);
+            this.transfer(transfer, selected, Session.getTransferType().equals(Host.TransferType.browser));
         }
 
         /// <summary>
@@ -2383,6 +2387,8 @@ namespace Ch.Cyberduck.Ui.Controller
         public void SetWorkdir(Path directory, List<Path> selected)
         {
             Workdir = directory;
+            // Remove any custom file filter
+            SetPathFilter(null);
             // Change to last selected browser view
             ReloadData(Workdir != null ? selected : new List<Path>());
             SetNavigation(IsMounted());

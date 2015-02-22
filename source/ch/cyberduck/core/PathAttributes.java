@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.serializer.Serializer;
 
 import org.apache.commons.lang3.StringUtils;
@@ -60,7 +61,7 @@ public class PathAttributes extends Attributes implements Serializable {
     /**
      * MD5 checksum
      */
-    private String checksum;
+    private Checksum checksum;
 
     /**
      * ETag header in HTTP
@@ -217,11 +218,11 @@ public class PathAttributes extends Attributes implements Serializable {
     }
 
     @Override
-    public String getChecksum() {
+    public Checksum getChecksum() {
         return checksum;
     }
 
-    public void setChecksum(final String checksum) {
+    public void setChecksum(final Checksum checksum) {
         this.checksum = checksum;
     }
 

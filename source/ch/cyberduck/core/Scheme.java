@@ -103,12 +103,23 @@ public enum Scheme {
     udt {
         @Override
         public boolean isSecure() {
+            return false;
+        }
+
+        @Override
+        public int getPort() {
+            return 4280;
+        }
+    },
+    udts {
+        @Override
+        public boolean isSecure() {
             return true;
         }
 
         @Override
         public int getPort() {
-            return 8007;
+            return 42443;
         }
     },
     irods {

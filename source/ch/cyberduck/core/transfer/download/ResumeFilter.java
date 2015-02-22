@@ -80,12 +80,12 @@ public class ResumeFilter extends AbstractDownloadFilter {
     @Override
     public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
         final TransferStatus status = super.prepare(file, local, parent);
-        if(read.append(file)) {
+        if(read.offset(file)) {
             if(local.isFile()) {
                 if(local.exists()) {
                     if(local.attributes().getSize() > 0) {
                         status.setAppend(true);
-                        status.setCurrent(local.attributes().getSize());
+                        status.setSkip(local.attributes().getSize());
                     }
                 }
             }

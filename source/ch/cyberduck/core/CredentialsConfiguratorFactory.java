@@ -29,13 +29,22 @@ public final class CredentialsConfiguratorFactory {
         //
     }
 
+    private static CredentialsConfigurator instance;
+
+    private static final Object lock = new Object();
+
     /**
      * @param protocol Protocol
      * @return Configurator for default settings
      */
     public static CredentialsConfigurator get(final Protocol protocol) {
         if(protocol.getType() == Protocol.Type.ssh) {
-            return new OpenSSHCredentialsConfigurator();
+            synchronized(lock) {
+                if(null == instance) {
+                    instance = new OpenSSHCredentialsConfigurator();
+                }
+                return instance;
+            }
         }
         return new NullCredentialsConfigurator();
     }

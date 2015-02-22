@@ -1223,23 +1223,20 @@ public class PreferencesController extends ToolbarWindowController {
         this.transferPopup = b;
         this.transferPopup.setTarget(this.id());
         this.transferPopup.setAction(Foundation.selector("transferPopupClicked:"));
-        this.transferPopup.selectItemAtIndex(
-                new NSInteger(preferences.getInteger("connection.host.max") == 1 ? TransferPopupOption.browser.ordinal() : TransferPopupOption.queue.ordinal()));
-    }
-
-    private enum TransferPopupOption {
-        queue,
-        browser
+        this.transferPopup.removeAllItems();
+        for(String name : preferences.getList("queue.transfer.type.enabled")) {
+            final Host.TransferType t = Host.TransferType.valueOf(name);
+            this.transferPopup.addItemWithTitle(t.toString());
+            this.transferPopup.lastItem().setRepresentedObject(t.name());
+        }
+        this.transferPopup.selectItemAtIndex(this.transferPopup.indexOfItemWithRepresentedObject(
+                preferences.getProperty("queue.transfer.type")
+        ));
     }
 
     @Action
     public void transferPopupClicked(final NSPopUpButton sender) {
-        if(sender.indexOfSelectedItem().intValue() == TransferPopupOption.browser.ordinal()) {
-            preferences.setProperty("connection.host.max", 1);
-        }
-        else if(sender.indexOfSelectedItem().intValue() == TransferPopupOption.queue.ordinal()) {
-            preferences.setProperty("connection.host.max", -1);
-        }
+        preferences.setProperty("queue.transfer.type", sender.selectedItem().representedObject());
     }
 
     @Outlet

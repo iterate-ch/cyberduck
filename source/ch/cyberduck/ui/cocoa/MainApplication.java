@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.binding.application.NSApplication;
+import ch.cyberduck.binding.foundation.NSBundle;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.UserDefaultsPreferences;
@@ -53,11 +54,18 @@ public final class MainApplication {
             final NSApplication app = NSApplication.sharedApplication();
 
             // Register factory implementations.
-            PreferencesFactory.set(new UserDefaultsPreferences());
+            final UserDefaultsPreferences preferences = new UserDefaultsPreferences();
+            PreferencesFactory.set(preferences);
             ProtocolFactory.register();
 
             if(log.isInfoEnabled()) {
-                log.info("Encoding " + System.getProperty("file.encoding"));
+                log.info(String.format("Running version %s", NSBundle.mainBundle()
+                        .objectForInfoDictionaryKey("CFBundleVersion").toString()));
+                log.info(String.format("Running Java %s on %s", System
+                        .getProperty("java.version"), System.getProperty("os.arch")));
+                log.info(String.format("Available localizations:%s", preferences.applicationLocales()));
+                log.info(String.format("Native library path:%s", System.getProperty("java.library.path")));
+                log.info(String.format("Using default encoding %s", System.getProperty("file.encoding")));
             }
 
             final MainController c = new MainController();

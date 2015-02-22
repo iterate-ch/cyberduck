@@ -123,7 +123,7 @@ public class SFTPReadFeatureTest extends AbstractTestCase {
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
             status.setAppend(true);
-            status.setCurrent(100L);
+            status.setSkip(100L);
             final InputStream in = new SFTPReadFeature(session).read(test, status);
             assertNotNull(in);
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);

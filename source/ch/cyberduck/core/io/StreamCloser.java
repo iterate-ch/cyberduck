@@ -1,7 +1,7 @@
 package ch.cyberduck.core.io;
 
 /*
- * Copyright (c) 2002-2014 David Kocher. All rights reserved.
+ * Copyright (c) 2002-2015 David Kocher. All rights reserved.
  * http://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -19,60 +19,15 @@ package ch.cyberduck.core.io;
  */
 
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.threading.NamedThreadFactory;
-
-import org.apache.commons.io.IOUtils;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @version $Id$
  */
-public class StreamCloser {
+public interface StreamCloser {
+    void close(InputStream in) throws ConnectionTimeoutException;
 
-    private final Preferences preferences
-            = PreferencesFactory.get();
-
-    public void close(final InputStream in) throws ConnectionTimeoutException {
-        final CountDownLatch signal = new CountDownLatch(1);
-        new NamedThreadFactory("close").newThread(new Runnable() {
-            @Override
-            public void run() {
-                IOUtils.closeQuietly(in);
-                signal.countDown();
-            }
-        }).start();
-        try {
-            if(!signal.await(preferences.getInteger("connection.timeout.seconds"), TimeUnit.SECONDS)) {
-                throw new ConnectionTimeoutException("Timeout closing input stream", null);
-            }
-        }
-        catch(InterruptedException e) {
-            throw new ConnectionTimeoutException(e.getMessage(), e);
-        }
-    }
-
-    public void close(final OutputStream out) throws ConnectionTimeoutException {
-        final CountDownLatch signal = new CountDownLatch(1);
-        new NamedThreadFactory("close").newThread(new Runnable() {
-            @Override
-            public void run() {
-                IOUtils.closeQuietly(out);
-                signal.countDown();
-            }
-        }).start();
-        try {
-            if(!signal.await(preferences.getInteger("connection.timeout.seconds"), TimeUnit.SECONDS)) {
-                throw new ConnectionTimeoutException("Timeout closing output stream", null);
-            }
-        }
-        catch(InterruptedException e) {
-            throw new ConnectionTimeoutException(e.getMessage(), e);
-        }
-    }
+    void close(OutputStream out) throws ConnectionTimeoutException;
 }

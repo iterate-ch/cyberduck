@@ -3,6 +3,8 @@ package ch.cyberduck.core.synchronization;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.HashAlgorithm;
 
 import org.junit.Test;
 
@@ -18,26 +20,26 @@ public class ChecksumComparisonServiceTest extends AbstractTestCase {
         ComparisonService s = new ChecksumComparisonService();
         assertEquals(Comparison.equal, s.compare(new PathAttributes() {
                                                      @Override
-                                                     public String getChecksum() {
-                                                         return "a";
+                                                     public Checksum getChecksum() {
+                                                         return new Checksum(HashAlgorithm.md5, "a");
                                                      }
                                                  }, new LocalAttributes("/t") {
                                                      @Override
-                                                     public String getChecksum() {
-                                                         return "a";
+                                                     public Checksum getChecksum() {
+                                                         return new Checksum(HashAlgorithm.md5, "a");
                                                      }
                                                  }
         ));
 
         assertEquals(Comparison.notequal, s.compare(new PathAttributes() {
                                                         @Override
-                                                        public String getChecksum() {
-                                                            return "b";
+                                                        public Checksum getChecksum() {
+                                                            return new Checksum(HashAlgorithm.md5, "b");
                                                         }
                                                     }, new LocalAttributes("/t") {
                                                         @Override
-                                                        public String getChecksum() {
-                                                            return "a";
+                                                        public Checksum getChecksum() {
+                                                            return new Checksum(HashAlgorithm.md5, "a");
                                                         }
                                                     }
         ));

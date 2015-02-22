@@ -19,18 +19,18 @@ package ch.cyberduck.core.udt.qloudsonic;
  */
 
 import ch.cyberduck.core.Header;
-import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.aquaticprime.License;
 import ch.cyberduck.core.aquaticprime.LicenseFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.udt.UDTProtocol;
 import ch.cyberduck.core.udt.UDTProxyProvider;
+import ch.cyberduck.core.udt.UDTTLSProtocol;
 
 import org.apache.log4j.Logger;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,9 +42,6 @@ public class QloudsonicProxyProvider implements UDTProxyProvider {
 
     private LicenseFactory factory;
 
-    private Preferences preferences
-            = PreferencesFactory.get();
-
     public QloudsonicProxyProvider() {
         this.factory = new QloudsonicVoucherFinder();
     }
@@ -54,8 +51,16 @@ public class QloudsonicProxyProvider implements UDTProxyProvider {
     }
 
     @Override
-    public URI find(final Location.Name region) {
-        return URI.create(String.format("udt://127.0.0.1:%d", Scheme.udt.getPort()));
+    public Host find(final Location.Name region, final boolean tls) {
+        final Protocol protocol;
+        if(tls) {
+            protocol = new UDTTLSProtocol();
+        }
+        else {
+            protocol = new UDTProtocol();
+        }
+        return new Host(protocol, String.format("%s.qloudsonic.io",
+                region.getIdentifier()), protocol.getScheme().getPort());
     }
 
     @Override

@@ -55,7 +55,7 @@ public class SwiftReadFeature implements Read {
             if(status.isAppend()) {
                 stream = session.getClient().getObject(new SwiftRegionService(session).lookup(file),
                         containerService.getContainer(file).getName(), containerService.getKey(file),
-                        status.getCurrent(), status.getLength());
+                        status.getSkip(), status.getLength());
             }
             else {
                 stream = session.getClient().getObject(new SwiftRegionService(session).lookup(file),
@@ -75,7 +75,7 @@ public class SwiftReadFeature implements Read {
     }
 
     @Override
-    public boolean append(final Path file) {
+    public boolean offset(final Path file) {
         return true;
     }
 }

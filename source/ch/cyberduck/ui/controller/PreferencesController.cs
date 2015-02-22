@@ -48,8 +48,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private static readonly String NullString = "null";
 
-        private static readonly string UseBrowserSession = LocaleFactory.localizedString("Use browser connection");
-        private static readonly string UseQueueSession = LocaleFactory.localizedString("Open new connection");
         private static PreferencesController _instance;
 
         private bool _downloadRegexInvalid;
@@ -749,14 +747,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_TransferModeChangedEvent()
         {
-            if (UseBrowserSession.Equals(View.TransferMode))
-            {
-                PreferencesFactory.get().setProperty("connection.host.max", 1);
-            }
-            else if (UseQueueSession.Equals(View.TransferMode))
-            {
-                PreferencesFactory.get().setProperty("connection.host.max", -1);
-            }
+            PreferencesFactory.get().setProperty("queue.transfer.type", View.TransferMode);
         }
 
         private void View_DefaultEncodingChangedEvent()
@@ -918,9 +909,7 @@ namespace Ch.Cyberduck.Ui.Controller
             #region Transfers - General
 
             PopulateTransferModes();
-            View.TransferMode = PreferencesFactory.get().getInteger("connection.host.max") == 1
-                                    ? UseBrowserSession
-                                    : UseQueueSession;
+            View.TransferMode = PreferencesFactory.get().getProperty("queue.transfer.type");
             View.TransfersToFront = PreferencesFactory.get().getBoolean("queue.window.open.transfer.start");
             View.TransfersToBack = PreferencesFactory.get().getBoolean("queue.window.open.transfer.stop");
             View.RemoveFromTransfers = PreferencesFactory.get().getBoolean("queue.removeItemWhenComplete");
@@ -1244,8 +1233,9 @@ namespace Ch.Cyberduck.Ui.Controller
         private void PopulateTransferModes()
         {
             List<string> modes = new List<string>();
-            modes.Add(UseQueueSession);
-            modes.Add(UseBrowserSession);
+            foreach (String name in Utils.ConvertFromJavaList<String>(PreferencesFactory.get().getList("queue.transfer.type.enabled"))) {
+                modes.Add(Host.TransferType.valueOf(name).toString());
+            }
             View.PopulateTransferModes(modes);
         }
 

@@ -63,7 +63,7 @@ public class SwiftObjectListServiceTest extends AbstractTestCase {
                 assertNotNull(p.attributes().getModificationDate());
                 assertNotNull(p.attributes().getSize());
                 assertNotNull(p.attributes().getChecksum());
-                assertNotNull(p.attributes().getETag());
+                assertNull(p.attributes().getETag());
             }
             else if(p.isDirectory()) {
                 //assertFalse(p.isPlaceholder());

@@ -10,6 +10,8 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.test.NullLocal;
 import ch.cyberduck.core.test.NullSession;
 
@@ -38,8 +40,8 @@ public class ComparisonServiceFilterTest extends AbstractTestCase {
                 attr.set(true);
                 return new PathAttributes() {
                     @Override
-                    public String getChecksum() {
-                        return "a";
+                    public Checksum getChecksum() {
+                        return new Checksum(HashAlgorithm.md5, "a");
                     }
                 };
             }
@@ -68,8 +70,8 @@ public class ComparisonServiceFilterTest extends AbstractTestCase {
             public LocalAttributes attributes() {
                 return new LocalAttributes("/t") {
                     @Override
-                    public String getChecksum() {
-                        return "a";
+                    public Checksum getChecksum() {
+                        return new Checksum(HashAlgorithm.md5, "a");
                     }
                 };
             }
@@ -183,8 +185,8 @@ public class ComparisonServiceFilterTest extends AbstractTestCase {
                 attr.set(true);
                 return new PathAttributes() {
                     @Override
-                    public String getChecksum() {
-                        return "b";
+                    public Checksum getChecksum() {
+                        return new Checksum(HashAlgorithm.md5, "b");
                     }
 
                     @Override
@@ -213,8 +215,8 @@ public class ComparisonServiceFilterTest extends AbstractTestCase {
             public LocalAttributes attributes() {
                 return new LocalAttributes("t") {
                     @Override
-                    public String getChecksum() {
-                        return "a";
+                    public Checksum getChecksum() {
+                        return new Checksum(HashAlgorithm.md5, "a");
                     }
 
                     @Override

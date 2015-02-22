@@ -151,6 +151,7 @@ public class TerminalPreferences extends MemoryPreferences {
         }
         defaults.put("local.normalize.prefix", String.valueOf(true));
         defaults.put("connection.login.name", System.getProperty("user.name"));
+        defaults.put("queue.download.checksum", String.valueOf(true));
     }
 
     @Override

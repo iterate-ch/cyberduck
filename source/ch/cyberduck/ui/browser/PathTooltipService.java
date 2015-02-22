@@ -22,6 +22,7 @@ import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.date.AbstractUserDateFormatter;
 import ch.cyberduck.core.formatter.SizeFormatter;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
+import ch.cyberduck.core.io.Checksum;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -48,8 +49,10 @@ public class PathTooltipService {
         if(StringUtils.isNotBlank(file.attributes().getRegion())) {
             tooltip.append("\n").append(file.attributes().getRegion());
         }
-        if(StringUtils.isNotBlank(file.attributes().getChecksum())) {
-            tooltip.append("\n").append(file.attributes().getChecksum());
+        final Checksum checksum = file.attributes().getChecksum();
+        if(checksum != null) {
+            tooltip.append("\n").append(String.format("%s %s",
+                    StringUtils.upperCase(checksum.algorithm.name()), checksum.hash));
         }
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
             tooltip.append("\n").append(file.attributes().getVersionId());

@@ -66,7 +66,7 @@ public abstract class Session<C> implements TranscriptListener {
     private Preferences preferences
             = PreferencesFactory.get();
 
-    public boolean alert() throws BackgroundException {
+    public boolean alert(final ConnectionCallback callback) throws BackgroundException {
         if(host.getProtocol().isSecure()) {
             return false;
         }
@@ -248,11 +248,13 @@ public abstract class Session<C> implements TranscriptListener {
         insensitive
     }
 
-    /**
-     * @return The maximum number of concurrent connections allowed or -1 if no limit is set
-     */
-    public int getMaxConnections() {
-        return host.getTransfer().getMaxConnections();
+    public Host.TransferType getTransferType() {
+        switch(host.getTransfer()) {
+            case unknown:
+                return Host.TransferType.valueOf(preferences.getProperty("queue.transfer.type"));
+            default:
+                return host.getTransfer();
+        }
     }
 
     /**

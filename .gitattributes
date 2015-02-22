@@ -1877,8 +1877,8 @@ lib/asm-3.3.1.jar -text
 lib/aws-java-sdk-1.6.6.jar -text svneol=unset#application/jar
 lib/azure-storage-2.0.0.jar -text
 lib/barchart-udt-bundle-2.3.0.jar -text
-lib/bcpkix-jdk15on-151.jar -text
-lib/bcprov-jdk15on-151.jar -text
+lib/bcpkix-jdk15on-1.51.jar -text
+lib/bcprov-jdk15on-1.51.jar -text
 lib/cglib-2.2.2.jar -text
 lib/commons-cli-1.2.jar -text
 lib/commons-codec-1.8.jar -text svneol=unset#application/zip
@@ -1910,7 +1910,7 @@ lib/jackson-core-asl-1.9.13.jar -text svneol=unset#application/jar
 lib/jackson-mapper-asl-1.9.13.jar -text svneol=unset#application/jar
 lib/jansi-1.12.jar -text
 lib/java-xmlbuilder-1.0.jar -text svneol=unset#application/zip
-lib/jets3t-0.9.3.jar -text
+lib/jets3t-0.9.4.jar -text
 lib/jna-4.1.0.jar -text svneol=unset#application/jar
 lib/jna-platform-4.1.0.jar -text
 lib/jnidispatch.dll -text

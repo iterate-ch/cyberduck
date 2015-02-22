@@ -1,5 +1,7 @@
 package ch.cyberduck.core.io;
 
+import ch.cyberduck.core.preferences.PreferencesFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
@@ -35,7 +37,7 @@ public class StreamGobbler extends InputStream {
     private final class GobblerThread extends Thread {
         @Override
         public void run() {
-            byte[] buff = new byte[8192];
+            byte[] buff = new byte[PreferencesFactory.get().getInteger("connection.buffer")];
 
             while(true) {
                 try {

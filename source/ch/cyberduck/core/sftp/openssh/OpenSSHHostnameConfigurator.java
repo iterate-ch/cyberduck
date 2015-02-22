@@ -32,10 +32,13 @@ import org.apache.log4j.Logger;
 public class OpenSSHHostnameConfigurator implements HostnameConfigurator {
     private static final Logger log = Logger.getLogger(OpenSSHHostnameConfigurator.class);
 
+    private static final Local file
+            = LocalFactory.get(Local.HOME, ".ssh/config");
+
     private OpenSshConfig configuration;
 
     public OpenSSHHostnameConfigurator() {
-        this(new OpenSshConfig(LocalFactory.get(Local.HOME, ".ssh/config")));
+        this(new OpenSshConfig(file));
     }
 
     public OpenSSHHostnameConfigurator(final OpenSshConfig configuration) {
@@ -55,7 +58,7 @@ public class OpenSSHHostnameConfigurator implements HostnameConfigurator {
             return alias;
         }
         if(log.isInfoEnabled()) {
-            log.info(String.format("Using hostname alias %s from ~/.ssh/config", alias));
+            log.info(String.format("Using hostname alias %s from %s", alias, file));
         }
         return hostname;
     }

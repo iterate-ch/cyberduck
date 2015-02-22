@@ -138,10 +138,7 @@ public class OpenSshConfig {
                     IOUtils.closeQuietly(in);
                 }
             }
-            catch(AccessDeniedException none) {
-                hosts = Collections.emptyMap();
-            }
-            catch(IOException err) {
+            catch(AccessDeniedException | IOException none) {
                 hosts = Collections.emptyMap();
             }
             lastModified = mtime;
@@ -372,6 +369,17 @@ public class OpenSshConfig {
          */
         public boolean isBatchMode() {
             return batchMode != null && batchMode;
+        }
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("Host{");
+            sb.append("hostName='").append(hostName).append('\'');
+            sb.append(", port=").append(port);
+            sb.append(", identityFile=").append(identityFile);
+            sb.append(", user='").append(user).append('\'');
+            sb.append('}');
+            return sb.toString();
         }
     }
 

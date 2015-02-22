@@ -181,6 +181,41 @@ public class SFTPSession extends Session<SSHClient> {
     }
 
     @Override
+    public boolean alert(final ConnectionCallback prompt) throws BackgroundException {
+        if(!preferences.getBoolean(String.format("ssh.algorithm.whitelist.%s", host.getHostname()))) {
+            if(preferences.getList("ssh.algorithm.cipher.blacklist").contains(algorithms.getClient2ServerCipherAlgorithm())) {
+                alert(prompt, algorithms.getClient2ServerCipherAlgorithm());
+            }
+            if(preferences.getList("ssh.algorithm.cipher.blacklist").contains(algorithms.getServer2ClientCipherAlgorithm())) {
+                alert(prompt, algorithms.getServer2ClientCipherAlgorithm());
+            }
+            if(preferences.getList("ssh.algorithm.mac.blacklist").contains(algorithms.getClient2ServerMACAlgorithm())) {
+                alert(prompt, algorithms.getClient2ServerMACAlgorithm());
+            }
+            if(preferences.getList("ssh.algorithm.mac.blacklist").contains(algorithms.getServer2ClientMACAlgorithm())) {
+                alert(prompt, algorithms.getServer2ClientMACAlgorithm());
+            }
+            if(preferences.getList("ssh.algorithm.kex.blacklist").contains(algorithms.getKeyExchangeAlgorithm())) {
+                alert(prompt, algorithms.getKeyExchangeAlgorithm());
+            }
+            if(preferences.getList("ssh.algorithm.signature.blacklist").contains(algorithms.getSignatureAlgorithm())) {
+                alert(prompt, algorithms.getSignatureAlgorithm());
+            }
+        }
+        return false;
+    }
+
+    private void alert(final ConnectionCallback prompt, final String algorithm) throws ConnectionCanceledException {
+        prompt.warn(host.getProtocol(), MessageFormat.format(LocaleFactory.localizedString("Insecure algorithm {0} negotiated with server", "Credentials"),
+                        algorithm),
+                MessageFormat.format("{0}. {1}.", LocaleFactory.localizedString("The algorithm is possibly too weak to meet current cryptography standards", "Credentials"),
+                        LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support")),
+                LocaleFactory.localizedString("Continue", "Credentials"),
+                LocaleFactory.localizedString("Disconnect", "Credentials"),
+                String.format("ssh.algorithm.whitelist.%s", host.getHostname()));
+    }
+
+    @Override
     public void login(final PasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
                       final Cache<Path> cache) throws BackgroundException {
         final List<SFTPAuthentication> methods = new ArrayList<SFTPAuthentication>();

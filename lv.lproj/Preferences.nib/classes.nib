@@ -7,8 +7,6 @@
 		<dict>
 			<key>ACTIONS</key>
 			<dict>
-				<key></key>
-				<string>id</string>
 				<key>help</key>
 				<string>id</string>
 			</dict>

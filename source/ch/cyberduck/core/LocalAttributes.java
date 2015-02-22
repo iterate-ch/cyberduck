@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.io.Checksum;
 
 import java.io.File;
 
@@ -25,7 +26,7 @@ public class LocalAttributes extends Attributes {
 
     private String path;
 
-    private String checksum;
+    private Checksum checksum;
 
     private Permission permission;
 
@@ -104,11 +105,11 @@ public class LocalAttributes extends Attributes {
     }
 
     @Override
-    public String getChecksum() {
+    public Checksum getChecksum() {
         return checksum;
     }
 
-    public void setChecksum(final String checksum) {
+    public void setChecksum(final Checksum checksum) {
         this.checksum = checksum;
     }
 

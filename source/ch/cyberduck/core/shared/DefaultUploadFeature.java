@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.io.StreamCloser;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
@@ -59,14 +60,14 @@ public class DefaultUploadFeature implements Upload<Void> {
                 in = local.getInputStream();
                 out = writer.write(file, status);
                 new StreamCopier(status, status)
-                        .withOffset(status.getCurrent())
+                        .withOffset(status.getSkip())
                         .withLimit(status.getLength())
                         .withListener(listener)
                         .transfer(in, new ThrottledOutputStream(out, throttle));
                 return null;
             }
             finally {
-                final StreamCloser c = new StreamCloser();
+                final StreamCloser c = new DefaultStreamCloser();
                 c.close(in);
                 c.close(out);
             }

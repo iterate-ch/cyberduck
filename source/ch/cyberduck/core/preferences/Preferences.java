@@ -27,6 +27,7 @@ import ch.cyberduck.core.DisabledProxyFinder;
 import ch.cyberduck.core.DisabledRendezvous;
 import ch.cyberduck.core.DisabledSleepPreventer;
 import ch.cyberduck.core.DisabledTerminalService;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
@@ -377,7 +378,14 @@ public abstract class Preferences {
          * The maximum number of concurrent transfers
          */
         defaults.put("queue.maxtransfers", String.valueOf(5));
-        defaults.put("queue.session.pool.size", String.valueOf(1));
+        /**
+         * Default transfer connection handling
+         */
+        defaults.put("queue.transfer.type.enabled", String.format("%s %s",
+                String.valueOf(Host.TransferType.newconnection.name()),
+                String.valueOf(Host.TransferType.browser.name())
+        ));
+        defaults.put("queue.transfer.type", String.valueOf(Host.TransferType.newconnection.name()));
         /**
          * Warning when number of transfers in queue exceeds limit
          */
@@ -437,6 +445,7 @@ public abstract class Preferences {
         defaults.put("queue.download.permissions.folder.default", String.valueOf(755));
 
         defaults.put("queue.download.timestamp.change", String.valueOf(true));
+        defaults.put("queue.download.checksum", String.valueOf(false));
 
         defaults.put("queue.download.skip.enable", String.valueOf(true));
         defaults.put("queue.download.skip.regex.default",
@@ -454,7 +463,7 @@ public abstract class Preferences {
         defaults.put("queue.download.wherefrom", String.valueOf(true));
 
         // Segmented concurrent downloads
-        defaults.put("queue.download.segments.threshold", String.valueOf(Long.MAX_VALUE));
+        defaults.put("queue.download.segments.threshold", String.valueOf(String.valueOf(Long.MAX_VALUE)));
         defaults.put("queue.download.segments.size", String.valueOf(20L * 1024L * 1024L));
 
         /**
@@ -528,6 +537,8 @@ public abstract class Preferences {
          * Total number of connections in the pool
          */
         defaults.put("http.connections.total", String.valueOf(Integer.MAX_VALUE));
+        defaults.put("http.connections.retry", String.valueOf(1));
+
         defaults.put("http.manager.timeout", String.valueOf(0)); // Infinite
         defaults.put("http.socket.buffer", String.valueOf(8192));
         defaults.put("http.credentials.charset", "ISO-8859-1");
@@ -568,6 +579,8 @@ public abstract class Preferences {
          */
         defaults.put("ftp.timezone.auto", String.valueOf(false));
         defaults.put("ftp.timezone.default", TimeZone.getDefault().getID());
+
+        defaults.put("ftp.symlink.absolute", String.valueOf(false));
 
         /**
          * Authentication header version
@@ -792,11 +805,6 @@ public abstract class Preferences {
         );
 
         /**
-         * Maximum concurrent connections to the same host
-         * Unlimited by default
-         */
-        defaults.put("connection.host.max", String.valueOf(-1));
-        /**
          * Default login name
          */
         defaults.put("connection.login.name", StringUtils.EMPTY);
@@ -921,6 +929,13 @@ public abstract class Preferences {
          */
         defaults.put("ssh.compression", "zlib");
         defaults.put("ssh.subsystem.name", "sftp");
+
+        defaults.put("ssh.algorithm.cipher.blacklist", StringUtils.EMPTY);
+        defaults.put("ssh.algorithm.mac.blacklist", StringUtils.EMPTY);
+        defaults.put("ssh.algorithm.kex.blacklist", StringUtils.EMPTY);
+        defaults.put("ssh.algorithm.signature.blacklist", StringUtils.EMPTY);
+
+        defaults.put("sftp.symlink.absolute", String.valueOf(false));
 
         defaults.put("archive.default", "tar.gz");
 

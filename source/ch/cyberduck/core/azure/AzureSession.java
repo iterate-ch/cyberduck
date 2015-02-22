@@ -27,7 +27,6 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -60,21 +59,15 @@ import org.apache.commons.lang3.StringUtils;
 import javax.net.ssl.HttpsURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.EnumSet;
 
 import com.microsoft.azure.storage.Credentials;
 import com.microsoft.azure.storage.OperationContext;
-import com.microsoft.azure.storage.ResultContinuation;
-import com.microsoft.azure.storage.ResultSegment;
 import com.microsoft.azure.storage.RetryNoRetry;
 import com.microsoft.azure.storage.SendingRequestEvent;
 import com.microsoft.azure.storage.StorageCredentialsAccountAndKey;
 import com.microsoft.azure.storage.StorageEvent;
-import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.BlobRequestOptions;
 import com.microsoft.azure.storage.blob.CloudBlobClient;
-import com.microsoft.azure.storage.blob.CloudBlobContainer;
-import com.microsoft.azure.storage.blob.ContainerListingDetails;
 
 /**
  * @version $Id$
@@ -154,37 +147,11 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        try {
-            if(directory.isRoot()) {
-                ResultSegment<CloudBlobContainer> result;
-                ResultContinuation token = null;
-                final AttributedList<Path> containers = new AttributedList<Path>();
-                do {
-                    final BlobRequestOptions options = new BlobRequestOptions();
-                    options.setRetryPolicyFactory(new RetryNoRetry());
-                    result = client.listContainersSegmented(null, ContainerListingDetails.NONE,
-                            preferences.getInteger("azure.listing.chunksize"), token,
-                            options, context);
-                    for(CloudBlobContainer container : result.getResults()) {
-                        final PathAttributes attributes = new PathAttributes();
-                        attributes.setETag(container.getProperties().getEtag());
-                        attributes.setModificationDate(container.getProperties().getLastModified().getTime());
-                        containers.add(new Path(String.format("/%s", container.getName()),
-                                EnumSet.of(Path.Type.volume, Path.Type.directory), attributes));
-                    }
-                    listener.chunk(directory, containers);
-                    token = result.getContinuationToken();
-                }
-                while(result.getHasMoreResults());
-                return containers;
-
-            }
-            else {
-                return new AzureObjectListService(this, context).list(directory, listener);
-            }
+        if(directory.isRoot()) {
+            return new AttributedList<Path>(new AzureContainerListService(this, context).list(listener));
         }
-        catch(StorageException e) {
-            throw new AzureExceptionMappingService().map("Listing directory {0} failed", e, directory);
+        else {
+            return new AzureObjectListService(this, context).list(directory, listener);
         }
     }
 

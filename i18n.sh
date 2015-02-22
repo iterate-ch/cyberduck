@@ -24,7 +24,6 @@ tx="/usr/local/bin/tx"
 
 usage() {
 	echo ""
-	echo "	  Usage: i18n.sh --extractstrings"
 	echo "	  Usage: i18n.sh [-l <language>] --status"
 	echo "	  Usage: i18n.sh [-l <language>] --init"
 	echo "	  Usage: i18n.sh [-l <language>] [-n <nib>] [--force] --update"
@@ -86,17 +85,6 @@ run() {
 	arch -arch $arch ./build/Cyberduck.app/Contents/MacOS/Cyberduck -AppleLanguages "(`basename $language .lproj`)"
 }
 
-extractstrings() {
-	echo "*** Extracting strings from Obj-C source files (genstrings)..."
-	genstrings -j -a -q -o $base_language source/ch/cyberduck/ui/cocoa/*.java
-	echo "*** Extracting strings from Java source files (genstrings)..."
-	genstrings -j -a -q -o $base_language source/ch/cyberduck/core/*.java
-	genstrings	  -a -q -o $base_language source/ch/cyberduck/ui/cocoa/*.m
-	genstrings -j -a -q -o $base_language source/ch/cyberduck/core/ftp/*.java
-	genstrings -j -a -q -o $base_language source/ch/cyberduck/core/ftps/*.java
-	genstrings -j -a -q -o $base_language source/ch/cyberduck/core/sftp/*.java
-}
-
 status() {
 	if [ "$language" = "all" ] ; then
 	{
@@ -142,7 +130,8 @@ updateNibFromStrings() {
 				--dictionary $language/$nib.strings $base_language/$nibfile
 	}
 	fi;
-	rm -rf $language/$nibfile.bak 
+	cp -R $language/$nibfile.bak/.svn $language/$nibfile/.svn
+	rm -rf $language/$nibfile.bak
 }
 
 udpateStringsFromNib() {
@@ -265,11 +254,6 @@ while [ "$1" != "" ] # When there are arguments...
 				force=true;
 				shift;
 			;;
-			-g | --extractstrings)
-				extractstrings;
-				exit 0;
-				echo "*** DONE. ***";
-			;;
 			-h | --help) 
 				usage;
 				exit 0;
@@ -328,7 +312,7 @@ while [ "$1" != "" ] # When there are arguments...
 				exit 0;
 			;; 
 			*)	
-				echo "Option [$1] not one of  [--extractstrings, --status, --update, --open, --init]"; # Error (!)
+				echo "Option [$1] not one of  [--status, --update, --open, --init]"; # Error (!)
 				exit 1
 			;; # Abort Script Now
 	esac;

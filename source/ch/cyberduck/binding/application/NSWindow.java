@@ -1553,7 +1553,7 @@ public abstract class NSWindow extends NSResponder {
      * Original signature : <code>void registerForDraggedTypes(NSArray*)</code><br>
      * <i>from NSDrag native declaration : :571</i>
      */
-    public abstract void registerForDraggedTypes(NSArray newTypes);
+    public abstract void registerForDraggedTypes(NSArray types);
 
     /**
      * Original signature : <code>void unregisterDraggedTypes()</code><br>

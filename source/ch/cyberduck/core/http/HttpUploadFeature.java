@@ -24,6 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamCloser;
 import ch.cyberduck.core.io.StreamCopier;
@@ -80,13 +81,13 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
                 in = this.decorate(local.getInputStream(), digest);
                 out = writer.write(file, status);
                 new StreamCopier(cancel, progress)
-                        .withOffset(status.getCurrent())
+                        .withOffset(status.getSkip())
                         .withLimit(status.getLength())
                         .withListener(count)
                         .transfer(in, new ThrottledOutputStream(out, throttle));
             }
             finally {
-                final StreamCloser c = new StreamCloser();
+                final StreamCloser c = new DefaultStreamCloser();
                 c.close(in);
                 c.close(out);
             }

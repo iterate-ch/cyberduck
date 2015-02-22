@@ -174,7 +174,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
     protected NSObject objectValueForItem(final TransferItem file, final String identifier) {
         final TransferStatus status = this.getStatus(file);
         if(identifier.equals(Column.include.name())) {
-            if(status.isSkipped()) {
+            if(status.isRejected()) {
                 return NSNumber.numberWithBoolean(false);
             }
             return NSNumber.numberWithBoolean(this.isSelected(file));

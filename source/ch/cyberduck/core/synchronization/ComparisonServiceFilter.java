@@ -28,12 +28,12 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
-
-import org.apache.commons.lang3.StringUtils;
 
 import java.text.MessageFormat;
 import java.util.TimeZone;
@@ -93,10 +93,11 @@ public class ComparisonServiceFilter implements ComparePathFilter {
                 final PathAttributes attributes = attribute.find(file);
                 if(PreferencesFactory.get().getBoolean("queue.sync.compare.hash")) {
                     // MD5/ETag Checksum is supported
-                    if(StringUtils.isNotBlank(attributes.getChecksum())) {
+                    if(attributes.getChecksum() != null) {
                         progress.message(MessageFormat.format(
                                 LocaleFactory.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
-                        local.attributes().setChecksum(new MD5ChecksumCompute().compute(local.getInputStream()));
+                        local.attributes().setChecksum(new Checksum(HashAlgorithm.md5,
+                                new MD5ChecksumCompute().compute(local.getInputStream())));
                         final Comparison comparison = checksum.compare(attributes, local.attributes());
                         if(!Comparison.notequal.equals(comparison)) {
                             // Decision is available

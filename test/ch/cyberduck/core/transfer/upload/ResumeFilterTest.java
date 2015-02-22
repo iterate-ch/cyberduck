@@ -135,7 +135,7 @@ public class ResumeFilterTest extends AbstractTestCase {
         }, new TransferStatus().exists(true));
         assertTrue(status.isAppend());
         assertFalse(status.isRename());
-        assertEquals(7L, status.getCurrent());
+        assertEquals(7L, status.getSkip());
     }
 
     @Test
@@ -147,7 +147,7 @@ public class ResumeFilterTest extends AbstractTestCase {
         final TransferStatus status = f.prepare(t, new NullLocal("t"), new TransferStatus().exists(true));
         assertFalse(status.isAppend());
         assertTrue(status.isRename());
-        assertEquals(0L, status.getCurrent());
+        assertEquals(0L, status.getSkip());
     }
 
     @Test
@@ -238,7 +238,7 @@ public class ResumeFilterTest extends AbstractTestCase {
         };
         assertTrue(f.accept(t, l, new TransferStatus().exists(true)));
         assertEquals(3L, f.prepare(t, l, new TransferStatus().exists(true)).getLength());
-        assertEquals(2L, f.prepare(t, l, new TransferStatus().exists(true)).getCurrent());
+        assertEquals(2L, f.prepare(t, l, new TransferStatus().exists(true)).getSkip());
     }
 
     @Test

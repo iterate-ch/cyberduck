@@ -65,13 +65,7 @@ public abstract class EditorFactory extends Factory<EditorFactory> {
                 final Class<EditorFactory> name = (Class<EditorFactory>) Class.forName(clazz);
                 factory = name.newInstance();
             }
-            catch(InstantiationException e) {
-                throw new FactoryException(e.getMessage(), e);
-            }
-            catch(IllegalAccessException e) {
-                throw new FactoryException(e.getMessage(), e);
-            }
-            catch(ClassNotFoundException e) {
+            catch(InstantiationException | ClassNotFoundException | IllegalAccessException e) {
                 throw new FactoryException(e.getMessage(), e);
             }
         }

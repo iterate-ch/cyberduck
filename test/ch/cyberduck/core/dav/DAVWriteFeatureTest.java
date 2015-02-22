@@ -76,7 +76,7 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
         }
         {
             final byte[] buffer = new byte[content.length - 1];
-            final InputStream in = new DAVReadFeature(session).read(test, new TransferStatus().length(content.length).append(true).current(1L));
+            final InputStream in = new DAVReadFeature(session).read(test, new TransferStatus().length(content.length).append(true).skip(1L));
             IOUtils.readFully(in, buffer);
             IOUtils.closeQuietly(in);
             final byte[] reference = new byte[content.length - 1];
@@ -145,7 +145,7 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         IOUtils.closeQuietly(out);
-        assertEquals(content.length, status.getCurrent());
+        assertEquals(content.length, status.getSkip());
         assertTrue(status.isComplete());
         assertEquals(content.length, new DefaultAttributesFeature(session).find(test).getSize());
         assertEquals(-1, new DAVAttributesFeature(session).find(test).getSize());

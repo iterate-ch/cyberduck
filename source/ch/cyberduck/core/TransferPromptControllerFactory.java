@@ -19,6 +19,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferPrompt;
 
@@ -54,17 +55,9 @@ public class TransferPromptControllerFactory extends Factory<TransferPrompt> {
             }
             return constructor.newInstance(c, transfer, session);
         }
-        catch(InstantiationException e) {
-            throw new FactoryException(e.getMessage(), e);
-        }
-        catch(IllegalAccessException e) {
-            throw new FactoryException(e.getMessage(), e);
-        }
-        catch(ClassNotFoundException e) {
-            throw new FactoryException(e.getMessage(), e);
-        }
-        catch(InvocationTargetException e) {
-            throw new FactoryException(e.getMessage(), e);
+        catch(InstantiationException | InvocationTargetException | ClassNotFoundException | IllegalAccessException e) {
+            log.error(String.format("Failure loading callback class %s. %s", clazz, e.getMessage()));
+            return new DisabledTransferPrompt();
         }
     }
 

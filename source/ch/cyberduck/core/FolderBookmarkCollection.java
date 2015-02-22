@@ -50,9 +50,11 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
         }
     };
 
-    private static final String PREFIX = "bookmark.";
+    private static final String DEFAULT_PREFIX = "bookmark.";
 
     private static final long serialVersionUID = -675342412129904735L;
+
+    private String prefix;
 
     /**
      * @return Singleton instance
@@ -67,7 +69,12 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
      * @param f Parent directory to look for bookmarks
      */
     public FolderBookmarkCollection(final Local f) {
+        this(f, DEFAULT_PREFIX);
+    }
+
+    public FolderBookmarkCollection(final Local f, final String prefix) {
         super(f);
+        this.prefix = prefix;
     }
 
     @Override
@@ -101,7 +108,7 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
         this.lock();
         try {
             for(int i = 0; i < this.size(); i++) {
-                preferences.setProperty(String.format("%s%s", PREFIX, this.get(i).getUuid()), i);
+                preferences.setProperty(String.format("%s%s", prefix, this.get(i).getUuid()), i);
             }
         }
         finally {
@@ -136,8 +143,8 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
         Collections.sort(this, new Comparator<Host>() {
             @Override
             public int compare(Host o1, Host o2) {
-                return Integer.valueOf(preferences.getInteger(String.format("%s%s", PREFIX, o1.getUuid()))).compareTo(
-                        preferences.getInteger(String.format("%s%s", PREFIX, o2.getUuid()))
+                return Integer.valueOf(preferences.getInteger(String.format("%s%s", prefix, o1.getUuid()))).compareTo(
+                        preferences.getInteger(String.format("%s%s", prefix, o2.getUuid()))
                 );
             }
         });

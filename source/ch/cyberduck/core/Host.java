@@ -288,7 +288,6 @@ public class Host implements Serializable, Comparable<Host> {
         }
         if(transfer != TransferType.unknown) {
             dict.setStringForKey(transfer.name(), "Transfer Connection");
-            dict.setStringForKey(String.valueOf(transfer.getMaxConnections()), "Maximum Connections");
         }
         if(null != downloadFolder) {
             dict.setStringForKey(downloadFolder.getAbbreviatedPath(), "Download Folder");
@@ -321,11 +320,6 @@ public class Host implements Serializable, Comparable<Host> {
         },
         browser {
             @Override
-            public int getMaxConnections() {
-                return 1;
-            }
-
-            @Override
             public String toString() {
                 return LocaleFactory.localizedString("Use browser connection");
             }
@@ -336,16 +330,18 @@ public class Host implements Serializable, Comparable<Host> {
                 return LocaleFactory.localizedString("Open new connection");
             }
         },
+        concurrent {
+            @Override
+            public String toString() {
+                return LocaleFactory.localizedString("Open multiple connections");
+            }
+        },
         udt {
             @Override
             public String toString() {
-                return LocaleFactory.localizedString("Qloudsonic UDP (UDT)");
+                return LocaleFactory.localizedString("Qloudsonic (UDP-based Data Transfer Protocol)");
             }
         };
-
-        public int getMaxConnections() {
-            return PreferencesFactory.get().getInteger("connection.host.max");
-        }
     }
 
     /**
@@ -440,7 +436,7 @@ public class Host implements Serializable, Comparable<Host> {
 
     /**
      * Sets the name for this host. Also reverts the nickname if no custom nickname is set.
-     * <p>
+     * <p/>
      * Configures credentials according to new hostname.
      *
      * @param hostname Server

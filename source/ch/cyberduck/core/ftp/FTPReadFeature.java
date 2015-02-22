@@ -49,7 +49,7 @@ public class FTPReadFeature implements Read {
                 throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
             }
             if(status.isAppend()) {
-                session.getClient().setRestartOffset(status.getCurrent());
+                session.getClient().setRestartOffset(status.getSkip());
             }
             final InputStream in = new FTPDataFallback(session).data(file, new DataConnectionAction<InputStream>() {
                 @Override
@@ -89,7 +89,7 @@ public class FTPReadFeature implements Read {
     }
 
     @Override
-    public boolean append(final Path file) throws BackgroundException {
+    public boolean offset(final Path file) throws BackgroundException {
         // Where a server process supports RESTart in STREAM mode
         try {
             return session.getClient().hasFeature("REST", "STREAM");

@@ -80,8 +80,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
                                     final ProgressListener progressListener, final StreamListener streamListener,
                                     final X509TrustManager trust, final X509KeyManager key) {
         this(connect, transfer, options, meter, prompt, error, transferItemCallback, connectionCallback, progressListener, streamListener,
-                trust, key,
-                PreferencesFactory.get().getInteger("queue.session.pool.size"));
+                trust, key, PreferencesFactory.get().getInteger("queue.maxtransfers"));
     }
 
     public ConcurrentTransferWorker(final ConnectionService connect,
@@ -103,15 +102,17 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         completion = new ExecutorCompletionService<TransferStatus>(
                 Executors.newFixedThreadPool(connections, new NamedThreadFactory("transfer")),
                 new LinkedBlockingQueue<Future<TransferStatus>>());
+        this.trust = trust;
+        this.key = key;
     }
 
     @Override
     protected Session<?> borrow() throws BackgroundException {
         try {
-            final Session session = pool.borrowObject();
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
+            final Session session = pool.borrowObject();
             if(log.isInfoEnabled()) {
                 log.info(String.format("Borrow session %s from pool", session));
             }
@@ -148,7 +149,8 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
     @Override
     public void await() throws BackgroundException {
         // Await termination for submitted tasks in queue
-        for(int i = 0; i < size.get(); i++) {
+        final int queued = size.get();
+        for(int i = 0; i < queued; i++) {
             try {
                 final TransferStatus status = completion.take().get();
                 if(log.isInfoEnabled()) {

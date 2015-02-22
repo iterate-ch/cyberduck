@@ -64,7 +64,7 @@ public class FTPWriteFeatureTest extends AbstractTestCase {
         }
         {
             final byte[] buffer = new byte[content.length - 1];
-            final InputStream in = new FTPReadFeature(session).read(test, new TransferStatus().length(content.length).append(true).current(1L));
+            final InputStream in = new FTPReadFeature(session).read(test, new TransferStatus().length(content.length).append(true).skip(1L));
             IOUtils.readFully(in, buffer);
             IOUtils.closeQuietly(in);
             final byte[] reference = new byte[content.length - 1];

@@ -28,6 +28,8 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -94,7 +96,9 @@ public class AzureObjectListService implements ListService {
                         attributes.setSize(blob.getProperties().getLength());
                         attributes.setModificationDate(blob.getProperties().getLastModified().getTime());
                         attributes.setETag(blob.getProperties().getEtag());
-                        attributes.setChecksum(blob.getProperties().getContentMD5());
+                        if(StringUtils.isNotBlank(blob.getProperties().getContentMD5())) {
+                            attributes.setChecksum(new Checksum(HashAlgorithm.md5, blob.getProperties().getContentMD5()));
+                        }
                     }
                     final EnumSet<AbstractPath.Type> types = object instanceof CloudBlobDirectory
                             ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);

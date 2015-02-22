@@ -266,7 +266,7 @@ public class Terminal {
             preferences.setProperty("s3.upload.udt.threshold", 0L);
         }
         if(input.hasOption(TerminalOptionsBuilder.Params.parallel.name())) {
-            preferences.setProperty("queue.session.pool.size",
+            preferences.setProperty("queue.maxtransfers",
                     NumberUtils.toInt(input.getOptionValue(TerminalOptionsBuilder.Params.parallel.name()), 1));
         }
     }
@@ -275,6 +275,9 @@ public class Terminal {
         // Transfer
         final TransferSpeedometer meter = new TransferSpeedometer(transfer);
         final TransferPrompt prompt;
+        if(input.hasOption(TerminalOptionsBuilder.Params.parallel.name())) {
+            session.getHost().setTransfer(Host.TransferType.concurrent);
+        }
         if(input.hasOption(TerminalOptionsBuilder.Params.existing.name())) {
             prompt = new DisabledTransferPrompt() {
                 @Override

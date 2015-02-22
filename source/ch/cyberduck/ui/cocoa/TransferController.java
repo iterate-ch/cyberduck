@@ -518,6 +518,7 @@ public final class TransferController extends WindowController implements NSTool
         // and then use the private pasteboard instead.
         this.transferTable.registerForDraggedTypes(NSArray.arrayWithObjects(
                 NSPasteboard.StringPboardType,
+                // Accept file promises made myself
                 NSPasteboard.FilesPromisePboardType));
 
         this.transferTable.setGridStyleMask(NSTableView.NSTableViewGridNone);
@@ -560,7 +561,7 @@ public final class TransferController extends WindowController implements NSTool
         if(1 == selected) {
             final Transfer transfer = transferTableModel.getSource().get(transferTable.selectedRow().intValue());
             // Draw text fields at the bottom
-            final String remote = transfer.getRemote();
+            final String remote = transfer.getRemote().getUrl();
             urlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(remote));
             final String local = transfer.getLocal();
             if(local != null) {
@@ -765,7 +766,12 @@ public final class TransferController extends WindowController implements NSTool
     }
 
     private enum TransferToolbarItem {
-        resume,
+        resume {
+            @Override
+            public String label() {
+                return LocaleFactory.localizedString("Resume", "Transfer");
+            }
+        },
         reload,
         stop,
         remove,

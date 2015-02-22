@@ -123,10 +123,7 @@ public final class HostParser {
                 try {
                     path = URLDecoder.decode(input.substring(begin, input.length()), "UTF-8");
                 }
-                catch(UnsupportedEncodingException e) {
-                    log.error(e.getMessage(), e);
-                }
-                catch(IllegalArgumentException e) {
+                catch(UnsupportedEncodingException | IllegalArgumentException e) {
                     log.error(e.getMessage(), e);
                 }
             }
@@ -147,10 +144,7 @@ public final class HostParser {
             try {
                 path = URLDecoder.decode(input.substring(begin, input.length()), "UTF-8");
             }
-            catch(UnsupportedEncodingException e) {
-                log.error(e.getMessage(), e);
-            }
-            catch(IllegalArgumentException e) {
+            catch(UnsupportedEncodingException | IllegalArgumentException e) {
                 log.error(e.getMessage(), e);
             }
         }

@@ -208,7 +208,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         final TransferStatus expected = new TransferStatus();
         expected.setAppend(false);
         expected.setLength(5L);
-        expected.setCurrent(0L);
+        expected.setSkip(0L);
         assertEquals(expected, table.get(new Path("/transfer/test", EnumSet.of(Path.Type.file))));
     }
 
@@ -222,7 +222,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path("/transfer/test", EnumSet.of(Path.Type.file));
         test.attributes().setSize(5L);
-        final Local local = new Local(System.getProperty("java.io.tmpdir") + "/transfer/test");
+        final Local local = new Local(System.getProperty("java.io.tmpdir") + "/transfer/" + UUID.randomUUID().toString());
         LocalTouchFactory.get().touch(local);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write("test", out);
@@ -248,7 +248,7 @@ public class DownloadTransferTest extends AbstractTestCase {
                     }
 
                     @Override
-                    public boolean append(final Path file) throws BackgroundException {
+                    public boolean offset(final Path file) throws BackgroundException {
                         return true;
                     }
                 })
@@ -258,7 +258,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         final TransferStatus expected = new TransferStatus();
         expected.setAppend(true);
         expected.setExists(true);
-        expected.setCurrent("test".getBytes().length);
+        expected.setSkip("test".getBytes().length);
         // Remote size
         expected.setLength(5L);
         assertEquals(expected, table.get(test));

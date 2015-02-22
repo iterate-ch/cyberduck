@@ -242,7 +242,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 final StorageObject part = S3MultipartUploadService.super.upload(
                         file, local, throttle, listener, status
                                 .length(length)
-                                .current(offset)
+                                .skip(offset)
                                 .parameters(requestParameters),
                         overall, overall);
                 if(log.isInfoEnabled()) {

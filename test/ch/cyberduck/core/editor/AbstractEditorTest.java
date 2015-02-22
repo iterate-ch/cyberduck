@@ -92,7 +92,7 @@ public class AbstractEditorTest extends AbstractTestCase {
                         }
 
                         @Override
-                        public boolean append(final Path file) {
+                        public boolean offset(final Path file) {
                             assertEquals(new Path("/f", EnumSet.of(Path.Type.file)), file);
                             return false;
                         }

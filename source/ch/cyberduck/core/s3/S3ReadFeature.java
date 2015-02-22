@@ -59,7 +59,7 @@ public class S3ReadFeature implements Read {
                         null, // ifUnmodifiedSince
                         null, // ifMatch
                         null, // ifNoneMatch
-                        status.isAppend() ? status.getCurrent() : null, null);
+                        status.isAppend() ? status.getSkip() : null, null);
                 return object.getDataInputStream();
             }
             else {
@@ -70,7 +70,7 @@ public class S3ReadFeature implements Read {
                         null, // ifUnmodifiedSince
                         null, // ifMatch
                         null, // ifNoneMatch
-                        status.isAppend() ? status.getCurrent() : null, null);
+                        status.isAppend() ? status.getSkip() : null, null);
             }
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Reading stream with content length %d", object.getContentLength()));
@@ -83,7 +83,7 @@ public class S3ReadFeature implements Read {
     }
 
     @Override
-    public boolean append(final Path file) {
+    public boolean offset(final Path file) {
         return true;
     }
 }
