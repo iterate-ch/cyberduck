@@ -133,6 +133,12 @@ public final class TerminalOptionsBuilder {
                 .withLongOpt(Params.parallel.name())
                 .isRequired(false)
                 .create('c'));
+        options.addOption(OptionBuilder
+                .withDescription("Throttle bandwidth")
+                .withLongOpt(Params.throttle.name())
+                .hasArg(true).withArgName("bytes per second")
+                .isRequired(false)
+                .create());
         final StringBuilder b = new StringBuilder().append(StringUtils.LF);
         final Set<TransferAction> actions = new HashSet<TransferAction>(TransferAction.forTransfer(Transfer.Type.download));
         actions.add(TransferAction.cancel);
@@ -185,6 +191,7 @@ public final class TerminalOptionsBuilder {
         retry,
         udt,
         parallel,
+        throttle,
         existing,
         verbose,
         quiet,

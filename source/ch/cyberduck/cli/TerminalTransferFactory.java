@@ -27,6 +27,8 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.UploadTransfer;
 
+import org.apache.commons.cli.CommandLine;
+
 import java.util.List;
 
 /**
@@ -38,8 +40,9 @@ public final class TerminalTransferFactory {
         //
     }
 
-    public static Transfer create(final TerminalAction type, final Host host, final List<TransferItem> items) throws BackgroundException {
+    public static Transfer create(final CommandLine input, final Host host, final List<TransferItem> items) throws BackgroundException {
         final Transfer transfer;
+        final TerminalAction type = TerminalActionFinder.get(input);
         switch(type) {
             case download:
                 transfer = new DownloadTransfer(host, items);
@@ -53,6 +56,14 @@ public final class TerminalTransferFactory {
             default:
                 throw new BackgroundException(LocaleFactory.localizedString("Unknown"),
                         String.format("Unknown transfer type %s", type.name()));
+        }
+        if(input.hasOption(TerminalOptionsBuilder.Params.throttle.name())) {
+            try {
+                transfer.setBandwidth(Float.valueOf(input.getOptionValue(TerminalOptionsBuilder.Params.throttle.name())));
+            }
+            catch(NumberFormatException ignore) {
+                //
+            }
         }
         return transfer;
     }
