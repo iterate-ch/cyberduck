@@ -197,7 +197,10 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                         }
                         long remaining = status.getLength();
                         long offset = 0;
-                        long partsize = preferences.getLong("queue.download.segments.size");
+                        // Part size from default setting of size divided by maximum number of connections
+                        long partsize = Math.max(
+                                preferences.getLong("queue.download.segments.size"),
+                                status.getLength() / preferences.getInteger("queue.maxtransfers"));
                         // Sorted list
                         final List<TransferStatus> segments = new ArrayList<TransferStatus>();
                         for(int segmentNumber = 1; remaining > 0; segmentNumber++) {
