@@ -35,6 +35,7 @@ import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageObject;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -100,7 +101,10 @@ public class S3AttributesFeature implements Attributes {
     protected PathAttributes convert(final StorageObject object) {
         final PathAttributes attributes = new PathAttributes();
         attributes.setSize(object.getContentLength());
-        attributes.setModificationDate(object.getLastModifiedDate().getTime());
+        final Date lastmodified = object.getLastModifiedDate();
+        if(lastmodified != null) {
+            attributes.setModificationDate(lastmodified.getTime());
+        }
         attributes.setStorageClass(object.getStorageClass());
         if(StringUtils.isNotBlank(object.getETag())) {
             attributes.setChecksum(new Checksum(HashAlgorithm.md5, object.getETag()));
