@@ -18,27 +18,19 @@ package ch.cyberduck.core.io;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.ChecksumException;
 
 import org.apache.commons.codec.binary.Hex;
-import org.jets3t.service.utils.ServiceUtils;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 /**
  * @version $Id$
  */
-public class SHA256ChecksumCompute implements ChecksumCompute {
+public class SHA256ChecksumCompute extends AbstractChecksumCompute {
 
     @Override
     public String compute(final InputStream in) throws ChecksumException {
-        try {
-            return Hex.encodeHexString(ServiceUtils.hashSHA256(in));
-        }
-        catch(IOException e) {
-            throw new ChecksumException(LocaleFactory.localizedString("Checksum failure", "Error"), e.getMessage(), e);
-        }
+        return Hex.encodeHexString(this.digest("SHA-256", in));
     }
 }
