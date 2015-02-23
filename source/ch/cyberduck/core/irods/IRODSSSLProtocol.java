@@ -22,6 +22,9 @@ import ch.cyberduck.core.Scheme;
  * feedback@cyberduck.ch
  */
 
+/**
+ * @version $Id: $
+ */
 public final class IRODSSSLProtocol extends AbstractProtocol {
 
     @Override

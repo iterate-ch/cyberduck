@@ -22,6 +22,9 @@ import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
 
+/**
+ * @version $Id: $
+ */
 public final class IRODSProtocol extends AbstractProtocol {
 
     @Override
