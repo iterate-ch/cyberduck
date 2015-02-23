@@ -261,9 +261,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         if(file.isFile()) {
             // No icon update if disabled
             if(options.icon) {
-                if(!status.isExists()) {
-                    touch.touch(local);
-                }
+                touch.touch(local);
                 icon.set(local, status);
             }
         }
