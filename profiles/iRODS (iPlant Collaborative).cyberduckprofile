@@ -16,6 +16,8 @@
         <false/>
         <key>Default Hostname</key>
         <string>data.iplantcollaborative.org</string>
+        <key>Region</key>
+        <string>iplant</string>
         <key>Default Port</key>
         <string>1247</string>
         <key>Username Placeholder</key>
