@@ -27,7 +27,10 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProfileReaderFactory;
 
 import org.junit.Test;
 
@@ -43,8 +46,12 @@ public class IRODSListServiceTest extends AbstractTestCase {
 
     @Test
     public void testList() throws Exception {
-        final Host host = new Host(new IRODSProtocol(), "data.iplantcollaborative.org", new Credentials("markobosancic", "Marko12345"));
-        host.setRegion("iplant");
+        final Profile profile = ProfileReaderFactory.get().read(
+                new Local("profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
+                properties.getProperty("irods.key"), properties.getProperty("irods.secret")
+        ));
+
         final IRODSSession session = new IRODSSession(host);
 
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
