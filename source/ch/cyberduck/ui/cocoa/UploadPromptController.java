@@ -27,7 +27,7 @@ import ch.cyberduck.core.transfer.UploadTransfer;
 public class UploadPromptController extends TransferPromptController {
 
     public UploadPromptController(final WindowController parent, final UploadTransfer transfer, final Session session) {
-        super(parent, transfer, session);
+        super(parent, transfer);
         browserModel = new UploadPromptModel(this, session, transfer, cache);
     }
 }
