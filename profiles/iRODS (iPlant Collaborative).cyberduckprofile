@@ -8,8 +8,6 @@
         <string>iplantcollaborative</string>
         <key>Description</key>
         <string>iPlant Data Store</string>
-        <key>Default Port</key>
-        <string>80</string>
         <key>Hostname Configurable</key>
         <false/>
         <key>Port Configurable</key>
