@@ -38,4 +38,5 @@ public class S3HttpRequestRetryHandlerTest extends AbstractTestCase {
         context.setAttribute(HttpCoreContext.HTTP_REQUEST, new HttpHead());
         assertTrue(h.retryRequest(new SSLException(new SocketException("Broken pipe")), 1, context));
     }
+
 }
