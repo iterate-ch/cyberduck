@@ -48,6 +48,7 @@ import ch.cyberduck.core.local.IconServiceFactory;
 import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.local.QuarantineService;
 import ch.cyberduck.core.local.QuarantineServiceFactory;
+import ch.cyberduck.core.local.features.Touch;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFeature;
@@ -77,6 +78,9 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
 
     private final ApplicationLauncher launcher
             = ApplicationLauncherFactory.get();
+
+    private final Touch touch
+            = LocalTouchFactory.get();
 
     private Preferences preferences
             = PreferencesFactory.get();
@@ -258,7 +262,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             // No icon update if disabled
             if(options.icon) {
                 if(!status.isExists()) {
-                    LocalTouchFactory.get().touch(local);
+                    touch.touch(local);
                 }
                 icon.set(local, status);
             }
