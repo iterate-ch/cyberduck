@@ -59,7 +59,7 @@ public class S3ReadFeature implements Read {
                         null, // ifUnmodifiedSince
                         null, // ifMatch
                         null, // ifNoneMatch
-                        status.isAppend() ? status.getSkip() : null, null);
+                        status.isAppend() ? status.getSkip() : null, status.getLength());
                 return object.getDataInputStream();
             }
             else {
@@ -70,7 +70,7 @@ public class S3ReadFeature implements Read {
                         null, // ifUnmodifiedSince
                         null, // ifMatch
                         null, // ifNoneMatch
-                        status.isAppend() ? status.getSkip() : null, null);
+                        status.isAppend() ? status.getSkip() : null, status.getLength());
             }
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Reading stream with content length %d", object.getContentLength()));
