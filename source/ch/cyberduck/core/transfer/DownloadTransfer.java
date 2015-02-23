@@ -184,13 +184,16 @@ public class DownloadTransfer extends Transfer {
             // Force resume by user or retry of failed transfer
             return TransferAction.resume;
         }
+        final TransferAction action;
         if(reloadRequested) {
-            return TransferAction.forName(
+            action = TransferAction.forName(
                     PreferencesFactory.get().getProperty("queue.download.reload.action"));
         }
-        // Use default
-        final TransferAction action = TransferAction.forName(
-                PreferencesFactory.get().getProperty("queue.download.action"));
+        else {
+            // Use default
+            action = TransferAction.forName(
+                    PreferencesFactory.get().getProperty("queue.download.action"));
+        }
         if(action.equals(TransferAction.callback)) {
             for(TransferItem download : roots) {
                 final Local local = download.local;

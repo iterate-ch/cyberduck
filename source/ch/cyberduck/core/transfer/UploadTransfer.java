@@ -173,13 +173,16 @@ public class UploadTransfer extends Transfer {
             // Force resume by user or retry of failed transfer
             return TransferAction.resume;
         }
-        else if(reloadRequested) {
-            return TransferAction.forName(
+        final TransferAction action;
+        if(reloadRequested) {
+            action = TransferAction.forName(
                     PreferencesFactory.get().getProperty("queue.upload.reload.action"));
         }
-        // Use default
-        final TransferAction action = TransferAction.forName(
-                PreferencesFactory.get().getProperty("queue.upload.action"));
+        else {
+            // Use default
+            action = TransferAction.forName(
+                    PreferencesFactory.get().getProperty("queue.upload.action"));
+        }
         if(action.equals(TransferAction.callback)) {
             for(TransferItem upload : roots) {
                 final Write write = session.getFeature(Write.class);
