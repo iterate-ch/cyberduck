@@ -21,8 +21,7 @@ package ch.cyberduck.cli;
 import ch.cyberduck.core.DefaultCertificateStore;
 import ch.cyberduck.core.LocaleFactory;
 
-import org.apache.http.conn.ssl.BrowserCompatHostnameVerifier;
-import org.apache.http.conn.ssl.X509HostnameVerifier;
+import org.apache.http.conn.ssl.DefaultHostnameVerifier;
 
 import javax.net.ssl.SSLException;
 import java.security.cert.CertificateExpiredException;
@@ -39,8 +38,8 @@ public class TerminalCertificateStore extends DefaultCertificateStore {
 
     private final Console console = new Console();
 
-    private final X509HostnameVerifier verifier
-            = new BrowserCompatHostnameVerifier();
+    private final DefaultHostnameVerifier verifier
+            = new DefaultHostnameVerifier();
 
     private TerminalPromptReader prompt;
 
