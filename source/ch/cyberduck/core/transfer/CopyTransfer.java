@@ -127,17 +127,18 @@ public class CopyTransfer extends Transfer {
 
     @Override
     public <T> T serialize(final Serializer dict) {
-        dict.setStringForKey(String.valueOf(this.getType().ordinal()), "Kind");
+        dict.setStringForKey(String.valueOf(this.getType().name()), "Type");
         dict.setObjectForKey(host, "Host");
         if(destination != null) {
             dict.setObjectForKey(destination.getHost(), "Destination");
         }
         dict.setListForKey(new ArrayList<Serializable>(files.values()), "Destinations");
         dict.setListForKey(new ArrayList<Serializable>(files.keySet()), "Roots");
+        dict.setStringForKey(this.getUuid(), "UUID");
         dict.setStringForKey(String.valueOf(this.getSize()), "Size");
         dict.setStringForKey(String.valueOf(this.getTransferred()), "Current");
-        if(this.getTimestamp() != null) {
-            dict.setStringForKey(String.valueOf(this.getTimestamp().getTime()), "Timestamp");
+        if(timestamp != null) {
+            dict.setStringForKey(String.valueOf(timestamp.getTime()), "Timestamp");
         }
         if(bandwidth != null) {
             dict.setStringForKey(String.valueOf(bandwidth.getRate()), "Bandwidth");
