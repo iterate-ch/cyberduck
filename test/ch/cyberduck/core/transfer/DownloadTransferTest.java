@@ -208,7 +208,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         final TransferStatus expected = new TransferStatus();
         expected.setAppend(false);
         expected.setLength(5L);
-        expected.setSkip(0L);
+        expected.setOffset(0L);
         // Already touched file in #apply of filter
         expected.setExists(true);
         assertEquals(expected, table.get(new Path("/transfer/test", EnumSet.of(Path.Type.file))));
@@ -260,7 +260,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         final TransferStatus expected = new TransferStatus();
         expected.setAppend(true);
         expected.setExists(true);
-        expected.setSkip("test".getBytes().length);
+        expected.setOffset("test".getBytes().length);
         // Remote size
         expected.setLength(5L);
         assertEquals(expected, table.get(test));

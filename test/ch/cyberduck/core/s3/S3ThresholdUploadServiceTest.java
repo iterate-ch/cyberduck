@@ -61,7 +61,7 @@ public class S3ThresholdUploadServiceTest extends AbstractTestCase {
         status.setMime("text/plain");
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), status,
                 new DisabledLoginCallback());
-        assertEquals((long) random.getBytes().length, status.getSkip(), 0L);
+        assertEquals((long) random.getBytes().length, status.getOffset(), 0L);
         assertTrue(status.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
         final PathAttributes attributes = session.list(container,

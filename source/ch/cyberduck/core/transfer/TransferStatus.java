@@ -57,8 +57,11 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      * Target file or directory already exists
      */
     private boolean exists = false;
+
     /**
-     * Append to file
+     * Append to file with offset
+     *
+     * @see #offset
      */
     private boolean append = false;
 
@@ -75,7 +78,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     /**
      * The number of transferred bytes. Must be less or equals size.
      */
-    private AtomicLong skip
+    private AtomicLong offset
             = new AtomicLong(0);
     /**
      * Transfer size. May be less than the file size in attributes or 0 if creating symbolic links.
@@ -118,7 +121,6 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      * Target timestamp to set when transfer is complete
      */
     private Long timestamp;
-
 
     private Map<String, String> parameters
             = Collections.emptyMap();
@@ -188,27 +190,27 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     /**
      * @return Number of bytes transferred
      */
-    public long getSkip() {
-        return skip.get();
+    public long getOffset() {
+        return offset.get();
     }
 
     /**
-     * @param skip The already transferred bytes
+     * @param offset The already transferred bytes
      */
-    public void setSkip(final long skip) {
-        this.skip.set(skip);
+    public void setOffset(final long offset) {
+        this.offset.set(offset);
         if(log.isInfoEnabled()) {
-            log.info(String.format("Transferred bytes set to %d bytes", skip));
+            log.info(String.format("Transferred bytes set to %d bytes", offset));
         }
     }
 
     @Override
     public void progress(final long bytes) {
-        this.setSkip(skip.get() + bytes);
+        offset.set(offset.get() + bytes);
     }
 
     public TransferStatus skip(final long bytes) {
-        this.setSkip(bytes);
+        this.setOffset(bytes);
         return this;
     }
 
@@ -255,11 +257,11 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      * Mark this path with an append flag when transferred
      *
      * @param append If false, the current status is cleared
-     * @see #setSkip(long)
+     * @see #setOffset(long)
      */
     public void setAppend(final boolean append) {
         if(!append) {
-            skip.set(0);
+            offset.set(0);
         }
         this.append = append;
     }
@@ -450,7 +452,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         sb.append("exists=").append(exists);
         sb.append(", append=").append(append);
         sb.append(", segments=").append(segments);
-        sb.append(", current=").append(skip);
+        sb.append(", offset=").append(offset);
         sb.append(", length=").append(length);
         sb.append(", canceled=").append(canceled);
         sb.append(", renamed=").append(rename);

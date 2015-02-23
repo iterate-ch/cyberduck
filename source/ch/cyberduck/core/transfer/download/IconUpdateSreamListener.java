@@ -62,7 +62,7 @@ public class IconUpdateSreamListener extends DisabledStreamListener {
     @Override
     public void recv(final long bytes) {
         if(enabled && threshold) {
-            final BigDecimal fraction = new BigDecimal(status.getSkip()).divide(new BigDecimal(status.getLength()), 1, RoundingMode.DOWN);
+            final BigDecimal fraction = new BigDecimal(status.getOffset()).divide(new BigDecimal(status.getLength()), 1, RoundingMode.DOWN);
             if(fraction.multiply(BigDecimal.TEN).intValue() > step) {
                 // Another 10 percent of the file has been transferred
                 icon.set(file, status);

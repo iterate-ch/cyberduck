@@ -52,7 +52,7 @@ public class DAVReadFeature implements Read {
         final List<Header> headers = new ArrayList<Header>();
         if(status.isAppend()) {
             headers.add(new BasicHeader(HttpHeaders.RANGE, String.format("bytes=%d-%d",
-                    status.getSkip(), status.getSkip() + status.getLength())));
+                    status.getOffset(), status.getOffset() + status.getLength())));
             // Disable compression
             headers.add(new BasicHeader(HttpHeaders.ACCEPT_ENCODING, "identity"));
         }

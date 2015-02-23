@@ -271,7 +271,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                             // Add transfer length to total bytes
                             transfer.addSize(status.getLength());
                             // Add skipped bytes
-                            transfer.addTransferred(status.getSkip());
+                            transfer.addTransferred(status.getOffset());
                             // Recursive
                             if(file.isDirectory()) {
                                 // Call recursively for all children

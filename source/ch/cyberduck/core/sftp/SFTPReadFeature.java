@@ -52,9 +52,9 @@ public class SFTPReadFeature implements Read {
             final int maxUnconfirmedReads
                     = (int) (status.getLength() / PreferencesFactory.get().getInteger("connection.chunksize")) + 1;
             if(log.isInfoEnabled()) {
-                log.info(String.format("Skipping %d bytes", status.getSkip()));
+                log.info(String.format("Skipping %d bytes", status.getOffset()));
             }
-            return handle.new ReadAheadRemoteFileInputStream(maxUnconfirmedReads, status.getSkip()) {
+            return handle.new ReadAheadRemoteFileInputStream(maxUnconfirmedReads, status.getOffset()) {
                 @Override
                 public void close() throws IOException {
                     try {
