@@ -38,11 +38,11 @@ usage() {
 
 init() {
 	mkdir -p $language
-	for nibfile in `ls $base_language | grep .nib | grep -v ~.nib`; do
+	for n in `ls $base_language | grep .nib | grep -v ~.nib`; do
 	{
-		echo "Copying $nibfile"
-		cp -R $base_language/$nibfile $language/$nibfile
-		rm -rf $language/$nibfile/.svn
+		echo "Copying $n"
+		cp -R $base_language/$n $language/$n
+		rm -rf $language/$n/.svn
 	}
 	done
 	for stringsfile in `ls $base_language | grep .strings | grep -v ~.strings`; do
@@ -152,15 +152,15 @@ update() {
 				echo "*** Updating $language Localization...";
 				if [ "$nibfile" = "all" ] ; then
 					echo "*** Updating all NIBs...";
-					for nibfile in `ls $language | grep .nib | grep -v ~.nib`; do
-						nib=`basename $nibfile .nib`
-						$nibtool --localizable-strings $base_language/$nibfile > $base_language/$nib.strings
+					for n in `ls $language | grep .nib | grep -v ~.nib`; do
+						nib=`basename $n .nib`
+						$nibtool --localizable-strings $base_language/$n > $base_language/$nib.strings
 						nib;
 					done;
 				fi;
-				if [ "$nibfile" != "all" ] ; then
-						nib=`basename $nibfile .nib`
-						$nibtool --localizable-strings $base_language/$nibfile > $base_language/$nib.strings
+				if [ "$n" != "all" ] ; then
+						nib=`basename $n .nib`
+						$nibtool --localizable-strings $base_language/$n > $base_language/$nib.strings
 						nib;
 				fi;
 			}
@@ -172,9 +172,9 @@ update() {
 		echo "*** Updating $language Localization...";
 		if [ "$nibfile" = "all" ] ; then
 			echo "*** Updating all NIBs...";
-			for nibfile in `ls $language | grep .nib | grep -v ~.nib`; do
-				nib=`basename $nibfile .nib`;
-				$nibtool --localizable-strings $base_language/$nibfile > $base_language/$nib.strings
+			for n in `ls $language | grep .nib | grep -v ~.nib`; do
+				nib=`basename $n .nib`;
+				$nibtool --localizable-strings $base_language/$n > $base_language/$nib.strings
 				nib;
 			done;
 		fi;
@@ -310,8 +310,8 @@ while [ "$1" != "" ] # When there are arguments...
 				test;
 				echo "*** DONE. ***";
 				exit 0;
-			;; 
-			*)	
+			;;
+			*)
 				echo "Option [$1] not one of  [--status, --update, --open, --init]"; # Error (!)
 				exit 1
 			;; # Abort Script Now
