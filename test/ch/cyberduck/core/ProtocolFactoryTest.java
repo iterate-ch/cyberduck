@@ -4,6 +4,7 @@ import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
+import ch.cyberduck.core.irods.IRODSProtocol;
 import ch.cyberduck.core.openstack.SwiftProtocol;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 
@@ -27,6 +28,7 @@ public class ProtocolFactoryTest extends AbstractTestCase {
         assertEquals(new SFTPProtocol(), ProtocolFactory.forName("sftp"));
         assertEquals(new SwiftProtocol(), ProtocolFactory.forName("swift"));
         assertEquals(new SFTPProtocol(), ProtocolFactory.forName(String.valueOf(new SFTPProtocol().hashCode())));
+        assertEquals(new IRODSProtocol(), ProtocolFactory.forName("irods"));
         assertEquals(null, ProtocolFactory.forName(String.valueOf("unknown")));
     }
 
@@ -36,6 +38,7 @@ public class ProtocolFactoryTest extends AbstractTestCase {
         assertEquals(new DAVSSLProtocol(), ProtocolFactory.forScheme("https"));
         assertEquals(new FTPProtocol(), ProtocolFactory.forScheme("ftp"));
         assertEquals(new FTPTLSProtocol(), ProtocolFactory.forScheme("ftps"));
+        assertEquals(new IRODSProtocol(), ProtocolFactory.forScheme("irods"));
     }
 
     @Test
@@ -45,6 +48,7 @@ public class ProtocolFactoryTest extends AbstractTestCase {
         assertTrue(ProtocolFactory.isURL("sftp://h.name"));
         assertTrue(ProtocolFactory.isURL("http://h.name"));
         assertTrue(ProtocolFactory.isURL("https://h.name"));
+        assertTrue(ProtocolFactory.isURL("irods://h.name"));
         assertFalse(ProtocolFactory.isURL("h.name"));
     }
 

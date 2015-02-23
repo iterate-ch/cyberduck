@@ -4,6 +4,7 @@ import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.gstorage.GoogleStorageProtocol;
+import ch.cyberduck.core.irods.IRODSProtocol;
 import ch.cyberduck.core.openstack.SwiftProtocol;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.sftp.SFTPProtocol;
@@ -35,6 +36,8 @@ public class ProtocolTest extends AbstractTestCase {
         assertTrue(new SFTPProtocol().isPortConfigurable());
         assertTrue(new DAVProtocol().isHostnameConfigurable());
         assertTrue(new DAVProtocol().isPortConfigurable());
+        assertTrue(new IRODSProtocol().isHostnameConfigurable());
+        assertTrue(new IRODSProtocol().isPortConfigurable());
 
         assertFalse(new GoogleStorageProtocol().isHostnameConfigurable());
         assertFalse(new GoogleStorageProtocol().isPortConfigurable());
