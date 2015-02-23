@@ -84,12 +84,21 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        return null;
+        return new IRODSListService(this).list(directory, listener);
     }
 
     public final IRODSAccount getIRODSAccount() {
         return new IRODSAccount(host.getHostname(), host.getPort(),
-                host.getCredentials().getUsername(), host.getCredentials().getPassword(), "", host.getRegion(), "");
+                host.getCredentials().getUsername(), host.getCredentials().getPassword(),
+                getHomeDir(), host.getRegion(), "");
+    }
+
+    private String getHomeDir() {
+        return new StringBuilder()
+                .append(Path.DELIMITER).append(host.getRegion())
+                .append(Path.DELIMITER).append("home")
+                .append(Path.DELIMITER).append(host.getCredentials().getUsername())
+                .toString();
     }
 
 }
