@@ -41,17 +41,16 @@ public class TerminalNotification implements NotificationService {
 
     @Override
     public void notify(final String title, final String description) {
-        console.printf("\r%s%s%n", Ansi.ansi()
-                .saveCursorPosition()
-                .eraseLine(Ansi.Erase.ALL)
-                .restoreCursorPosition(), title);
+        console.printf("\r%s%s%n%s", Ansi.ansi()
+                        .saveCursorPosition()
+                        .eraseLine(Ansi.Erase.ALL)
+                        .restoreCursorPosition(),
+                title,
+                Ansi.ansi().reset());
     }
 
     @Override
     public void notifyWithImage(final String title, final String description, final String image) {
-        console.printf("\r%s%s%n", Ansi.ansi()
-                .saveCursorPosition()
-                .eraseLine(Ansi.Erase.ALL)
-                .restoreCursorPosition(), title);
+        this.notify(title, description);
     }
 }
