@@ -75,7 +75,7 @@ public class DAVListServiceTest extends AbstractTestCase {
             assertNotNull(p.attributes().getModificationDate());
             assertNotNull(p.attributes().getCreationDate());
             assertNotNull(p.attributes().getSize());
-            assertNotNull(p.attributes().getChecksum());
+            assertNull(p.attributes().getChecksum());
             assertNotNull(p.attributes().getETag());
         }
         session.close();

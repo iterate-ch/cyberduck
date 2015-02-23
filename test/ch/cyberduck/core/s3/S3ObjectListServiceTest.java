@@ -58,7 +58,7 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
             if(p.isFile()) {
                 assertNotNull(p.attributes().getModificationDate());
                 assertNotNull(p.attributes().getSize());
-                assertNotNull(p.attributes().getChecksum());
+                assertNotNull(p.attributes().getETag());
                 assertNotNull(p.attributes().getStorageClass());
             }
         }
