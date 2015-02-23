@@ -26,6 +26,8 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.SerializerFactory;
+import ch.cyberduck.core.serializer.TransferDictionary;
 import ch.cyberduck.core.test.NullLocal;
 import ch.cyberduck.core.test.NullSession;
 
@@ -67,6 +69,38 @@ public class SyncTransferTest extends AbstractTestCase {
         }));
         assertTrue(prompt.get());
     }
+
+    @Test
+    public void testSerializeLastSelectedAction() throws Exception {
+        final Path p = new Path("t", EnumSet.of(Path.Type.directory));
+        final SyncTransfer transfer = new SyncTransfer(new Host("t"), new TransferItem(p, new NullLocal("p", "t") {
+            @Override
+            public boolean exists() {
+                return true;
+            }
+
+            @Override
+            public AttributedList<Local> list() {
+                return new AttributedList<Local>(Arrays.<Local>asList(new NullLocal("p", "a")));
+            }
+        }));
+        transfer.action(null, true, false, new DisabledTransferPrompt() {
+            @Override
+            public TransferAction prompt(final TransferItem file) {
+                return TransferAction.upload;
+            }
+        });
+        final Transfer serialized = new TransferDictionary().deserialize(transfer.serialize(SerializerFactory.get()));
+        assertNotSame(transfer, serialized);
+        assertEquals(TransferAction.upload, serialized.action(null, true, false, new DisabledTransferPrompt() {
+            @Override
+            public TransferAction prompt(final TransferItem file) {
+                fail();
+                return null;
+            }
+        }));
+    }
+
 
     @Test
     public void testFilterDownload() throws Exception {

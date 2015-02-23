@@ -31,6 +31,7 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.synchronization.CachingComparisonServiceFilter;
 import ch.cyberduck.core.synchronization.Comparison;
@@ -63,16 +64,23 @@ public class SyncTransfer extends Transfer {
 
     private CachingComparisonServiceFilter comparison;
 
+    private TransferAction action;
+
     private TransferItem item;
 
     private PathCache cache
             = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
     public SyncTransfer(final Host host, final TransferItem item) {
+        this(host, item, TransferAction.callback);
+    }
+
+    public SyncTransfer(final Host host, final TransferItem item, final TransferAction action) {
         super(host, Collections.singletonList(item),
                 new BandwidthThrottle(PreferencesFactory.get().getFloat("queue.upload.bandwidth.bytes")));
         this.init();
         this.item = item;
+        this.action = action;
     }
 
     private void init() {
@@ -86,6 +94,26 @@ public class SyncTransfer extends Transfer {
         upload.withCache(cache);
         download.withCache(cache);
         return this;
+    }
+
+    @Override
+    public <T> T serialize(final Serializer dict) {
+        dict.setStringForKey(String.valueOf(this.getType().name()), "Type");
+        dict.setObjectForKey(host, "Host");
+        dict.setListForKey(roots, "Items");
+        dict.setStringForKey(this.getUuid(), "UUID");
+        dict.setStringForKey(String.valueOf(this.getSize()), "Size");
+        dict.setStringForKey(String.valueOf(this.getTransferred()), "Current");
+        if(timestamp != null) {
+            dict.setStringForKey(String.valueOf(timestamp.getTime()), "Timestamp");
+        }
+        if(bandwidth != null) {
+            dict.setStringForKey(String.valueOf(bandwidth.getRate()), "Bandwidth");
+        }
+        if(action != null) {
+            dict.setStringForKey(action.name(), "Action");
+        }
+        return dict.getSerialized();
     }
 
     @Override
@@ -150,8 +178,14 @@ public class SyncTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Find transfer action for Resume=%s,Reload=%s", resumeRequested, reloadRequested));
         }
+        if(resumeRequested) {
+            if(action.equals(TransferAction.callback)) {
+                return action = prompt.prompt(item);
+            }
+            return action;
+        }
         // Prompt for synchronization.
-        return prompt.prompt(item);
+        return action = prompt.prompt(item);
     }
 
     @Override
