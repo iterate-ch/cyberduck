@@ -133,7 +133,7 @@ public class CopyTransfer extends Transfer {
             dict.setObjectForKey(destination.getHost(), "Destination");
         }
         dict.setListForKey(new ArrayList<Serializable>(files.values()), "Destinations");
-        dict.setListForKey(new ArrayList<Serializable>(files.keySet()), "Roots");
+        dict.setListForKey(new ArrayList<Serializable>(files.keySet()), "Items");
         dict.setStringForKey(this.getUuid(), "UUID");
         dict.setStringForKey(String.valueOf(this.getSize()), "Size");
         dict.setStringForKey(String.valueOf(this.getTransferred()), "Current");
