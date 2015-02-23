@@ -186,7 +186,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path("/transfer", EnumSet.of(Path.Type.directory));
-        final Transfer transfer = new DownloadTransfer(new Host("t"), test, new NullLocal(UUID.randomUUID().toString(), "transfer"));
+        final Transfer transfer = new DownloadTransfer(new Host("t"), test, new NullLocal(UUID.randomUUID().toString(), UUID.randomUUID().toString()));
         final Map<Path, TransferStatus> table
                 = new HashMap<Path, TransferStatus>();
         final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions(),
@@ -209,6 +209,8 @@ public class DownloadTransferTest extends AbstractTestCase {
         expected.setAppend(false);
         expected.setLength(5L);
         expected.setSkip(0L);
+        // Already touched file in #apply of filter
+        expected.setExists(true);
         assertEquals(expected, table.get(new Path("/transfer/test", EnumSet.of(Path.Type.file))));
     }
 
