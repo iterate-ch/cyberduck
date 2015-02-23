@@ -2182,6 +2182,7 @@ profiles/assets/HP[!!-~]Cloud[!!-~]Object[!!-~]Storage.tiff -text svneol=unset#i
 profiles/assets/Lunacloud.png -text svneol=unset#image/png
 profiles/assets/Template.tiff -text svneol=unset#image/tiff
 profiles/exoscale.cyberduckprofile -text svneol=unset#application/octet-stream
+profiles/iRODS[!!-~](iPlant[!!-~]Collaborative).cyberduckprofile -text
 pt_BR.lproj/Alert.strings -text svneol=unset#text/utf-16
 pt_BR.lproj/Archive.strings -text svneol=unset#text/utf-16
 pt_BR.lproj/Azure.strings -text svneol=unset#text/utf-16
