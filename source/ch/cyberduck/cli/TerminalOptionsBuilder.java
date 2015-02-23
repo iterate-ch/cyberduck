@@ -120,7 +120,7 @@ public final class TerminalOptionsBuilder {
         options.addOption(OptionBuilder
                 .withDescription("Retry failed connection attempts")
                 .withLongOpt(Params.retry.name())
-                .hasOptionalArg()
+                .hasOptionalArg().withArgName("count")
                 .isRequired(false)
                 .create('r'));
         options.addOption(OptionBuilder
@@ -131,8 +131,9 @@ public final class TerminalOptionsBuilder {
         options.addOption(OptionBuilder
                 .withDescription("Number of concurrent connections to use for transfers")
                 .withLongOpt(Params.parallel.name())
+                .hasOptionalArg().withArgName("connections")
                 .isRequired(false)
-                .create('c'));
+                .create());
         options.addOption(OptionBuilder
                 .withDescription("Throttle bandwidth")
                 .withLongOpt(Params.throttle.name())
