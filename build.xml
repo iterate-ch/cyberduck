@@ -41,6 +41,7 @@
     <property name="build.bundles" value="${build.deploy}/bundles"/>
     <property name="build.classes" value="${build}/classes"/>
     <property name="build.unittests" value="${build}/test-classes"/>
+    <property name="build.unittests.include" value="**/*Test.class"/>
     <property name="build.unittests.reports" value="${build}/report"/>
     <property name="config" value="${home}/config"/>
     <property name="img" value="${home}/img"/>
@@ -308,7 +309,7 @@
                 <formatter type="xml" extension=".xml" usefile="true"/>
                 <batchtest todir="${build.unittests.reports}">
                     <fileset dir="${build.unittests}">
-                        <include name="**/*Test.class"/>
+                        <include name="${build.unittests.include}"/>
                     </fileset>
                 </batchtest>
                 <sysproperty key="java.library.path" value="${build}"/>
