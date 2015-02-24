@@ -298,6 +298,8 @@
             </fileset>
         </copy>
         <echo message="Running tests with ${jvm.runtime.bin}/java"/>
+        <!-- Get all properties available to pass them to test task -->
+        <propertyset id="test.systemproperties" negate="true"/>
         <jacoco:coverage destfile="${build}/jacoco.exec" xmlns:jacoco="antlib:org.jacoco.ant">
             <junit jvm="${jvm.runtime.bin}/java" fork="yes" forkmode="once"
                    printsummary="on" filtertrace="on"
@@ -312,37 +314,7 @@
                         <include name="${build.unittests.include}"/>
                     </fileset>
                 </batchtest>
-                <sysproperty key="java.library.path" value="${build}"/>
-                <sysproperty key="jna.library.path" value="${build}"/>
-                <sysproperty key="s3.key" value="${s3.key}"/>
-                <sysproperty key="s3.secret" value="${s3.secret}"/>
-                <sysproperty key="rackspace.key" value="${rackspace.key}"/>
-                <sysproperty key="rackspace.secret" value="${rackspace.secret}"/>
-                <sysproperty key="hpcloud.key" value="${hpcloud.key}"/>
-                <sysproperty key="hpcloud.secret" value="${hpcloud.secret}"/>
-                <sysproperty key="hpcloud.user" value="${hpcloud.user}"/>
-                <sysproperty key="hpcloud.password" value="${hpcloud.password}"/>
-                <sysproperty key="webdav.user" value="${webdav.user}"/>
-                <sysproperty key="webdav.password" value="${webdav.password}"/>
-                <sysproperty key="ftp.user" value="${ftp.user}"/>
-                <sysproperty key="ftp.password" value="${ftp.password}"/>
-                <sysproperty key="sftp.user" value="${sftp.user}"/>
-                <sysproperty key="sftp.password" value="${sftp.password}"/>
-                <sysproperty key="sftp.key" value="${sftp.key}"/>
-                <sysproperty key="sftp.key.openssh.rsa" value="${sftp.key.openssh.rsa}"/>
-                <sysproperty key="sftp.key.openssh.ecdsa" value="${sftp.key.openssh.ecdsa}"/>
-                <sysproperty key="sftp.key.putty" value="${sftp.key.putty}"/>
-                <sysproperty key="google.projectid" value="${google.projectid}"/>
-                <sysproperty key="google.accesstoken" value="${google.accesstoken}"/>
-                <sysproperty key="google.refreshtoken" value="${google.refreshtoken}"/>
-                <sysproperty key="azure.account" value="${azure.account}"/>
-                <sysproperty key="azure.key" value="${azure.key}"/>
-                <sysproperty key="oraclecloud.key" value="${oraclecloud.key}"/>
-                <sysproperty key="oraclecloud.secret" value="${oraclecloud.secret}"/>
-                <sysproperty key="evault.s3.key" value="${evault.s3.key}"/>
-                <sysproperty key="evault.s3.secret" value="${evault.s3.secret}"/>
-                <sysproperty key="evault.openstack.key" value="${evault.openstack.key}"/>
-                <sysproperty key="evault.openstack.secret" value="${evault.openstack.secret}"/>
+                <syspropertyset refid="test.systemproperties"/>
             </junit>
         </jacoco:coverage>
         <junitreport todir="${build.unittests.reports}/html">
