@@ -375,6 +375,7 @@
             <dict>
                 <key>UTTypeConformsTo</key>
                 <array>
+                    <string>com.apple.package</string>
                     <string>public.data</string>
                 </array>
                 <key>UTTypeDescription</key>
