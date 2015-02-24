@@ -26,6 +26,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 
@@ -66,7 +67,7 @@ public class TerminalLoginCallback implements LoginCallback {
     public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason,
                        final LoginOptions options) throws LoginCanceledException {
         credentials.setSaved(false);
-        console.printf("%n%s. %s", title, reason);
+        console.printf("%n%s", new StringAppender().append(title).append(reason));
         try {
             if(options.user) {
                 if(StringUtils.isBlank(credentials.getUsername())) {
