@@ -42,13 +42,13 @@ public final class TerminalOptionsBuilder {
         options.addOption(OptionBuilder
                 .withDescription("Username")
                 .withLongOpt(Params.username.name())
-                .hasArg(true).withArgName("username")
+                .hasArg(true).withArgName("username or access key")
                 .isRequired(false)
                 .create('u'));
         options.addOption(OptionBuilder
                 .withDescription("Password")
                 .withLongOpt(Params.password.name())
-                .hasArg(true).withArgName("password")
+                .hasArg(true).withArgName("password or secret key")
                 .isRequired(false)
                 .create('p'));
         options.addOption(OptionBuilder
