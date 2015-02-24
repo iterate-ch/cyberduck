@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.preferences.Preferences;
@@ -35,6 +36,7 @@ import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
+import ch.cyberduck.core.shared.DisabledMoveFeature;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.log4j.Logger;
@@ -301,6 +303,9 @@ public abstract class Session<C> implements TranscriptListener {
         }
         if(type == Touch.class) {
             return (T) new DefaultTouchFeature(this);
+        }
+        if(type == Move.class) {
+            return (T) new DisabledMoveFeature();
         }
         if(type == DistributionConfiguration.class) {
             if(null == cloudfront) {
