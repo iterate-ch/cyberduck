@@ -40,7 +40,7 @@ import org.irods.jargon.core.exception.JargonException;
 import org.irods.jargon.core.pub.IRODSFileSystem;
 
 /**
- * @version $Id: $
+ * @version $Id$
  */
 public class IRODSSession extends SSLSession<IRODSFileSystem> {
     private static final Logger log = Logger.getLogger(IRODSSession.class);

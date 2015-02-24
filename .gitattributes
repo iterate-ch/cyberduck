@@ -2948,6 +2948,7 @@ test/ch/cyberduck/core/importer/org.mozdev.fireftp/fjpxtvk8.default/fireFTPsites
 test/ch/cyberduck/core/importer/wcx_ftp.ini -text
 test/ch/cyberduck/core/irods/IRODSExceptionMappingServiceTest.java -text
 test/ch/cyberduck/core/irods/IRODSListServiceTest.java -text
+test/ch/cyberduck/core/irods/IRODSSessionTest.java -text
 test/ch/cyberduck/core/local/SystemLocalTest.cs -text svneol=unset#application/octet-stream
 test/ch/cyberduck/core/s3/S3HttpRequestRetryHandlerTest.java -text
 test/ch/cyberduck/core/serializer/impl/1c158c34-db8a-4c32-a732-abd9447bb27c.duck -text

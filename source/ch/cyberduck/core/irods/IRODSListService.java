@@ -31,7 +31,7 @@ import java.io.File;
 import java.util.EnumSet;
 
 /**
- * @version $Id: $
+ * @version $Id$
  */
 public class IRODSListService implements ListService {
 

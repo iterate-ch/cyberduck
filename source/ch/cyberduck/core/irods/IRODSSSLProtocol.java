@@ -23,7 +23,7 @@ import ch.cyberduck.core.Scheme;
  */
 
 /**
- * @version $Id: $
+ * @version $Id$
  */
 public final class IRODSSSLProtocol extends AbstractProtocol {
 

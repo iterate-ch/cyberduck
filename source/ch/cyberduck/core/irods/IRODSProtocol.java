@@ -23,7 +23,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
 
 /**
- * @version $Id: $
+ * @version $Id$
  */
 public final class IRODSProtocol extends AbstractProtocol {
 

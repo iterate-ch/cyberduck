@@ -40,7 +40,7 @@ import static org.junit.Assert.*;
 import static org.junit.Assert.assertNotNull;
 
 /**
- * @version $Id: $
+ * @version $Id$
  */
 public class IRODSListServiceTest extends AbstractTestCase {
 
