@@ -41,4 +41,9 @@ public final class IRODSProtocol extends AbstractProtocol {
     public Scheme getScheme() {
         return Scheme.irods;
     }
+
+    @Override
+    public String disk() {
+        return String.format("%s.tiff", "ftp");
+    }
 }
