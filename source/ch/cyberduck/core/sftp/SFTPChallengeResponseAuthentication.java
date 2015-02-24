@@ -85,8 +85,12 @@ public class SFTPChallengeResponseAuthentication implements SFTPAuthentication {
 
                 @Override
                 public void init(final Resource resource, final String name, final String instruction) {
-                    this.name = name;
-                    this.instruction = instruction;
+                    if(StringUtils.isNoneBlank(instruction)) {
+                        this.instruction = instruction;
+                    }
+                    if(StringUtils.isNoneBlank(name)) {
+                        this.name = name;
+                    }
                 }
 
                 @Override
@@ -109,12 +113,18 @@ public class SFTPChallengeResponseAuthentication implements SFTPAuthentication {
                         final StringAppender message = new StringAppender().append(instruction).append(prompt);
                         // Properly handle an instruction field with embedded newlines.  They should also
                         // be able to display at least 30 characters for the name and prompts.
-                        final Credentials additional = new Credentials();
+                        final Credentials additional = new Credentials() {
+                            @Override
+                            public String getPasswordPlaceholder() {
+                                return StringUtils.removeEnd(StringUtils.strip(prompt), ":");
+                            }
+                        };
                         try {
-                            controller.prompt(host, additional,
-                                    String.format("%s. %s",
-                                            LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                                            name), message.toString(), new LoginOptions().user(false).keychain(false)
+                            final StringAppender title = new StringAppender().append(name).append(
+                                    LocaleFactory.localizedString("Provide additional login credentials", "Credentials")
+                            );
+                            controller.prompt(host, additional, title.toString(),
+                                    message.toString(), new LoginOptions().user(false).keychain(false)
                             );
                         }
                         catch(LoginCanceledException e) {
