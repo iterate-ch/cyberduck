@@ -26,6 +26,8 @@ import ch.cyberduck.core.exception.NotfoundException;
 import org.irods.jargon.core.exception.AuthenticationException;
 import org.irods.jargon.core.exception.CatNoAccessException;
 import org.irods.jargon.core.exception.FileNotFoundException;
+import org.irods.jargon.core.exception.InvalidGroupException;
+import org.irods.jargon.core.exception.InvalidUserException;
 import org.irods.jargon.core.exception.JargonException;
 
 /**
@@ -37,18 +39,21 @@ public class IRODSExceptionMappingService extends AbstractExceptionMappingServic
     public BackgroundException map(final JargonException e) {
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, e.getMessage());
-
-        if (e instanceof CatNoAccessException) {
+        if(e instanceof CatNoAccessException) {
             return new AccessDeniedException(buffer.toString(), e);
         }
-        if (e instanceof FileNotFoundException) {
+        if(e instanceof FileNotFoundException) {
             return new NotfoundException(buffer.toString(), e);
         }
-        if (e instanceof AuthenticationException) {
+        if(e instanceof AuthenticationException) {
             return new LoginFailureException(buffer.toString(), e);
         }
-
+        if(e instanceof InvalidUserException) {
+            return new LoginFailureException(buffer.toString(), e);
+        }
+        if(e instanceof InvalidGroupException) {
+            return new LoginFailureException(buffer.toString(), e);
+        }
         return this.wrap(e, buffer);
     }
-
 }
