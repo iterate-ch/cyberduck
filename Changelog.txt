@@ -3,6 +3,10 @@ http://cyberduck.io/
 
 Changelog. Last modified: $Date$
 
+4.7 [https://trac.cyberduck.io/milestone/4.7]
+- [Feature] Support multiple connections per transfer (#1135)
+- [Feature] Support for segmented downloads with multiple connections per file (#4498)
+
 4.6.5 [https://trac.cyberduck.io/milestone/4.6.5]
 - [Feature] Support for China (Beijing) region (S3)
 - [Feature] Drag bookmarks from history and Bonjour tab to default bookmarks (Mac) (#2182)
