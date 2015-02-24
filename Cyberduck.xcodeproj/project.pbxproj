@@ -6291,7 +6291,7 @@
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
 				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
-				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_FILE = setup/app/Info.plist;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_NAME = Cyberduck;
 				SECTORDER_FLAGS = "";
@@ -6448,7 +6448,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
-				INFOPLIST_FILE = "Info-CLI.plist";
+				INFOPLIST_FILE = "setup/pkg/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
 				MACH_O_TYPE = mh_execute;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
@@ -6497,7 +6497,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
-				INFOPLIST_FILE = "Info-CLI.plist";
+				INFOPLIST_FILE = "setup/pkg/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
 				MACH_O_TYPE = mh_execute;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
@@ -6545,7 +6545,7 @@
 				COPY_PHASE_STRIP = YES;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
-				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_FILE = setup/app/Info.plist;
 				PRODUCT_NAME = Cyberduck;
 				WRAPPER_EXTENSION = app;
 			};

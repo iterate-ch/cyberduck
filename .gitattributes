@@ -4,8 +4,6 @@
 /Credits.rtf -text
 /Cyberduck[!!-~]Website.webloc -text
 /Donate.webloc -text
-/Info-CLI.plist -text
-/Info.plist.debug -text
 /LICENSE.txt -text
 Spotlight[!!-~]Importer/English.lproj/InfoPlist.strings svneol=native#unset
 Spotlight[!!-~]Importer/English.lproj/schema.strings svneol=native#unset
@@ -2416,6 +2414,7 @@ ru.lproj/Status.strings -text svneol=unset#text/utf-16
 ru.lproj/Support.strings -text svneol=unset#text/utf-16
 ru.lproj/Transfer.strings -text svneol=unset#text/utf-16
 /sandbox.plist -text
+setup/app/Info.plist.debug -text
 setup/banner.png -text
 setup/brew/duck.binary.rb -text
 setup/brew/duck.source.rb -text
@@ -2430,6 +2429,7 @@ setup/nsi/FileAssociation.nsh -text
 setup/nsi/cyberduck.nsi -text
 setup/nsi/header.bmp -text
 setup/nsi/welcome.bmp -text
+setup/pkg/Info.plist -text
 setup/pkg/postinstall -text
 setup/rpm/duck.spec -text
 setup/uninstall.png -text svneol=unset#image/png
