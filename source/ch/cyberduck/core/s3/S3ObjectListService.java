@@ -146,7 +146,6 @@ public class S3ObjectListService implements ListService {
                         ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
                 final Path file = new Path(parent, PathNormalizer.name(key), types,
                         attributes.convert(object));
-                file.attributes().setStorageClass(object.getStorageClass());
                 // Copy bucket location
                 file.attributes().setRegion(bucket.attributes().getRegion());
                 children.add(file);

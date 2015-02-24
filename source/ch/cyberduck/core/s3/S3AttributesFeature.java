@@ -107,6 +107,7 @@ public class S3AttributesFeature implements Attributes {
         attributes.setStorageClass(object.getStorageClass());
         if(StringUtils.isNotBlank(object.getETag())) {
             attributes.setChecksum(Checksum.parse(object.getETag()));
+            attributes.setETag(object.getETag());
         }
         if(object instanceof S3Object) {
             attributes.setVersionId(((S3Object) object).getVersionId());
