@@ -35,10 +35,10 @@ import java.util.EnumSet;
  */
 public class IRODSListService implements ListService {
 
-    private final IRODSSession irodsSession;
+    private IRODSSession session;
 
-    public IRODSListService(IRODSSession irodsSession) {
-        this.irodsSession = irodsSession;
+    public IRODSListService(IRODSSession session) {
+        this.session = session;
     }
 
     @Override
@@ -46,8 +46,7 @@ public class IRODSListService implements ListService {
         try {
             final AttributedList<Path> children = new AttributedList<Path>();
 
-            File[] files = irodsSession.getClient().getIRODSFileFactory(irodsSession.getIRODSAccount()).
-                    instanceIRODSFile(directory.getAbsolute()).listFiles();
+            File[] files = session.getIrodsFileSystemAO().getIRODSFileFactory().instanceIRODSFile(directory.getAbsolute()).listFiles();
             for (File file : files) {
                 final String normalizedPath = PathNormalizer.normalize(file.getAbsolutePath(), true);
 

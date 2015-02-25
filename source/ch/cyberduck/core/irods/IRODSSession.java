@@ -26,6 +26,10 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.SSLSession;
@@ -38,12 +42,15 @@ import org.irods.jargon.core.connection.IRODSAccount;
 import org.irods.jargon.core.connection.auth.AuthResponse;
 import org.irods.jargon.core.exception.JargonException;
 import org.irods.jargon.core.pub.IRODSFileSystem;
+import org.irods.jargon.core.pub.IRODSFileSystemAO;
 
 /**
  * @version $Id$
  */
 public class IRODSSession extends SSLSession<IRODSFileSystem> {
     private static final Logger log = Logger.getLogger(IRODSSession.class);
+
+    private IRODSFileSystemAO irodsFileSystemAO;
 
     public IRODSSession(final Host h) {
         super(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
@@ -65,8 +72,17 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
     @Override
     public void login(final PasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel, final Cache<Path> cache) throws BackgroundException {
         try {
-            AuthResponse authResponse = client.getIRODSAccessObjectFactory().authenticateIRODSAccount(getIRODSAccount());
-            // TODO authResponse.isSuccessful() and !
+            final IRODSAccount irodsAccount = IRODSAccount.instance(host.getHostname(), host.getPort(),
+                    host.getCredentials().getUsername(), host.getCredentials().getPassword(),
+                    getHomeDir(), host.getRegion(), "");
+
+            final AuthResponse authResponse = client.getIRODSAccessObjectFactory().authenticateIRODSAccount(irodsAccount);
+            if (authResponse.isSuccessful()) {
+                irodsFileSystemAO = client.getIRODSAccessObjectFactory().getIRODSFileSystemAO(authResponse.getAuthenticatedIRODSAccount());
+            } else {
+                // TODO research auth further
+                throw new LoginFailureException(String.format("Login failed for user %s", host.getCredentials().getUsername()));
+            }
         } catch(JargonException e) {
             throw new IRODSExceptionMappingService().map(e);
         }
@@ -75,7 +91,9 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
     @Override
     protected void logout() throws BackgroundException {
         try {
-            client.close(getIRODSAccount());
+            client.close();
+            irodsFileSystemAO = null;
+            client = null;
         }
         catch(JargonException e) {
             throw new IRODSExceptionMappingService().map(e);
@@ -87,13 +105,16 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
         return new IRODSListService(this).list(directory, listener);
     }
 
+    public final IRODSFileSystemAO getIrodsFileSystemAO() {
+        return irodsFileSystemAO;
+    }
+
     public final IRODSAccount getIRODSAccount() {
-        return new IRODSAccount(host.getHostname(), host.getPort(),
-                host.getCredentials().getUsername(), host.getCredentials().getPassword(),
-                getHomeDir(), host.getRegion(), "");
+        return irodsFileSystemAO.getIRODSAccount();
     }
 
     private String getHomeDir() {
+        // TODO extend DefaultHomeFinderService
         return new StringBuilder()
                 .append(Path.DELIMITER).append(host.getRegion())
                 .append(Path.DELIMITER).append("home")
