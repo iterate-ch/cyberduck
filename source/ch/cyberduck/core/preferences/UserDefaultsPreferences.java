@@ -226,7 +226,7 @@ public class UserDefaultsPreferences extends Preferences {
         defaults.put("bookmark.import.crossftp.location", "~/.crossftp/sites.xml");
         defaults.put("bookmark.import.fireftp.location", "~/Library/Application Support/Firefox/Profiles");
         if(LocalFactory.get("~/Downloads").exists()) {
-            // For 10.5 this usually exists and should be preferrred
+            // For 10.5+ this usually exists and should be preferrred
             defaults.put("queue.download.folder", "~/Downloads");
         }
         else {
@@ -360,7 +360,6 @@ public class UserDefaultsPreferences extends Preferences {
 
     @Override
     public List<String> applicationLocales() {
-//        return this.toList(NSBundle.mainBundle().preferredLocalizations());
         return this.toList(NSBundle.mainBundle().localizations());
     }
 

@@ -1875,8 +1875,7 @@ public class InfoController extends ToolbarWindowController {
                 checksumField.setStringValue(LocaleFactory.localizedString("Unknown"));
             }
             else {
-                this.updateField(checksumField, String.format("%s %s",
-                        StringUtils.upperCase(checksum.algorithm.name()), checksum.hash), TRUNCATE_MIDDLE_ATTRIBUTES);
+                this.updateField(checksumField, checksum.hash, TRUNCATE_MIDDLE_ATTRIBUTES);
             }
         }
     }

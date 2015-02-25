@@ -70,7 +70,7 @@ public class AzureReadFeature implements Read {
             options.setRetryPolicyFactory(new RetryNoRetry());
             final BlobInputStream in = blob.openInputStream(AccessCondition.generateEmptyCondition(), options, context);
             try {
-                StreamCopier.skip(in, status.getSkip());
+                StreamCopier.skip(in, status.getOffset());
             }
             catch(IOException e) {
                 throw new DefaultIOExceptionMappingService().map(e);

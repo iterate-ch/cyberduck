@@ -55,7 +55,7 @@ public class SwiftReadFeature implements Read {
             if(status.isAppend()) {
                 stream = session.getClient().getObject(new SwiftRegionService(session).lookup(file),
                         containerService.getContainer(file).getName(), containerService.getKey(file),
-                        status.getSkip(), status.getLength());
+                        status.getOffset(), status.getLength());
             }
             else {
                 stream = session.getClient().getObject(new SwiftRegionService(session).lookup(file),

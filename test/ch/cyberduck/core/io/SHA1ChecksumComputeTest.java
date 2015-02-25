@@ -1,7 +1,7 @@
 package ch.cyberduck.core.io;
 
 /*
- * Copyright (c) 2002-2014 David Kocher. All rights reserved.
+ * Copyright (c) 2002-2015 David Kocher. All rights reserved.
  * http://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -25,11 +25,12 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class SHA256ChecksumComputeTest extends AbstractTestCase {
+public class SHA1ChecksumComputeTest extends AbstractTestCase {
 
     @Test
     public void testCompute() throws Exception {
-        assertEquals("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-                new SHA256ChecksumCompute().compute(new NullInputStream(0)));
+        assertEquals("da39a3ee5e6b4b0d3255bfef95601890afd80709",
+                new SHA1ChecksumCompute().compute(new NullInputStream(0)));
+
     }
 }

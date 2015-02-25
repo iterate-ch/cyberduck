@@ -26,6 +26,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 
@@ -66,30 +67,34 @@ public class TerminalLoginCallback implements LoginCallback {
     public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason,
                        final LoginOptions options) throws LoginCanceledException {
         credentials.setSaved(false);
-        console.printf("%n%s", reason);
+        console.printf("%n%s", new StringAppender().append(title).append(reason));
         try {
-            if(StringUtils.isBlank(credentials.getUsername())) {
-                final String user = console.readLine("%n%s: ", credentials.getUsernamePlaceholder());
-                credentials.setUsername(user);
-            }
-            else {
-                final String user = console.readLine("%n%s (%s): ", credentials.getUsernamePlaceholder(), credentials.getUsername());
-                if(StringUtils.isNotBlank(user)) {
+            if(options.user) {
+                if(StringUtils.isBlank(credentials.getUsername())) {
+                    final String user = console.readLine("%n%s: ", credentials.getUsernamePlaceholder());
                     credentials.setUsername(user);
                 }
+                else {
+                    final String user = console.readLine("%n%s (%s): ", credentials.getUsernamePlaceholder(), credentials.getUsername());
+                    if(StringUtils.isNotBlank(user)) {
+                        credentials.setUsername(user);
+                    }
+                }
+                console.printf("Login as %s", credentials.getUsername());
             }
-            console.printf("Login as %s", credentials.getUsername());
-            final String password = keychain.getPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
-                    bookmark.getHostname(), credentials.getUsername());
-            if(StringUtils.isNotBlank(password)) {
-                credentials.setPassword(password);
-            }
-            else {
-                final char[] input = console.readPassword("%n%s: ", credentials.getPasswordPlaceholder());
-                credentials.setPassword(String.valueOf(input));
-                Arrays.fill(input, ' ');
-                if(!credentials.validate(bookmark.getProtocol(), options)) {
-                    this.prompt(bookmark, credentials, title, reason, options);
+            if(options.password) {
+                final String password = keychain.getPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
+                        bookmark.getHostname(), credentials.getUsername());
+                if(StringUtils.isNotBlank(password)) {
+                    credentials.setPassword(password);
+                }
+                else {
+                    final char[] input = console.readPassword("%n%s: ", credentials.getPasswordPlaceholder());
+                    credentials.setPassword(String.valueOf(input));
+                    Arrays.fill(input, ' ');
+                    if(!credentials.validate(bookmark.getProtocol(), options)) {
+                        this.prompt(bookmark, credentials, title, reason, options);
+                    }
                 }
             }
         }

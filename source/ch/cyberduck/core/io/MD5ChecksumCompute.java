@@ -18,17 +18,12 @@ package ch.cyberduck.core.io;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.ChecksumException;
 
-import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
-import org.jets3t.service.utils.ServiceUtils;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 
 import net.schmizz.sshj.common.Buffer;
@@ -36,25 +31,11 @@ import net.schmizz.sshj.common.Buffer;
 /**
  * @version $Id$
  */
-public class MD5ChecksumCompute implements ChecksumCompute {
+public class MD5ChecksumCompute extends AbstractChecksumCompute {
 
     @Override
     public String compute(final InputStream in) throws ChecksumException {
-        try {
-            return Hex.encodeHexString(ServiceUtils.computeMD5Hash(in));
-        }
-        catch(NoSuchAlgorithmException | IOException e) {
-            throw new ChecksumException(LocaleFactory.localizedString("Checksum failure", "Error"), e.getMessage(), e);
-        }
-    }
-
-    public String compute(final String in) throws ChecksumException {
-        try {
-            return this.compute(new ByteArrayInputStream(Hex.decodeHex(in.toCharArray())));
-        }
-        catch(DecoderException e) {
-            throw new ChecksumException(LocaleFactory.localizedString("Checksum failure", "Error"), e.getMessage(), e);
-        }
+        return Hex.encodeHexString(this.digest("MD5", in));
     }
 
     public String fingerprint(final PublicKey key) throws ChecksumException {

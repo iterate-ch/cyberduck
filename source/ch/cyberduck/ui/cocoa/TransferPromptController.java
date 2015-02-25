@@ -27,7 +27,6 @@ import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.TransferItemCache;
 import ch.cyberduck.core.UserDateFormatterFactory;
@@ -87,17 +86,14 @@ public abstract class TransferPromptController extends SheetController
 
     protected Transfer transfer;
 
-    private Session session;
-
     private TransferAction action;
 
     protected Cache<TransferItem> cache
             = new TransferItemCache(Integer.MAX_VALUE);
 
-    public TransferPromptController(final WindowController parent, final Transfer transfer, final Session session) {
+    public TransferPromptController(final WindowController parent, final Transfer transfer) {
         super(parent);
         this.transfer = transfer;
-        this.session = session;
         this.action = TransferAction.forName(preferences.getProperty(
                 String.format("queue.prompt.%s.action.default", transfer.getType().name())));
     }

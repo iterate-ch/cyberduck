@@ -27,7 +27,7 @@ import ch.cyberduck.core.transfer.DownloadTransfer;
 public class DownloadPromptController extends TransferPromptController {
 
     public DownloadPromptController(final WindowController parent, final DownloadTransfer transfer, final Session session) {
-        super(parent, transfer, session);
+        super(parent, transfer);
         browserModel = new DownloadPromptModel(this, session, transfer, cache);
     }
 }

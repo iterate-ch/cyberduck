@@ -61,7 +61,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         PreferencesFactory.get().setProperty("s3.storage.class", "REDUCED_REDUNDANCY");
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), status, new DisabledLoginCallback());
-        assertEquals((long) random.getBytes().length, status.getSkip(), 0L);
+        assertEquals((long) random.getBytes().length, status.getOffset(), 0L);
         assertTrue(status.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
         final PathAttributes attributes = new S3AttributesFeature(session).find(test);
@@ -110,7 +110,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         final TransferStatus status = new TransferStatus();
         status.setLength(random.length);
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), status, null);
-        assertEquals((long) random.length, status.getSkip(), 0L);
+        assertEquals((long) random.length, status.getOffset(), 0L);
         assertTrue(status.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(random.length, session.list(container,
@@ -140,7 +140,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         final TransferStatus status = new TransferStatus();
         status.setLength(random.length);
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), status, null);
-        assertEquals((long) random.length, status.getSkip(), 0L);
+        assertEquals((long) random.length, status.getOffset(), 0L);
         assertTrue(status.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(random.length, session.list(container,
@@ -185,7 +185,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
             interrupt.set(true);
         }
         assertTrue(interrupt.get());
-        assertEquals(5242880L, status.getSkip(), 0L);
+        assertEquals(5242880L, status.getOffset(), 0L);
         assertFalse(status.isComplete());
         assertFalse(new S3FindFeature(session).find(test));
 
@@ -193,7 +193,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         new S3MultipartUploadService(session, 10485760L, 1).upload(test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
                 new DisabledLoginCallback());
-        assertEquals(random.length, append.getSkip(), 0L);
+        assertEquals(random.length, append.getOffset(), 0L);
         assertTrue(append.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(random.length, session.list(container,
@@ -243,7 +243,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
             interrupt.set(true);
         }
         assertTrue(interrupt.get());
-        assertEquals(32768L, status.getSkip(), 0L);
+        assertEquals(32768L, status.getOffset(), 0L);
         assertFalse(status.isComplete());
 
         final TransferStatus append = new TransferStatus().append(true).length(random.length);
@@ -251,7 +251,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), append,
                 new DisabledLoginCallback());
-        assertEquals(32769L, append.getSkip(), 0L);
+        assertEquals(32769L, append.getOffset(), 0L);
         assertTrue(append.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(random.length, session.list(container,

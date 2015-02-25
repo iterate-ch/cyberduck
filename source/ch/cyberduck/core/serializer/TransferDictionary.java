@@ -27,6 +27,7 @@ import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.SyncTransfer;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.UploadTransfer;
 
@@ -151,7 +152,14 @@ public class TransferDictionary {
                 transfer = new UploadTransfer(host, roots);
                 break;
             case sync:
-                transfer = new SyncTransfer(host, roots.iterator().next());
+                final String actionObj = dict.stringForKey("Action");
+                if(null == actionObj) {
+                    transfer = new SyncTransfer(host, roots.iterator().next());
+                }
+                else {
+                    transfer = new SyncTransfer(host, roots.iterator().next(),
+                            TransferAction.forName(actionObj));
+                }
                 break;
             case copy:
                 Object destinationObj = dict.objectForKey("Destination");

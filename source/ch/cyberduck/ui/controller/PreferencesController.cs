@@ -1232,9 +1232,10 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void PopulateTransferModes()
         {
-            List<string> modes = new List<string>();
+            List<KeyValuePair<string, Host.TransferType>> modes = new List<KeyValuePair<string, Host.TransferType>>();
             foreach (String name in Utils.ConvertFromJavaList<String>(PreferencesFactory.get().getList("queue.transfer.type.enabled"))) {
-                modes.Add(Host.TransferType.valueOf(name).toString());
+                Host.TransferType t = Host.TransferType.valueOf(name);
+                modes.Add(new KeyValuePair<string, Host.TransferType>(t.toString(), t));
             }
             View.PopulateTransferModes(modes);
         }

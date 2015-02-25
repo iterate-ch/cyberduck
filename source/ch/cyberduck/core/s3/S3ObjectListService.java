@@ -29,8 +29,6 @@ import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -47,7 +45,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -62,8 +59,11 @@ public class S3ObjectListService implements ListService {
     private PathContainerService containerService
             = new S3PathContainerService();
 
+    private S3AttributesFeature attributes;
+
     public S3ObjectListService(final S3Session session) {
         this.session = session;
+        this.attributes = new S3AttributesFeature(session);
     }
 
     @Override
@@ -144,16 +144,8 @@ public class S3ObjectListService implements ListService {
                 }
                 final EnumSet<AbstractPath.Type> types = object.isDirectoryPlaceholder()
                         ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
-                final Path file = new Path(parent, PathNormalizer.name(key), types);
-                if(StringUtils.isNotBlank(object.getETag())) {
-                    file.attributes().setChecksum(new Checksum(HashAlgorithm.md5, object.getETag()));
-                }
-                final Date lastmodified = object.getLastModifiedDate();
-                if(lastmodified != null) {
-                    file.attributes().setModificationDate(lastmodified.getTime());
-                }
-                file.attributes().setSize(object.getContentLength());
-                file.attributes().setStorageClass(object.getStorageClass());
+                final Path file = new Path(parent, PathNormalizer.name(key), types,
+                        attributes.convert(object));
                 // Copy bucket location
                 file.attributes().setRegion(bucket.attributes().getRegion());
                 children.add(file);

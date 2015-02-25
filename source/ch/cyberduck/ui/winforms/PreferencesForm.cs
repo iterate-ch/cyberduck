@@ -848,9 +848,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             gdSpreadsheetsComboBox.DisplayMember = "Value";
         }
 
-        public void PopulateTransferModes(List<string> transferModes)
+        public void PopulateTransferModes(List<KeyValuePair<string, Host.TransferType>> modes)
         {
-            transferFilesCombobox.DataSource = transferModes;
+            transferFilesCombobox.DataSource = null;
+            transferFilesCombobox.DataSource = modes;
+            transferFilesCombobox.DisplayMember = "Key";
+            transferFilesCombobox.ValueMember = "Value";
         }
 
         public void PopulateDuplicateDownloadActions(List<string> actions)

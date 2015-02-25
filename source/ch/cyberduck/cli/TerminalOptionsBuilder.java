@@ -42,13 +42,13 @@ public final class TerminalOptionsBuilder {
         options.addOption(OptionBuilder
                 .withDescription("Username")
                 .withLongOpt(Params.username.name())
-                .hasArg(true).withArgName("username")
+                .hasArg(true).withArgName("username or access key")
                 .isRequired(false)
                 .create('u'));
         options.addOption(OptionBuilder
                 .withDescription("Password")
                 .withLongOpt(Params.password.name())
-                .hasArg(true).withArgName("password")
+                .hasArg(true).withArgName("password or secret key")
                 .isRequired(false)
                 .create('p'));
         options.addOption(OptionBuilder
@@ -120,7 +120,7 @@ public final class TerminalOptionsBuilder {
         options.addOption(OptionBuilder
                 .withDescription("Retry failed connection attempts")
                 .withLongOpt(Params.retry.name())
-                .hasOptionalArg()
+                .hasOptionalArg().withArgName("count")
                 .isRequired(false)
                 .create('r'));
         options.addOption(OptionBuilder
@@ -131,8 +131,15 @@ public final class TerminalOptionsBuilder {
         options.addOption(OptionBuilder
                 .withDescription("Number of concurrent connections to use for transfers")
                 .withLongOpt(Params.parallel.name())
+                .hasOptionalArg().withArgName("connections")
                 .isRequired(false)
-                .create('c'));
+                .create());
+        options.addOption(OptionBuilder
+                .withDescription("Throttle bandwidth")
+                .withLongOpt(Params.throttle.name())
+                .hasArg(true).withArgName("bytes per second")
+                .isRequired(false)
+                .create());
         final StringBuilder b = new StringBuilder().append(StringUtils.LF);
         final Set<TransferAction> actions = new HashSet<TransferAction>(TransferAction.forTransfer(Transfer.Type.download));
         actions.add(TransferAction.cancel);
@@ -185,6 +192,7 @@ public final class TerminalOptionsBuilder {
         retry,
         udt,
         parallel,
+        throttle,
         existing,
         verbose,
         quiet,

@@ -1,7 +1,7 @@
 package ch.cyberduck.core.io;
 
 /*
- * Copyright (c) 2002-2014 David Kocher. All rights reserved.
+ * Copyright (c) 2002-2015 David Kocher. All rights reserved.
  * http://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,18 +18,19 @@ package ch.cyberduck.core.io;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.exception.ChecksumException;
 
-import org.apache.commons.io.input.NullInputStream;
-import org.junit.Test;
+import org.apache.commons.codec.binary.Hex;
 
-import static org.junit.Assert.assertEquals;
+import java.io.InputStream;
 
-public class SHA256ChecksumComputeTest extends AbstractTestCase {
+/**
+ * @version $Id$
+ */
+public class SHA1ChecksumCompute extends AbstractChecksumCompute {
 
-    @Test
-    public void testCompute() throws Exception {
-        assertEquals("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-                new SHA256ChecksumCompute().compute(new NullInputStream(0)));
+    @Override
+    public String compute(final InputStream in) throws ChecksumException {
+        return Hex.encodeHexString(this.digest("SHA-1", in));
     }
 }

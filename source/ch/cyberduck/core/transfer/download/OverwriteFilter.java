@@ -17,14 +17,23 @@ package ch.cyberduck.core.transfer.download;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.local.LocalTrashFactory;
+import ch.cyberduck.core.local.features.Trash;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
 /**
  * @version $Id$
  */
 public class OverwriteFilter extends AbstractDownloadFilter {
+
+    private final Trash trash
+            = LocalTrashFactory.get();
 
     public OverwriteFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session) {
         super(symlinkResolver, session, new DownloadFilterOptions());
@@ -33,5 +42,16 @@ public class OverwriteFilter extends AbstractDownloadFilter {
     public OverwriteFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session,
                            final DownloadFilterOptions options) {
         super(symlinkResolver, session, options);
+    }
+
+    @Override
+    public void apply(final Path file, final Local local, final TransferStatus status,
+                      final ProgressListener listener) throws BackgroundException {
+        if(file.isFile()) {
+            if(status.isExists()) {
+                trash.trash(local);
+            }
+        }
+        super.apply(file, local, status, listener);
     }
 }

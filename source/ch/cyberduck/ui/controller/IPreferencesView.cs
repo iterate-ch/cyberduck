@@ -222,7 +222,7 @@ namespace Ch.Cyberduck.Ui.Controller
         void PopulateEditors(List<KeyValueIconTriple<Application, string>> editors);
         void PopulateProtocols(List<KeyValueIconTriple<Protocol, string>> protocols);
         void PopulateEncodings(List<string> encodings);
-        void PopulateTransferModes(List<string> transferModes);
+        void PopulateTransferModes(List<KeyValuePair<string, Host.TransferType>> modes);
         void PopulateDuplicateDownloadActions(List<string> actions);
         void PopulateDuplicateUploadActions(List<string> actions);
         void PopulateChmodDownloadTypes(List<string> types);

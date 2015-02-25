@@ -49,7 +49,7 @@ public class FTPReadFeature implements Read {
                 throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
             }
             if(status.isAppend()) {
-                session.getClient().setRestartOffset(status.getSkip());
+                session.getClient().setRestartOffset(status.getOffset());
             }
             final InputStream in = new FTPDataFallback(session).data(file, new DataConnectionAction<InputStream>() {
                 @Override

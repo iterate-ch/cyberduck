@@ -27,7 +27,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.io.HashAlgorithm;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -35,6 +34,7 @@ import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageObject;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -100,10 +100,14 @@ public class S3AttributesFeature implements Attributes {
     protected PathAttributes convert(final StorageObject object) {
         final PathAttributes attributes = new PathAttributes();
         attributes.setSize(object.getContentLength());
-        attributes.setModificationDate(object.getLastModifiedDate().getTime());
+        final Date lastmodified = object.getLastModifiedDate();
+        if(lastmodified != null) {
+            attributes.setModificationDate(lastmodified.getTime());
+        }
         attributes.setStorageClass(object.getStorageClass());
         if(StringUtils.isNotBlank(object.getETag())) {
-            attributes.setChecksum(new Checksum(HashAlgorithm.md5, object.getETag()));
+            attributes.setChecksum(Checksum.parse(object.getETag()));
+            attributes.setETag(object.getETag());
         }
         if(object instanceof S3Object) {
             attributes.setVersionId(((S3Object) object).getVersionId());

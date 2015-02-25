@@ -106,7 +106,7 @@ public class DAVReadFeatureTest extends AbstractTestCase {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);
-        status.setSkip(100L);
+        status.setOffset(100L);
         final Path workdir = session.workdir();
         final InputStream in = new DAVReadFeature(session).read(test, status);
         assertNotNull(in);

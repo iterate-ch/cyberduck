@@ -15,7 +15,9 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -40,7 +42,7 @@ import static org.junit.Assert.*;
 public class SFTPWriteFeatureTest extends AbstractTestCase {
 
     @Test
-    public void testWrite() throws Exception {
+    public void testWriteThrottled() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
                 properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
         ));
@@ -52,7 +54,8 @@ public class SFTPWriteFeatureTest extends AbstractTestCase {
         new Random().nextBytes(content);
         status.setLength(content.length);
         final Path test = new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final OutputStream out = new SFTPWriteFeature(session).write(test, status);
+        final OutputStream out = new ThrottledOutputStream(new SFTPWriteFeature(session).write(test, status),
+                new BandwidthThrottle(102400f));
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();

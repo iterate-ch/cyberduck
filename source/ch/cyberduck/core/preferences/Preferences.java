@@ -377,13 +377,14 @@ public abstract class Preferences {
         /**
          * The maximum number of concurrent transfers
          */
-        defaults.put("queue.maxtransfers", String.valueOf(5));
+        defaults.put("queue.maxtransfers", String.valueOf(2));
         /**
          * Default transfer connection handling
          */
-        defaults.put("queue.transfer.type.enabled", String.format("%s %s",
+        defaults.put("queue.transfer.type.enabled", String.format("%s %s %s",
                 String.valueOf(Host.TransferType.newconnection.name()),
-                String.valueOf(Host.TransferType.browser.name())
+                String.valueOf(Host.TransferType.browser.name()),
+                String.valueOf(Host.TransferType.concurrent.name())
         ));
         defaults.put("queue.transfer.type", String.valueOf(Host.TransferType.newconnection.name()));
         /**
@@ -445,7 +446,7 @@ public abstract class Preferences {
         defaults.put("queue.download.permissions.folder.default", String.valueOf(755));
 
         defaults.put("queue.download.timestamp.change", String.valueOf(true));
-        defaults.put("queue.download.checksum", String.valueOf(false));
+        defaults.put("queue.download.checksum", String.valueOf(true));
 
         defaults.put("queue.download.skip.enable", String.valueOf(true));
         defaults.put("queue.download.skip.regex.default",
@@ -463,7 +464,7 @@ public abstract class Preferences {
         defaults.put("queue.download.wherefrom", String.valueOf(true));
 
         // Segmented concurrent downloads
-        defaults.put("queue.download.segments.threshold", String.valueOf(String.valueOf(Long.MAX_VALUE)));
+        defaults.put("queue.download.segments.threshold", String.valueOf(0L));
         defaults.put("queue.download.segments.size", String.valueOf(20L * 1024L * 1024L));
 
         /**

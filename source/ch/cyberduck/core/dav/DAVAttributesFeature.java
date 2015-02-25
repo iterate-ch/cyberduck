@@ -26,7 +26,6 @@ import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.io.HashAlgorithm;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.http.HttpHeaders;
@@ -71,10 +70,10 @@ public class DAVAttributesFeature implements Attributes {
             }
             if(headers.containsKey(HttpHeaders.ETAG)) {
                 attributes.setETag(headers.get(HttpHeaders.ETAG));
-                attributes.setChecksum(new Checksum(HashAlgorithm.md5, headers.get(HttpHeaders.ETAG)));
+                attributes.setChecksum(Checksum.parse(headers.get(HttpHeaders.ETAG)));
             }
             if(headers.containsKey(HttpHeaders.CONTENT_MD5)) {
-                attributes.setChecksum(new Checksum(HashAlgorithm.md5, headers.get(HttpHeaders.CONTENT_MD5)));
+                attributes.setChecksum(Checksum.parse(headers.get(HttpHeaders.CONTENT_MD5)));
             }
             return attributes;
         }

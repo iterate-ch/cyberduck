@@ -70,9 +70,9 @@ public class SFTPWriteFeature extends AppendWriteFeature {
             final int maxUnconfirmedWrites
                     = (int) (status.getLength() / preferences.getInteger("connection.chunksize")) + 1;
             if(log.isInfoEnabled()) {
-                log.info(String.format("Skipping %d bytes", status.getSkip()));
+                log.info(String.format("Skipping %d bytes", status.getOffset()));
             }
-            return handle.new RemoteFileOutputStream(status.getSkip(), maxUnconfirmedWrites) {
+            return handle.new RemoteFileOutputStream(status.getOffset(), maxUnconfirmedWrites) {
                 @Override
                 public void close() throws IOException {
                     try {

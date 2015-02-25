@@ -118,7 +118,7 @@ public abstract class Transfer implements Serializable {
     /**
      * Last transferred timestamp
      */
-    private Date timestamp;
+    protected Date timestamp;
 
     /**
      * Unique identifier

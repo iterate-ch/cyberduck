@@ -182,6 +182,9 @@ public class SFTPSession extends Session<SSHClient> {
 
     @Override
     public boolean alert(final ConnectionCallback prompt) throws BackgroundException {
+        if(null == algorithms) {
+            return super.alert(prompt);
+        }
         if(!preferences.getBoolean(String.format("ssh.algorithm.whitelist.%s", host.getHostname()))) {
             if(preferences.getList("ssh.algorithm.cipher.blacklist").contains(algorithms.getClient2ServerCipherAlgorithm())) {
                 alert(prompt, algorithms.getClient2ServerCipherAlgorithm());
@@ -202,7 +205,7 @@ public class SFTPSession extends Session<SSHClient> {
                 alert(prompt, algorithms.getSignatureAlgorithm());
             }
         }
-        return false;
+        return super.alert(prompt);
     }
 
     private void alert(final ConnectionCallback prompt, final String algorithm) throws ConnectionCanceledException {

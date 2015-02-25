@@ -41,16 +41,23 @@ public class TerminalStreamListener implements StreamListener {
 
     private AtomicLong timestamp = new AtomicLong();
 
+    private static final int DEFAULT_WIDTH = 30;
+
     /**
      * Progress bar fixed width in characters
      */
-    private int width = 30;
+    private int width;
 
     private final Semaphore lock
             = new Semaphore(1);
 
     public TerminalStreamListener(final TransferSpeedometer meter) {
+        this(meter, DEFAULT_WIDTH);
+    }
+
+    public TerminalStreamListener(final TransferSpeedometer meter, final int width) {
         this.meter = meter;
+        this.width = width;
     }
 
     private void increment() {
@@ -75,7 +82,7 @@ public class TerminalStreamListener implements StreamListener {
             for(; i < width; i++) {
                 console.printf(StringUtils.SPACE);
             }
-            console.printf("] %s", progress.getProgress());
+            console.printf("] %s%s", progress.getProgress(), Ansi.ansi().reset());
             timestamp.set(System.currentTimeMillis());
         }
         catch(InterruptedException e) {

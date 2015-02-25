@@ -42,14 +42,15 @@
     <property name="app.runtime.system.min" value="10.6"/>
 
     <property name="jvm.runtime.home" value="${lib}/1.7.0-u40-b30.jre"/>
-    <property name="jvm.runtime.bin" value="${jvm.runtime.home}/${bundle.home}/bin"/>
+    <!--<property name="jvm.runtime.bin" value="${jvm.runtime.home}/${bundle.home}/bin"/>-->
+    <property name="jvm.runtime.bin" value="${java.home}/bin"/>
 
     <property name="codesign.certificate" value="Developer ID Application: David Kocher"/>
     <property name="codesign.keychain" value="${user.home}/Library/Keychains/codesign.keychain"/>
     <property name="codesign.entitlements" value="${home}/sandbox.plist"/>
     <!-- Designated requirement -->
-    <property name="codesign.requirement.source" value="${home}/codesign-requirement.txt"/>
-    <property name="codesign.requirement" value="${home}/codesign-requirement.bin"/>
+    <property name="codesign.requirement.source" value="${setup}/app/codesign-requirement.txt"/>
+    <property name="codesign.requirement" value="${setup}/app/codesign-requirement.bin"/>
     <property name="codesign.options" value="--timestamp=none --force"/>
     <property name="codesign.arg"
               value="--entitlements ${codesign.entitlements} --requirements ${codesign.requirement}"/>

@@ -180,20 +180,19 @@ public class DownloadTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Find transfer action for Resume=%s,Reload=%s", resumeRequested, reloadRequested));
         }
-        final TransferAction action;
         if(resumeRequested) {
-            // Force resume
-            action = TransferAction.resume;
+            // Force resume by user or retry of failed transfer
+            return TransferAction.resume;
         }
-        else if(reloadRequested) {
+        final TransferAction action;
+        if(reloadRequested) {
             action = TransferAction.forName(
                     PreferencesFactory.get().getProperty("queue.download.reload.action"));
         }
         else {
             // Use default
             action = TransferAction.forName(
-                    PreferencesFactory.get().getProperty("queue.download.action")
-            );
+                    PreferencesFactory.get().getProperty("queue.download.action"));
         }
         if(action.equals(TransferAction.callback)) {
             for(TransferItem download : roots) {

@@ -18,10 +18,15 @@ package ch.cyberduck.core.io;
  * feedback@cyberduck.io
  */
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+
 /**
  * @version $Id$
  */
 public final class Checksum {
+    private static final Logger log = Logger.getLogger(Checksum.class);
+
     public HashAlgorithm algorithm;
     public String hash;
 
@@ -33,6 +38,23 @@ public final class Checksum {
     @Override
     public String toString() {
         return hash;
+    }
+
+    public static Checksum parse(final String hash) {
+        if(StringUtils.isBlank(hash)) {
+            return null;
+        }
+        if(hash.matches("[a-fA-F0-9]{32}")) {
+            return new Checksum(HashAlgorithm.md5, hash);
+        }
+        if(hash.matches("[a-fA-F0-9]{40}")) {
+            return new Checksum(HashAlgorithm.sha1, hash);
+        }
+        if(hash.matches("[A-Fa-f0-9]{64}")) {
+            return new Checksum(HashAlgorithm.sha256, hash);
+        }
+        log.warn(String.format("Did not detected algorithm for checksum %s", hash));
+        return null;
     }
 
     @Override
