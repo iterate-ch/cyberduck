@@ -1906,7 +1906,7 @@ lib/ikvm-native-win32-x86.dll -text
 lib/jackson-core-asl-1.9.13.jar -text svneol=unset#application/jar
 lib/jackson-mapper-asl-1.9.13.jar -text svneol=unset#application/jar
 lib/jansi-1.12.jar -text
-lib/jargon-core-4.0.2.1-SNAPSHOT.jar -text
+lib/jargon-core-4.0.2.1-RC1.jar -text
 lib/java-xmlbuilder-1.0.jar -text svneol=unset#application/zip
 lib/jets3t-0.9.4.jar -text
 lib/jna-4.1.0.jar -text svneol=unset#application/jar
