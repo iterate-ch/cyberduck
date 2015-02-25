@@ -2586,6 +2586,7 @@ source/ch/cyberduck/core/editor/SystemWatchEditorFactory.cs -text
 source/ch/cyberduck/core/i18n/DictionaryLocale.cs -text
 source/ch/cyberduck/core/importer/CDTransmitImporter.h -text
 source/ch/cyberduck/core/importer/CDTransmitImporter.m -text
+source/ch/cyberduck/core/irods/IRODSDirectoryFeature.java -text
 source/ch/cyberduck/core/irods/IRODSExceptionMappingService.java -text
 source/ch/cyberduck/core/irods/IRODSListService.java -text
 source/ch/cyberduck/core/irods/IRODSProtocol.java -text
@@ -2946,6 +2947,7 @@ test/ch/cyberduck/core/importer/com.fivedetails.Bookmarks.plist -text
 test/ch/cyberduck/core/importer/com.panic.Transmit.plist -text svneol=unset#unset
 test/ch/cyberduck/core/importer/org.mozdev.fireftp/fjpxtvk8.default/fireFTPsites.dat -text
 test/ch/cyberduck/core/importer/wcx_ftp.ini -text
+test/ch/cyberduck/core/irods/IRODSDirectoryFeatureTest.java -text
 test/ch/cyberduck/core/irods/IRODSExceptionMappingServiceTest.java -text
 test/ch/cyberduck/core/irods/IRODSListServiceTest.java -text
 test/ch/cyberduck/core/irods/IRODSSessionTest.java -text

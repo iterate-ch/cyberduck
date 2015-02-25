@@ -105,6 +105,20 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
         return new IRODSListService(this).list(directory, listener);
     }
 
+    @Override
+    public <T> T getFeature(final Class<T> type) {
+        if(type == Directory.class) {
+            return (T) new IRODSDirectoryFeature(this);
+        }
+        if(type == Find.class) {
+            return (T) new IRODSFindFeature(this);
+        }
+        if(type == Delete.class) {
+            return (T) new IRODSDeleteFeature(this);
+        }
+        return super.getFeature(type);
+    }
+
     public final IRODSFileSystemAO getIrodsFileSystemAO() {
         return irodsFileSystemAO;
     }
