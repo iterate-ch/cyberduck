@@ -7,6 +7,7 @@ Changelog. Last modified: $Date$
 - [Feature] Support multiple connections per transfer (#1135)
 - [Feature] Support for segmented downloads with multiple connections per file (#4498)
 - [Feature] Connecting with temporary access credentials from EC2 (S3) (#8610)
+- [Feature] Verify checksum for downloads if available (WebDAV, S3, OpenStack Swift)
 
 4.6.5 [https://trac.cyberduck.io/milestone/4.6.5]
 - [Feature] Support for China (Beijing) region (S3)
