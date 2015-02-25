@@ -43,7 +43,7 @@ public class DefaultCertificateStore implements CertificateStore {
     @Override
     public X509Certificate choose(final String[] keyTypes, final Principal[] issuers,
                                   final String hostname, final String prompt) throws ConnectionCanceledException {
-        final CertificateStoreX509KeyManager store = new KeychainX509KeyManager().init();
+        final CertificateStoreX509KeyManager store = new KeychainX509KeyManager(this).init();
         final String[] aliases = store.getClientAliases(keyTypes, issuers);
         if(null == aliases) {
             throw new ConnectionCanceledException(String.format("No certificate matching issuer %s found",
