@@ -58,10 +58,10 @@ public class IRODSListServiceTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final AttributedList<Path> list = new IRODSListService(session).list(new Path(session.getIRODSAccount().getHomeDirectory(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
+        final AttributedList<Path> list = new IRODSListService(session).list(session.workdir(), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path p : list) {
-            assertEquals(new Path(session.getIRODSAccount().getHomeDirectory(), EnumSet.of(Path.Type.directory, Path.Type.volume)), p.getParent());
+            assertEquals(session.workdir(), p.getParent());
             assertNotNull(p.attributes().getModificationDate());
             assertNotNull(p.attributes().getSize());
         }

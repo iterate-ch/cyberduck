@@ -45,6 +45,7 @@ public class IRODSSessionTest extends AbstractTestCase {
         assertFalse(session.isConnected());
     }
 
+    @Test
     public void testLogin() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
                 new Local("profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
@@ -61,7 +62,7 @@ public class IRODSSessionTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertNotNull(session.workdir());
 
-        final AttributedList<Path> list = session.list(new Path(session.getIRODSAccount().getHomeDirectory(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
+        final AttributedList<Path> list = session.list(session.workdir(), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
 
         assertTrue(session.isConnected());

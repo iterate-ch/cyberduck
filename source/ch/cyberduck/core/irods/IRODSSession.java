@@ -44,6 +44,8 @@ import org.irods.jargon.core.exception.JargonException;
 import org.irods.jargon.core.pub.IRODSFileSystem;
 import org.irods.jargon.core.pub.IRODSFileSystemAO;
 
+import java.util.EnumSet;
+
 /**
  * @version $Id$
  */
@@ -74,7 +76,7 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
         try {
             final IRODSAccount irodsAccount = IRODSAccount.instance(host.getHostname(), host.getPort(),
                     host.getCredentials().getUsername(), host.getCredentials().getPassword(),
-                    getHomeDir(), host.getRegion(), "");
+                    workdir().getAbsolute(), host.getRegion(), "");
 
             final AuthResponse authResponse = client.getIRODSAccessObjectFactory().authenticateIRODSAccount(irodsAccount);
             if (authResponse.isSuccessful()) {
@@ -119,21 +121,16 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
         return super.getFeature(type);
     }
 
+    @Override
+    public Path workdir() {
+        final StringBuilder sb = new StringBuilder()
+                .append(Path.DELIMITER).append(host.getRegion())
+                .append(Path.DELIMITER).append("home")
+                .append(Path.DELIMITER).append(host.getCredentials().getUsername());
+        return new Path(sb.toString(), EnumSet.of(Path.Type.directory));
+    }
+
     public final IRODSFileSystemAO getIrodsFileSystemAO() {
         return irodsFileSystemAO;
     }
-
-    public final IRODSAccount getIRODSAccount() {
-        return irodsFileSystemAO.getIRODSAccount();
-    }
-
-    private String getHomeDir() {
-        // TODO extend DefaultHomeFinderService
-        return new StringBuilder()
-                .append(Path.DELIMITER).append(host.getRegion())
-                .append(Path.DELIMITER).append("home")
-                .append(Path.DELIMITER).append(host.getCredentials().getUsername())
-                .toString();
-    }
-
 }

@@ -61,8 +61,7 @@ public class IRODSDirectoryFeatureTest extends AbstractTestCase {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
 
-        final Path parent = new Path(session.getIRODSAccount().getHomeDirectory(), EnumSet.of(Path.Type.directory));
-        final Path test = new Path(parent, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final Path test = new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new IRODSDirectoryFeature(session).mkdir(test);
         assertTrue(session.getFeature(Find.class).find(test));
 

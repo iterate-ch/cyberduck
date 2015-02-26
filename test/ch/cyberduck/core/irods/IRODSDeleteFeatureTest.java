@@ -60,8 +60,7 @@ public class IRODSDeleteFeatureTest extends AbstractTestCase {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
 
-        final Path parent = new Path(session.getIRODSAccount().getHomeDirectory(), EnumSet.of(Path.Type.directory));
-        final Path test = new Path(parent, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final Path test = new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         session.getFeature(Directory.class).mkdir(test);
         assertTrue(session.getFeature(Find.class).find(test));
 
@@ -82,8 +81,7 @@ public class IRODSDeleteFeatureTest extends AbstractTestCase {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
 
-        final Path parent = new Path(session.getIRODSAccount().getHomeDirectory(), EnumSet.of(Path.Type.directory));
-        final Path test = new Path(parent, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final Path test = new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
 
         assertFalse(session.getFeature(Find.class).find(test));
 
