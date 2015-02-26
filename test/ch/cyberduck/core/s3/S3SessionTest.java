@@ -288,6 +288,7 @@ public class S3SessionTest extends AbstractTestCase {
     public void testTemporaryAccessToken() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
                 new Local("profiles/S3 (Temporary Credentials).cyberduckprofile"));
+        assertTrue(profile.validate(new Credentials(), new LoginOptions(profile)));
         final Host host = new Host(profile);
         final S3Session s = new S3Session(host);
         s.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());

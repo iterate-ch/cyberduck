@@ -111,9 +111,19 @@ public interface Protocol {
     }
 
     /**
-     * @return True if anonymous logins are possible.
+     * @return True if anonymous login is possible.
      */
     boolean isAnonymousConfigurable();
+
+    /**
+     * @return True if username is required
+     */
+    boolean isUsernameConfigurable();
+
+    /**
+     * @return True if password is required
+     */
+    boolean isPasswordConfigurable();
 
     /**
      * @return False if the hostname to connect is static.

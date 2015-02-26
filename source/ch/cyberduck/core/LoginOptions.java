@@ -86,6 +86,8 @@ public final class LoginOptions {
     public LoginOptions(final Protocol protocol) {
         publickey = protocol.getType() == Protocol.Type.ssh;
         anonymous = protocol.isAnonymousConfigurable();
+        user = protocol.isUsernameConfigurable();
+        password = protocol.isPasswordConfigurable();
     }
 
     @Override
