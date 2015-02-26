@@ -32,6 +32,7 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.SSLSession;
@@ -125,6 +126,9 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
         }
         if(type == Move.class) {
             return (T) new IRODSMoveFeature(this);
+        }
+        if(type == Write.class) {
+            return (T) new IRODSWriteFeature(this);
         }
         return super.getFeature(type);
     }
