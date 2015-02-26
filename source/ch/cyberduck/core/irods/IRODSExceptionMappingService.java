@@ -25,6 +25,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 
 import org.irods.jargon.core.exception.AuthenticationException;
 import org.irods.jargon.core.exception.CatNoAccessException;
+import org.irods.jargon.core.exception.DataNotFoundException;
 import org.irods.jargon.core.exception.FileNotFoundException;
 import org.irods.jargon.core.exception.InvalidGroupException;
 import org.irods.jargon.core.exception.InvalidUserException;
@@ -43,6 +44,9 @@ public class IRODSExceptionMappingService extends AbstractExceptionMappingServic
             return new AccessDeniedException(buffer.toString(), e);
         }
         if(e instanceof FileNotFoundException) {
+            return new NotfoundException(buffer.toString(), e);
+        }
+        if(e instanceof DataNotFoundException) {
             return new NotfoundException(buffer.toString(), e);
         }
         if(e instanceof AuthenticationException) {
