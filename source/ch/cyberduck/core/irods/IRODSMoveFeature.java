@@ -20,7 +20,6 @@ package ch.cyberduck.core.irods;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Move;
 
@@ -41,17 +40,12 @@ public class IRODSMoveFeature implements Move {
     @Override
     public void move(final Path file, final Path renamed, final boolean exists, final ProgressListener listener) throws BackgroundException {
         try {
-            if (!file.getAbsolute().equals(renamed.getAbsolute())) {
-                final IRODSFile irodsSourceFile = session.getIrodsFileSystemAO().getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
-                if (irodsSourceFile.exists()) {
-                    final IRODSFile irodsDestinationFile = session.getIrodsFileSystemAO().getIRODSFileFactory().instanceIRODSFile(renamed.getAbsolute());
-                    irodsSourceFile.renameTo(irodsDestinationFile);
-                } else {
-                    throw new NotfoundException(String.format("%s doesn't exist", file.getAbsolute()));
-                }
+            final IRODSFile irodsSourceFile = session.getIrodsFileSystemAO().getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
+            if (irodsSourceFile.exists()) {
+                final IRODSFile irodsDestinationFile = session.getIrodsFileSystemAO().getIRODSFileFactory().instanceIRODSFile(renamed.getAbsolute());
+                irodsSourceFile.renameTo(irodsDestinationFile);
             } else {
-                // TODO research support for moving to different IRODSFile.resource
-                throw new InteroperabilityException("Renaming to same name initiates a physical move to a different resource");
+                throw new NotfoundException(String.format("%s doesn't exist", file.getAbsolute()));
             }
         } catch(JargonException e) {
             throw new IRODSExceptionMappingService().map("Cannot rename {0}", e, file);
