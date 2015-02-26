@@ -5,7 +5,7 @@
         <key>Protocol</key>
         <string>irods</string>
         <key>Vendor</key>
-        <string>iplantcollaborative</string>
+        <string>iplant</string>
         <key>Description</key>
         <string>iPlant Data Store</string>
         <key>Hostname Configurable</key>
