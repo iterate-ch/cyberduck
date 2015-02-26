@@ -15,7 +15,6 @@ import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
@@ -99,7 +98,7 @@ public class DAVReadFeatureTest extends AbstractTestCase {
         assertNotNull(out);
         IOUtils.write(content, out);
         IOUtils.closeQuietly(out);
-        new HttpUploadFeature(new DAVWriteFeature(session)).upload(
+        new DAVUploadFeature(new DAVWriteFeature(session)).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 new TransferStatus().length(content.length),
                 new DisabledConnectionCallback());
@@ -107,7 +106,6 @@ public class DAVReadFeatureTest extends AbstractTestCase {
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final Path workdir = session.workdir();
         final InputStream in = new DAVReadFeature(session).read(test, status);
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
