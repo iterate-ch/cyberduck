@@ -72,7 +72,7 @@ public class IRODSFindFeature implements Find {
             }
             return found;
         } catch(JargonException e) {
-            throw new IRODSExceptionMappingService().map(e);
+            throw new IRODSExceptionMappingService().map("Finding {0} failed", e, file);
         }
     }
 

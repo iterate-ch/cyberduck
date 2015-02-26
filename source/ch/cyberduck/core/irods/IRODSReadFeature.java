@@ -19,34 +19,42 @@ package ch.cyberduck.core.irods;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.irods.jargon.core.exception.JargonException;
 import org.irods.jargon.core.pub.io.IRODSFile;
 
+import java.io.InputStream;
+
 /**
  * @version $Id$
  */
-public class IRODSDirectoryFeature implements Directory {
+public class IRODSReadFeature implements Read {
 
     private IRODSSession session;
 
-    public IRODSDirectoryFeature(final IRODSSession session) {
+    public IRODSReadFeature(IRODSSession session) {
         this.session = session;
     }
 
     @Override
-    public void mkdir(final Path file) throws BackgroundException {
-        this.mkdir(file, null);
+    public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
+        try {
+            final IRODSFile irodsFile = session.getIrodsFileSystemAO().getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
+            if (irodsFile.exists()) {
+                return session.getIrodsFileSystemAO().getIRODSFileFactory().instanceIRODSFileInputStream(irodsFile);
+            } else {
+                throw new NotfoundException(String.format("%s doesn't exist", file.getAbsolute()));
+            }
+        } catch(JargonException e) {
+            throw new IRODSExceptionMappingService().map("Downloading {0} failed", e, file);
+        }
     }
 
     @Override
-    public void mkdir(final Path file, final String region) throws BackgroundException {
-        try {
-            final IRODSFile irodsFile = session.getIrodsFileSystemAO().getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
-            session.getIrodsFileSystemAO().mkdir(irodsFile, false);
-        } catch(JargonException e) {
-            throw new IRODSExceptionMappingService().map("Cannot create folder {0}", e, file);
-        }
+    public boolean offset(final Path file) throws BackgroundException {
+        return false;
     }
 }

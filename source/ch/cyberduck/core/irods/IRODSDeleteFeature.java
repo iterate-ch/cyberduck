@@ -67,10 +67,10 @@ public class IRODSDeleteFeature implements Delete {
                         session.getIrodsFileSystemAO().directoryDeleteNoForce(irodsFile);
                     }
                 } else {
-                    throw new NotfoundException(String.format("Path %s doesn't exist", file.getAbsolute()));
+                    throw new NotfoundException(String.format("%s doesn't exist", file.getAbsolute()));
                 }
             } catch(JargonException e) {
-                throw new IRODSExceptionMappingService().map(e);
+                throw new IRODSExceptionMappingService().map("Cannot delete {0}", e, file);
             }
             deleted.add(file);
         }

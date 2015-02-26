@@ -2592,6 +2592,7 @@ source/ch/cyberduck/core/irods/IRODSExceptionMappingService.java -text
 source/ch/cyberduck/core/irods/IRODSFindFeature.java -text
 source/ch/cyberduck/core/irods/IRODSListService.java -text
 source/ch/cyberduck/core/irods/IRODSProtocol.java -text
+source/ch/cyberduck/core/irods/IRODSReadFeature.java -text
 source/ch/cyberduck/core/irods/IRODSSSLProtocol.java -text
 source/ch/cyberduck/core/irods/IRODSSession.java -text
 source/ch/cyberduck/core/local/DefaultBrowserLauncher.cs -text
@@ -2954,6 +2955,7 @@ test/ch/cyberduck/core/irods/IRODSDirectoryFeatureTest.java -text
 test/ch/cyberduck/core/irods/IRODSExceptionMappingServiceTest.java -text
 test/ch/cyberduck/core/irods/IRODSFindFeatureTest.java -text
 test/ch/cyberduck/core/irods/IRODSListServiceTest.java -text
+test/ch/cyberduck/core/irods/IRODSReadFeatureTest.java -text
 test/ch/cyberduck/core/irods/IRODSSessionTest.java -text
 test/ch/cyberduck/core/local/SystemLocalTest.cs -text svneol=unset#application/octet-stream
 test/ch/cyberduck/core/s3/S3HttpRequestRetryHandlerTest.java -text
