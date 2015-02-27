@@ -21,16 +21,22 @@ package ch.cyberduck.core.preferences;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 
+import org.apache.log4j.Logger;
+
 /**
  * @version $Id$
  */
 public class UserHomeSupportDirectoryFinder implements SupportDirectoryFinder {
+    private static final Logger log = Logger.getLogger(UserHomeSupportDirectoryFinder.class);
 
     private final Preferences preferences = PreferencesFactory.get();
 
     @Override
     public Local find() {
-        final Local home = LocalFactory.get(preferences.getProperty("local.user.home"));
-        return LocalFactory.get(home, ".duck");
+        final Local folder = LocalFactory.get(LocalFactory.get(preferences.getProperty("local.user.home")), ".duck");
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Use folder %s for application support directory", folder));
+        }
+        return folder;
     }
 }

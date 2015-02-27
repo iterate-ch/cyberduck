@@ -21,15 +21,22 @@ package ch.cyberduck.core.preferences;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 
+import org.apache.log4j.Logger;
+
 /**
  * @version $Id$
  */
 public class TemporarySupportDirectoryFinder implements SupportDirectoryFinder {
+    private static final Logger log = Logger.getLogger(TemporarySupportDirectoryFinder.class);
 
     private final Preferences preferences = PreferencesFactory.get();
 
     @Override
     public Local find() {
-        return LocalFactory.get(preferences.getProperty("tmp.dir"));
+        final Local folder = LocalFactory.get(preferences.getProperty("tmp.dir"));
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Use folder %s for application support directory", folder));
+        }
+        return folder;
     }
 }
