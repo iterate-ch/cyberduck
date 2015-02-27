@@ -267,7 +267,7 @@ public class Terminal {
         }
         if(input.hasOption(TerminalOptionsBuilder.Params.parallel.name())) {
             preferences.setProperty("queue.maxtransfers",
-                    NumberUtils.toInt(input.getOptionValue(TerminalOptionsBuilder.Params.parallel.name()), 1));
+                    NumberUtils.toInt(input.getOptionValue(TerminalOptionsBuilder.Params.parallel.name()), 2));
         }
     }
 
