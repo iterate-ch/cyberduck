@@ -22,6 +22,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 
 import org.irods.jargon.core.exception.JargonException;
+import org.irods.jargon.core.pub.IRODSFileSystemAO;
 import org.irods.jargon.core.pub.io.IRODSFile;
 
 /**
@@ -43,9 +44,11 @@ public class IRODSDirectoryFeature implements Directory {
     @Override
     public void mkdir(final Path file, final String region) throws BackgroundException {
         try {
-            final IRODSFile irodsFile = session.getIrodsFileSystemAO().getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
-            session.getIrodsFileSystemAO().mkdir(irodsFile, false);
-        } catch(JargonException e) {
+            final IRODSFileSystemAO fs = session.filesystem();
+            final IRODSFile f = fs.getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
+            fs.mkdir(f, false);
+        }
+        catch(JargonException e) {
             throw new IRODSExceptionMappingService().map("Cannot create folder {0}", e, file);
         }
     }

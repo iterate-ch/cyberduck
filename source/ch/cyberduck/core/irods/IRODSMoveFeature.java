@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Move;
 
 import org.irods.jargon.core.exception.JargonException;
+import org.irods.jargon.core.pub.IRODSFileSystemAO;
 import org.irods.jargon.core.pub.io.IRODSFile;
 
 /**
@@ -40,14 +41,17 @@ public class IRODSMoveFeature implements Move {
     @Override
     public void move(final Path file, final Path renamed, final boolean exists, final ProgressListener listener) throws BackgroundException {
         try {
-            final IRODSFile irodsSourceFile = session.getIrodsFileSystemAO().getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
-            if (irodsSourceFile.exists()) {
-                final IRODSFile irodsDestinationFile = session.getIrodsFileSystemAO().getIRODSFileFactory().instanceIRODSFile(renamed.getAbsolute());
-                irodsSourceFile.renameTo(irodsDestinationFile);
-            } else {
+            final IRODSFileSystemAO fs = session.filesystem();
+            final IRODSFile s = fs.getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
+            if(s.exists()) {
+                final IRODSFile d = fs.getIRODSFileFactory().instanceIRODSFile(renamed.getAbsolute());
+                s.renameTo(d);
+            }
+            else {
                 throw new NotfoundException(String.format("%s doesn't exist", file.getAbsolute()));
             }
-        } catch(JargonException e) {
+        }
+        catch(JargonException e) {
             throw new IRODSExceptionMappingService().map("Cannot rename {0}", e, file);
         }
     }

@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 
 import org.irods.jargon.core.exception.JargonException;
+import org.irods.jargon.core.pub.IRODSFileSystemAO;
 import org.irods.jargon.core.pub.io.IRODSFile;
 
 /**
@@ -62,8 +63,9 @@ public class IRODSFindFeature implements Find {
             return false;
         }
         try {
-            final IRODSFile irodsFile = session.getIrodsFileSystemAO().getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
-            final boolean found = session.getIrodsFileSystemAO().isFileExists(irodsFile);
+            final IRODSFileSystemAO fs = session.filesystem();
+            final IRODSFile f = fs.getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
+            final boolean found = fs.isFileExists(f);
             if(found) {
                 list.add(file);
             }
@@ -71,8 +73,9 @@ public class IRODSFindFeature implements Find {
                 list.attributes().addHidden(file);
             }
             return found;
-        } catch(JargonException e) {
-            throw new IRODSExceptionMappingService().map("Finding {0} failed", e, file);
+        }
+        catch(JargonException e) {
+            throw new IRODSExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
     }
 

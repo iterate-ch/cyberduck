@@ -25,6 +25,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.irods.jargon.core.exception.JargonException;
 import org.irods.jargon.core.packinstr.DataObjInp;
+import org.irods.jargon.core.pub.IRODSFileSystemAO;
 import org.irods.jargon.core.pub.io.IRODSFile;
 
 import java.io.OutputStream;
@@ -43,14 +44,10 @@ public class IRODSWriteFeature implements Write {
     @Override
     public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            return session.getIrodsFileSystemAO().getIRODSFileFactory().instanceIRODSFileOutputStream(file.getAbsolute());
-            // TODO research further
-            /*if (status.isAppend()) {
-                return session.getIrodsFileSystemAO().getIRODSFileFactory().instanceIRODSFileOutputStream(file.getAbsolute());
-            } else {
-                return session.getIrodsFileSystemAO().getIRODSFileFactory().instanceIRODSFileOutputStream(file.getAbsolute(), DataObjInp.OpenFlags.WRITE_FAIL_IF_EXISTS);
-            }*/
-        } catch(JargonException e) {
+            return session.filesystem().getIRODSFileFactory().instanceIRODSFileOutputStream(
+                    file.getAbsolute(), status.isAppend() ? DataObjInp.OpenFlags.WRITE : DataObjInp.OpenFlags.READ_WRITE);
+        }
+        catch(JargonException e) {
             throw new IRODSExceptionMappingService().map("Uploading {0} failed", e, file);
         }
     }
@@ -58,15 +55,16 @@ public class IRODSWriteFeature implements Write {
     @Override
     public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
         try {
-            IRODSFile irodsFile = session.getIrodsFileSystemAO().getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
-            if (irodsFile.exists()) {
+            final IRODSFileSystemAO fs = session.filesystem();
+            final IRODSFile f = fs.getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
+            if(f.exists()) {
                 return new Append(length);
-                // TODO research further
-                // TODO what is return Write.override; ?
-            } else {
+            }
+            else {
                 return Write.notfound;
             }
-        } catch(JargonException e) {
+        }
+        catch(JargonException e) {
             throw new IRODSExceptionMappingService().map(e);
         }
     }
