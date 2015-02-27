@@ -21,12 +21,20 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 
+import org.apache.log4j.Logger;
+
 /**
  * @version $Id$
  */
 public class DefaultWorkingDirectoryFinder implements WorkingDirectoryFinder {
+    private static final Logger log = Logger.getLogger(DefaultWorkingDirectoryFinder.class);
+
     @Override
     public Local find() {
-        return LocalFactory.get(System.getProperty("user.dir"));
+        final Local folder = LocalFactory.get(System.getProperty("user.dir"));
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Determined folder %s as working directory", folder));
+        }
+        return folder;
     }
 }

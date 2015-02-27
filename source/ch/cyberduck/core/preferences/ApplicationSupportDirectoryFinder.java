@@ -18,11 +18,11 @@ package ch.cyberduck.core.preferences;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.binding.foundation.FoundationKitFunctions;
 import ch.cyberduck.binding.foundation.FoundationKitFunctionsLibrary;
 import ch.cyberduck.binding.foundation.NSArray;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
 
 import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSUInteger;
@@ -51,7 +51,11 @@ public class ApplicationSupportDirectoryFinder implements SupportDirectoryFinder
             if(log.isInfoEnabled()) {
                 log.info(String.format("Found application support directory in %s", directory));
             }
-            return LocalFactory.get(directory, application);
+            final Local folder = LocalFactory.get(directory, application);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Use folder %s for application support directory", folder));
+            }
+            return folder;
         }
     }
 }

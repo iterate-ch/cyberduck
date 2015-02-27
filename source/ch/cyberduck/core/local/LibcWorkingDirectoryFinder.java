@@ -20,6 +20,8 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 
+import org.apache.log4j.Logger;
+
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
@@ -28,12 +30,17 @@ import com.sun.jna.Pointer;
  * @version $Id$
  */
 public class LibcWorkingDirectoryFinder implements WorkingDirectoryFinder {
+    private static final Logger log = Logger.getLogger(LibcWorkingDirectoryFinder.class);
 
     private static final CLibrary library = (CLibrary) Native.loadLibrary("c", CLibrary.class);
 
     @Override
     public Local find() {
-        return LocalFactory.get(library.getcwd(null, 0L));
+        final Local folder = LocalFactory.get(library.getcwd(null, 0L));
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Determined folder %s as working directory", folder));
+        }
+        return folder;
     }
 
     public interface CLibrary extends Library {
