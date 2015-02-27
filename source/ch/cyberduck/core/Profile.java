@@ -283,6 +283,22 @@ public final class Profile implements Protocol, Serializable {
     }
 
     @Override
+    public boolean isUsernameConfigurable() {
+        if(StringUtils.isBlank(this.value("Username Configurable"))) {
+            return parent.isUsernameConfigurable();
+        }
+        return this.bool("Username Configurable");
+    }
+
+    @Override
+    public boolean isPasswordConfigurable() {
+        if(StringUtils.isBlank(this.value("Password Configurable"))) {
+            return parent.isPasswordConfigurable();
+        }
+        return this.bool("Password Configurable");
+    }
+
+    @Override
     public boolean isHostnameConfigurable() {
         if(StringUtils.isBlank(this.value("Hostname Configurable"))) {
             return parent.isHostnameConfigurable();

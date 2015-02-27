@@ -107,6 +107,16 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
+    public boolean isUsernameConfigurable() {
+        return true;
+    }
+
+    @Override
+    public boolean isPasswordConfigurable() {
+        return true;
+    }
+
+    @Override
     public boolean isUTCTimezone() {
         return true;
     }

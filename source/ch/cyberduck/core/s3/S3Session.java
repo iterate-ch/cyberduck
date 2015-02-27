@@ -30,6 +30,7 @@ import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.PreferencesUseragentProvider;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
@@ -38,7 +39,13 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.WebsiteCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.ConnectionRefusedException;
+import ch.cyberduck.core.exception.ConnectionTimeoutException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.ListCanceledException;
+import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.exception.ResolveFailedException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.iam.AmazonIdentityConfiguration;
@@ -345,8 +352,10 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         }
         configuration.setProperty("s3service.enable-storage-classes", String.valueOf(true));
         if(StringUtils.isNotBlank(host.getProtocol().getContext())) {
-            configuration.setProperty("s3service.s3-endpoint-virtual-path",
-                    PathNormalizer.normalize(host.getProtocol().getContext()));
+            if(!ProtocolFactory.isURL(host.getProtocol().getContext())) {
+                configuration.setProperty("s3service.s3-endpoint-virtual-path",
+                        PathNormalizer.normalize(host.getProtocol().getContext()));
+            }
         }
         configuration.setProperty("s3service.https-only", String.valueOf(host.getProtocol().isSecure()));
         if(host.getProtocol().isSecure()) {
@@ -391,9 +400,19 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     public void login(final PasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
                       final Cache<Path> cache)
             throws BackgroundException {
-        client.setProviderCredentials(host.getCredentials().isAnonymousLogin() ? null :
-                new AWSCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
-
+        if(ProtocolFactory.isURL(host.getProtocol().getContext())) {
+            try {
+                client.setProviderCredentials(new S3SessionCredentialsRetriever(this, host.getProtocol().getContext()).get());
+            }
+            catch(ConnectionTimeoutException | ConnectionRefusedException | ResolveFailedException | NotfoundException | InteroperabilityException e) {
+                log.warn(String.format("Failure to retrieve session credentials from . %s", e.getMessage()));
+                throw new LoginFailureException(e.getDetail(false), e);
+            }
+        }
+        else {
+            client.setProviderCredentials(host.getCredentials().isAnonymousLogin() ? null :
+                    new AWSCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
+        }
         final Path home = new S3HomeFinderService(this).find();
         cache.put(home, this.list(home, new DisabledListProgressListener() {
             @Override
