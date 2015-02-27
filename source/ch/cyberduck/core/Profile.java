@@ -279,7 +279,10 @@ public final class Profile implements Protocol, Serializable {
 
     @Override
     public boolean isAnonymousConfigurable() {
-        return parent.isAnonymousConfigurable();
+        if(StringUtils.isBlank(this.value("Anonymous Configurable"))) {
+            return parent.isAnonymousConfigurable();
+        }
+        return this.bool("Anonymous Configurable");
     }
 
     @Override
