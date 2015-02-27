@@ -34,10 +34,7 @@ import ch.cyberduck.core.ProfileReaderFactory;
 
 import org.junit.Test;
 
-import java.util.EnumSet;
-
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * @version $Id$
@@ -64,6 +61,12 @@ public class IRODSListServiceTest extends AbstractTestCase {
             assertEquals(session.workdir(), p.getParent());
             assertNotNull(p.attributes().getModificationDate());
             assertNotNull(p.attributes().getSize());
+            if(p.isFile()) {
+                assertNotNull(p.attributes().getChecksum());
+            }
+            else {
+                assertNull(p.attributes().getChecksum());
+            }
         }
         session.close();
     }
