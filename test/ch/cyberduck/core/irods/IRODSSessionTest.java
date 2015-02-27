@@ -23,7 +23,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id: $
+ * @version $Id$
  */
 public class IRODSSessionTest extends AbstractTestCase {
 
