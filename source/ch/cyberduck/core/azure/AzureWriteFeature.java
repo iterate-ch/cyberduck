@@ -19,15 +19,12 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.shared.DefaultFindFeature;
+import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
@@ -47,14 +44,12 @@ import com.microsoft.azure.storage.blob.CloudBlockBlob;
 /**
  * @version $Id$
  */
-public class AzureWriteFeature implements Write {
+public class AzureWriteFeature extends AppendWriteFeature {
     private static final Logger log = Logger.getLogger(AzureWriteFeature.class);
 
     private AzureSession session;
 
     private OperationContext context;
-
-    private Find finder;
 
     private PathContainerService containerService
             = new AzurePathContainerService();
@@ -66,22 +61,14 @@ public class AzureWriteFeature implements Write {
             = preferences.getMap("azure.metadata.default");
 
     public AzureWriteFeature(final AzureSession session, final OperationContext context) {
+        super(session);
         this.session = session;
         this.context = context;
-        this.finder = new DefaultFindFeature(session);
     }
 
     public AzureWriteFeature withMetadata(final Map<String, String> metadata) {
         this.metadata = metadata;
         return this;
-    }
-
-    @Override
-    public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
-        if(finder.withCache(cache).find(file)) {
-            return Write.override;
-        }
-        return Write.notfound;
     }
 
     @Override
