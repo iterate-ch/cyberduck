@@ -19,7 +19,6 @@ package ch.cyberduck.core.preferences;
  */
 
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.local.DefaultWorkingDirectoryFinder;
 
 import org.apache.log4j.Logger;
@@ -32,7 +31,7 @@ public class StaticApplicationResourcesFinder implements ApplicationResourcesFin
 
     @Override
     public Local find() {
-        final Local folder = LocalFactory.get(new DefaultWorkingDirectoryFinder().find(), "app");
+        final Local folder = new DefaultWorkingDirectoryFinder().find();
         if(log.isDebugEnabled()) {
             log.debug(String.format("Use folder %s for application resources directory", folder));
         }
