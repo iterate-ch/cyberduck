@@ -2593,7 +2593,6 @@ source/ch/cyberduck/core/irods/IRODSExceptionMappingService.java -text
 source/ch/cyberduck/core/irods/IRODSFindFeature.java -text
 source/ch/cyberduck/core/irods/IRODSMoveFeature.java -text
 source/ch/cyberduck/core/irods/IRODSProtocol.java -text
-source/ch/cyberduck/core/irods/IRODSReadFeature.java -text
 source/ch/cyberduck/core/irods/IRODSSession.java -text
 source/ch/cyberduck/core/irods/IRODSWriteFeature.java -text
 source/ch/cyberduck/core/local/DefaultBrowserLauncher.cs -text
