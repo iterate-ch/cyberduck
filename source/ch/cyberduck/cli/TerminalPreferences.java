@@ -140,9 +140,10 @@ public class TerminalPreferences extends MemoryPreferences {
                     log.warn("Failure determining user home with `echo ~`");
                 }
                 defaults.put("ssh.authentication.agent.enable", String.valueOf(false));
-                // Lowercase folder names
+                // Lowercase folder names to use when looking for profiles and bookmarks in user support directory
                 defaults.put("bookmarks.folder.name", "bookmarks");
                 defaults.put("profiles.folder.name", "profiles");
+                // Default bundled profiles location
                 final Local resources = ApplicationResourcesFinderFactory.get().find();
                 defaults.put("application.bookmarks.path", String.format("%s/bookmarks", resources.getAbsolute()));
                 defaults.put("application.profiles.path", String.format("%s/profiles", resources.getAbsolute()));
