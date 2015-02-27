@@ -52,4 +52,9 @@ public abstract class AppendWriteFeature implements Write {
         }
         return Write.notfound;
     }
+
+    @Override
+    public boolean pooled() {
+        return false;
+    }
 }

@@ -51,6 +51,11 @@ public interface Write {
      */
     boolean temporary();
 
+    /**
+     * @return True if the write has a pool with concurrent connections implemented. Applies to multipart uploads.
+     */
+    boolean pooled();
+
     public static final class Append {
         /**
          * Append to file
