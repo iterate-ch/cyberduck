@@ -24,8 +24,14 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.io.Checksum;
 
+import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.apache.commons.lang3.StringUtils;
 import org.irods.jargon.core.exception.JargonException;
+import org.irods.jargon.core.pub.IRODSFileSystemAO;
+import org.irods.jargon.core.pub.domain.ObjStat;
+import org.irods.jargon.core.pub.io.IRODSFile;
 
 import java.io.File;
 import java.util.EnumSet;
@@ -45,24 +51,30 @@ public class IRODSListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> children = new AttributedList<Path>();
-
-            File[] files = session.getIrodsFileSystemAO().getIRODSFileFactory().instanceIRODSFile(directory.getAbsolute()).listFiles();
-            for (File file : files) {
-                final String normalizedPath = PathNormalizer.normalize(file.getAbsolutePath(), true);
-
+            final IRODSFileSystemAO fs = session.filesystem();
+            final IRODSFile f = fs.getIRODSFileFactory().instanceIRODSFile(directory.getAbsolute());
+            for(File file : fs.getListInDirWithFileFilter(f, TrueFileFilter.TRUE)) {
+                final String normalized = PathNormalizer.normalize(file.getAbsolutePath(), true);
+                if(StringUtils.equals(normalized, directory.getAbsolute())) {
+                    continue;
+                }
                 final PathAttributes attributes = new PathAttributes();
-                attributes.setModificationDate(file.lastModified());
-                attributes.setSize(file.length());
-
-                children.add(new Path(directory, PathNormalizer.name(normalizedPath),
+                final ObjStat stats = fs.getObjStat(file.getAbsolutePath());
+                attributes.setModificationDate(stats.getModifiedAt().getTime());
+                attributes.setCreationDate(stats.getCreatedAt().getTime());
+                attributes.setSize(stats.getObjSize());
+                attributes.setChecksum(Checksum.parse(stats.getChecksum()));
+                attributes.setOwner(stats.getOwnerName());
+                attributes.setGroup(stats.getOwnerZone());
+                children.add(new Path(directory, PathNormalizer.name(normalized),
                         file.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file),
                         attributes));
                 listener.chunk(directory, children);
             }
             return children;
-        } catch(JargonException e) {
+        }
+        catch(JargonException e) {
             throw new IRODSExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
     }
-
 }
