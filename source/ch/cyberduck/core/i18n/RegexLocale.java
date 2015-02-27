@@ -65,7 +65,7 @@ public class RegexLocale implements Locale {
                 this.load(table);
             }
             catch(IOException e) {
-                log.warn(String.format("Failure loading properties %s", table));
+                log.warn(String.format("Failure loading properties from %s.strings. %s", table, e.getMessage()));
             }
         }
         if(cache.containsKey(lookup)) {
