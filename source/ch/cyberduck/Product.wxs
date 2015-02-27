@@ -91,7 +91,7 @@
       <Component Id="ikvm.naming" Guid="F99DD3CA-1E4E-4F17-9F94-52A3E93BDAD5">
         <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Naming.dll" KeyPath="yes" Checksum="yes" />
       </Component>
-      <Component Id="ikvm.naming" Guid="898A68A4-7883-4EBF-94A4-BE3D127D6D38">
+      <Component Id="ikvm.management" Guid="898A68A4-7883-4EBF-94A4-BE3D127D6D38">
         <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Management.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="ikvm.native" Guid="975906E0-033F-4B86-84B7-5B969278EC55">
