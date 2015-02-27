@@ -22,6 +22,7 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
@@ -33,6 +34,8 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.SSLSession;
@@ -40,13 +43,17 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.irods.jargon.core.connection.IRODSAccount;
+import org.irods.jargon.core.connection.SettableJargonProperties;
 import org.irods.jargon.core.connection.auth.AuthResponse;
 import org.irods.jargon.core.exception.JargonException;
+import org.irods.jargon.core.pub.IRODSAccessObjectFactory;
 import org.irods.jargon.core.pub.IRODSFileSystem;
 import org.irods.jargon.core.pub.IRODSFileSystemAO;
 
+import java.text.MessageFormat;
 import java.util.EnumSet;
 
 /**
@@ -55,7 +62,10 @@ import java.util.EnumSet;
 public class IRODSSession extends SSLSession<IRODSFileSystem> {
     private static final Logger log = Logger.getLogger(IRODSSession.class);
 
-    private IRODSFileSystemAO irodsFileSystemAO;
+    private IRODSFileSystemAO filesystem;
+
+    private Preferences preferences
+            = PreferencesFactory.get();
 
     public IRODSSession(final Host h) {
         super(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
@@ -68,27 +78,45 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
     @Override
     protected IRODSFileSystem connect(final HostKeyCallback key) throws BackgroundException {
         try {
-            return IRODSFileSystem.instance();
-        } catch(JargonException e) {
+            return this.configure(IRODSFileSystem.instance());
+        }
+        catch(JargonException e) {
             throw new IRODSExceptionMappingService().map(e);
         }
     }
 
-    @Override
-    public void login(final PasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel, final Cache<Path> cache) throws BackgroundException {
-        try {
-            final IRODSAccount irodsAccount = IRODSAccount.instance(host.getHostname(), host.getPort(),
-                    host.getCredentials().getUsername(), host.getCredentials().getPassword(),
-                    workdir().getAbsolute(), host.getRegion(), "");
+    protected IRODSFileSystem configure(final IRODSFileSystem client) {
+        final SettableJargonProperties properties = new SettableJargonProperties(client.getJargonProperties());
+        properties.setComputeAndVerifyChecksumAfterTransfer(preferences.getBoolean("queue.download.checksum"));
+        properties.setEncoding(this.getEncoding());
+        properties.setIrodsSocketTimeout(this.timeout());
+        properties.setIrodsParallelSocketTimeout(this.timeout());
+        properties.setMaxParallelThreads(preferences.getInteger("queue.maxtransfers"));
+        properties.setTransferThreadPoolMaxSimultaneousTransfers(preferences.getInteger("queue.maxtransfers"));
+        properties.setUseParallelTransfer(host.getTransfer().equals(Host.TransferType.concurrent));
+        client.getIrodsSession().setJargonProperties(properties);
+        return client;
+    }
 
-            final AuthResponse authResponse = client.getIRODSAccessObjectFactory().authenticateIRODSAccount(irodsAccount);
-            if (authResponse.isSuccessful()) {
-                irodsFileSystemAO = client.getIRODSAccessObjectFactory().getIRODSFileSystemAO(authResponse.getAuthenticatedIRODSAccount());
-            } else {
-                // TODO research auth further
-                throw new LoginFailureException(String.format("Login failed for user %s", host.getCredentials().getUsername()));
+    @Override
+    public void login(final PasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
+                      final Cache<Path> cache) throws BackgroundException {
+        try {
+            final IRODSAccount account = IRODSAccount.instance(host.getHostname(), host.getPort(),
+                    host.getCredentials().getUsername(), host.getCredentials().getPassword(),
+                    this.workdir().getAbsolute(), host.getRegion(), StringUtils.EMPTY);
+
+            final IRODSAccessObjectFactory factory = client.getIRODSAccessObjectFactory();
+            final AuthResponse auth = factory.authenticateIRODSAccount(account);
+            if(auth.isSuccessful()) {
+                filesystem = factory.getIRODSFileSystemAO(auth.getAuthenticatedIRODSAccount());
             }
-        } catch(JargonException e) {
+            else {
+                throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString(
+                        "Login {0} with username and password", "Credentials"), host.getHostname()));
+            }
+        }
+        catch(JargonException e) {
             throw new IRODSExceptionMappingService().map(e);
         }
     }
@@ -97,7 +125,7 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
     protected void logout() throws BackgroundException {
         try {
             client.close();
-            irodsFileSystemAO = null;
+            filesystem = null;
             client = null;
         }
         catch(JargonException e) {
@@ -133,16 +161,16 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
         return super.getFeature(type);
     }
 
-    @Override
-    public Path workdir() {
-        final StringBuilder sb = new StringBuilder()
-                .append(Path.DELIMITER).append(host.getRegion())
-                .append(Path.DELIMITER).append("home")
-                .append(Path.DELIMITER).append(host.getCredentials().getUsername());
-        return new Path(sb.toString(), EnumSet.of(Path.Type.directory));
+    public final IRODSFileSystemAO filesystem() {
+        return filesystem;
     }
 
-    public final IRODSFileSystemAO getIrodsFileSystemAO() {
-        return irodsFileSystemAO;
+    @Override
+    public Path workdir() {
+        return new Path(new StringBuilder()
+                .append(Path.DELIMITER).append(host.getRegion())
+                .append(Path.DELIMITER).append("home")
+                .append(Path.DELIMITER).append(host.getCredentials().getUsername())
+                .toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
     }
 }
