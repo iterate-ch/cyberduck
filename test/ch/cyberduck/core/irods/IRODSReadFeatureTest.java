@@ -20,6 +20,7 @@ package ch.cyberduck.core.irods;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -34,7 +35,12 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.shared.DefaultTouchFeature;
+import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
@@ -42,9 +48,11 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
@@ -106,5 +114,45 @@ public class IRODSReadFeatureTest extends AbstractTestCase {
         assertFalse(session.getFeature(Find.class).find(test));
 
         new IRODSReadFeature(session).read(test, new TransferStatus());
+    }
+
+
+    @Test
+    public void testReadRange() throws Exception {
+        final Profile profile = ProfileReaderFactory.get().read(
+                new Local("profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
+                properties.getProperty("irods.key"), properties.getProperty("irods.secret")
+        ));
+        final IRODSSession session = new IRODSSession(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        new DefaultTouchFeature(session).touch(test);
+
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final byte[] content = RandomStringUtils.random(1000).getBytes();
+        final OutputStream out = local.getOutputStream(false);
+        assertNotNull(out);
+        IOUtils.write(content, out);
+        IOUtils.closeQuietly(out);
+        new DefaultUploadFeature(session).upload(
+                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                new TransferStatus().length(content.length),
+                new DisabledConnectionCallback());
+        final TransferStatus status = new TransferStatus();
+        status.setLength(content.length);
+        status.setAppend(true);
+        status.setOffset(100L);
+        final InputStream in = new IRODSReadFeature(session).read(test, status);
+        assertNotNull(in);
+        final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
+        new StreamCopier(status, status).transfer(in, buffer);
+        final byte[] reference = new byte[content.length - 100];
+        System.arraycopy(content, 100, reference, 0, content.length - 100);
+        assertArrayEquals(reference, buffer.toByteArray());
+        in.close();
+        new IRODSDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        session.close();
     }
 }
