@@ -147,6 +147,8 @@ public class TerminalPreferences extends MemoryPreferences {
                 defaults.put("application.bookmarks.path", String.format("%s/bookmarks", resources.getAbsolute()));
                 defaults.put("application.profiles.path", String.format("%s/profiles", resources.getAbsolute()));
                 defaults.put("connection.ssl.securerandom", "NativePRNGNonBlocking");
+
+                break;
             }
         }
         defaults.put("local.normalize.prefix", String.valueOf(true));
