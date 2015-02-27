@@ -373,6 +373,11 @@ public final class Profile implements Protocol, Serializable {
     }
 
     @Override
+    public int compareTo(final Protocol o) {
+        return o.compareTo(this);
+    }
+
+    @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Profile{");
         sb.append("parent=").append(parent);

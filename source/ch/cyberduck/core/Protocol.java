@@ -28,7 +28,7 @@ import java.util.Set;
 /**
  * @version $Id$
  */
-public interface Protocol {
+public interface Protocol extends Comparable<Protocol> {
 
     boolean validate(Credentials credentials, LoginOptions options);
 

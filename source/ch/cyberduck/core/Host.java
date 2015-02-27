@@ -45,7 +45,7 @@ public class Host implements Serializable, Comparable<Host> {
      *
      * @see Protocol#getDefaultPort()
      */
-    private int port = -1;
+    private Integer port = -1;
     /**
      * The fully qualified hostname
      */
@@ -650,18 +650,30 @@ public class Host implements Serializable, Comparable<Host> {
     }
 
     @Override
-    public int compareTo(final Host other) {
-        if(port != other.port) {
+    public int compareTo(final Host o) {
+        if(protocol.compareTo(o.protocol) < 0) {
             return -1;
         }
-        if(credentials != null ? !credentials.equals(other.credentials) : other.credentials != null) {
+        else if(protocol.compareTo(o.protocol) > 0) {
+            return 1;
+        }
+        if(port.compareTo(o.port) < 0) {
             return -1;
         }
-        if(hostname != null ? !hostname.equals(other.hostname) : other.hostname != null) {
+        else if(port.compareTo(o.port) > 0) {
+            return 1;
+        }
+        if(hostname.compareTo(o.hostname) < 0) {
             return -1;
         }
-        if(protocol != null ? !protocol.equals(other.protocol) : other.protocol != null) {
+        else if(hostname.compareTo(o.hostname) > 0) {
+            return 1;
+        }
+        if(credentials.compareTo(o.credentials) < 0) {
             return -1;
+        }
+        else if(credentials.compareTo(o.credentials) > 0) {
+            return 1;
         }
         return 0;
     }
