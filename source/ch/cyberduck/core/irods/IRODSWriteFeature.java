@@ -45,7 +45,7 @@ public class IRODSWriteFeature implements Write {
     public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             return session.filesystem().getIRODSFileFactory().instanceIRODSFileOutputStream(
-                    file.getAbsolute(), status.isAppend() ? DataObjInp.OpenFlags.WRITE : DataObjInp.OpenFlags.READ_WRITE);
+                    file.getAbsolute(), status.isAppend() ? DataObjInp.OpenFlags.READ_WRITE : DataObjInp.OpenFlags.WRITE);
         }
         catch(JargonException e) {
             throw new IRODSExceptionMappingService().map("Uploading {0} failed", e, file);
@@ -58,7 +58,7 @@ public class IRODSWriteFeature implements Write {
             final IRODSFileSystemAO fs = session.filesystem();
             final IRODSFile f = fs.getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
             if(f.exists()) {
-                return new Append(length);
+                return new Append(f.length());
             }
             else {
                 return Write.notfound;
