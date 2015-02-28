@@ -44,8 +44,10 @@ import java.util.Comparator;
  */
 public class GotoController extends AlertController {
 
+    @Outlet
     private NSComboBox folderCombobox;
 
+    @Delegate
     private ProxyController folderComboboxModel;
 
     private Cache<Path> cache;

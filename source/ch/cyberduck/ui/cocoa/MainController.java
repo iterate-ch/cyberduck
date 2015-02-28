@@ -283,6 +283,8 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Outlet
     private NSMenu editMenu;
+
+    @Delegate
     private EditMenuDelegate editMenuDelegate;
 
     public void setEditMenu(NSMenu editMenu) {
@@ -316,6 +318,8 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Outlet
     private NSMenu urlMenu;
+
+    @Delegate
     private URLMenuDelegate urlMenuDelegate;
 
     public void setUrlMenu(NSMenu urlMenu) {
@@ -356,6 +360,8 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Outlet
     private NSMenu openUrlMenu;
+
+    @Delegate
     private URLMenuDelegate openUrlMenuDelegate;
 
     public void setOpenUrlMenu(NSMenu openUrlMenu) {
@@ -396,6 +402,8 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Outlet
     private NSMenu archiveMenu;
+
+    @Delegate
     private ArchiveMenuDelegate archiveMenuDelegate;
 
     public void setArchiveMenu(NSMenu archiveMenu) {
@@ -411,6 +419,8 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Outlet
     private NSMenu bookmarkMenu;
+
+    @Delegate
     private BookmarkMenuDelegate bookmarkMenuDelegate;
 
     public void setBookmarkMenu(NSMenu bookmarkMenu) {
@@ -426,6 +436,8 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Outlet
     private NSMenu historyMenu;
+
+    @Delegate
     private HistoryMenuDelegate historyMenuDelegate;
 
     public void setHistoryMenu(NSMenu historyMenu) {
@@ -441,6 +453,8 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Outlet
     private NSMenu rendezvousMenu;
+
+    @Delegate
     private RendezvousMenuDelegate rendezvousMenuDelegate;
 
     public void setRendezvousMenu(NSMenu rendezvousMenu) {
@@ -1190,6 +1204,8 @@ public class MainController extends BundleController implements NSApplication.De
      * Display donation reminder dialog
      */
     private boolean displayDonationPrompt = true;
+
+    @Outlet
     private WindowController donationController;
 
 

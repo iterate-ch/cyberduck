@@ -321,6 +321,7 @@ public final class TransferController extends WindowController implements NSTool
     @Outlet
     private NSPopUpButton bandwidthPopup;
 
+    @Delegate
     private AbstractMenuDelegate bandwidthPopupDelegate;
 
     public void setBandwidthPopup(NSPopUpButton bandwidthPopup) {
@@ -430,7 +431,11 @@ public final class TransferController extends WindowController implements NSTool
 
     @Outlet
     private NSTableView transferTable;
+
+    @Delegate
     private TransferTableDataSource transferTableModel;
+
+    @Delegate
     private AbstractTableDelegate<Transfer> transferTableDelegate;
 
     public void setQueueTable(NSTableView view) {

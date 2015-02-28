@@ -741,7 +741,11 @@ public class InfoController extends ToolbarWindowController {
 
     @Outlet
     private NSTableView aclTable;
+
+    @Delegate
     private ListDataSource aclTableModel;
+
+    @Delegate
     private AbstractTableDelegate<Acl.UserAndRole> aclTableDelegate;
 
     private enum AclColumns {
@@ -961,7 +965,11 @@ public class InfoController extends ToolbarWindowController {
 
     @Outlet
     private NSTableView metadataTable;
+
+    @Delegate
     private ListDataSource metadataTableModel;
+
+    @Delegate
     private AbstractTableDelegate<String> metadataTableDelegate;
 
     private enum MetadataColumns {

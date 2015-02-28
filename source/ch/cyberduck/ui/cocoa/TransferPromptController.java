@@ -80,8 +80,10 @@ public abstract class TransferPromptController extends SheetController
     @Outlet
     private NSOutlineView browserView;
 
+    @Delegate
     protected TransferPromptModel browserModel;
 
+    @Delegate
     protected AbstractPathTableDelegate browserViewDelegate;
 
     protected Transfer transfer;

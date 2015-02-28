@@ -130,7 +130,11 @@ public final class ActivityController extends WindowController {
 
     @Outlet
     private NSTableView table;
+
+    @Delegate
     private ListDataSource model;
+
+    @Delegate
     private AbstractTableDelegate<TaskController> delegate;
 
     public void setTable(NSTableView table) {
