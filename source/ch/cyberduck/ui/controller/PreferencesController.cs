@@ -18,22 +18,22 @@
 
 using System;
 using System.Collections.Generic;
-using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Winforms;
-using Ch.Cyberduck.Ui.Winforms.Controls;
-using StructureMap;
 using ch.cyberduck.core;
 using ch.cyberduck.core.editor;
 using ch.cyberduck.core.features;
 using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.io;
 using ch.cyberduck.core.local;
-using ch.cyberduck.core.transfer;
 using ch.cyberduck.core.preferences;
+using ch.cyberduck.core.transfer;
+using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Ui.Winforms;
+using Ch.Cyberduck.Ui.Winforms.Controls;
 using java.util;
 using java.util.regex;
 using org.apache.log4j;
 using org.jets3t.service.model;
+using StructureMap;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -47,9 +47,7 @@ namespace Ch.Cyberduck.Ui.Controller
             new KeyValueIconTriple<Host, string>(null, LocaleFactory.localizedString("None"), null);
 
         private static readonly String NullString = "null";
-
         private static PreferencesController _instance;
-
         private bool _downloadRegexInvalid;
         private bool _uploadRegexInvalid;
 
@@ -191,31 +189,31 @@ namespace Ch.Cyberduck.Ui.Controller
         public void collectionItemAdded(object obj)
         {
             Invoke(delegate
-                {
-                    Host selected = View.DefaultBookmark;
-                    PopulateBookmarks();
-                    SelectDefaultBookmark(selected);
-                });
+            {
+                Host selected = View.DefaultBookmark;
+                PopulateBookmarks();
+                SelectDefaultBookmark(selected);
+            });
         }
 
         public void collectionItemRemoved(object obj)
         {
             Invoke(delegate
-                {
-                    Host selected = View.DefaultBookmark;
-                    PopulateBookmarks();
-                    SelectDefaultBookmark(selected);
-                });
+            {
+                Host selected = View.DefaultBookmark;
+                PopulateBookmarks();
+                SelectDefaultBookmark(selected);
+            });
         }
 
         public void collectionItemChanged(object obj)
         {
             Invoke(delegate
-                {
-                    Host selected = View.DefaultBookmark;
-                    PopulateBookmarks();
-                    SelectDefaultBookmark(selected);
-                });
+            {
+                Host selected = View.DefaultBookmark;
+                PopulateBookmarks();
+                SelectDefaultBookmark(selected);
+            });
         }
 
         private void View_BookmarkSizeChangedEvent()
@@ -230,8 +228,8 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_DefaultEncryptionChangedEvent()
         {
             PreferencesFactory.get()
-                       .setProperty("s3.encryption.algorithm",
-                                    NullString.Equals(View.DefaultEncryption) ? null : View.DefaultEncryption);
+                .setProperty("s3.encryption.algorithm",
+                    NullString.Equals(View.DefaultEncryption) ? null : View.DefaultEncryption);
         }
 
         private void View_AlwaysUseDefaultEditorChangedEvent()
@@ -262,8 +260,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void LaunchIEOptions(int activeRegister)
         {
             ApplicationLauncherFactory.get()
-                                      .open(new Application("rundll32.exe"),
-                                            "shell32.dll,Control_RunDLL inetcpl.cpl,," + activeRegister);
+                .open(new Application("rundll32.exe"), "shell32.dll,Control_RunDLL inetcpl.cpl,," + activeRegister);
         }
 
         private void View_UpdateFeedChangedEvent()
@@ -656,8 +653,8 @@ namespace Ch.Cyberduck.Ui.Controller
             else
             {
                 PreferencesFactory.get()
-                           .setProperty("queue.upload.reload.action",
-                                        PreferencesFactory.get().getProperty("queue.upload.action"));
+                    .setProperty("queue.upload.reload.action",
+                        PreferencesFactory.get().getProperty("queue.upload.action"));
             }
         }
 
@@ -665,13 +662,14 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (View.DuplicateDownloadOverwrite)
             {
-                PreferencesFactory.get().setProperty("queue.download.reload.action", TransferAction.overwrite.toString());
+                PreferencesFactory.get()
+                    .setProperty("queue.download.reload.action", TransferAction.overwrite.toString());
             }
             else
             {
                 PreferencesFactory.get()
-                           .setProperty("queue.download.reload.action",
-                                        PreferencesFactory.get().getProperty("queue.download.action"));
+                    .setProperty("queue.download.reload.action",
+                        PreferencesFactory.get().getProperty("queue.download.action"));
             }
         }
 
@@ -713,7 +711,6 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-
         private void View_DuplicateDownloadActionChangedEvent()
         {
             duplicateComboboxClicked(View.DuplicateDownloadAction, "queue.download.action");
@@ -747,7 +744,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_TransferModeChangedEvent()
         {
-            PreferencesFactory.get().setProperty("queue.transfer.type", View.TransferMode);
+            PreferencesFactory.get().setProperty("queue.transfer.type", View.TransferMode.name());
         }
 
         private void View_DefaultEncodingChangedEvent()
@@ -909,7 +906,7 @@ namespace Ch.Cyberduck.Ui.Controller
             #region Transfers - General
 
             PopulateTransferModes();
-            View.TransferMode = PreferencesFactory.get().getProperty("queue.transfer.type");
+            View.TransferMode = Host.TransferType.valueOf(PreferencesFactory.get().getProperty("queue.transfer.type"));
             View.TransfersToFront = PreferencesFactory.get().getBoolean("queue.window.open.transfer.start");
             View.TransfersToBack = PreferencesFactory.get().getBoolean("queue.window.open.transfer.stop");
             View.RemoveFromTransfers = PreferencesFactory.get().getBoolean("queue.removeItemWhenComplete");
@@ -920,14 +917,14 @@ namespace Ch.Cyberduck.Ui.Controller
             View.DuplicateUploadAction = GetDuplicateAction("queue.upload.action");
             View.DuplicateDownloadOverwrite =
                 PreferencesFactory.get()
-                           .getProperty("queue.download.reload.action")
-                           .Equals(TransferAction.overwrite.toString())
+                    .getProperty("queue.download.reload.action")
+                    .Equals(TransferAction.overwrite.toString())
                     ? true
                     : false;
             View.DuplicateUploadOverwrite =
                 PreferencesFactory.get()
-                           .getProperty("queue.upload.reload.action")
-                           .Equals(TransferAction.overwrite.toString())
+                    .getProperty("queue.upload.reload.action")
+                    .Equals(TransferAction.overwrite.toString())
                     ? true
                     : false;
             View.UploadWithTemporaryFilename = PreferencesFactory.get().getBoolean("queue.upload.file.temporary");
@@ -1017,9 +1014,9 @@ namespace Ch.Cyberduck.Ui.Controller
             View.AutomaticUpdateCheck = PreferencesFactory.get().getBoolean("update.check");
             long lastCheck = PreferencesFactory.get().getLong("update.check.last");
             View.LastUpdateCheck = 0 == lastCheck
-                                       ? String.Empty
-                                       : UserDefaultsDateFormatter.GetLongFormat(
-                                           new DateTime(PreferencesFactory.get().getLong("update.check.last")));
+                ? String.Empty
+                : UserDefaultsDateFormatter.GetLongFormat(
+                    new DateTime(PreferencesFactory.get().getLong("update.check.last")));
             PopulateFeeds();
             View.UpdateFeed = PreferencesFactory.get().getProperty("update.feed");
 
@@ -1045,9 +1042,12 @@ namespace Ch.Cyberduck.Ui.Controller
         private void PopulateBookmarkSize()
         {
             List<KeyValuePair<int, string>> sizes = new List<KeyValuePair<int, string>>();
-            sizes.Add(new KeyValuePair<int, string>(BookmarkController.SmallBookmarkSize, LocaleFactory.localizedString("Use Small Icons", "Preferences")));
-            sizes.Add(new KeyValuePair<int, string>(BookmarkController.MediumBookmarkSize, LocaleFactory.localizedString("Use Medium Icons", "Preferences")));
-            sizes.Add(new KeyValuePair<int, string>(BookmarkController.LargeBookmarkSize, LocaleFactory.localizedString("Use Large Icons", "Preferences")));
+            sizes.Add(new KeyValuePair<int, string>(BookmarkController.SmallBookmarkSize,
+                LocaleFactory.localizedString("Use Small Icons", "Preferences")));
+            sizes.Add(new KeyValuePair<int, string>(BookmarkController.MediumBookmarkSize,
+                LocaleFactory.localizedString("Use Medium Icons", "Preferences")));
+            sizes.Add(new KeyValuePair<int, string>(BookmarkController.LargeBookmarkSize,
+                LocaleFactory.localizedString("Use Large Icons", "Preferences")));
             View.PopulateBookmarkSize(sizes);
         }
 
@@ -1082,7 +1082,6 @@ namespace Ch.Cyberduck.Ui.Controller
             View.PopulateLocales(locales);
         }
 
-
         private void PopulateSpreadsheetExportFormats()
         {
             IList<KeyValuePair<string, string>> f = new List<KeyValuePair<string, string>>();
@@ -1091,8 +1090,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 string ext = "." + s;
                 f.Add(new KeyValuePair<string, string>(s,
-                                                       String.Format("{0} ({1})",
-                                                                     FileDescriptorFactory.get().getKind(ext), ext)));
+                    String.Format("{0} ({1})", FileDescriptorFactory.get().getKind(ext), ext)));
             }
             View.PopulateSpreadsheetExportFormats(f);
         }
@@ -1105,8 +1103,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 string ext = "." + s;
                 f.Add(new KeyValuePair<string, string>(s,
-                                                       String.Format("{0} ({1})",
-                                                                     FileDescriptorFactory.get().getKind(ext), ext)));
+                    String.Format("{0} ({1})", FileDescriptorFactory.get().getKind(ext), ext)));
             }
             View.PopulatePresentationExportFormats(f);
         }
@@ -1119,8 +1116,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 string ext = "." + s;
                 f.Add(new KeyValuePair<string, string>(s,
-                                                       String.Format("{0} ({1})",
-                                                                     FileDescriptorFactory.get().getKind(ext), ext)));
+                    String.Format("{0} ({1})", FileDescriptorFactory.get().getKind(ext), ext)));
             }
             View.PopulateDocumentExportFormats(f);
         }
@@ -1129,16 +1125,14 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             IList<KeyValuePair<float, string>> list = new List<KeyValuePair<float, string>>();
             list.Add(new KeyValuePair<float, string>(BandwidthThrottle.UNLIMITED,
-                                                     LocaleFactory.localizedString("Unlimited Bandwidth", "Preferences")));
+                LocaleFactory.localizedString("Unlimited Bandwidth", "Preferences")));
             foreach (String option in
                 PreferencesFactory.get()
-                           .getProperty("queue.bandwidth.options")
-                           .Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries))
+                    .getProperty("queue.bandwidth.options")
+                    .Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries))
             {
                 list.Add(new KeyValuePair<float, string>(Convert.ToInt32(option.Trim()),
-                                                         (SizeFormatterFactory.get()
-                                                                              .format(Convert.ToInt32(option.Trim())) +
-                                                          "/s")));
+                    (SizeFormatterFactory.get().format(Convert.ToInt32(option.Trim())) + "/s")));
             }
             View.PopulateDefaultUploadThrottleList(list);
         }
@@ -1147,16 +1141,14 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             IList<KeyValuePair<float, string>> list = new List<KeyValuePair<float, string>>();
             list.Add(new KeyValuePair<float, string>(BandwidthThrottle.UNLIMITED,
-                                                     LocaleFactory.localizedString("Unlimited Bandwidth", "Preferences")));
+                LocaleFactory.localizedString("Unlimited Bandwidth", "Preferences")));
             foreach (String option in
                 PreferencesFactory.get()
-                           .getProperty("queue.bandwidth.options")
-                           .Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries))
+                    .getProperty("queue.bandwidth.options")
+                    .Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries))
             {
                 list.Add(new KeyValuePair<float, string>(Convert.ToInt32(option.Trim()),
-                                                         (SizeFormatterFactory.get()
-                                                                              .format(Convert.ToInt32(option.Trim())) +
-                                                          "/s")));
+                    (SizeFormatterFactory.get().format(Convert.ToInt32(option.Trim())) + "/s")));
             }
             View.PopulateDefaultDownloadThrottleList(list);
         }
@@ -1170,7 +1162,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 Location.Name location = (Location.Name) iter.next();
                 defaultBucketLocations.Add(new KeyValuePair<string, string>(location.getIdentifier(),
-                                                                            location.toString()));
+                    location.toString()));
             }
             View.PopulateDefaultBucketLocations(defaultBucketLocations);
         }
@@ -1179,13 +1171,10 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             IList<KeyValuePair<string, string>> storageClasses = new List<KeyValuePair<string, string>>();
             storageClasses.Add(new KeyValuePair<string, string>(S3Object.STORAGE_CLASS_STANDARD,
-                                                                LocaleFactory.localizedString(
-                                                                    S3Object.STORAGE_CLASS_STANDARD, "S3")));
+                LocaleFactory.localizedString(S3Object.STORAGE_CLASS_STANDARD, "S3")));
             storageClasses.Add(new KeyValuePair<string, string>(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY,
-                                                                LocaleFactory.localizedString(
-                                                                    LocaleFactory.localizedString(
-                                                                        S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, "S3"),
-                                                                    "S3")));
+                LocaleFactory.localizedString(
+                    LocaleFactory.localizedString(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, "S3"), "S3")));
             View.PopulateDefaultStorageClasses(storageClasses);
         }
 
@@ -1233,7 +1222,10 @@ namespace Ch.Cyberduck.Ui.Controller
         private void PopulateTransferModes()
         {
             List<KeyValuePair<string, Host.TransferType>> modes = new List<KeyValuePair<string, Host.TransferType>>();
-            foreach (String name in Utils.ConvertFromJavaList<String>(PreferencesFactory.get().getList("queue.transfer.type.enabled"))) {
+            foreach (
+                String name in
+                    Utils.ConvertFromJavaList<String>(PreferencesFactory.get().getList("queue.transfer.type.enabled")))
+            {
                 Host.TransferType t = Host.TransferType.valueOf(name);
                 modes.Add(new KeyValuePair<string, Host.TransferType>(t.toString(), t));
             }
@@ -1264,7 +1256,7 @@ namespace Ch.Cyberduck.Ui.Controller
             foreach (Host host in BookmarkCollection.defaultCollection())
             {
                 bookmarks.Add(new KeyValueIconTriple<Host, string>(host, BookmarkNameProvider.toString(host),
-                                                                   host.getProtocol().getProvider()));
+                    host.getProtocol().getProvider()));
             }
             View.PopulateBookmarks(bookmarks);
         }
@@ -1298,13 +1290,12 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (defaultEditor != null && ApplicationFinderFactory.get().isInstalled(defaultEditor))
                 {
                     editors.Insert(0,
-                                   new KeyValueIconTriple<Application, string>(defaultEditor, defaultEditor.getName(),
-                                                                               defaultEditor.getName()));
+                        new KeyValueIconTriple<Application, string>(defaultEditor, defaultEditor.getName(),
+                            defaultEditor.getName()));
                 }
             }
             editors.Add(new KeyValueIconTriple<Application, string>(new Application(null, null),
-                                                                    LocaleFactory.localizedString("Choose") + "…",
-                                                                    String.Empty));
+                LocaleFactory.localizedString("Choose") + "…", String.Empty));
             View.PopulateEditors(editors);
             if (defaultEditor != null)
             {

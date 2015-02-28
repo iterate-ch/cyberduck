@@ -19,6 +19,7 @@
             <File source="${BUILDPATH}\IKVM.OpenJDK.Security.dll"/>
             <File source="${BUILDPATH}\IKVM.OpenJDK.Text.dll"/>
             <File source="${BUILDPATH}\IKVM.OpenJDK.Util.dll"/>
+            <File source="${BUILDPATH}\IKVM.OpenJDK.Management.dll"/>
             <File source="${BUILDPATH}\IKVM.OpenJDK.XML.API.dll"/>
             <File source="${BUILDPATH}\IKVM.OpenJDK.XML.Bind.dll"/>
             <File source="${BUILDPATH}\IKVM.OpenJDK.XML.Parse.dll"/>

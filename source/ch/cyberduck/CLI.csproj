@@ -55,6 +55,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\lib\IKVM.OpenJDK.Jdbc.dll</HintPath>
     </Reference>
+    <Reference Include="IKVM.OpenJDK.Management">
+      <HintPath>..\..\..\lib\IKVM.OpenJDK.Management.dll</HintPath>
+    </Reference>
     <Reference Include="IKVM.OpenJDK.Security, Version=7.2.4630.5, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\lib\IKVM.OpenJDK.Security.dll</HintPath>

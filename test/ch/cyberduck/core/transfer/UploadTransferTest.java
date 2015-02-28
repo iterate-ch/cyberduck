@@ -367,6 +367,11 @@ public class UploadTransferTest extends AbstractTestCase {
                         public boolean temporary() {
                             return true;
                         }
+
+                        @Override
+                        public boolean pooled() {
+                            return false;
+                        }
                     };
                 }
                 return null;

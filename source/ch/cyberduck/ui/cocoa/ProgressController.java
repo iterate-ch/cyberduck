@@ -230,6 +230,7 @@ public class ProgressController extends BundleController implements TransferList
     @Outlet
     private NSPopUpButton filesPopup;
 
+    @Delegate
     private AbstractMenuDelegate filesPopupMenuDelegate;
 
     public void setFilesPopup(final NSPopUpButton p) {

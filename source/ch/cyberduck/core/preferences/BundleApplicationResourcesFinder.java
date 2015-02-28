@@ -42,7 +42,11 @@ public class BundleApplicationResourcesFinder implements ApplicationResourcesFin
             log.warn("No main bundle found");
             return new TemporarySupportDirectoryFinder().find();
         }
-        return LocalFactory.get(b.resourcePath());
+        final Local folder = LocalFactory.get(b.resourcePath());
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Use folder %s for application resources directory", folder));
+        }
+        return folder;
     }
 
     public NSBundle bundle() {

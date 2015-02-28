@@ -1757,6 +1757,7 @@ lib/IKVM.OpenJDK.Beans.dll -text
 lib/IKVM.OpenJDK.Charsets.dll -text
 lib/IKVM.OpenJDK.Core.dll -text
 lib/IKVM.OpenJDK.Jdbc.dll -text
+lib/IKVM.OpenJDK.Management.dll -text
 lib/IKVM.OpenJDK.Naming.dll -text
 lib/IKVM.OpenJDK.Security.dll -text
 lib/IKVM.OpenJDK.SwingAWT.dll -text
@@ -1884,7 +1885,7 @@ lib/commons-io-2.4.jar -text svneol=unset#application/zip
 lib/commons-lang3-3.3.2.jar -text svneol=unset#application/zip
 lib/commons-logging-1.1.3.jar -text svneol=unset#application/zip
 lib/commons-net-3.3-ftp.jar -text
-lib/commons-pool2-2.2.jar -text
+lib/commons-pool2-2.3.jar -text
 lib/dd-plist.jar -text
 lib/dns_sd.jar -text
 lib/ext/ant-contrib-1.0b3.jar -text

@@ -33,6 +33,7 @@ import ch.cyberduck.core.TransferErrorCallbackControllerFactory;
 import ch.cyberduck.core.TransferPromptControllerFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.notification.NotificationService;
@@ -93,7 +94,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
     private NotificationService growl = NotificationServiceFactory.get();
 
     public TransferBackgroundAction(final Controller controller,
-                                    final Session session,
+                                    final Session<?> session,
                                     final PathCache cache,
                                     final TransferListener listener,
                                     final Transfer transfer,
@@ -105,7 +106,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
     }
 
     public TransferBackgroundAction(final Controller controller,
-                                    final Session session,
+                                    final Session<?> session,
                                     final PathCache cache,
                                     final TransferListener listener,
                                     final ProgressListener progress,
@@ -119,7 +120,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
     }
 
     public TransferBackgroundAction(final Controller controller,
-                                    final Session session,
+                                    final Session<?> session,
                                     final PathCache cache,
                                     final TransferListener listener,
                                     final ProgressListener progress,
@@ -133,7 +134,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
     }
 
     public TransferBackgroundAction(final Controller controller,
-                                    final Session session,
+                                    final Session<?> session,
                                     final PathCache cache,
                                     final TransferListener listener,
                                     final ProgressListener progress,
@@ -155,7 +156,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
                                     final ConnectionCallback callback,
                                     final HostKeyCallback key,
                                     final Controller controller,
-                                    final Session session,
+                                    final Session<?> session,
                                     final PathCache cache,
                                     final TransferListener listener,
                                     final ProgressListener progress,
@@ -176,9 +177,12 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
         this.prompt = prompt;
         switch(session.getTransferType()) {
             case concurrent:
-                this.worker = new ConcurrentTransferWorker(connection, transfer, options,
-                        meter, prompt, error, this, callback, progress, stream, x509Trust, x509Key);
-                break;
+                final Write write = session.getFeature(Write.class);
+                if(!write.pooled()) {
+                    this.worker = new ConcurrentTransferWorker(connection, transfer, options,
+                            meter, prompt, error, this, callback, progress, stream, x509Trust, x509Key);
+                    break;
+                }
             default:
                 this.worker = new SingleTransferWorker(session, transfer, options,
                         meter, prompt, error, this, progress, stream, callback);

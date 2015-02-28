@@ -27,7 +27,7 @@ import org.apache.commons.lang3.StringUtils;
  *
  * @version $Id$
  */
-public class Credentials {
+public class Credentials implements Comparable<Credentials> {
 
     /**
      * The login name
@@ -210,6 +210,20 @@ public class Credentials {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public int compareTo(final Credentials o) {
+        if(null == user && null == o.user) {
+            return 0;
+        }
+        if(null == user) {
+            return -1;
+        }
+        if(null == o.user) {
+            return 1;
+        }
+        return user.compareTo(o.user);
     }
 
     @Override

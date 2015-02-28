@@ -203,14 +203,22 @@ public class BrowserController extends WindowController
     // setting appearance attributes()
     private final NSLayoutManager layoutManager = NSLayoutManager.layoutManager();
 
+    @Delegate
     private BrowserOutlineViewModel browserOutlineModel;
+
     @Outlet
     private NSOutlineView browserOutlineView;
+
+    @Delegate
     private AbstractBrowserTableDelegate<Path> browserOutlineViewDelegate;
 
+    @Delegate
     private BrowserListViewModel browserListModel;
+
     @Outlet
     private NSTableView browserListView;
+
+    @Delegate
     private AbstractBrowserTableDelegate<Path> browserListViewDelegate;
 
     private NSToolbar toolbar;
@@ -712,6 +720,8 @@ public class BrowserController extends WindowController
 
     @Outlet
     private NSMenu editMenu;
+
+    @Delegate
     private EditMenuDelegate editMenuDelegate;
 
     public void setEditMenu(NSMenu editMenu) {
@@ -739,6 +749,8 @@ public class BrowserController extends WindowController
 
     @Outlet
     private NSMenu urlMenu;
+
+    @Delegate
     private URLMenuDelegate urlMenuDelegate;
 
     public void setUrlMenu(NSMenu urlMenu) {
@@ -765,6 +777,8 @@ public class BrowserController extends WindowController
 
     @Outlet
     private NSMenu openUrlMenu;
+
+    @Delegate
     private URLMenuDelegate openUrlMenuDelegate;
 
     public void setOpenUrlMenu(NSMenu openUrlMenu) {
@@ -791,6 +805,8 @@ public class BrowserController extends WindowController
 
     @Outlet
     private NSMenu archiveMenu;
+
+    @Delegate
     private ArchiveMenuDelegate archiveMenuDelegate;
 
     public void setArchiveMenu(NSMenu archiveMenu) {
@@ -1642,9 +1658,13 @@ public class BrowserController extends WindowController
         this.reload();
     }
 
+    @Delegate
     private BookmarkTableDataSource bookmarkModel;
 
+    @Outlet
     private NSTableView bookmarkTable;
+
+    @Delegate
     private AbstractTableDelegate<Host> bookmarkTableDelegate;
 
     public void setBookmarkTable(NSTableView view) {
@@ -3035,7 +3055,7 @@ public class BrowserController extends WindowController
         return session;
     }
 
-    public Cache getCache() {
+    public Cache<Path> getCache() {
         return cache;
     }
 

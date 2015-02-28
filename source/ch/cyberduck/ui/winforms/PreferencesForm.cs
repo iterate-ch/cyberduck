@@ -20,10 +20,10 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using ch.cyberduck.core;
+using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
-using ch.cyberduck.core;
-using PreferencesFactory = ch.cyberduck.core.preferences.PreferencesFactory;
 using Application = ch.cyberduck.core.local.Application;
 
 namespace Ch.Cyberduck.Ui.Winforms
@@ -41,14 +41,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             InitializeComponent();
 
             Load += delegate
+            {
+                int newWidth = 10; // border etc.
+                foreach (ToolStripItem item in toolStrip.Items)
                 {
-                    int newWidth = 10; // border etc.
-                    foreach (ToolStripItem item in toolStrip.Items)
-                    {
-                        newWidth += item.Size.Width + item.Margin.Left + item.Margin.Right;
-                    }
-                    Width = newWidth;
-                };
+                    newWidth += item.Size.Width + item.Margin.Left + item.Margin.Right;
+                }
+                Width = newWidth;
+            };
 
             MaximumSize = new Size(MaxWidth, MaxHeight);
             MinimumSize = new Size(MinWidth, MinHeight);
@@ -226,10 +226,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { defaultEncodingCombobox.Text = value; }
         }
 
-        public string TransferMode
+        public Host.TransferType TransferMode
         {
-            get { return transferFilesCombobox.Text; }
-            set { transferFilesCombobox.Text = value; }
+            get { return (Host.TransferType) transferFilesCombobox.SelectedValue; }
+            set { transferFilesCombobox.SelectedValue = value; }
         }
 
         public bool TransfersToFront
@@ -728,7 +728,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         }
 
         public event VoidHandler AutomaticUpdateChangedEvent = delegate { };
-
         public event VoidHandler CheckForUpdateEvent;
 
         public string DocumentExportFormat
@@ -800,8 +799,8 @@ namespace Ch.Cyberduck.Ui.Winforms
                 if (triple.Key.getIdentifier() != null)
                 {
                     imageList.Images.Add(triple.Value,
-                                         IconCache.Instance.GetFileIconFromExecutable(triple.Key.getIdentifier(),
-                                                                                      IconCache.IconSize.Small));
+                        IconCache.Instance.GetFileIconFromExecutable(triple.Key.getIdentifier(),
+                            IconCache.IconSize.Small));
                 }
             }
             editorComboBox.ICImageList = imageList;
@@ -1466,7 +1465,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 if (result == DialogResult.OK)
                 {
                     PreferencesFactory.get()
-                               .setProperty("editor.bundleIdentifier", editorOpenFileDialog.FileName.ToLower());
+                        .setProperty("editor.bundleIdentifier", editorOpenFileDialog.FileName.ToLower());
                     RepopulateEditorsEvent();
                 }
                 else

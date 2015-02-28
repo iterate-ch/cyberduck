@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -17,9 +17,9 @@
 // 
 
 using System.Collections.Generic;
-using Ch.Cyberduck.Ui.Winforms.Controls;
 using ch.cyberduck.core;
 using ch.cyberduck.core.local;
+using Ch.Cyberduck.Ui.Winforms.Controls;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -33,19 +33,16 @@ namespace Ch.Cyberduck.Ui.Controller
         Protocol DefaultProtocol { set; get; }
         Application DefaultEditor { set; get; }
         bool AlwaysUseDefaultEditor { set; get; }
-        
         bool ShowHiddenFiles { set; get; }
         bool DoubleClickEditor { set; get; }
         bool ReturnKeyRenames { set; get; }
         bool InfoWindowShowsCurrentSelection { set; get; }
-        void PopulateBookmarkSize(IList<KeyValuePair<int, string>> sizes);
         int BookmarkSize { set; get; }
-
         bool AlternatingRowBackground { set; get; }
         bool HorizontalLines { set; get; }
         bool VerticalLines { set; get; }
         string DefaultEncoding { set; get; }
-        string TransferMode { set; get; }
+        Host.TransferType TransferMode { set; get; }
         bool TransfersToFront { set; get; }
         bool TransfersToBack { set; get; }
         bool RemoveFromTransfers { set; get; }
@@ -56,7 +53,6 @@ namespace Ch.Cyberduck.Ui.Controller
         bool DuplicateDownloadOverwrite { set; get; }
         bool DuplicateUploadOverwrite { set; get; }
         bool UploadWithTemporaryFilename { set; get; }
-
         bool ChmodDownload { set; get; }
         bool ChmodDownloadUseDefault { set; get; }
         string ChmodDownloadType { set; get; }
@@ -71,7 +67,6 @@ namespace Ch.Cyberduck.Ui.Controller
         bool DownloadOtherExecute { set; get; }
         bool ChmodDownloadEnabled { set; }
         bool ChmodDownloadDefaultEnabled { set; }
-
         bool ChmodUpload { set; get; }
         bool ChmodUploadUseDefault { set; get; }
         string ChmodUploadType { set; get; }
@@ -86,28 +81,22 @@ namespace Ch.Cyberduck.Ui.Controller
         bool UploadOtherExecute { set; get; }
         bool ChmodUploadEnabled { set; }
         bool ChmodUploadDefaultEnabled { set; }
-
         bool PreserveModificationDownload { set; get; }
         bool PreserveModificationUpload { set; get; }
-
         bool DownloadSkip { set; get; }
         string DownloadSkipRegex { set; get; }
         bool DownloadSkipRegexEnabled { set; }
         bool UploadSkip { set; get; }
         string UploadSkipRegex { set; get; }
         bool UploadSkipRegexEnabled { set; }
-
         string DefaultBucketLocation { set; get; }
         string DefaultStorageClass { set; get; }
         string DefaultEncryption { set; get; }
-
         float DefaultDownloadThrottle { set; get; }
         float DefaultUploadThrottle { set; get; }
-
         int ConnectionTimeout { set; get; }
         int RetryDelay { set; get; }
         int Retries { set; get; }
-
         string DocumentExportFormat { set; get; }
         string PresentationExportFormat { set; get; }
         string SpreadsheetExportFormat { set; get; }
@@ -117,30 +106,24 @@ namespace Ch.Cyberduck.Ui.Controller
         bool AutomaticUpdateCheck { set; get; }
         string LastUpdateCheck { set; }
         string UpdateFeed { set; get; }
-
         bool UseSystemProxy { set; get; }
+        void PopulateBookmarkSize(IList<KeyValuePair<int, string>> sizes);
         void MarkDownloadSkipRegex(int position);
         void MarkUploadSkipRegex(int position);
-
         void PopulateDocumentExportFormats(IList<KeyValuePair<string, string>> formats);
         void PopulatePresentationExportFormats(IList<KeyValuePair<string, string>> formats);
         void PopulateSpreadsheetExportFormats(IList<KeyValuePair<string, string>> formats);
-
         event VoidHandler DocumentExportFormatChanged;
         event VoidHandler PresentationExportFormatChanged;
         event VoidHandler SpreadsheetExportFormatChanged;
         event VoidHandler ConvertUploadsChanged;
         event VoidHandler OcrUploadsChanged;
-
         void PopulateLocales(IList<KeyValuePair<string, string>> locales);
-
         event VoidHandler LocaleChanged;
-
         event VoidHandler AutomaticUpdateChangedEvent;
         event VoidHandler CheckForUpdateEvent;
         event VoidHandler UpdateFeedChangedEvent;
         event VoidHandler BookmarkSizeChangedEvent;
-
         event VoidHandler UseSystemProxyChangedEvent;
         event VoidHandler ChangeSystemProxyEvent;
         event VoidHandler SaveWorkspaceChangedEvent;
@@ -195,28 +178,22 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler UploadOtherReadChangedEvent;
         event VoidHandler UploadOtherWriteChangedEvent;
         event VoidHandler UploadOtherExecuteChangedEvent;
-
         event VoidHandler PreserveModificationDownloadChangedEvent;
         event VoidHandler PreserveModificationUploadChangedEvent;
-
         event VoidHandler DownloadSkipChangedEvent;
         event VoidHandler DownloadSkipRegexChangedEvent;
         event VoidHandler DownloadSkipRegexDefaultEvent;
         event VoidHandler UploadSkipChangedEvent;
         event VoidHandler UploadSkipRegexChangedEvent;
         event VoidHandler UploadSkipRegexDefaultEvent;
-
         event VoidHandler DefaultBucketLocationChangedEvent;
         event VoidHandler DefaultStorageClassChangedEvent;
         event VoidHandler DefaultEncryptionChangedEvent;
-
         event VoidHandler DefaultDownloadThrottleChangedEvent;
         event VoidHandler DefaultUploadThrottleChangedEvent;
-
         event VoidHandler ConnectionTimeoutChangedEvent;
         event VoidHandler RetryDelayChangedEvent;
         event VoidHandler RetriesChangedEvent;
-
         //todo introduce Enums to handle the objects directly instead of using strings
         void PopulateBookmarks(List<KeyValueIconTriple<Host, string>> bookmarks);
         void PopulateEditors(List<KeyValueIconTriple<Application, string>> editors);

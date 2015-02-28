@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.sftp.SFTPProtocol;
 
 import org.junit.Test;
 
@@ -121,5 +122,21 @@ public class HostTest extends AbstractTestCase {
         assertEquals("/p f", host.getDefaultPath());
         host.setDefaultPath("/p ");
         assertEquals("/p", host.getDefaultPath());
+    }
+
+    @Test
+    public void testCompare() {
+        assertEquals(0, new Host("a", 33).compareTo(new Host("a", 33)));
+        assertEquals(1, new Host("a", 22).compareTo(new Host("a", 33)));
+        assertEquals(-1, new Host("a", 33).compareTo(new Host("a", 22)));
+
+        assertEquals(1, new Host(new SFTPProtocol(), "a", 22, new Credentials("u", null))
+                .compareTo(new Host(new SFTPProtocol(), "a", 22, new Credentials())));
+        assertEquals(-1, new Host(new SFTPProtocol(), "a", 22, new Credentials())
+                .compareTo(new Host(new SFTPProtocol(), "a", 22, new Credentials("u", null))));
+
+        assertEquals(0, new Host("a").compareTo((new Host("a"))));
+        assertEquals(-1, new Host("a").compareTo((new Host("b"))));
+        assertEquals(1, new Host("b").compareTo((new Host("a"))));
     }
 }

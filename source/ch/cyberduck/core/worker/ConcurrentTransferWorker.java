@@ -47,6 +47,7 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.log4j.Logger;
 
+import java.util.NoSuchElementException;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
@@ -96,9 +97,10 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         configuration.setJmxEnabled(false);
         configuration.setMaxTotal(connections);
         configuration.setMaxIdle(connections);
+        configuration.setBlockWhenExhausted(true);
+        configuration.setMaxWaitMillis(1000L);
         pool = new GenericObjectPool<Session>(
                 new SessionPool(transfer.getHost()), configuration);
-        pool.setBlockWhenExhausted(true);
         completion = new ExecutorCompletionService<TransferStatus>(
                 Executors.newFixedThreadPool(connections, new NamedThreadFactory("transfer")),
                 new LinkedBlockingQueue<Future<TransferStatus>>());
@@ -112,7 +114,19 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
-            final Session session = pool.borrowObject();
+            Session session;
+            while(true) {
+                try {
+                    session = pool.borrowObject();
+                    break;
+                }
+                catch(NoSuchElementException e) {
+                    if(this.isCanceled()) {
+                        throw new ConnectionCanceledException();
+                    }
+                    // Continue
+                }
+            }
             if(log.isInfoEnabled()) {
                 log.info(String.format("Borrow session %s from pool", session));
             }

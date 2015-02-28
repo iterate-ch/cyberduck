@@ -122,20 +122,25 @@ public class FolderTransferCollection extends Collection<Transfer> {
     }
 
     protected void save(final Transfer transfer) {
-        this.lock();
-        try {
-            folder.mkdir();
-            final Local f = this.getFile(transfer);
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Save transfer %s", f));
+        if(this.isLocked()) {
+            log.debug(String.format("Skip saving transfer %s while loading", transfer));
+        }
+        else {
+            this.lock();
+            try {
+                folder.mkdir();
+                final Local f = this.getFile(transfer);
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Save transfer %s", f));
+                }
+                writer.write(transfer, f);
             }
-            writer.write(transfer, f);
-        }
-        catch(AccessDeniedException e) {
-            log.warn(String.format("Failure saving item in collection %s", e.getMessage()));
-        }
-        finally {
-            this.unlock();
+            catch(AccessDeniedException e) {
+                log.warn(String.format("Failure saving item in collection %s", e.getMessage()));
+            }
+            finally {
+                this.unlock();
+            }
         }
     }
 

@@ -248,7 +248,13 @@ public abstract class Preferences {
         defaults.put("application.bookmarks.path", String.format("%s/Bookmarks", resources.getAbsolute()));
         defaults.put("application.profiles.path", String.format("%s/Profiles", resources.getAbsolute()));
 
+        /**
+         * Lowercase folder name to use when looking for bookmarks in user support directory
+         */
         defaults.put("bookmarks.folder.name", "Bookmarks");
+        /**
+         * Lowercase folder name to use when looking for profiles in user support directory
+         */
         defaults.put("profiles.folder.name", "Profiles");
 
         /**

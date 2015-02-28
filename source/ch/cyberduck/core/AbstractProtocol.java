@@ -198,6 +198,11 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
+    public int compareTo(final Protocol o) {
+        return this.getIdentifier().compareTo(o.getIdentifier());
+    }
+
+    @Override
     public int hashCode() {
         int result = this.getIdentifier() != null ? this.getIdentifier().hashCode() : 0;
         result = 31 * result + (this.getScheme() != null ? this.getScheme().hashCode() : 0);

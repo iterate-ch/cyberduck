@@ -377,6 +377,7 @@ public class PreferencesController extends ToolbarWindowController {
         editorCombobox.lastItem().setTarget(this.id());
     }
 
+    @Outlet
     private NSOpenPanel editorPathPanel;
     private ProxyController editorPathPanelDelegate = new EditorOpenPanelDelegate();
 
