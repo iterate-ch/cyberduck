@@ -58,29 +58,56 @@ public class IRODSWriteFeatureTest extends AbstractTestCase {
         assertFalse(session.getFeature(Find.class).find(test));
 
         final byte[] content = RandomStringUtils.random(100).getBytes();
+        {
+            final TransferStatus status = new TransferStatus();
+            status.setAppend(false);
+            status.setLength(content.length);
 
-        final TransferStatus status = new TransferStatus();
-        status.setAppend(false);
-        status.setLength(content.length);
+            assertEquals(false, new IRODSWriteFeature(session).append(test, status.getLength(), PathCache.empty()).append);
+            assertEquals(0L, new IRODSWriteFeature(session).append(test, status.getLength(), PathCache.empty()).size, 0L);
 
-        assertEquals(false, new IRODSWriteFeature(session).append(test, status.getLength(), PathCache.empty()).append);
-        assertEquals(0L, new IRODSWriteFeature(session).append(test, status.getLength(), PathCache.empty()).size, 0L);
+            final OutputStream out = new IRODSWriteFeature(session).write(test, status);
+            assertNotNull(out);
 
-        final OutputStream out = new IRODSWriteFeature(session).write(test, status);
-        assertNotNull(out);
+            new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
+            IOUtils.closeQuietly(out);
+            assertTrue(session.getFeature(Find.class).find(test));
 
-        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        IOUtils.closeQuietly(out);
-        assertTrue(session.getFeature(Find.class).find(test));
+            final PathAttributes attributes = session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
+            assertEquals(content.length, attributes.getSize());
 
-        final PathAttributes attributes = session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
-        assertEquals(content.length, attributes.getSize());
+            final InputStream in = session.getFeature(Read.class).read(test, new TransferStatus());
+            final byte[] buffer = new byte[content.length];
+            IOUtils.readFully(in, buffer);
+            IOUtils.closeQuietly(in);
+            assertArrayEquals(content, buffer);
+        }
+        {
+            final byte[] newcontent = RandomStringUtils.random(10).getBytes();
 
-        final InputStream in = session.getFeature(Read.class).read(test, new TransferStatus());
-        final byte[] buffer = new byte[content.length];
-        IOUtils.readFully(in, buffer);
-        IOUtils.closeQuietly(in);
-        assertArrayEquals(content, buffer);
+            final TransferStatus status = new TransferStatus();
+            status.setAppend(false);
+            status.setLength(newcontent.length);
+
+            assertEquals(true, new IRODSWriteFeature(session).append(test, status.getLength(), PathCache.empty()).append);
+            assertEquals(content.length, new IRODSWriteFeature(session).append(test, status.getLength(), PathCache.empty()).size, 0L);
+
+            final OutputStream out = new IRODSWriteFeature(session).write(test, status);
+            assertNotNull(out);
+
+            new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(newcontent), out);
+            IOUtils.closeQuietly(out);
+            assertTrue(session.getFeature(Find.class).find(test));
+
+            final PathAttributes attributes = session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
+            assertEquals(newcontent.length, attributes.getSize());
+
+            final InputStream in = session.getFeature(Read.class).read(test, new TransferStatus());
+            final byte[] buffer = new byte[newcontent.length];
+            IOUtils.readFully(in, buffer);
+            IOUtils.closeQuietly(in);
+            assertArrayEquals(newcontent, buffer);
+        }
 
         session.getFeature(Delete.class).delete(Arrays.asList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         assertFalse(session.getFeature(Find.class).find(test));
