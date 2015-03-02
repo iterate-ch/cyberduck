@@ -2783,6 +2783,7 @@ public class BrowserController extends WindowController
         downloadToPanel = null;
     }
 
+    @Outlet
     private NSSavePanel downloadAsPanel;
 
     @Action
@@ -2810,6 +2811,7 @@ public class BrowserController extends WindowController
         }
     }
 
+    @Outlet
     private NSOpenPanel syncPanel;
 
     @Action
