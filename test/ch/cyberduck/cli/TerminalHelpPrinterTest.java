@@ -18,6 +18,7 @@ package ch.cyberduck.cli;
  */
 
 import org.apache.commons.cli.HelpFormatter;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class TerminalHelpPrinterTest {
@@ -28,6 +29,7 @@ public class TerminalHelpPrinterTest {
     }
 
     @Test
+    @Ignore
     public void testPrintWidth20DefaultFormatter() throws Exception {
         final HelpFormatter f = new HelpFormatter();
         f.setWidth(20);
