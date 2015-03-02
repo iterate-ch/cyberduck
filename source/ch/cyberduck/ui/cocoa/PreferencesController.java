@@ -1707,18 +1707,19 @@ public class PreferencesController extends ToolbarWindowController {
         if(Application.notfound.equals(defaultHandler)) {
             defaultProtocolHandlerCombobox.addItemWithTitle(LocaleFactory.localizedString("Unknown"));
             defaultProtocolHandlerCombobox.setEnabled(false);
-            return;
         }
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Default Protocol Handler for %s:%s", protocol, defaultHandler));
-        }
-        for(Application handler : SchemeHandlerFactory.get().getAllHandlers(protocol)) {
-            defaultProtocolHandlerCombobox.addItemWithTitle(handler.getName());
-            final NSMenuItem item = defaultProtocolHandlerCombobox.lastItem();
-            item.setImage(IconCacheFactory.<NSImage>get().applicationIcon(handler, 16));
-            item.setRepresentedObject(handler.getIdentifier());
-            if(handler.getIdentifier().equals(defaultHandler.getIdentifier())) {
-                defaultProtocolHandlerCombobox.selectItem(item);
+        else {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Default Protocol Handler for %s:%s", protocol, defaultHandler));
+            }
+            for(Application handler : SchemeHandlerFactory.get().getAllHandlers(protocol)) {
+                defaultProtocolHandlerCombobox.addItemWithTitle(handler.getName());
+                final NSMenuItem item = defaultProtocolHandlerCombobox.lastItem();
+                item.setImage(IconCacheFactory.<NSImage>get().applicationIcon(handler, 16));
+                item.setRepresentedObject(handler.getIdentifier());
+                if(handler.getIdentifier().equals(defaultHandler.getIdentifier())) {
+                    defaultProtocolHandlerCombobox.selectItem(item);
+                }
             }
         }
     }
