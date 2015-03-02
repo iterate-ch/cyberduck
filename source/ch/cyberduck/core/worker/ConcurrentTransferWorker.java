@@ -124,6 +124,9 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
                     if(this.isCanceled()) {
                         throw new ConnectionCanceledException();
                     }
+                    if(e.getCause() instanceof BackgroundException) {
+                        throw (BackgroundException) e.getCause();
+                    }
                     // Continue
                 }
             }
