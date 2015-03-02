@@ -299,7 +299,9 @@
         </copy>
         <echo message="Running tests with ${jvm.runtime.bin}/java"/>
         <!-- Get all properties available to pass them to test task -->
-        <propertyset id="test.systemproperties" negate="true"/>
+        <propertyset id="test.systemproperties">
+            <propertyref builtin="commandline"/>
+        </propertyset>
         <jacoco:coverage destfile="${build}/jacoco.exec" xmlns:jacoco="antlib:org.jacoco.ant">
             <junit jvm="${jvm.runtime.bin}/java" fork="yes" forkmode="once"
                    printsummary="on" filtertrace="on"
