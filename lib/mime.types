@@ -1522,7 +1522,7 @@ video/jpm					jpm jpgm
 video/mj2					mj2 mjp2
 # video/mp1s
 # video/mp2p
-# video/mp2t
+video/mp2t					ts
 video/mp4					mp4 mp4v mpg4 m4s
 # video/mp4v-es
 video/mpeg					mpeg mpg mpe m1v m2v
