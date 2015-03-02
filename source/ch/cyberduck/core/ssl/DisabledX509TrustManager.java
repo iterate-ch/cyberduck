@@ -41,7 +41,7 @@ public class DisabledX509TrustManager extends AbstractX509TrustManager {
     }
 
     @Override
-    public void verify(final String hostname, final X509Certificate[] certs) throws CertificateException {
+    public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
         //
     }
 }

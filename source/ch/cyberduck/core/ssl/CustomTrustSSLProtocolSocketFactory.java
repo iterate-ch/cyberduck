@@ -30,8 +30,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509KeyManager;
-import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -78,11 +76,17 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
         }
     }
 
+    private X509TrustManager trust;
+
+    private X509KeyManager key;
+
     /**
      * @param trust Verifying trusts in system settings
      * @param key   Key manager for client certificate selection
      */
     public CustomTrustSSLProtocolSocketFactory(final X509TrustManager trust, final X509KeyManager key) {
+        this.trust = trust;
+        this.key = key;
         try {
             context = SSLContext.getInstance("TLS");
             context.init(new KeyManager[]{key}, new TrustManager[]{trust}, rpng);
@@ -100,7 +104,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
      * @param socket    Socket to configure
      * @param protocols Enabled SSL protocol versions
      */
-    private void configure(final Socket socket, final String[] protocols) {
+    private void configure(final Socket socket, final String[] protocols) throws IOException {
         if(socket instanceof SSLSocket) {
             try {
                 if(log.isDebugEnabled()) {
@@ -132,6 +136,11 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
      * @throws IOException Error creating socket
      */
     private Socket handshake(final SocketGetter f) throws IOException {
+        // Load trust store before handshake
+        trust.init();
+        // Load key store before handshake
+        key.init();
+        // Configure socket
         final Socket socket = f.create();
         this.configure(socket, ENABLED_SSL_PROTOCOLS.toArray(new String[ENABLED_SSL_PROTOCOLS.size()]));
         if(log.isDebugEnabled()) {

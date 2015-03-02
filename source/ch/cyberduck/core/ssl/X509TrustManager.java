@@ -18,6 +18,7 @@ package ch.cyberduck.core.ssl;
  * feedback@cyberduck.ch
  */
 
+import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
@@ -26,7 +27,7 @@ import java.security.cert.X509Certificate;
  */
 public interface X509TrustManager extends javax.net.ssl.X509TrustManager {
 
-    X509TrustManager init();
+    X509TrustManager init() throws IOException;
 
-    void verify(String hostname, X509Certificate[] certs) throws CertificateException;
+    void verify(String hostname, X509Certificate[] certs, String cipher) throws CertificateException;
 }

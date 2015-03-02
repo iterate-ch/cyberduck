@@ -77,7 +77,7 @@ public class DefaultX509KeyManager implements X509KeyManager {
     }
 
     @Override
-    public String[] getClientAliases(String keyType, Principal[] issuers) {
+    public String[] getClientAliases(final String keyType, final Principal[] issuers) {
         return manager.getClientAliases(keyType, issuers);
     }
 
@@ -91,17 +91,17 @@ public class DefaultX509KeyManager implements X509KeyManager {
      *                implementations are free to select an alias applicable to any socket
      */
     @Override
-    public String chooseClientAlias(String[] keyType, Principal[] issuers, Socket socket) {
+    public String chooseClientAlias(final String[] keyType, final Principal[] issuers, final Socket socket) {
         return manager.chooseClientAlias(keyType, issuers, socket);
     }
 
     @Override
-    public String[] getServerAliases(String keyType, Principal[] issuers) {
+    public String[] getServerAliases(final String keyType, final Principal[] issuers) {
         return manager.getServerAliases(keyType, issuers);
     }
 
     @Override
-    public String chooseServerAlias(String keyType, Principal[] issuers, Socket socket) {
+    public String chooseServerAlias(final String keyType, final Principal[] issuers, final Socket socket) {
         return manager.chooseServerAlias(keyType, issuers, socket);
     }
 
@@ -109,7 +109,7 @@ public class DefaultX509KeyManager implements X509KeyManager {
      * Returns the certificate chain associated with the given alias.
      */
     @Override
-    public X509Certificate[] getCertificateChain(String alias) {
+    public X509Certificate[] getCertificateChain(final String alias) {
         return manager.getCertificateChain(alias);
     }
 
