@@ -44,7 +44,8 @@ public class IRODSWriteFeature implements Write {
     @Override
     public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            return session.filesystem().getIRODSFileFactory().instanceIRODSFileOutputStream(
+            final IRODSFileSystemAO fs = session.filesystem();
+            return fs.getIRODSFileFactory().instanceIRODSFileOutputStream(
                     file.getAbsolute(), status.isAppend() ? DataObjInp.OpenFlags.READ_WRITE : DataObjInp.OpenFlags.WRITE_TRUNCATE);
         }
         catch(JargonException e) {
