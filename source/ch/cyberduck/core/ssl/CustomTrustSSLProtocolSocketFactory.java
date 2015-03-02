@@ -19,6 +19,7 @@ package ch.cyberduck.core.ssl;
  */
 
 import ch.cyberduck.core.FactoryException;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
@@ -38,6 +39,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -59,6 +61,8 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
 
     private final AtomicBoolean initializer
             = new AtomicBoolean(false);
+
+    private Preferences preferences = PreferencesFactory.get();
 
     private SecureRandom rpng;
 
@@ -115,6 +119,17 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
                     log.debug(String.format("Configure SSL parameters with protocols %s", Arrays.toString(protocols)));
                 }
                 ((SSLSocket) socket).setEnabledProtocols(protocols);
+                final List<String> ciphers = Arrays.asList(((SSLSocket) socket).getEnabledCipherSuites());
+                final List<String> blacklist = preferences.getList("connection.ssl.cipher.blacklist");
+                if(!blacklist.isEmpty()) {
+                    for(Iterator<String> iter = ciphers.iterator(); iter.hasNext(); ) {
+                        final String cipher = iter.next();
+                        if(blacklist.contains(cipher)) {
+                            iter.remove();
+                        }
+                    }
+                }
+                ((SSLSocket) socket).setEnabledCipherSuites(ciphers.toArray(new String[ciphers.size()]));
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Enabled cipher suites %s",
                             Arrays.toString(((SSLSocket) socket).getEnabledCipherSuites())));
