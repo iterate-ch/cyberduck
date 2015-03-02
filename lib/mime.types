@@ -47,6 +47,7 @@ application/cdmi-queue				cdmiq
 application/cu-seeme				cu
 # application/cybercash
 application/davmount+xml			davmount
+application/dash+xml			mpd
 # application/dca-rft
 # application/dec-dx
 # application/dialog-info+xml
@@ -1522,7 +1523,7 @@ video/mj2					mj2 mjp2
 # video/mp1s
 # video/mp2p
 # video/mp2t
-video/mp4					mp4 mp4v mpg4
+video/mp4					mp4 mp4v mpg4 m4s
 # video/mp4v-es
 video/mpeg					mpeg mpg mpe m1v m2v
 # video/mpeg4-generic
