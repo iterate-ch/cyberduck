@@ -26,7 +26,7 @@ public class LaunchServicesSchemeHandlerTest extends AbstractTestCase {
         l.setDefaultHandler(
                 Arrays.asList(Scheme.ftp), new Application("none.app", null)
         );
-        assertEquals("none.app", l.getDefaultHandler(Scheme.ftp).getIdentifier());
+        assertEquals(Application.notfound, l.getDefaultHandler(Scheme.ftp));
         assertFalse(l.isDefaultHandler(Arrays.asList(Scheme.ftp), new Application("other.app", null)));
         l.setDefaultHandler(
                 Arrays.asList(Scheme.ftp), new Application("ch.sudo.cyberduck", null)
