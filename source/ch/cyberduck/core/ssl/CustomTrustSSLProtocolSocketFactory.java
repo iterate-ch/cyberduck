@@ -39,6 +39,7 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @version $Id$
@@ -55,6 +56,9 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
 
     private static final List<String> ENABLED_SSL_PROTOCOLS
             = new ArrayList<String>();
+
+    private final AtomicBoolean initializer
+            = new AtomicBoolean(false);
 
     private SecureRandom rpng;
 
@@ -136,10 +140,13 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
      * @throws IOException Error creating socket
      */
     private Socket handshake(final SocketGetter f) throws IOException {
-        // Load trust store before handshake
-        trust.init();
-        // Load key store before handshake
-        key.init();
+        if(!initializer.get()) {
+            // Load trust store before handshake
+            trust.init();
+            // Load key store before handshake
+            key.init();
+            initializer.set(true);
+        }
         // Configure socket
         final Socket socket = f.create();
         this.configure(socket, ENABLED_SSL_PROTOCOLS.toArray(new String[ENABLED_SSL_PROTOCOLS.size()]));
