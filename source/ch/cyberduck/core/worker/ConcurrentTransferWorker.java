@@ -127,7 +127,13 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
                     if(e.getCause() instanceof BackgroundException) {
                         throw (BackgroundException) e.getCause();
                     }
-                    // Continue
+                    if(null == e.getCause()) {
+                        log.warn(String.format("Timeout borrowing session from pool %s", pool));
+                        // Timeout
+                        continue;
+                    }
+                    log.error(String.format("Borrowing session from pool %s failed with %s", pool, e));
+                    throw new BackgroundException(e);
                 }
             }
             if(log.isInfoEnabled()) {
