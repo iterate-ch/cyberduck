@@ -315,6 +315,8 @@
                     </fileset>
                 </batchtest>
                 <syspropertyset refid="test.systemproperties"/>
+                <sysproperty key="java.library.path" value="${build}"/>
+                <sysproperty key="jna.library.path" value="${build}"/>
             </junit>
         </jacoco:coverage>
         <junitreport todir="${build.unittests.reports}/html">
