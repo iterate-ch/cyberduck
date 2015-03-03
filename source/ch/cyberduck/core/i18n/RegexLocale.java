@@ -43,8 +43,7 @@ public class RegexLocale implements Locale {
     private Map<Key, String> cache
             = Collections.<Key, String>synchronizedMap(new LRUMap(1000));
 
-    private Local resources
-            = ApplicationResourcesFinderFactory.get().find();
+    private Local resources;
 
     private String locale
             = java.util.Locale.getDefault().getLanguage();
@@ -52,9 +51,18 @@ public class RegexLocale implements Locale {
     private Pattern pattern
             = Pattern.compile("\"(.*)\"\\s*=\\s*\"(.*)\";");
 
+    public RegexLocale() {
+        this(ApplicationResourcesFinderFactory.get().find());
+    }
+
+    public RegexLocale(final Local resources) {
+        this.resources = resources;
+    }
+
     @Override
     public void setDefault(final String language) {
         locale = language;
+        cache.clear();
     }
 
     @Override
