@@ -26,6 +26,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.gstorage.GoogleStorageProtocol;
+import ch.cyberduck.core.irods.IRODSProtocol;
 import ch.cyberduck.core.openstack.SwiftProtocol;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3Protocol;
@@ -55,6 +56,7 @@ public final class ProtocolFactory {
     public static final Protocol SWIFT = new SwiftProtocol();
     public static final Protocol GOOGLESTORAGE_SSL = new GoogleStorageProtocol();
     public static final Protocol AZURE = new AzureProtocol();
+    public static final Protocol IRODS = new IRODSProtocol();
 
     /**
      * Ordered list of supported protocols.
@@ -77,6 +79,7 @@ public final class ProtocolFactory {
         register(S3_SSL);
         register(GOOGLESTORAGE_SSL);
         register(AZURE);
+        register(IRODS);
         // Order determines list in connection dropdown
         final Local bundled = LocalFactory.get(PreferencesFactory.get().getProperty("application.profiles.path"));
         if(bundled.exists()) {

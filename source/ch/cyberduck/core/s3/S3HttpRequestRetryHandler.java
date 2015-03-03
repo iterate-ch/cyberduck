@@ -31,7 +31,7 @@ import org.jets3t.service.impl.rest.httpclient.JetS3tRequestAuthorizer;
 import java.io.IOException;
 
 /**
- * @version $Id$
+ * @version $Id: $
  */
 public class S3HttpRequestRetryHandler extends ExtendedHttpRequestRetryHandler {
     private static final Logger log = Logger.getLogger(S3HttpRequestRetryHandler.class);

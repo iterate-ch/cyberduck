@@ -22,6 +22,7 @@ import ch.cyberduck.core.azure.AzureSession;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.gstorage.GoogleStorageSession;
+import ch.cyberduck.core.irods.IRODSSession;
 import ch.cyberduck.core.openstack.SwiftSession;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.sftp.SFTPSession;
@@ -57,6 +58,8 @@ public final class SessionFactory {
                 return new DAVSession(host, trust, key);
             case azure:
                 return new AzureSession(host, trust, key);
+            case irods:
+                return new IRODSSession(host, trust, key);
             default:
                 throw new FactoryException(protocol.getType().name());
         }

@@ -1907,6 +1907,7 @@ lib/ikvm-native-win32-x86.dll -text
 lib/jackson-core-asl-1.9.13.jar -text svneol=unset#application/jar
 lib/jackson-mapper-asl-1.9.13.jar -text svneol=unset#application/jar
 lib/jansi-1.12.jar -text
+lib/jargon-core-4.0.2.1-RC1.jar -text
 lib/java-xmlbuilder-1.0.jar -text svneol=unset#application/zip
 lib/jets3t-0.9.4.jar -text
 lib/jna-4.1.0.jar -text svneol=unset#application/jar
@@ -2180,6 +2181,7 @@ profiles/assets/HP[!!-~]Cloud[!!-~]Object[!!-~]Storage.tiff -text svneol=unset#i
 profiles/assets/Lunacloud.png -text svneol=unset#image/png
 profiles/assets/Template.tiff -text svneol=unset#image/tiff
 profiles/exoscale.cyberduckprofile -text svneol=unset#application/octet-stream
+profiles/iRODS[!!-~](iPlant[!!-~]Collaborative).cyberduckprofile -text svneol=unset#application/octet-stream
 pt_BR.lproj/Alert.strings -text svneol=unset#text/utf-16
 pt_BR.lproj/Archive.strings -text svneol=unset#text/utf-16
 pt_BR.lproj/Azure.strings -text svneol=unset#text/utf-16
@@ -2599,6 +2601,7 @@ source/ch/cyberduck/core/openstack/SwiftSession.java -text
 source/ch/cyberduck/core/preferences/AssemblyApplicationResourcesFinder.cs -text
 source/ch/cyberduck/core/preferences/RoamingSupportDirectoryFinder.cs -text
 source/ch/cyberduck/core/preferences/SettingsDictionary.cs -text
+source/ch/cyberduck/core/s3/S3HttpRequestRetryHandler.java -text
 source/ch/cyberduck/core/s3/S3Session.java -text
 source/ch/cyberduck/core/sparkle/Updater.java -text
 source/ch/cyberduck/core/ssl/AbstractX509TrustManager.java -text
@@ -2940,7 +2943,9 @@ test/ch/cyberduck/core/importer/com.fivedetails.Bookmarks.plist -text
 test/ch/cyberduck/core/importer/com.panic.Transmit.plist -text svneol=unset#unset
 test/ch/cyberduck/core/importer/org.mozdev.fireftp/fjpxtvk8.default/fireFTPsites.dat -text
 test/ch/cyberduck/core/importer/wcx_ftp.ini -text
+test/ch/cyberduck/core/irods/IRODSWriteFeatureTest.java -text
 test/ch/cyberduck/core/local/SystemLocalTest.cs -text svneol=unset#application/octet-stream
+test/ch/cyberduck/core/s3/S3HttpRequestRetryHandlerTest.java -text
 test/ch/cyberduck/core/serializer/impl/1c158c34-db8a-4c32-a732-abd9447bb27c.duck -text
 test/ch/cyberduck/core/serializer/impl/Custom[!!-~]Regions[!!-~]S3.cyberduckprofile -text svneol=unset#application/octet-stream
 test/ch/cyberduck/core/serializer/impl/Dropbox.cyberduckprofile -text

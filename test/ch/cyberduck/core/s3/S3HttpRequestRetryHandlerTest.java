@@ -17,7 +17,7 @@ import java.net.SocketException;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id$
+ * @version $Id: $
  */
 public class S3HttpRequestRetryHandlerTest extends AbstractTestCase {
 
