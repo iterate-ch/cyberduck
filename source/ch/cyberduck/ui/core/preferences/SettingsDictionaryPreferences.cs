@@ -44,7 +44,7 @@ using Rendezvous = Ch.Cyberduck.Core.Rendezvous;
 
 namespace Ch.Cyberduck.Ui.Core.Preferences
 {
-    public class SettingsDictionaryPreferences : Preferences
+    public class SettingsDictionaryPreferences : ch.cyberduck.core.preferences.Preferences
     {
         private static readonly Logger Log = Logger.getLogger(typeof (SettingsDictionaryPreferences).FullName);
         private SettingsDictionary _settings;
