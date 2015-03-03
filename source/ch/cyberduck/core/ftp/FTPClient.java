@@ -19,6 +19,7 @@ package ch.cyberduck.core.ftp;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -34,16 +35,16 @@ import javax.net.ssl.SSLSessionContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -59,6 +60,8 @@ public class FTPClient extends FTPSClient {
 
     private SSLSocketFactory sslSocketFactory;
 
+    private Protocol protocol;
+
     /**
      * Map of FEAT responses. If null, has not been initialised.
      */
@@ -67,9 +70,14 @@ public class FTPClient extends FTPSClient {
     private Preferences preferences
             = PreferencesFactory.get();
 
-    public FTPClient(final SSLSocketFactory f, final SSLContext c) {
+    public FTPClient(final Protocol protocol, final SSLSocketFactory f, final SSLContext c) {
         super(false, c);
+        this.protocol = protocol;
         this.sslSocketFactory = f;
+    }
+
+    public void setProtocol(final Protocol protocol) {
+        this.protocol = protocol;
     }
 
     @Override
@@ -111,54 +119,51 @@ public class FTPClient extends FTPSClient {
         }
     }
 
-    /**
-     * SSL versions enabled.
-     */
-    private List<String> versions
-            = Collections.emptyList();
-
-    @Override
-    public void setEnabledProtocols(final String[] protocols) {
-        versions = Arrays.asList(protocols);
-        super.setEnabledProtocols(protocols);
-    }
-
     @Override
     protected void execAUTH() throws IOException {
-        if(versions.isEmpty()) {
-            log.debug("No SSL protocol versions configured");
-            return;
-        }
-        if(FTPReply.SECURITY_DATA_EXCHANGE_COMPLETE != this.sendCommand("AUTH", this.getAuthValue())) {
-            throw new FTPException(this.getReplyCode(), this.getReplyString());
+        if(protocol.isSecure()) {
+            if(FTPReply.SECURITY_DATA_EXCHANGE_COMPLETE != this.sendCommand("AUTH", this.getAuthValue())) {
+                throw new FTPException(this.getReplyCode(), this.getReplyString());
+            }
         }
     }
 
     @Override
     public void execPROT(final String prot) throws IOException {
-        if(FTPReply.COMMAND_OK != this.sendCommand("PROT", prot)) {
-            throw new FTPException(this.getReplyCode(), this.getReplyString());
-        }
-        if("P".equals(prot)) {
-            // Private
-            this.setSocketFactory(sslSocketFactory);
-        }
-    }
-
-    @Override
-    public void execPBSZ(long pbsz) throws IOException {
-        if(FTPReply.COMMAND_OK != this.sendCommand("PBSZ", String.valueOf(pbsz))) {
-            throw new FTPException(this.getReplyCode(), this.getReplyString());
+        if(protocol.isSecure()) {
+            if(FTPReply.COMMAND_OK != this.sendCommand("PROT", prot)) {
+                throw new FTPException(this.getReplyCode(), this.getReplyString());
+            }
+            if("P".equals(prot)) {
+                // Private
+                this.setSocketFactory(sslSocketFactory);
+            }
         }
     }
 
     @Override
-    protected void sslNegotiation() throws java.io.IOException {
-        if(versions.isEmpty()) {
-            log.debug("No trust manager configured");
-            return;
+    public void execPBSZ(final long pbsz) throws IOException {
+        if(protocol.isSecure()) {
+            if(FTPReply.COMMAND_OK != this.sendCommand("PBSZ", String.valueOf(pbsz))) {
+                throw new FTPException(this.getReplyCode(), this.getReplyString());
+            }
         }
-        super.sslNegotiation();
+    }
+
+    @Override
+    protected void sslNegotiation() throws IOException {
+        if(protocol.isSecure()) {
+            final SSLSocket socket = (SSLSocket) sslSocketFactory.createSocket(_socket_,
+                    _socket_.getInetAddress().getHostAddress(), _socket_.getPort(), false);
+            socket.setEnableSessionCreation(true);
+            socket.setUseClientMode(true);
+            socket.startHandshake();
+            _socket_ = socket;
+            _controlInput_ = new BufferedReader(new InputStreamReader(
+                    socket.getInputStream(), getControlEncoding()));
+            _controlOutput_ = new BufferedWriter(new OutputStreamWriter(
+                    socket.getOutputStream(), getControlEncoding()));
+        }
     }
 
     public List<String> list(final FTPCmd command) throws IOException {

@@ -173,7 +173,7 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
                 if(null == app) {
                     log.error(String.format("Loading bundle %s failed", path));
                     identifier = search;
-                    name = null;
+                    name = FilenameUtils.removeExtension(LocalFactory.get(path).getDisplayName());
                 }
                 else {
                     NSDictionary dict = app.infoDictionary();
@@ -205,8 +205,7 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
             }
             else {
                 log.warn(String.format("Cannot determine installation path for %s", search));
-                identifier = search;
-                name = null;
+                return Application.notfound;
             }
         }
         final Application application = new Application(identifier, name);

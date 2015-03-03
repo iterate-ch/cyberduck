@@ -19,6 +19,7 @@ package ch.cyberduck.core.ssl;
  */
 
 import ch.cyberduck.core.FactoryException;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
@@ -30,8 +31,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509KeyManager;
-import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -40,7 +39,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @version $Id$
@@ -57,6 +58,11 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
 
     private static final List<String> ENABLED_SSL_PROTOCOLS
             = new ArrayList<String>();
+
+    private final AtomicBoolean initializer
+            = new AtomicBoolean(false);
+
+    private Preferences preferences = PreferencesFactory.get();
 
     private SecureRandom rpng;
 
@@ -78,11 +84,17 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
         }
     }
 
+    private X509TrustManager trust;
+
+    private X509KeyManager key;
+
     /**
      * @param trust Verifying trusts in system settings
      * @param key   Key manager for client certificate selection
      */
     public CustomTrustSSLProtocolSocketFactory(final X509TrustManager trust, final X509KeyManager key) {
+        this.trust = trust;
+        this.key = key;
         try {
             context = SSLContext.getInstance("TLS");
             context.init(new KeyManager[]{key}, new TrustManager[]{trust}, rpng);
@@ -100,13 +112,24 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
      * @param socket    Socket to configure
      * @param protocols Enabled SSL protocol versions
      */
-    private void configure(final Socket socket, final String[] protocols) {
+    private void configure(final Socket socket, final String[] protocols) throws IOException {
         if(socket instanceof SSLSocket) {
             try {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Configure SSL parameters with protocols %s", Arrays.toString(protocols)));
                 }
                 ((SSLSocket) socket).setEnabledProtocols(protocols);
+                final List<String> ciphers = Arrays.asList(((SSLSocket) socket).getEnabledCipherSuites());
+                final List<String> blacklist = preferences.getList("connection.ssl.cipher.blacklist");
+                if(!blacklist.isEmpty()) {
+                    for(Iterator<String> iter = ciphers.iterator(); iter.hasNext(); ) {
+                        final String cipher = iter.next();
+                        if(blacklist.contains(cipher)) {
+                            iter.remove();
+                        }
+                    }
+                }
+                ((SSLSocket) socket).setEnabledCipherSuites(ciphers.toArray(new String[ciphers.size()]));
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Enabled cipher suites %s",
                             Arrays.toString(((SSLSocket) socket).getEnabledCipherSuites())));
@@ -132,6 +155,14 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
      * @throws IOException Error creating socket
      */
     private Socket handshake(final SocketGetter f) throws IOException {
+        if(!initializer.get()) {
+            // Load trust store before handshake
+            trust.init();
+            // Load key store before handshake
+            key.init();
+            initializer.set(true);
+        }
+        // Configure socket
         final Socket socket = f.create();
         this.configure(socket, ENABLED_SSL_PROTOCOLS.toArray(new String[ENABLED_SSL_PROTOCOLS.size()]));
         if(log.isDebugEnabled()) {

@@ -36,14 +36,12 @@ import java.text.MessageFormat;
  */
 public final class TerminalHelpPrinter {
 
-    private TerminalHelpPrinter() {
-        //
+    public static void print(final Options options) {
+        print(options, new TerminalHelpFormatter());
     }
 
-    public static void print(final Options options) {
-        final HelpFormatter formatter = new TerminalHelpFormatter();
+    public static void print(final Options options, final HelpFormatter formatter) {
         formatter.setSyntaxPrefix("Usage:");
-        formatter.setWidth(200);
         final StringBuilder protocols = new StringBuilder(StringUtils.LF);
         protocols.append("Supported protocols");
         protocols.append(StringUtils.LF);
@@ -66,8 +64,8 @@ public final class TerminalHelpPrinter {
         final StringBuilder header = new StringBuilder(StringUtils.LF);
         header.append("\t");
         header.append("URLs must be fully qualified. Paths can either denote "
-                + "a remote file (ftps://user@example.net/resource) or folder ftps://user@example.net/directory/) "
-                + "with a trailing slash.");
+                + "a remote file (ftps://user@example.net/resource) or folder (ftps://user@example.net/directory/) "
+                + "with a trailing slash. You can reference files relative to your home directory with /~ (ftps://user@example.net/~/).");
         header.append(protocols.toString());
         final StringBuilder footer = new StringBuilder(StringUtils.LF);
         final Preferences preferences = PreferencesFactory.get();

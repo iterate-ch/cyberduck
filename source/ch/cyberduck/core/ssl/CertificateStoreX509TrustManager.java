@@ -48,27 +48,25 @@ public class CertificateStoreX509TrustManager extends AbstractX509TrustManager {
     }
 
     @Override
-    public void checkClientTrusted(final X509Certificate[] x509Certificates, final String authType)
+    public void checkClientTrusted(final X509Certificate[] x509Certificates, final String cipher)
             throws CertificateException {
 
-        this.verify(x509Certificates);
+        this.verify(x509Certificates, cipher);
     }
 
     @Override
-    public void checkServerTrusted(final X509Certificate[] x509Certificates, final String authType)
+    public void checkServerTrusted(final X509Certificate[] x509Certificates, final String cipher)
             throws CertificateException {
 
-        this.verify(x509Certificates);
+        this.verify(x509Certificates, cipher);
     }
 
-    private void verify(final X509Certificate[] certs)
-            throws CertificateException {
-
-        this.verify(callback.getTarget(), certs);
+    private void verify(final X509Certificate[] certs, final String cipher) throws CertificateException {
+        this.verify(callback.getTarget(), certs, cipher);
     }
 
     @Override
-    public void verify(final String hostname, final X509Certificate[] certs) throws CertificateException {
+    public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
         if(Arrays.asList(this.getAcceptedIssuers()).containsAll(Arrays.asList(certs))) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Certificate for %s previously trusted", hostname));

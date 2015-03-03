@@ -61,9 +61,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -126,6 +124,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     protected void configure(final FTPClient client) throws IOException {
+        client.setProtocol(host.getProtocol());
         client.setSocketFactory(new ProxySocketFactory(host.getProtocol(), new TrustManagerHostnameCallback() {
             @Override
             public String getTarget() {
@@ -139,13 +138,6 @@ public class FTPSession extends SSLSession<FTPClient> {
         client.setDefaultPort(host.getProtocol().getDefaultPort());
         client.setParserFactory(new FTPParserFactory());
         client.setRemoteVerificationEnabled(preferences.getBoolean("ftp.datachannel.verify"));
-        if(host.getProtocol().isSecure()) {
-            List<String> protocols = new ArrayList<String>();
-            for(String protocol : preferences.getProperty("connection.ssl.protocols").split(",")) {
-                protocols.add(protocol.trim());
-            }
-            client.setEnabledProtocols(protocols.toArray(new String[protocols.size()]));
-        }
         final int buffer = preferences.getInteger("ftp.socket.buffer");
         client.setBufferSize(buffer);
 
@@ -161,7 +153,6 @@ public class FTPSession extends SSLSession<FTPClient> {
         if(preferences.getInteger("connection.buffer.send") > 0) {
             client.setSendDataSocketBufferSize(preferences.getInteger("connection.buffer.send"));
         }
-
         client.setStrictMultilineParsing(preferences.getBoolean("ftp.parser.multiline.strict"));
     }
 
@@ -183,10 +174,10 @@ public class FTPSession extends SSLSession<FTPClient> {
     public FTPClient connect(final HostKeyCallback callback) throws BackgroundException {
         try {
             final CustomTrustSSLProtocolSocketFactory f
-                    = new CustomTrustSSLProtocolSocketFactory(trust.init(), key.init());
+                    = new CustomTrustSSLProtocolSocketFactory(trust, key);
 
             final LoggingProtocolCommandListener listener = new LoggingProtocolCommandListener(this);
-            final FTPClient client = new FTPClient(f, f.getSSLContext()) {
+            final FTPClient client = new FTPClient(host.getProtocol(), f, f.getSSLContext()) {
                 @Override
                 public void disconnect() throws IOException {
                     try {

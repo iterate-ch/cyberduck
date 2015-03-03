@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.ssl.CertificateStoreX509KeyManager;
 import ch.cyberduck.core.ssl.CertificateStoreX509TrustManager;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
@@ -263,5 +264,47 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
         for(int i = 1; i <= files; i++) {
             assertTrue(transferred.contains(new Path("/t" + i, EnumSet.of(Path.Type.file))));
         }
+    }
+
+    @Test
+    public void testBorrowTimeoutNoSessionAvailable() throws Exception {
+        final Host host = new Host(new SFTPProtocol(), "localhost", new Credentials("u", "p"));
+        final Transfer t = new UploadTransfer(host,
+                new Path("/t", EnumSet.of(Path.Type.directory)),
+                new NullLocal("l"));
+        final LoginConnectionService connection = new LoginConnectionService(new DisabledLoginCallback(),
+                new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()) {
+            @Override
+            public void connect(final Session session, final Cache<Path> cache) throws BackgroundException {
+                //
+            }
+        };
+        final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
+                connection, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
+                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(),
+                new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DisabledCertificateStore()),
+                new CertificateStoreX509KeyManager(new DisabledCertificateStore()), 1);
+        final Session<?> session = worker.borrow();
+        assertNotNull(session);
+        final CyclicBarrier lock = new CyclicBarrier(2);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    assertSame(session, worker.borrow());
+                    try {
+                        lock.await();
+                    }
+                    catch(InterruptedException | BrokenBarrierException e) {
+                        fail();
+                    }
+                }
+                catch(BackgroundException e) {
+                    fail();
+                }
+            }
+        }).start();
+        Thread.sleep(2000L);
+        worker.release(session);
     }
 }

@@ -22,7 +22,6 @@ import org.apache.log4j.Logger;
 
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
-import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -36,17 +35,17 @@ import java.security.cert.X509Certificate;
 public final class DefaultX509TrustManager implements X509TrustManager {
     private static final Logger log = Logger.getLogger(DefaultX509TrustManager.class);
 
-    private X509TrustManager standardTrustManager;
+    private javax.net.ssl.X509TrustManager system;
 
     public DefaultX509TrustManager init() throws IOException {
         try {
             final TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
             factory.init(KeyStore.getInstance(KeyStore.getDefaultType()));
-            TrustManager[] trustmanagers = factory.getTrustManagers();
+            final TrustManager[] trustmanagers = factory.getTrustManagers();
             if(trustmanagers.length == 0) {
                 throw new NoSuchAlgorithmException("SunX509 trust manager not supported");
             }
-            this.standardTrustManager = (X509TrustManager) trustmanagers[0];
+            system = (javax.net.ssl.X509TrustManager) trustmanagers[0];
         }
         catch(NoSuchAlgorithmException | KeyStoreException e) {
             throw new IOException(e);
@@ -55,32 +54,35 @@ public final class DefaultX509TrustManager implements X509TrustManager {
     }
 
     @Override
-    public void checkClientTrusted(X509Certificate[] x509Certificates, String authType)
-            throws CertificateException {
-        this.standardTrustManager.checkClientTrusted(x509Certificates, authType);
+    public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
+        this.checkServerTrusted(certs, cipher);
     }
 
     @Override
-    public void checkServerTrusted(X509Certificate[] x509Certificates, String authType)
-            throws CertificateException {
-        if((x509Certificates != null)) {
+    public void checkClientTrusted(final X509Certificate[] certs, final String cipher) throws CertificateException {
+        system.checkClientTrusted(certs, cipher);
+    }
+
+    @Override
+    public void checkServerTrusted(final X509Certificate[] certs, final String cipher) throws CertificateException {
+        if((certs != null)) {
             if(log.isInfoEnabled()) {
                 log.info("Server certificate chain:");
-                for(int i = 0; i < x509Certificates.length; i++) {
-                    log.info(String.format("X509Certificate[%d]=%s", i, x509Certificates[i]));
+                for(int i = 0; i < certs.length; i++) {
+                    log.info(String.format("X509Certificate[%d]=%s", i, certs[i]));
                 }
             }
         }
-        if((x509Certificates != null) && (x509Certificates.length == 1)) {
-            x509Certificates[0].checkValidity();
+        if((certs != null) && (certs.length == 1)) {
+            certs[0].checkValidity();
         }
         else {
-            standardTrustManager.checkServerTrusted(x509Certificates, authType);
+            system.checkServerTrusted(certs, cipher);
         }
     }
 
     @Override
     public X509Certificate[] getAcceptedIssuers() {
-        return standardTrustManager.getAcceptedIssuers();
+        return system.getAcceptedIssuers();
     }
 }

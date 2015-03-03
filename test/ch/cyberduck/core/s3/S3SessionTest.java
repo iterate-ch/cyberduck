@@ -54,17 +54,17 @@ public class S3SessionTest extends AbstractTestCase {
             }
 
             @Override
-            public void verify(final String hostname, final X509Certificate[] certs) throws CertificateException {
+            public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
                 throw new CertificateException();
             }
 
             @Override
-            public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+            public void checkClientTrusted(X509Certificate[] x509Certificates, final String cipher) throws CertificateException {
                 fail();
             }
 
             @Override
-            public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+            public void checkServerTrusted(X509Certificate[] x509Certificates, final String cipher) throws CertificateException {
                 fail();
             }
 

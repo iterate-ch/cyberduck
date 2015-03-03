@@ -471,7 +471,7 @@ public abstract class Preferences {
 
         // Segmented concurrent downloads
         defaults.put("queue.download.segments.threshold", String.valueOf(0L));
-        defaults.put("queue.download.segments.size", String.valueOf(20L * 1024L * 1024L));
+        defaults.put("queue.download.segments.size", String.valueOf(100L * 1024L * 1024L));
 
         /**
          * Open completed downloads
@@ -876,6 +876,8 @@ public abstract class Preferences {
 
         defaults.put("connection.ssl.provider.bouncycastle.position", String.valueOf(1));
         defaults.put("connection.ssl.protocols", "TLSv1.2, TLSv1.1, TLSv1");
+        defaults.put("connection.ssl.cipher.blacklist", StringUtils.EMPTY);
+
         defaults.put("connection.ssl.x509.revocation.online", String.valueOf(false));
 
         defaults.put("connection.ssl.keystore.type", null);

@@ -34,13 +34,19 @@ public class MappingMimeTypeService implements MimeTypeService {
     private static final Mimetypes types
             = Mimetypes.getInstance();
 
+    private static final String MIME_FILE = "mime.types";
+
     static {
         try {
-            final Enumeration<URL> resources = MappingMimeTypeService.class.getClassLoader().getResources("mime.types");
+            final ClassLoader loader = MappingMimeTypeService.class.getClassLoader();
+            final Enumeration<URL> resources = loader.getResources(MIME_FILE);
+            if(!resources.hasMoreElements()) {
+                log.warn(String.format("No file %s in classpath %s", MIME_FILE, loader));
+            }
             while(resources.hasMoreElements()) {
                 final URL url = resources.nextElement();
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Loading MIME types from %s", url));
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Loading MIME types from %s", url));
                 }
                 types.loadAndReplaceMimetypes(url.openStream());
             }

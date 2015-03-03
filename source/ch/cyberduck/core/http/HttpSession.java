@@ -156,7 +156,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                     }
                 })
                 .register(Scheme.https.toString(), new SSLConnectionSocketFactory(
-                        new CustomTrustSSLProtocolSocketFactory(trust.init(), key.init()),
+                        new CustomTrustSSLProtocolSocketFactory(trust, key),
                         new DisabledX509HostnameVerifier()
                 ) {
                     @Override

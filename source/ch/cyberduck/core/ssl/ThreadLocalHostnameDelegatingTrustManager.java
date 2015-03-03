@@ -18,6 +18,7 @@ package ch.cyberduck.core.ssl;
  * feedback@cyberduck.io
  */
 
+import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
@@ -39,23 +40,24 @@ public final class ThreadLocalHostnameDelegatingTrustManager implements X509Trus
     }
 
     @Override
-    public X509TrustManager init() {
+    public X509TrustManager init() throws IOException {
+        delegate.init();
         return this;
     }
 
     @Override
-    public void verify(final String hostname, final X509Certificate[] certs) throws CertificateException {
-        delegate.verify(hostname, certs);
+    public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
+        delegate.verify(hostname, certs, cipher);
     }
 
     @Override
-    public void checkClientTrusted(final X509Certificate[] certs, final String s) throws CertificateException {
-        delegate.verify(target.get(), certs);
+    public void checkClientTrusted(final X509Certificate[] certs, final String cipher) throws CertificateException {
+        delegate.verify(target.get(), certs, cipher);
     }
 
     @Override
-    public void checkServerTrusted(final X509Certificate[] certs, final String s) throws CertificateException {
-        delegate.verify(target.get(), certs);
+    public void checkServerTrusted(final X509Certificate[] certs, final String cipher) throws CertificateException {
+        delegate.verify(target.get(), certs, cipher);
     }
 
     @Override

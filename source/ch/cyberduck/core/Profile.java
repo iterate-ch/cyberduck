@@ -377,7 +377,7 @@ public final class Profile implements Protocol, Serializable {
 
     @Override
     public int compareTo(final Protocol o) {
-        return o.compareTo(this);
+        return this.getIdentifier().compareTo(o.getIdentifier());
     }
 
     @Override

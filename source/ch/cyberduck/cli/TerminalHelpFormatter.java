@@ -20,6 +20,7 @@ package ch.cyberduck.cli;
 
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.PrintWriter;
 
@@ -27,61 +28,60 @@ import java.io.PrintWriter;
  * @version $Id$
  */
 public final class TerminalHelpFormatter extends HelpFormatter {
+
+    private static final int DEFAULT_WIDTH = 200;
+
+    public TerminalHelpFormatter() {
+        this(DEFAULT_WIDTH);
+    }
+
+    public TerminalHelpFormatter(final int width) {
+        this.setWidth(width);
+    }
+
     @Override
     public void printHelp(PrintWriter pw, int width, String cmdLineSyntax,
                           String header, Options options, int leftPad,
                           int descPad, String footer, boolean autoUsage) {
         if(autoUsage) {
-            printUsage(pw, width, cmdLineSyntax, options);
+            this.printUsage(pw, width, cmdLineSyntax, options);
         }
         else {
-            printUsage(pw, width, cmdLineSyntax);
+            this.printUsage(pw, width, cmdLineSyntax);
         }
-
         if((header != null) && (header.length() > 0)) {
-            printWrapped(pw, width, header);
+            this.printWrapped(pw, width, header);
         }
-
-        printOptions(pw, width, options, leftPad, descPad);
-
+        this.printOptions(pw, width, options, leftPad, descPad);
         if((footer != null) && (footer.length() > 0)) {
-            printWrapped(pw, width, footer);
+            this.printWrapped(pw, width, footer);
         }
     }
 
-    protected StringBuffer renderWrappedText(StringBuffer sb, int width,
-                                             int nextLineTabStop, String text) {
+    protected StringBuffer renderWrappedText(final StringBuffer sb, final int width, int nextLineTabStop, String text) {
         int pos = findWrapPos(text, width, 0);
-
         if(pos == -1) {
             sb.append(rtrim(text));
 
             return sb;
         }
         sb.append(rtrim(text.substring(0, pos))).append(getNewLine());
-
         if(nextLineTabStop >= width) {
             // stops infinite loop happening
             nextLineTabStop = 1;
         }
-
         // all following lines must be padded with nextLineTabStop space characters
         final String padding = createPadding(nextLineTabStop);
-
         while(true) {
-            text = padding + text.substring(pos);
+            text = padding + StringUtils.removeStart(text.substring(pos), StringUtils.SPACE);
             pos = findWrapPos(text, width, 0);
-
             if(pos == -1) {
                 sb.append(text);
-
                 return sb;
             }
-
             if((text.length() > width) && (pos == nextLineTabStop - 1)) {
                 pos = width;
             }
-
             sb.append(rtrim(text.substring(0, pos))).append(getNewLine());
         }
     }

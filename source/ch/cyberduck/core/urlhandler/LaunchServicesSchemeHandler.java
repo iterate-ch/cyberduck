@@ -70,14 +70,18 @@ public final class LaunchServicesSchemeHandler extends AbstractSchemeHandler {
      */
     @Override
     public Application getDefaultHandler(final Scheme scheme) {
-        return applicationFinder.getDescription(this.getDefaultHandler(scheme.name()));
+        final Application application = applicationFinder.getDescription(this.getDefaultHandler(scheme.name()));
+        if(applicationFinder.isInstalled(application)) {
+            return application;
+        }
+        return Application.notfound;
     }
 
     private native String getDefaultHandler(String scheme);
 
     @Override
     public List<Application> getAllHandlers(final Scheme scheme) {
-        List<Application> handlers = new ArrayList<Application>();
+        final List<Application> handlers = new ArrayList<Application>();
         for(String bundleIdentifier : this.getAllHandlers(scheme.name())) {
             final Application application = applicationFinder.getDescription(bundleIdentifier);
             if(applicationFinder.isInstalled(application)) {
