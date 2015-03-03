@@ -96,10 +96,6 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
     @Delegate
     private FSCallback fileystemCallback;
 
-    private FuseFilesystem() {
-        //
-    }
-
     @Override
     public void mount(final Session s) {
         session = s;

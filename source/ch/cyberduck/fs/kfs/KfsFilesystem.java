@@ -77,10 +77,6 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
      */
     private KfsLibrary filesystem;
 
-    private KfsFilesystem() {
-        //
-    }
-
     /**
      * Reference to mounted filesystem
      */
