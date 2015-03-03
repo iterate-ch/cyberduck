@@ -38,7 +38,7 @@ public class ProtocolFactoryTest extends AbstractTestCase {
         assertEquals(new DAVSSLProtocol(), ProtocolFactory.forScheme("https"));
         assertEquals(new FTPProtocol(), ProtocolFactory.forScheme("ftp"));
         assertEquals(new FTPTLSProtocol(), ProtocolFactory.forScheme("ftps"));
-        assertEquals(new IRODSProtocol(), ProtocolFactory.forScheme("irods"));
+        assertNull(ProtocolFactory.forScheme("irods"));
     }
 
     @Test
@@ -48,7 +48,7 @@ public class ProtocolFactoryTest extends AbstractTestCase {
         assertTrue(ProtocolFactory.isURL("sftp://h.name"));
         assertTrue(ProtocolFactory.isURL("http://h.name"));
         assertTrue(ProtocolFactory.isURL("https://h.name"));
-        assertTrue(ProtocolFactory.isURL("irods://h.name"));
+        assertFalse(ProtocolFactory.isURL("irods://h.name"));
         assertFalse(ProtocolFactory.isURL("h.name"));
     }
 
