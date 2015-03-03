@@ -100,6 +100,12 @@ public final class TerminalOptionsBuilder {
                 .isRequired(false)
                 .create("l"));
         options.addOption(OptionBuilder
+                .withDescription("Mount as file system")
+                .withLongOpt(TerminalAction.mount.name())
+                .hasArg(true).withArgName("url")
+                .isRequired(false)
+                .create());
+        options.addOption(OptionBuilder
                 .withDescription("Long list format with modification date and permission mask")
                 .withLongOpt(Params.longlist.name())
                 .hasArg(false)

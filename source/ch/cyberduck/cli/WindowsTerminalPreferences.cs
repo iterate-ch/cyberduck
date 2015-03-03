@@ -42,7 +42,7 @@ namespace Ch.Cyberduck.Cli
             defaults.put("factory.applicationlauncher.class", typeof (WindowsApplicationLauncher).AssemblyQualifiedName);
             defaults.put("factory.applicationfinder.class", typeof (RegistryApplicationFinder).AssemblyQualifiedName);
             defaults.put("factory.local.class", typeof (SystemLocal).AssemblyQualifiedName);
-            defaults.put("factory.passwordstore.class", typeof (PasswordKeychain).AssemblyQualifiedName);
+            defaults.put("factory.passwordstore.class", typeof (DataProtectorPasswordStore).AssemblyQualifiedName);
             defaults.put("factory.proxy.class", typeof (SystemProxy).AssemblyQualifiedName);
             defaults.put("factory.reachability.class", typeof (TcpReachability).AssemblyQualifiedName);
             defaults.put("factory.filedescriptor.class", typeof (Win32FileDescriptor).AssemblyQualifiedName);

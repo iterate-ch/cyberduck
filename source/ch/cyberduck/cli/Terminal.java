@@ -46,6 +46,8 @@ import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.worker.DisconnectWorker;
 import ch.cyberduck.core.worker.SessionListWorker;
+import ch.cyberduck.fs.Filesystem;
+import ch.cyberduck.fs.FilesystemFactory;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -192,6 +194,8 @@ public class Terminal {
                     return this.edit(session, remote);
                 case list:
                     return this.list(session, remote, input.hasOption(TerminalOptionsBuilder.Params.longlist.name()));
+                case mount:
+                    return this.mount(session, remote);
             }
             final Transfer transfer;
             switch(action) {
@@ -309,6 +313,19 @@ public class Terminal {
                 new PreferencesX509KeyManager(new TerminalCertificateStore(reader)));
         this.execute(action);
         if(action.hasFailed()) {
+            return Exit.failure;
+        }
+        return Exit.success;
+    }
+
+    protected Exit mount(final Session session, final Path remote) {
+        final CountDownLatch lock = new CountDownLatch(1);
+        final Filesystem fs = FilesystemFactory.get();
+        fs.mount(session);
+        try {
+            lock.await();
+        }
+        catch(InterruptedException e) {
             return Exit.failure;
         }
         return Exit.success;

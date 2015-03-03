@@ -23,7 +23,7 @@ using org.apache.log4j;
 
 namespace Ch.Cyberduck.Core
 {
-    public class PasswordKeychain : HostPasswordStore
+    public class DataProtectorPasswordStore : HostPasswordStore
     {
         private static readonly Logger Log = Logger.getLogger(typeof (Keychain).FullName);
 

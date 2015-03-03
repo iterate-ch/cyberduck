@@ -53,6 +53,7 @@ import ch.cyberduck.core.local.RevealService;
 import ch.cyberduck.core.local.RevealServiceFactory;
 import ch.cyberduck.fs.Filesystem;
 import ch.cyberduck.fs.FilesystemBackgroundAction;
+import ch.cyberduck.ui.cocoa.Delegate;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
@@ -83,6 +84,17 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
     private Local mountpoint;
 
     private RevealService reveal = RevealServiceFactory.get();
+
+    /**
+     * Filesystem implementation
+     */
+    private GMUserFileSystem filesystem;
+
+    /**
+     *
+     */
+    @Delegate
+    private FSCallback fileystemCallback;
 
     private FuseFilesystem() {
         //
@@ -158,16 +170,6 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
 //        }
         filesystem.setDelegate(null);
     }
-
-    /**
-     *
-     */
-    private GMUserFileSystem filesystem;
-
-    /**
-     *
-     */
-    private FSCallback fileystemCallback;
 
     /**
      *
@@ -252,10 +254,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             try {
                 return future.get();
             }
-            catch(InterruptedException e) {
-                log.error("Error executing action for mounted disk:" + e.getMessage());
-            }
-            catch(ExecutionException e) {
+            catch(InterruptedException | ExecutionException e) {
                 log.error("Error executing action for mounted disk:" + e.getMessage());
             }
             return null;
@@ -293,10 +292,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             try {
                 return future.get();
             }
-            catch(InterruptedException e) {
-                log.error("Error executing action for mounted disk:" + e.getMessage());
-            }
-            catch(ExecutionException e) {
+            catch(InterruptedException | ExecutionException e) {
                 log.error("Error executing action for mounted disk:" + e.getMessage());
             }
             return null;
@@ -335,10 +331,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             try {
                 future.get();
             }
-            catch(InterruptedException e) {
-                log.error("Error executing action for mounted disk:" + e.getMessage());
-            }
-            catch(ExecutionException e) {
+            catch(InterruptedException | ExecutionException e) {
                 log.error("Error executing action for mounted disk:" + e.getMessage());
             }
             return true;
@@ -358,10 +351,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             try {
                 return future.get();
             }
-            catch(InterruptedException e) {
-                log.error("Error executing action for mounted disk:" + e.getMessage());
-            }
-            catch(ExecutionException e) {
+            catch(InterruptedException | ExecutionException e) {
                 log.error("Error executing action for mounted disk:" + e.getMessage());
             }
             return false;
@@ -384,10 +374,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             try {
                 return future.get();
             }
-            catch(InterruptedException e) {
-                log.error("Error executing action for mounted disk:" + e.getMessage());
-            }
-            catch(ExecutionException e) {
+            catch(InterruptedException | ExecutionException e) {
                 log.error("Error executing action for mounted disk:" + e.getMessage());
             }
             return false;
@@ -407,10 +394,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             try {
                 return future.get();
             }
-            catch(InterruptedException e) {
-                log.error("Error executing action for mounted disk:" + e.getMessage());
-            }
-            catch(ExecutionException e) {
+            catch(InterruptedException | ExecutionException e) {
                 log.error("Error executing action for mounted disk:" + e.getMessage());
             }
             return false;
@@ -430,10 +414,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             try {
                 return future.get();
             }
-            catch(InterruptedException e) {
-                log.error("Error executing action for mounted disk:" + e.getMessage());
-            }
-            catch(ExecutionException e) {
+            catch(InterruptedException | ExecutionException e) {
                 log.error("Error executing action for mounted disk:" + e.getMessage());
             }
             return false;
@@ -455,10 +436,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             try {
                 return future.get();
             }
-            catch(InterruptedException e) {
-                log.error("Error executing action for mounted disk:" + e.getMessage());
-            }
-            catch(ExecutionException e) {
+            catch(InterruptedException | ExecutionException e) {
                 log.error("Error executing action for mounted disk:" + e.getMessage());
             }
             return false;

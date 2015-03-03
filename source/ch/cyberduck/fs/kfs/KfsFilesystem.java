@@ -72,6 +72,11 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
 
     private RevealService reveal = RevealServiceFactory.get();
 
+    /**
+     * Filesystem implementation
+     */
+    private KfsLibrary filesystem;
+
     private KfsFilesystem() {
         //
     }
@@ -107,10 +112,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                 try {
                     return future.get();
                 }
-                catch(InterruptedException e) {
-                    log.error("Error executing action for mounted disk:" + e.getMessage());
-                }
-                catch(ExecutionException e) {
+                catch(InterruptedException | ExecutionException e) {
                     log.error("Error executing action for mounted disk:" + e.getMessage());
                 }
                 return false;
@@ -190,10 +192,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                 try {
                     return future.get();
                 }
-                catch(InterruptedException e) {
-                    log.error("Error executing action for mounted disk:" + e.getMessage());
-                }
-                catch(ExecutionException e) {
+                catch(InterruptedException | ExecutionException e) {
                     log.error("Error executing action for mounted disk:" + e.getMessage());
                 }
                 return false;
@@ -216,10 +215,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                 try {
                     return future.get();
                 }
-                catch(InterruptedException e) {
-                    log.error("Error executing action for mounted disk:" + e.getMessage());
-                }
-                catch(ExecutionException e) {
+                catch(InterruptedException | ExecutionException e) {
                     log.error("Error executing action for mounted disk:" + e.getMessage());
                 }
                 return false;
@@ -261,10 +257,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                 try {
                     return future.get();
                 }
-                catch(InterruptedException e) {
-                    log.error("Error executing action for mounted disk:" + e.getMessage());
-                }
-                catch(ExecutionException e) {
+                catch(InterruptedException | ExecutionException e) {
                     log.error("Error executing action for mounted disk:" + e.getMessage());
                 }
                 return new KfsLibrary.size_t(-1);
@@ -299,10 +292,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                 try {
                     return future.get();
                 }
-                catch(InterruptedException e) {
-                    log.error("Error executing action for mounted disk:" + e.getMessage());
-                }
-                catch(ExecutionException e) {
+                catch(InterruptedException | ExecutionException e) {
                     log.error("Error executing action for mounted disk:" + e.getMessage());
                 }
                 return new KfsLibrary.size_t(-1);
@@ -343,10 +333,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                 try {
                     return future.get();
                 }
-                catch(InterruptedException e) {
-                    log.error("Error executing action for mounted disk:" + e.getMessage());
-                }
-                catch(ExecutionException e) {
+                catch(InterruptedException | ExecutionException e) {
                     log.error("Error executing action for mounted disk:" + e.getMessage());
                 }
                 return false;
@@ -368,10 +355,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                 try {
                     return future.get();
                 }
-                catch(InterruptedException e) {
-                    log.error("Error executing action for mounted disk:" + e.getMessage());
-                }
-                catch(ExecutionException e) {
+                catch(InterruptedException | ExecutionException e) {
                     log.error("Error executing action for mounted disk:" + e.getMessage());
                 }
                 return false;
@@ -395,10 +379,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                 try {
                     return future.get();
                 }
-                catch(InterruptedException e) {
-                    log.error("Error executing action for mounted disk:" + e.getMessage());
-                }
-                catch(ExecutionException e) {
+                catch(InterruptedException | ExecutionException e) {
                     log.error("Error executing action for mounted disk:" + e.getMessage());
                 }
                 return false;
@@ -444,10 +425,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                 try {
                     return future.get();
                 }
-                catch(InterruptedException e) {
-                    log.error("Error executing action for mounted disk:" + e.getMessage());
-                }
-                catch(ExecutionException e) {
+                catch(InterruptedException | ExecutionException e) {
                     log.error("Error executing action for mounted disk:" + e.getMessage());
                 }
                 return false;
@@ -469,10 +447,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                 try {
                     return future.get();
                 }
-                catch(InterruptedException e) {
-                    log.error("Error executing action for mounted disk:" + e.getMessage());
-                }
-                catch(ExecutionException e) {
+                catch(InterruptedException | ExecutionException e) {
                     log.error("Error executing action for mounted disk:" + e.getMessage());
                 }
                 return false;
@@ -515,9 +490,4 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
         log.debug("unmount");
         filesystem.kfs_unmount(identifier);
     }
-
-    /**
-     *
-     */
-    private KfsLibrary filesystem;
 }

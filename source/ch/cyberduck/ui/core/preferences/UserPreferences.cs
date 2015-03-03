@@ -38,7 +38,7 @@ using Ch.Cyberduck.Ui.Winforms.Threading;
 using java.util;
 using org.apache.log4j;
 using Application = System.Windows.Forms.Application;
-using Keychain = Ch.Cyberduck.Core.PasswordKeychain;
+using Keychain = Ch.Cyberduck.Core.DataProtectorPasswordStore;
 using Path = System.IO.Path;
 using Rendezvous = Ch.Cyberduck.Core.Rendezvous;
 
