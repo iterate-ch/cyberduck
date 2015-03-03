@@ -38,7 +38,6 @@ using Ch.Cyberduck.Ui.Winforms.Threading;
 using java.util;
 using org.apache.log4j;
 using Application = System.Windows.Forms.Application;
-using Keychain = Ch.Cyberduck.Core.DataProtectorPasswordStore;
 using Path = System.IO.Path;
 using Rendezvous = Ch.Cyberduck.Core.Rendezvous;
 
@@ -350,7 +349,7 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             defaults.put("factory.local.class", typeof (SystemLocal).AssemblyQualifiedName);
             defaults.put("factory.locale.class", typeof (DictionaryLocale).AssemblyQualifiedName);
             defaults.put("factory.dateformatter.class", typeof (UserDefaultsDateFormatter).AssemblyQualifiedName);
-            defaults.put("factory.passwordstore.class", typeof (Keychain).AssemblyQualifiedName);
+            defaults.put("factory.passwordstore.class", typeof (DataProtectorPasswordStore).AssemblyQualifiedName);
             defaults.put("factory.certificatestore.class", typeof (SystemCertificateStore).AssemblyQualifiedName);
             defaults.put("factory.hostkeycallback.class", typeof (HostKeyController).AssemblyQualifiedName);
             defaults.put("factory.logincallback.class", typeof (PromptLoginController).AssemblyQualifiedName);
