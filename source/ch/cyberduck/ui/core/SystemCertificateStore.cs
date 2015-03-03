@@ -33,9 +33,9 @@ using X509Certificate = java.security.cert.X509Certificate;
 
 namespace Ch.Cyberduck.Ui.Core
 {
-    public class CertificateKeychain : CertificateStore
+    public class SystemCertificateStore : CertificateStore
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (CertificateKeychain).FullName);
+        private static readonly Logger Log = Logger.getLogger(typeof (SystemCertificateStore).FullName);
 
         public bool isTrusted(String hostName, List certs)
         {

@@ -2703,11 +2703,11 @@ source/ch/cyberduck/ui/controller/threading/BrowserControllerBackgroundAction.cs
 source/ch/cyberduck/ui/controller/threading/SimpleDefaultMainAction.cs -text
 source/ch/cyberduck/ui/controller/threading/SimpleWindowMainAction.cs -text
 source/ch/cyberduck/ui/controller/threading/WindowMainAction.cs -text
-source/ch/cyberduck/ui/core/CertificateKeychain.cs -text
 source/ch/cyberduck/ui/core/Commands.cs -text
 source/ch/cyberduck/ui/core/CrashReporter.cs -text
 source/ch/cyberduck/ui/core/DragDropLib.cs -text
 source/ch/cyberduck/ui/core/GlobalKeyboardHook.cs -text
+source/ch/cyberduck/ui/core/SystemCertificateStore.cs -text
 source/ch/cyberduck/ui/core/Utils.cs -text
 source/ch/cyberduck/ui/core/VirtualFileDataObject.cs -text
 source/ch/cyberduck/ui/core/local/TaskbarApplicationBadgeLabeler.cs -text

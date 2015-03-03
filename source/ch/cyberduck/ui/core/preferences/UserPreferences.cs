@@ -351,7 +351,7 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             defaults.put("factory.locale.class", typeof (DictionaryLocale).AssemblyQualifiedName);
             defaults.put("factory.dateformatter.class", typeof (UserDefaultsDateFormatter).AssemblyQualifiedName);
             defaults.put("factory.passwordstore.class", typeof (Keychain).AssemblyQualifiedName);
-            defaults.put("factory.certificatestore.class", typeof (CertificateKeychain).AssemblyQualifiedName);
+            defaults.put("factory.certificatestore.class", typeof (SystemCertificateStore).AssemblyQualifiedName);
             defaults.put("factory.hostkeycallback.class", typeof (HostKeyController).AssemblyQualifiedName);
             defaults.put("factory.logincallback.class", typeof (PromptLoginController).AssemblyQualifiedName);
             defaults.put("factory.transfererrorcallback.class",

@@ -71,7 +71,7 @@ namespace Ch.Cyberduck.Ui.Controller
             //register exception
             PreferencesFactory.get()
                 .setProperty(hostName + ".certificate.accept",
-                    CertificateKeychain.ConvertCertificate(cert).SubjectName.Name);
+                    SystemCertificateStore.ConvertCertificate(cert).SubjectName.Name);
             Assert.IsTrue(CertificateStoreFactory.get().isTrusted(hostName, certs));
         }
 
@@ -161,7 +161,7 @@ namespace Ch.Cyberduck.Ui.Controller
             //register exception
             PreferencesFactory.get()
                 .setProperty(hostName + ".certificate.accept",
-                    CertificateKeychain.ConvertCertificate(hostCert).SubjectName.Name);
+                    SystemCertificateStore.ConvertCertificate(hostCert).SubjectName.Name);
             Assert.IsTrue(CertificateStoreFactory.get().isTrusted(hostName, certs));
         }
     }

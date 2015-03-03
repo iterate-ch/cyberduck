@@ -174,7 +174,7 @@
     <Compile Include="ui\controller\MainController.cs" />
     <Compile Include="ui\controller\threading\BrowserControllerBackgroundAction.cs" />
     <Compile Include="ui\controller\UpdateController.cs" />
-    <Compile Include="ui\core\CertificateKeychain.cs" />
+    <Compile Include="ui\core\SystemCertificateStore.cs" />
     <Compile Include="ui\core\Commands.cs" />
     <Compile Include="ui\core\CrashReporter.cs" />
     <Compile Include="ui\core\DragDropLib.cs" />
