@@ -28,6 +28,7 @@ import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
@@ -162,6 +163,9 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
         }
         if(type == Touch.class) {
             return (T) new IRODSTouchFeature(this);
+        }
+        if(type == Copy.class) {
+            return (T) new IRODSCopyFeature(this);
         }
         return super.getFeature(type);
     }
