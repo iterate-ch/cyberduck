@@ -500,14 +500,4 @@ public class DAVSessionTest extends AbstractTestCase {
             throw e;
         }
     }
-
-    @Test
-    public void testConnectProxy() throws Exception {
-
-    }
-
-    @Test
-    public void testConnectProxyAuth() throws Exception {
-
-    }
 }
