@@ -210,7 +210,7 @@ namespace Ch.Cyberduck.Ui.Controller
             string s = LocaleFactory.localizedString("No private key selected");
             if (View.PkCheckboxState)
             {
-                string selectedKeyFile = UserPreferences.HomeFolder;
+                string selectedKeyFile = PreferencesFactory.get().getProperty("local.user.home");
                 if (!s.Equals(View.PkLabel))
                 {
                     selectedKeyFile = View.PkLabel;

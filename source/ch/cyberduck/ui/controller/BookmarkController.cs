@@ -160,7 +160,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (View.PkCheckboxState)
             {
-                string selectedKeyFile = UserPreferences.HomeFolder;
+                string selectedKeyFile = PreferencesFactory.get().getProperty("local.user.home");
                 if (null != _host.getCredentials().getIdentity())
                 {
                     selectedKeyFile = _host.getCredentials().getIdentity().getAbsolute();
