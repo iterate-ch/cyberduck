@@ -30,12 +30,20 @@ namespace Ch.Cyberduck.Core
 
         public override Proxy find(Host host)
         {
-            string target = new HostUrlProvider(false).get(host);
-            if (_system.IsBypassed(new Uri(target)))
+            Uri target;
+            try
+            {
+                target = new Uri(new HostUrlProvider(false).get(host));
+            }
+            catch (UriFormatException e)
             {
                 return Proxy.DIRECT;
             }
-            Uri proxy = _system.GetProxy(new Uri(target));
+            if (_system.IsBypassed(target))
+            {
+                return Proxy.DIRECT;
+            }
+            Uri proxy = _system.GetProxy(target);
             return new Proxy(Proxy.Type.valueOf(proxy.Scheme.ToUpper()), proxy.Host, proxy.Port);
         }
     }
