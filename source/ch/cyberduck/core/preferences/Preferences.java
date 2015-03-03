@@ -471,7 +471,7 @@ public abstract class Preferences {
 
         // Segmented concurrent downloads
         defaults.put("queue.download.segments.threshold", String.valueOf(0L));
-        defaults.put("queue.download.segments.size", String.valueOf(20L * 1024L * 1024L));
+        defaults.put("queue.download.segments.size", String.valueOf(100L * 1024L * 1024L));
 
         /**
          * Open completed downloads
