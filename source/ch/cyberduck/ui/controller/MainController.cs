@@ -77,7 +77,7 @@ namespace Ch.Cyberduck.Ui.Controller
         static MainController()
         {
             StructureMapBootstrapper.Bootstrap();
-            PreferencesFactory.set(new UserPreferences());
+            PreferencesFactory.set(new SettingsDictionaryPreferences());
             ProtocolFactory.register();
 
             if (!Debugger.IsAttached)

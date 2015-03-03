@@ -2711,7 +2711,7 @@ source/ch/cyberduck/ui/core/SystemCertificateStore.cs -text
 source/ch/cyberduck/ui/core/Utils.cs -text
 source/ch/cyberduck/ui/core/VirtualFileDataObject.cs -text
 source/ch/cyberduck/ui/core/local/TaskbarApplicationBadgeLabeler.cs -text
-source/ch/cyberduck/ui/core/preferences/UserPreferences.cs -text
+source/ch/cyberduck/ui/core/preferences/SettingsDictionaryPreferences.cs -text
 source/ch/cyberduck/ui/core/urlhandler/URLSchemeHandlerConfiguration.cs -text
 source/ch/cyberduck/ui/growl/ToolstripNotificationService.cs -text
 source/ch/cyberduck/ui/winforms/AboutBox.Designer.cs -text

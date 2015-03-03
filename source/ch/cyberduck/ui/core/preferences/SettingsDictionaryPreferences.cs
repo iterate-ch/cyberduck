@@ -23,6 +23,7 @@ using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using ch.cyberduck.core;
+using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.local;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Editor;
@@ -43,9 +44,9 @@ using Rendezvous = Ch.Cyberduck.Core.Rendezvous;
 
 namespace Ch.Cyberduck.Ui.Core.Preferences
 {
-    public class UserPreferences : ch.cyberduck.core.preferences.Preferences
+    public class SettingsDictionaryPreferences : Preferences
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (UserPreferences).FullName);
+        private static readonly Logger Log = Logger.getLogger(typeof (SettingsDictionaryPreferences).FullName);
         private SettingsDictionary _settings;
 
         /// <summary>

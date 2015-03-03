@@ -180,7 +180,7 @@
     <Compile Include="ui\core\DragDropLib.cs" />
     <Compile Include="ui\core\GlobalKeyboardHook.cs" />
     <Compile Include="ui\core\local\TaskbarApplicationBadgeLabeler.cs" />
-    <Compile Include="ui\core\preferences\UserPreferences.cs" />
+    <Compile Include="ui\core\preferences\SettingsDictionaryPreferences.cs" />
     <Compile Include="ui\core\urlhandler\URLSchemeHandlerConfiguration.cs" />
     <Compile Include="ui\core\Utils.cs" />
     <Compile Include="ui\core\VirtualFileDataObject.cs" />
