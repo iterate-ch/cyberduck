@@ -33,6 +33,7 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -92,6 +93,7 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
         properties.setIrodsSocketTimeout(this.timeout());
         properties.setIrodsParallelSocketTimeout(this.timeout());
         properties.setMaxParallelThreads(preferences.getInteger("queue.maxtransfers"));
+        properties.setUseTransferThreadsPool(true);
         properties.setTransferThreadPoolMaxSimultaneousTransfers(preferences.getInteger("queue.maxtransfers"));
         properties.setUseParallelTransfer(host.getTransfer().equals(Host.TransferType.concurrent));
         client.getIrodsSession().setJargonProperties(properties);
@@ -157,6 +159,9 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
         }
         if(type == Write.class) {
             return (T) new IRODSWriteFeature(this);
+        }
+        if(type == Touch.class) {
+            return (T) new IRODSTouchFeature(this);
         }
         return super.getFeature(type);
     }
