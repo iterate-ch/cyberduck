@@ -33,11 +33,18 @@ import java.util.Map;
  */
 public class BundleLocale implements Locale {
 
-    private NSBundle bundle
-            = new BundleApplicationResourcesFinder().bundle();
+    private NSBundle bundle;
 
     private Map<String, String> cache
             = Collections.<String, String>synchronizedMap(new LRUMap(1000));
+
+    public BundleLocale() {
+        this(new BundleApplicationResourcesFinder().bundle());
+    }
+
+    public BundleLocale(final NSBundle bundle) {
+        this.bundle = bundle;
+    }
 
     @Override
     public String localize(final String key, final String table) {
@@ -58,5 +65,6 @@ public class BundleLocale implements Locale {
         else {
             preferences.setProperty("AppleLanguages", Collections.singletonList(language));
         }
+        cache.clear();
     }
 }
