@@ -66,7 +66,6 @@ public class TerminalLoginCallback implements LoginCallback {
     @Override
     public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason,
                        final LoginOptions options) throws LoginCanceledException {
-        credentials.setSaved(false);
         console.printf("%n%s", new StringAppender().append(title).append(reason));
         try {
             if(options.user) {
