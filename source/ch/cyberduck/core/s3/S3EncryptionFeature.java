@@ -51,7 +51,7 @@ public class S3EncryptionFeature implements Encryption {
     @Override
     public void setEncryption(final Path file, final String algorithm) throws BackgroundException {
         if(file.isFile()) {
-            final S3CopyFeature copy = new S3CopyFeature(session);
+            final S3ThresholdCopyFeature copy = new S3ThresholdCopyFeature(session);
             // Copy item in place to write new attributes
             copy.copy(file, file, new S3StorageClassFeature(session).getClass(file), algorithm,
                     new S3AccessControlListFeature(session).getPermission(file));

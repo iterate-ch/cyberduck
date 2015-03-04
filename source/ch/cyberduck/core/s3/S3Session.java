@@ -459,6 +459,9 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
             return (T) new S3MoveFeature(this);
         }
         if(type == Copy.class) {
+            if(host.getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
+                return (T) new S3ThresholdCopyFeature(this);
+            }
             return (T) new S3CopyFeature(this);
         }
         if(type == Delete.class) {
