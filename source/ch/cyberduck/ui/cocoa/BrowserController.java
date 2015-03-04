@@ -234,7 +234,7 @@ public class BrowserController extends WindowController
      * Caching files listings of previously listed directories
      */
     private PathCache cache
-            = new PathCache(PreferencesFactory.get().getInteger("browser.cache.size"));
+            = new PathCache(preferences.getInteger("browser.cache.size"));
 
     private List<Editor> editors
             = new ArrayList<Editor>();
