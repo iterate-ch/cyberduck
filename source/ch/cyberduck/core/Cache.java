@@ -46,7 +46,7 @@ public abstract class Cache<T extends Referenceable> {
         }
         else {
             // Will inflate to the given size
-            impl = Collections.synchronizedMap(new LRUMap(size));
+            impl = new LRUMap(size);
         }
     }
 
