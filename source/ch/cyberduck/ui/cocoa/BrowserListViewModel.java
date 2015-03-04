@@ -18,9 +18,6 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.binding.application.NSDraggingInfo;
 import ch.cyberduck.binding.application.NSPasteboard;
 import ch.cyberduck.binding.application.NSTableColumn;
@@ -30,6 +27,9 @@ import ch.cyberduck.binding.foundation.NSIndexSet;
 import ch.cyberduck.binding.foundation.NSMutableArray;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSURL;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.Path;
 
 import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSInteger;
@@ -60,7 +60,7 @@ public class BrowserListViewModel extends BrowserTableDataSource implements NSTa
     @Override
     public NSInteger numberOfRowsInTableView(final NSTableView view) {
         if(controller.isMounted()) {
-            return new NSInteger(this.get(this.controller.workdir()).size());
+            return new NSInteger(this.get(controller.workdir()).size());
         }
         return new NSInteger(0);
     }
@@ -68,14 +68,14 @@ public class BrowserListViewModel extends BrowserTableDataSource implements NSTa
     @Override
     public void tableView_setObjectValue_forTableColumn_row(final NSTableView view, final NSObject value,
                                                             final NSTableColumn column, final NSInteger row) {
-        super.setObjectValueForItem(this.get(this.controller.workdir()).get(row.intValue()),
+        super.setObjectValueForItem(this.get(controller.workdir()).get(row.intValue()),
                 value, column.identifier());
     }
 
     public NSObject tableView_objectValueForTableColumn_row(final NSTableView view,
                                                             final NSTableColumn column, final NSInteger row) {
         if(controller.isMounted()) {
-            final List<Path> children = this.get(this.controller.workdir());
+            final List<Path> children = this.get(controller.workdir());
             return super.objectValueForItem(children.get(row.intValue()), column.identifier());
         }
         return null;
@@ -96,7 +96,7 @@ public class BrowserListViewModel extends BrowserTableDataSource implements NSTa
                 if(-1 == draggingColumn || 0 == draggingColumn || 1 == draggingColumn) {
                     // Allow drags to icon and filename column
                     if(row.intValue() != -1) {
-                        Path p = this.get(this.controller.workdir()).get(row.intValue());
+                        Path p = this.get(controller.workdir()).get(row.intValue());
                         if(p.isDirectory()) {
                             destination = p;
                         }
@@ -117,7 +117,7 @@ public class BrowserListViewModel extends BrowserTableDataSource implements NSTa
         if(controller.isMounted()) {
             Path destination = controller.workdir();
             if(row.intValue() != -1) {
-                destination = this.get(this.controller.workdir()).get(row.intValue());
+                destination = this.get(controller.workdir()).get(row.intValue());
             }
             return super.acceptDrop(view, destination, draggingInfo);
         }
@@ -141,7 +141,7 @@ public class BrowserListViewModel extends BrowserTableDataSource implements NSTa
                                                                final NSPasteboard pboard) {
         if(controller.isMounted()) {
             NSMutableArray items = NSMutableArray.array();
-            final AttributedList<Path> children = this.get(this.controller.workdir());
+            final AttributedList<Path> children = this.get(controller.workdir());
             final List<Path> selected = new ArrayList<Path>();
             for(NSUInteger index = rowIndexes.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = rowIndexes.indexGreaterThanIndex(index)) {
                 selected.add(children.get(index.intValue()));
