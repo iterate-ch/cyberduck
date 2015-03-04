@@ -53,6 +53,7 @@ import ch.cyberduck.core.local.IconServiceFactory;
 import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.pasteboard.PathPasteboard;
 import ch.cyberduck.core.pasteboard.PathPasteboardFactory;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.transfer.CopyTransfer;
@@ -62,6 +63,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.ui.browser.Column;
 
+import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
@@ -90,6 +92,56 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     protected BrowserController controller;
 
     protected Cache<Path> cache;
+
+    private final Preferences preferences = PreferencesFactory.get();
+
+    private final Map<Item, NSAttributedString> attributed = new LRUMap(
+            preferences.getInteger("browser.model.cache.size")
+    );
+
+    private static final class Item {
+        private Path file;
+        private String column;
+
+        public Item(final Path file, final String column) {
+            this.file = file;
+            this.column = column;
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if(this == o) {
+                return true;
+            }
+            if(o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            final Item item = (Item) o;
+            if(column != null ? !column.equals(item.column) : item.column != null) {
+                return false;
+            }
+            if(file != null ? !file.equals(item.file) : item.file != null) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = file != null ? file.hashCode() : 0;
+            result = 31 * result + (column != null ? column.hashCode() : 0);
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("Item{");
+            sb.append("file=").append(file);
+            sb.append(", column='").append(column).append('\'');
+            sb.append('}');
+            return sb.toString();
+        }
+    }
 
     protected BrowserTableDataSource(final BrowserController controller, final Cache<Path> cache) {
         this.controller = controller;
@@ -141,36 +193,44 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         if(identifier.equals(Column.icon.name())) {
             return this.iconForPath(item);
         }
+        final Item key = new Item(item, identifier);
+        NSAttributedString value = attributed.get(key);
+        if(null != value) {
+            return value;
+        }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Lookup failed for %s in cache", key));
+        }
         if(identifier.equals(Column.filename.name())) {
-            return NSAttributedString.attributedStringWithAttributes(
+            value = NSAttributedString.attributedStringWithAttributes(
                     item.getName(),
                     TableCellAttributes.browserFontLeftAlignment());
         }
-        if(identifier.equals(Column.size.name())) {
-            return NSAttributedString.attributedStringWithAttributes(
+        else if(identifier.equals(Column.size.name())) {
+            value = NSAttributedString.attributedStringWithAttributes(
                     SizeFormatterFactory.get().format(item.attributes().getSize()),
                     TableCellAttributes.browserFontRightAlignment());
         }
-        if(identifier.equals(Column.modified.name())) {
-            return NSAttributedString.attributedStringWithAttributes(
+        else if(identifier.equals(Column.modified.name())) {
+            value = NSAttributedString.attributedStringWithAttributes(
                     UserDateFormatterFactory.get().getShortFormat(item.attributes().getModificationDate(),
-                            PreferencesFactory.get().getBoolean("browser.date.natural")),
+                            preferences.getBoolean("browser.date.natural")),
                     TableCellAttributes.browserFontLeftAlignment()
             );
         }
-        if(identifier.equals(Column.owner.name())) {
-            return NSAttributedString.attributedStringWithAttributes(
+        else if(identifier.equals(Column.owner.name())) {
+            value = NSAttributedString.attributedStringWithAttributes(
                     StringUtils.isBlank(item.attributes().getOwner()) ?
                             LocaleFactory.localizedString("Unknown") : item.attributes().getOwner(),
                     TableCellAttributes.browserFontLeftAlignment());
         }
-        if(identifier.equals(Column.group.name())) {
-            return NSAttributedString.attributedStringWithAttributes(
+        else if(identifier.equals(Column.group.name())) {
+            value = NSAttributedString.attributedStringWithAttributes(
                     StringUtils.isBlank(item.attributes().getGroup()) ?
                             LocaleFactory.localizedString("Unknown") : item.attributes().getGroup(),
                     TableCellAttributes.browserFontLeftAlignment());
         }
-        if(identifier.equals(Column.permission.name())) {
+        else if(identifier.equals(Column.permission.name())) {
             final Acl acl = item.attributes().getAcl();
             if(!Acl.EMPTY.equals(acl)) {
                 final StringBuilder s = new StringBuilder();
@@ -178,38 +238,44 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     s.append(String.format("%s%s:%s", s.length() == 0 ? StringUtils.EMPTY : ", ",
                             entry.getKey().getDisplayName(), entry.getValue()));
                 }
-                return NSAttributedString.attributedStringWithAttributes(s.toString(),
+                value = NSAttributedString.attributedStringWithAttributes(s.toString(),
                         TableCellAttributes.browserFontLeftAlignment());
             }
-            final Permission permission = item.attributes().getPermission();
-            return NSAttributedString.attributedStringWithAttributes(
-                    permission.toString(),
-                    TableCellAttributes.browserFontLeftAlignment());
+            else {
+                final Permission permission = item.attributes().getPermission();
+                value = NSAttributedString.attributedStringWithAttributes(
+                        permission.toString(),
+                        TableCellAttributes.browserFontLeftAlignment());
+            }
         }
-        if(identifier.equals(Column.kind.name())) {
-            return NSAttributedString.attributedStringWithAttributes(
+        else if(identifier.equals(Column.kind.name())) {
+            value = NSAttributedString.attributedStringWithAttributes(
                     descriptor.getKind(item),
                     TableCellAttributes.browserFontLeftAlignment());
         }
-        if(identifier.equals(Column.extension.name())) {
-            return NSAttributedString.attributedStringWithAttributes(
+        else if(identifier.equals(Column.extension.name())) {
+            value = NSAttributedString.attributedStringWithAttributes(
                     item.isFile() ? StringUtils.isNotBlank(item.getExtension()) ? item.getExtension() :
                             LocaleFactory.localizedString("None") : LocaleFactory.localizedString("None"),
                     TableCellAttributes.browserFontLeftAlignment());
         }
-        if(identifier.equals(Column.region.name())) {
-            return NSAttributedString.attributedStringWithAttributes(
+        else if(identifier.equals(Column.region.name())) {
+            value = NSAttributedString.attributedStringWithAttributes(
                     StringUtils.isNotBlank(item.attributes().getRegion()) ? item.attributes().getRegion() :
                             LocaleFactory.localizedString("Unknown"),
                     TableCellAttributes.browserFontLeftAlignment());
         }
-        if(identifier.equals(Column.version.name())) {
-            return NSAttributedString.attributedStringWithAttributes(
+        else if(identifier.equals(Column.version.name())) {
+            value = NSAttributedString.attributedStringWithAttributes(
                     StringUtils.isNotBlank(item.attributes().getVersionId()) ? item.attributes().getVersionId() :
                             LocaleFactory.localizedString("None"),
                     TableCellAttributes.browserFontLeftAlignment());
         }
-        throw new IllegalArgumentException(String.format("Unknown identifier %s", identifier));
+        else {
+            throw new IllegalArgumentException(String.format("Unknown identifier %s", identifier));
+        }
+        attributed.put(key, value);
+        return value;
     }
 
     /**

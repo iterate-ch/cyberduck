@@ -267,7 +267,7 @@ public abstract class Preferences {
         /**
          * Caching NS* proxy instances.
          */
-        defaults.put("browser.model.cache.size", String.valueOf(200));
+        defaults.put("browser.model.cache.size", String.valueOf(10000));
 
         /**
          * Callback threshold
