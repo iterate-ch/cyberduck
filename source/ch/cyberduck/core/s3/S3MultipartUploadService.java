@@ -67,12 +67,6 @@ import java.util.concurrent.Future;
 public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, MessageDigest> {
     private static final Logger log = Logger.getLogger(S3MultipartUploadService.class);
 
-    /**
-     * The maximum allowed parts in a multipart upload.
-     */
-    public static final int MAXIMUM_UPLOAD_PARTS = 10000;
-
-
     private S3Session session;
 
     private PathContainerService containerService
@@ -149,7 +143,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                         }
                     }
                     // Last part can be less than 5 MB. Adjust part size.
-                    final Long length = Math.min(Math.max((status.getLength() / MAXIMUM_UPLOAD_PARTS), partsize), remaining);
+                    final Long length = Math.min(Math.max((status.getLength() / S3MultipartService.MAXIMUM_UPLOAD_PARTS), partsize), remaining);
                     if(!skip) {
                         // Submit to queue
                         parts.add(this.submit(file, local, throttle, listener, status, multipart, partNumber, offset, length));

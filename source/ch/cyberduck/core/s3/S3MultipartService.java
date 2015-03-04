@@ -36,6 +36,11 @@ import java.util.List;
  * @version $Id$
  */
 public class S3MultipartService {
+    /**
+     * The maximum allowed parts in a multipart upload.
+     */
+    public static final int MAXIMUM_UPLOAD_PARTS = 10000;
+
     private static final Logger log = Logger.getLogger(S3MultipartService.class);
 
     private S3Session session;
