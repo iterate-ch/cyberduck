@@ -146,8 +146,7 @@ public class GoogleStorageSession extends S3Session {
             final String url = oauth.generateBrowserUrlToAuthorizeNativeApplication(
                     OAuthConstants.GSOAuth2_10.Scopes.FullControl
             );
-            final LoginOptions options = new LoginOptions();
-            options.keychain = false;
+            final LoginOptions options = new LoginOptions().keychain(false);
             controller.prompt(host, host.getCredentials(),
                     LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"), url, options);
 
