@@ -59,8 +59,7 @@ public class DefaultPathReference implements CacheReference<Path> {
      */
     @Override
     public String toString() {
-        return String.format("%s-%s%s",
-                String.valueOf(file.getType()), this.attributes(), file.getAbsolute());
+        return String.valueOf(file.getType()) + "-" + this.attributes() + file.getAbsolute();
     }
 
     /**
