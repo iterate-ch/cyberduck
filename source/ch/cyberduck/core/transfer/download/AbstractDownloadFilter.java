@@ -210,7 +210,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                         for(int segmentNumber = 1; remaining > 0; segmentNumber++) {
                             final Local renamed = LocalFactory.get(
                                     LocalFactory.get(local.getParent(), String.format("%s.cyberducksegment", local.getName())),
-                                    String.format("%d.cyberducksegment", segmentNumber));
+                                    String.format("%s-%d.cyberducksegment", local.getName(), segmentNumber));
                             boolean skip = false;
                             // Last part can be less than 5 MB. Adjust part size.
                             final Long length = Math.min(partsize, remaining);
