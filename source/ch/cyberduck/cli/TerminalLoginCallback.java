@@ -20,11 +20,9 @@ package ch.cyberduck.cli;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -40,9 +38,6 @@ import java.util.Arrays;
 public class TerminalLoginCallback implements LoginCallback {
 
     private final Console console = new Console();
-
-    private final HostPasswordStore keychain
-            = PasswordStoreFactory.get();
 
     private TerminalPromptReader prompt;
 
@@ -82,14 +77,6 @@ public class TerminalLoginCallback implements LoginCallback {
                 console.printf("Login as %s", credentials.getUsername());
             }
             if(options.password) {
-                if(options.keychain) {
-                    final String password = keychain.getPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
-                            bookmark.getHostname(), credentials.getUsername());
-                    if(StringUtils.isNotBlank(password)) {
-                        credentials.setPassword(password);
-                        return;
-                    }
-                }
                 final char[] input = console.readPassword("%n%s: ", credentials.getPasswordPlaceholder());
                 credentials.setPassword(String.valueOf(input));
                 Arrays.fill(input, ' ');
