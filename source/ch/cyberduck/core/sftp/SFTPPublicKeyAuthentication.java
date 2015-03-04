@@ -56,7 +56,7 @@ public class SFTPPublicKeyAuthentication implements SFTPAuthentication {
     }
 
     @Override
-    public boolean authenticate(final Host host, final LoginCallback prompt, CancelCallback cancel)
+    public boolean authenticate(final Host host, final LoginCallback prompt, final CancelCallback cancel)
             throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Login using public key authentication with credentials %s", host.getCredentials()));

@@ -48,7 +48,7 @@ public class SFTPAgentAuthentication implements SFTPAuthentication {
     }
 
     @Override
-    public boolean authenticate(final Host host, final LoginCallback controller, CancelCallback cancel)
+    public boolean authenticate(final Host host, final LoginCallback controller, final CancelCallback cancel)
             throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Login using agent %s with credentials %s", agent, host.getCredentials()));

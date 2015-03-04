@@ -40,7 +40,7 @@ public class SFTPPasswordAuthentication implements SFTPAuthentication {
     }
 
     @Override
-    public boolean authenticate(final Host host, final LoginCallback prompt, CancelCallback cancel)
+    public boolean authenticate(final Host host, final LoginCallback prompt, final CancelCallback cancel)
             throws BackgroundException {
         if(StringUtils.isBlank(host.getCredentials().getPassword())) {
             return false;

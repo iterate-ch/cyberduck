@@ -41,7 +41,7 @@ public class SFTPNoneAuthentication implements SFTPAuthentication {
     }
 
     @Override
-    public boolean authenticate(final Host host, final LoginCallback controller, CancelCallback cancel)
+    public boolean authenticate(final Host host, final LoginCallback controller, final CancelCallback cancel)
             throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Login using none authentication with credentials %s", host.getCredentials()));
