@@ -21,6 +21,7 @@ package ch.cyberduck.core.http;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.protocol.HttpContext;
+import org.apache.log4j.Logger;
 import org.jets3t.service.io.UnrecoverableIOException;
 
 import javax.net.ssl.SSLHandshakeException;
@@ -37,6 +38,7 @@ import com.barchart.udt.ExceptionUDT;
  * @version $Id$
  */
 public class ExtendedHttpRequestRetryHandler extends DefaultHttpRequestRetryHandler {
+    private static final Logger log = Logger.getLogger(ExtendedHttpRequestRetryHandler.class);
 
     private static final List<Class<? extends IOException>> exceptions = Arrays.asList(
             UnrecoverableIOException.class,
@@ -56,9 +58,17 @@ public class ExtendedHttpRequestRetryHandler extends DefaultHttpRequestRetryHand
     public boolean retryRequest(final IOException exception, final int executionCount, final HttpContext context) {
         if(ExceptionUtils.getRootCause(exception) != null) {
             if(ExceptionUtils.getRootCause(exception) instanceof RuntimeException) {
+                log.warn(String.format("Cancel retry request with execution count %d for failure %s", executionCount, exception));
                 return false;
             }
         }
-        return super.retryRequest(exception, executionCount, context);
+        final boolean retry = super.retryRequest(exception, executionCount, context);
+        if(retry) {
+            log.info(String.format("Retry request with failure %s", exception));
+        }
+        else {
+            log.warn(String.format("Cancel retry request with execution count %d for failure %s", executionCount, exception));
+        }
+        return retry;
     }
 }
