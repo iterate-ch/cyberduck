@@ -31,6 +31,11 @@ public final class HostCredentials extends Credentials {
         this.host = host;
     }
 
+    public HostCredentials(final Host host, final String user) {
+        super(user);
+        this.host = host;
+    }
+
     public HostCredentials(final Host host, final String user, final String password) {
         super(user, password);
         this.host = host;
