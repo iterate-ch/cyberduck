@@ -272,7 +272,7 @@ public abstract class Preferences {
         /**
          * Callback threshold
          */
-        defaults.put("browser.list.limit.directory", String.valueOf(10000));
+        defaults.put("browser.list.limit.directory", String.valueOf(5000));
         defaults.put("browser.list.limit.container", String.valueOf(100));
 
         defaults.put("info.toolbar.selected", String.valueOf(0));
