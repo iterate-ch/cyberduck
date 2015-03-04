@@ -103,6 +103,7 @@ public class SwiftSession extends HttpSession<Client> {
     protected void logout() throws BackgroundException {
         try {
             client.disconnect();
+            pool.shutdown(false);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
@@ -155,7 +156,6 @@ public class SwiftSession extends HttpSession<Client> {
                     }
                 }
             });
-            pool.shutdown();
         }
         catch(GenericException e) {
             throw new SwiftExceptionMappingService().map(e);
