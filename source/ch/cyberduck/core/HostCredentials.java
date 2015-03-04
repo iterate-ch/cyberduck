@@ -27,17 +27,12 @@ public final class HostCredentials extends Credentials {
     private Host host;
 
     public HostCredentials(final Host host) {
-        super(PreferencesFactory.get().getProperty("connection.login.name"), null);
+        super(PreferencesFactory.get().getProperty("connection.login.name"));
         this.host = host;
     }
 
     public HostCredentials(final Host host, final String user, final String password) {
         super(user, password);
-        this.host = host;
-    }
-
-    public HostCredentials(final Host host, final String user, final String password, final boolean save) {
-        super(user, password, save);
         this.host = host;
     }
 

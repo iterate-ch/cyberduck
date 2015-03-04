@@ -47,8 +47,7 @@ public class Credentials implements Comparable<Credentials> {
     /**
      * If the credentials should be stored in the Keychain upon successful login
      */
-    private boolean keychained
-            = PreferencesFactory.get().getBoolean("connection.login.useKeychain");
+    private boolean keychained;
 
     /**
      * Default credentials
@@ -68,17 +67,6 @@ public class Credentials implements Comparable<Credentials> {
     public Credentials(final String user, final String password) {
         this.user = user;
         this.password = password;
-    }
-
-    /**
-     * @param user     The username to use or null if anonymous
-     * @param password The password to use or null if anonymous
-     * @param save     if the credential should be added to the keychain upon successful login
-     */
-    public Credentials(final String user, final String password, final boolean save) {
-        this.user = user;
-        this.password = password;
-        this.keychained = save;
     }
 
     /**

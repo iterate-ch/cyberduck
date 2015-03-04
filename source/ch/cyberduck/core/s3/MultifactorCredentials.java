@@ -28,7 +28,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 public final class MultifactorCredentials extends Credentials {
 
     public MultifactorCredentials() {
-        super(PreferencesFactory.get().getProperty("s3.mfa.serialnumber"), null, false);
+        super(PreferencesFactory.get().getProperty("s3.mfa.serialnumber"));
     }
 
     @Override
