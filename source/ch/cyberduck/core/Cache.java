@@ -150,7 +150,14 @@ public abstract class Cache<T extends Referenceable> {
      * @see ch.cyberduck.core.Cache
      */
     public boolean isCached(final T reference) {
-        return this.containsKey(reference) && !this.get(reference).attributes().isInvalid();
+        return this.containsKey(reference);
+    }
+
+    public boolean isValid(final T reference) {
+        if(this.isCached(reference)) {
+            return !this.get(reference).attributes().isInvalid();
+        }
+        return false;
     }
 
     /**
