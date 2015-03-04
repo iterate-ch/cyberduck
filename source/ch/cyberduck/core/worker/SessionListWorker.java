@@ -54,11 +54,6 @@ public class SessionListWorker extends Worker<AttributedList<Path>> implements L
     }
 
     @Override
-    public void reset() {
-        cache.invalidate(directory);
-    }
-
-    @Override
     public AttributedList<Path> run() throws BackgroundException {
         try {
             if(cache.isCached(directory)) {
