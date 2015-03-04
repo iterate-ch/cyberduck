@@ -36,17 +36,22 @@ public abstract class Cache<T extends Referenceable> {
 
     private final Map<T, AttributedList<T>> impl;
 
+    private final Map<CacheReference, T> reverse;
+
     public Cache(int size) {
         if(size == Integer.MAX_VALUE) {
             // Unlimited
             impl = new LinkedHashMap<T, AttributedList<T>>();
+            reverse = new LinkedHashMap<CacheReference, T>();
         }
         else if(size == 0) {
             impl = Collections.emptyMap();
+            reverse = Collections.emptyMap();
         }
         else {
             // Will inflate to the given size
             impl = new LRUMap(size);
+            reverse = new LinkedHashMap<CacheReference, T>();
         }
     }
 
@@ -60,6 +65,15 @@ public abstract class Cache<T extends Referenceable> {
      * @see ch.cyberduck.core.AttributedList#get(Referenceable)
      */
     public T lookup(final CacheReference reference) {
+        final T parent = reverse.get(reference);
+        if(null != parent) {
+            for(T entry : impl.get(parent)) {
+                if(this.key(entry).equals(reference)) {
+                    return entry;
+                }
+            }
+        }
+        log.warn(String.format("Lookup failed for %s in reverse cache", reference));
         for(AttributedList<T> list : impl.values()) {
             for(T entry : list) {
                 if(this.key(entry).equals(reference)) {
@@ -120,6 +134,9 @@ public abstract class Cache<T extends Referenceable> {
     public AttributedList<T> put(final T reference, final AttributedList<T> children) {
         if(log.isInfoEnabled()) {
             log.info(String.format("Caching %s", reference));
+        }
+        for(T f : children) {
+            reverse.put(this.key(f), reference);
         }
         return impl.put(reference, children);
     }
