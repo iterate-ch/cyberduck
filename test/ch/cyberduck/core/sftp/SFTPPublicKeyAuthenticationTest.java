@@ -30,7 +30,7 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractTestCase {
     @Test
     public void testAuthenticateKeyNoPassword() throws Exception {
         final Credentials credentials = new Credentials(
-                properties.getProperty("sftp.user"), null, false
+                properties.getProperty("sftp.user")
         );
         final Local key = new Local(System.getProperty("java.io.tmpdir"), "k");
         credentials.setIdentity(key);
@@ -52,7 +52,7 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractTestCase {
     @Test(expected = LoginFailureException.class)
     public void testAuthenticatePuTTYKeyWithWrongPassword() throws Exception {
         final Credentials credentials = new Credentials(
-                properties.getProperty("sftp.user"), "", false
+                properties.getProperty("sftp.user"), ""
         );
         final Local key = new Local(System.getProperty("java.io.tmpdir"), "k");
         credentials.setIdentity(key);
@@ -76,7 +76,7 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractTestCase {
     @Test(expected = LoginFailureException.class)
     public void testAuthenticateOpenSSHKeyWithPassword() throws Exception {
         final Credentials credentials = new Credentials(
-                properties.getProperty("sftp.user"), "", false
+                properties.getProperty("sftp.user"), ""
         );
         final Local key = new Local(System.getProperty("java.io.tmpdir"), "k");
         credentials.setIdentity(key);
@@ -100,7 +100,7 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractTestCase {
     @Test(expected = InteroperabilityException.class)
     public void testUnknownFormat() throws Exception {
         final Credentials credentials = new Credentials(
-                properties.getProperty("sftp.user"), "", false
+                properties.getProperty("sftp.user"), ""
         );
         final Local key = new Local(System.getProperty("java.io.tmpdir"), "k");
         credentials.setIdentity(key);
