@@ -113,7 +113,7 @@ public class SFTPChallengeResponseAuthentication implements SFTPAuthentication {
                         final StringAppender message = new StringAppender().append(instruction).append(prompt);
                         // Properly handle an instruction field with embedded newlines.  They should also
                         // be able to display at least 30 characters for the name and prompts.
-                        final Credentials additional = new Credentials() {
+                        final Credentials additional = new Credentials(credentials.getUsername()) {
                             @Override
                             public String getPasswordPlaceholder() {
                                 return StringUtils.removeEnd(StringUtils.strip(prompt), ":");
