@@ -25,7 +25,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.collections.map.LRUMap;
 
-import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -36,9 +35,9 @@ import java.util.Map;
  */
 public class NSObjectPathReference implements CacheReference<Path> {
 
-    private static Map<Path, NSString> cache = Collections.synchronizedMap(new LRUMap(
+    private static Map<Path, NSString> cache = new LRUMap(
             PreferencesFactory.get().getInteger("browser.model.cache.size")
-    ));
+    );
 
     public static NSObject get(final Path file) {
         if(!cache.containsKey(file)) {
