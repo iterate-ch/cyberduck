@@ -83,18 +83,19 @@ public class TerminalLoginCallback implements LoginCallback {
                 console.printf("Login as %s", credentials.getUsername());
             }
             if(options.password) {
-                final String password = keychain.getPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
-                        bookmark.getHostname(), credentials.getUsername());
-                if(StringUtils.isNotBlank(password)) {
-                    credentials.setPassword(password);
-                }
-                else {
-                    final char[] input = console.readPassword("%n%s: ", credentials.getPasswordPlaceholder());
-                    credentials.setPassword(String.valueOf(input));
-                    Arrays.fill(input, ' ');
-                    if(!credentials.validate(bookmark.getProtocol(), options)) {
-                        this.prompt(bookmark, credentials, title, reason, options);
+                if(options.keychain) {
+                    final String password = keychain.getPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
+                            bookmark.getHostname(), credentials.getUsername());
+                    if(StringUtils.isNotBlank(password)) {
+                        credentials.setPassword(password);
+                        return;
                     }
+                }
+                final char[] input = console.readPassword("%n%s: ", credentials.getPasswordPlaceholder());
+                credentials.setPassword(String.valueOf(input));
+                Arrays.fill(input, ' ');
+                if(!credentials.validate(bookmark.getProtocol(), options)) {
+                    this.prompt(bookmark, credentials, title, reason, options);
                 }
             }
         }
