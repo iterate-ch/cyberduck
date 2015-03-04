@@ -30,10 +30,8 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import ch.iterate.openstack.swift.model.Region;
@@ -48,16 +46,8 @@ public class SwiftLocationFeature implements Location {
     private PathContainerService containerService
             = new SwiftPathContainerService();
 
-    private Map<Path, Name> cache
-            = new HashMap<Path, Name>();
-
     public SwiftLocationFeature(final SwiftSession session) {
         this.session = session;
-    }
-
-    public SwiftLocationFeature(final SwiftSession session, final Map<Path, Name> cache) {
-        this.session = session;
-        this.cache = cache;
     }
 
     @Override
@@ -89,19 +79,13 @@ public class SwiftLocationFeature implements Location {
     @Override
     public Name getLocation(final Path file) throws BackgroundException {
         final Path container = containerService.getContainer(file);
-        if(cache.containsKey(container)) {
-            return cache.get(container);
-        }
         if(Location.unknown.equals(new SwiftRegion(container.attributes().getRegion()))) {
             for(Path c : new SwiftContainerListService(session, new SwiftRegion(session.getHost().getRegion()))
                     .list(new DisabledListProgressListener())) {
                 if(c.getName().equals(container.getName())) {
-                    final SwiftRegion region = new SwiftRegion(c.attributes().getRegion());
-                    cache.put(container, region);
-                    return region;
+                    return new SwiftRegion(c.attributes().getRegion());
                 }
             }
-            cache.put(container, Location.unknown);
             return Location.unknown;
         }
         return new SwiftRegion(container.attributes().getRegion());

@@ -83,9 +83,6 @@ public class SwiftSession extends HttpSession<Client> {
     protected Map<Region, AccountInfo> accounts
             = new HashMap<Region, AccountInfo>();
 
-    protected Map<Path, Location.Name> regions
-            = new HashMap<Path, Location.Name>();
-
     private final ThreadPool pool
             = new ThreadPool(5, "accounts");
 
@@ -106,8 +103,6 @@ public class SwiftSession extends HttpSession<Client> {
     protected void logout() throws BackgroundException {
         try {
             client.disconnect();
-            accounts.clear();
-            regions.clear();
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
@@ -219,7 +214,7 @@ public class SwiftSession extends HttpSession<Client> {
             return (T) new SwiftTouchFeature(this);
         }
         if(type == Location.class) {
-            return (T) new SwiftLocationFeature(this, regions);
+            return (T) new SwiftLocationFeature(this);
         }
         if(type == AnalyticsProvider.class) {
             return (T) new QloudstatAnalyticsProvider();
