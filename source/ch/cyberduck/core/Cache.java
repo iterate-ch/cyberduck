@@ -108,7 +108,11 @@ public abstract class Cache<T extends Referenceable> {
      * @return The previously cached directory listing
      */
     public AttributedList<T> remove(final T reference) {
-        return impl.remove(reference);
+        final AttributedList<T> removed = impl.remove(reference);
+        for(T r : removed) {
+            reverse.remove(this.key(r));
+        }
+        return removed;
     }
 
     /**
@@ -169,6 +173,7 @@ public abstract class Cache<T extends Referenceable> {
             log.info(String.format("Clearing cache %s", this.toString()));
         }
         impl.clear();
+        reverse.clear();
     }
 
     @Override
