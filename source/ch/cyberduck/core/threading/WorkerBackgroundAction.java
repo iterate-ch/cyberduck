@@ -56,6 +56,12 @@ public class WorkerBackgroundAction<T> extends BrowserBackgroundAction<Boolean> 
     }
 
     @Override
+    protected void reset() throws BackgroundException {
+        worker.reset();
+        super.reset();
+    }
+
+    @Override
     public Boolean run() throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Run worker %s", worker));

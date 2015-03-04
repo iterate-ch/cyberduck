@@ -158,7 +158,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
         return PreferencesFactory.get().getInteger("connection.retry") - repeat;
     }
 
-    protected void reset() {
+    protected void reset() throws BackgroundException {
         // Clear the transcript and exceptions
         transcript = new StringBuilder();
         // Reset the failure status but remember the previous exception for automatic retry.
@@ -175,9 +175,9 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     @Override
     public T call() {
-        // Reset status
-        this.reset();
         try {
+            // Reset status
+            this.reset();
             // Open connection
             this.connect(session);
             // Run action

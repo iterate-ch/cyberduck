@@ -80,4 +80,8 @@ public abstract class Worker<T> {
             }
         };
     }
+
+    public void reset() throws BackgroundException {
+        //
+    }
 }

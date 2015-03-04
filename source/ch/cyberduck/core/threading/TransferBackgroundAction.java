@@ -191,7 +191,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
     }
 
     @Override
-    protected void reset() {
+    protected void reset() throws BackgroundException {
         transfer.start();
     }
 
