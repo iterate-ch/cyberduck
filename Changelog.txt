@@ -8,6 +8,7 @@ Changelog. Last modified: $Date$
 - [Feature] Support for segmented downloads with multiple connections per file (#4498)
 - [Feature] Connecting with temporary access credentials from EC2 (S3) (#8610)
 - [Feature] Verify checksum for downloads if available (WebDAV, S3, OpenStack Swift)
+- [Feature] Using multipart when copying large files (S3) (#8616)
 
 4.6.5 [https://trac.cyberduck.io/milestone/4.6.5]
 - [Feature] Support for China (Beijing) region (S3)
