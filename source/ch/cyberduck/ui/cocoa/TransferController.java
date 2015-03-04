@@ -56,7 +56,6 @@ import ch.cyberduck.core.threading.TransferBackgroundAction;
 import ch.cyberduck.core.threading.TransferCollectionBackgroundAction;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.QueueFactory;
-import ch.cyberduck.core.transfer.SyncTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferCallback;
 import ch.cyberduck.core.transfer.TransferItem;
@@ -611,13 +610,6 @@ public final class TransferController extends WindowController implements NSTool
         NSIndexSet set = transferTable.selectedRowIndexes();
         for(NSUInteger index = set.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = set.indexGreaterThanIndex(index)) {
             final Transfer transfer = transferTableModel.getSource().get(index.intValue());
-            if(transfer instanceof SyncTransfer) {
-                // Currently we do not support bandwidth throtling for sync transfers due to
-                // the problem of mapping both download and upload rate in the GUI
-                bandwidthPopup.setEnabled(false);
-                // Break through and set the standard icon below
-                break;
-            }
             if(transfer.getBandwidth().getRate() != BandwidthThrottle.UNLIMITED) {
                 // Mark as throttled
                 this.bandwidthPopup.itemAtIndex(new NSInteger(0)).setImage(IconCacheFactory.<NSImage>get().iconNamed("turtle.tiff"));

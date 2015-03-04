@@ -413,13 +413,6 @@ namespace Ch.Cyberduck.Ui.Controller
             foreach (IProgressView progressView in View.SelectedTransfers)
             {
                 Transfer transfer = GetTransferFromView(progressView);
-                if (transfer is SyncTransfer)
-                {
-                    // Currently we do not support bandwidth throtling for sync transfers due to
-                    // the problem of mapping both download and upload rate in the GUI
-                    View.BandwidthEnabled = false;
-                    // Break through and set the standard icon below
-                }
                 if (transfer.getBandwidth().getRate() != BandwidthThrottle.UNLIMITED)
                 {
                     View.Bandwidth = transfer.getBandwidth().getRate();
