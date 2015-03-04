@@ -60,7 +60,7 @@ public class MountWorker extends Worker<Path> {
         try {
             home = session.getFeature(Home.class).find();
             // Remove cached home to force error if repeated attempt to mount fails
-            cache.remove(home);
+            cache.invalidate(home);
             // Retrieve directory listing of default path
             list = new SessionListWorker(session, cache, home, listener).run();
         }
@@ -69,6 +69,9 @@ public class MountWorker extends Worker<Path> {
             // The default path does not exist or is not readable due to possible permission issues. Fallback
             // to default working directory
             home = session.workdir();
+            // Remove cached home to force error if repeated attempt to mount fails
+            cache.invalidate(home);
+            // Retrieve directory listing of working directory
             list = new SessionListWorker(session, cache, home, listener).run();
         }
         cache.put(home, list);
