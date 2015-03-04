@@ -70,8 +70,6 @@ import ch.iterate.openstack.swift.model.AccountInfo;
 import ch.iterate.openstack.swift.model.Region;
 
 /**
- * Rackspace Cloud Files Implementation
- *
  * @version $Id$
  */
 public class SwiftSession extends HttpSession<Client> {
