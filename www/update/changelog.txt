@@ -6,3 +6,4 @@ A command line interface (CLI) version is now available from https://duck.sh/ fo
 - [Feature] Connecting with temporary access credentials from EC2 (S3) (#8610)
 - [Feature] Verify checksum for downloads if available (WebDAV, S3, OpenStack Swift)
 - [Feature] Using multipart when copying large files (S3) (#8616)
+- [Bugfix] Login with combination of public key authentication one-time passcode (SFTP) (#8597)
