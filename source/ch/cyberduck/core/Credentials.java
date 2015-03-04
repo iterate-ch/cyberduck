@@ -57,6 +57,10 @@ public class Credentials implements Comparable<Credentials> {
         //
     }
 
+    public Credentials(final String user) {
+        this.user = user;
+    }
+
     /**
      * @param user     Login with this username
      * @param password Passphrase
