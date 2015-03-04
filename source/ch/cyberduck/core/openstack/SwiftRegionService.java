@@ -47,7 +47,7 @@ public class SwiftRegionService {
         final Path container = containerService.getContainer(file);
         if(Location.unknown.equals(new SwiftLocationFeature.SwiftRegion(container.attributes().getRegion()))) {
             if(session.isConnected()) {
-                return this.lookup(new SwiftLocationFeature(session).getLocation(container));
+                return this.lookup(session.getFeature(Location.class).getLocation(container));
             }
         }
         return this.lookup(new SwiftLocationFeature.SwiftRegion(file.attributes().getRegion()));
