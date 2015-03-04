@@ -146,8 +146,6 @@ public class CloudFrontDistributionConfiguration
 
     private <T> T authenticated(final Authenticated<T> run, final LoginCallback prompt) throws BackgroundException {
         final LoginOptions options = new LoginOptions();
-        options.anonymous = false;
-        options.publickey = false;
         try {
             final KeychainLoginService login = new KeychainLoginService(prompt, PasswordStoreFactory.get());
             login.validate(session.getHost(), this.getName(), options);

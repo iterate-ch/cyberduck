@@ -100,8 +100,6 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
 
     private <T> T authenticated(final Authenticated<T> run, final LoginCallback prompt) throws BackgroundException {
         final LoginOptions options = new LoginOptions();
-        options.anonymous = false;
-        options.publickey = false;
         try {
             final KeychainLoginService login = new KeychainLoginService(prompt, PasswordStoreFactory.get());
             login.validate(host, LocaleFactory.localizedString("AWS Identity and Access Management", "S3"), options);
