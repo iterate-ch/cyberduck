@@ -52,7 +52,7 @@ import ch.iterate.openstack.swift.model.Region;
 public class SwiftContainerListService implements RootListService {
     private static final Logger log = Logger.getLogger(SwiftContainerListService.class);
 
-    private final ThreadPool threadFactory
+    private final ThreadPool pool
             = new ThreadPool(5, "cdn");
 
     private SwiftSession session;
@@ -109,7 +109,7 @@ public class SwiftContainerListService implements RootListService {
                         if(cdn) {
                             final DistributionConfiguration feature = session.getFeature(DistributionConfiguration.class);
                             if(feature != null) {
-                                threadFactory.execute(new Runnable() {
+                                pool.execute(new Runnable() {
                                     @Override
                                     public void run() {
                                         for(Distribution.Method method : feature.getMethods(container)) {
@@ -128,7 +128,7 @@ public class SwiftContainerListService implements RootListService {
                             }
                         }
                         if(size) {
-                            threadFactory.execute(new Runnable() {
+                            pool.execute(new Runnable() {
                                 @Override
                                 public void run() {
                                     try {
@@ -157,6 +157,10 @@ public class SwiftContainerListService implements RootListService {
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
+        }
+        finally {
+            // Shutdown gracefully
+            pool.shutdown();
         }
     }
 }

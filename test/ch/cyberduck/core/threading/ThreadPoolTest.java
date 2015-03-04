@@ -50,6 +50,22 @@ public class ThreadPoolTest extends AbstractTestCase {
     }
 
     @Test
+    public void testGracefulShutdown() throws Exception {
+        final ThreadPool pool = new ThreadPool();
+        final AtomicInteger counter = new AtomicInteger(10);
+        for(int i = 0; i < 10; i++) {
+            pool.execute(new Callable<Integer>() {
+                @Override
+                public Integer call() throws Exception {
+                    return counter.decrementAndGet();
+                }
+            });
+        }
+        pool.shutdown(true);
+        assertEquals(0, counter.get());
+    }
+
+    @Test
     public void testExecute() throws Exception {
         final ThreadPool p = new ThreadPool();
         final Object r = new Object();

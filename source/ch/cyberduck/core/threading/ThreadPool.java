@@ -69,11 +69,23 @@ public class ThreadPool {
         pool = Executors.newFixedThreadPool(size, threadFactory);
     }
 
-    public void shutdown() {
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Shutdown pool %s", pool));
+    public void shutdown(boolean gracefully) {
+        if(gracefully) {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Shutdown pool %s gracefully", pool));
+            }
+            pool.shutdown();
         }
-        pool.shutdownNow();
+        else {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Shutdown pool %s now", pool));
+            }
+            pool.shutdownNow();
+        }
+    }
+
+    public void shutdown() {
+        this.shutdown(true);
     }
 
     /**

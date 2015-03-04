@@ -83,7 +83,7 @@ public class SwiftSession extends HttpSession<Client> {
     protected Map<Region, AccountInfo> accounts
             = new HashMap<Region, AccountInfo>();
 
-    private final ThreadPool threadFactory
+    private final ThreadPool pool
             = new ThreadPool(5, "accounts");
 
     public SwiftSession(final Host h) {
@@ -138,7 +138,7 @@ public class SwiftSession extends HttpSession<Client> {
                 }
                 cancel.verify();
             }
-            threadFactory.execute(new Runnable() {
+            pool.execute(new Runnable() {
                 @Override
                 public void run() {
                     for(Region region : client.getRegions()) {
@@ -155,6 +155,7 @@ public class SwiftSession extends HttpSession<Client> {
                     }
                 }
             });
+            pool.shutdown();
         }
         catch(GenericException e) {
             throw new SwiftExceptionMappingService().map(e);

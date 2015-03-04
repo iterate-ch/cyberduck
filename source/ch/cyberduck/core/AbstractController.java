@@ -134,11 +134,11 @@ public abstract class AbstractController implements Controller {
         if(log.isInfoEnabled()) {
             log.info(String.format("Terminating single executor thread pool %s", singleExecutor));
         }
-        singleExecutor.shutdown();
+        singleExecutor.shutdown(false);
         if(log.isInfoEnabled()) {
             log.info(String.format("Terminating concurrent executor thread pool %s", concurrentExecutor));
         }
-        concurrentExecutor.shutdown();
+        concurrentExecutor.shutdown(false);
     }
 
     private final class BackgroundCallable<T> implements Callable<T> {
