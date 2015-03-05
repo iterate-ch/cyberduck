@@ -52,7 +52,8 @@ public class PathCacheTest extends AbstractTestCase {
         cache.invalidate(f);
         assertTrue(cache.get(f).attributes().isInvalid());
         assertTrue(cache.containsKey(f));
-        assertFalse(cache.isCached(f));
+        assertTrue(cache.isCached(f));
+        assertFalse(cache.isValid(f));
     }
 
     @Test
