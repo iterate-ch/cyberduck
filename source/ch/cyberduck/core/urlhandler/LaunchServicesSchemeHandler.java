@@ -37,7 +37,6 @@ public final class LaunchServicesSchemeHandler extends AbstractSchemeHandler {
         Native.load("LaunchServicesSchemeHandler");
     }
 
-
     private ApplicationFinder applicationFinder;
 
     public LaunchServicesSchemeHandler() {
