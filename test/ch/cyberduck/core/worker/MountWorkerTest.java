@@ -19,8 +19,7 @@ import org.junit.Test;
 
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -28,7 +27,7 @@ import static org.junit.Assert.assertTrue;
 public class MountWorkerTest extends AbstractTestCase {
 
     @Test
-    public void testRun() throws Exception {
+    public void testRunInvalidDefaultPath() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
                 properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
         ));
@@ -40,7 +39,7 @@ public class MountWorkerTest extends AbstractTestCase {
         final MountWorker worker = new MountWorker(session, cache, new DisabledListProgressListener());
         assertEquals(new Path("/home/jenkins", EnumSet.of(Path.Type.directory)), worker.run());
         assertTrue(cache.containsKey(new Path("/home/jenkins", EnumSet.of(Path.Type.directory))));
-        assertTrue(cache.containsKey(new Path("/notfound", EnumSet.of(Path.Type.directory))));
+        assertFalse(cache.containsKey(new Path("/notfound", EnumSet.of(Path.Type.directory))));
         session.close();
     }
 }
