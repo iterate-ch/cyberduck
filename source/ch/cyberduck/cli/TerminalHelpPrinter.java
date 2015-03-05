@@ -36,6 +36,10 @@ import java.text.MessageFormat;
  */
 public final class TerminalHelpPrinter {
 
+    private TerminalHelpPrinter() {
+        //
+    }
+
     public static void print(final Options options) {
         print(options, new TerminalHelpFormatter());
     }
