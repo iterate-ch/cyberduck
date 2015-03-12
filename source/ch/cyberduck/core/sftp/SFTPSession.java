@@ -40,7 +40,7 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sftp.openssh.OpenSSHAgentAuthenticator;
 import ch.cyberduck.core.sftp.putty.PageantAuthenticator;
-import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
+import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
@@ -143,12 +143,7 @@ public class SFTPSession extends Session<SSHClient> {
         final int timeout = this.timeout();
         connection.setTimeout(timeout);
         connection.setConnectTimeout(timeout);
-        connection.setSocketFactory(new ProxySocketFactory(host.getProtocol(), new TrustManagerHostnameCallback() {
-            @Override
-            public String getTarget() {
-                return host.getHostname();
-            }
-        }));
+        connection.setSocketFactory(new ProxySocketFactory(host.getProtocol(), new DefaultTrustManagerHostnameCallback(host)));
         connection.addHostKeyVerifier(new HostKeyVerifier() {
             @Override
             public boolean verify(String hostname, int port, PublicKey publicKey) {
