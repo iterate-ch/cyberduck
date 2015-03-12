@@ -46,10 +46,10 @@ import ch.cyberduck.core.idna.PunycodeConverter;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
+import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.SSLSession;
-import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -125,12 +125,7 @@ public class FTPSession extends SSLSession<FTPClient> {
 
     protected void configure(final FTPClient client) throws IOException {
         client.setProtocol(host.getProtocol());
-        client.setSocketFactory(new ProxySocketFactory(host.getProtocol(), new TrustManagerHostnameCallback() {
-            @Override
-            public String getTarget() {
-                return host.getHostname();
-            }
-        }));
+        client.setSocketFactory(new ProxySocketFactory(host.getProtocol(), new DefaultTrustManagerHostnameCallback(host)));
         client.setControlEncoding(this.getEncoding());
         client.setConnectTimeout(this.timeout());
         client.setDefaultTimeout(this.timeout());
