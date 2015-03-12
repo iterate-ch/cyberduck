@@ -26,7 +26,6 @@ public enum TerminalAction {
     version,
     edit,
     list,
-    mount,
     download,
     upload,
     copy,
