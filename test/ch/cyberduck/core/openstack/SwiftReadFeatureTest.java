@@ -17,6 +17,7 @@ import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 
@@ -87,6 +88,30 @@ public class SwiftReadFeatureTest extends AbstractTestCase {
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
         new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        session.close();
+    }
+
+    @Test
+    public void testDownloadGzip() throws Exception {
+        final SwiftSession session = new SwiftSession(
+                new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
+                        new Credentials(
+                                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+                        )));
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final TransferStatus status = new TransferStatus();
+        status.setLength(182L);
+        final Path container = new Path(".ACCESS_LOGS", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("DFW");
+        final InputStream in = new SwiftReadFeature(session).read(new Path(container,
+                "/cdn.cyberduck.ch/2015/03/01/10/3b1d6998c430d58dace0c16e58aaf925.log.gz",
+                EnumSet.of(Path.Type.file)), status);
+        assertNotNull(in);
+        new StreamCopier(status, status).transfer(in, new NullOutputStream());
+        assertEquals(182L, status.getOffset());
+        assertEquals(182L, status.getLength());
+        in.close();
         session.close();
     }
 }

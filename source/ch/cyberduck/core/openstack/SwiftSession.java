@@ -55,6 +55,7 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.threading.ThreadPool;
 
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -94,7 +95,14 @@ public class SwiftSession extends HttpSession<Client> {
 
     @Override
     public Client connect(final HostKeyCallback key) throws BackgroundException {
-        return new Client(super.builder().build());
+        return new Client(this.builder().build());
+    }
+
+    @Override
+    public HttpClientBuilder builder() {
+        final HttpClientBuilder builder = super.builder();
+        builder.disableContentCompression();
+        return builder;
     }
 
     @Override
