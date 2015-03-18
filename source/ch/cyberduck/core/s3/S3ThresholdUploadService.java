@@ -126,29 +126,22 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
                     }
                 }
             }
-            if(status.getLength() > multipartThreshold) {
-                if(!preferences.getBoolean("s3.upload.multipart")) {
-                    // Disabled by user
-                    if(status.getLength() < preferences.getLong("s3.upload.multipart.required.threshold")) {
-                        log.warn("Multipart upload is disabled with property s3.upload.multipart");
-                        final S3SingleUploadService single = new S3SingleUploadService(session);
-                        return single.upload(file, local, throttle, listener, status, prompt);
-                    }
-                }
-                final S3MultipartUploadService service = new S3MultipartUploadService(session);
-                try {
-                    return service.upload(file, local, throttle, listener, status, prompt);
-                }
-                catch(NotfoundException e) {
-                    log.warn(String.format("Failure using multipart upload %s. Fallback to single upload.", e.getMessage()));
+        }
+        if(status.getLength() > multipartThreshold) {
+            if(!preferences.getBoolean("s3.upload.multipart")) {
+                // Disabled by user
+                if(status.getLength() < preferences.getLong("s3.upload.multipart.required.threshold")) {
+                    log.warn("Multipart upload is disabled with property s3.upload.multipart");
                     final S3SingleUploadService single = new S3SingleUploadService(session);
                     return single.upload(file, local, throttle, listener, status, prompt);
                 }
-                catch(InteroperabilityException e) {
-                    log.warn(String.format("Failure using multipart upload %s. Fallback to single upload.", e.getMessage()));
-                    final S3SingleUploadService single = new S3SingleUploadService(session);
-                    return single.upload(file, local, throttle, listener, status, prompt);
-                }
+            }
+            final S3MultipartUploadService service = new S3MultipartUploadService(session);
+            try {
+                return service.upload(file, local, throttle, listener, status, prompt);
+            }
+            catch(NotfoundException | InteroperabilityException e) {
+                log.warn(String.format("Failure using multipart upload %s. Fallback to single upload.", e.getMessage()));
             }
         }
         final S3SingleUploadService single = new S3SingleUploadService(session);
