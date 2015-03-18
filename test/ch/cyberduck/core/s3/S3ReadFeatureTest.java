@@ -93,8 +93,7 @@ public class S3ReadFeatureTest extends AbstractTestCase {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
-        // Set to unknown
-        status.setLength(-1L);
+        status.setLength(1457L);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final InputStream in = new S3ReadFeature(session).read(new Path(container,
                 "189584543480_CloudTrail_us-east-1_20141017T0910Z_CoraJxmlIWYQI2wc.json.gz",
@@ -102,7 +101,7 @@ public class S3ReadFeatureTest extends AbstractTestCase {
         assertNotNull(in);
         new StreamCopier(status, status).transfer(in, new NullOutputStream());
         assertEquals(1457L, status.getOffset());
-        assertEquals(-1L, status.getLength());
+        assertEquals(1457L, status.getLength());
         in.close();
         session.close();
     }
