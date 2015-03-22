@@ -21,16 +21,20 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.LocalTrashFactory;
 import ch.cyberduck.core.local.features.Trash;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
+import org.apache.log4j.Logger;
+
 /**
  * @version $Id$
  */
 public class OverwriteFilter extends AbstractDownloadFilter {
+    private static final Logger log = Logger.getLogger(OverwriteFilter.class);
 
     private final Trash trash
             = LocalTrashFactory.get();
@@ -49,7 +53,13 @@ public class OverwriteFilter extends AbstractDownloadFilter {
                       final ProgressListener listener) throws BackgroundException {
         if(file.isFile()) {
             if(status.isExists()) {
-                trash.trash(local);
+                try {
+                    trash.trash(local);
+                }
+                catch(AccessDeniedException e) {
+                    // Ignore. See #8670
+                    log.warn(e.getMessage());
+                }
             }
         }
         super.apply(file, local, status, listener);
