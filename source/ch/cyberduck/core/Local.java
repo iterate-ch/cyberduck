@@ -196,7 +196,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
             return;
         }
         if(!file.delete()) {
-            throw new AccessDeniedException(String.format("Delete %s failed", path));
+            throw new AccessDeniedException(String.format("Delete %s failed", file.getName()));
         }
     }
 

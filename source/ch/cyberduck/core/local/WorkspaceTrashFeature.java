@@ -17,11 +17,11 @@ package ch.cyberduck.core.local;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.binding.application.NSWorkspace;
+import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.local.features.Trash;
-import ch.cyberduck.binding.application.NSWorkspace;
-import ch.cyberduck.binding.foundation.NSArray;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -46,7 +46,7 @@ public class WorkspaceTrashFeature implements Trash {
                         NSWorkspace.RecycleOperation,
                         file.getParent().getAbsolute(), StringUtils.EMPTY,
                         NSArray.arrayWithObject(file.getName()))) {
-                    throw new AccessDeniedException(String.format("Failed to move %s to Trash", file));
+                    throw new AccessDeniedException(String.format("Failed to move %s to Trash", file.getName()));
                 }
             }
         }
