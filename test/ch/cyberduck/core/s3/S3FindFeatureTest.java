@@ -83,7 +83,7 @@ public class S3FindFeatureTest extends AbstractTestCase {
         cache.put(new Path("/g", EnumSet.of(Path.Type.directory)), list);
         final Find finder = new S3FindFeature(new S3Session(new Host("t")) {
             @Override
-            public S3Session.RequestEntityRestStorageService getClient() {
+            public RequestEntityRestStorageService getClient() {
                 fail();
                 return null;
             }
@@ -98,7 +98,7 @@ public class S3FindFeatureTest extends AbstractTestCase {
         cache.put(new Path("/g", EnumSet.of(Path.Type.directory)), list);
         final Find finder = new S3FindFeature(new S3Session(new Host("t")) {
             @Override
-            public S3Session.RequestEntityRestStorageService getClient() {
+            public RequestEntityRestStorageService getClient() {
                 fail();
                 return null;
             }

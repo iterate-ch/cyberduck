@@ -99,7 +99,7 @@ public class S3ThresholdDownloadService extends DefaultDownloadFeature {
                     final S3Session tunneled = new S3Session(session.getHost(), trust, key);
                     final UDTProxyConfigurator configurator = new UDTProxyConfigurator(location, udtTransferOption.provider(), trust, key);
                     configurator.configure(tunneled);
-                    final S3Session.RequestEntityRestStorageService client = tunneled.open(new DisabledHostKeyCallback(), session);
+                    final RequestEntityRestStorageService client = tunneled.open(new DisabledHostKeyCallback(), session);
                     // Swap credentials. No login required
                     client.setProviderCredentials(session.getClient().getProviderCredentials());
                     try {
