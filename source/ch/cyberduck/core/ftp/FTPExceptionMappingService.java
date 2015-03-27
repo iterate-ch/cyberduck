@@ -21,7 +21,7 @@ import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -43,7 +43,7 @@ public class FTPExceptionMappingService extends AbstractExceptionMappingService<
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, e.getMessage());
         if(e instanceof FTPConnectionClosedException) {
-            return new ConnectionCanceledException(e);
+            return new ConnectionRefusedException(buffer.toString(), e);
         }
         if(e instanceof FTPException) {
             return this.handle((FTPException) e, buffer);
