@@ -11,6 +11,9 @@ Changelog. Last modified: $Date$
 - [Feature] Using multipart when copying large files (S3) (#8616)
 - [Bugfix] Crash opening preferences window (#8617)
 - [Bugfix] Login with combination of public key authentication one-time passcode (SFTP) (#8597)
+- [Bugfix] Enable multipart uploads for all providers (S3) (#8677)
+- [Bugfix] Incomplete download of files with Content-Encoding header (OpenStack Swift) (#8656)
+- [Bugfix] Failure to download to mounted AFP drive (Mac) (#8670)
 
 4.6.5 [https://trac.cyberduck.io/milestone/4.6.5]
 - [Feature] Support for China (Beijing) region (S3)
@@ -23,7 +26,7 @@ Changelog. Last modified: $Date$
 - [Feature] Backspace keyboard shortcut to change to parent directory (Windows) (#8457)
 - [Bugfix] No localizations (Windows) (#8497)
 - [Bugfix] Crash opening preferences when default editor is no longer installed (Mac) (#8402)
-- [Bugfix] Downloading files with Content-Encoding metadata decompresses and truncates the content (S3) (#8263)
+- [Bugfix] Incomplete download of files with Content-Encoding header (S3) (#8263)
 - [Bugfix] Interoperability issue with MLSD replies (FTP) (#8511)
 - [Bugfix] Allow Web URL configuration for OpenStack Swift and S3 (#8516)
 
