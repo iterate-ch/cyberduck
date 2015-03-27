@@ -23,6 +23,7 @@ import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sftp.openssh.config.transport.OpenSshConfig;
 
@@ -39,6 +40,9 @@ public class OpenSSHCredentialsConfigurator implements CredentialsConfigurator {
             = LocalFactory.get(Local.HOME, ".ssh/config");
 
     private OpenSshConfig configuration;
+
+    private Preferences preferences
+            = PreferencesFactory.get();
 
     public OpenSSHCredentialsConfigurator() {
         this(new OpenSshConfig(file));
@@ -69,8 +73,8 @@ public class OpenSSHCredentialsConfigurator implements CredentialsConfigurator {
                 }
                 else {
                     // No custom public key authentication configuration
-                    if(PreferencesFactory.get().getBoolean("ssh.authentication.publickey.default.enable")) {
-                        final Local rsa = LocalFactory.get(PreferencesFactory.get().getProperty("ssh.authentication.publickey.default.rsa"));
+                    if(preferences.getBoolean("ssh.authentication.publickey.default.enable")) {
+                        final Local rsa = LocalFactory.get(preferences.getProperty("ssh.authentication.publickey.default.rsa"));
                         if(rsa.exists()) {
                             if(log.isInfoEnabled()) {
                                 log.info(String.format("Using RSA default host key %s from %s", rsa, file));
@@ -78,7 +82,7 @@ public class OpenSSHCredentialsConfigurator implements CredentialsConfigurator {
                             credentials.setIdentity(rsa);
                         }
                         else {
-                            final Local dsa = LocalFactory.get(PreferencesFactory.get().getProperty("ssh.authentication.publickey.default.dsa"));
+                            final Local dsa = LocalFactory.get(preferences.getProperty("ssh.authentication.publickey.default.dsa"));
                             if(dsa.exists()) {
                                 if(log.isInfoEnabled()) {
                                     log.info(String.format("Using DSA default host key %s from %s", dsa, file));
