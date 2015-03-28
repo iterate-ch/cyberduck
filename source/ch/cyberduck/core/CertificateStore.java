@@ -34,14 +34,14 @@ public interface CertificateStore {
      * @param certificates Certificate chain
      * @return True if trusted in Keychain
      */
-    public abstract boolean isTrusted(String hostname, List<X509Certificate> certificates)
+    boolean isTrusted(String hostname, List<X509Certificate> certificates)
             throws CertificateException;
 
     /**
      * @param certificates X.509 certificates
      * @return False if display is not possible
      */
-    public abstract boolean display(List<X509Certificate> certificates)
+    boolean display(List<X509Certificate> certificates)
             throws CertificateException;
 
     /**
@@ -53,6 +53,6 @@ public interface CertificateStore {
      * @param prompt   Display in certificate choose prompt
      * @return Null if no certificate selected
      */
-    public X509Certificate choose(String[] keyTypes, Principal[] issuers, String hostname, String prompt)
+    X509Certificate choose(String[] keyTypes, Principal[] issuers, String hostname, String prompt)
             throws ConnectionCanceledException;
 }
