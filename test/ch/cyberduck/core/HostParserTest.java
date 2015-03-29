@@ -298,4 +298,19 @@ public class HostParserTest extends AbstractTestCase {
         assertEquals(21, host.getPort());
         assertEquals("~/sandbox", host.getDefaultPath());
     }
+
+    @Test
+    public void testParseIpv6() throws Exception {
+        assertEquals("fc01:2:3:4:5::1", HostParser.parse("ftp://fc01:2:3:4:5::1/~/sandbox").getHostname());
+        assertEquals(Protocol.Type.ftp, HostParser.parse("ftp://fc01:2:3:4:5::1/~/sandbox").getProtocol().getType());
+        assertEquals(21, HostParser.parse("ftp://fc01:2:3:4:5::1/~/sandbox").getPort());
+        assertEquals("user", HostParser.parse("ftp://user@fc01:2:3:4:5::1/~/sandbox").getCredentials().getUsername());
+        assertEquals("/~/sandbox", HostParser.parse("ftp://fc01:2:3:4:5::1/~/sandbox").getDefaultPath());
+        assertEquals("fc01:2:3:4:5::1", HostParser.parse("ftp://[fc01:2:3:4:5::1]:2121").getHostname());
+        assertEquals(2121, HostParser.parse("ftp://[fc01:2:3:4:5::1]:2121").getPort());
+        assertEquals("user", HostParser.parse("ftp://user@[fc01:2:3:4:5::1]:2121").getCredentials().getUsername());
+        assertEquals("/~/sandbox", HostParser.parse("ftp://[fc01:2:3:4:5::1]:2121/~/sandbox").getDefaultPath());
+        assertEquals("/sandbox", HostParser.parse("ftp://[fc01:2:3:4:5::1]:2121/sandbox").getDefaultPath());
+        assertEquals("/sandbox@a", HostParser.parse("ftp://[fc01:2:3:4:5::1]:2121/sandbox@a").getDefaultPath());
+    }
 }

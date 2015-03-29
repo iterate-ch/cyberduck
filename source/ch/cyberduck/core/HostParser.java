@@ -21,10 +21,12 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.conn.util.InetAddressUtils;
 import org.apache.log4j.Logger;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.regex.Pattern;
 
 /**
  * @version $Id$
@@ -35,6 +37,10 @@ public final class HostParser {
     private HostParser() {
         //
     }
+
+    private static final Pattern IPV6_PATTERN =
+            Pattern.compile(
+                    "^[0-9a-fA-F]{1,4}(:[0-9a-fA-F]{1,4}){7}$");
 
     /**
      * Parses URL in the format ftp://username:pass@hostname:portnumber/path/to/file
@@ -100,19 +106,58 @@ public final class HostParser {
             }
         }
         String hostname = preferences.getProperty("connection.hostname.default");
-        if(StringUtils.isNotBlank(input)) {
-            hostname = input.substring(begin, input.length());
-        }
         String path = null;
         int port = protocol.getDefaultPort();
+        // Handle IPv6
+        if(input.indexOf('[', begin) != -1 && input.indexOf(']', begin) != -1) {
+            if(input.indexOf(']', begin) > input.indexOf('[', begin)) {
+                begin = input.indexOf('[', begin) + 1;
+                cut = input.indexOf(']', begin);
+                String address = input.substring(begin, cut);
+                if(InetAddressUtils.isIPv6Address(address)) {
+                    hostname = address;
+                    begin += hostname.length();
+                }
+            }
+        }
+        else if(input.indexOf(Path.DELIMITER, begin) != -1) {
+            cut = input.indexOf(Path.DELIMITER, begin);
+            String address = input.substring(begin, cut);
+            if(InetAddressUtils.isIPv6Address(address)) {
+                hostname = address;
+                begin += hostname.length();
+            }
+        }
+        else {
+            if(InetAddressUtils.isIPv6Address(input)) {
+                hostname = input;
+                begin += hostname.length();
+            }
+        }
+        if(StringUtils.isBlank(hostname)) {
+            // Handle DNS name or IPv4
+            if(StringUtils.isNotBlank(input)) {
+                if(input.indexOf(':', begin) != -1
+                        && (input.indexOf(Path.DELIMITER, begin) == -1 || input.indexOf(':', begin) < input.indexOf(Path.DELIMITER, begin))) {
+                    cut = input.indexOf(':', begin);
+                }
+                else if(input.indexOf(Path.DELIMITER, begin) != -1) {
+                    cut = input.indexOf(Path.DELIMITER, begin);
+                }
+                else {
+                    cut = input.length();
+                }
+                hostname = input.substring(begin, cut);
+                begin += hostname.length();
+            }
+        }
         if(input.indexOf(':', begin) != -1
                 && (input.indexOf(Path.DELIMITER, begin) == -1 || input.indexOf(':', begin) < input.indexOf(Path.DELIMITER, begin))) {
-            cut = input.indexOf(':', begin);
-            hostname = input.substring(begin, cut);
-            begin += hostname.length() + 1;
+            begin = input.indexOf(':', begin) + 1;
             String portString;
             if(input.indexOf(Path.DELIMITER, begin) != -1) {
-                portString = input.substring(begin, input.indexOf(Path.DELIMITER, begin));
+                cut = input.indexOf(Path.DELIMITER, begin);
+                portString = input.substring(begin, cut);
                 try {
                     port = Integer.parseInt(portString);
                     begin += portString.length();
@@ -122,6 +167,7 @@ public final class HostParser {
                 }
                 try {
                     path = URLDecoder.decode(input.substring(begin, input.length()), "UTF-8");
+                    begin += path.length();
                 }
                 catch(UnsupportedEncodingException | IllegalArgumentException e) {
                     log.error(e.getMessage(), e);
@@ -131,16 +177,14 @@ public final class HostParser {
                 portString = input.substring(begin, input.length());
                 try {
                     port = Integer.parseInt(portString);
+                    begin += portString.length();
                 }
                 catch(NumberFormatException e) {
                     log.warn("Invalid port number given");
                 }
             }
         }
-        else if(input.indexOf(Path.DELIMITER, begin) != -1) {
-            cut = input.indexOf(Path.DELIMITER, begin);
-            hostname = input.substring(begin, cut);
-            begin += hostname.length();
+        if(input.indexOf(Path.DELIMITER, begin) != -1) {
             try {
                 path = URLDecoder.decode(input.substring(begin, input.length()), "UTF-8");
             }
