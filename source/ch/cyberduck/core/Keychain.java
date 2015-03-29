@@ -72,10 +72,6 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
         }
     }
 
-    public Keychain() {
-        //
-    }
-
     /**
      * @param protocol    Protocol identifier
      * @param port        Port number
