@@ -85,7 +85,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
     private ConnectionSocketFactory sslSocketFactory;
 
     protected HttpSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
-        this(host, trust, key, ProxyFactory.get());
+        this(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, ProxyFactory.get());
     }
 
     protected HttpSession(final Host host, final X509TrustManager trust, final X509KeyManager key, final ProxyFinder proxy) {
@@ -164,7 +164,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                           final ConnectionSocketFactory defaultSocketFactory,
                           final ConnectionSocketFactory sslSocketFactory,
                           final ProxyFinder proxyFinder) {
-        super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
+        super(host, trust, key);
         this.socketFactory = defaultSocketFactory;
         this.sslSocketFactory = sslSocketFactory;
         // Always register HTTP for possible use with proxy. Contains a number of protocol properties such as the
