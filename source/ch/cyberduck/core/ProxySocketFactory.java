@@ -17,6 +17,7 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 
@@ -25,15 +26,22 @@ import org.apache.log4j.Logger;
 
 import javax.net.SocketFactory;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @version $Id$
  */
 public class ProxySocketFactory extends SocketFactory {
     private static final Logger log = Logger.getLogger(ProxySocketFactory.class);
+
+    private final Preferences preferences
+            = PreferencesFactory.get();
 
     private SocketConfigurator configurator;
 
@@ -43,6 +51,9 @@ public class ProxySocketFactory extends SocketFactory {
 
     private TrustManagerHostnameCallback hostnameCallback;
 
+    private List<Proxy.Type> types = new ArrayList<Proxy.Type>(
+            Arrays.asList(Proxy.Type.DIRECT, Proxy.Type.SOCKS, Proxy.Type.HTTP, Proxy.Type.HTTPS));
+
     public ProxySocketFactory(final Protocol protocol, final TrustManagerHostnameCallback hostnameCallback) {
         this(protocol, hostnameCallback, new DefaultSocketConfigurator());
     }
@@ -50,6 +61,11 @@ public class ProxySocketFactory extends SocketFactory {
     public ProxySocketFactory(final Protocol protocol, final TrustManagerHostnameCallback hostnameCallback,
                               final SocketConfigurator configurator) {
         this(protocol, hostnameCallback, configurator, ProxyFactory.get());
+    }
+
+    public ProxySocketFactory(final Protocol protocol, final TrustManagerHostnameCallback hostnameCallback,
+                              final ProxyFinder proxyFinder) {
+        this(protocol, hostnameCallback, new DefaultSocketConfigurator(), proxyFinder);
     }
 
     public ProxySocketFactory(final Protocol protocol, final TrustManagerHostnameCallback hostnameCallback,
@@ -66,15 +82,27 @@ public class ProxySocketFactory extends SocketFactory {
      * @return Socket factory configured with SOCKS proxy if route is determined to be proxied. Otherwise
      * direct connection socket factory.
      */
-    private SocketFactory factory(final String target) {
-        if(PreferencesFactory.get().getBoolean("connection.proxy.enable")) {
+    protected SocketFactory factory(final String target) {
+        if(preferences.getBoolean("connection.proxy.enable")) {
             final Proxy proxy = proxyFinder.find(new Host(protocol, target));
-            if(proxy.getType() == Proxy.Type.SOCKS) {
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Configured to use SOCKS proxy %s", proxy));
-                }
-                return new DefaultSocketFactory(new java.net.Proxy(
-                        java.net.Proxy.Type.SOCKS, new InetSocketAddress(proxy.getHostname(), proxy.getPort())));
+            if(!types.contains(proxy.getType())) {
+                log.warn(String.format("Use of %s proxy is disabled for socket factory %s", proxy.getType(), this));
+                return new DefaultSocketFactory();
+            }
+            switch(proxy.getType()) {
+                case SOCKS:
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Configured to use SOCKS proxy %s", proxy));
+                    }
+                    return new DefaultSocketFactory(new java.net.Proxy(
+                            java.net.Proxy.Type.SOCKS, new InetSocketAddress(proxy.getHostname(), proxy.getPort())));
+                case HTTP:
+                case HTTPS:
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Configured to use HTTP proxy %s", proxy));
+                    }
+                    return new DefaultSocketFactory(new java.net.Proxy(
+                            java.net.Proxy.Type.HTTP, new InetSocketAddress(proxy.getHostname(), proxy.getPort())));
             }
         }
         return new DefaultSocketFactory();
@@ -87,38 +115,81 @@ public class ProxySocketFactory extends SocketFactory {
             log.info(String.format("Use target hostname %s determined from callback %s for proxy configuration",
                     target, hostnameCallback));
         }
-        final Socket socket = this.factory(target).createSocket();
-        configurator.configure(socket);
-        return socket;
+        try {
+            final Socket socket = this.factory(target).createSocket();
+            configurator.configure(socket);
+            return socket;
+        }
+        catch(IllegalArgumentException e) {
+            throw this.failure(target, e);
+        }
+    }
+
+    private IOException failure(final String target, final IllegalArgumentException e) {
+        final Proxy proxy = proxyFinder.find(new Host(protocol, target));
+        return new ConnectException(String.format("Unsupported proxy type %s", proxy.getType()));
     }
 
     @Override
     public Socket createSocket(final String hostname, final int port) throws IOException {
-        final Socket socket = this.factory(hostname).createSocket(hostname, port);
-        configurator.configure(socket);
-        return socket;
+        try {
+            final Socket socket = this.factory(hostname).createSocket(hostname, port);
+            configurator.configure(socket);
+            return socket;
+        }
+        catch(IllegalArgumentException e) {
+            throw this.failure(hostname, e);
+        }
     }
 
     @Override
     public Socket createSocket(final String hostname, final int port,
                                final InetAddress localHost, final int localPort) throws IOException {
-        final Socket socket = this.factory(hostname).createSocket(hostname, port, localHost, localPort);
-        configurator.configure(socket);
-        return socket;
+        try {
+            final Socket socket = this.factory(hostname).createSocket(hostname, port, localHost, localPort);
+            configurator.configure(socket);
+            return socket;
+        }
+        catch(IllegalArgumentException e) {
+            throw this.failure(hostname, e);
+        }
     }
 
     @Override
     public Socket createSocket(final InetAddress inetAddress, final int port) throws IOException {
-        final Socket socket = this.factory(inetAddress.getHostName()).createSocket(inetAddress, port);
-        configurator.configure(socket);
-        return socket;
+        try {
+            final Socket socket = this.factory(inetAddress.getHostName()).createSocket(inetAddress, port);
+            configurator.configure(socket);
+            return socket;
+        }
+        catch(IllegalArgumentException e) {
+            throw this.failure(inetAddress.getHostName(), e);
+        }
     }
 
     @Override
     public Socket createSocket(final InetAddress inetAddress, final int port,
                                final InetAddress localHost, final int localPort) throws IOException {
-        final Socket socket = this.factory(inetAddress.getHostName()).createSocket(inetAddress, port, localHost, localPort);
-        configurator.configure(socket);
-        return socket;
+        try {
+            final Socket socket = this.factory(inetAddress.getHostName()).createSocket(inetAddress, port, localHost, localPort);
+            configurator.configure(socket);
+            return socket;
+        }
+        catch(IllegalArgumentException e) {
+            throw this.failure(inetAddress.getHostName(), e);
+        }
+    }
+
+    public ProxySocketFactory disable(final Proxy.Type type) {
+        types.remove(type);
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("ProxySocketFactory{");
+        sb.append("types=").append(types);
+        sb.append('}');
+        return sb.toString();
     }
 }

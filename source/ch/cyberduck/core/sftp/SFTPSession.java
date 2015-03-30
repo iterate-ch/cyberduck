@@ -46,6 +46,7 @@ import ch.cyberduck.core.threading.CancelCallback;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import javax.net.SocketFactory;
 import java.io.IOException;
 import java.security.PublicKey;
 import java.text.MessageFormat;
@@ -60,7 +61,6 @@ import net.schmizz.sshj.Config;
 import net.schmizz.sshj.DefaultConfig;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.common.DisconnectReason;
-import net.schmizz.sshj.common.Factory;
 import net.schmizz.sshj.common.SSHException;
 import net.schmizz.sshj.sftp.Request;
 import net.schmizz.sshj.sftp.Response;
@@ -69,7 +69,6 @@ import net.schmizz.sshj.sftp.SFTPException;
 import net.schmizz.sshj.transport.DisconnectListener;
 import net.schmizz.sshj.transport.NegotiatedAlgorithms;
 import net.schmizz.sshj.transport.Transport;
-import net.schmizz.sshj.transport.compression.Compression;
 import net.schmizz.sshj.transport.compression.DelayedZlibCompression;
 import net.schmizz.sshj.transport.compression.NoneCompression;
 import net.schmizz.sshj.transport.compression.ZlibCompression;
@@ -91,8 +90,19 @@ public class SFTPSession extends Session<SSHClient> {
 
     private NegotiatedAlgorithms algorithms;
 
+    private SocketFactory socketFactory;
+
     public SFTPSession(final Host h) {
+        this(h, new ProxySocketFactory(h.getProtocol(), new DefaultTrustManagerHostnameCallback(h)));
+    }
+
+    public SFTPSession(final Host h, final ProxyFinder proxy) {
+        this(h, new ProxySocketFactory(h.getProtocol(), new DefaultTrustManagerHostnameCallback(h), proxy));
+    }
+
+    public SFTPSession(final Host h, final SocketFactory socketFactory) {
         super(h);
+        this.socketFactory = socketFactory;
     }
 
     @Override
@@ -125,8 +135,7 @@ public class SFTPSession extends Session<SSHClient> {
                         new NoneCompression.Factory()));
             }
             else {
-                configuration.setCompressionFactories(Arrays.<Factory.Named<Compression>>asList(
-                        new NoneCompression.Factory()));
+                configuration.setCompressionFactories(new NoneCompression.Factory());
             }
             configuration.setVersion(new PreferencesUseragentProvider().get());
             final KeepAliveProvider heartbeat = KeepAliveProvider.KEEP_ALIVE;
@@ -142,8 +151,7 @@ public class SFTPSession extends Session<SSHClient> {
         final SSHClient connection = new SSHClient(configuration);
         final int timeout = this.timeout();
         connection.setTimeout(timeout);
-        connection.setConnectTimeout(timeout);
-        connection.setSocketFactory(new ProxySocketFactory(host.getProtocol(), new DefaultTrustManagerHostnameCallback(host)));
+        connection.setSocketFactory(socketFactory);
         connection.addHostKeyVerifier(new HostKeyVerifier() {
             @Override
             public boolean verify(String hostname, int port, PublicKey publicKey) {

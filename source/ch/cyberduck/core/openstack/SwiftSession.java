@@ -27,6 +27,7 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProxyFinder;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
@@ -58,6 +59,7 @@ import ch.cyberduck.core.threading.ThreadPool;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
 
+import javax.net.SocketFactory;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -91,6 +93,14 @@ public class SwiftSession extends HttpSession<Client> {
 
     public SwiftSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
+    }
+
+    public SwiftSession(final Host host, final X509TrustManager trust, final X509KeyManager key, final ProxyFinder proxy) {
+        super(host, trust, key, proxy);
+    }
+
+    public SwiftSession(final Host host, final X509TrustManager trust, final X509KeyManager key, final SocketFactory socketFactory) {
+        super(host, trust, key, socketFactory);
     }
 
     @Override

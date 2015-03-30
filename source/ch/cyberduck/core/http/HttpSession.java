@@ -19,10 +19,12 @@ package ch.cyberduck.core.http;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.DisabledProxyFinder;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Proxy;
 import ch.cyberduck.core.ProxyFactory;
+import ch.cyberduck.core.ProxyFinder;
 import ch.cyberduck.core.ProxySocketFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.Upload;
@@ -60,6 +62,7 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpCoreContext;
 import org.apache.log4j.Logger;
 
+import javax.net.SocketFactory;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -77,13 +80,100 @@ public abstract class HttpSession<C> extends SSLSession<C> {
     private HttpClientBuilder builder
             = HttpClients.custom();
 
+    private ConnectionSocketFactory socketFactory;
+
+    private ConnectionSocketFactory sslSocketFactory;
+
     protected HttpSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
+        this(host, trust, key, ProxyFactory.get());
+    }
+
+    protected HttpSession(final Host host, final X509TrustManager trust, final X509KeyManager key, final ProxyFinder proxy) {
+        this(host, trust, key, new PlainConnectionSocketFactory() {
+            @Override
+            public Socket createSocket(final HttpContext context) throws IOException {
+                // Return socket factory with disabled support for HTTP tunneling as provided internally
+                return new ProxySocketFactory(host.getProtocol(), new TrustManagerHostnameCallback() {
+                    @Override
+                    public String getTarget() {
+                        return context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST).toString();
+                    }
+                }, proxy).disable(Proxy.Type.HTTP).disable(Proxy.Type.HTTPS).createSocket();
+            }
+        }, new SSLConnectionSocketFactory(
+                new CustomTrustSSLProtocolSocketFactory(trust, key),
+                new DisabledX509HostnameVerifier()
+        ) {
+            @Override
+            public Socket createSocket(final HttpContext context) throws IOException {
+                return new ProxySocketFactory(host.getProtocol(), new TrustManagerHostnameCallback() {
+                    @Override
+                    public String getTarget() {
+                        return context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST).toString();
+                    }
+                }, proxy).disable(Proxy.Type.HTTP).disable(Proxy.Type.HTTPS).createSocket();
+            }
+
+            @Override
+            public Socket connectSocket(final int connectTimeout,
+                                        final Socket socket,
+                                        final HttpHost host,
+                                        final InetSocketAddress remoteAddress,
+                                        final InetSocketAddress localAddress,
+                                        final HttpContext context) throws IOException {
+                if(trust instanceof ThreadLocalHostnameDelegatingTrustManager) {
+                    ((ThreadLocalHostnameDelegatingTrustManager) trust).setTarget(remoteAddress.getHostName());
+                }
+                return super.connectSocket(connectTimeout, socket, host, remoteAddress, localAddress, context);
+            }
+        }, proxy);
+    }
+
+    protected HttpSession(final Host host, final X509TrustManager trust, final X509KeyManager key,
+                          final SocketFactory socketFactory) {
+        this(host, trust, key, new PlainConnectionSocketFactory() {
+            @Override
+            public Socket createSocket(final HttpContext context) throws IOException {
+                return socketFactory.createSocket();
+            }
+        }, new SSLConnectionSocketFactory(
+                new CustomTrustSSLProtocolSocketFactory(trust, key),
+                new DisabledX509HostnameVerifier()
+        ) {
+            @Override
+            public Socket createSocket(final HttpContext context) throws IOException {
+                return socketFactory.createSocket();
+            }
+
+            @Override
+            public Socket connectSocket(final int connectTimeout,
+                                        final Socket socket,
+                                        final HttpHost host,
+                                        final InetSocketAddress remoteAddress,
+                                        final InetSocketAddress localAddress,
+                                        final HttpContext context) throws IOException {
+                if(trust instanceof ThreadLocalHostnameDelegatingTrustManager) {
+                    ((ThreadLocalHostnameDelegatingTrustManager) trust).setTarget(remoteAddress.getHostName());
+                }
+                return super.connectSocket(connectTimeout, socket, host, remoteAddress, localAddress, context);
+            }
+        }, new DisabledProxyFinder());
+    }
+
+    protected HttpSession(final Host host, final X509TrustManager trust, final X509KeyManager key,
+                          final ConnectionSocketFactory defaultSocketFactory,
+                          final ConnectionSocketFactory sslSocketFactory,
+                          final ProxyFinder proxyFinder) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
+        this.socketFactory = defaultSocketFactory;
+        this.sslSocketFactory = sslSocketFactory;
         // Always register HTTP for possible use with proxy. Contains a number of protocol properties such as the
         // default port and the socket factory to be used to create the java.net.Socket instances for the given protocol
         final Registry<ConnectionSocketFactory> registry = this.registry().build();
+        // Use HTTP Connect proxy implementation provided here instead of
+        // relying on internal proxy support in socket factory
         if(preferences.getBoolean("connection.proxy.enable")) {
-            final Proxy proxy = ProxyFactory.get().find(host);
+            final Proxy proxy = proxyFinder.find(host);
             if(proxy.getType() == Proxy.Type.HTTP) {
                 final HttpHost h = new HttpHost(proxy.getHostname(), proxy.getPort(), Scheme.http.name());
                 if(log.isInfoEnabled()) {
@@ -144,44 +234,8 @@ public abstract class HttpSession<C> extends SSLSession<C> {
 
     protected RegistryBuilder<ConnectionSocketFactory> registry() {
         return RegistryBuilder.<ConnectionSocketFactory>create()
-                .register(Scheme.http.toString(), new PlainConnectionSocketFactory() {
-                    @Override
-                    public Socket createSocket(final HttpContext context) throws IOException {
-                        return new ProxySocketFactory(host.getProtocol(), new TrustManagerHostnameCallback() {
-                            @Override
-                            public String getTarget() {
-                                return context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST).toString();
-                            }
-                        }).createSocket();
-                    }
-                })
-                .register(Scheme.https.toString(), new SSLConnectionSocketFactory(
-                        new CustomTrustSSLProtocolSocketFactory(trust, key),
-                        new DisabledX509HostnameVerifier()
-                ) {
-                    @Override
-                    public Socket createSocket(final HttpContext context) throws IOException {
-                        return new ProxySocketFactory(host.getProtocol(), new TrustManagerHostnameCallback() {
-                            @Override
-                            public String getTarget() {
-                                return context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST).toString();
-                            }
-                        }).createSocket();
-                    }
-
-                    @Override
-                    public Socket connectSocket(final int connectTimeout,
-                                                final Socket socket,
-                                                final HttpHost host,
-                                                final InetSocketAddress remoteAddress,
-                                                final InetSocketAddress localAddress,
-                                                final HttpContext context) throws IOException {
-                        if(trust instanceof ThreadLocalHostnameDelegatingTrustManager) {
-                            ((ThreadLocalHostnameDelegatingTrustManager) trust).setTarget(remoteAddress.getHostName());
-                        }
-                        return super.connectSocket(connectTimeout, socket, host, remoteAddress, localAddress, context);
-                    }
-                });
+                .register(Scheme.http.toString(), socketFactory)
+                .register(Scheme.https.toString(), sslSocketFactory);
     }
 
     protected PoolingHttpClientConnectionManager pool(final Registry<ConnectionSocketFactory> registry) {

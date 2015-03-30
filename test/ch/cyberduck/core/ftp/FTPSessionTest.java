@@ -58,6 +58,34 @@ public class FTPSessionTest extends AbstractTestCase {
         assertFalse(session.isConnected());
     }
 
+    @Test
+    public void testConnectHttpProxy() throws Exception {
+        final Host host = new Host(new FTPProtocol(), "mirror.switch.ch", new Credentials(
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
+        ));
+        final FTPSession session = new FTPSession(host, new ProxySocketFactory(host.getProtocol(), new DefaultTrustManagerHostnameCallback(host),
+                new DefaultSocketConfigurator(), new ProxyFinder() {
+            @Override
+            public boolean usePassiveFTP() {
+                return false;
+            }
+
+            @Override
+            public Proxy find(final Host target) {
+                return new Proxy(Proxy.Type.HTTP, "localhost", 3128);
+            }
+        })
+        );
+        final LoginConnectionService c = new LoginConnectionService(
+                new DisabledLoginCallback(),
+                new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(),
+                new DisabledProgressListener(), new DisabledTranscriptListener());
+        c.connect(session, PathCache.empty());
+        assertTrue(session.isConnected());
+        session.close();
+    }
+
     @Test(expected = LoginFailureException.class)
     public void testConnectTLSNotSupported() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "mirror.switch.ch", new Credentials(

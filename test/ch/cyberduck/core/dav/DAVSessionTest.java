@@ -4,9 +4,11 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.exception.ProxyException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Headers;
@@ -43,7 +45,7 @@ public class DAVSessionTest extends AbstractTestCase {
 
     @Test
     public void testConnect() throws Exception {
-        final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.ch", new Credentials(
+        final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io", new Credentials(
                 PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         final DAVSession session = new DAVSession(host,
@@ -61,6 +63,133 @@ public class DAVSessionTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
+    }
+
+    @Test(expected = ConnectionRefusedException.class)
+    public void testConnectRefused() throws Exception {
+        final Host host = new Host(new DAVSSLProtocol(), "localhost", 2121);
+        final DAVSession session = new DAVSession(host,
+                new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DefaultCertificateStore()),
+                new CertificateStoreX509KeyManager(new DefaultCertificateStore()));
+        try {
+            session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+            session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        }
+        catch(ConnectionRefusedException e) {
+            assertEquals("Connection failed", e.getMessage());
+            throw e;
+        }
+    }
+
+    @Test(expected = ProxyException.class)
+    public void testConnectHttpProxyFailure() throws Exception {
+        final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io", new Credentials(
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
+        ));
+        final DAVSession session = new DAVSession(host,
+                new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DefaultCertificateStore()),
+                new CertificateStoreX509KeyManager(new DefaultCertificateStore()),
+                new ProxySocketFactory(host.getProtocol(), new DefaultTrustManagerHostnameCallback(host),
+                        new DefaultSocketConfigurator(), new ProxyFinder() {
+                    @Override
+                    public boolean usePassiveFTP() {
+                        return false;
+                    }
+
+                    @Override
+                    public Proxy find(final Host target) {
+                        return new Proxy(Proxy.Type.HTTP, "localhost", 1111);
+                    }
+                })
+        );
+        final LoginConnectionService c = new LoginConnectionService(
+                new DisabledLoginCallback(),
+                new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(),
+                new DisabledProgressListener(), new DisabledTranscriptListener());
+        c.connect(session, PathCache.empty());
+    }
+
+    @Test
+    public void testConnectHttpProxy() throws Exception {
+        final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io", new Credentials(
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
+        ));
+        final DAVSession session = new DAVSession(host,
+                new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DefaultCertificateStore()),
+                new CertificateStoreX509KeyManager(new DefaultCertificateStore()),
+                new ProxyFinder() {
+                    @Override
+                    public boolean usePassiveFTP() {
+                        return false;
+                    }
+
+                    @Override
+                    public Proxy find(final Host target) {
+                        return new Proxy(Proxy.Type.HTTP, "localhost", 3128);
+                    }
+                }
+        );
+        final AtomicBoolean proxied = new AtomicBoolean();
+        final LoginConnectionService c = new LoginConnectionService(
+                new DisabledLoginCallback(),
+                new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(),
+                new DisabledProgressListener(), new DisabledTranscriptListener() {
+            @Override
+            public void log(final boolean request, final String message) {
+                if(request) {
+                    if(message.contains("CONNECT")) {
+                        proxied.set(true);
+                    }
+                }
+            }
+        });
+        c.connect(session, PathCache.empty());
+        assertTrue(proxied.get());
+        assertTrue(session.isConnected());
+        session.close();
+    }
+
+    @Test(expected = ConnectionRefusedException.class)
+    public void testConnectHttpProxyConnectionFailure() throws Exception {
+        final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io", new Credentials(
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
+        ));
+        final DAVSession session = new DAVSession(host,
+                new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DefaultCertificateStore()),
+                new CertificateStoreX509KeyManager(new DefaultCertificateStore()),
+                new ProxyFinder() {
+                    @Override
+                    public boolean usePassiveFTP() {
+                        return false;
+                    }
+
+                    @Override
+                    public Proxy find(final Host target) {
+                        return new Proxy(Proxy.Type.HTTP, "localhost", 5555);
+                    }
+                }
+        );
+        final AtomicBoolean proxied = new AtomicBoolean();
+        final LoginConnectionService c = new LoginConnectionService(
+                new DisabledLoginCallback(),
+                new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(),
+                new DisabledProgressListener(), new DisabledTranscriptListener() {
+            @Override
+            public void log(final boolean request, final String message) {
+                if(request) {
+                    if(message.contains("CONNECT")) {
+                        proxied.set(true);
+                    }
+                }
+            }
+        });
+        c.connect(session, PathCache.empty());
+        assertFalse(proxied.get());
+        assertFalse(session.isConnected());
+        session.close();
     }
 
     @Test(expected = InteroperabilityException.class)

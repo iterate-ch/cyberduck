@@ -32,6 +32,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProxyFinder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Copy;
@@ -67,6 +68,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 
+import javax.net.SocketFactory;
 import java.io.IOException;
 
 import com.github.sardine.impl.SardineException;
@@ -100,6 +102,19 @@ public class DAVSession extends HttpSession<DAVClient> {
 
     public DAVSession(final Host host, final X509TrustManager trust, final X509KeyManager key, final RedirectCallback redirect) {
         super(host, trust, key);
+        this.redirect = redirect;
+    }
+
+    public DAVSession(final Host host, final X509TrustManager trust, final X509KeyManager key, final SocketFactory socketFactory) {
+        super(host, trust, key, socketFactory);
+    }
+
+    public DAVSession(final Host host, final X509TrustManager trust, final X509KeyManager key, final ProxyFinder proxy) {
+        super(host, trust, key, proxy);
+    }
+
+    public DAVSession(final Host host, final X509TrustManager trust, final X509KeyManager key, final SocketFactory socketFactory, final RedirectCallback redirect) {
+        super(host, trust, key, socketFactory);
         this.redirect = redirect;
     }
 

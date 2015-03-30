@@ -10,6 +10,7 @@ import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.test.NullLocal;
 
 import org.junit.Test;
@@ -249,6 +250,35 @@ public class SFTPSessionTest extends AbstractTestCase {
                 new DisabledProgressListener(), new DisabledTranscriptListener());
         login.connect(session, PathCache.empty());
         assertTrue(change.get());
+        session.close();
+    }
+
+    @Test
+    public void testConnectHttpProxy() throws Exception {
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
+                properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
+        ));
+        final SFTPSession session = new SFTPSession(host,
+                new ProxySocketFactory(host.getProtocol(), new DefaultTrustManagerHostnameCallback(host),
+                        new DefaultSocketConfigurator(), new ProxyFinder() {
+                    @Override
+                    public boolean usePassiveFTP() {
+                        return false;
+                    }
+
+                    @Override
+                    public Proxy find(final Host target) {
+                        return new Proxy(Proxy.Type.HTTP, "localhost", 3128);
+                    }
+                })
+        );
+        final LoginConnectionService c = new LoginConnectionService(
+                new DisabledLoginCallback(),
+                new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(),
+                new DisabledProgressListener(), new DisabledTranscriptListener());
+        c.connect(session, PathCache.empty());
+        assertTrue(session.isConnected());
         session.close();
     }
 }

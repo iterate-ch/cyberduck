@@ -30,6 +30,7 @@ import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.ProxyFinder;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
@@ -68,6 +69,8 @@ import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
 import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.security.ProviderCredentials;
 
+import javax.net.SocketFactory;
+
 /**
  * @version $Id$
  */
@@ -92,6 +95,14 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
 
     public S3Session(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
+    }
+
+    public S3Session(final Host host, final X509TrustManager trust, final X509KeyManager key, final ProxyFinder proxy) {
+        super(host, trust, key, proxy);
+    }
+
+    public S3Session(final Host host, final X509TrustManager trust, final X509KeyManager key, final SocketFactory socketFactory) {
+        super(host, trust, key, socketFactory);
     }
 
     @Override

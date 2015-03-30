@@ -29,6 +29,7 @@ import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.ProxyFactory;
+import ch.cyberduck.core.ProxyFinder;
 import ch.cyberduck.core.ProxySocketFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -59,6 +60,7 @@ import org.apache.commons.net.ftp.FTPCmd;
 import org.apache.commons.net.ftp.FTPReply;
 import org.apache.log4j.Logger;
 
+import javax.net.SocketFactory;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.EnumSet;
@@ -86,12 +88,27 @@ public class FTPSession extends SSLSession<FTPClient> {
 
     private Case casesensitivity = Case.sensitive;
 
+    private SocketFactory socketFactory;
+
     public FTPSession(final Host h) {
-        super(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        this(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+    }
+
+    public FTPSession(final Host h, final SocketFactory socketFactory) {
+        this(h, new DisabledX509TrustManager(), new DefaultX509KeyManager(), socketFactory);
     }
 
     public FTPSession(final Host h, final X509TrustManager trust, final X509KeyManager key) {
+        this(h, trust, key, new ProxySocketFactory(h.getProtocol(), new DefaultTrustManagerHostnameCallback(h)));
+    }
+
+    public FTPSession(final Host h, final X509TrustManager trust, final X509KeyManager key, final ProxyFinder proxy) {
+        this(h, trust, key, new ProxySocketFactory(h.getProtocol(), new DefaultTrustManagerHostnameCallback(h), proxy));
+    }
+
+    public FTPSession(final Host h, final X509TrustManager trust, final X509KeyManager key, final SocketFactory socketFactory) {
         super(h, trust, key);
+        this.socketFactory = socketFactory;
     }
 
     @Override
@@ -125,7 +142,7 @@ public class FTPSession extends SSLSession<FTPClient> {
 
     protected void configure(final FTPClient client) throws IOException {
         client.setProtocol(host.getProtocol());
-        client.setSocketFactory(new ProxySocketFactory(host.getProtocol(), new DefaultTrustManagerHostnameCallback(host)));
+        client.setSocketFactory(socketFactory);
         client.setControlEncoding(this.getEncoding());
         client.setConnectTimeout(this.timeout());
         client.setDefaultTimeout(this.timeout());
