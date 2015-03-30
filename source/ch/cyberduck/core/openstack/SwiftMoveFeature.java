@@ -51,13 +51,18 @@ public class SwiftMoveFeature implements Move {
     @Override
     public void move(final Path file, final Path renamed, boolean exists, final ProgressListener listener) throws BackgroundException {
         try {
-            if(file.isFile()) {
+            if(file.isFile() || file.isPlaceholder()) {
                 new SwiftCopyFeature(session).copy(file, renamed);
                 session.getClient().deleteObject(new SwiftRegionService(session).lookup(file),
                         containerService.getContainer(file).getName(), containerService.getKey(file));
             }
             else if(file.isDirectory()) {
-                for(Path i : session.list(file, new DisabledListProgressListener())) {
+                for(Path i : session.list(file, new DisabledListProgressListener() {
+                    @Override
+                    public void message(final String message) {
+                        listener.message(message);
+                    }
+                })) {
                     this.move(i, new Path(renamed, i.getName(), i.getType()), false, listener);
                 }
                 try {

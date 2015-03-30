@@ -54,13 +54,18 @@ public class AzureMoveFeature implements Move {
 
     @Override
     public void move(final Path file, final Path renamed, final boolean exists, final ProgressListener listener) throws BackgroundException {
-        if(file.isFile()) {
+        if(file.isFile() || file.isPlaceholder()) {
             new AzureCopyFeature(session, context).copy(file, renamed);
             new AzureDeleteFeature(session, context).delete(Collections.singletonList(file),
                     new DisabledLoginCallback(), listener);
         }
         else if(file.isDirectory()) {
-            for(Path i : session.list(file, new DisabledListProgressListener())) {
+            for(Path i : session.list(file, new DisabledListProgressListener() {
+                @Override
+                public void message(final String message) {
+                    listener.message(message);
+                }
+            })) {
                 this.move(i, new Path(renamed, i.getName(), i.getType()), false, listener);
             }
         }

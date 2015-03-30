@@ -72,7 +72,12 @@ public class S3MoveFeature implements Move {
                         containerService.getKey(file));
             }
             if(file.isDirectory()) {
-                for(Path i : session.list(file, new DisabledListProgressListener())) {
+                for(Path i : session.list(file, new DisabledListProgressListener() {
+                    @Override
+                    public void message(final String message) {
+                        listener.message(message);
+                    }
+                })) {
                     this.move(i, new Path(renamed, i.getName(), i.getType()), false, listener);
                 }
             }
