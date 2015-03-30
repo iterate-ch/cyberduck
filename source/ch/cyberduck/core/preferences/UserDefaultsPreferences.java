@@ -210,6 +210,8 @@ public class UserDefaultsPreferences extends Preferences {
                 bundle.objectForInfoDictionaryKey("CFBundleIdentifier").toString());
         defaults.put("application.version",
                 bundle.objectForInfoDictionaryKey("CFBundleShortVersionString").toString());
+        defaults.put("application.revision",
+                bundle.objectForInfoDictionaryKey("CFBundleVersion").toString());
         defaults.put("application.receipt.path", bundle.bundlePath() + "/Contents/_MASReceipt");
         defaults.put("application.bookmarks.path", bundle.resourcePath() + "/Bookmarks");
         defaults.put("application.profiles.path", bundle.resourcePath() + "/Profiles");

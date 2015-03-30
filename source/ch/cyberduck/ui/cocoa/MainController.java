@@ -514,11 +514,13 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Action
     public void aboutMenuClicked(final ID sender) {
-        NSDictionary dict = NSDictionary.dictionaryWithObjectsForKeys(
+        final NSDictionary dict = NSDictionary.dictionaryWithObjectsForKeys(
                 NSArray.arrayWithObjects(
-                        NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleShortVersionString").toString(),
-                        NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion").toString()),
+                        preferences.getProperty("application.name"),
+                        preferences.getProperty("application.version"),
+                        preferences.getProperty("application.revision")),
                 NSArray.arrayWithObjects(
+                        "ApplicationName",
                         "ApplicationVersion",
                         "Version")
         );
