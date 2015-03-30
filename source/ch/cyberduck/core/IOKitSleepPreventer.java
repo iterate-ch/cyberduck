@@ -30,6 +30,9 @@ public final class IOKitSleepPreventer implements SleepPreventer {
         Native.load("IOKitSleepPreventer");
     }
 
+    private static final String reason
+            = PreferencesFactory.get().getProperty("application.name");
+
     protected IOKitSleepPreventer() {
         //
     }
@@ -39,7 +42,7 @@ public final class IOKitSleepPreventer implements SleepPreventer {
     @Override
     public String lock() {
         synchronized(lock) {
-            return this.createAssertion(PreferencesFactory.get().getProperty("application.name"));
+            return this.createAssertion(reason);
         }
     }
 
