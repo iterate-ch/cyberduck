@@ -322,7 +322,7 @@ public class BrowserController extends WindowController
         }
         else {
             // Setting up a custom filter for the directory listing
-            this.filenameFilter = new SearchFilter(cache, search);
+            this.filenameFilter = new SearchFilter(search);
         }
     }
 

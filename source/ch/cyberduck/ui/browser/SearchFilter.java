@@ -18,7 +18,6 @@ package ch.cyberduck.ui.browser;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Path;
 
@@ -33,10 +32,7 @@ public class SearchFilter implements Filter<Path> {
 
     private String input;
 
-    private Cache<Path> cache;
-
-    public SearchFilter(Cache<Path> cache, String input) {
-        this.cache = cache;
+    public SearchFilter(final String input) {
         this.input = input;
     }
 
@@ -51,10 +47,6 @@ public class SearchFilter implements Filter<Path> {
                 // Matching version
                 return true;
             }
-        }
-        if(file.isDirectory()) {
-            // #471. Expanded item children may match search string
-            return cache.isCached(file);
         }
         return false;
     }

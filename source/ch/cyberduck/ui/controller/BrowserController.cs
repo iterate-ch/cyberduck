@@ -2764,7 +2764,7 @@ namespace Ch.Cyberduck.Ui.Controller
             else
             {
                 // Setting up a custom filter for the directory listing
-                FilenameFilter = new CustomPathFilter(searchString, _cache);
+                FilenameFilter = new CustomPathFilter(searchString);
             }
             ReloadData(true);
         }
@@ -2988,7 +2988,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private class CustomPathFilter : SearchFilter, IModelFilter
         {
-            public CustomPathFilter(String searchString, PathCache cache) : base(cache, searchString)
+            public CustomPathFilter(String searchString) : base(searchString)
             {
             }
 
