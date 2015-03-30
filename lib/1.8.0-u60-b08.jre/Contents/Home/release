@@ -1,0 +1,5 @@
+JAVA_VERSION="1.8.0"
+OS_NAME="Darwin"
+OS_VERSION="11.2"
+OS_ARCH="x86_64"
+SOURCE=" .:195ccfafe077 corba:b8f1a7340261 hotspot:00e840150570 jaxp:15bf325a1688 jaxws:7add02dfb2b8 jdk:b1fec09a9588 langtools:1f6454abd0e6 nashorn:5ec92df8ca4f"

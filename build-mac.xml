@@ -41,7 +41,7 @@
 
     <property name="app.runtime.system.min" value="10.6"/>
 
-    <property name="jvm.runtime.home" value="${lib}/1.7.0-u40-b30.jre"/>
+    <property name="jvm.runtime.home" value="${lib}/1.8.0-u60-b08.jre"/>
     <property name="jvm.runtime.bin" value="${jvm.runtime.home}/${bundle.home}/bin"/>
     <property name="jvm.runtime.bin" value="${java.home}/bin"/>
 
