@@ -9,6 +9,7 @@ Changelog. Last modified: $Date$
 - [Feature] Connecting with temporary access credentials from EC2 (S3) (#8610)
 - [Feature] Verify checksum for downloads if available (WebDAV, S3, OpenStack Swift)
 - [Feature] Using multipart when copying large files (S3) (#8616)
+- [Feature] HTTP proxy tunneling using CONNECT method (#76)
 - [Bugfix] Crash opening preferences window (#8617)
 - [Bugfix] Login with combination of public key authentication one-time passcode (SFTP) (#8597)
 - [Bugfix] Enable multipart uploads for all providers (S3) (#8677)
