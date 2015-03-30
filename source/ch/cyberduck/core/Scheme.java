@@ -132,17 +132,6 @@ public enum Scheme {
         public int getPort() {
             return 1247;
         }
-    },
-    irods_ssl {
-        @Override
-        public boolean isSecure() {
-            return true;
-        }
-
-        @Override
-        public int getPort() {
-            return 1247;
-        }
     };
 
     public abstract boolean isSecure();
