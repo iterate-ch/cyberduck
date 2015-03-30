@@ -37,7 +37,7 @@ public final class SystemConfigurationProxy extends AbstractProxyFinder implemen
     }
 
     private HostUrlProvider provider
-            = new HostUrlProvider();
+            = new ProxyHostUrlProvider();
 
     /**
      * Use passive connect mode

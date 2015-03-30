@@ -33,7 +33,7 @@ namespace Ch.Cyberduck.Core
             Uri target;
             try
             {
-                target = new Uri(new HostUrlProvider(false).get(host));
+                target = new Uri(new ProxyHostUrlProvider().get(host));
             }
             catch (UriFormatException e)
             {
