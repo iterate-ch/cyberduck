@@ -52,11 +52,13 @@ public class S3DirectoryFeatureTest extends AbstractTestCase {
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
         ));
         final S3Session session = new S3Session(host);
+        session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final S3DirectoryFeature feature = new S3DirectoryFeature(session);
         for(Location.Name region : new S3Protocol().getRegions()) {
             final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
+            test.attributes().setRegion(region.getIdentifier());
             feature.mkdir(test, region.getIdentifier());
             assertTrue(new S3FindFeature(session).find(test));
             new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
