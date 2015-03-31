@@ -30,6 +30,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.http.HttpHeaders;
 import org.apache.log4j.Logger;
 
 import java.io.OutputStream;
@@ -101,8 +102,19 @@ public class AzureWriteFeature implements Write {
                     .getBlockBlobReference(containerService.getKey(file));
             blob.getProperties().setContentType(status.getMime());
             final HashMap<String, String> headers = new HashMap<>();
-            headers.putAll(metadata); // Default
-            headers.putAll(status.getMetadata()); // Previous
+            // Add default metadata
+            headers.putAll(metadata);
+            // Add previous metadata when overwriting file
+            for(Map.Entry<String, String> e : status.getMetadata().entrySet()) {
+                // Remove additional headers not allowed in metadata that get added in the reader feature
+                if(HttpHeaders.CACHE_CONTROL.equals(e.getKey())) {
+                    continue;
+                }
+                if(HttpHeaders.CONTENT_TYPE.equals(e.getKey())) {
+                    continue;
+                }
+                headers.put(e.getKey(), e.getValue());
+            }
             blob.setMetadata(headers);
             final BlobRequestOptions options = new BlobRequestOptions();
             options.setRetryPolicyFactory(new RetryNoRetry());
