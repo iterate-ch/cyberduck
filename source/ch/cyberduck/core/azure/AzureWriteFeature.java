@@ -105,17 +105,17 @@ public class AzureWriteFeature implements Write {
             // Add default metadata
             headers.putAll(metadata);
             // Add previous metadata when overwriting file
-            for(Map.Entry<String, String> e : status.getMetadata().entrySet()) {
-                // Remove additional headers not allowed in metadata that get added in the reader feature
-                if(HttpHeaders.CACHE_CONTROL.equals(e.getKey())) {
-                    continue;
-                }
-                if(HttpHeaders.CONTENT_TYPE.equals(e.getKey())) {
-                    continue;
-                }
-                headers.put(e.getKey(), e.getValue());
-            }
+            headers.putAll(status.getMetadata());
             blob.setMetadata(headers);
+            // Remove additional headers not allowed in metadata and move to properties
+            if(headers.containsKey(HttpHeaders.CACHE_CONTROL)) {
+                blob.getProperties().setCacheControl(headers.get(HttpHeaders.CACHE_CONTROL));
+                headers.remove(HttpHeaders.CACHE_CONTROL);
+            }
+            if(headers.containsKey(HttpHeaders.CONTENT_TYPE)) {
+                blob.getProperties().setCacheControl(headers.get(HttpHeaders.CONTENT_TYPE));
+                headers.remove(HttpHeaders.CONTENT_TYPE);
+            }
             final BlobRequestOptions options = new BlobRequestOptions();
             options.setConcurrentRequestCount(1);
             options.setRetryPolicyFactory(new RetryNoRetry());
