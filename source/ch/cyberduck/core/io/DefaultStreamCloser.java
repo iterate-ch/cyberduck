@@ -32,6 +32,9 @@ public class DefaultStreamCloser implements StreamCloser {
 
     @Override
     public void close(final InputStream in) throws BackgroundException {
+        if(null == in) {
+            return;
+        }
         try {
             in.close();
         }
@@ -42,6 +45,9 @@ public class DefaultStreamCloser implements StreamCloser {
 
     @Override
     public void close(final OutputStream out) throws BackgroundException {
+        if(null == out) {
+            return;
+        }
         try {
             out.close();
         }
