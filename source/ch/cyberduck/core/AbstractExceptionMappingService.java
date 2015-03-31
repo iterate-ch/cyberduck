@@ -26,6 +26,7 @@ import ch.cyberduck.core.ssl.SSLExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.http.NoHttpResponseException;
 import org.apache.log4j.Logger;
 
 import javax.net.ssl.SSLException;
@@ -107,6 +108,9 @@ public abstract class AbstractExceptionMappingService<T extends Exception> imple
                 return new ConnectionRefusedException(buffer.toString(), failure);
             }
             if(cause instanceof UnknownHostException) {
+                return new ConnectionRefusedException(buffer.toString(), failure);
+            }
+            if(cause instanceof NoHttpResponseException) {
                 return new ConnectionRefusedException(buffer.toString(), failure);
             }
         }
