@@ -8,7 +8,6 @@ import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.exception.ProxyException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Headers;
@@ -81,7 +80,7 @@ public class DAVSessionTest extends AbstractTestCase {
         }
     }
 
-    @Test(expected = ProxyException.class)
+    @Test(expected = ConnectionRefusedException.class)
     public void testConnectHttpProxyFailure() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io", new Credentials(
                 PreferencesFactory.get().getProperty("connection.login.anon.name"), null
