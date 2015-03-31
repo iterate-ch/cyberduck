@@ -117,6 +117,7 @@ public class AzureWriteFeature implements Write {
             }
             blob.setMetadata(headers);
             final BlobRequestOptions options = new BlobRequestOptions();
+            options.setConcurrentRequestCount(1);
             options.setRetryPolicyFactory(new RetryNoRetry());
             options.setStoreBlobContentMD5(preferences.getBoolean("azure.upload.md5"));
             return blob.openOutputStream(AccessCondition.generateEmptyCondition(), options, context);

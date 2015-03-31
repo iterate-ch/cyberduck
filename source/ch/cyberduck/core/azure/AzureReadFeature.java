@@ -67,6 +67,7 @@ public class AzureReadFeature implements Read {
             final CloudBlockBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
                     .getBlockBlobReference(containerService.getKey(file));
             final BlobRequestOptions options = new BlobRequestOptions();
+            options.setConcurrentRequestCount(1);
             options.setRetryPolicyFactory(new RetryNoRetry());
             final BlobInputStream in = blob.openInputStream(AccessCondition.generateEmptyCondition(), options, context);
             if(status.isAppend()) {
