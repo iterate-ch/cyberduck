@@ -391,12 +391,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                             }
                             if(!status.isFailure()) {
                                 // Post process of file.
-                                try {
-                                    filter.complete(item.remote, item.local, options, status, progressListener);
-                                }
-                                catch(BackgroundException e) {
-                                    log.warn(String.format("Ignore failure in completion filter for %s", item));
-                                }
+                                filter.complete(item.remote, item.local, options, status, progressListener);
                             }
                             return status;
                         }
