@@ -38,6 +38,7 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.notification.NotificationService;
 import ch.cyberduck.core.notification.NotificationServiceFactory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
@@ -179,10 +180,15 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
             case concurrent:
                 final Write write = session.getFeature(Write.class);
                 if(!write.pooled()) {
-                    this.worker = new ConcurrentTransferWorker(connection, transfer, options,
-                            meter, prompt, error, this, callback, progress, stream, x509Trust, x509Key);
-                    break;
+                    final int connections = PreferencesFactory.get().getInteger("queue.maxtransfers");
+                    if(connections > 1) {
+                        this.worker = new ConcurrentTransferWorker(connection, transfer, options,
+                                meter, prompt, error, this, callback, progress, stream, x509Trust, x509Key,
+                                connections);
+                        break;
+                    }
                 }
+                // Fall through default single transfer worker
             default:
                 this.worker = new SingleTransferWorker(session, transfer, options,
                         meter, prompt, error, this, progress, stream, callback);
