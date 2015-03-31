@@ -87,7 +87,11 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     private Preferences preferences
             = PreferencesFactory.get();
 
-    private S3Protocol.AuthenticationHeaderSignatureVersion authenticationHeaderSignatureVersion;
+    private S3Protocol.AuthenticationHeaderSignatureVersion authenticationHeaderSignatureVersion
+            = host.getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME) ?
+            // Only for AWS
+            S3Protocol.AuthenticationHeaderSignatureVersion.valueOf(preferences.getProperty("s3.signature.version")) :
+            S3Protocol.AuthenticationHeaderSignatureVersion.AWS2;
 
     public S3Session(final Host h) {
         super(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
@@ -195,13 +199,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         configuration.setProperty("httpclient.proxy-autodetect", String.valueOf(false));
         configuration.setProperty("httpclient.retry-max", String.valueOf(0));
         configuration.setProperty("storage-service.internal-error-retry-max", String.valueOf(0));
-        if(host.getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
-            // Only for AWS
-            authenticationHeaderSignatureVersion = S3Protocol.AuthenticationHeaderSignatureVersion.valueOf(preferences.getProperty("s3.signature.version"));
-        }
-        else {
-            authenticationHeaderSignatureVersion = S3Protocol.AuthenticationHeaderSignatureVersion.AWS2;
-        }
         configuration.setProperty("storage-service.request-signature-version", authenticationHeaderSignatureVersion.toString());
         return configuration;
     }
