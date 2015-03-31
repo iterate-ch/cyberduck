@@ -21,9 +21,11 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.bouncycastle.util.encoders.Base64;
 
 import java.security.PublicKey;
@@ -36,12 +38,19 @@ import net.schmizz.sshj.common.KeyType;
  * @version $Id$
  */
 public abstract class PreferencesHostKeyVerifier extends AbstractHostKeyCallback {
+    private static final Logger log = Logger.getLogger(PreferencesHostKeyVerifier.class);
+
+    private final Preferences preferences
+            = PreferencesFactory.get();
 
     @Override
     public boolean verify(final String hostname, final int port, final PublicKey key)
             throws ConnectionCanceledException, ChecksumException {
-        final String lookup = PreferencesFactory.get().getProperty(this.getFormat(hostname, key));
+        final String lookup = preferences.getProperty(this.getFormat(hostname, key));
         if(StringUtils.equals(Base64.toBase64String(key.getEncoded()), lookup)) {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Accepted host key %s matching %s", key, lookup));
+            }
             return true;
         }
         final boolean accept;
@@ -61,7 +70,7 @@ public abstract class PreferencesHostKeyVerifier extends AbstractHostKeyCallback
     @Override
     protected void allow(final String hostname, final PublicKey key, final boolean persist) {
         if(persist) {
-            PreferencesFactory.get().setProperty(this.getFormat(hostname, key), Base64.toBase64String(key.getEncoded()));
+            preferences.setProperty(this.getFormat(hostname, key), Base64.toBase64String(key.getEncoded()));
         }
     }
 }
