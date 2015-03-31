@@ -113,6 +113,14 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
                     final RequestEntityRestStorageService client = tunneled.open(new DisabledHostKeyCallback(), session);
                     // Swap credentials. No login required
                     client.setProviderCredentials(session.getClient().getProviderCredentials());
+                    if(!preferences.getBoolean("s3.upload.multipart")) {
+                        // Disabled by user
+                        if(status.getLength() < preferences.getLong("s3.upload.multipart.required.threshold")) {
+                            log.warn("Multipart upload is disabled with property s3.upload.multipart");
+                            final S3SingleUploadService single = new S3SingleUploadService(tunneled);
+                            return single.upload(file, local, throttle, listener, status, prompt);
+                        }
+                    }
                     final Upload<StorageObject> service = new S3MultipartUploadService(tunneled);
                     try {
                         return service.upload(file, local, throttle, listener, status, prompt);
