@@ -18,10 +18,10 @@ package ch.cyberduck.core.io;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.exception.ConnectionTimeoutException;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.exception.BackgroundException;
 
-import org.apache.commons.io.IOUtils;
-
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -31,12 +31,22 @@ import java.io.OutputStream;
 public class DefaultStreamCloser implements StreamCloser {
 
     @Override
-    public void close(final InputStream in) throws ConnectionTimeoutException {
-        IOUtils.closeQuietly(in);
+    public void close(final InputStream in) throws BackgroundException {
+        try {
+            in.close();
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
     }
 
     @Override
-    public void close(final OutputStream out) throws ConnectionTimeoutException {
-        IOUtils.closeQuietly(out);
+    public void close(final OutputStream out) throws BackgroundException {
+        try {
+            out.close();
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
     }
 }

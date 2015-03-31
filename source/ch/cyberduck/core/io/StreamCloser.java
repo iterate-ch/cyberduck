@@ -18,7 +18,7 @@ package ch.cyberduck.core.io;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.exception.ConnectionTimeoutException;
+import ch.cyberduck.core.exception.BackgroundException;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -27,7 +27,7 @@ import java.io.OutputStream;
  * @version $Id$
  */
 public interface StreamCloser {
-    void close(InputStream in) throws ConnectionTimeoutException;
+    void close(InputStream in) throws BackgroundException;
 
-    void close(OutputStream out) throws ConnectionTimeoutException;
+    void close(OutputStream out) throws BackgroundException;
 }
