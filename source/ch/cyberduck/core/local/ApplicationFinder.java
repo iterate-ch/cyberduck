@@ -26,7 +26,7 @@ import java.util.List;
 public interface ApplicationFinder {
 
     /**
-     * @param filename File name
+     * @param filename File type to search default editor
      * @return All of the application bundle identifiers that are capable of handling
      *         the specified content type in the specified roles.
      */
@@ -35,7 +35,7 @@ public interface ApplicationFinder {
     /**
      * Find application for file type.
      *
-     * @param filename File name
+     * @param filename File type to search default editor
      * @return Absolute path to installed application Application#notfound if not installed
      * @see ch.cyberduck.core.local.Application#notfound
      */
@@ -48,9 +48,9 @@ public interface ApplicationFinder {
     boolean isInstalled(Application application);
 
     /**
-     * @param application Identifier
+     * @param identifier Application identifier of search path
      * @return Application description or Application#notfound if not installed
      * @see ch.cyberduck.core.local.Application#notfound
      */
-    Application getDescription(String application);
+    Application getDescription(String identifier);
 }
