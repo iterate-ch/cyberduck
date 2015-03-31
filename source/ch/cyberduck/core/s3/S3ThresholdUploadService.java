@@ -43,7 +43,6 @@ import ch.cyberduck.core.udt.UDTTransferOption;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
-import org.jets3t.service.Constants;
 import org.jets3t.service.model.StorageObject;
 
 import com.barchart.udt.ExceptionUDT;
@@ -98,7 +97,7 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
     public StorageObject upload(final Path file, Local local, final BandwidthThrottle throttle, final StreamListener listener,
                                 final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
         final Host bookmark = session.getHost();
-        if(bookmark.getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
+        if(bookmark.getHostname().endsWith(preferences.getProperty("s3.default.hostname"))) {
             // Only for AWS given threshold
             if(status.getLength() > udtThreshold) {
                 // Prompt user

@@ -41,7 +41,6 @@ import ch.cyberduck.core.udt.UDTTransferOption;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
-import org.jets3t.service.Constants;
 
 import com.barchart.udt.ExceptionUDT;
 
@@ -87,7 +86,7 @@ public class S3ThresholdDownloadService extends DefaultDownloadFeature {
     public void download(final Path file, final Local local, final BandwidthThrottle throttle,
                          final StreamListener listener, final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
         final Host bookmark = session.getHost();
-        if(bookmark.getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
+        if(bookmark.getHostname().endsWith(preferences.getProperty("s3.default.hostname"))) {
             // Only for AWS given threshold
             if(status.getLength() > udtThreshold) {
                 // Prompt user

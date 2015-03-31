@@ -69,6 +69,13 @@ import com.barchart.udt.ResourceUDT;
 public class UDTProxyConfigurator implements TrustManagerHostnameCallback {
     private static final Logger log = Logger.getLogger(UDTProxyConfigurator.class);
 
+    private static final UDTCallback NOOP = new UDTCallback() {
+        @Override
+        public void socketCreated(UDTSocket socket) {
+            ;
+        }
+    };
+
     private Preferences preferences
             = PreferencesFactory.get();
 
@@ -83,6 +90,8 @@ public class UDTProxyConfigurator implements TrustManagerHostnameCallback {
 
     private X509KeyManager key;
 
+    private UDTCallback callback;
+
     private SocketConfigurator configurator
             = new DefaultSocketConfigurator();
 
@@ -91,6 +100,7 @@ public class UDTProxyConfigurator implements TrustManagerHostnameCallback {
         this.provider = provider;
         this.trust = new KeychainX509TrustManager(this);
         this.key = new KeychainX509KeyManager();
+        this.callback = NOOP;
     }
 
     public UDTProxyConfigurator(final Location.Name location, final UDTProxyProvider provider,
@@ -99,6 +109,7 @@ public class UDTProxyConfigurator implements TrustManagerHostnameCallback {
         this.provider = provider;
         this.trust = trust;
         this.key = new KeychainX509KeyManager();
+        this.callback = NOOP;
     }
 
     public UDTProxyConfigurator(final Location.Name location, final UDTProxyProvider provider,
@@ -107,6 +118,17 @@ public class UDTProxyConfigurator implements TrustManagerHostnameCallback {
         this.provider = provider;
         this.trust = trust;
         this.key = key;
+        this.callback = NOOP;
+    }
+
+    public UDTProxyConfigurator(final Location.Name location, final UDTProxyProvider provider,
+                                final X509TrustManager trust, final X509KeyManager key,
+                                final UDTCallback callback) {
+        this.location = location;
+        this.provider = provider;
+        this.trust = trust;
+        this.key = key;
+        this.callback = callback;
     }
 
     static {
@@ -161,8 +183,9 @@ public class UDTProxyConfigurator implements TrustManagerHostnameCallback {
             ) {
                 @Override
                 public Socket createSocket(final HttpContext context) throws IOException {
-                    final Socket socket = new UDTSocket();
+                    final UDTSocket socket = new UDTSocket();
                     configurator.configure(socket);
+                    callback.socketCreated(socket);
                     return socket;
                 }
 
@@ -184,8 +207,9 @@ public class UDTProxyConfigurator implements TrustManagerHostnameCallback {
             registry.register(proxy.getProtocol().getScheme().toString(), new PlainConnectionSocketFactory() {
                 @Override
                 public Socket createSocket(final HttpContext context) throws IOException {
-                    final Socket socket = new UDTSocket();
+                    final UDTSocket socket = new UDTSocket();
                     configurator.configure(socket);
+                    callback.socketCreated(socket);
                     return socket;
                 }
             });
