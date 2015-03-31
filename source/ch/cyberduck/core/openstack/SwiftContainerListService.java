@@ -89,7 +89,7 @@ public class SwiftContainerListService implements RootListService {
             final List<Path> containers = new ArrayList<Path>();
             final int limit = preferences.getInteger("openstack.list.container.limit");
             final Client client = session.getClient();
-            for(Region r : client.getRegions()) {
+            for(final Region r : client.getRegions()) {
                 if(region.getIdentifier() != null) {
                     if(!StringUtils.equals(r.getRegionId(), region.getIdentifier())) {
                         log.warn(String.format("Skip region %s", r));
@@ -104,50 +104,53 @@ public class SwiftContainerListService implements RootListService {
                     for(final Container f : chunk) {
                         final PathAttributes attributes = new PathAttributes();
                         attributes.setRegion(f.getRegion().getRegionId());
-                        final Path container = new Path(String.format("/%s", f.getName()),
-                                EnumSet.of(Path.Type.volume, Path.Type.directory), attributes);
-                        if(cdn) {
-                            final DistributionConfiguration feature = session.getFeature(DistributionConfiguration.class);
-                            if(feature != null) {
-                                pool.execute(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        for(Distribution.Method method : feature.getMethods(container)) {
-                                            try {
-                                                final Distribution distribution = feature.read(container, method, new DisabledLoginCallback());
-                                                if(log.isInfoEnabled()) {
-                                                    log.info(String.format("Cached distribution %s", distribution));
-                                                }
-                                            }
-                                            catch(BackgroundException e) {
-                                                log.warn(String.format("Failure caching CDN configuration for container %s %s", container, e.getMessage()));
-                                            }
-                                        }
-                                    }
-                                });
-                            }
-                        }
-                        if(size) {
-                            pool.execute(new Runnable() {
-                                @Override
-                                public void run() {
-                                    try {
-                                        final ContainerInfo info = client.getContainerInfo(f.getRegion(), f.getName());
-                                        container.attributes().setSize(info.getTotalSize());
-                                    }
-                                    catch(IOException e) {
-                                        log.warn(String.format("Failure reading info for container %s %s", container, e.getMessage()));
-                                    }
-                                }
-                            });
-                        }
-                        containers.add(container);
+                        containers.add(new Path(String.format("/%s", f.getName()),
+                                EnumSet.of(Path.Type.volume, Path.Type.directory), attributes));
                         marker = f.getName();
                     }
                     listener.chunk(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
                             new AttributedList<Path>(containers));
                 }
                 while(!chunk.isEmpty());
+                if(cdn) {
+                    final DistributionConfiguration feature = session.getFeature(DistributionConfiguration.class);
+                    if(feature != null) {
+                        for(final Path container : containers) {
+                            pool.execute(new Runnable() {
+                                @Override
+                                public void run() {
+                                    for(Distribution.Method method : feature.getMethods(container)) {
+                                        try {
+                                            final Distribution distribution = feature.read(container, method, new DisabledLoginCallback());
+                                            if(log.isInfoEnabled()) {
+                                                log.info(String.format("Cached distribution %s", distribution));
+                                            }
+                                        }
+                                        catch(BackgroundException e) {
+                                            log.warn(String.format("Failure caching CDN configuration for container %s %s", container, e.getMessage()));
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }
+                }
+                if(size) {
+                    for(final Path container : containers) {
+                        pool.execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    final ContainerInfo info = client.getContainerInfo(r, container.getName());
+                                    container.attributes().setSize(info.getTotalSize());
+                                }
+                                catch(IOException e) {
+                                    log.warn(String.format("Failure reading info for container %s %s", container, e.getMessage()));
+                                }
+                            }
+                        });
+                    }
+                }
             }
             return containers;
         }
