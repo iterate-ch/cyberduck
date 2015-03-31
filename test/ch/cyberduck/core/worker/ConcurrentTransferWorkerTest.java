@@ -68,7 +68,7 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
                 connection, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
                 new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(),
                 new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DisabledCertificateStore()),
-                new CertificateStoreX509KeyManager(new DisabledCertificateStore()));
+                new CertificateStoreX509KeyManager(new DisabledCertificateStore()), 5);
         try {
             final Session<?> session = worker.borrow();
         }
@@ -91,7 +91,7 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
                 connection, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
                 new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(),
                 new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DisabledCertificateStore()),
-                new CertificateStoreX509KeyManager(new DisabledCertificateStore()));
+                new CertificateStoreX509KeyManager(new DisabledCertificateStore()), 2);
         worker.borrow();
     }
 
