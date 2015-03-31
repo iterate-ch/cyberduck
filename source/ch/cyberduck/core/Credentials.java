@@ -37,7 +37,8 @@ public class Credentials implements Comparable<Credentials> {
     /**
      * The login password
      */
-    private transient String password;
+    private ThreadLocal<String> password
+            = new ThreadLocal<String>();
 
     /**
      * If not null, use public key authentication if SSH is the protocol
@@ -66,7 +67,7 @@ public class Credentials implements Comparable<Credentials> {
      */
     public Credentials(final String user, final String password) {
         this.user = user;
-        this.password = password;
+        this.password.set(password);
     }
 
     /**
@@ -89,20 +90,20 @@ public class Credentials implements Comparable<Credentials> {
      * @return The login secret
      */
     public String getPassword() {
-        if(StringUtils.isEmpty(password)) {
+        if(StringUtils.isEmpty(password.get())) {
             if(this.isAnonymousLogin()) {
                 return PreferencesFactory.get().getProperty("connection.login.anon.pass");
             }
         }
-        return password;
+        return password.get();
     }
 
     public void setPassword(final String password) {
-        this.password = password;
+        this.password.set(password);
     }
 
     public Credentials withPassword(final String password) {
-        this.password = password;
+        this.setPassword(password);
         return this;
     }
 
@@ -195,7 +196,7 @@ public class Credentials implements Comparable<Credentials> {
             return false;
         }
         final Credentials that = (Credentials) o;
-        if(password != null ? !password.equals(that.password) : that.password != null) {
+        if(password.get() != null ? !password.get().equals(that.password.get()) : that.password.get() != null) {
             return false;
         }
         if(user != null ? !user.equals(that.user) : that.user != null) {
@@ -221,7 +222,7 @@ public class Credentials implements Comparable<Credentials> {
     @Override
     public int hashCode() {
         int result = user != null ? user.hashCode() : 0;
-        result = 31 * result + (password != null ? password.hashCode() : 0);
+        result = 31 * result + (password.get() != null ? password.get().hashCode() : 0);
         return result;
     }
 
