@@ -24,7 +24,6 @@ import ch.cyberduck.binding.application.*;
 import ch.cyberduck.binding.foundation.NSAppleScript;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSAttributedString;
-import ch.cyberduck.binding.foundation.NSBundle;
 import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.binding.foundation.NSMutableAttributedString;
 import ch.cyberduck.binding.foundation.NSNotification;
@@ -47,6 +46,7 @@ import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.FileDescriptorFactory;
 import ch.cyberduck.core.preferences.Preferences;
@@ -418,16 +418,17 @@ public class PreferencesController extends ToolbarWindowController {
             NSArray selected = sheet.filenames();
             String filename;
             if((filename = selected.lastObject().toString()) != null) {
-                String path = LocalFactory.get(filename).getAbsolute();
-                NSBundle bundle = NSBundle.bundleWithPath(path);
-                if(null == bundle) {
-                    log.error(String.format("Loading bundle %s failed", path));
-                }
-                else {
-                    preferences.setProperty("editor.bundleIdentifier", bundle.bundleIdentifier());
+                final String path = LocalFactory.get(filename).getAbsolute();
+                final ApplicationFinder finder = ApplicationFinderFactory.get();
+                final Application application = finder.getDescription(path);
+                if(finder.isInstalled(application)) {
+                    preferences.setProperty("editor.bundleIdentifier", application.getIdentifier());
                     for(BrowserController controller : MainController.getBrowsers()) {
                         controller.validateToolbar();
                     }
+                }
+                else {
+                    log.error(String.format("Loading bundle %s failed", path));
                 }
             }
         }
