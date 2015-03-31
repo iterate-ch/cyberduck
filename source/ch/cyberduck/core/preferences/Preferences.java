@@ -67,7 +67,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
-import org.jets3t.service.Constants;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.net.URL;
@@ -600,7 +599,7 @@ public abstract class Preferences {
          */
         defaults.put("s3.location", "us-east-1");
         defaults.put("s3.bucket.virtualhost.disable", String.valueOf(false));
-        defaults.put("s3.default.hostname", Constants.S3_DEFAULT_HOSTNAME);
+        defaults.put("s3.hostname.default", ProtocolFactory.S3_SSL.getDefaultHostname());
 
         defaults.put("s3.bucket.acl.default", "public-read");
         //defaults.put("s3.bucket.acl.default", "private");

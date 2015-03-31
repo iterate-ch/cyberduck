@@ -97,7 +97,7 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
     public StorageObject upload(final Path file, Local local, final BandwidthThrottle throttle, final StreamListener listener,
                                 final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
         final Host bookmark = session.getHost();
-        if(bookmark.getHostname().endsWith(preferences.getProperty("s3.default.hostname"))) {
+        if(bookmark.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
             // Only for AWS given threshold
             if(status.getLength() > udtThreshold) {
                 // Prompt user

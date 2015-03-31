@@ -27,12 +27,13 @@ import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.features.Cname;
 import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3BucketListService;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.s3.ServiceExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jets3t.service.Constants;
 import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3WebsiteConfig;
@@ -49,6 +50,9 @@ import java.util.List;
  * @version $Id$
  */
 public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistributionConfiguration {
+
+    private Preferences preferences
+            = PreferencesFactory.get();
 
     private S3Session session;
 
@@ -69,7 +73,7 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
             return super.getMethods(container);
         }
         final List<Distribution.Method> methods = new ArrayList<Distribution.Method>();
-        if(session.getHost().getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
+        if(session.getHost().getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
             methods.addAll(super.getMethods(container));
             methods.addAll(Arrays.asList(Distribution.WEBSITE, Distribution.WEBSITE_CDN));
         }
