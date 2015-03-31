@@ -37,6 +37,8 @@ import java.util.EnumSet;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import ch.iterate.openstack.swift.model.Region;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -54,10 +56,13 @@ public class SwiftDirectoryFeatureTest extends AbstractTestCase {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new SwiftDirectoryFeature(session).mkdir(container, null);
-        assertTrue(new SwiftFindFeature(session).find(container));
-        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(container), new DisabledLoginCallback(), new DisabledProgressListener());
-        assertFalse(new SwiftFindFeature(session).find(container));
+        final SwiftDirectoryFeature feature = new SwiftDirectoryFeature(session);
+        for(Region region : session.getClient().getRegions()) {
+            feature.mkdir(container, region.getRegionId());
+            assertTrue(new SwiftFindFeature(session).find(container));
+            new SwiftDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new DisabledProgressListener());
+            assertFalse(new SwiftFindFeature(session).find(container));
+        }
         session.close();
     }
 
@@ -88,7 +93,7 @@ public class SwiftDirectoryFeatureTest extends AbstractTestCase {
         assertTrue(put.get());
         assertTrue(new SwiftFindFeature(session).find(placeholder));
         assertTrue(new DefaultFindFeature(session).find(placeholder));
-        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(placeholder), new DisabledLoginCallback(), new DisabledProgressListener());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new DisabledProgressListener());
         assertFalse(new SwiftFindFeature(session).find(placeholder));
         session.close();
     }
