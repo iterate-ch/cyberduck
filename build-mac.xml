@@ -65,7 +65,7 @@
     <property name="spotlight" value="${home}/Spotlight Importer"/>
     <property name="build.spotlight" value="${spotlight}/build/${configuration}"/>
 
-    <property name="build.xcodeoptions" value="SDKROOT=macosx10.9 MACOSX_DEPLOYMENT_TARGET=${app.runtime.system.min}"/>
+    <property name="build.xcodeoptions" value="SDKROOT=macosx MACOSX_DEPLOYMENT_TARGET=${app.runtime.system.min}"/>
 
     <property name="build.lipo.binaries" value="**/Contents/MacOS/*,**/*.framework/Versions/Current/*,**/*.dylib"/>
     <property name="build.lipo.arch.remove" value=""/>
