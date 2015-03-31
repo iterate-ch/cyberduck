@@ -200,7 +200,7 @@ public abstract class ToolbarWindowController extends WindowController implement
         toolbarItem.setToolTip(tab.label());
         toolbarItem.setImage(IconCacheFactory.<NSImage>get().iconNamed(itemIdentifier, 32));
         toolbarItem.setTarget(this.id());
-        toolbarItem.setAction(Foundation.selector("select:"));
+        toolbarItem.setAction(Foundation.selector("toolbarItemSelected:"));
 
         return toolbarItem;
     }
@@ -234,7 +234,7 @@ public abstract class ToolbarWindowController extends WindowController implement
         return item.label();
     }
 
-    public void select(final NSToolbarItem sender) {
+    public void toolbarItemSelected(final NSToolbarItem sender) {
         this.setSelectedPanel(tabView.indexOfTabViewItemWithIdentifier(sender.itemIdentifier()));
     }
 
