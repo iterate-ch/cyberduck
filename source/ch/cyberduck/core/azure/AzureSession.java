@@ -27,6 +27,7 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -44,8 +45,6 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.DisabledX509HostnameVerifier;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -55,10 +54,13 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHeaders;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.HashMap;
 
 import com.microsoft.azure.storage.Credentials;
 import com.microsoft.azure.storage.OperationContext;
@@ -75,9 +77,6 @@ import com.microsoft.azure.storage.blob.CloudBlobClient;
 public class AzureSession extends SSLSession<CloudBlobClient> {
 
     private StorageCredentialsAccountAndKey credentials;
-
-    private Preferences preferences
-            = PreferencesFactory.get();
 
     private OperationContext context
             = new OperationContext();
@@ -107,6 +106,9 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
             final BlobRequestOptions options = client.getDefaultRequestOptions();
             options.setTimeoutIntervalInMs(this.timeout());
             options.setRetryPolicyFactory(new RetryNoRetry());
+            context.setUserHeaders(new HashMap<String, String>(Collections.singletonMap(
+                            HttpHeaders.USER_AGENT, new PreferencesUseragentProvider().get()))
+            );
             context.getSendingRequestEventHandler().addListener(listener = new StorageEvent<SendingRequestEvent>() {
                 @Override
                 public void eventOccurred(final SendingRequestEvent event) {
