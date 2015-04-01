@@ -33,10 +33,10 @@ namespace Ch.Cyberduck.Core.Local
         private static readonly Logger Log = Logger.getLogger(typeof (SystemLocal).FullName);
 
         public SystemLocal(string parent, string name)
-            : base(parent, name) {}
+            : base(parent, MakeValidFilename(name)) {}
 
         public SystemLocal(ch.cyberduck.core.Local parent, string name)
-            : base(parent, name) {}
+            : base(parent, MakeValidFilename(name)) {}
 
         public SystemLocal(string path)
             : base(
