@@ -540,6 +540,7 @@ public abstract class Preferences {
          * HTTP routes to maximum number of connections allowed for those routes
          */
         defaults.put("http.connections.route", String.valueOf(10));
+        defaults.put("http.connections.reuse", String.valueOf(true));
         /**
          * Total number of connections in the pool
          */

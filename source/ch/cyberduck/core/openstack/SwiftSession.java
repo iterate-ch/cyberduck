@@ -56,7 +56,6 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.threading.ThreadPool;
 
-import org.apache.http.impl.NoConnectionReuseStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
 
@@ -112,7 +111,6 @@ public class SwiftSession extends HttpSession<Client> {
     @Override
     public HttpClientBuilder builder() {
         final HttpClientBuilder builder = super.builder();
-        builder.setConnectionReuseStrategy(new NoConnectionReuseStrategy());
         builder.disableContentCompression();
         return builder;
     }

@@ -60,7 +60,6 @@ import ch.cyberduck.core.udt.qloudsonic.QloudsonicTransferOption;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.NoConnectionReuseStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
 import org.jets3t.service.Jets3tProperties;
@@ -207,7 +206,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     public HttpClientBuilder builder() {
         final HttpClientBuilder builder = super.builder();
         builder.disableContentCompression();
-        builder.setConnectionReuseStrategy(new NoConnectionReuseStrategy());
         return builder;
     }
 

@@ -51,6 +51,7 @@ import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.DefaultConnectionReuseStrategy;
+import org.apache.http.impl.NoConnectionReuseStrategy;
 import org.apache.http.impl.auth.BasicSchemeFactory;
 import org.apache.http.impl.auth.DigestSchemeFactory;
 import org.apache.http.impl.auth.KerberosSchemeFactory;
@@ -211,7 +212,12 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                 .setBufferSize(preferences.getInteger("http.socket.buffer"))
                 .setCharset(Charset.forName(this.getEncoding()))
                 .build());
-        builder.setConnectionReuseStrategy(new DefaultConnectionReuseStrategy());
+        if(preferences.getBoolean("http.connections.reuse")) {
+            builder.setConnectionReuseStrategy(new DefaultConnectionReuseStrategy());
+        }
+        else {
+            builder.setConnectionReuseStrategy(new NoConnectionReuseStrategy());
+        }
         builder.setRetryHandler(new ExtendedHttpRequestRetryHandler(preferences.getInteger("http.connections.retry")));
         if(!preferences.getBoolean("http.compression.enable")) {
             builder.disableContentCompression();
