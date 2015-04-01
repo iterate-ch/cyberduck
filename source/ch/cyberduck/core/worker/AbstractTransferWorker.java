@@ -212,6 +212,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                 for(TransferItem next : transfer.getRoots()) {
                     this.prepare(next.remote, next.local, new TransferStatus().exists(true), filter);
                 }
+                this.await();
                 meter.reset();
                 // Transfer all files sequentially
                 for(TransferItem next : transfer.getRoots()) {
