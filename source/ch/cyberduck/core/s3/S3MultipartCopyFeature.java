@@ -101,14 +101,14 @@ public class S3MultipartCopyFeature implements Copy {
                 long offset = 0;
                 final List<Future<MultipartPart>> parts = new ArrayList<Future<MultipartPart>>();
                 if(0 == remaining) {
-                    parts.add(this.submit(source, copy, multipart, 1, offset, 0L));
+                    parts.add(this.submit(source, multipart, 1, offset, 0L));
                 }
                 for(int partNumber = 1; remaining > 0; partNumber++) {
                     boolean skip = false;
                     // Last part can be less than 5 MB. Adjust part size.
                     final Long length = Math.min(Math.max((size / S3MultipartService.MAXIMUM_UPLOAD_PARTS), partsize), remaining);
                     // Submit to queue
-                    parts.add(this.submit(source, copy, multipart, partNumber, offset, length));
+                    parts.add(this.submit(source, multipart, partNumber, offset, length));
                     remaining -= length;
                     offset += length;
                 }
@@ -146,7 +146,7 @@ public class S3MultipartCopyFeature implements Copy {
         }
     }
 
-    private Future<MultipartPart> submit(final Path source, final Path copy,
+    private Future<MultipartPart> submit(final Path source,
                                          final MultipartUpload multipart,
                                          final int partNumber, final long offset, final long length) throws BackgroundException {
         if(log.isInfoEnabled()) {
