@@ -237,5 +237,4 @@ public class UDTProxyConfigurator implements TrustManagerHostnameCallback {
         manager.setDefaultMaxPerRoute(preferences.getInteger("http.connections.route"));
         builder.setConnectionManager(manager);
     }
-
 }

@@ -210,6 +210,8 @@ public class UDTProxyConfiguratorTest extends AbstractTestCase {
         proxy.configure(tunneled);
         assertNotNull(tunneled.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         assertTrue(tunneled.isConnected());
+        tunneled.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(),
+                PathCache.empty());
 
         final TransferStatus status = new TransferStatus();
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
@@ -259,6 +261,8 @@ public class UDTProxyConfiguratorTest extends AbstractTestCase {
         proxy.configure(tunneled);
         assertNotNull(tunneled.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         assertTrue(tunneled.isConnected());
+        tunneled.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(),
+                PathCache.empty());
 
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
