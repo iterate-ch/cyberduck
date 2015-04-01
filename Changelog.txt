@@ -15,6 +15,7 @@ Changelog. Last modified: $Date$
 - [Bugfix] Enable multipart uploads for all providers (S3) (#8677)
 - [Bugfix] Incomplete download of files with Content-Encoding header (OpenStack Swift) (#8656)
 - [Bugfix] Failure to download to mounted AFP drive (Mac) (#8670)
+- [Bugfix] Regular connection failures (OpenStack Swift) (#8634)
 
 4.6.5 [https://trac.cyberduck.io/milestone/4.6.5]
 - [Feature] Support for China (Beijing) region (S3)
