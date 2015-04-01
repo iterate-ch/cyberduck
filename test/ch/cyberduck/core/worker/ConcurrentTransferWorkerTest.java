@@ -323,20 +323,17 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
                 new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(),
                 new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DisabledCertificateStore()),
                 new CertificateStoreX509KeyManager(new DisabledCertificateStore()), 1);
-        final CountDownLatch entry = new CountDownLatch(1);
-        worker.submit(new TransferWorker.TransferCallable() {
-            @Override
-            public TransferStatus call() throws BackgroundException {
-                try {
-                    Thread.sleep(1000L);
+        int workers = 1000;
+        final CountDownLatch entry = new CountDownLatch(workers);
+        for(int i = 0; i < workers; i++) {
+            worker.submit(new TransferWorker.TransferCallable() {
+                @Override
+                public TransferStatus call() throws BackgroundException {
+                    entry.countDown();
+                    return new TransferStatus().complete();
                 }
-                catch(InterruptedException e) {
-                    fail();
-                }
-                entry.countDown();
-                return null;
-            }
-        });
+            });
+        }
         worker.await();
         assertTrue(entry.getCount() == 0);
 

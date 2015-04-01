@@ -160,27 +160,30 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
 
     @Override
     public void await() throws BackgroundException {
-        // Await termination for submitted tasks in queue
-        final int queued = size.get();
-        for(int i = 0; i < queued; i++) {
-            try {
-                final TransferStatus status = completion.take().get();
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Finished %s", status));
+        while(size.get() > 0) {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Await termination for %d submitted tasks in queue", size.get()));
+            }
+            for(int i = 0; i < size.get(); i++) {
+                try {
+                    final TransferStatus status = completion.take().get();
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Finished %s", status));
+                    }
                 }
-            }
-            catch(InterruptedException e) {
-                throw new ConnectionCanceledException(e);
-            }
-            catch(ExecutionException e) {
-                final Throwable cause = e.getCause();
-                if(cause instanceof BackgroundException) {
-                    throw (BackgroundException) cause;
+                catch(InterruptedException e) {
+                    throw new ConnectionCanceledException(e);
                 }
-                throw new BackgroundException(cause);
-            }
-            finally {
-                size.decrementAndGet();
+                catch(ExecutionException e) {
+                    final Throwable cause = e.getCause();
+                    if(cause instanceof BackgroundException) {
+                        throw (BackgroundException) cause;
+                    }
+                    throw new BackgroundException(cause);
+                }
+                finally {
+                    size.decrementAndGet();
+                }
             }
         }
     }
