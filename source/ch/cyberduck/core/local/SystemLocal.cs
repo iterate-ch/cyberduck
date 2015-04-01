@@ -28,22 +28,18 @@ namespace Ch.Cyberduck.Core.Local
 {
     public class SystemLocal : ch.cyberduck.core.Local
     {
-        protected const int ErrorAccessDenied = 5;
-        protected const int ErrorFileNotFound = 2;
         private static readonly Logger Log = Logger.getLogger(typeof (SystemLocal).FullName);
 
         public SystemLocal(string parent, string name)
-            : base(parent, MakeValidFilename(name)) {}
+            : base(parent, name) {}
 
         public SystemLocal(ch.cyberduck.core.Local parent, string name)
-            : base(parent, MakeValidFilename(name)) {}
+            : base(parent, name) {}
 
         public SystemLocal(string path)
             : base(
-                Path.Combine(FilenameUtils.getPrefix(path), MakeValidPath(FilenameUtils.getPath(path))) +
-                MakeValidFilename(FilenameUtils.getName(path)))
-        {
-        }
+                Path.Combine(FilenameUtils.getPrefix(path), FilenameUtils.getPath(path)) +
+                FilenameUtils.getName(path)) {}
 
         public override char getDelimiter()
         {
@@ -78,55 +74,6 @@ namespace Ch.Cyberduck.Core.Local
         public override bool isSymbolicLink()
         {
             return false;
-        }
-
-        private static string MakeValidPath(string path)
-        {
-            if (Utils.IsNotBlank(path))
-            {
-                path = FilenameUtils.separatorsToSystem(path);
-                string prefix = FilenameUtils.getPrefix(path);
-                if (!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
-                {
-                    path = path + Path.DirectorySeparatorChar;
-                }
-                path = FilenameUtils.getPath(path);
-
-                StringBuilder sb = new StringBuilder();
-                if (Utils.IsNotBlank(prefix))
-                {
-                    sb.Append(prefix);
-                }
-                path = FilenameUtils.separatorsToSystem(path);
-                string[] parts = path.Split(Path.DirectorySeparatorChar);
-                foreach (string part in parts)
-                {
-                    string cleanpart = part;
-                    foreach (char c in Path.GetInvalidFileNameChars())
-                    {
-                        cleanpart = cleanpart.Replace(c.ToString(), "_");
-                    }
-                    sb.Append(cleanpart);
-                    if (!parts[parts.Length - 1].Equals(part))
-                    {
-                        sb.Append(Path.DirectorySeparatorChar);
-                    }
-                }
-                return sb.ToString();
-            }
-            return path;
-        }
-
-        private static string MakeValidFilename(string name)
-        {
-            if (Utils.IsNotBlank(name))
-            {
-                foreach (char c in Path.GetInvalidFileNameChars())
-                {
-                    name = name.Replace(c.ToString(), "_");
-                }
-            }
-            return name;
         }
    }
 }
