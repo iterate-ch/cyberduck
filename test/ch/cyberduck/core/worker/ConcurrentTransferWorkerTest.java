@@ -160,10 +160,7 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
                     try {
                         lock.await();
                     }
-                    catch(InterruptedException e) {
-                        fail();
-                    }
-                    catch(BrokenBarrierException e) {
+                    catch(InterruptedException | BrokenBarrierException e) {
                         fail();
                     }
                 }
@@ -306,5 +303,42 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
         }).start();
         Thread.sleep(2000L);
         worker.release(session);
+    }
+
+    @Test
+    public void testAwait() throws Exception {
+        final Host host = new Host(new SFTPProtocol(), "localhost", new Credentials("u", "p"));
+        final Transfer t = new UploadTransfer(host,
+                new Path("/t", EnumSet.of(Path.Type.directory)),
+                new NullLocal("l"));
+        final LoginConnectionService connection = new LoginConnectionService(new DisabledLoginCallback(),
+                new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()) {
+            @Override
+            public void connect(final Session session, final Cache<Path> cache) throws BackgroundException {
+                //
+            }
+        };
+        final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
+                connection, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
+                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(),
+                new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DisabledCertificateStore()),
+                new CertificateStoreX509KeyManager(new DisabledCertificateStore()), 1);
+        final CountDownLatch entry = new CountDownLatch(1);
+        worker.submit(new TransferWorker.TransferCallable() {
+            @Override
+            public TransferStatus call() throws BackgroundException {
+                try {
+                    Thread.sleep(1000L);
+                }
+                catch(InterruptedException e) {
+                    fail();
+                }
+                entry.countDown();
+                return null;
+            }
+        });
+        worker.await();
+        assertTrue(entry.getCount() == 0);
+
     }
 }
