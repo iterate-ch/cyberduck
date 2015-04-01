@@ -294,6 +294,9 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                             throw e;
                         }
                         catch(BackgroundException e) {
+                            if(isCanceled()) {
+                                throw new ConnectionCanceledException(e);
+                            }
                             if(diagnostics.determine(e) == FailureDiagnostics.Type.network) {
                                 throw e;
                             }
@@ -366,6 +369,9 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                             }
                             catch(BackgroundException e) {
                                 status.setFailure();
+                                if(isCanceled()) {
+                                    throw new ConnectionCanceledException(e);
+                                }
                                 if(diagnostics.determine(e) == FailureDiagnostics.Type.network) {
                                     throw e;
                                 }

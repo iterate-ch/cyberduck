@@ -252,7 +252,13 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
 
     @Override
     public Boolean run() throws BackgroundException {
-        return worker.run();
+        try {
+            return worker.run();
+        }
+        catch(ConnectionCanceledException e) {
+            worker.cancel();
+            throw e;
+        }
     }
 
     public void finish() {
