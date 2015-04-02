@@ -67,19 +67,16 @@ public class FTPWriteFeature extends AppendWriteFeature {
             return new CountingOutputStream(out) {
                 @Override
                 public void close() throws IOException {
-                    try {
-                        super.close();
+                    super.close();
+                    // Read 226 status
+                    if(!session.getClient().completePendingCommand()) {
+                        log.warn(String.format("Unexpected reply %s when completing file upload", session.getClient().getReplyString()));
+                        throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
                     }
-                    finally {
-                        // Read 226 status
-                        if(!session.getClient().completePendingCommand()) {
-                            throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
-                        }
-                        if(this.getByteCount() != status.getLength()) {
-                            // Interrupted transfer
-                            if(!session.getClient().abort()) {
-                                log.error("Error closing data socket:" + session.getClient().getReplyString());
-                            }
+                    if(this.getByteCount() != status.getLength()) {
+                        // Interrupted transfer
+                        if(!session.getClient().abort()) {
+                            log.warn(String.format("Unexpected reply %s when aborting file upload", session.getClient().getReplyString()));
                         }
                     }
                 }
