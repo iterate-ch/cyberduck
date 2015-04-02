@@ -350,74 +350,72 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
         // Only transfer if accepted by filter and stored in table with transfer status
         if(table.containsKey(item.remote)) {
             final TransferStatus status = table.get(item.remote);
-            if(status.isSegmented()) {
-                // Handle submit of all segments
-                final List<TransferStatus> segments = status.getSegments();
-                for(final TransferStatus segment : segments) {
-                    this.submit(new TransferCallable() {
-                        @Override
-                        public TransferStatus call() throws BackgroundException {
-                            // Transfer
-                            final Session<?> session = borrow();
+            // Handle submit of one or more segments
+            final List<TransferStatus> segments = status.getSegments();
+            for(final TransferStatus segment : segments) {
+                this.submit(new TransferCallable() {
+                    @Override
+                    public TransferStatus call() throws BackgroundException {
+                        // Transfer
+                        final Session<?> session = borrow();
+                        try {
                             try {
-                                try {
-                                    AbstractTransferWorker.this.transfer.transfer(session,
-                                            segment.getRename().remote != null ? segment.getRename().remote : item.remote,
-                                            segment.getRename().local != null ? segment.getRename().local : item.local,
-                                            options, segment, connectionCallback, progressListener, streamListener);
-                                    transferItemCallback.complete(item);
+                                AbstractTransferWorker.this.transfer.transfer(session,
+                                        segment.getRename().remote != null ? segment.getRename().remote : item.remote,
+                                        segment.getRename().local != null ? segment.getRename().local : item.local,
+                                        options, segment, connectionCallback, progressListener, streamListener);
+                                transferItemCallback.complete(item);
+                            }
+                            catch(ConnectionCanceledException e) {
+                                throw e;
+                            }
+                            catch(BackgroundException e) {
+                                segment.setFailure();
+                                if(isCanceled()) {
+                                    throw new ConnectionCanceledException(e);
                                 }
-                                catch(ConnectionCanceledException e) {
+                                if(diagnostics.determine(e) == FailureDiagnostics.Type.network) {
                                     throw e;
                                 }
-                                catch(BackgroundException e) {
-                                    segment.setFailure();
-                                    if(isCanceled()) {
-                                        throw new ConnectionCanceledException(e);
-                                    }
-                                    if(diagnostics.determine(e) == FailureDiagnostics.Type.network) {
-                                        throw e;
-                                    }
-                                    if(table.size() == 0) {
-                                        throw e;
-                                    }
-                                    // Prompt to continue or abort for application errors
-                                    if(error.prompt(e)) {
-                                        // Continue
-                                        log.warn(String.format("Ignore transfer failure %s", e));
-                                    }
-                                    else {
-                                        throw new ConnectionCanceledException(e);
-                                    }
+                                if(table.size() == 0) {
+                                    throw e;
                                 }
-                                // Recursive
-                                if(item.remote.isDirectory()) {
-                                    for(TransferItem f : cache.get(item)) {
-                                        // Recursive
-                                        transfer(f, filter);
-                                    }
-                                    cache.remove(item);
+                                // Prompt to continue or abort for application errors
+                                if(error.prompt(e)) {
+                                    // Continue
+                                    log.warn(String.format("Ignore transfer failure %s", e));
                                 }
-                                if(!segment.isFailure()) {
-                                    // Post process of file.
-                                    filter.complete(item.remote, item.local, options, segment, progressListener);
+                                else {
+                                    throw new ConnectionCanceledException(e);
                                 }
-                                return segment;
                             }
-                            finally {
-                                release(session);
+                            // Recursive
+                            if(item.remote.isDirectory()) {
+                                for(TransferItem f : cache.get(item)) {
+                                    // Recursive
+                                    transfer(f, filter);
+                                }
+                                cache.remove(item);
                             }
+                            if(!segment.isFailure()) {
+                                // Post process of file.
+                                filter.complete(item.remote, item.local, options, segment, progressListener);
+                            }
+                            return segment;
                         }
+                        finally {
+                            release(session);
+                        }
+                    }
 
-                        @Override
-                        public String toString() {
-                            final StringBuilder sb = new StringBuilder("TransferCallable{");
-                            sb.append("status=").append(segment);
-                            sb.append('}');
-                            return sb.toString();
-                        }
-                    });
-                }
+                    @Override
+                    public String toString() {
+                        final StringBuilder sb = new StringBuilder("TransferCallable{");
+                        sb.append("status=").append(segment);
+                        sb.append('}');
+                        return sb.toString();
+                    }
+                });
             }
             this.submit(new TransferCallable() {
                 @Override
