@@ -196,7 +196,10 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
             @Override
             public StorageObject call() throws BackgroundException {
                 return SwiftLargeObjectUploadFeature.super.upload(
-                        segment, local, throttle, listener, new TransferStatus().length(length).skip(offset), overall, overall);
+                        segment, local, throttle, listener, new TransferStatus()
+                                .length(length)
+                                .skip(offset),
+                        overall, overall);
             }
         });
     }
