@@ -65,19 +65,16 @@ public class FTPReadFeature implements Read {
             return new CountingInputStream(in) {
                 @Override
                 public void close() throws IOException {
-                    try {
-                        super.close();
+                    super.close();
+                    // Read 226 status after closing stream
+                    if(!session.getClient().completePendingCommand()) {
+                        log.warn(String.format("Unexpected reply %s when completing file transfer", session.getClient().getReplyString()));
+                        throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
                     }
-                    finally {
-                        // Read 226 status
-                        if(!session.getClient().completePendingCommand()) {
-                            throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
-                        }
-                        if(this.getByteCount() != status.getLength()) {
-                            // Interrupted transfer
-                            if(!session.getClient().abort()) {
-                                log.error("Error closing data socket:" + session.getClient().getReplyString());
-                            }
+                    if(this.getByteCount() < status.getLength()) {
+                        // Abort interrupted transfer
+                        if(!session.getClient().abort()) {
+                            log.warn(String.format("Unexpected reply %s when aborting file transfer", session.getClient().getReplyString()));
                         }
                     }
                 }

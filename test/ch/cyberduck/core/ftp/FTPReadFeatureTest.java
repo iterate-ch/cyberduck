@@ -119,7 +119,6 @@ public class FTPReadFeatureTest extends AbstractTestCase {
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final Path workdir = session.workdir();
         final InputStream in = new FTPReadFeature(session).read(test, status);
         assertNotNull(in);
         final ByteArrayOutputStream download = new ByteArrayOutputStream(content.length - 100);
@@ -149,6 +148,7 @@ public class FTPReadFeatureTest extends AbstractTestCase {
         assertNotNull(in);
         // Send ABOR because stream was not read completly
         in.close();
+        // Make sure subsequent PWD command works
         assertEquals(workdir, session.workdir());
         new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
@@ -177,6 +177,7 @@ public class FTPReadFeatureTest extends AbstractTestCase {
         assertTrue(in.read() > 0);
         // Send ABOR because stream was not read completly
         in.close();
+        // Make sure subsequent PWD command works
         assertEquals(workdir, session.workdir());
         new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
