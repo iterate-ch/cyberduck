@@ -182,26 +182,24 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Await termination for %d submitted tasks in queue", size.get()));
             }
-            for(int i = 0; i < size.get(); i++) {
-                try {
-                    final TransferStatus status = completion.take().get();
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Finished %s", status));
-                    }
+            try {
+                final TransferStatus status = completion.take().get();
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Finished %s", status));
                 }
-                catch(InterruptedException e) {
-                    throw new ConnectionCanceledException(e);
+            }
+            catch(InterruptedException e) {
+                throw new ConnectionCanceledException(e);
+            }
+            catch(ExecutionException e) {
+                final Throwable cause = e.getCause();
+                if(cause instanceof BackgroundException) {
+                    throw (BackgroundException) cause;
                 }
-                catch(ExecutionException e) {
-                    final Throwable cause = e.getCause();
-                    if(cause instanceof BackgroundException) {
-                        throw (BackgroundException) cause;
-                    }
-                    throw new BackgroundException(cause);
-                }
-                finally {
-                    size.decrementAndGet();
-                }
+                throw new BackgroundException(cause);
+            }
+            finally {
+                size.decrementAndGet();
             }
         }
     }
