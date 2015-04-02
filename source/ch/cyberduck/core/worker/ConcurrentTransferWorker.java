@@ -82,14 +82,30 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
                                     final Integer connections) {
         super(transfer, options, prompt, meter, error, transferItemCallback, progressListener, streamListener, connectionCallback);
         this.connect = connect;
-        final GenericObjectPoolConfig configuration = new GenericObjectPoolConfig();
+        final GenericObjectPoolConfig configuration = new GenericObjectPoolConfig() {
+            @Override
+            public String toString() {
+                final StringBuilder sb = new StringBuilder("GenericObjectPoolConfig{");
+                sb.append("connections=").append(connections);
+                sb.append('}');
+                return sb.toString();
+            }
+        };
         configuration.setJmxEnabled(false);
         configuration.setMaxTotal(connections);
         configuration.setMaxIdle(connections);
         configuration.setBlockWhenExhausted(true);
         configuration.setMaxWaitMillis(1000L);
         pool = new GenericObjectPool<Session>(
-                new SessionPool(transfer.getHost()), configuration);
+                new SessionPool(transfer.getHost()), configuration) {
+            @Override
+            public String toString() {
+                final StringBuilder sb = new StringBuilder("GenericObjectPool{");
+                sb.append("configuration=").append(configuration);
+                sb.append('}');
+                return sb.toString();
+            }
+        };
         completion = new ExecutorCompletionService<TransferStatus>(
                 Executors.newFixedThreadPool(connections, new NamedThreadFactory("transfer")),
                 new LinkedBlockingQueue<Future<TransferStatus>>());
@@ -254,6 +270,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
     public String toString() {
         final StringBuilder sb = new StringBuilder("ConcurrentTransferWorker{");
         sb.append("size=").append(size);
+        sb.append(", pool=").append(pool);
         sb.append('}');
         return sb.toString();
     }
