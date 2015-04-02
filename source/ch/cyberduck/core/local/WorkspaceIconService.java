@@ -55,7 +55,7 @@ public final class WorkspaceIconService implements IconService {
         }
         else {
             if(status.getLength() > 0) {
-                int fraction = (int) (status.getOffset() / status.getLength() * 10);
+                int fraction = (int) (status.getOffset() / (status.getOffset() + status.getLength()) * 10);
                 return this.set(file, String.format("download%d.icns", ++fraction));
             }
             else {
