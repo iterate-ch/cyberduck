@@ -31,11 +31,12 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -43,6 +44,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
@@ -51,11 +53,12 @@ import java.util.Random;
 import java.util.UUID;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @version $Id$
  */
-public class DefaultUploadFeatureTest extends AbstractTestCase {
+public class DefaultDownloadFeatureTest extends AbstractTestCase {
 
     @Test
     public void testTransferSegment() throws Exception {
@@ -78,30 +81,35 @@ public class DefaultUploadFeatureTest extends AbstractTestCase {
     private void run(final Session<?> session) throws Exception {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        final byte[] content = new byte[32770];
-        new Random().nextBytes(content);
-        final OutputStream out = local.getOutputStream(false);
-        IOUtils.write(content, out);
-        IOUtils.closeQuietly(out);
+
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        new DefaultTouchFeature(session).touch(test);
+        final byte[] content = new byte[39864];
+        new Random().nextBytes(content);
+        {
+            final TransferStatus status = new TransferStatus().length(content.length);
+            final OutputStream out = session.getFeature(Write.class).write(test, status);
+            assertNotNull(out);
+            new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
+            out.close();
+        }
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         {
             final TransferStatus status = new TransferStatus().length(content.length / 2);
-            new DefaultUploadFeature(session).upload(
+            new DefaultDownloadFeature(session).download(
                     test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                     status,
                     new DisabledConnectionCallback());
         }
         {
             final TransferStatus status = new TransferStatus().length(content.length / 2).skip(content.length / 2).append(true);
-            new DefaultUploadFeature(session).upload(
+            new DefaultDownloadFeature(session).download(
                     test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                     status,
                     new DisabledConnectionCallback());
         }
-        final byte[] buffer = new byte[content.length];
-        final Read read = session.getFeature(Read.class);
-        final InputStream in = read.read(test, new TransferStatus().length(content.length));
+        final byte[] buffer = new byte[39864];
+        final InputStream in = local.getInputStream();
         IOUtils.readFully(in, buffer);
         IOUtils.closeQuietly(in);
         assertArrayEquals(content, buffer);
