@@ -61,6 +61,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ConcurrentTransferWorker extends AbstractTransferWorker {
     private static final Logger log = Logger.getLogger(ConcurrentTransferWorker.class);
 
+    private static final long BORROW_MAX_WAIT_INTERVAL = 1000L;
+
     private ConnectionService connect;
 
     private GenericObjectPool<Session> pool;
@@ -95,7 +97,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         configuration.setMaxTotal(connections);
         configuration.setMaxIdle(connections);
         configuration.setBlockWhenExhausted(true);
-        configuration.setMaxWaitMillis(1000L);
+        configuration.setMaxWaitMillis(BORROW_MAX_WAIT_INTERVAL);
         pool = new GenericObjectPool<Session>(
                 new SessionPool(transfer.getHost()), configuration) {
             @Override
@@ -133,7 +135,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
                         throw (BackgroundException) e.getCause();
                     }
                     if(null == e.getCause()) {
-                        log.warn(String.format("Timeout borrowing session from pool %s", pool));
+                        log.warn(String.format("Timeout borrowing session from pool %s. Wait for another %dms", pool, BORROW_MAX_WAIT_INTERVAL));
                         // Timeout
                         continue;
                     }
