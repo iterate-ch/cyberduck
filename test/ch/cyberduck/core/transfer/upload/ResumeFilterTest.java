@@ -247,7 +247,9 @@ public class ResumeFilterTest extends AbstractTestCase {
             }
         };
         assertTrue(f.accept(t, l, new TransferStatus().exists(true)));
-        assertEquals(3L, f.prepare(t, l, new TransferStatus().exists(true)).getLength());
+        // Remaining length to transfer is 1
+        assertEquals(1L, f.prepare(t, l, new TransferStatus().exists(true)).getLength());
+        // Skip first 2 bytes
         assertEquals(2L, f.prepare(t, l, new TransferStatus().exists(true)).getOffset());
     }
 
