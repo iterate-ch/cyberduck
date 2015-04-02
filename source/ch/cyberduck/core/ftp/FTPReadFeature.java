@@ -25,6 +25,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.CountingInputStream;
 import org.apache.commons.net.ftp.FTP;
+import org.apache.commons.net.ftp.FTPReply;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -67,14 +68,15 @@ public class FTPReadFeature implements Read {
                 public void close() throws IOException {
                     super.close();
                     // Read 226 status after closing stream
-                    if(!session.getClient().completePendingCommand()) {
-                        log.warn(String.format("Unexpected reply %s when completing file download", session.getClient().getReplyString()));
-                        throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
-                    }
-                    if(this.getByteCount() < status.getLength()) {
-                        // Abort interrupted transfer
-                        if(!session.getClient().abort()) {
-                            log.warn(String.format("Unexpected reply %s when aborting file download", session.getClient().getReplyString()));
+                    int reply = session.getClient().getReply();
+                    if(!FTPReply.isPositiveCompletion(reply)) {
+                        if(status.isSegment()) {
+                            // Ignore 451 and 426 response because stream was prematurely closed
+                            log.warn(String.format("Ignore unexpected reply %s when completing file segment", session.getClient().getReplyString()));
+                        }
+                        else {
+                            log.warn(String.format("Unexpected reply %s when completing file download", session.getClient().getReplyString()));
+                            throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
                         }
                     }
                 }
