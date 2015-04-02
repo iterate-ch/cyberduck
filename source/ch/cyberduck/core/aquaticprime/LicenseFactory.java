@@ -149,7 +149,7 @@ public abstract class LicenseFactory extends Factory<License> {
             }
         }
         catch(AccessDeniedException e) {
-            log.error(String.format("Failure finding receipt %s", e.getMessage()));
+            log.warn(String.format("Failure finding receipt %s", e.getMessage()));
         }
         return LicenseFactory.EMPTY_LICENSE;
     }

@@ -28,7 +28,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -54,7 +54,7 @@ public class DonationKeyFactory extends LicenseFactory {
         final List<License> keys = super.open();
         if(keys.isEmpty()) {
             if(log.isInfoEnabled()) {
-                log.info(String.format("No donation key found"));
+                log.info("No donation key found");
             }
             // No key found. Look for receipt in sandboxed application container
             for(Local file : LocalFactory.get(String.format("~/Library/Containers/%s/Data/Library/Application Support/%s",
@@ -72,7 +72,7 @@ public class DonationKeyFactory extends LicenseFactory {
             }
         }
         if(keys.isEmpty()) {
-            return Arrays.asList(LicenseFactory.EMPTY_LICENSE);
+            return Collections.singletonList(LicenseFactory.EMPTY_LICENSE);
         }
         return keys;
     }
