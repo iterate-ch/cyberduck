@@ -96,7 +96,7 @@ public class FTPReadFeatureTest extends AbstractTestCase {
             in.close();
             assertArrayEquals(content, buffer.toByteArray());
         }
-        new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }
 
@@ -116,18 +116,19 @@ public class FTPReadFeatureTest extends AbstractTestCase {
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         IOUtils.closeQuietly(out);
         final TransferStatus status = new TransferStatus();
-        status.setLength(content.length);
+        // Partial read with offset and not full content length
+        status.setLength(content.length - 100 - 1);
         status.setAppend(true);
         status.setOffset(100L);
         final InputStream in = new FTPReadFeature(session).read(test, status);
         assertNotNull(in);
-        final ByteArrayOutputStream download = new ByteArrayOutputStream(content.length - 100);
+        final ByteArrayOutputStream download = new ByteArrayOutputStream();
         new StreamCopier(status, status).transfer(in, download);
-        final byte[] reference = new byte[content.length - 100];
-        System.arraycopy(content, 100, reference, 0, content.length - 100);
+        final byte[] reference = new byte[content.length - 100 - 1];
+        System.arraycopy(content, 100 - 1, reference, 0, content.length - 100 - 1);
         assertArrayEquals(reference, download.toByteArray());
         in.close();
-        new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }
 
@@ -150,7 +151,7 @@ public class FTPReadFeatureTest extends AbstractTestCase {
         in.close();
         // Make sure subsequent PWD command works
         assertEquals(workdir, session.workdir());
-        new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }
 
@@ -179,7 +180,7 @@ public class FTPReadFeatureTest extends AbstractTestCase {
         in.close();
         // Make sure subsequent PWD command works
         assertEquals(workdir, session.workdir());
-        new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }
 }
