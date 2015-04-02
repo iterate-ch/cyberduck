@@ -67,7 +67,7 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
         final List<Header> headers = new ArrayList<Header>();
         if(status.isAppend()) {
             headers.add(new BasicHeader(HttpHeaders.CONTENT_RANGE, String.format("bytes %d-%d/%d",
-                            status.getOffset(), status.getLength() - 1, status.getLength()))
+                            status.getOffset(), status.getOffset() + status.getLength() - 1, status.getOffset() + status.getLength()))
             );
         }
         if(expect) {
@@ -87,7 +87,7 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
             public String call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
                     return session.getClient().put(new DAVPathEncoder().encode(file), entity,
-                            decorate(file, headers, status), new ETagResponseHandler());
+                            headers, new ETagResponseHandler());
                 }
                 catch(SardineException e) {
                     throw new DAVExceptionMappingService().map("Upload {0} failed", e, file);
@@ -99,15 +99,10 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
 
             @Override
             public long getContentLength() {
-                return status.getLength() - status.getOffset();
+                return status.getLength();
             }
         };
         return this.write(file, status, command);
-    }
-
-    protected List<Header> decorate(final Path file, final List<Header> headers,
-                                    final TransferStatus status) throws BackgroundException {
-        return headers;
     }
 
     @Override
