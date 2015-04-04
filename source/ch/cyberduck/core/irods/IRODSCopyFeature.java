@@ -20,7 +20,9 @@ package ch.cyberduck.core.irods;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.irods.jargon.core.exception.JargonException;
 import org.irods.jargon.core.pub.DataTransferOperations;
 import org.irods.jargon.core.pub.IRODSFileSystemAO;
@@ -61,7 +63,7 @@ public class IRODSCopyFeature implements Copy {
                         public CallbackResponse transferAsksWhetherToForceOperation(final String irodsAbsolutePath, final boolean isCollection) {
                             return CallbackResponse.YES_THIS_FILE;
                         }
-                    }, DefaultTransferControlBlock.instance());
+                    }, DefaultTransferControlBlock.instance(StringUtils.EMPTY, PreferencesFactory.get().getInteger("connection.retry")));
         }
         catch(JargonException e) {
             throw new IRODSExceptionMappingService().map("Cannot copy {0}", e, source);
