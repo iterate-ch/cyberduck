@@ -17,13 +17,15 @@ package ch.cyberduck.core.local;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.binding.foundation.NSFileManager;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.local.features.Symlink;
-import ch.cyberduck.binding.foundation.NSFileManager;
 
 import org.apache.log4j.Logger;
+import org.rococoa.ObjCObjectByReference;
+import org.rococoa.cocoa.foundation.NSError;
 
 /**
  * @version $Id$
@@ -33,11 +35,16 @@ public class WorkspaceSymlinkFeature implements Symlink {
 
     @Override
     public void symlink(final Local file, final String target) throws AccessDeniedException {
-        final boolean success = NSFileManager.defaultManager().createSymbolicLinkAtPath_pathContent(
-                file.getAbsolute(), target);
+        final ObjCObjectByReference error = new ObjCObjectByReference();
+        final boolean success = NSFileManager.defaultManager().createSymbolicLinkAtPath_withDestinationPath_error(
+                file.getAbsolute(), target, error);
         if(!success) {
-            throw new AccessDeniedException(String.format("%s %s",
-                    LocaleFactory.localizedString("Cannot create file", "Error"), file.getAbsolute()));
+            final NSError f = error.getValueAs(NSError.class);
+            if(null == f) {
+                throw new AccessDeniedException(String.format("%s %s",
+                        LocaleFactory.localizedString("Cannot create file", "Error"), file.getAbsolute()));
+            }
+            throw new AccessDeniedException(String.format("%s", f.localizedDescription()));
         }
         if(log.isDebugEnabled()) {
             log.debug(String.format("Created symbolic link %s with target %s", file, target));
