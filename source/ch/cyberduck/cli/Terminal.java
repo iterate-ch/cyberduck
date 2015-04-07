@@ -278,6 +278,9 @@ public class Terminal {
         if(input.hasOption(TerminalOptionsBuilder.Params.parallel.name())) {
             session.getHost().setTransfer(Host.TransferType.concurrent);
         }
+        else {
+            session.getHost().setTransfer(Host.TransferType.newconnection);
+        }
         if(input.hasOption(TerminalOptionsBuilder.Params.existing.name())) {
             prompt = new DisabledTransferPrompt() {
                 @Override
