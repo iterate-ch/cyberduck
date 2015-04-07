@@ -99,6 +99,11 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
     }
 
     @Override
+    public boolean pooled() {
+        return true;
+    }
+
+    @Override
     public StorageObject upload(final Path file, final Local local,
                                 final BandwidthThrottle throttle,
                                 final StreamListener listener,

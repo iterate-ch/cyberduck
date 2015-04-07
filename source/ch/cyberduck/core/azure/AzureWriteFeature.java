@@ -91,11 +91,6 @@ public class AzureWriteFeature implements Write {
     }
 
     @Override
-    public boolean pooled() {
-        return false;
-    }
-
-    @Override
     public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final CloudBlockBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())

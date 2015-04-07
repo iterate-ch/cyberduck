@@ -33,7 +33,7 @@ import ch.cyberduck.core.TransferErrorCallbackControllerFactory;
 import ch.cyberduck.core.TransferPromptControllerFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.notification.NotificationService;
@@ -88,7 +88,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
 
     private TransferListener listener;
 
-    private AbstractTransferWorker worker;
+    protected AbstractTransferWorker worker;
 
     private TransferPrompt prompt;
 
@@ -178,17 +178,30 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
         this.prompt = prompt;
         switch(session.getTransferType()) {
             case concurrent:
-                final Write write = session.getFeature(Write.class);
-                if(!write.pooled()) {
-                    final int connections = PreferencesFactory.get().getInteger("queue.maxtransfers");
-                    if(connections > 1) {
-                        this.worker = new ConcurrentTransferWorker(connection, transfer, options,
-                                meter, prompt, error, this, callback, progress, stream, x509Trust, x509Key,
-                                connections);
-                        break;
-                    }
+                switch(transfer.getType()) {
+                    case upload:
+                        final Upload feature = session.getFeature(Upload.class);
+                        if(feature.pooled()) {
+                            // Already pooled internally.
+                            this.worker = new SingleTransferWorker(session, transfer, options,
+                                    meter, prompt, error, this, progress, stream, callback);
+                            break;
+                        }
+                        // Fall through concurrent worker
+                    default:
+                        // Setup concurrent worker if not already pooled internally
+                        final int connections = PreferencesFactory.get().getInteger("queue.maxtransfers");
+                        if(connections > 1) {
+                            this.worker = new ConcurrentTransferWorker(connection, transfer, options,
+                                    meter, prompt, error, this, callback, progress, stream, x509Trust, x509Key,
+                                    connections);
+                        }
+                        else {
+                            this.worker = new SingleTransferWorker(session, transfer, options,
+                                    meter, prompt, error, this, progress, stream, callback);
+                        }
                 }
-                // Fall through default single transfer worker
+                break;
             default:
                 this.worker = new SingleTransferWorker(session, transfer, options,
                         meter, prompt, error, this, progress, stream, callback);

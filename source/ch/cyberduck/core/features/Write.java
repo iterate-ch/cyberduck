@@ -51,12 +51,7 @@ public interface Write {
      */
     boolean temporary();
 
-    /**
-     * @return True if the write has a pool with concurrent connections implemented. Applies to multipart uploads.
-     */
-    boolean pooled();
-
-    public static final class Append {
+    final class Append {
         /**
          * Append to file
          */
@@ -99,10 +94,10 @@ public interface Write {
     /**
      * Existing remote file found
      */
-    public static final Append override = new Append(true);
+    Append override = new Append(true);
 
     /**
      * No file found
      */
-    public static final Append notfound = new Append();
+    Append notfound = new Append();
 }

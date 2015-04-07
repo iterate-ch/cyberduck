@@ -33,4 +33,9 @@ public interface Upload<Output> {
 
     Output upload(final Path file, Local local, final BandwidthThrottle throttle, final StreamListener listener,
                   final TransferStatus status, final ConnectionCallback callback) throws BackgroundException;
+
+    /**
+     * @return True if the write has a pool with concurrent connections implemented. Applies to multipart uploads.
+     */
+    boolean pooled();
 }

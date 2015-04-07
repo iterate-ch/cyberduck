@@ -51,6 +51,11 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
     }
 
     @Override
+    public boolean pooled() {
+        return false;
+    }
+
+    @Override
     public Output upload(final Path file, final Local local, final BandwidthThrottle throttle,
                          final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         return this.upload(file, local, throttle, listener, status, status, status);

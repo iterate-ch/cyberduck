@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.threading;
+package ch.cyberduck.core.threading;
 
 /*
  * Copyright (c) 2013 David Kocher. All rights reserved.
@@ -31,12 +31,12 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
+import ch.cyberduck.core.openstack.SwiftSession;
+import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.sftp.SFTPDeleteFeature;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.test.NullLocal;
-import ch.cyberduck.core.threading.MainAction;
-import ch.cyberduck.core.threading.TransferBackgroundAction;
 import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
@@ -45,6 +45,9 @@ import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferListener;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferProgress;
+import ch.cyberduck.core.transfer.UploadTransfer;
+import ch.cyberduck.core.worker.ConcurrentTransferWorker;
+import ch.cyberduck.core.worker.SingleTransferWorker;
 
 import org.junit.Test;
 
@@ -60,6 +63,49 @@ import static org.junit.Assert.*;
  * @version $Id$
  */
 public class TransferBackgroundActionTest extends AbstractTestCase {
+
+    @Test
+    public void testWorkerImplementationDefaultSingle() throws Exception {
+        final AbstractController controller = new AbstractController() {
+            @Override
+            public void invoke(final MainAction runnable, final boolean wait) {
+                runnable.run();
+            }
+        };
+        final Host host = new Host("l");
+        host.setTransfer(Host.TransferType.newconnection);
+        assertEquals(SingleTransferWorker.class, new TransferBackgroundAction(controller, new SFTPSession(host), PathCache.empty(),
+                new TransferAdapter(), new UploadTransfer(host, Collections.emptyList()), new TransferOptions()).worker.getClass());
+
+        assertEquals(SingleTransferWorker.class, new TransferBackgroundAction(controller, new S3Session(host), PathCache.empty(),
+                new TransferAdapter(), new UploadTransfer(host, Collections.emptyList()), new TransferOptions()).worker.getClass());
+        assertEquals(SingleTransferWorker.class, new TransferBackgroundAction(controller, new S3Session(host), PathCache.empty(),
+                new TransferAdapter(), new DownloadTransfer(host, Collections.emptyList()), new TransferOptions()).worker.getClass());
+    }
+
+    @Test
+    public void testWorkerImplementationDefaultConcurrent() throws Exception {
+        final AbstractController controller = new AbstractController() {
+            @Override
+            public void invoke(final MainAction runnable, final boolean wait) {
+                runnable.run();
+            }
+        };
+        final Host host = new Host("l");
+        host.setTransfer(Host.TransferType.concurrent);
+        assertEquals(ConcurrentTransferWorker.class, new TransferBackgroundAction(controller, new SFTPSession(host), PathCache.empty(),
+                new TransferAdapter(), new UploadTransfer(host, Collections.emptyList()), new TransferOptions()).worker.getClass());
+
+        assertEquals(SingleTransferWorker.class, new TransferBackgroundAction(controller, new S3Session(host), PathCache.empty(),
+                new TransferAdapter(), new UploadTransfer(host, Collections.emptyList()), new TransferOptions()).worker.getClass());
+        assertEquals(ConcurrentTransferWorker.class, new TransferBackgroundAction(controller, new S3Session(host), PathCache.empty(),
+                new TransferAdapter(), new DownloadTransfer(host, Collections.emptyList()), new TransferOptions()).worker.getClass());
+
+        assertEquals(SingleTransferWorker.class, new TransferBackgroundAction(controller, new SwiftSession(host), PathCache.empty(),
+                new TransferAdapter(), new UploadTransfer(host, Collections.emptyList()), new TransferOptions()).worker.getClass());
+        assertEquals(ConcurrentTransferWorker.class, new TransferBackgroundAction(controller, new SwiftSession(host), PathCache.empty(),
+                new TransferAdapter(), new DownloadTransfer(host, Collections.emptyList()), new TransferOptions()).worker.getClass());
+    }
 
     @Test
     public void testDuplicate() throws Exception {

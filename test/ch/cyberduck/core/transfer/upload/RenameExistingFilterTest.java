@@ -163,11 +163,6 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                         public boolean temporary() {
                             return true;
                         }
-
-                        @Override
-                        public boolean pooled() {
-                            return false;
-                        }
                     };
                 }
                 return null;
@@ -258,11 +253,6 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                         @Override
                         public boolean temporary() {
                             return true;
-                        }
-
-                        @Override
-                        public boolean pooled() {
-                            return false;
                         }
                     };
                 }

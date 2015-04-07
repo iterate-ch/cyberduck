@@ -62,6 +62,11 @@ public class SwiftThresholdUploadService implements Upload {
     }
 
     @Override
+    public boolean pooled() {
+        return true;
+    }
+
+    @Override
     public Object upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
                          final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final Upload feature;

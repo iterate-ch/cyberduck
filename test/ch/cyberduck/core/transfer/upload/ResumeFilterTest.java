@@ -168,11 +168,6 @@ public class ResumeFilterTest extends AbstractTestCase {
             public boolean temporary() {
                 return true;
             }
-
-            @Override
-            public boolean pooled() {
-                return false;
-            }
         });
         final long size = 3L;
         final Path t = new Path("t", EnumSet.of(Path.Type.file));
@@ -216,11 +211,6 @@ public class ResumeFilterTest extends AbstractTestCase {
             @Override
             public boolean temporary() {
                 return true;
-            }
-
-            @Override
-            public boolean pooled() {
-                return false;
             }
         });
         final long size = 3L;
@@ -270,11 +260,6 @@ public class ResumeFilterTest extends AbstractTestCase {
             @Override
             public boolean temporary() {
                 return true;
-            }
-
-            @Override
-            public boolean pooled() {
-                return false;
             }
         });
         final long size = 3L;

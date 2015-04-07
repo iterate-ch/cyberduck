@@ -94,6 +94,11 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
     }
 
     @Override
+    public boolean pooled() {
+        return true;
+    }
+
+    @Override
     public StorageObject upload(final Path file, Local local, final BandwidthThrottle throttle, final StreamListener listener,
                                 final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
         final Host bookmark = session.getHost();

@@ -76,4 +76,9 @@ public class DefaultUploadFeature implements Upload<Void> {
             throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
         }
     }
+
+    @Override
+    public boolean pooled() {
+        return false;
+    }
 }
