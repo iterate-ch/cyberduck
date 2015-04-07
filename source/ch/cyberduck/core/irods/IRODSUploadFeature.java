@@ -87,12 +87,15 @@ public class IRODSUploadFeature implements Upload<Void> {
                         }
 
                         @Override
-                        public void overallStatusCallback(final org.irods.jargon.core.transfer.TransferStatus transferStatus) throws JargonException {
+                        public void overallStatusCallback(final org.irods.jargon.core.transfer.TransferStatus t) throws JargonException {
                             //
                         }
 
                         @Override
                         public CallbackResponse transferAsksWhetherToForceOperation(final String irodsAbsolutePath, final boolean isCollection) {
+                            if(status.isCanceled()) {
+                                return CallbackResponse.CANCEL;
+                            }
                             if(status.isAppend()) {
                                 return CallbackResponse.NO_THIS_FILE;
                             }
