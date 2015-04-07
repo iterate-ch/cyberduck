@@ -32,7 +32,7 @@ public class PreferencesUseragentProvider implements UseragentProvider {
     private static final String ua = String.format("%s/%s.%s (%s/%s) (%s)",
             preferences.getProperty("application.name"),
             preferences.getProperty("application.version"),
-            preferences.getProperty("application.version"),
+            preferences.getProperty("application.revision"),
             System.getProperty("os.name"),
             System.getProperty("os.version"),
             System.getProperty("os.arch"));
