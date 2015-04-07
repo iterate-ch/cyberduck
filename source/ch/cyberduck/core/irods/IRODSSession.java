@@ -93,10 +93,6 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
         properties.setEncoding(this.getEncoding());
         properties.setIrodsSocketTimeout(this.timeout());
         properties.setIrodsParallelSocketTimeout(this.timeout());
-        properties.setMaxParallelThreads(preferences.getInteger("queue.maxtransfers"));
-        properties.setUseTransferThreadsPool(true);
-        properties.setTransferThreadPoolMaxSimultaneousTransfers(preferences.getInteger("queue.maxtransfers"));
-        properties.setUseParallelTransfer(host.getTransfer().equals(Host.TransferType.concurrent));
         client.getIrodsSession().setJargonProperties(properties);
         return client;
     }
