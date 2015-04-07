@@ -105,9 +105,19 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
     public void login(final PasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
                       final Cache<Path> cache) throws BackgroundException {
         try {
+            final String region;
+            final String resource;
+            if(StringUtils.contains(host.getRegion(), ':')) {
+                region = StringUtils.splitPreserveAllTokens(host.getRegion(), ':')[0];
+                resource = StringUtils.splitPreserveAllTokens(host.getRegion(), ':')[1];
+            }
+            else {
+                region = host.getRegion();
+                resource = StringUtils.EMPTY;
+            }
             final IRODSAccount account = IRODSAccount.instance(host.getHostname(), host.getPort(),
                     host.getCredentials().getUsername(), host.getCredentials().getPassword(),
-                    this.workdir().getAbsolute(), host.getRegion(), StringUtils.EMPTY);
+                    this.workdir().getAbsolute(), region, resource);
 
             final IRODSAccessObjectFactory factory = client.getIRODSAccessObjectFactory();
             final AuthResponse auth = factory.authenticateIRODSAccount(account);
