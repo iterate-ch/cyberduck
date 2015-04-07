@@ -29,10 +29,13 @@ public class PreferencesUseragentProvider implements UseragentProvider {
     private static final Preferences preferences
             = PreferencesFactory.get();
 
-    private static final String ua = preferences.getProperty("application.name") + "/"
-            + preferences.getProperty("application.version")
-            + " (" + System.getProperty("os.name") + "/" + System.getProperty("os.version") + ")"
-            + " (" + System.getProperty("os.arch") + ")";
+    private static final String ua = String.format("%s/%s.%s (%s/%s) (%s)",
+            preferences.getProperty("application.name"),
+            preferences.getProperty("application.version"),
+            preferences.getProperty("application.version"),
+            System.getProperty("os.name"),
+            System.getProperty("os.version"),
+            System.getProperty("os.arch"));
 
     @Override
     public String get() {
