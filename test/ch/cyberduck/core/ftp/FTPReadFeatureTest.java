@@ -123,9 +123,9 @@ public class FTPReadFeatureTest extends AbstractTestCase {
         final InputStream in = new FTPReadFeature(session).read(test, status);
         assertNotNull(in);
         final ByteArrayOutputStream download = new ByteArrayOutputStream();
-        new StreamCopier(status, status).transfer(in, download);
+        new StreamCopier(status, status).withLimit(status.getLength()).transfer(in, download);
         final byte[] reference = new byte[content.length - 100 - 1];
-        System.arraycopy(content, 100 - 1, reference, 0, content.length - 100 - 1);
+        System.arraycopy(content, 100, reference, 0, content.length - 100 - 1);
         assertArrayEquals(reference, download.toByteArray());
         in.close();
         new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
