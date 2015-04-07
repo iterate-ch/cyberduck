@@ -18,20 +18,24 @@ package ch.cyberduck.core.irods;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.irods.jargon.core.exception.JargonException;
+import org.irods.jargon.core.packinstr.TransferOptions;
 import org.irods.jargon.core.pub.IRODSFileSystemAO;
 import org.irods.jargon.core.pub.io.IRODSFile;
 import org.irods.jargon.core.transfer.DefaultTransferControlBlock;
+import org.irods.jargon.core.transfer.TransferControlBlock;
 import org.irods.jargon.core.transfer.TransferStatusCallbackListener;
 
 import java.io.File;
@@ -42,6 +46,8 @@ import java.io.File;
 public class IRODSUploadFeature implements Upload<Void> {
 
     private IRODSSession session;
+
+    private final Preferences preferences = PreferencesFactory.get();
 
     public IRODSUploadFeature(final IRODSSession session) {
         this.session = session;
@@ -59,6 +65,16 @@ public class IRODSUploadFeature implements Upload<Void> {
         try {
             final IRODSFileSystemAO fs = session.filesystem();
             final IRODSFile f = fs.getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
+            final TransferControlBlock block = DefaultTransferControlBlock.instance(StringUtils.EMPTY,
+                    preferences.getInteger("connection.retry"));
+            final TransferOptions options = new TransferOptions();
+            options.setComputeAndVerifyChecksumAfterTransfer(false);
+            options.setComputeChecksumAfterTransfer(false);
+            options.setMaxThreads(preferences.getInteger("queue.maxtransfers"));
+            // Enable progress callbacks
+            options.setIntraFileStatusCallbacks(true);
+            options.setUseParallelTransfer(session.getTransferType().equals(Host.TransferType.concurrent));
+            block.setTransferOptions(options);
             fs.getIRODSAccessObjectFactory().getDataTransferOperations(fs.getIRODSAccount())
                     .putOperation(new File(local.getAbsolute()), f, new TransferStatusCallbackListener() {
                         @Override
@@ -82,7 +98,7 @@ public class IRODSUploadFeature implements Upload<Void> {
                             }
                             return CallbackResponse.YES_THIS_FILE;
                         }
-                    }, DefaultTransferControlBlock.instance(StringUtils.EMPTY, PreferencesFactory.get().getInteger("connection.retry")));
+                    }, block);
         }
         catch(JargonException e) {
             throw new IRODSExceptionMappingService().map(e);
