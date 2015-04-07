@@ -74,9 +74,4 @@ public class IRODSWriteFeature implements Write {
     public boolean temporary() {
         return false;
     }
-
-    @Override
-    public boolean pooled() {
-        return false;
-    }
 }
