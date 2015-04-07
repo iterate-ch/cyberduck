@@ -261,8 +261,8 @@ public class DownloadTransferTest extends AbstractTestCase {
         expected.setAppend(true);
         expected.setExists(true);
         expected.setOffset("test".getBytes().length);
-        // Remote size
-        expected.setLength(5L);
+        // Transfer length
+        expected.setLength(5L - "test".getBytes().length);
         assertEquals(expected, table.get(test));
         local.delete();
     }
