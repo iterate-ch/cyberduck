@@ -200,6 +200,9 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         return pool.execute(new Callable<StorageObject>() {
             @Override
             public StorageObject call() throws BackgroundException {
+                if(overall.isCanceled()) {
+                    return null;
+                }
                 return SwiftLargeObjectUploadFeature.super.upload(
                         segment, local, throttle, listener, new TransferStatus()
                                 .length(length)
