@@ -296,7 +296,7 @@ public class UploadTransferTest extends AbstractTestCase {
         // Remote size
         expected.setOffset(5L);
         // Local size
-        expected.setLength(bytes.length);
+        expected.setLength(bytes.length - 5L);
         assertEquals(expected, table.get(new Path("/transfer/" + name, EnumSet.of(Path.Type.file))));
         local.delete();
     }
