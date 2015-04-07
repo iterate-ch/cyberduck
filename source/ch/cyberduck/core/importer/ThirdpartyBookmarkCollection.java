@@ -30,6 +30,7 @@ import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -45,6 +46,8 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
     private static final Logger log = Logger.getLogger(ThirdpartyBookmarkCollection.class);
 
     private static final long serialVersionUID = -4582425984484543617L;
+
+    private final Preferences preferences = PreferencesFactory.get();
 
     private PasswordStore keychain = PasswordStoreFactory.get();
 
@@ -75,9 +78,9 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
             catch(BackgroundException e) {
                 log.warn(String.format("Failure obtaining checksum for %s", file));
             }
-            if(PreferencesFactory.get().getBoolean(this.getConfiguration())) {
+            if(preferences.getBoolean(this.getConfiguration())) {
                 // Previously imported
-                final String previous = PreferencesFactory.get().getProperty(String.format("%s.checksum", this.getConfiguration()));
+                final String previous = preferences.getProperty(String.format("%s.checksum", this.getConfiguration()));
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Saved previous checksum %s for bookmark %s", previous, file));
                 }
@@ -108,7 +111,7 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
             }
             // Save last checksum
             if(StringUtils.isNotBlank(current)) {
-                PreferencesFactory.get().setProperty(String.format("%s.checksum", this.getConfiguration()), current);
+                preferences.setProperty(String.format("%s.checksum", this.getConfiguration()), current);
             }
         }
         else {

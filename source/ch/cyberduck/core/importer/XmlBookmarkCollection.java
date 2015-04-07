@@ -30,7 +30,6 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
@@ -80,14 +79,8 @@ public abstract class XmlBookmarkCollection extends ThirdpartyBookmarkCollection
             xr.setErrorHandler(handler);
             xr.parse(new InputSource(in));
         }
-        catch(FileNotFoundException e) {
-            log.error("Error reading " + this.getFile() + ":" + e.getMessage());
-        }
-        catch(SAXException e) {
-            log.error("Error reading " + this.getFile() + ":" + e.getMessage());
-        }
-        catch(IOException e) {
-            log.error("Error reading " + this.getFile() + ":" + e.getMessage());
+        catch(SAXException | IOException e) {
+            log.error(String.format("Error reading %s:%s", this.getFile(), e.getMessage()));
         }
     }
 }
