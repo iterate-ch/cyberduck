@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<FileZilla3>
+    <Servers>
+        <Server>
+            <Host>cyberduck.io</Host>
+            <Port>22</Port>
+            <Protocol>1</Protocol>
+            <Type>0</Type>
+            <User>u</User>
+            <Pass encoding="base64">dGVzdA==</Pass>
+            <Logontype>1</Logontype>
+            <TimezoneOffset>0</TimezoneOffset>
+            <PasvMode>MODE_DEFAULT</PasvMode>
+            <MaximumMultipleConnections>0</MaximumMultipleConnections>
+            <EncodingType>Auto</EncodingType>
+            <BypassProxy>0</BypassProxy>
+            <Name>New site</Name>
+            <Comments/>
+            <LocalDir/>
+            <RemoteDir/>
+            <SyncBrowsing>0</SyncBrowsing>New site
+        </Server>
+    </Servers>
+</FileZilla3>

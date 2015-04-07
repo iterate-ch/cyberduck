@@ -21,6 +21,7 @@ package ch.cyberduck.core.importer;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -38,6 +39,14 @@ public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
     private static final Logger log = Logger.getLogger(FilezillaBookmarkCollection.class);
 
     private static final long serialVersionUID = -4612895793983093594L;
+
+    public FilezillaBookmarkCollection() {
+        super();
+    }
+
+    public FilezillaBookmarkCollection(final PasswordStore keychain) {
+        super(keychain);
+    }
 
     @Override
     public String getBundleIdentifier() {

@@ -49,7 +49,15 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
 
     private final Preferences preferences = PreferencesFactory.get();
 
-    private PasswordStore keychain = PasswordStoreFactory.get();
+    private PasswordStore keychain;
+
+    public ThirdpartyBookmarkCollection() {
+        this.keychain = PasswordStoreFactory.get();
+    }
+
+    public ThirdpartyBookmarkCollection(final PasswordStore keychain) {
+        this.keychain = keychain;
+    }
 
     @Override
     public String getName() {

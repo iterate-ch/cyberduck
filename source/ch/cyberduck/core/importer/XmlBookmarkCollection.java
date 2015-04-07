@@ -19,6 +19,7 @@ package ch.cyberduck.core.importer;
  */
 
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.exception.AccessDeniedException;
 
 import org.apache.log4j.Logger;
@@ -41,6 +42,14 @@ public abstract class XmlBookmarkCollection extends ThirdpartyBookmarkCollection
     private static final Logger log = Logger.getLogger(XmlBookmarkCollection.class);
 
     private static final long serialVersionUID = -3145592458663362423L;
+
+    public XmlBookmarkCollection() {
+        super();
+    }
+
+    public XmlBookmarkCollection(final PasswordStore keychain) {
+        super(keychain);
+    }
 
     protected abstract static class AbstractHandler extends DefaultHandler {
         private StringBuilder currentText = null;
