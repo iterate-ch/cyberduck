@@ -75,12 +75,12 @@ public class TransferBackgroundActionTest extends AbstractTestCase {
         final Host host = new Host("l");
         host.setTransfer(Host.TransferType.newconnection);
         assertEquals(SingleTransferWorker.class, new TransferBackgroundAction(controller, new SFTPSession(host), PathCache.empty(),
-                new TransferAdapter(), new UploadTransfer(host, Collections.emptyList()), new TransferOptions()).worker.getClass());
+                new TransferAdapter(), new UploadTransfer(host, Collections.<TransferItem>emptyList()), new TransferOptions()).worker.getClass());
 
         assertEquals(SingleTransferWorker.class, new TransferBackgroundAction(controller, new S3Session(host), PathCache.empty(),
-                new TransferAdapter(), new UploadTransfer(host, Collections.emptyList()), new TransferOptions()).worker.getClass());
+                new TransferAdapter(), new UploadTransfer(host, Collections.<TransferItem>emptyList()), new TransferOptions()).worker.getClass());
         assertEquals(SingleTransferWorker.class, new TransferBackgroundAction(controller, new S3Session(host), PathCache.empty(),
-                new TransferAdapter(), new DownloadTransfer(host, Collections.emptyList()), new TransferOptions()).worker.getClass());
+                new TransferAdapter(), new DownloadTransfer(host, Collections.<TransferItem>emptyList()), new TransferOptions()).worker.getClass());
     }
 
     @Test
@@ -94,17 +94,17 @@ public class TransferBackgroundActionTest extends AbstractTestCase {
         final Host host = new Host("l");
         host.setTransfer(Host.TransferType.concurrent);
         assertEquals(ConcurrentTransferWorker.class, new TransferBackgroundAction(controller, new SFTPSession(host), PathCache.empty(),
-                new TransferAdapter(), new UploadTransfer(host, Collections.emptyList()), new TransferOptions()).worker.getClass());
+                new TransferAdapter(), new UploadTransfer(host, Collections.<TransferItem>emptyList()), new TransferOptions()).worker.getClass());
 
         assertEquals(SingleTransferWorker.class, new TransferBackgroundAction(controller, new S3Session(host), PathCache.empty(),
-                new TransferAdapter(), new UploadTransfer(host, Collections.emptyList()), new TransferOptions()).worker.getClass());
+                new TransferAdapter(), new UploadTransfer(host, Collections.<TransferItem>emptyList()), new TransferOptions()).worker.getClass());
         assertEquals(ConcurrentTransferWorker.class, new TransferBackgroundAction(controller, new S3Session(host), PathCache.empty(),
-                new TransferAdapter(), new DownloadTransfer(host, Collections.emptyList()), new TransferOptions()).worker.getClass());
+                new TransferAdapter(), new DownloadTransfer(host, Collections.<TransferItem>emptyList()), new TransferOptions()).worker.getClass());
 
         assertEquals(SingleTransferWorker.class, new TransferBackgroundAction(controller, new SwiftSession(host), PathCache.empty(),
-                new TransferAdapter(), new UploadTransfer(host, Collections.emptyList()), new TransferOptions()).worker.getClass());
+                new TransferAdapter(), new UploadTransfer(host, Collections.<TransferItem>emptyList()), new TransferOptions()).worker.getClass());
         assertEquals(ConcurrentTransferWorker.class, new TransferBackgroundAction(controller, new SwiftSession(host), PathCache.empty(),
-                new TransferAdapter(), new DownloadTransfer(host, Collections.emptyList()), new TransferOptions()).worker.getClass());
+                new TransferAdapter(), new DownloadTransfer(host, Collections.<TransferItem>emptyList()), new TransferOptions()).worker.getClass());
     }
 
     @Test
