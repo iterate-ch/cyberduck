@@ -52,7 +52,7 @@ public abstract class ControllerBackgroundAction<T> extends SessionBackgroundAct
                                       final ProgressListener progress,
                                       final TranscriptListener transcript,
                                       final HostKeyCallback key) {
-        super(login, session, cache, controller, progress, controller, key);
+        super(login, session, cache, controller, progress, transcript, key);
         this.controller = controller;
     }
 
