@@ -18,12 +18,14 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.LoginService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.worker.Worker;
 
 import org.apache.log4j.Logger;
@@ -34,22 +36,37 @@ import org.apache.log4j.Logger;
 public class WorkerBackgroundAction<T> extends BrowserBackgroundAction<Boolean> {
     private static final Logger log = Logger.getLogger(WorkerBackgroundAction.class);
 
-    private Worker<T> worker;
+    protected Worker<T> worker;
 
     private T result;
 
-    public WorkerBackgroundAction(final Controller controller, final Session session, final Worker<T> worker) {
+    public WorkerBackgroundAction(final Controller controller,
+                                  final Session session,
+                                  final Worker<T> worker) {
         this(controller, session, PathCache.empty(), worker);
     }
 
     public WorkerBackgroundAction(final LoginService login,
                                   final Controller controller,
-                                  final Session session, final Cache<Path> cache, final Worker<T> worker) {
+                                  final Session session,
+                                  final Cache<Path> cache,
+                                  final Worker<T> worker) {
         super(login, controller, session, cache);
         this.worker = worker;
     }
 
-    public WorkerBackgroundAction(final Controller controller, final Session session, final Cache<Path> cache,
+    public WorkerBackgroundAction(final ConnectionService connection,
+                                  final Controller controller,
+                                  final Session session,
+                                  final Cache<Path> cache,
+                                  final Worker<T> worker) {
+        super(connection, controller, session, cache);
+        this.worker = worker;
+    }
+
+    public WorkerBackgroundAction(final Controller controller,
+                                  final Session session,
+                                  final Cache<Path> cache,
                                   final Worker<T> worker) {
         super(controller, session, cache);
         this.worker = worker;
@@ -66,7 +83,13 @@ public class WorkerBackgroundAction<T> extends BrowserBackgroundAction<Boolean> 
         if(log.isDebugEnabled()) {
             log.debug(String.format("Run worker %s", worker));
         }
-        result = worker.run();
+        try {
+            result = worker.run();
+        }
+        catch(ConnectionCanceledException e) {
+            worker.cancel();
+            throw e;
+        }
         return true;
     }
 

@@ -19,6 +19,7 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
@@ -458,6 +459,11 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
         else {
             log.warn(String.format("Skip file %s with unknown transfer status", item));
         }
+    }
+
+    @Override
+    public String getActivity() {
+        return BookmarkNameProvider.toString(transfer.getHost());
     }
 
     @Override

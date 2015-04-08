@@ -17,20 +17,7 @@ package ch.cyberduck.core.threading;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.Controller;
-import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.HostKeyCallbackFactory;
-import ch.cyberduck.core.KeychainLoginService;
-import ch.cyberduck.core.LoginCallbackFactory;
-import ch.cyberduck.core.LoginService;
-import ch.cyberduck.core.PasswordStoreFactory;
-import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.TranscriptListener;
-import ch.cyberduck.core.TransferErrorCallbackControllerFactory;
-import ch.cyberduck.core.TransferPromptControllerFactory;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Upload;
@@ -66,7 +53,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @version $Id$
  */
-public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean> implements TransferItemCallback {
+public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> implements TransferItemCallback {
     private static final Logger log = Logger.getLogger(TransferBackgroundAction.class);
 
     private Transfer transfer;
@@ -87,8 +74,6 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
             = new ScheduledThreadPool();
 
     private TransferListener listener;
-
-    protected AbstractTransferWorker worker;
 
     private TransferPrompt prompt;
 
@@ -170,47 +155,59 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
                                     final StreamListener stream,
                                     final X509TrustManager x509Trust,
                                     final X509KeyManager x509Key) {
-        super(login, controller, session, cache, progress, transcript, key);
+        super(new LoginConnectionService(login, key, progress, transcript), controller, session, cache, null);
+        this.worker = new WorkerFinder().find(login, callback, key, session, progress, transfer, options, prompt, this,
+                error, meter, stream, transcript, x509Trust, x509Key);
         this.meter = meter;
         this.transfer = transfer.withCache(cache);
         this.options = options;
         this.listener = listener;
         this.prompt = prompt;
-        switch(session.getTransferType()) {
-            case concurrent:
-                switch(transfer.getType()) {
-                    case upload:
-                        final Upload feature = session.getFeature(Upload.class);
-                        if(feature.pooled()) {
-                            // Already pooled internally.
-                            this.worker = new SingleTransferWorker(session, transfer, options,
-                                    meter, prompt, error, this, progress, stream, callback);
-                            break;
-                        }
-                        // Fall through concurrent worker
-                    default:
-                        // Setup concurrent worker if not already pooled internally
-                        final int connections = PreferencesFactory.get().getInteger("queue.maxtransfers");
-                        if(connections > 1) {
-                            this.worker = new ConcurrentTransferWorker(connection, transfer, options,
-                                    meter, prompt, error, this, callback, progress, stream, x509Trust, x509Key,
-                                    connections);
-                        }
-                        else {
-                            this.worker = new SingleTransferWorker(session, transfer, options,
-                                    meter, prompt, error, this, progress, stream, callback);
-                        }
-                }
-                break;
-            default:
-                this.worker = new SingleTransferWorker(session, transfer, options,
-                        meter, prompt, error, this, progress, stream, callback);
-                break;
+    }
+
+    private static final class WorkerFinder {
+        private AbstractTransferWorker find(final LoginService login,
+                                            final ConnectionCallback callback,
+                                            final HostKeyCallback key,
+                                            final Session<?> session,
+                                            final ProgressListener progress,
+                                            final Transfer transfer,
+                                            final TransferOptions options,
+                                            final TransferPrompt prompt,
+                                            final TransferItemCallback item,
+                                            final TransferErrorCallback error,
+                                            final TransferSpeedometer meter,
+                                            final StreamListener stream,
+                                            final TranscriptListener transcript,
+                                            final X509TrustManager x509Trust,
+                                            final X509KeyManager x509Key) {
+            switch(session.getTransferType()) {
+                case concurrent:
+                    switch(transfer.getType()) {
+                        case upload:
+                            final Upload feature = session.getFeature(Upload.class);
+                            if(feature.pooled()) {
+                                // Already pooled internally.
+                                break;
+                            }
+                        default:
+                            // Setup concurrent worker if not already pooled internally
+                            final int connections = PreferencesFactory.get().getInteger("queue.maxtransfers");
+                            if(connections > 1) {
+                                return new ConcurrentTransferWorker(new LoginConnectionService(login, key, progress, transcript), transfer, options,
+                                        meter, prompt, error, item, callback, progress, stream, x509Trust, x509Key,
+                                        connections);
+                            }
+                    }
+            }
+            return new SingleTransferWorker(session, transfer, options,
+                    meter, prompt, error, item, progress, stream, callback);
         }
     }
 
     @Override
     protected void reset() throws BackgroundException {
+        super.reset();
         transfer.start();
     }
 
@@ -244,6 +241,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
 
     @Override
     public void prepare() throws ConnectionCanceledException {
+        super.prepare();
         listener.start(transfer);
         timerPool = new ScheduledThreadPool();
         progressTimer = timerPool.repeat(new Runnable() {
@@ -254,29 +252,16 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
                 }
             }
         }, 100L, TimeUnit.MILLISECONDS);
-        super.prepare();
     }
 
     @Override
     public void message(final String message) {
-        prompt.message(message);
         super.message(message);
-    }
-
-    @Override
-    public Boolean run() throws BackgroundException {
-        try {
-            return worker.run();
-        }
-        catch(ConnectionCanceledException e) {
-            worker.cancel();
-            throw e;
-        }
+        prompt.message(message);
     }
 
     public void finish() {
         super.finish();
-
         progressTimer.cancel(false);
         transfer.stop();
         listener.stop(transfer);
@@ -292,15 +277,6 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
         options.reloadRequested = false;
         options.resumeRequested = true;
         super.pause();
-    }
-
-    @Override
-    public void cancel() {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Cancel background action for transfer %s", transfer));
-        }
-        worker.cancel();
-        super.cancel();
     }
 
     @Override

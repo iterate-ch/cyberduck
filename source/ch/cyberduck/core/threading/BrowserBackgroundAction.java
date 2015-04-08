@@ -19,6 +19,7 @@ package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.BookmarkCollection;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.HistoryCollection;
 import ch.cyberduck.core.Host;
@@ -42,6 +43,13 @@ public abstract class BrowserBackgroundAction<T> extends ControllerBackgroundAct
                                    final Session<?> session,
                                    final Cache<Path> cache) {
         super(controller, session, cache);
+    }
+
+    public BrowserBackgroundAction(final ConnectionService connection,
+                                   final Controller controller,
+                                   final Session<?> session,
+                                   final Cache<Path> cache) {
+        super(connection, controller, session, cache, controller, controller);
     }
 
     public BrowserBackgroundAction(final LoginService login,
