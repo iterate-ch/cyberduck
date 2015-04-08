@@ -52,6 +52,7 @@ import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -352,7 +353,8 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
             final TransferStatus status = table.get(item.remote);
             // Handle submit of one or more segments
             final List<TransferStatus> segments = status.getSegments();
-            for(final TransferStatus segment : segments) {
+            for(final Iterator<TransferStatus> iter = segments.iterator(); iter.hasNext(); ) {
+                final TransferStatus segment = iter.next();
                 this.submit(new TransferCallable() {
                     @Override
                     public TransferStatus call() throws BackgroundException {
@@ -401,6 +403,9 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                                 // Post process of file.
                                 filter.complete(item.remote, item.local, options, segment, progressListener);
                             }
+                            if(!iter.hasNext()) {
+                                table.remove(item.remote);
+                            }
                             return segment;
                         }
                         finally {
@@ -423,7 +428,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                     if(status.isSegmented()) {
                         // Await completion of all segments
                         boolean complete = true;
-                        for(TransferStatus segment : status.getSegments()) {
+                        for(TransferStatus segment : segments) {
                             if(!segment.await()) {
                                 log.warn(String.format("Failure to complete segment %s.", segment));
                                 complete = false;
@@ -438,7 +443,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                             status.setFailure();
                         }
                     }
-                    return table.remove(item.remote);
+                    return status;
                 }
 
                 @Override
