@@ -27,6 +27,7 @@ import ch.cyberduck.core.local.RevealServiceFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
+import ch.cyberduck.ui.cocoa.Action;
 
 import org.rococoa.Foundation;
 import org.rococoa.Selector;
@@ -81,12 +82,13 @@ public class TransferMenuDelegate extends AbstractMenuDelegate {
         return super.menuUpdateItemAtIndex(menu, item, index, cancel);
     }
 
-    public void reveal(final NSMenuItem sender) {
+    @Action
+    public void revealMenuClicked(final NSMenuItem sender) {
         reveal.reveal(LocalFactory.get(sender.representedObject()));
     }
 
     @Override
     protected Selector getDefaultAction() {
-        return Foundation.selector("reveal:");
+        return Foundation.selector("revealMenuClicked:");
     }
 }
