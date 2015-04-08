@@ -100,7 +100,7 @@ public abstract class SheetController extends WindowController implements SheetC
      * @param sender A button in the sheet dialog
      */
     @Action
-    public void closeSheetButtonClicked(final NSButton sender) {
+    public void closeSheet(final NSButton sender) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Close sheet with button %s", sender.title()));
         }
