@@ -70,6 +70,8 @@ public class IRODSUploadFeature implements Upload<Void> {
             final TransferControlBlock block = DefaultTransferControlBlock.instance(StringUtils.EMPTY,
                     preferences.getInteger("connection.retry"));
             final TransferOptions options = new TransferOptions();
+            options.setPutOption(TransferOptions.PutOptions.NORMAL);
+            options.setForceOption(TransferOptions.ForceOption.ASK_CALLBACK_LISTENER);
             options.setComputeAndVerifyChecksumAfterTransfer(false);
             options.setComputeChecksumAfterTransfer(false);
             options.setMaxThreads(preferences.getInteger("queue.maxtransfers"));
