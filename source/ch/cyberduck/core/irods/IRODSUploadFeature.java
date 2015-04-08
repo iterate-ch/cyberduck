@@ -30,6 +30,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.irods.jargon.core.exception.JargonException;
 import org.irods.jargon.core.packinstr.TransferOptions;
 import org.irods.jargon.core.pub.IRODSFileSystemAO;
@@ -44,6 +45,7 @@ import java.io.File;
  * @version $Id$
  */
 public class IRODSUploadFeature implements Upload<Void> {
+    private static final Logger log = Logger.getLogger(IRODSUploadFeature.class);
 
     private IRODSSession session;
 
@@ -79,8 +81,19 @@ public class IRODSUploadFeature implements Upload<Void> {
                     .putOperation(new File(local.getAbsolute()), f, new TransferStatusCallbackListener() {
                         @Override
                         public FileStatusCallbackResponse statusCallback(final org.irods.jargon.core.transfer.TransferStatus t) throws JargonException {
-                            listener.sent(t.getBytesTransfered() - status.getOffset());
+                            if(log.isDebugEnabled()) {
+                                log.debug(String.format("Progress with transfer status %s", t));
+                            }
+                            final long sent = t.getBytesTransfered() - status.getOffset();
+                            status.progress(sent);
+                            listener.sent(sent);
+                            if(t.getTotalFilesTransferredSoFar() == t.getTotalFilesToTransfer()) {
+                                status.setComplete();
+                            }
                             if(status.isCanceled()) {
+                                if(log.isDebugEnabled()) {
+                                    log.debug(String.format("Set canceled for block %s", block));
+                                }
                                 return FileStatusCallbackResponse.SKIP;
                             }
                             return FileStatusCallbackResponse.CONTINUE;
