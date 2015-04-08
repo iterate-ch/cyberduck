@@ -1100,6 +1100,7 @@ public final class TransferController extends WindowController implements NSTool
      * @param item Menu item
      * @return True if enabled
      */
+    @Action
     public boolean validateMenuItem(final NSMenuItem item) {
         final Selector action = item.action();
         if(action.equals(Foundation.selector("paste:"))) {
@@ -1126,6 +1127,7 @@ public final class TransferController extends WindowController implements NSTool
      * @param item Toolbar item
      */
     @Override
+    @Action
     public boolean validateToolbarItem(final NSToolbarItem item) {
         return this.validateItem(item.action());
     }
