@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.threading;
+package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.AbstractController;
 import ch.cyberduck.core.AbstractTestCase;
@@ -6,8 +6,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.test.NullSession;
-import ch.cyberduck.core.threading.BrowserBackgroundAction;
-import ch.cyberduck.core.threading.MainAction;
 
 import org.junit.Test;
 
@@ -30,6 +28,6 @@ public class BrowserBackgroundActionTest extends AbstractTestCase {
             public Boolean run() throws BackgroundException {
                 return false;
             }
-        }.getSession());
+        }.session);
     }
 }

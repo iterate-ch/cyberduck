@@ -82,7 +82,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     private NotificationService growl = NotificationServiceFactory.get();
 
-    private Session<?> session;
+    protected Session<?> session;
 
     private Cache<Path> cache;
 
@@ -93,13 +93,8 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
                                    final TranscriptListener transcript,
                                    final LoginCallback prompt,
                                    final HostKeyCallback key) {
-        this.connection = new LoginConnectionService(prompt, key, PasswordStoreFactory.get(),
-                progress, transcript);
-        this.session = session;
-        this.cache = cache;
-        this.alert = alert;
-        this.progressListener = progress;
-        this.transcriptListener = transcript;
+        this(new LoginConnectionService(prompt, key, PasswordStoreFactory.get(),
+                progress, transcript), session, cache, alert, progress, transcript);
     }
 
     public SessionBackgroundAction(final LoginService login,
@@ -109,7 +104,16 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
                                    final ProgressListener progress,
                                    final TranscriptListener transcript,
                                    final HostKeyCallback key) {
-        this.connection = new LoginConnectionService(login, key, progress, transcript);
+        this(new LoginConnectionService(login, key, progress, transcript), session, cache, alert, progress, transcript);
+    }
+
+    public SessionBackgroundAction(final ConnectionService connection,
+                                   final Session<?> session,
+                                   final Cache<Path> cache,
+                                   final AlertCallback alert,
+                                   final ProgressListener progress,
+                                   final TranscriptListener transcript) {
+        this.connection = connection;
         this.session = session;
         this.cache = cache;
         this.alert = alert;
@@ -245,10 +249,6 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     public void pause() {
         final BackgroundActionPauser pauser = new BackgroundActionPauser(this);
         pauser.await(this);
-    }
-
-    public Session<?> getSession() {
-        return session;
     }
 
     @Override
