@@ -73,7 +73,7 @@ public abstract class AlertController extends SheetController {
         while(((button = buttons.nextObject()) != null)) {
             final NSButton b = Rococoa.cast(button, NSButton.class);
             b.setTarget(this.id());
-            b.setAction(Foundation.selector("closeSheet:"));
+            b.setAction(Foundation.selector("closeSheetButtonClicked:"));
         }
         alert.beginSheet(parent.window(), this.id(), Foundation.selector("alertDidEnd:returnCode:contextInfo:"), null);
     }
