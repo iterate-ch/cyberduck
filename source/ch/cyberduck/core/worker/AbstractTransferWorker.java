@@ -362,7 +362,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                         final Session<?> session = borrow();
                         try {
                             try {
-                                AbstractTransferWorker.this.transfer.transfer(session,
+                                transfer.transfer(session,
                                         segment.getRename().remote != null ? segment.getRename().remote : item.remote,
                                         segment.getRename().local != null ? segment.getRename().local : item.local,
                                         options, segment, connectionCallback, progressListener, streamListener);
