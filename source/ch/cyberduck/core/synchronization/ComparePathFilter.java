@@ -25,5 +25,5 @@ import ch.cyberduck.core.exception.BackgroundException;
  * @version $Id$
  */
 public interface ComparePathFilter {
-    public Comparison compare(final Path file, final Local local) throws BackgroundException;
+    Comparison compare(Path file, Local local) throws BackgroundException;
 }
