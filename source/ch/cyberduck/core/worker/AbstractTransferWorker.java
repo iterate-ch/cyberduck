@@ -272,8 +272,6 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                             filter.apply(item.remote, item.local, status, progressListener);
                             // Add transfer length to total bytes
                             transfer.addSize(status.getLength());
-                            // Add skipped bytes
-                            transfer.addTransferred(status.getOffset());
                             // Recursive
                             if(file.isDirectory()) {
                                 // Call recursively for all children
