@@ -35,6 +35,7 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -172,6 +173,9 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
         }
         if(type == Copy.class) {
             return (T) new IRODSCopyFeature(this);
+        }
+        if(type == Upload.class) {
+            return (T) new IRODSUploadFeature(this);
         }
         return super.getFeature(type);
     }
