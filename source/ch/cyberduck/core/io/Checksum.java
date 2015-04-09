@@ -53,7 +53,7 @@ public final class Checksum {
         if(hash.matches("[A-Fa-f0-9]{64}")) {
             return new Checksum(HashAlgorithm.sha256, hash);
         }
-        log.warn(String.format("Did not detected algorithm for checksum %s", hash));
+        log.warn(String.format("Failure to detect algorithm for checksum %s", hash));
         return null;
     }
 
