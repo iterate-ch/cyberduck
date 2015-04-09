@@ -96,6 +96,7 @@ public class IRODSUploadFeature implements Upload<Void> {
                                 if(log.isDebugEnabled()) {
                                     log.debug(String.format("Set canceled for block %s", block));
                                 }
+                                block.setCancelled(true);
                                 return FileStatusCallbackResponse.SKIP;
                             }
                             return FileStatusCallbackResponse.CONTINUE;
