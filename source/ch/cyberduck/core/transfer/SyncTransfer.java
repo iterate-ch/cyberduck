@@ -18,6 +18,7 @@ package ch.cyberduck.core.transfer;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
@@ -91,6 +92,10 @@ public class SyncTransfer extends Transfer {
     @Override
     public Transfer withCache(final PathCache cache) {
         this.cache = cache;
+        // Populate cache for root items. See #8712
+        for(TransferItem root : roots) {
+            this.cache.put(root.remote.getParent(), new AttributedList<Path>(Collections.singletonList(root.remote)));
+        }
         upload.withCache(cache);
         download.withCache(cache);
         return this;
