@@ -16,6 +16,7 @@
             <File source="${BUILDPATH}\IKVM.OpenJDK.Beans.dll"/>
             <File source="${BUILDPATH}\IKVM.OpenJDK.Core.dll"/>
             <File source="${BUILDPATH}\IKVM.OpenJDK.Charsets.dll"/>
+            <File source="${BUILDPATH}\IKVM.OpenJDK.Localedata.dll"/>
             <File source="${BUILDPATH}\IKVM.OpenJDK.Security.dll"/>
             <File source="${BUILDPATH}\IKVM.OpenJDK.Text.dll"/>
             <File source="${BUILDPATH}\IKVM.OpenJDK.Util.dll"/>

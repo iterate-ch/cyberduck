@@ -36,43 +36,46 @@
       <HintPath>..\..\..\build\core.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.Beans">
-      <HintPath>..\..\..\lib\IKVM.OpenJDK.Beans.dll</HintPath>
+      <HintPath>..\..\..\lib\ikvmbin-8.1.5561\bin\IKVM.OpenJDK.Beans.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.Charsets">
-      <HintPath>..\..\..\lib\IKVM.OpenJDK.Charsets.dll</HintPath>
+      <HintPath>..\..\..\lib\ikvmbin-8.1.5561\bin\IKVM.OpenJDK.Charsets.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.Core">
-      <HintPath>..\..\..\lib\IKVM.OpenJDK.Core.dll</HintPath>
+      <HintPath>..\..\..\lib\ikvmbin-8.1.5561\bin\IKVM.OpenJDK.Core.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.Jdbc">
-      <HintPath>..\..\..\lib\IKVM.OpenJDK.Jdbc.dll</HintPath>
+      <HintPath>..\..\..\lib\ikvmbin-8.1.5561\bin\IKVM.OpenJDK.Jdbc.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Localedata">
+      <HintPath>..\..\..\lib\ikvmbin-8.1.5561\bin\IKVM.OpenJDK.Localedata.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.Security">
-      <HintPath>..\..\..\lib\IKVM.OpenJDK.Security.dll</HintPath>
+      <HintPath>..\..\..\lib\ikvmbin-8.1.5561\bin\IKVM.OpenJDK.Security.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.Text">
-      <HintPath>..\..\..\lib\IKVM.OpenJDK.Text.dll</HintPath>
+      <HintPath>..\..\..\lib\ikvmbin-8.1.5561\bin\IKVM.OpenJDK.Text.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.XML.API">
-      <HintPath>..\..\..\lib\IKVM.OpenJDK.XML.API.dll</HintPath>
+      <HintPath>..\..\..\lib\ikvmbin-8.1.5561\bin\IKVM.OpenJDK.XML.API.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.XML.Bind">
-      <HintPath>..\..\..\lib\IKVM.OpenJDK.XML.Bind.dll</HintPath>
+      <HintPath>..\..\..\lib\ikvmbin-8.1.5561\bin\IKVM.OpenJDK.XML.Bind.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.XML.Parse">
-      <HintPath>..\..\..\lib\IKVM.OpenJDK.XML.Parse.dll</HintPath>
+      <HintPath>..\..\..\lib\ikvmbin-8.1.5561\bin\IKVM.OpenJDK.XML.Parse.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.XML.Transform">
-      <HintPath>..\..\..\lib\IKVM.OpenJDK.XML.Transform.dll</HintPath>
+      <HintPath>..\..\..\lib\ikvmbin-8.1.5561\bin\IKVM.OpenJDK.XML.Transform.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.XML.XPath">
-      <HintPath>..\..\..\lib\IKVM.OpenJDK.XML.XPath.dll</HintPath>
+      <HintPath>..\..\..\lib\ikvmbin-8.1.5561\bin\IKVM.OpenJDK.XML.XPath.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.Runtime">
-      <HintPath>..\..\..\lib\IKVM.Runtime.dll</HintPath>
+      <HintPath>..\..\..\lib\ikvmbin-8.1.5561\bin\IKVM.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.Runtime.JNI">
-      <HintPath>..\..\..\lib\IKVM.Runtime.JNI.dll</HintPath>
+      <HintPath>..\..\..\lib\ikvmbin-8.1.5561\bin\IKVM.Runtime.JNI.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />

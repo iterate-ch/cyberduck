@@ -58,6 +58,9 @@
       <Component Id="ikvm.charsets" Guid="700C1DBC-EADB-4FF0-B315-3119F1066219">
         <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Charsets.dll" KeyPath="yes" Checksum="yes" />
       </Component>
+      <Component Id="ikvm.localedata" Guid="968E70A5-1C73-4778-BC21-B2D048B44F18">
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Localedata.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
       <Component Id="ikvm.jdbc" Guid="BA4C5CF6-588A-4036-AE61-2D54A97F106C">
         <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Jdbc.dll" KeyPath="yes" Checksum="yes" />
       </Component>
