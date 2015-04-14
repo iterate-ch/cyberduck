@@ -188,24 +188,6 @@ NSArray* CreateCertificatesFromData(JNIEnv *env, jobjectArray jCertificates) {
 JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_isTrustedNative(JNIEnv *env, jobject this, jstring jHostname, jobjectArray jCertificates) {
 	OSStatus err;
 	NSArray *certificates = CreateCertificatesFromData(env, jCertificates);
-	// Adds a certificates to a keychain.
-	int i;
-	for(i = 0; i < [certificates count]; i++) {
-        SecCertificateRef certificateRef = (SecCertificateRef)[certificates objectAtIndex:i];
-        err = SecCertificateAddToKeychain(certificateRef, NULL);
-        switch(err)
-        {
-            case errSecDuplicateItem:
-                // The function returns errSecDuplicateItem and does not add another copy to the keychain.
-                // The function looks at the certificate data, not at the certificate object, to
-                // determine whether the certificate is a duplicate. It considers two certificates to be
-                // duplicates if they have the same primary key attributes.
-                break;
-            default:
-                NSLog(@"Error adding certificate to Keychain");
-                break;
-        }
-    }
 	// Creates a search object for finding policies.
 	SecPolicySearchRef searchRef = NULL;
 	err = SecPolicySearchCreate(CSSM_CERT_X_509v3, &CSSMOID_APPLE_TP_SSL, NULL, &searchRef);
