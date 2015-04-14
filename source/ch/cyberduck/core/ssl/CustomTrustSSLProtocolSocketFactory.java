@@ -67,7 +67,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
     private SecureRandom rpng;
 
     {
-        final String random = PreferencesFactory.get().getProperty("connection.ssl.securerandom");
+        final String random = preferences.getProperty("connection.ssl.securerandom");
         try {
             // Obtains random numbers from the underlying native OS, without blocking to prevent
             // from excessive stalling. For example, /dev/urandom
