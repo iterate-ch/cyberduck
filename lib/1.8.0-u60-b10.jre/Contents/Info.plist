@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+        <key>CFBundleDevelopmentRegion</key>
+        <string>English</string>
+        <key>CFBundleGetInfoString</key>
+        <string>OpenJDK (1.8.0)</string>
+        <key>CFBundleIdentifier</key>
+        <string>net.java.openjdk.jre</string>
+        <key>CFBundleInfoDictionaryVersion</key>
+        <string>7.0</string>
+        <key>CFBundleName</key>
+        <string>OpenJDK 8</string>
+        <key>CFBundlePackageType</key>
+        <string>BNDL</string>
+        <key>CFBundleShortVersionString</key>
+        <string>1.0</string>
+        <key>CFBundleSignature</key>
+        <string>????</string>
+        <key>CFBundleVersion</key>
+        <string>1.8.0</string>
+        <key>JavaVM</key>
+        <dict>
+                <key>JVMMinimumFrameworkVersion</key>
+                <string>13.2.9</string>
+                <key>JVMMinimumSystemVersion</key>
+                <string>10.6.0</string>
+                <key>JVMPlatformVersion</key>
+                <string>1.8</string>
+                <key>JVMVendor</key>
+                <string>iterate GmbH</string>
+                <key>JVMVersion</key>
+                <string>1.8.0</string>
+        </dict>
+</dict>
+</plist>
