@@ -79,7 +79,7 @@ public final class PromptLoginController implements LoginCallback {
                      final String continueButton, final String disconnectButton, final String preference)
             throws LoginCanceledException {
         if(log.isDebugEnabled()) {
-            log.debug("Display insecure connection alert");
+            log.debug(String.format("Display insecure connection alert for %s", protocol));
         }
         final NSAlert alert = NSAlert.alert(title, message,
                 continueButton, // Default Button
