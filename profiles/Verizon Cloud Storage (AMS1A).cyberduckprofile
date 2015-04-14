@@ -10,5 +10,7 @@
         <string>Verizon Cloud Storage (Netherlands, EU)</string>
         <key>Default Hostname</key>
         <string>storage-ams1a.cloud.verizon.com</string>
+        <key>Hostname Configurable</key>
+        <false/>
     </dict>
 </plist>

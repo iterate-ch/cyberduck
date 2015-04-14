@@ -10,5 +10,7 @@
         <string>Verizon Cloud Storage (East Coast USA)</string>
         <key>Default Hostname</key>
         <string>storage-iad3a.cloud.verizon.com</string>
+        <key>Hostname Configurable</key>
+        <false/>
     </dict>
 </plist>
