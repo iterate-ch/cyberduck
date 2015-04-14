@@ -1,13 +1,13 @@
 package ch.cyberduck.core;
 
+import ch.cyberduck.binding.foundation.NSAppleScript;
+import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.binding.foundation.NSAppleScript;
-import ch.cyberduck.binding.foundation.NSDictionary;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -37,7 +37,7 @@ public class ApplescriptTerminalService implements TerminalService {
                     preferences.getProperty("terminal.bundle.identifier")));
         }
         String ssh = MessageFormat.format(preferences.getProperty("terminal.command.ssh"),
-                identity ? "-i " + host.getCredentials().getIdentity().getAbsolute() : StringUtils.EMPTY,
+                identity ? String.format("-i \"%s\"", host.getCredentials().getIdentity().getAbsolute()) : StringUtils.EMPTY,
                 host.getCredentials().getUsername(),
                 host.getHostname(),
                 String.valueOf(host.getPort()), this.escape(workdir.getAbsolute()));
