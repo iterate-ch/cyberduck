@@ -175,10 +175,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     else
                     {
                         View.LocalFileModificationDate =
-                            UserDateFormatterFactory.get()
-                                                    .getLongFormat(
-                                                        UserDefaultsDateFormatter.ConvertJavaMillisecondsToDotNetMillis(
-                                                            selected.local.attributes().getModificationDate()));
+                            UserDateFormatterFactory.get().getLongFormat(selected.local.attributes().getModificationDate());
                     }
                     View.RemoteFileUrl =
                         new DefaultUrlProvider(Transfer.getHost()).toUrl(selected.remote)
