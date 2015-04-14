@@ -30,6 +30,10 @@ namespace Ch.Cyberduck.Core
 
         public override Proxy find(Host host)
         {
+            if (!PreferencesFactory.get().getBoolean("connection.proxy.enable"))
+            {
+                return Proxy.DIRECT;
+            }
             Uri target;
             try
             {

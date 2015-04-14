@@ -174,22 +174,20 @@ public abstract class HttpSession<C> extends SSLSession<C> {
         final Registry<ConnectionSocketFactory> registry = this.registry().build();
         // Use HTTP Connect proxy implementation provided here instead of
         // relying on internal proxy support in socket factory
-        if(preferences.getBoolean("connection.proxy.enable")) {
-            final Proxy proxy = proxyFinder.find(host);
-            if(proxy.getType() == Proxy.Type.HTTP) {
-                final HttpHost h = new HttpHost(proxy.getHostname(), proxy.getPort(), Scheme.http.name());
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Setup proxy %s", h));
-                }
-                builder.setProxy(h);
+        final Proxy proxy = proxyFinder.find(host);
+        if(proxy.getType() == Proxy.Type.HTTP) {
+            final HttpHost h = new HttpHost(proxy.getHostname(), proxy.getPort(), Scheme.http.name());
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Setup proxy %s", h));
             }
-            if(proxy.getType() == Proxy.Type.HTTPS) {
-                final HttpHost h = new HttpHost(proxy.getHostname(), proxy.getPort(), Scheme.https.name());
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Setup proxy %s", h));
-                }
-                builder.setProxy(h);
+            builder.setProxy(h);
+        }
+        if(proxy.getType() == Proxy.Type.HTTPS) {
+            final HttpHost h = new HttpHost(proxy.getHostname(), proxy.getPort(), Scheme.https.name());
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Setup proxy %s", h));
             }
+            builder.setProxy(h);
         }
         final HttpClientConnectionManager manager = this.pool(registry);
         builder.setUserAgent(new PreferencesUseragentProvider().get());

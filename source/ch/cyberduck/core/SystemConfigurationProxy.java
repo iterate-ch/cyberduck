@@ -19,6 +19,8 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.library.Native;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -39,6 +41,9 @@ public final class SystemConfigurationProxy extends AbstractProxyFinder implemen
     private HostUrlProvider provider
             = new ProxyHostUrlProvider();
 
+    private Preferences preferences
+            = PreferencesFactory.get();
+
     /**
      * Use passive connect mode
      *
@@ -53,6 +58,9 @@ public final class SystemConfigurationProxy extends AbstractProxyFinder implemen
 
     @Override
     public Proxy find(final Host target) {
+        if(!preferences.getBoolean("connection.proxy.enable")) {
+            return Proxy.DIRECT;
+        }
         final String route = this.findNative(provider.get(target));
         if(null == route) {
             if(log.isInfoEnabled()) {

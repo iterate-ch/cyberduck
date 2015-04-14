@@ -83,27 +83,25 @@ public class ProxySocketFactory extends SocketFactory {
      * direct connection socket factory.
      */
     protected SocketFactory factory(final String target) {
-        if(preferences.getBoolean("connection.proxy.enable")) {
-            final Proxy proxy = proxyFinder.find(new Host(protocol, target));
-            if(!types.contains(proxy.getType())) {
-                log.warn(String.format("Use of %s proxy is disabled for socket factory %s", proxy.getType(), this));
-                return new DefaultSocketFactory();
-            }
-            switch(proxy.getType()) {
-                case SOCKS:
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Configured to use SOCKS proxy %s", proxy));
-                    }
-                    return new DefaultSocketFactory(new java.net.Proxy(
-                            java.net.Proxy.Type.SOCKS, new InetSocketAddress(proxy.getHostname(), proxy.getPort())));
-                case HTTP:
-                case HTTPS:
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Configured to use HTTP proxy %s", proxy));
-                    }
-                    return new DefaultSocketFactory(new java.net.Proxy(
-                            java.net.Proxy.Type.HTTP, new InetSocketAddress(proxy.getHostname(), proxy.getPort())));
-            }
+        final Proxy proxy = proxyFinder.find(new Host(protocol, target));
+        if(!types.contains(proxy.getType())) {
+            log.warn(String.format("Use of %s proxy is disabled for socket factory %s", proxy.getType(), this));
+            return new DefaultSocketFactory();
+        }
+        switch(proxy.getType()) {
+            case SOCKS:
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Configured to use SOCKS proxy %s", proxy));
+                }
+                return new DefaultSocketFactory(new java.net.Proxy(
+                        java.net.Proxy.Type.SOCKS, new InetSocketAddress(proxy.getHostname(), proxy.getPort())));
+            case HTTP:
+            case HTTPS:
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Configured to use HTTP proxy %s", proxy));
+                }
+                return new DefaultSocketFactory(new java.net.Proxy(
+                        java.net.Proxy.Type.HTTP, new InetSocketAddress(proxy.getHostname(), proxy.getPort())));
         }
         return new DefaultSocketFactory();
     }
