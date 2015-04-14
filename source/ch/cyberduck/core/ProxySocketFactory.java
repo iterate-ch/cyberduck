@@ -17,8 +17,6 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 
 import org.apache.commons.net.DefaultSocketFactory;
@@ -39,9 +37,6 @@ import java.util.List;
  */
 public class ProxySocketFactory extends SocketFactory {
     private static final Logger log = Logger.getLogger(ProxySocketFactory.class);
-
-    private final Preferences preferences
-            = PreferencesFactory.get();
 
     private SocketConfigurator configurator;
 
