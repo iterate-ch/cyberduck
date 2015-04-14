@@ -18,6 +18,7 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.DefaultProxyFinder;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.IOKitSleepPreventer;
 import ch.cyberduck.core.Keychain;
@@ -97,6 +98,7 @@ public class TerminalPreferences extends MemoryPreferences {
                 defaults.put("factory.locale.class", RegexLocale.class.getName());
                 defaults.put("factory.applicationlauncher.class", ExecApplicationLauncher.class.getName());
                 defaults.put("factory.editorfactory.class", DefaultEditorFactory.class.getName());
+                defaults.put("factory.proxy.class", DefaultProxyFinder.class.getName());
                 break;
         }
     }
