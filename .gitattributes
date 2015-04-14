@@ -2295,9 +2295,9 @@ profiles/Softlayer[!!-~](Dallas[!!-~]Private[!!-~]Network).cyberduckprofile -tex
 profiles/Softlayer[!!-~](Dallas).cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Softlayer[!!-~](Singapore[!!-~]Private[!!-~]Network).cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Softlayer[!!-~](Singapore).cyberduckprofile -text svneol=unset#application/octet-stream
-profiles/Verizon[!!-~]Cloud[!!-~]Storage[!!-~](AMS1A).cyberduckprofile -text
-profiles/Verizon[!!-~]Cloud[!!-~]Storage[!!-~](IAD3A).cyberduckprofile -text
-profiles/Verizon[!!-~]Cloud[!!-~]Storage[!!-~](USHAA).cyberduckprofile -text
+profiles/Verizon[!!-~]Cloud[!!-~]Storage[!!-~](AMS1A).cyberduckprofile -text svneol=unset#application/octet-stream
+profiles/Verizon[!!-~]Cloud[!!-~]Storage[!!-~](IAD3A).cyberduckprofile -text svneol=unset#application/octet-stream
+profiles/Verizon[!!-~]Cloud[!!-~]Storage[!!-~](USHAA).cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/assets/Dream Objects.tiff -text svneol=unset#image/tiff
 profiles/assets/Dump[!!-~]Truck.png -text svneol=unset#image/png
 profiles/assets/GreenQloud.tiff -text svneol=unset#image/tiff
