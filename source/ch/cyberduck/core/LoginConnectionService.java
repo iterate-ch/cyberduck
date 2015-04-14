@@ -48,6 +48,8 @@ public class LoginConnectionService implements ConnectionService {
     private Resolver resolver
             = new Resolver();
 
+    private ProxyFinder proxy;
+
     private LoginService login;
 
     private final FailureDiagnostics<Exception> diagnostics
@@ -65,11 +67,30 @@ public class LoginConnectionService implements ConnectionService {
                 listener, transcript);
     }
 
+    public LoginConnectionService(final ProxyFinder proxy,
+                                  final LoginCallback prompt,
+                                  final HostKeyCallback key,
+                                  final HostPasswordStore keychain,
+                                  final ProgressListener listener,
+                                  final TranscriptListener transcript) {
+        this(new KeychainLoginService(prompt, keychain), proxy, key,
+                listener, transcript);
+    }
+
     public LoginConnectionService(final LoginService login,
                                   final HostKeyCallback key,
                                   final ProgressListener listener,
                                   final TranscriptListener transcript) {
+        this(login, ProxyFactory.get(), key, listener, transcript);
+    }
+
+    public LoginConnectionService(final LoginService login,
+                                  final ProxyFinder proxy,
+                                  final HostKeyCallback key,
+                                  final ProgressListener listener,
+                                  final TranscriptListener transcript) {
         this.login = login;
+        this.proxy = proxy;
         this.key = key;
         this.listener = listener;
         this.transcript = transcript;
@@ -138,12 +159,15 @@ public class LoginConnectionService implements ConnectionService {
         final String hostname = configurator.getHostname(bookmark.getHostname());
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Resolving {0}", "Status"),
                 hostname));
-        try {
-            resolver.resolve(hostname);
-        }
-        catch(ResolveFailedException e) {
-            log.warn(String.format("DNS resolver failed for %s", hostname));
-            throw e;
+        if(proxy.find(bookmark) == Proxy.DIRECT) {
+            // Only try to resolve target hostname if direct connection
+            try {
+                resolver.resolve(hostname);
+            }
+            catch(ResolveFailedException e) {
+                log.warn(String.format("DNS resolver failed for %s", hostname));
+                throw e;
+            }
         }
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Opening {0} connection to {1}", "Status"),
                 bookmark.getProtocol().getName(), hostname));

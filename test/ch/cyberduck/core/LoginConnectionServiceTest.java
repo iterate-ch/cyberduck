@@ -8,6 +8,8 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPSession;
+import ch.cyberduck.core.s3.S3Protocol;
+import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.ssl.CertificateStoreX509TrustManager;
@@ -33,9 +35,25 @@ import static org.junit.Assert.*;
  */
 public class LoginConnectionServiceTest extends AbstractTestCase {
 
+    @Test(expected = LoginCanceledException.class)
+    public void testNoResolveForHTTPProxy() throws Exception {
+        final Session session = new S3Session(new Host(new S3Protocol(), "unknownhost.local", new Credentials("user", "")));
+        final LoginConnectionService s = new LoginConnectionService(new DisabledProxyFinder() {
+            @Override
+            public Proxy find(final Host target) {
+                return new Proxy(Proxy.Type.HTTP, "proxy.local", 6666);
+            }
+        }, new DisabledLoginCallback(),
+                new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(),
+                new DisabledProgressListener(),
+                new DisabledTranscriptListener());
+        s.check(session, PathCache.empty());
+    }
+
     @Test(expected = BackgroundException.class)
     public void testConnectDnsFailure() throws Exception {
-        final FTPSession session = new FTPSession(new Host(new FTPProtocol(), "unknownhost.local", new Credentials("user", "")));
+        final Session session = new FTPSession(new Host(new FTPProtocol(), "unknownhost.local", new Credentials("user", "")));
         final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new HostKeyCallback() {
             @Override
             public boolean verify(final String hostname, final int port, final PublicKey key) throws ConnectionCanceledException {
@@ -59,7 +77,7 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
 
     @Test(expected = ConnectionCanceledException.class)
     public void testHandshakeFailure() throws Exception {
-        final DAVSession session = new DAVSession(new Host(new DAVSSLProtocol(), "54.228.253.92", new Credentials("user", "p")),
+        final Session session = new DAVSession(new Host(new DAVSSLProtocol(), "54.228.253.92", new Credentials("user", "p")),
                 new CertificateStoreX509TrustManager(new TrustManagerHostnameCallback() {
                     @Override
                     public String getTarget() {
@@ -91,7 +109,7 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
                 new DisabledProgressListener(), new DisabledTranscriptListener());
         final AtomicBoolean disconnected = new AtomicBoolean();
         try {
-            final FTPSession session = new FTPSession(new Host(new FTPProtocol(), "", new Credentials("user", ""))) {
+            final Session session = new FTPSession(new Host(new FTPProtocol(), "", new Credentials("user", ""))) {
                 @Override
                 public void interrupt() throws BackgroundException {
                     disconnected.set(true);
@@ -127,7 +145,6 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
         }, new DisabledProgressListener(), new DisabledTranscriptListener());
         final Host host = new Host(new SFTPProtocol(), "localhost", new Credentials("user", ""));
         final Session session = new SFTPSession(host) {
-
             @Override
             public SSHClient connect(final HostKeyCallback key) throws BackgroundException {
                 connected.set(true);
