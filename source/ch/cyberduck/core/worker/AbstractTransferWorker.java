@@ -169,10 +169,15 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
     protected abstract void release(Session session) throws BackgroundException;
 
     @Override
-    public void cancel() {
+    public void reset() {
         for(TransferStatus status : table.values()) {
             status.setCanceled();
         }
+    }
+
+    @Override
+    public void cancel() {
+        this.reset();
         super.cancel();
     }
 
