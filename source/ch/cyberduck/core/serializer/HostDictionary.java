@@ -82,10 +82,6 @@ public class HostDictionary {
             if(usernameObj != null) {
                 bookmark.getCredentials().setUsername(usernameObj.toString());
             }
-            Object passwordObj = dict.stringForKey("Password");
-            if(passwordObj != null) {
-                bookmark.getCredentials().setPassword(passwordObj.toString());
-            }
             Object cdnCredentialsObj = dict.stringForKey("CDN Credentials");
             if(cdnCredentialsObj != null) {
                 bookmark.getCdnCredentials().setUsername(cdnCredentialsObj.toString());
