@@ -42,4 +42,11 @@ public class ProfileTest extends AbstractTestCase {
         assertNotEquals(0, ProfileReaderFactory.get().read(
                 new Local("profiles/S3 (Temporary Credentials).cyberduckprofile")).compareTo(new FTPProtocol()));
     }
+
+    @Test
+    public void testCompareMultipleRegions() {
+        assertEquals(0, ProfileReaderFactory.get().read(
+                new Local("profiles/Verizon Cloud Storage (AMS1A).cyberduckprofile")).compareTo(ProfileReaderFactory.get().read(
+                new Local("profiles/Verizon Cloud Storage (IAD3A).cyberduckprofile"))));
+    }
 }

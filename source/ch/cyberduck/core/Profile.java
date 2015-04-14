@@ -363,6 +363,9 @@ public final class Profile implements Protocol, Serializable {
         if(this.getProvider() != null ? !this.getProvider().equals(protocol.getProvider()) : protocol.getProvider() != null) {
             return false;
         }
+        if(this.getDefaultHostname() != null ? !this.getDefaultHostname().equals(protocol.getDefaultHostname()) : protocol.getDefaultHostname() != null) {
+            return false;
+        }
         return true;
     }
 
@@ -372,6 +375,7 @@ public final class Profile implements Protocol, Serializable {
         result = 31 * result + (this.getScheme() != null ? this.getScheme().hashCode() : 0);
         result = 31 * result + (this.getContext() != null ? this.getContext().hashCode() : 0);
         result = 31 * result + (this.getProvider() != null ? this.getProvider().hashCode() : 0);
+        result = 31 * result + (this.getDefaultHostname() != null ? this.getDefaultHostname().hashCode() : 0);
         return result;
     }
 
