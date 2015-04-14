@@ -19,6 +19,7 @@
 using System;
 using System.Net;
 using ch.cyberduck.core;
+using ch.cyberduck.core.preferences;
 
 using InetSocketAddress = java.net.InetSocketAddress;
 
