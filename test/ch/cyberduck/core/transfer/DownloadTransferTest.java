@@ -198,19 +198,21 @@ public class DownloadTransferTest extends AbstractTestCase {
             }
         }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), table);
-        worker.prepare(test, new NullLocal(System.getProperty("java.io.tmpdir")), new TransferStatus().exists(true),
-                new OverwriteFilter(new DownloadSymlinkResolver(Collections.singletonList(new TransferItem(test))),
-                        new NullSession(new Host("h")))
+        final DownloadFilterOptions options = new DownloadFilterOptions();
+        options.icon = false;
+        final TransferPathFilter filter = new OverwriteFilter(new DownloadSymlinkResolver(Collections.singletonList(new TransferItem(test))),
+                new NullSession(new Host("h"))).withOptions(options);
+        worker.prepare(test, new NullLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString()), new TransferStatus().exists(true),
+                filter
         );
         final TransferStatus status = new TransferStatus();
-        status.setExists(true);
+        status.setExists(false);
         assertEquals(status, table.get(test));
         final TransferStatus expected = new TransferStatus();
         expected.setAppend(false);
         expected.setLength(5L);
         expected.setOffset(0L);
-        // Already touched file in #apply of filter
-        expected.setExists(true);
+        expected.setExists(false);
         assertEquals(expected, table.get(new Path("/transfer/test", EnumSet.of(Path.Type.file))));
     }
 
