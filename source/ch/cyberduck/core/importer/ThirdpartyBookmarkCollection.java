@@ -19,6 +19,7 @@ package ch.cyberduck.core.importer;
  */
 
 import ch.cyberduck.core.AbstractHostCollection;
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
@@ -166,11 +167,12 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
             log.debug(String.format("Create new bookmark from import %s", bookmark));
         }
         // Save password if any to Keychain
-        if(StringUtils.isNotBlank(bookmark.getCredentials().getPassword())) {
+        final Credentials credentials = bookmark.getCredentials();
+        if(StringUtils.isNotBlank(credentials.getPassword())) {
             keychain.addPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
-                    bookmark.getHostname(), bookmark.getCredentials().getUsername(), bookmark.getCredentials().getPassword());
+                    bookmark.getHostname(), credentials.getUsername(), credentials.getPassword());
             // Reset password in memory
-            bookmark.getCredentials().setPassword(null);
+            credentials.setPassword(null);
         }
         return super.add(bookmark);
     }
