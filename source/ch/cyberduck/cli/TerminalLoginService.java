@@ -52,7 +52,7 @@ public class TerminalLoginService extends KeychainLoginService {
             credentials.setPassword(input.getOptionValue(TerminalOptionsBuilder.Params.password.name()));
         }
         if(input.hasOption(TerminalOptionsBuilder.Params.identity.name())) {
-            bookmark.getCredentials().setIdentity(LocalFactory.get(input.getOptionValue(TerminalOptionsBuilder.Params.identity.name())));
+            credentials.setIdentity(LocalFactory.get(input.getOptionValue(TerminalOptionsBuilder.Params.identity.name())));
         }
         if(StringUtils.isNotBlank(credentials.getUsername())
                 && StringUtils.isNotBlank(credentials.getPassword())) {
