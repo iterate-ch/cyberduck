@@ -30,6 +30,7 @@ import org.jets3t.service.model.MultipartPart;
 import org.jets3t.service.model.MultipartUpload;
 
 import java.text.MessageFormat;
+import java.util.EnumSet;
 import java.util.List;
 
 /**
@@ -77,7 +78,7 @@ public class S3MultipartService {
             }
             for(MultipartUpload upload : chunk.getUploads()) {
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Resume multipart upload %s", upload.getUploadId()));
+                    log.info(String.format("Found multipart upload %s for %s", upload.getUploadId(), file));
                 }
                 return upload;
             }
@@ -98,6 +99,20 @@ public class S3MultipartService {
         }
         catch(S3ServiceException e) {
             throw new ServiceExceptionMappingService().map(MessageFormat.format("Upload {0} failed", multipart.getObjectKey()), e);
+        }
+    }
+
+    public void delete(final MultipartUpload upload) throws BackgroundException {
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Delete multipart upload %s", upload.getUploadId()));
+        }
+        try {
+            session.getClient().multipartAbortUpload(upload);
+        }
+        catch(S3ServiceException e) {
+            throw new ServiceExceptionMappingService().map("Cannot delete {0}", e,
+                    new Path(new Path(upload.getBucketName(), EnumSet.of(Path.Type.directory)),
+                            upload.getObjectKey(), EnumSet.of(Path.Type.file)));
         }
     }
 }
