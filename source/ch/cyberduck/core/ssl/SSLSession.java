@@ -37,8 +37,12 @@ public abstract class SSLSession<C> extends Session<C> {
     private static final Logger log = Logger.getLogger(SSLSession.class);
 
     static {
-        Security.insertProviderAt(new BouncyCastleProvider(),
-                PreferencesFactory.get().getInteger("connection.ssl.provider.bouncycastle.position"));
+        final int position = PreferencesFactory.get().getInteger("connection.ssl.provider.bouncycastle.position");
+        final BouncyCastleProvider provider = new BouncyCastleProvider();
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Install provider %s at position %d", provider, position));
+        }
+        Security.insertProviderAt(provider, position);
     }
 
     protected X509TrustManager trust;
