@@ -38,6 +38,8 @@ import ch.cyberduck.core.local.LaunchServicesFileDescriptor;
 import ch.cyberduck.core.local.LaunchServicesQuarantineService;
 import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
 import ch.cyberduck.core.local.WorkspaceIconService;
+import ch.cyberduck.core.local.WorkspaceSymlinkFeature;
+import ch.cyberduck.core.local.features.DefaultSymlinkFeature;
 import ch.cyberduck.core.preferences.ApplicationResourcesFinderFactory;
 import ch.cyberduck.core.preferences.ApplicationSupportDirectoryFinder;
 import ch.cyberduck.core.preferences.BundleApplicationResourcesFinder;
@@ -89,6 +91,7 @@ public class TerminalPreferences extends MemoryPreferences {
                 defaults.put("factory.iconcache.class", NSImageIconCache.class.getName());
                 defaults.put("factory.filedescriptor.class", LaunchServicesFileDescriptor.class.getName());
                 defaults.put("factory.workingdirectory.class", FileManagerWorkingDirectoryFinder.class.getName());
+                defaults.put("factory.symlink.class", WorkspaceSymlinkFeature.class.getName());
                 break;
             case windows:
                 break;
@@ -99,6 +102,7 @@ public class TerminalPreferences extends MemoryPreferences {
                 defaults.put("factory.applicationlauncher.class", ExecApplicationLauncher.class.getName());
                 defaults.put("factory.editorfactory.class", DefaultEditorFactory.class.getName());
                 defaults.put("factory.proxy.class", DefaultProxyFinder.class.getName());
+                defaults.put("factory.symlink.class", DefaultSymlinkFeature.class.getName());
                 break;
         }
     }
