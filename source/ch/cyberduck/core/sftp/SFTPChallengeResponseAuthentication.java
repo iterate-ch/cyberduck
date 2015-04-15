@@ -101,7 +101,9 @@ public class SFTPChallengeResponseAuthentication implements SFTPAuthentication {
                     final String response;
                     // For each prompt, the corresponding echo field indicates whether the user input should
                     // be echoed as characters are typed
-                    if(!password.get()) {
+                    if(!password.get()
+                            // Some servers ask for one-time passcode first
+                            && !StringUtils.contains(prompt, "Verification code")) {
                         // In its first callback the server prompts for the password
                         if(log.isDebugEnabled()) {
                             log.debug("First callback returning provided credentials");
