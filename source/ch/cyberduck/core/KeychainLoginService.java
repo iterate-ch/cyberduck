@@ -75,8 +75,6 @@ public class KeychainLoginService implements LoginService {
             listener.message(LocaleFactory.localizedString("Login successful", "Credentials"));
             // Write credentials to keychain
             keychain.save(bookmark);
-            // Reset password in memory
-            bookmark.getCredentials().setPassword(null);
         }
         catch(LoginFailureException e) {
             listener.message(LocaleFactory.localizedString("Login failed", "Credentials"));
@@ -86,8 +84,6 @@ public class KeychainLoginService implements LoginService {
                         new LoginOptions(bookmark.getProtocol()));
             }
             catch(LoginCanceledException c) {
-                // Reset password in memory
-                bookmark.getCredentials().setPassword(null);
                 throw c;
             }
             throw e;
