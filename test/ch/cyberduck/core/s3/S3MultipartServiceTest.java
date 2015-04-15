@@ -22,6 +22,7 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
@@ -29,6 +30,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 
 import org.jets3t.service.model.MultipartUpload;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.EnumSet;
@@ -67,5 +69,25 @@ public class S3MultipartServiceTest extends AbstractTestCase {
         final Path test = new Path(container, "t f", EnumSet.of(Path.Type.file));
         final MultipartUpload part = new S3MultipartService(session).find(test);
         assertNull(part);
+    }
+
+    @Test
+    @Ignore
+    public void testAbort() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                        new Credentials(
+                                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                        )));
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        for(Path container : new S3BucketListService(session).list(new DisabledListProgressListener())) {
+            final Path key = new Path(container, "/", EnumSet.of(Path.Type.file));
+            MultipartUpload part;
+            final S3MultipartService service = new S3MultipartService(session);
+            while((part = service.find(key)) != null) {
+                service.delete(part);
+            }
+        }
     }
 }
