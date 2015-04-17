@@ -44,8 +44,10 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.UserDateFormatterFactory;
+import ch.cyberduck.core.date.AbstractUserDateFormatter;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.formatter.SizeFormatter;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.local.FileDescriptor;
 import ch.cyberduck.core.local.FileDescriptorFactory;
@@ -55,6 +57,7 @@ import ch.cyberduck.core.pasteboard.PathPasteboard;
 import ch.cyberduck.core.pasteboard.PathPasteboardFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.resources.IconCache;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.DownloadTransfer;
@@ -87,17 +90,23 @@ import java.util.Set;
 public abstract class BrowserTableDataSource extends ProxyController implements NSDraggingSource {
     private static final Logger log = Logger.getLogger(BrowserTableDataSource.class);
 
+    private SizeFormatter sizeFormatter = SizeFormatterFactory.get();
+
+    private AbstractUserDateFormatter dateFormatter = UserDateFormatterFactory.get();
+
+    private IconCache<NSImage> icons = IconCacheFactory.<NSImage>get();
+
     private FileDescriptor descriptor = FileDescriptorFactory.get();
-
-    protected BrowserController controller;
-
-    protected Cache<Path> cache;
 
     private final Preferences preferences = PreferencesFactory.get();
 
     private final Map<Item, NSAttributedString> attributed = new LRUMap(
             preferences.getInteger("browser.model.cache.size")
     );
+
+    protected BrowserController controller;
+
+    protected Cache<Path> cache;
 
     private static final class Item {
         private Path file;
@@ -178,9 +187,9 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
 
     protected NSImage iconForPath(final Path item) {
         if(item.isVolume()) {
-            return IconCacheFactory.<NSImage>get().volumeIcon(controller.getSession().getHost().getProtocol(), 16);
+            return icons.volumeIcon(controller.getSession().getHost().getProtocol(), 16);
         }
-        return IconCacheFactory.<NSImage>get().fileIcon(item, 16);
+        return icons.fileIcon(item, 16);
     }
 
     protected NSObject objectValueForItem(final Path item, final String identifier) {
@@ -208,12 +217,12 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         }
         else if(identifier.equals(Column.size.name())) {
             value = NSAttributedString.attributedStringWithAttributes(
-                    SizeFormatterFactory.get().format(item.attributes().getSize()),
+                    sizeFormatter.format(item.attributes().getSize()),
                     TableCellAttributes.browserFontRightAlignment());
         }
         else if(identifier.equals(Column.modified.name())) {
             value = NSAttributedString.attributedStringWithAttributes(
-                    UserDateFormatterFactory.get().getShortFormat(item.attributes().getModificationDate(),
+                    dateFormatter.getShortFormat(item.attributes().getModificationDate(),
                             preferences.getBoolean("browser.date.natural")),
                     TableCellAttributes.browserFontLeftAlignment()
             );
