@@ -30,11 +30,11 @@ namespace Ch.Cyberduck.Core.Proxy
     {
         private readonly IWebProxy _system = WebRequest.GetSystemWebProxy();
 
-        public override Proxy find(Host host)
+        public override ch.cyberduck.core.proxy.Proxy find(Host host)
         {
             if (!PreferencesFactory.get().getBoolean("connection.proxy.enable"))
             {
-                return Proxy.DIRECT;
+                return ch.cyberduck.core.proxy.Proxy.DIRECT;
             }
             Uri target;
             try
@@ -43,14 +43,14 @@ namespace Ch.Cyberduck.Core.Proxy
             }
             catch (UriFormatException e)
             {
-                return Proxy.DIRECT;
+                return ch.cyberduck.core.proxy.Proxy.DIRECT;
             }
             if (_system.IsBypassed(target))
             {
-                return Proxy.DIRECT;
+                return ch.cyberduck.core.proxy.Proxy.DIRECT;
             }
             Uri proxy = _system.GetProxy(target);
-            return new Proxy(Proxy.Type.valueOf(proxy.Scheme.ToUpper()), proxy.Host, proxy.Port);
+            return new ch.cyberduck.core.proxy.Proxy(Proxy.Type.valueOf(proxy.Scheme.ToUpper()), proxy.Host, proxy.Port);
         }
     }
 }
