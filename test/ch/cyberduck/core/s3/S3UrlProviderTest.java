@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import java.net.URI;
 import java.util.EnumSet;
+import java.util.Iterator;
 
 import static org.junit.Assert.*;
 
@@ -37,10 +38,26 @@ public class S3UrlProviderTest extends AbstractTestCase {
     }
 
     @Test
-    public void testUri() throws Exception {
+    public void testProviderUriWithKey() throws Exception {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
-        assertEquals("https://s3.amazonaws.com/test.cyberduck.ch/key",
-                new S3UrlProvider(session).toUrl(new Path("/test.cyberduck.ch/key", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.provider).getUrl());
+        final Iterator<DescriptiveUrl> provider = new S3UrlProvider(session).toUrl(new Path("/test.cyberduck.ch/key",
+                EnumSet.of(Path.Type.file))).filter(DescriptiveUrl.Type.provider).iterator();
+        assertEquals("s3://test.cyberduck.ch/key", provider.next().getUrl());
+        assertEquals("https://s3.amazonaws.com/test.cyberduck.ch/key", provider.next().getUrl());
+    }
+
+    @Test
+    public void testProviderUriRoot() throws Exception {
+        final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
+        final Iterator<DescriptiveUrl> provider = new S3UrlProvider(session).toUrl(new Path("/test.cyberduck.ch",
+                EnumSet.of(Path.Type.directory))).filter(DescriptiveUrl.Type.provider).iterator();
+        assertEquals("s3://test.cyberduck.ch/", provider.next().getUrl());
+        assertEquals("https://s3.amazonaws.com/test.cyberduck.ch", provider.next().getUrl());
+    }
+
+    @Test
+    public void testHttpUri() throws Exception {
+        final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
         assertEquals("https://test.cyberduck.ch.s3.amazonaws.com/key",
                 new S3UrlProvider(session).toUrl(new Path("/test.cyberduck.ch/key", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.http).getUrl());
     }
