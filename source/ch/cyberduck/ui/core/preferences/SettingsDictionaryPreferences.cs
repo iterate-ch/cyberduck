@@ -30,6 +30,7 @@ using Ch.Cyberduck.Core.Editor;
 using Ch.Cyberduck.Core.I18n;
 using Ch.Cyberduck.Core.Local;
 using Ch.Cyberduck.Core.Proxy;
+using Ch.Cyberduck.Core.Diagnostics;
 using Ch.Cyberduck.Core.Preferences;
 using Ch.Cyberduck.Properties;
 using Ch.Cyberduck.Ui.Controller;

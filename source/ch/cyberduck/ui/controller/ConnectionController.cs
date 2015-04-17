@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Media;
 using System.Threading;
 using ch.cyberduck.core;
+using ch.cyberduck.core.diagnostics;
 using ch.cyberduck.core.ftp;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;

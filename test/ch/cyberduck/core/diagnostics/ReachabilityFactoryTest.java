@@ -1,8 +1,7 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.diagnostics;
 
 /*
- * Copyright (c) 2002-2009 David Kocher. All rights reserved.
- *
+ * Copyright (c) 2002-2013 David Kocher. All rights reserved.
  * http://cyberduck.ch/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,20 +14,22 @@ package ch.cyberduck.core;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * Bug fixes, suggestions and comments should be sent to:
- * dkocher@cyberduck.ch
+ * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
+
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.FactoryException;
+import ch.cyberduck.core.diagnostics.ReachabilityFactory;
+
+import org.junit.Test;
 
 /**
  * @version $Id$
  */
-public class ReachabilityFactory extends Factory<Reachability> {
+public class ReachabilityFactoryTest extends AbstractTestCase {
 
-    protected ReachabilityFactory() {
-        super("factory.reachability.class");
-    }
-
-    public static Reachability get() {
-        return new ReachabilityFactory().create();
+    @Test(expected = FactoryException.class)
+    public void testGet() throws Exception {
+        ReachabilityFactory.get();
     }
 }

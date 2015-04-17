@@ -18,6 +18,7 @@
 
 using Ch.Cyberduck.Ui.Controller;
 using ch.cyberduck.core;
+using ch.cyberduck.core.diagnostics;
 using ch.cyberduck.core.exception;
 using ch.cyberduck.core.threading;
 using java.lang;

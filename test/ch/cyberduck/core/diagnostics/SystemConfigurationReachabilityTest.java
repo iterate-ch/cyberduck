@@ -1,5 +1,8 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.diagnostics;
 
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Factory;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.test.Depends;
 
 import org.junit.Ignore;

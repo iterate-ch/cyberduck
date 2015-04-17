@@ -2725,13 +2725,13 @@ source/ch/cyberduck/core/RFC2253.cs -text
 source/ch/cyberduck/core/SerializableDictionary.cs -text
 source/ch/cyberduck/core/Shell32.cs -text
 source/ch/cyberduck/core/SshTerminalService.cs -text
-source/ch/cyberduck/core/SystemConfigurationReachability.m -text
-source/ch/cyberduck/core/TcpReachability.cs -text
 source/ch/cyberduck/core/Utils.cs -text
 source/ch/cyberduck/core/bonjour/Rendezvous.cs -text
 source/ch/cyberduck/core/collections/IndexedLinkedList.cs -text
 source/ch/cyberduck/core/collections/LRUCache.cs -text
 source/ch/cyberduck/core/date/AbstractUserDateFormatter.java -text
+source/ch/cyberduck/core/diagnostics/SystemConfigurationReachability.m -text
+source/ch/cyberduck/core/diagnostics/TcpReachability.cs -text
 source/ch/cyberduck/core/editor/SystemEditorFactory.cs -text
 source/ch/cyberduck/core/editor/SystemWatchEditor.cs -text
 source/ch/cyberduck/core/editor/SystemWatchEditorFactory.cs -text

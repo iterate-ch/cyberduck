@@ -22,8 +22,6 @@
 		470912ED0C36FCE00049FBCE /* Prompt.nib in Resources */ = {isa = PBXBuildFile; fileRef = 470912EB0C36FCE00049FBCE /* Prompt.nib */; };
 		47121FF71611F94000E2547D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 47121FF61611F94000E2547D /* main.m */; };
 		4716C5F50872BA9900938886 /* Command.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4716C5EF0872BA9800938886 /* Command.nib */; };
-		4718C1EF107A9F12006FDEFA /* SystemConfigurationReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = 4718C1ED107A9F12006FDEFA /* SystemConfigurationReachability.h */; };
-		4718C1F0107A9F12006FDEFA /* SystemConfigurationReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 4718C1EE107A9F12006FDEFA /* SystemConfigurationReachability.m */; };
 		471C664419E3E20700D7266E /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47022C221018663600488C19 /* CoreServices.framework */; };
 		471DF150167F2A7B00EAFE71 /* cyberduck-document.icns in Resources */ = {isa = PBXBuildFile; fileRef = 471DF14F167F2A7B00EAFE71 /* cyberduck-document.icns */; };
 		471F5C2E12AD1B6B0005D323 /* Alert.strings in Resources */ = {isa = PBXBuildFile; fileRef = 471F5C0C12AD1B6B0005D323 /* Alert.strings */; };
@@ -274,6 +272,8 @@
 		47E987600D689A280077733F /* S3.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47E9875E0D689A280077733F /* S3.strings */; };
 		47EA2451162B5CE0002E23E2 /* LaunchServicesSchemeHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 47EA244F162B5CE0002E23E2 /* LaunchServicesSchemeHandler.h */; };
 		47EA2452162B5CE0002E23E2 /* LaunchServicesSchemeHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 47EA2450162B5CE0002E23E2 /* LaunchServicesSchemeHandler.m */; };
+		47EDDEEB1AE191EB00B17C93 /* SystemConfigurationReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = 47EDDEE91AE191EB00B17C93 /* SystemConfigurationReachability.h */; };
+		47EDDEEC1AE191EB00B17C93 /* SystemConfigurationReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 47EDDEEA1AE191EB00B17C93 /* SystemConfigurationReachability.m */; };
 		47F0B7D3087AD1B100439978 /* Status.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47F0B7D2087AD1AE00439978 /* Status.strings */; };
 		47F102B41628D57500923FDE /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 474522C51076B68E00823467 /* ApplicationServices.framework */; };
 		47F102CA1628D5CE00923FDE /* LaunchServicesQuarantineService.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F102BD1628D5CE00923FDE /* LaunchServicesQuarantineService.h */; };
@@ -694,8 +694,6 @@
 		47181E9D0E17D1E500568D80 /* el */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = el; path = el.lproj/Status.strings; sourceTree = "<group>"; };
 		47181E9E0E17D1E500568D80 /* el */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = el; path = el.lproj/Configuration.strings; sourceTree = "<group>"; };
 		47181E9F0E17D1E500568D80 /* el */ = {isa = PBXFileReference; lastKnownFileType = text; name = el; path = el.lproj/License.txt; sourceTree = "<group>"; };
-		4718C1ED107A9F12006FDEFA /* SystemConfigurationReachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SystemConfigurationReachability.h; sourceTree = "<group>"; };
-		4718C1EE107A9F12006FDEFA /* SystemConfigurationReachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SystemConfigurationReachability.m; sourceTree = "<group>"; };
 		4718F4A9175F432400B424AD /* Rackspace UK.cyberduckprofile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Rackspace UK.cyberduckprofile"; sourceTree = "<group>"; };
 		4718F4AA175F432400B424AD /* Rackspace US.cyberduckprofile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Rackspace US.cyberduckprofile"; sourceTree = "<group>"; };
 		471D2C5505A2505600675163 /* Cyberduck.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cyberduck.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2276,6 +2274,8 @@
 		47E9875F0D689A280077733F /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = en; path = en.lproj/S3.strings; sourceTree = "<group>"; };
 		47EA244F162B5CE0002E23E2 /* LaunchServicesSchemeHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LaunchServicesSchemeHandler.h; sourceTree = "<group>"; };
 		47EA2450162B5CE0002E23E2 /* LaunchServicesSchemeHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LaunchServicesSchemeHandler.m; sourceTree = "<group>"; };
+		47EDDEE91AE191EB00B17C93 /* SystemConfigurationReachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SystemConfigurationReachability.h; path = diagnostics/SystemConfigurationReachability.h; sourceTree = "<group>"; };
+		47EDDEEA1AE191EB00B17C93 /* SystemConfigurationReachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SystemConfigurationReachability.m; path = diagnostics/SystemConfigurationReachability.m; sourceTree = "<group>"; };
 		47EF0EC50D6DBF3F00AC2F94 /* ca */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = ca; path = ca.lproj/S3.strings; sourceTree = "<group>"; };
 		47EF0EC60D6DBF3F00AC2F94 /* cs */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = cs; path = cs.lproj/S3.strings; sourceTree = "<group>"; };
 		47EF0EC80D6DBF3F00AC2F94 /* da */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = da; path = da.lproj/S3.strings; sourceTree = "<group>"; };
@@ -2610,6 +2610,7 @@
 		474152DA06C4F08A00AC0BD2 /* core */ = {
 			isa = PBXGroup;
 			children = (
+				47EDDEE81AE191DE00B17C93 /* diagnostics */,
 				47DD76701AE133B1005F08A0 /* proxy */,
 				47B1F212199E13C200960511 /* sparkle */,
 				47C88FED17269A54001A746A /* IOKitSleepPreventer.h */,
@@ -2618,8 +2619,6 @@
 				47F102BA1628D5CE00923FDE /* local */,
 				4797D27F1628296900340E1C /* editor */,
 				47BE1F8712369DE600E758FE /* importer */,
-				4718C1ED107A9F12006FDEFA /* SystemConfigurationReachability.h */,
-				4718C1EE107A9F12006FDEFA /* SystemConfigurationReachability.m */,
 				47983749072AD67800FA3CDB /* Keychain.h */,
 				4798373F072AD66D00FA3CDB /* Keychain.m */,
 				47F7AD95194ADCB2000314F1 /* KeystoreImpl.h */,
@@ -3900,6 +3899,15 @@
 			path = urlhandler;
 			sourceTree = "<group>";
 		};
+		47EDDEE81AE191DE00B17C93 /* diagnostics */ = {
+			isa = PBXGroup;
+			children = (
+				47EDDEE91AE191EB00B17C93 /* SystemConfigurationReachability.h */,
+				47EDDEEA1AE191EB00B17C93 /* SystemConfigurationReachability.m */,
+			);
+			name = diagnostics;
+			sourceTree = "<group>";
+		};
 		47F102BA1628D5CE00923FDE /* local */ = {
 			isa = PBXGroup;
 			children = (
@@ -3960,7 +3968,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4718C1EF107A9F12006FDEFA /* SystemConfigurationReachability.h in Headers */,
+				47EDDEEB1AE191EB00B17C93 /* SystemConfigurationReachability.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4632,7 +4640,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4718C1F0107A9F12006FDEFA /* SystemConfigurationReachability.m in Sources */,
+				47EDDEEC1AE191EB00B17C93 /* SystemConfigurationReachability.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

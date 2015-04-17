@@ -31,7 +31,7 @@ import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.IOKitSleepPreventer;
 import ch.cyberduck.core.Keychain;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.SystemConfigurationReachability;
+import ch.cyberduck.core.diagnostics.SystemConfigurationReachability;
 import ch.cyberduck.core.aquaticprime.ReceiptFactory;
 import ch.cyberduck.core.bonjour.RendezvousResponder;
 import ch.cyberduck.core.editor.FSEventWatchEditorFactory;

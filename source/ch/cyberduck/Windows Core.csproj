@@ -132,7 +132,7 @@
     <Compile Include="core\SshTerminalService.cs" />
     <Compile Include="core\ssl\HostnameVerifier.cs" />
     <Compile Include="core\proxy\SystemProxy.cs" />
-    <Compile Include="core\TcpReachability.cs" />
+    <Compile Include="core\diagnostics\TcpReachability.cs" />
     <Compile Include="core\Utils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <!-- add localizations -->

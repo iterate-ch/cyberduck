@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.diagnostics;
 
 /*
  * Copyright (c) 2002-2009 David Kocher. All rights reserved.
@@ -19,6 +19,8 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.idna.PunycodeConverter;
 import ch.cyberduck.core.library.Native;
 import ch.cyberduck.core.preferences.PreferencesFactory;

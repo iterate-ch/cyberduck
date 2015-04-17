@@ -20,9 +20,10 @@ using System;
 using System.Diagnostics;
 using System.Net.Sockets;
 using ch.cyberduck.core;
+using ch.cyberduck.core.diagnostics;
 using ch.cyberduck.core.preferences;
 
-namespace Ch.Cyberduck.Core
+namespace Ch.Cyberduck.Core.Diagnostics
 {
     public class TcpReachability : Reachability
     {
