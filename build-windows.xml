@@ -115,6 +115,7 @@
             <fileset file="${build}/ui.jar"/>
             <fileset dir="${lib}">
                 <include name="*.jar"/>
+                <include name="1.8.0*/Contents/Home/lib/ext/sunec.jar"/>
                 <exclude name="asm-*.jar"/>
                 <exclude name="cglib-*.jar"/>
                 <exclude name="dns_sd.jar"/>

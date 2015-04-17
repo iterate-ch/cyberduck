@@ -38,6 +38,7 @@
             <File source="${BUILDPATH}\cyberduck.windows.core.dll"/>
             <File source="${BUILDPATH}\ikvm-native-win32-x86.dll"/>
             <File source="${BUILDPATH}\jnidispatch.dll"/>
+            <File source="${BUILDPATH}\sunec.dll"/>
             <File source="${BUILDPATH}\sunmscapi.dll"/>
             <File source="${BUILDPATH}\cyberduck-document.ico"/>
             <Folder source="${BUILDPATH}\profiles" />

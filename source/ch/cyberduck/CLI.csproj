@@ -131,10 +131,14 @@
     <ItemGroup>
       <SunMSCAPI Include="..\..\..\lib\sunmscapi.dll" />
     </ItemGroup>
+    <ItemGroup>
+      <ECSupport Include="..\..\..\lib\sunec.dll" />
+    </ItemGroup>
     <Copy SourceFiles="@(AdditionalResources)" DestinationFolder="$(OutputPath)" />
     <Copy SourceFiles="@(DefaultProfiles)" DestinationFolder="$(OutputPath)\profiles" />
     <Copy SourceFiles="@(JNASupport)" DestinationFolder="$(OutputPath)" />
     <Copy SourceFiles="@(SunMSCAPI)" DestinationFolder="$(OutputPath)" />
+    <Copy SourceFiles="@(ECSupport)" DestinationFolder="$(OutputPath)" />
   </Target>
   <Target Name="AfterBuild">
   </Target>
