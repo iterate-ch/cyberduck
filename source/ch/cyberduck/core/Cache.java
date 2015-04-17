@@ -170,6 +170,9 @@ public abstract class Cache<T extends Referenceable> {
         if(this.containsKey(reference)) {
             this.get(reference).attributes().setInvalid(true);
         }
+        else {
+            log.warn(String.format("No cache for %s", reference));
+        }
     }
 
     /**
