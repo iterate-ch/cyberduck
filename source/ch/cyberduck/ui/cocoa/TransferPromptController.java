@@ -338,7 +338,7 @@ public abstract class TransferPromptController extends SheetController
                     (Rococoa.cast(cell, OutlineCell.class)).setIcon(IconCacheFactory.<NSImage>get().fileIcon(file.remote, 16));
                 }
                 if(cell.isKindOfClass(Foundation.getClass(NSTextFieldCell.class.getSimpleName()))) {
-                    if(status.isRejected() || !status.isExists()) {
+                    if(status.isRejected()) {
                         Rococoa.cast(cell, NSTextFieldCell.class).setTextColor(NSColor.disabledControlTextColor());
                     }
                     else {
