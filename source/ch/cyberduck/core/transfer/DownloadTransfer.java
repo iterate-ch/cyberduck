@@ -236,7 +236,6 @@ public class DownloadTransfer extends Transfer {
                     log.debug(String.format("Create symbolic link from %s to %s", local, target));
                 }
                 final Symlink symlink = LocalSymlinkFactory.get();
-                //todo target may not be downloaded yet
                 symlink.symlink(local, target);
                 return;
             }
