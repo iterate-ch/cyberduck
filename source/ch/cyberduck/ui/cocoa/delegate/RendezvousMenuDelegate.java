@@ -24,7 +24,7 @@ import ch.cyberduck.binding.application.NSMenuItem;
 import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.RendezvousCollection;
+import ch.cyberduck.core.bonjour.RendezvousCollection;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.ui.cocoa.BrowserController;
 import ch.cyberduck.ui.cocoa.MainController;

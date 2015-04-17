@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.bonjour;
 
 /*
  * Copyright (c) 2002-2010 David Kocher. All rights reserved.
@@ -19,29 +19,36 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.Host;
+
+import java.util.Iterator;
 
 /**
  * @version $Id$
  */
-public class RendezvousFactory extends Factory<Rendezvous> {
+public interface Rendezvous {
+    /**
+     * Start browsing for rendezvous servcices for all registered service types
+     */
+    void init();
 
-    protected RendezvousFactory() {
-        super("factory.rendezvous.class");
-    }
+    /**
+     * Halt all service discvery browsers
+     */
+    void quit();
 
-    private static Rendezvous rendezvous;
+    void addListener(RendezvousListener listener);
 
-    public static synchronized Rendezvous instance() {
-        if(null == rendezvous) {
-            if(PreferencesFactory.get().getBoolean("rendezvous.enable")) {
-                rendezvous = new RendezvousFactory().create();
-            }
-            else {
-                rendezvous = new DisabledRendezvous();
-            }
-        }
-        return rendezvous;
-    }
+    void removeListener(RendezvousListener listener);
 
+    /**
+     * @return Number of servcices discovered in network
+     */
+    int numberOfServices();
+
+    Host getService(int index);
+
+    Iterator<Host> iterator();
+
+    String getDisplayedName(String identifier);
 }

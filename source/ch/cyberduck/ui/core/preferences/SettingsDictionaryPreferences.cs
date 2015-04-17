@@ -40,7 +40,7 @@ using java.util;
 using org.apache.log4j;
 using Application = System.Windows.Forms.Application;
 using Path = System.IO.Path;
-using Rendezvous = Ch.Cyberduck.Core.Rendezvous;
+using Rendezvous = Ch.Cyberduck.Core.Bonjour.Rendezvous;
 
 namespace Ch.Cyberduck.Ui.Core.Preferences
 {

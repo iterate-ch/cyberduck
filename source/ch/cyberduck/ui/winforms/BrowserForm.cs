@@ -28,6 +28,7 @@ using System.Text;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
 using ch.cyberduck.core;
+using ch.cyberduck.core.bonjour;
 using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;

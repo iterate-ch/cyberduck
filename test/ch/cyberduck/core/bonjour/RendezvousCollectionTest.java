@@ -1,5 +1,7 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.bonjour;
 
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 
 import org.junit.Test;

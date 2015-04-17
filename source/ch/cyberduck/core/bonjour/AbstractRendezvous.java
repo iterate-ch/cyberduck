@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.bonjour;
 
 /*
  * Copyright (c) 2002-2010 David Kocher. All rights reserved.
@@ -18,6 +18,15 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to:
  * dkocher@cyberduck.ch
  */
+
+import ch.cyberduck.core.BookmarkNameProvider;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LimitedRendezvousListener;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.PathNormalizer;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.UserDateFormatterFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -130,19 +139,6 @@ public abstract class AbstractRendezvous implements Rendezvous {
     @Override
     public Iterator<Host> iterator() {
         return services.values().iterator();
-    }
-
-    /**
-     * @param index Index in collection
-     * @return A nicely formatted informative string
-     */
-    @Override
-    public String getDisplayedName(final int index) {
-        if(index < this.numberOfServices()) {
-            Host host = services.values().toArray(new Host[services.size()])[index];
-            return BookmarkNameProvider.toString(host);
-        }
-        return LocaleFactory.localizedString("Unknown");
     }
 
     /**

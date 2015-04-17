@@ -24,6 +24,7 @@ using System.IO;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
 using ch.cyberduck.core;
+using ch.cyberduck.core.bonjour;
 using ch.cyberduck.core.cdn;
 using ch.cyberduck.core.editor;
 using ch.cyberduck.core.exception;

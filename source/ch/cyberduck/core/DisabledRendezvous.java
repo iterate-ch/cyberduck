@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.bonjour.AbstractRendezvous;
+
 /**
 * @version $Id$
 */

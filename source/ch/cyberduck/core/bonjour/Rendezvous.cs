@@ -22,7 +22,7 @@ using System.Text;
 using Bonjour;
 using ch.cyberduck.core;
 
-namespace Ch.Cyberduck.Core
+namespace Ch.Cyberduck.Core.Bonjour
 {
     public class Rendezvous : AbstractRendezvous
     {

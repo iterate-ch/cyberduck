@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.bonjour;
 
 /*
  * Copyright (c) 2002-2009 David Kocher. All rights reserved.
@@ -18,6 +18,10 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to:
  * dkocher@cyberduck.ch
  */
+
+import ch.cyberduck.core.AbstractHostCollection;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LocaleFactory;
 
 import java.util.Iterator;
 

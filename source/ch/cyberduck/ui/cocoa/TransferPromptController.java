@@ -332,13 +332,13 @@ public abstract class TransferPromptController extends SheetController
                 final TransferItem file = cache.lookup(new NSObjectPathReference(item));
                 final TransferStatus status = browserModel.getStatus(file);
                 if(identifier.equals(TransferPromptModel.Column.include.name())) {
-                    cell.setEnabled(!status.isRejected());
+                    cell.setEnabled(!status.isRejected() && status.isExists());
                 }
                 if(identifier.equals(TransferPromptModel.Column.filename.name())) {
                     (Rococoa.cast(cell, OutlineCell.class)).setIcon(IconCacheFactory.<NSImage>get().fileIcon(file.remote, 16));
                 }
                 if(cell.isKindOfClass(Foundation.getClass(NSTextFieldCell.class.getSimpleName()))) {
-                    if(status.isRejected()) {
+                    if(status.isRejected() || !status.isExists()) {
                         Rococoa.cast(cell, NSTextFieldCell.class).setTextColor(NSColor.disabledControlTextColor());
                     }
                     else {

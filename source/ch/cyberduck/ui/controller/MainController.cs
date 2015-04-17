@@ -27,6 +27,7 @@ using System.Threading;
 using System.Windows.Forms;
 using Windows7.DesktopIntegration;
 using ch.cyberduck.core;
+using ch.cyberduck.core.bonjour;
 using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.importer;
 using ch.cyberduck.core.notification;

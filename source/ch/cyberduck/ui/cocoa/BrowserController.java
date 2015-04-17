@@ -32,6 +32,7 @@ import ch.cyberduck.binding.foundation.NSRange;
 import ch.cyberduck.binding.foundation.NSString;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.aquaticprime.LicenseFactory;
+import ch.cyberduck.core.bonjour.RendezvousCollection;
 import ch.cyberduck.core.editor.DefaultEditorListener;
 import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;

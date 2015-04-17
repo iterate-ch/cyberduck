@@ -17,6 +17,7 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.bonjour.RendezvousListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.concurrent.TimedSemaphore;
