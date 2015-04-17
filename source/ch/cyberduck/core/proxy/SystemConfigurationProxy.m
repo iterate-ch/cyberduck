@@ -19,12 +19,12 @@
 #import "SystemConfigurationProxy.h"
 #import <JavaNativeFoundation/JNFString.h>
 
-JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_usePassiveFTPNative(JNIEnv *env, jobject this)
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_proxy_SystemConfigurationProxy_usePassiveFTPNative(JNIEnv *env, jobject this)
 {
 	return [Proxy usePassiveFTP];
 }
 
-JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_findNative(JNIEnv *env, jobject this, jstring target)
+JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_proxy_SystemConfigurationProxy_findNative(JNIEnv *env, jobject this, jstring target)
 {
     NSString *uri = [Proxy find:JNFJavaToNSString(env, target)];
     if(nil == uri) {
