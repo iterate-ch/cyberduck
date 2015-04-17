@@ -87,12 +87,8 @@ public class TransferPromptFilterWorker extends Worker<Map<TransferItem, Transfe
                     throw new ConnectionCanceledException();
                 }
                 final boolean accept = filter.accept(file.remote, file.local, status.get(file.getParent()));
-                final TransferStatus transfer = filter.prepare(file.remote, file.local, status.get(file.getParent()));
-                final boolean exists = transfer.isExists();
-                if(!exists) {
-                    continue;
-                }
-                status.put(file, transfer.reject(!accept));
+                status.put(file, filter.prepare(file.remote, file.local, status.get(file.getParent()))
+                        .reject(!accept));
             }
         }
         return status;
