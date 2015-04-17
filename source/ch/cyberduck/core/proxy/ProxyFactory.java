@@ -1,8 +1,9 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.proxy;
 
 /*
- * Copyright (c) 2002-2014 David Kocher. All rights reserved.
- * http://cyberduck.io/
+ * Copyright (c) 2002-2009 David Kocher. All rights reserved.
+ *
+ * http://cyberduck.ch/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,13 +16,21 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  *
  * Bug fixes, suggestions and comments should be sent to:
- * feedback@cyberduck.io
+ * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.bonjour.AbstractRendezvous;
+import ch.cyberduck.core.Factory;
 
 /**
-* @version $Id$
-*/
-public final class DisabledRendezvous extends AbstractRendezvous {
+ * @version $Id$
+ */
+public class ProxyFactory extends Factory<ProxyFinder> {
+
+    protected ProxyFactory() {
+        super("factory.proxy.class");
+    }
+
+    public static ProxyFinder get() {
+        return new ProxyFactory().create();
+    }
 }

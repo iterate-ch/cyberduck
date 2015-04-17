@@ -18,6 +18,9 @@ package ch.cyberduck.core;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.proxy.ProxyFinder;
+import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 
 import org.junit.Test;

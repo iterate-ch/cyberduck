@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.proxy;
 
 /*
  * Copyright (c) 2002-2014 David Kocher. All rights reserved.
@@ -17,6 +17,10 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DefaultSocketConfigurator;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.SocketConfigurator;
 import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 
 import org.apache.commons.net.DefaultSocketFactory;

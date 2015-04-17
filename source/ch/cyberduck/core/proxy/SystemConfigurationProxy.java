@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.proxy;
 
 /*
  *  Copyright (c) 2005 David Kocher. All rights reserved.
@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.library.Native;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;

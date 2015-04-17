@@ -1,8 +1,8 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.proxy;
 
 /*
- * Copyright (c) 2002-2015 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2014 David Kocher. All rights reserved.
+ * http://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,24 +14,23 @@ package ch.cyberduck.core;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
+ * Bug fixes, suggestions and comments should be sent to:
+ * feedback@cyberduck.io
  */
+
+import ch.cyberduck.core.Host;
 
 /**
  * @version $Id$
  */
-public class ProxyHostUrlProvider extends HostUrlProvider {
-
-    public ProxyHostUrlProvider() {
-        super(false);
+public class DisabledProxyFinder implements ProxyFinder {
+    @Override
+    public boolean usePassiveFTP() {
+        return true;
     }
 
     @Override
-    public String get(final Host host) {
-        switch(host.getProtocol().getScheme()) {
-            case sftp:
-                return super.get(new Host(ProtocolFactory.FTP, host.getHostname(), host.getPort()));
-        }
-        return super.get(host);
+    public Proxy find(final Host target) {
+        return Proxy.DIRECT;
     }
 }

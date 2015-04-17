@@ -38,6 +38,8 @@ import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.proxy.ProxyFinder;
+import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.sftp.openssh.OpenSSHAgentAuthenticator;
 import ch.cyberduck.core.sftp.putty.PageantAuthenticator;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;

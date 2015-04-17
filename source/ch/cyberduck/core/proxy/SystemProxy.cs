@@ -23,7 +23,7 @@ using ch.cyberduck.core.preferences;
 
 using InetSocketAddress = java.net.InetSocketAddress;
 
-namespace Ch.Cyberduck.Core
+namespace Ch.Cyberduck.Core.Proxy
 {
     public class SystemProxy : AbstractProxyFinder
     {

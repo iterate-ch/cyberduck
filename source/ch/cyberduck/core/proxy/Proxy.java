@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.proxy;
 
 /*
  * Copyright (c) 2002-2014 David Kocher. All rights reserved.
@@ -19,7 +19,7 @@ package ch.cyberduck.core;
  */
 
 /**
-* @version $Id$
+ * @version $Id$
 */
 public final class Proxy {
 

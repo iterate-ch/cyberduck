@@ -25,13 +25,13 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.PreferencesUseragentProvider;
-import ch.cyberduck.core.Proxy;
-import ch.cyberduck.core.ProxyFactory;
 import ch.cyberduck.core.UseragentProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.proxy.ProxyFactory;
 
 import org.apache.log4j.Logger;
 

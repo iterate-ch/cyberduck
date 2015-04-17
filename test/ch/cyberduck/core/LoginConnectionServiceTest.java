@@ -8,6 +8,8 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPSession;
+import ch.cyberduck.core.proxy.DisabledProxyFinder;
+import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.sftp.SFTPProtocol;

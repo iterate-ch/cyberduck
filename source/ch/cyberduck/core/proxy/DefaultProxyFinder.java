@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.proxy;
 
 /*
  * Copyright (c) 2002-2015 David Kocher. All rights reserved.
@@ -16,6 +16,9 @@ package ch.cyberduck.core;
  *
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
+
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostUrlProvider;
 
 import java.net.InetSocketAddress;
 import java.net.ProxySelector;

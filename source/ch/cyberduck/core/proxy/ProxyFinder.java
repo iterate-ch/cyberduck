@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.proxy;
 
 /*
  * Copyright (c) 2002-2009 David Kocher. All rights reserved.
@@ -19,16 +19,16 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Host;
+
 /**
  * @version $Id$
  */
-public class ProxyFactory extends Factory<ProxyFinder> {
+public interface ProxyFinder {
+    /**
+     * @return True if PASV should be used by default
+     */
+    boolean usePassiveFTP();
 
-    protected ProxyFactory() {
-        super("factory.proxy.class");
-    }
-
-    public static ProxyFinder get() {
-        return new ProxyFactory().create();
-    }
+    Proxy find(Host target);
 }

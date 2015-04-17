@@ -18,13 +18,11 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.DefaultProxyFinder;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.IOKitSleepPreventer;
 import ch.cyberduck.core.Keychain;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.MemoryPreferences;
-import ch.cyberduck.core.SystemConfigurationProxy;
 import ch.cyberduck.core.SystemConfigurationReachability;
 import ch.cyberduck.core.editor.DefaultEditorFactory;
 import ch.cyberduck.core.editor.FSEventWatchEditorFactory;
@@ -45,6 +43,8 @@ import ch.cyberduck.core.preferences.ApplicationSupportDirectoryFinder;
 import ch.cyberduck.core.preferences.BundleApplicationResourcesFinder;
 import ch.cyberduck.core.preferences.StaticApplicationResourcesFinder;
 import ch.cyberduck.core.preferences.UserHomeSupportDirectoryFinder;
+import ch.cyberduck.core.proxy.DefaultProxyFinder;
+import ch.cyberduck.core.proxy.SystemConfigurationProxy;
 import ch.cyberduck.core.resources.NSImageIconCache;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.core.transfer.Transfer;

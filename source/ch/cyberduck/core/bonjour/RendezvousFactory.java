@@ -19,7 +19,6 @@ package ch.cyberduck.core.bonjour;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledRendezvous;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 

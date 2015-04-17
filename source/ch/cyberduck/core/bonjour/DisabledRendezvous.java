@@ -1,9 +1,8 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.bonjour;
 
 /*
- * Copyright (c) 2002-2009 David Kocher. All rights reserved.
- *
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2014 David Kocher. All rights reserved.
+ * http://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,17 +15,11 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  *
  * Bug fixes, suggestions and comments should be sent to:
- * dkocher@cyberduck.ch
+ * feedback@cyberduck.io
  */
 
 /**
  * @version $Id$
- */
-public interface ProxyFinder {
-    /**
-     * @return True if PASV should be used by default
-     */
-    boolean usePassiveFTP();
-
-    Proxy find(Host target);
+*/
+public final class DisabledRendezvous extends AbstractRendezvous {
 }

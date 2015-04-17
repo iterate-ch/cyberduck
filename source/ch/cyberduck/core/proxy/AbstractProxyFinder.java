@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.proxy;
 
 /*
  * Copyright (c) 2002-2009 David Kocher. All rights reserved.

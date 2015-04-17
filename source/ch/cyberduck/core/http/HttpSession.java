@@ -19,18 +19,18 @@ package ch.cyberduck.core.http;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledProxyFinder;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.PreferencesUseragentProvider;
-import ch.cyberduck.core.Proxy;
-import ch.cyberduck.core.ProxyFactory;
-import ch.cyberduck.core.ProxyFinder;
-import ch.cyberduck.core.ProxySocketFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.proxy.DisabledProxyFinder;
+import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.proxy.ProxyFactory;
+import ch.cyberduck.core.proxy.ProxyFinder;
+import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;

@@ -125,13 +125,13 @@
     <Compile Include="core\preferences\RoamingSupportDirectoryFinder.cs" />
     <Compile Include="core\preferences\AssemblyApplicationResourcesFinder.cs" />
     <Compile Include="core\preferences\SettingsDictionary.cs" />
-    <Compile Include="core\Rendezvous.cs" />
+    <Compile Include="core\bonjour\Rendezvous.cs" />
     <Compile Include="core\RFC2253.cs" />
     <Compile Include="core\SerializableDictionary.cs" />
     <Compile Include="core\Shell32.cs" />
     <Compile Include="core\SshTerminalService.cs" />
     <Compile Include="core\ssl\HostnameVerifier.cs" />
-    <Compile Include="core\SystemProxy.cs" />
+    <Compile Include="core\proxy\SystemProxy.cs" />
     <Compile Include="core\TcpReachability.cs" />
     <Compile Include="core\Utils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -1,5 +1,8 @@
 package ch.cyberduck.core;
 
+import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.proxy.ProxyFinder;
+import ch.cyberduck.core.proxy.SystemConfigurationProxy;
 import ch.cyberduck.core.test.Depends;
 
 import org.junit.Test;
