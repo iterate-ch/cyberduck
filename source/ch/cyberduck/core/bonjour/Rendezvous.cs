@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Text;
 using Bonjour;
 using ch.cyberduck.core;
+using ch.cyberduck.core.bonjour;
 
 namespace Ch.Cyberduck.Core.Bonjour
 {
