@@ -23,6 +23,7 @@ using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Editor;
 using Ch.Cyberduck.Core.I18n;
 using Ch.Cyberduck.Core.Local;
+using Ch.Cyberduck.Core.Proxy;
 using Ch.Cyberduck.Core.Preferences;
 
 namespace Ch.Cyberduck.Cli
