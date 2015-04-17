@@ -119,7 +119,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
     @Test
     public void testReadLoginFailureFix() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
-        host.setCredentials(properties.getProperty("s3.key"), properties.getProperty("s3.secret"));
+        host.setCredentials(properties.getProperty("s3.key"), null);
         final S3Session session = new S3Session(host);
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override
@@ -128,6 +128,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
         assertTrue(session.isConnected());
+        host.getCredentials().setPassword(null);
         assertNull(host.getCredentials().getPassword());
         final DistributionConfiguration configuration
                 = new CloudFrontDistributionConfiguration(session);
