@@ -20,13 +20,13 @@
 #import "SystemConfigurationReachability.h"
 #import <JavaNativeFoundation/JNFString.h>
 
-JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationReachability_isReachable
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_diagnostics_SystemConfigurationReachability_isReachable
   (JNIEnv *env, jobject this, jstring urlString)
 {
 	return [Host isReachable:JNFJavaToNSString(env, urlString)];
 }
 
-JNIEXPORT void JNICALL Java_ch_cyberduck_core_SystemConfigurationReachability_diagnose
+JNIEXPORT void JNICALL Java_ch_cyberduck_core_diagnostics_SystemConfigurationReachability_diagnose
   (JNIEnv *env, jobject this, jstring urlString)
 {
 	[Host diagnose:JNFJavaToNSString(env, urlString)];
