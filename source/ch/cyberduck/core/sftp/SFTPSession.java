@@ -58,6 +58,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 import net.schmizz.concurrent.Promise;
+import net.schmizz.keepalive.KeepAlive;
 import net.schmizz.keepalive.KeepAliveProvider;
 import net.schmizz.sshj.Config;
 import net.schmizz.sshj.DefaultConfig;
@@ -140,7 +141,13 @@ public class SFTPSession extends Session<SSHClient> {
                 configuration.setCompressionFactories(new NoneCompression.Factory());
             }
             configuration.setVersion(new PreferencesUseragentProvider().get());
-            final KeepAliveProvider heartbeat = KeepAliveProvider.KEEP_ALIVE;
+            final KeepAliveProvider heartbeat;
+            if(preferences.getProperty("ssh.heartbeat.provider").equals("keep-alive")) {
+                heartbeat = KeepAliveProvider.KEEP_ALIVE;
+            }
+            else {
+                heartbeat = KeepAliveProvider.HEARTBEAT;
+            }
             configuration.setKeepAliveProvider(heartbeat);
             return this.connect(key, configuration);
         }
@@ -179,9 +186,8 @@ public class SFTPSession extends Session<SSHClient> {
         final Transport transport = connection.getTransport();
         transport.setDisconnectListener(disconnectListener);
         connection.connect(HostnameConfiguratorFactory.get(host.getProtocol()).getHostname(host.getHostname()), host.getPort());
-        connection.getConnection().getKeepAlive().setKeepAliveInterval(
-                preferences.getInteger("ssh.heartbeat.seconds")
-        );
+        final KeepAlive keepalive = connection.getConnection().getKeepAlive();
+        keepalive.setKeepAliveInterval(preferences.getInteger("ssh.heartbeat.seconds"));
         return connection;
     }
 
