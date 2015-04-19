@@ -67,8 +67,10 @@ public abstract class NSTableView extends NSControl {
      */
     public static final NSInteger NSTableViewSelectionHighlightStyleSourceList = new NSInteger(1);
 
-    public static interface DataSource {
+    public interface DataSource {
         NSInteger numberOfRowsInTableView(NSTableView view);
+
+        public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, NSInteger row);
 
         void tableView_setObjectValue_forTableColumn_row(NSTableView view, NSObject value, NSTableColumn tableColumn, NSInteger row);
 

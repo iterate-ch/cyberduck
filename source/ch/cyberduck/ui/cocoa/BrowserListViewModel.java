@@ -72,6 +72,7 @@ public class BrowserListViewModel extends BrowserTableDataSource implements NSTa
                 value, column.identifier());
     }
 
+    @Override
     public NSObject tableView_objectValueForTableColumn_row(final NSTableView view,
                                                             final NSTableColumn column, final NSInteger row) {
         if(controller.isMounted()) {

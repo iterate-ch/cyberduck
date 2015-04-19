@@ -33,7 +33,7 @@ public abstract class NSOutlineView extends NSTableView {
 
     public static final NSInteger NSOutlineViewDropOnItemIndex = new NSInteger(-1);
 
-    public static interface DataSource {
+    public interface DataSource {
         NSInteger outlineView_numberOfChildrenOfItem(NSOutlineView view, NSObject item);
 
         NSObject outlineView_child_ofItem(NSOutlineView outlineView, NSInteger index, NSObject item);

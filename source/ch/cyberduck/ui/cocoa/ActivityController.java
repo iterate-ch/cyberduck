@@ -24,6 +24,7 @@ import ch.cyberduck.binding.application.NSTableView;
 import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.foundation.NSNotification;
+import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.AbstractCollectionListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.threading.BackgroundAction;
@@ -148,6 +149,11 @@ public final class ActivityController extends WindowController {
             this.table.addTableColumn(c);
         }
         this.table.setDataSource((model = new ListDataSource() {
+            @Override
+            public NSObject tableView_objectValueForTableColumn_row(final NSTableView view, final NSTableColumn tableColumn, final NSInteger row) {
+                return null;
+            }
+
             @Override
             public NSInteger numberOfRowsInTableView(NSTableView view) {
                 return new NSInteger(tasks.size());

@@ -18,6 +18,13 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.application.NSDraggingInfo;
+import ch.cyberduck.binding.application.NSPasteboard;
+import ch.cyberduck.binding.application.NSTableColumn;
+import ch.cyberduck.binding.application.NSTableView;
+import ch.cyberduck.binding.foundation.NSArray;
+import ch.cyberduck.binding.foundation.NSIndexSet;
+import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.AbstractCollectionListener;
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Host;
@@ -32,11 +39,6 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferFilter;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
-import ch.cyberduck.binding.application.NSDraggingInfo;
-import ch.cyberduck.binding.application.NSPasteboard;
-import ch.cyberduck.binding.application.NSTableView;
-import ch.cyberduck.binding.foundation.NSArray;
-import ch.cyberduck.binding.foundation.NSIndexSet;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -124,6 +126,11 @@ public class TransferTableDataSource extends ListDataSource {
             }
         }
         return filtered;
+    }
+
+    @Override
+    public NSObject tableView_objectValueForTableColumn_row(final NSTableView view, final NSTableColumn tableColumn, final NSInteger row) {
+        return null;
     }
 
     @Override

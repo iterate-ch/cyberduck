@@ -246,6 +246,7 @@ public class BookmarkTableDataSource extends ListDataSource {
         return new NSInteger(this.getSource().size());
     }
 
+    @Override
     public NSObject tableView_objectValueForTableColumn_row(final NSTableView view, final NSTableColumn tableColumn,
                                                             final NSInteger row) {
         if(row.intValue() >= this.numberOfRowsInTableView(view).intValue()) {
