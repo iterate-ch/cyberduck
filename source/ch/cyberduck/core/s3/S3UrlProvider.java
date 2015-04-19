@@ -69,11 +69,6 @@ public class S3UrlProvider implements UrlProvider {
     @Override
     public DescriptiveUrlBag toUrl(final Path file) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
-        list.add(new DescriptiveUrl(URI.create(String.format("s3://%s%s",
-                containerService.getContainer(file).getName(),
-                containerService.isContainer(file) ? "/" : URIEncoder.encode(containerService.getKey(file)))),
-                DescriptiveUrl.Type.provider,
-                LocaleFactory.localizedString("Open in CLI")));
         if(file.isFile()) {
             if(!session.getHost().isDefaultWebURL()) {
                 list.addAll(new WebUrlProvider(session.getHost()).toUrl(file));
@@ -100,6 +95,11 @@ public class S3UrlProvider implements UrlProvider {
                     MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Torrent"))));
         }
         list.addAll(new DefaultUrlProvider(session.getHost()).toUrl(file));
+        list.add(new DescriptiveUrl(URI.create(String.format("s3://%s%s",
+                containerService.getContainer(file).getName(),
+                containerService.isContainer(file) ? "/" : URIEncoder.encode(containerService.getKey(file)))),
+                DescriptiveUrl.Type.provider,
+                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "S3")));
         return list;
     }
 

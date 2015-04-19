@@ -42,8 +42,8 @@ public class S3UrlProviderTest extends AbstractTestCase {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
         final Iterator<DescriptiveUrl> provider = new S3UrlProvider(session).toUrl(new Path("/test.cyberduck.ch/key",
                 EnumSet.of(Path.Type.file))).filter(DescriptiveUrl.Type.provider).iterator();
-        assertEquals("s3://test.cyberduck.ch/key", provider.next().getUrl());
         assertEquals("https://s3.amazonaws.com/test.cyberduck.ch/key", provider.next().getUrl());
+        assertEquals("s3://test.cyberduck.ch/key", provider.next().getUrl());
     }
 
     @Test
@@ -51,8 +51,8 @@ public class S3UrlProviderTest extends AbstractTestCase {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
         final Iterator<DescriptiveUrl> provider = new S3UrlProvider(session).toUrl(new Path("/test.cyberduck.ch",
                 EnumSet.of(Path.Type.directory))).filter(DescriptiveUrl.Type.provider).iterator();
-        assertEquals("s3://test.cyberduck.ch/", provider.next().getUrl());
         assertEquals("https://s3.amazonaws.com/test.cyberduck.ch", provider.next().getUrl());
+        assertEquals("s3://test.cyberduck.ch/", provider.next().getUrl());
     }
 
     @Test
