@@ -94,6 +94,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
             }
         };
         configuration.setJmxEnabled(false);
+        configuration.setMinIdle(0);
         configuration.setMaxTotal(connections);
         configuration.setMaxIdle(connections);
         configuration.setBlockWhenExhausted(true);
