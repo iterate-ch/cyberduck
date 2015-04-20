@@ -161,6 +161,11 @@ public class TerminalPreferences extends MemoryPreferences {
         defaults.put("local.normalize.prefix", String.valueOf(true));
         defaults.put("connection.login.name", System.getProperty("user.name"));
         defaults.put("queue.download.checksum", String.valueOf(true));
+
+        // Disable transfer filters
+        defaults.put("queue.download.skip.enable", "false");
+        defaults.put("queue.upload.skip.enable", "false");
+
     }
 
     @Override
