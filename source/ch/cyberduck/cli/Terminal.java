@@ -206,7 +206,7 @@ public class Terminal {
                 case download:
                 case upload:
                 case synchronize:
-                    transfer = TerminalTransferFactory.create(input, host,
+                    transfer = new TerminalTransferFactory().create(input, host, remote,
                             new ArrayList<TransferItem>(new SingleTransferItemFinder().find(input, action, remote)));
                     break;
                 case copy:

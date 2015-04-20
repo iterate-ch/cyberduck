@@ -20,6 +20,7 @@ package ch.cyberduck.cli;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.SyncTransfer;
@@ -28,6 +29,7 @@ import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.UploadTransfer;
 
 import org.apache.commons.cli.CommandLine;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
@@ -36,11 +38,8 @@ import java.util.List;
  */
 public final class TerminalTransferFactory {
 
-    private TerminalTransferFactory() {
-        //
-    }
-
-    public static Transfer create(final CommandLine input, final Host host, final List<TransferItem> items) throws BackgroundException {
+    public Transfer create(final CommandLine input, final Host host, final Path remote, final List<TransferItem> items)
+            throws BackgroundException {
         final Transfer transfer;
         final TerminalAction type = TerminalActionFinder.get(input);
         if(null == type) {
@@ -48,7 +47,12 @@ public final class TerminalTransferFactory {
         }
         switch(type) {
             case download:
-                transfer = new DownloadTransfer(host, items);
+                if(StringUtils.containsAny(remote.getName(), '*')) {
+                    transfer = new DownloadTransfer(host, items, new DownloadGlobFilter(remote.getName()));
+                }
+                else {
+                    transfer = new DownloadTransfer(host, items);
+                }
                 break;
             case upload:
                 transfer = new UploadTransfer(host, items);
