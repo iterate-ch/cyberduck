@@ -149,7 +149,7 @@ public class BrowserController extends WindowController
     /**
      * No file filter.
      */
-    private static final Filter<Path> NULL_FILTER = new NullPathFilter<Path>();
+    private static final Filter<Path> NULL_FILTER = new NullFilter<Path>();
 
     /**
      * Filter hidden files.
@@ -183,7 +183,7 @@ public class BrowserController extends WindowController
 
     {
         if(PreferencesFactory.get().getBoolean("browser.showHidden")) {
-            this.filenameFilter = new NullPathFilter<Path>();
+            this.filenameFilter = new NullFilter<Path>();
             this.showHiddenFiles = true;
         }
         else {
@@ -3719,7 +3719,7 @@ public class BrowserController extends WindowController
             }
         }
         else if(action.equals(Foundation.selector("showHiddenFilesClicked:"))) {
-            item.setState(this.getFilter() instanceof NullPathFilter ? NSCell.NSOnState : NSCell.NSOffState);
+            item.setState(this.getFilter() instanceof NullFilter ? NSCell.NSOnState : NSCell.NSOffState);
         }
         else if(action.equals(Foundation.selector("encodingMenuClicked:"))) {
             if(this.isMounted()) {

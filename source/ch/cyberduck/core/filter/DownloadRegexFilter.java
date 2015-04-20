@@ -32,21 +32,26 @@ import java.util.regex.Pattern;
 public class DownloadRegexFilter implements Filter<Path> {
     private static final Logger log = Logger.getLogger(DownloadRegexFilter.class);
 
-    private final Pattern pattern
-            = Pattern.compile(PreferencesFactory.get().getProperty("queue.download.skip.regex"));
+    private Pattern pattern;
+
+    public DownloadRegexFilter() {
+        this(Pattern.compile(PreferencesFactory.get().getProperty("queue.download.skip.regex")));
+    }
+
+    public DownloadRegexFilter(final Pattern pattern) {
+        this.pattern = pattern;
+    }
 
     @Override
     public boolean accept(final Path file) {
         if(file.attributes().isDuplicate()) {
             return false;
         }
-        if(PreferencesFactory.get().getBoolean("queue.download.skip.enable")) {
-            if(pattern.matcher(file.getName()).matches()) {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Skip %s excluded with regex", file.getAbsolute()));
-                }
-                return false;
+        if(pattern.matcher(file.getName()).matches()) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Skip %s excluded with regex", file.getAbsolute()));
             }
+            return false;
         }
         return true;
     }

@@ -32,18 +32,23 @@ import java.util.regex.Pattern;
 public class UploadRegexFilter implements Filter<Local> {
     private static final Logger log = Logger.getLogger(UploadRegexFilter.class);
 
-    private final Pattern pattern
-            = Pattern.compile(PreferencesFactory.get().getProperty("queue.upload.skip.regex"));
+    private Pattern pattern;
+
+    public UploadRegexFilter() {
+        this(Pattern.compile(PreferencesFactory.get().getProperty("queue.upload.skip.regex")));
+    }
+
+    public UploadRegexFilter(final Pattern pattern) {
+        this.pattern = pattern;
+    }
 
     @Override
     public boolean accept(final Local file) {
-        if(PreferencesFactory.get().getBoolean("queue.upload.skip.enable")) {
-            if(pattern.matcher(file.getName()).matches()) {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Skip %s excluded with regex", file));
-                }
-                return false;
+        if(pattern.matcher(file.getName()).matches()) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Skip %s excluded with regex", file));
             }
+            return false;
         }
         return true;
     }

@@ -67,7 +67,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         internal static readonly Filter HiddenFilter = new RegexFilter();
         private static readonly Logger Log = Logger.getLogger(typeof (BrowserController).FullName);
-        private static readonly Filter NullFilter = new NullPathFilter();
+        private static readonly Filter NullFilter = new NullFilter();
         protected static string DEFAULT = LocaleFactory.localizedString("Default");
         private readonly BookmarkCollection _bookmarkCollection = BookmarkCollection.defaultCollection();
         private readonly BookmarkModel _bookmarkModel;
@@ -2755,7 +2755,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 // Revert to the last used default filter
                 if (ShowHiddenFiles)
                 {
-                    FilenameFilter = new NullPathFilter();
+                    FilenameFilter = new NullFilter();
                 }
                 else
                 {

@@ -25,6 +25,7 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathNormalizer;
@@ -74,11 +75,16 @@ public class DownloadTransfer extends Transfer {
     private DownloadSymlinkResolver symlinkResolver;
 
     public DownloadTransfer(final Host host, final Path root, final Local local) {
-        this(host, Collections.singletonList(new TransferItem(root, local)));
+        this(host, Collections.singletonList(new TransferItem(root, local)), new NullFilter<Path>());
+    }
+
+    public DownloadTransfer(final Host host, final Path root, final Local local, final Filter<Path> f) {
+        this(host, Collections.singletonList(new TransferItem(root, local)), f);
     }
 
     public DownloadTransfer(final Host host, final List<TransferItem> roots) {
-        this(host, new DownloadRootPathsNormalizer().normalize(roots), new DownloadRegexFilter());
+        this(host, new DownloadRootPathsNormalizer().normalize(roots),
+                PreferencesFactory.get().getBoolean("queue.download.skip.enable") ? new DownloadRegexFilter() : new NullFilter<Path>());
     }
 
     public DownloadTransfer(final Host host, final List<TransferItem> roots, final Filter<Path> f) {

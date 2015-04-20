@@ -21,22 +21,9 @@ package ch.cyberduck.core;
 /**
  * @version $Id$
  */
-public class NullPathFilter<E extends AbstractPath> implements Filter<E> {
+public class NullFilter<E> implements Filter<E> {
 
     public boolean accept(final E file) {
         return true;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if(null == object) {
-            return false;
-        }
-        return object.getClass().equals(this.getClass());
-    }
-
-    @Override
-    public int hashCode() {
-        return this.getClass().hashCode();
     }
 }

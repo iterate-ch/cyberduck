@@ -24,6 +24,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathNormalizer;
@@ -72,11 +73,16 @@ public class UploadTransfer extends Transfer {
             = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
     public UploadTransfer(final Host host, final Path root, final Local local) {
-        this(host, Collections.singletonList(new TransferItem(root, local)));
+        this(host, Collections.singletonList(new TransferItem(root, local)), new NullFilter<Local>());
+    }
+
+    public UploadTransfer(final Host host, final Path root, final Local local, final Filter<Local> f) {
+        this(host, Collections.singletonList(new TransferItem(root, local)), f);
     }
 
     public UploadTransfer(final Host host, final List<TransferItem> roots) {
-        this(host, new UploadRootPathsNormalizer().normalize(roots), new UploadRegexFilter());
+        this(host, new UploadRootPathsNormalizer().normalize(roots),
+                PreferencesFactory.get().getBoolean("queue.upload.skip.enable") ? new UploadRegexFilter() : new NullFilter<Local>());
     }
 
     public UploadTransfer(final Host host, final List<TransferItem> roots, final Filter<Local> f) {

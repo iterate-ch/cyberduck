@@ -57,10 +57,10 @@ public class AttributedListAttributes<E> {
      * Initialize with default values
      *
      * @see ch.cyberduck.core.NullComparator
-     * @see ch.cyberduck.core.NullPathFilter
+     * @see NullFilter
      */
     public AttributedListAttributes() {
-        this(new NullComparator<E>(), new NullPathFilter());
+        this(new NullComparator<E>(), new NullFilter<E>());
     }
 
     /**
