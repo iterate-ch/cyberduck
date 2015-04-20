@@ -80,13 +80,13 @@ namespace Ch.Cyberduck.Ui.Controller
             if (null == directory)
             {
                 // Root
-                if (!_cache.isCached(null))
+                if (!_cache.isValid(null))
                 {
                     _cache.put(null, new AttributedList(Transfer.getRoots()));
                     Filter();
                 }
             }
-            else if (!_cache.isCached(directory))
+            else if (!_cache.isValid(directory))
             {
                 _controller.Background(new TransferPromptListAction(this, _controller, _session, directory, Transfer,
                     _cache));

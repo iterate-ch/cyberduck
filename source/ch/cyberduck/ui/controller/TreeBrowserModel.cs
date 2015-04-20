@@ -55,7 +55,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             Path directory = (Path) p;
             AttributedList list;
-            if (!_cache.isCached(directory))
+            if (!_cache.isValid(directory))
             {
                 // Reloading a workdir that is not cached yet would cause the interface to freeze;
                 // Delay until path is cached in the background
