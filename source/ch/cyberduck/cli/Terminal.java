@@ -18,7 +18,20 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledTranscriptListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.StringAppender;
+import ch.cyberduck.core.TildePathExpander;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.editor.DefaultEditorListener;
 import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
@@ -76,10 +89,6 @@ public class Terminal {
 
     private PathCache cache;
 
-    private ProgressListener progress;
-
-    private TranscriptListener transcript;
-
     private enum Exit {
         success,
         failure
@@ -102,9 +111,9 @@ public class Terminal {
         }
         this.input = input;
         this.cache = new PathCache(preferences.getInteger("browser.cache.size"));
-        this.progress = input.hasOption(TerminalOptionsBuilder.Params.quiet.name())
+        final ProgressListener progress = input.hasOption(TerminalOptionsBuilder.Params.quiet.name())
                 ? new DisabledListProgressListener() : new TerminalProgressListener();
-        this.transcript = input.hasOption(TerminalOptionsBuilder.Params.verbose.name())
+        final TranscriptListener transcript = input.hasOption(TerminalOptionsBuilder.Params.verbose.name())
                 ? new TerminalTranscriptListener() : new DisabledTranscriptListener();
         this.reader = input.hasOption(TerminalOptionsBuilder.Params.assumeyes.name())
                 ? new DisabledTerminalPromptReader() : new InteractiveTerminalPromptReader();
@@ -185,7 +194,6 @@ public class Terminal {
                             new TerminalCertificateStore(reader)
                     ),
                     new PreferencesX509KeyManager(new TerminalCertificateStore(reader)));
-            this.connect(session);
             final Path remote = new TildePathExpander(session).expand(new PathParser(input).parse(uri));
             switch(action) {
                 case edit:
@@ -233,12 +241,6 @@ public class Terminal {
             this.disconnect(session);
         }
         return Exit.failure;
-    }
-
-    protected void connect(final Session session) throws BackgroundException {
-        final LoginConnectionService connect = new LoginConnectionService(new TerminalLoginService(input,
-                new TerminalLoginCallback(reader)), new TerminalHostKeyVerifier(reader), progress, transcript);
-        connect.check(session, cache);
     }
 
     protected void configure(final CommandLine input) {
