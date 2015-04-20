@@ -70,13 +70,42 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
                 new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DisabledCertificateStore()),
                 new CertificateStoreX509KeyManager(new DisabledCertificateStore()), 5);
         try {
-            final Session<?> session = worker.borrow();
+            worker.borrow();
         }
         catch(BackgroundException e) {
             assertEquals("DNS lookup for unknownhostname failed. DNS is the network service that translates a server name to its Internet address. This error is most often caused by having no connection to the Internet or a misconfigured network. It can also be caused by an unresponsive DNS server or a firewall preventing access to the network.", e.getDetail());
             assertEquals("Connection failed", e.getMessage());
             throw e;
         }
+    }
+
+    @Test
+    public void testDoubleRelease() throws Exception {
+        final Host host = new Host("test.cyberduck.ch");
+        final Transfer t = new UploadTransfer(host,
+                new Path("/t", EnumSet.of(Path.Type.directory)),
+                new NullLocal("l"));
+        final LoginConnectionService connection = new LoginConnectionService(new DisabledLoginCallback(),
+                new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()) {
+            @Override
+            public boolean check(Session session, Cache<Path> cache) throws BackgroundException {
+                return true;
+            }
+
+            @Override
+            public boolean check(Session session, Cache<Path> cache, BackgroundException failure) throws BackgroundException {
+                return true;
+            }
+        };
+        final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
+                connection, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
+                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(),
+                new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DisabledCertificateStore()),
+                new CertificateStoreX509KeyManager(new DisabledCertificateStore()),
+                1);
+        final Session<?> session = worker.borrow();
+        worker.release(session);
+        worker.release(session);
     }
 
     @Test(expected = LoginCanceledException.class)

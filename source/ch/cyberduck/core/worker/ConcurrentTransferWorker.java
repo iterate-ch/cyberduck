@@ -165,7 +165,12 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         if(log.isInfoEnabled()) {
             log.info(String.format("Release session %s to pool", session));
         }
-        pool.returnObject(session);
+        try {
+            pool.returnObject(session);
+        }
+        catch(IllegalStateException e) {
+            log.warn(String.format("Failed to release session %s. %s", session, e.getMessage()));
+        }
     }
 
     @Override
@@ -247,6 +252,14 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
                 log.debug(String.format("Activate session %s", session));
             }
             connect.check(session, PathCache.empty());
+        }
+
+        @Override
+        public void passivateObject(final PooledObject<Session> p) throws Exception {
+            final Session session = p.getObject();
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Pause session %s", session));
+            }
         }
 
         @Override
