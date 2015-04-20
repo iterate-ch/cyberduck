@@ -193,7 +193,6 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
         }
         catch(BackgroundException failure) {
             log.warn(String.format("Failure executing background action: %s", failure));
-            growl.notify(failure.getMessage(), session.getHost().getHostname());
             exception = failure;
             failed = true;
             if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
@@ -209,6 +208,9 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
                         this.call();
                     }
                 }
+            }
+            else {
+                growl.notify(failure.getMessage(), session.getHost().getHostname());
             }
         }
         return null;
