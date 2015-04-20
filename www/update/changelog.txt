@@ -12,7 +12,6 @@ A command line interface (CLI) version is now available from https://duck.sh/ fo
 - [Bugfix] Regular connection failures (OpenStack Swift) (#8634)
 - [Bugfix] Handshake failure because of missing strong ciphers to negotiate for TLS (#8703)
 - [Bugfix] Skip DNS resolution when connecting through proxy (#8733)
-- [Bugfix] Authentication with public key and one-time passcode (SFTP) (#8597)
 - [Bugfix] Browser reload does not work (#8651)
 - [Bugfix] Disable sending of keep-alive packets for interoperability (SFTP) (#8618)
 - [Bugfix] Repeating connection failures because of server closing control connection (FTP) (#8532)
