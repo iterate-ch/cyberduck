@@ -10,3 +10,4 @@ A command line interface (CLI) version is now available from https://duck.sh/ fo
 - [Bugfix] Enable multipart uploads for all providers (S3) (#8677)
 - [Bugfix] Incomplete download of files with Content-Encoding header (OpenStack Swift) (#8656)
 - [Bugfix] Regular connection failures (OpenStack Swift) (#8634)
+- [Bugfix] Handshake failure because of missing strong ciphers to negotiate for TLS (#8703)
