@@ -68,7 +68,7 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
                 connection, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
                 new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(),
                 new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DisabledCertificateStore()),
-                new CertificateStoreX509KeyManager(new DisabledCertificateStore()), 5);
+                new CertificateStoreX509KeyManager(new DisabledCertificateStore()), PathCache.empty(), 5);
         try {
             worker.borrow();
         }
@@ -101,7 +101,7 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
                 connection, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
                 new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(),
                 new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DisabledCertificateStore()),
-                new CertificateStoreX509KeyManager(new DisabledCertificateStore()),
+                new CertificateStoreX509KeyManager(new DisabledCertificateStore()), PathCache.empty(),
                 1);
         final Session<?> session = worker.borrow();
         worker.release(session);
@@ -120,7 +120,7 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
                 connection, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
                 new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(),
                 new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DisabledCertificateStore()),
-                new CertificateStoreX509KeyManager(new DisabledCertificateStore()), 2);
+                new CertificateStoreX509KeyManager(new DisabledCertificateStore()), PathCache.empty(), 2);
         worker.borrow();
     }
 
@@ -146,7 +146,7 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
                 connection, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
                 new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(),
                 new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DisabledCertificateStore()),
-                new CertificateStoreX509KeyManager(new DisabledCertificateStore()),
+                new CertificateStoreX509KeyManager(new DisabledCertificateStore()), PathCache.empty(),
                 2);
         assertNotSame(worker.borrow(), worker.borrow());
     }
@@ -173,7 +173,7 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
                 connection, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
                 new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(),
                 new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DisabledCertificateStore()),
-                new CertificateStoreX509KeyManager(new DisabledCertificateStore()),
+                new CertificateStoreX509KeyManager(new DisabledCertificateStore()), PathCache.empty(),
                 1);
         final Session<?> session = worker.borrow();
         worker.release(session);
@@ -282,7 +282,7 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
         }, new DisabledTransferErrorCallback(),
                 new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(),
                 new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DisabledCertificateStore()),
-                new CertificateStoreX509KeyManager(new DisabledCertificateStore()),
+                new CertificateStoreX509KeyManager(new DisabledCertificateStore()), PathCache.empty(),
                 connections);
 
         assertTrue(worker.run());
@@ -309,7 +309,7 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
                 connection, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
                 new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(),
                 new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DisabledCertificateStore()),
-                new CertificateStoreX509KeyManager(new DisabledCertificateStore()), 1);
+                new CertificateStoreX509KeyManager(new DisabledCertificateStore()), PathCache.empty(), 1);
         final Session<?> session = worker.borrow();
         assertNotNull(session);
         final CyclicBarrier lock = new CyclicBarrier(2);
@@ -351,7 +351,7 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
                 connection, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
                 new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(),
                 new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DisabledCertificateStore()),
-                new CertificateStoreX509KeyManager(new DisabledCertificateStore()), 1);
+                new CertificateStoreX509KeyManager(new DisabledCertificateStore()), PathCache.empty(), 1);
         int workers = 1000;
         final CountDownLatch entry = new CountDownLatch(workers);
         for(int i = 0; i < workers; i++) {

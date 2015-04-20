@@ -75,12 +75,14 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
 
     private X509KeyManager key;
 
+    private PathCache cache = PathCache.empty();
+
     public ConcurrentTransferWorker(final ConnectionService connect,
                                     final Transfer transfer, final TransferOptions options,
                                     final TransferSpeedometer meter, final TransferPrompt prompt, final TransferErrorCallback error,
                                     final TransferItemCallback transferItemCallback, final ConnectionCallback connectionCallback,
                                     final ProgressListener progressListener, final StreamListener streamListener,
-                                    final X509TrustManager trust, final X509KeyManager key,
+                                    final X509TrustManager trust, final X509KeyManager key, final PathCache cache,
                                     final Integer connections) {
         super(transfer, options, prompt, meter, error, transferItemCallback, progressListener, streamListener, connectionCallback);
         this.connect = connect;
@@ -114,6 +116,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
                 new LinkedBlockingQueue<Future<TransferStatus>>());
         this.trust = trust;
         this.key = key;
+        this.cache = cache;
     }
 
     @Override
@@ -251,7 +254,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Activate session %s", session));
             }
-            connect.check(session, PathCache.empty());
+            connect.check(session, cache);
         }
 
         @Override

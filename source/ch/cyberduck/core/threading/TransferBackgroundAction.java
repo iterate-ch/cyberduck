@@ -157,7 +157,7 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> im
                                     final X509KeyManager x509Key) {
         super(new LoginConnectionService(login, key, progress, transcript), controller, session, cache, null);
         this.worker = new WorkerFinder().find(login, callback, key, session, progress, transfer, options, prompt, this,
-                error, meter, stream, transcript, x509Trust, x509Key);
+                error, meter, stream, transcript, x509Trust, x509Key, cache);
         this.meter = meter;
         this.transfer = transfer.withCache(cache);
         this.options = options;
@@ -180,7 +180,8 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> im
                                             final StreamListener stream,
                                             final TranscriptListener transcript,
                                             final X509TrustManager x509Trust,
-                                            final X509KeyManager x509Key) {
+                                            final X509KeyManager x509Key,
+                                            final PathCache cache) {
             switch(session.getTransferType()) {
                 case concurrent:
                     switch(transfer.getType()) {
@@ -195,7 +196,7 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> im
                             final int connections = PreferencesFactory.get().getInteger("queue.maxtransfers");
                             if(connections > 1) {
                                 return new ConcurrentTransferWorker(new LoginConnectionService(login, key, progress, transcript), transfer, options,
-                                        meter, prompt, error, item, callback, progress, stream, x509Trust, x509Key,
+                                        meter, prompt, error, item, callback, progress, stream, x509Trust, x509Key, cache,
                                         connections);
                             }
                     }
