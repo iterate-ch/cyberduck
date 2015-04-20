@@ -1787,7 +1787,6 @@ lib/1.8.0-u60-b10.jre/Contents/Home/lib/libawt.dylib -text
 lib/1.8.0-u60-b10.jre/Contents/Home/lib/libawt_lwawt.dylib -text
 lib/1.8.0-u60-b10.jre/Contents/Home/lib/libdt_socket.dylib -text
 lib/1.8.0-u60-b10.jre/Contents/Home/lib/libfontmanager.dylib -text
-lib/1.8.0-u60-b10.jre/Contents/Home/lib/libfreetype.dylib.6 -text
 lib/1.8.0-u60-b10.jre/Contents/Home/lib/libhprof.dylib -text
 lib/1.8.0-u60-b10.jre/Contents/Home/lib/libinstrument.dylib -text
 lib/1.8.0-u60-b10.jre/Contents/Home/lib/libj2gss.dylib -text
