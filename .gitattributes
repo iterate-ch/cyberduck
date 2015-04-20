@@ -1779,7 +1779,6 @@ lib/1.8.0-u60-b10.jre/Contents/Home/lib/images/cursors/motif_MoveDrop32x32.gif -
 lib/1.8.0-u60-b10.jre/Contents/Home/lib/images/cursors/motif_MoveNoDrop32x32.gif -text
 lib/1.8.0-u60-b10.jre/Contents/Home/lib/jce.jar -text
 lib/1.8.0-u60-b10.jre/Contents/Home/lib/jli/libjli.dylib -text
-lib/1.8.0-u60-b10.jre/Contents/Home/lib/jspawnhelper -text
 lib/1.8.0-u60-b10.jre/Contents/Home/lib/jsse.jar -text
 lib/1.8.0-u60-b10.jre/Contents/Home/lib/jvm.cfg -text
 lib/1.8.0-u60-b10.jre/Contents/Home/lib/libAppleScriptEngine.dylib -text
