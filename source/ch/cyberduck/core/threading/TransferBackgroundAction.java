@@ -185,6 +185,9 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> im
             switch(session.getTransferType()) {
                 case concurrent:
                     switch(transfer.getType()) {
+                        case copy:
+                        case move:
+                            break;
                         case upload:
                             final Upload feature = session.getFeature(Upload.class);
                             if(feature.pooled()) {
