@@ -217,7 +217,15 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> im
 
     @Override
     protected boolean connect(final Session session) throws BackgroundException {
-        final boolean opened = super.connect(session);
+        final boolean opened;
+        switch(session.getTransferType()) {
+            case concurrent:
+                // Skip opening connection when managed in pool
+                opened = false;
+                break;
+            default:
+                opened = super.connect(session);
+        }
         switch(transfer.getType()) {
             case copy:
                 final Session target = ((CopyTransfer) transfer).getDestination();
