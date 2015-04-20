@@ -233,7 +233,7 @@ public class CopyTransfer extends Transfer {
      * @param throttle The bandwidth limit
      * @param status   Transfer status
      */
-    public void copy(final Session<?> session, final Path file, final Session<?> target, final Path copy,
+    private void copy(final Session<?> session, final Path file, final Session<?> target, final Path copy,
                      final BandwidthThrottle throttle, final StreamListener streamListener,
                      final TransferStatus status) throws BackgroundException {
         InputStream in = null;
