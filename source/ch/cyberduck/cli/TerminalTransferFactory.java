@@ -43,6 +43,9 @@ public final class TerminalTransferFactory {
     public static Transfer create(final CommandLine input, final Host host, final List<TransferItem> items) throws BackgroundException {
         final Transfer transfer;
         final TerminalAction type = TerminalActionFinder.get(input);
+        if(null == type) {
+            throw new BackgroundException(LocaleFactory.localizedString("Unknown"), "Unknown transfer type");
+        }
         switch(type) {
             case download:
                 transfer = new DownloadTransfer(host, items);
