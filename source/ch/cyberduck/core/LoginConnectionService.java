@@ -114,6 +114,9 @@ public class LoginConnectionService implements ConnectionService {
             throw new ConnectionCanceledException();
         }
         if(session.isConnected()) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Skip opening connection for session %s", session));
+            }
             // Connection already open
             return false;
         }
