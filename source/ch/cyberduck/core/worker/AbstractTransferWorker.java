@@ -215,6 +215,8 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                 final TransferPathFilter filter = transfer.filter(session, action, progressListener);
                 // Reset the cached size of the transfer and progress value
                 transfer.reset();
+                // Return session to pool
+                this.release(session);
                 // Calculate information about the files in advance to give progress information
                 for(TransferItem next : transfer.getRoots()) {
                     this.prepare(next.remote, next.local, new TransferStatus().exists(true), filter);
@@ -267,7 +269,6 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                     @Override
                     public TransferStatus call() throws BackgroundException {
                         // Transfer
-                        final Session<?> session = borrow();
                         progressListener.message(MessageFormat.format(LocaleFactory.localizedString("Prepare {0}", "Status"), file.getName()));
                         try {
                             // Determine transfer status
@@ -281,15 +282,23 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                             transfer.addTransferred(status.getOffset());
                             // Recursive
                             if(file.isDirectory()) {
-                                // Call recursively for all children
-                                final List<TransferItem> children
-                                        = transfer.list(session, file, local, new ActionListProgressListener(AbstractTransferWorker.this, progressListener));
-                                // Put into cache for later reference when transferring
-                                cache.put(item, new AttributedList<TransferItem>(children));
-                                // Call recursively
-                                for(TransferItem f : children) {
-                                    // Change download path relative to parent local folder
-                                    prepare(f.remote, f.local, status, filter);
+                                final Session<?> session = borrow();
+                                try {
+                                    // Call recursively for all children
+                                    final List<TransferItem> children
+                                            = transfer.list(session, file, local, new ActionListProgressListener(AbstractTransferWorker.this, progressListener));
+                                    // Put into cache for later reference when transferring
+                                    cache.put(item, new AttributedList<TransferItem>(children));
+                                    // Return session to pool
+                                    release(session);
+                                    // Call recursively
+                                    for(TransferItem f : children) {
+                                        // Change download path relative to parent local folder
+                                        prepare(f.remote, f.local, status, filter);
+                                    }
+                                }
+                                finally {
+                                    release(session);
                                 }
                             }
                             if(log.isInfoEnabled()) {
@@ -319,9 +328,6 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                             else {
                                 throw new ConnectionCanceledException(e);
                             }
-                        }
-                        finally {
-                            release(session);
                         }
                     }
 
