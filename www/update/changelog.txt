@@ -11,3 +11,5 @@ A command line interface (CLI) version is now available from https://duck.sh/ fo
 - [Bugfix] Incomplete download of files with Content-Encoding header (OpenStack Swift) (#8656)
 - [Bugfix] Regular connection failures (OpenStack Swift) (#8634)
 - [Bugfix] Handshake failure because of missing strong ciphers to negotiate for TLS (#8703)
+- [Bugfix] Skip DNS resolution when connecting through proxy (#8733)
+- [Bugfix] Authentication with public key and one-time passcode (SFTP) (#8597)

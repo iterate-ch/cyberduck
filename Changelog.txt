@@ -16,6 +16,8 @@ Changelog. Last modified: $Date$
 - [Bugfix] Failure to download to mounted AFP drive (Mac) (#8670)
 - [Bugfix] Regular connection failures (OpenStack Swift) (#8634)
 - [Bugfix] Handshake failure because of missing strong ciphers to negotiate for TLS (#8703)
+- [Bugfix] Skip DNS resolution when connecting through proxy (#8733)
+- [Bugfix] Authentication with public key and one-time passcode (SFTP) (#8597)
 
 4.6.5 [https://trac.cyberduck.io/milestone/4.6.5]
 - [Feature] Support for China (Beijing) region (S3)
