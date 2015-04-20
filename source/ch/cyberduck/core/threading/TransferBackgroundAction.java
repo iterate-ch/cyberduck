@@ -218,12 +218,13 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> im
     @Override
     protected boolean connect(final Session session) throws BackgroundException {
         final boolean opened = super.connect(session);
-        if(transfer instanceof CopyTransfer) {
-            final Session target = ((CopyTransfer) transfer).getDestination();
-            if(connection.check(target, PathCache.empty())) {
-                // New connection opened
-                growl.notify("Connection opened", session.getHost().getHostname());
-            }
+        switch(transfer.getType()) {
+            case copy:
+                final Session target = ((CopyTransfer) transfer).getDestination();
+                if(connection.check(target, PathCache.empty())) {
+                    // New connection opened
+                    growl.notify("Connection opened", session.getHost().getHostname());
+                }
         }
         return opened;
     }
@@ -231,9 +232,10 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> im
     @Override
     protected void close(final Session session) throws BackgroundException {
         super.close(session);
-        if(transfer instanceof CopyTransfer) {
-            final Session target = ((CopyTransfer) transfer).getDestination();
-            super.close(target);
+        switch(transfer.getType()) {
+            case copy:
+                final Session target = ((CopyTransfer) transfer).getDestination();
+                super.close(target);
         }
     }
 
