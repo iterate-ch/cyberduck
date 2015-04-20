@@ -18,7 +18,6 @@ package ch.cyberduck.core.filter;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -29,7 +28,7 @@ import java.util.regex.Pattern;
 /**
  * @version $Id$
  */
-public class DownloadRegexFilter implements Filter<Path> {
+public class DownloadRegexFilter extends DownloadDuplicateFilter {
     private static final Logger log = Logger.getLogger(DownloadRegexFilter.class);
 
     private Pattern pattern;
@@ -44,7 +43,7 @@ public class DownloadRegexFilter implements Filter<Path> {
 
     @Override
     public boolean accept(final Path file) {
-        if(file.attributes().isDuplicate()) {
+        if(!super.accept(file)) {
             return false;
         }
         if(pattern.matcher(file.getName()).matches()) {
