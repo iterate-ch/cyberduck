@@ -27,13 +27,11 @@ import ch.cyberduck.core.aquaticprime.LicenseFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
 
 /**
  * @version $Id$
  */
 public class QloudsonicVoucherFinder extends LicenseFactory {
-    private static final Logger log = Logger.getLogger(QloudsonicVoucherFinder.class);
 
     public QloudsonicVoucherFinder() {
         super(LocalFactory.get(
