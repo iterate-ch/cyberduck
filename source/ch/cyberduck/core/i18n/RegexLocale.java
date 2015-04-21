@@ -22,6 +22,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.preferences.ApplicationResourcesFinderFactory;
 
 import org.apache.commons.collections.map.LRUMap;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
 import java.io.FileInputStream;
@@ -86,12 +87,17 @@ public class RegexLocale implements Locale {
         final LineNumberReader reader = new LineNumberReader(new InputStreamReader(new FileInputStream(
                 String.format("%s/%s.lproj/%s.strings", resources.getAbsolute(), locale, table)
         ), Charset.forName("UTF-16")));
-        String line;
-        while((line = reader.readLine()) != null) {
-            final Matcher matcher = pattern.matcher(line);
-            if(matcher.matches()) {
-                cache.put(new Key(table, matcher.group(1)), matcher.group(2));
+        try {
+            String line;
+            while((line = reader.readLine()) != null) {
+                final Matcher matcher = pattern.matcher(line);
+                if(matcher.matches()) {
+                    cache.put(new Key(table, matcher.group(1)), matcher.group(2));
+                }
             }
+        }
+        finally {
+            IOUtils.closeQuietly(reader);
         }
     }
 
