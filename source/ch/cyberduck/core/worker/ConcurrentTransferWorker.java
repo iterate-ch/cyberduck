@@ -133,7 +133,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
                 }
                 catch(NoSuchElementException e) {
                     if(this.isCanceled()) {
-                        throw new ConnectionCanceledException();
+                        throw new ConnectionCanceledException(e);
                     }
                     if(e.getCause() instanceof BackgroundException) {
                         throw (BackgroundException) e.getCause();
