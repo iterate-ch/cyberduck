@@ -18,7 +18,9 @@ package ch.cyberduck.core.editor;
  */
 
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -63,7 +65,7 @@ public class EditSaveWorker extends Worker<Transfer> {
         this.editor = editor;
         this.session = session;
         this.callback = callback;
-        this.upload = new UploadTransfer(session.getHost(), editor.getRemote(), editor.getLocal()) {
+        this.upload = new UploadTransfer(session.getHost(), editor.getRemote(), editor.getLocal(), new NullFilter<Local>()) {
             @Override
             public TransferAction action(final Session<?> session,
                                          final boolean resumeRequested, final boolean reloadRequested,

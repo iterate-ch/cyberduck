@@ -24,6 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.filter.DownloadDuplicateFilter;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.local.FileWatcherListener;
@@ -73,7 +74,8 @@ public class EditOpenWorker extends Worker<Transfer> {
         this.session = session;
         this.callback = callback;
         this.quit = quit;
-        this.download = new DownloadTransfer(session.getHost(), editor.getRemote(), editor.getLocal()) {
+        this.download = new DownloadTransfer(session.getHost(), editor.getRemote(), editor.getLocal(),
+                new DownloadDuplicateFilter()) {
             @Override
             public TransferAction action(final Session<?> session, final boolean resumeRequested, final boolean reloadRequested,
                                          final TransferPrompt prompt) throws BackgroundException {
