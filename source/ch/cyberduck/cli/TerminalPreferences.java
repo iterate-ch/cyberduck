@@ -127,7 +127,7 @@ public class TerminalPreferences extends MemoryPreferences {
         switch(Factory.Platform.getDefault()) {
             case mac: {
                 defaults.put("connection.ssl.keystore.type", "KeychainStore");
-                defaults.put("connection.ssl.keystore.provider", "Cyberduck");
+                defaults.put("connection.ssl.keystore.provider", "Apple");
 
                 break;
             }

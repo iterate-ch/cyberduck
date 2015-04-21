@@ -39,8 +39,6 @@ public class KeychainStoreTest extends AbstractTestCase {
         final CertificateStoreX509KeyManager m = new CertificateStoreX509KeyManager(new DisabledCertificateStore(),
                 KeyStore.getInstance("KeychainStore", "Apple")).init();
         final String[] aliases = m.getClientAliases("RSA", new Principal[]{
-//                new X500Principal("CN=StartCom Class 2 Primary Intermediate Client CA, OU=Secure Digital Certificate Signing, O=StartCom Ltd., C=IL")
-//                new X500Principal("CN=Developer ID Certification Authority, OU=Apple Certification Authority, O=Apple Inc., C=US")
                 new X500Principal("C=US, O=Apple Inc., OU=Apple Certification Authority, CN=Developer ID Certification Authority")
         });
         assertNotNull(aliases);

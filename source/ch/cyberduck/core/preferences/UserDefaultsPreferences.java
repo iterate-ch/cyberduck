@@ -31,9 +31,9 @@ import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.IOKitSleepPreventer;
 import ch.cyberduck.core.Keychain;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.diagnostics.SystemConfigurationReachability;
 import ch.cyberduck.core.aquaticprime.ReceiptFactory;
 import ch.cyberduck.core.bonjour.RendezvousResponder;
+import ch.cyberduck.core.diagnostics.SystemConfigurationReachability;
 import ch.cyberduck.core.editor.FSEventWatchEditorFactory;
 import ch.cyberduck.core.i18n.BundleLocale;
 import ch.cyberduck.core.local.FileManagerWorkingDirectoryFinder;
@@ -238,7 +238,7 @@ public class UserDefaultsPreferences extends Preferences {
 
         // SSL Keystore
         defaults.put("connection.ssl.keystore.type", "KeychainStore");
-        defaults.put("connection.ssl.keystore.provider", "Cyberduck");
+        defaults.put("connection.ssl.keystore.provider", "Apple");
 
         defaults.put(String.format("browser.column.%s", Column.icon.name()), String.valueOf(true));
         defaults.put(String.format("browser.column.%s.width", Column.icon.name()), String.valueOf(20));
