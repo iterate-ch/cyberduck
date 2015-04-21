@@ -89,7 +89,7 @@ public class Terminal {
 
     private PathCache cache;
 
-    protected enum Exit {
+    private enum Exit {
         success,
         failure
     }
@@ -103,7 +103,7 @@ public class Terminal {
     }
 
     public Terminal(final Preferences defaults, final Options options, final CommandLine input) {
-        PreferencesFactory.set(this.preferences = defaults);
+        this.preferences = defaults;
         ProtocolFactory.register();
         this.options = options;
         if(log.isInfoEnabled()) {
@@ -127,6 +127,7 @@ public class Terminal {
      */
     public static void main(final String... args) throws IOException {
         final TerminalPreferences defaults = new TerminalPreferences();
+        PreferencesFactory.set(defaults);
         open(args, defaults);
     }
 
@@ -193,6 +194,7 @@ public class Terminal {
                             new TerminalCertificateStore(reader)
                     ),
                     new PreferencesX509KeyManager(new TerminalCertificateStore(reader)));
+            //todo
             final Path remote = new TildePathExpander(session).expand(new PathParser(input).parse(uri));
             switch(action) {
                 case edit:
