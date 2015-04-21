@@ -69,8 +69,14 @@ public class TerminalStreamListener implements StreamListener {
         }
         try {
             lock.acquire();
-            final BigDecimal fraction = new BigDecimal(progress.getTransferred())
-                    .divide(new BigDecimal(progress.getSize()), 1, RoundingMode.DOWN);
+            final BigDecimal fraction;
+            if(progress.getTransferred() == 0L) {
+                fraction = BigDecimal.ZERO;
+            }
+            else {
+                fraction = new BigDecimal(progress.getTransferred())
+                        .divide(new BigDecimal(progress.getSize()), 1, RoundingMode.DOWN);
+            }
             console.printf("\r%s[", Ansi.ansi()
                     .saveCursorPosition()
                     .eraseLine(Ansi.Erase.ALL)
