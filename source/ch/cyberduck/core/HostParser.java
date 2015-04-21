@@ -26,7 +26,6 @@ import org.apache.log4j.Logger;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.regex.Pattern;
 
 /**
  * @version $Id$
@@ -37,10 +36,6 @@ public final class HostParser {
     private HostParser() {
         //
     }
-
-    private static final Pattern IPV6_PATTERN =
-            Pattern.compile(
-                    "^[0-9a-fA-F]{1,4}(:[0-9a-fA-F]{1,4}){7}$");
 
     /**
      * Parses URL in the format ftp://username:pass@hostname:portnumber/path/to/file
