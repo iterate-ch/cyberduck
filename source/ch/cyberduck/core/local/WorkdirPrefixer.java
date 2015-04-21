@@ -18,7 +18,6 @@ package ch.cyberduck.core.local;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.io.FilenameUtils;
@@ -31,9 +30,6 @@ public class WorkdirPrefixer {
 
     private final WorkingDirectoryFinder finder
             = WorkingDirectoryFinderFactory.get();
-
-    private final Preferences preferences
-            = PreferencesFactory.get();
 
     private boolean isAbsolute(final String path) {
         return FilenameUtils.getPrefixLength(path) != 0;
