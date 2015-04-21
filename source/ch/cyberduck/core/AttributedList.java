@@ -89,6 +89,9 @@ public class AttributedList<E extends Referenceable> extends ArrayList<E> {
         if(null == comparator) {
             return;
         }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Sort list %s with comparator %s", this, comparator));
+        }
         Collections.sort(this, comparator);
     }
 
@@ -127,6 +130,9 @@ public class AttributedList<E extends Referenceable> extends ArrayList<E> {
             attributes.setComparator(comparator);
         }
         if(needsFiltering) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Filter list %s with filter %s", this, filter));
+            }
             // Add previously hidden files to children
             final List<E> hidden = attributes.getHidden();
             this.addAll(hidden);
