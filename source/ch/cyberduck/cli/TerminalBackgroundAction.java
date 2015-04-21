@@ -25,13 +25,10 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.worker.Worker;
 
-import org.apache.log4j.Logger;
-
 /**
  * @version $Id$
  */
 public class TerminalBackgroundAction<T> extends WorkerBackgroundAction<T> {
-    private static final Logger log = Logger.getLogger(TerminalBackgroundAction.class);
 
     public TerminalBackgroundAction(final LoginService login,
                                     final TerminalController controller,
