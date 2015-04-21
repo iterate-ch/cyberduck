@@ -49,12 +49,12 @@ public class Console {
 
     public String readLine(String format, Object... args) throws ConnectionCanceledException {
         if(console != null) {
-            return console.readLine(format, args);
+            return this.wrap(console.readLine(format, args));
         }
         this.printf(format, args);
         final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         try {
-            return reader.readLine();
+            return this.wrap(reader.readLine());
         }
         catch(IOException e) {
             throw new ConnectionCanceledException(e);
@@ -63,7 +63,7 @@ public class Console {
 
     public char[] readPassword(String format, Object... args) throws ConnectionCanceledException {
         if(console != null) {
-            return console.readPassword(format, args);
+            return this.wrap(console.readPassword(format, args));
         }
         final String line = this.readLine(format, args);
         if(StringUtils.isBlank(line)) {
@@ -108,5 +108,19 @@ public class Console {
         finally {
             lock.release();
         }
+    }
+
+    private String wrap(final String input) throws ConnectionCanceledException {
+        if(null == input) {
+            throw new ConnectionCanceledException();
+        }
+        return input;
+    }
+
+    private char[] wrap(final char[] input) throws ConnectionCanceledException {
+        if(null == input) {
+            throw new ConnectionCanceledException();
+        }
+        return input;
     }
 }
