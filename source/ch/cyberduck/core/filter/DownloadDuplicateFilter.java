@@ -31,6 +31,9 @@ public class DownloadDuplicateFilter implements Filter<Path> {
     @Override
     public boolean accept(final Path file) {
         if(file.attributes().isDuplicate()) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Reject duplicate %s", file));
+            }
             return false;
         }
         return true;
