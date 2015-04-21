@@ -36,8 +36,6 @@ import net.schmizz.sshj.common.KeyType;
  */
 public class TerminalHostKeyVerifier extends OpenSSHHostKeyVerifier {
 
-    private final Console console = new Console();
-
     private TerminalPromptReader prompt;
 
     public TerminalHostKeyVerifier() {
