@@ -59,6 +59,7 @@ import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.worker.DisconnectWorker;
 import ch.cyberduck.core.worker.SessionListWorker;
+import ch.cyberduck.core.worker.Worker;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -194,7 +195,6 @@ public class Terminal {
                             new TerminalCertificateStore(reader)
                     ),
                     new PreferencesX509KeyManager(new TerminalCertificateStore(reader)));
-            //todo
             final Path remote = new TildePathExpander(session).expand(new PathParser(input).parse(uri));
             switch(action) {
                 case edit:
@@ -353,14 +353,15 @@ public class Terminal {
         }
         final Editor editor = factory.create(controller, session, application, remote);
         final CountDownLatch lock = new CountDownLatch(1);
-        final TerminalBackgroundAction<Transfer> action = new TerminalBackgroundAction<Transfer>(
-                new TerminalLoginService(input, new TerminalLoginCallback(reader)),
-                controller, session, cache, editor.open(new ApplicationQuitCallback() {
+        final Worker<Transfer> worker = editor.open(new ApplicationQuitCallback() {
             @Override
             public void callback() {
                 lock.countDown();
             }
-        }, new DisabledTransferErrorCallback(), new DefaultEditorListener(controller, session, editor))
+        }, new DisabledTransferErrorCallback(), new DefaultEditorListener(controller, session, editor));
+        final TerminalBackgroundAction<Transfer> action = new TerminalBackgroundAction<Transfer>(
+                new TerminalLoginService(input, new TerminalLoginCallback(reader)),
+                controller, session, cache, worker
         );
         this.execute(action);
         if(action.hasFailed()) {
