@@ -325,7 +325,7 @@
 
     <target name="sonar" depends="test" description="Run Sonar">
         <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
-            <classpath path="${lib.ext}/sonar-ant-task-2.1.jar"/>
+            <classpath path="${lib.ext}/sonar-ant-task-2.2.jar"/>
         </taskdef>
         <property name="sonar.projectName" value="${app.name}"/>
         <property name="sonar.projectKey" value="ch.cyberduck:cyberduck-${platform}"/>
@@ -350,6 +350,7 @@
         <property name="sonar.links.homepage" value="http://cyberduck.io"/>
         <property name="sonar.links.ci" value="https://ci.cyberduck.io"/>
         <property name="sonar.links.issue" value="https://trac.cyberduck.io"/>
+        <property name="sonar.scm.provider" value="svn"/>
         <property name="sonar.scm.url" value="scm:svn:http://svn.cyberduck.io/trunk"/>
         <property name="sonar.links.scm" value="https://svn.cyberduck.io"/>
         <property name="sonar.links.scm_dev" value="https://svn.cyberduck.io"/>
