@@ -35,9 +35,9 @@ public class DefaultSymlinkFeature implements Symlink {
         try {
             Files.createSymbolicLink(Paths.get(file.getAbsolute()), Paths.get(target));
         }
-        catch(IOException | UnsupportedOperationException x) {
+        catch(IOException | UnsupportedOperationException e) {
             throw new AccessDeniedException(String.format("%s %s",
-                    LocaleFactory.localizedString("Cannot create file", "Error"), file.getAbsolute()));
+                    LocaleFactory.localizedString("Cannot create file", "Error"), file.getAbsolute()), e);
         }
     }
 }
