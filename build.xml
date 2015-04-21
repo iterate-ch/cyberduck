@@ -350,7 +350,6 @@
         <property name="sonar.links.homepage" value="http://cyberduck.io"/>
         <property name="sonar.links.ci" value="https://ci.cyberduck.io"/>
         <property name="sonar.links.issue" value="https://trac.cyberduck.io"/>
-        <property name="sonar.scm.provider" value="svn"/>
         <property name="sonar.scm.url" value="scm:svn:http://svn.cyberduck.io/trunk"/>
         <property name="sonar.links.scm" value="https://svn.cyberduck.io"/>
         <property name="sonar.links.scm_dev" value="https://svn.cyberduck.io"/>
