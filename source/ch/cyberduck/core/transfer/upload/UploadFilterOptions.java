@@ -26,9 +26,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
  */
 public final class UploadFilterOptions {
 
-    private final Preferences preferences
-            = PreferencesFactory.get();
-
     public boolean permissions;
 
     public boolean acl;
@@ -44,6 +41,7 @@ public final class UploadFilterOptions {
 
     public UploadFilterOptions() {
         // Defaults
+        final Preferences preferences = PreferencesFactory.get();
         permissions = preferences.getBoolean("queue.upload.permissions.change");
         acl = preferences.getBoolean("queue.upload.permissions.change");
         timestamp = preferences.getBoolean("queue.upload.timestamp.change");
