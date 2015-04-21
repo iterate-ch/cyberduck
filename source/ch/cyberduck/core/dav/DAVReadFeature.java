@@ -51,8 +51,12 @@ public class DAVReadFeature implements Read {
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
         final List<Header> headers = new ArrayList<Header>();
         if(status.isAppend()) {
-            headers.add(new BasicHeader(HttpHeaders.RANGE, String.format("bytes=%d-%d",
-                    status.getOffset(), status.getOffset() + status.getLength())));
+            final String range = String.format("bytes=%d-%d",
+                    status.getOffset(), status.getOffset() + status.getLength());
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Add range header %s for file %s", range, file));
+            }
+            headers.add(new BasicHeader(HttpHeaders.RANGE, range));
             // Disable compression
             headers.add(new BasicHeader(HttpHeaders.ACCEPT_ENCODING, "identity"));
         }
