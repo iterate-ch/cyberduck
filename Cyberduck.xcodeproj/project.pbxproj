@@ -278,8 +278,6 @@
 		47F102B41628D57500923FDE /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 474522C51076B68E00823467 /* ApplicationServices.framework */; };
 		47F102CA1628D5CE00923FDE /* LaunchServicesQuarantineService.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F102BD1628D5CE00923FDE /* LaunchServicesQuarantineService.h */; };
 		47F102CE1628D5CE00923FDE /* LaunchServicesQuarantineService.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F102BF1628D5CE00923FDE /* LaunchServicesQuarantineService.m */; };
-		47F7AD97194ADCB2000314F1 /* KeystoreImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F7AD95194ADCB2000314F1 /* KeystoreImpl.h */; };
-		47F7AD98194ADCB2000314F1 /* KeystoreImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F7AD96194ADCB2000314F1 /* KeystoreImpl.m */; };
 		47FA2CF21A28A1B70058614E /* librococoa.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 477A104D0FD08DBA00BAD4AD /* librococoa.dylib */; };
 		47FB9C641725A5CC00FE33C1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
 		47FB9C661725A5CC00FE33C1 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */; };
@@ -2316,8 +2314,6 @@
 		47F102B91628D57500923FDE /* libLaunchServicesQuarantineService.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libLaunchServicesQuarantineService.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		47F102BD1628D5CE00923FDE /* LaunchServicesQuarantineService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LaunchServicesQuarantineService.h; sourceTree = "<group>"; };
 		47F102BF1628D5CE00923FDE /* LaunchServicesQuarantineService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LaunchServicesQuarantineService.m; sourceTree = "<group>"; };
-		47F7AD95194ADCB2000314F1 /* KeystoreImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeystoreImpl.h; sourceTree = "<group>"; };
-		47F7AD96194ADCB2000314F1 /* KeystoreImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeystoreImpl.m; sourceTree = "<group>"; };
 		47FB9C6B1725A5CC00FE33C1 /* libIOKitSleepPreventer.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libIOKitSleepPreventer.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		47FC190B099FB8AF0082431D /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = en; path = en.lproj/Crash.strings; sourceTree = "<group>"; };
 		47FC191F099FC1290082431D /* fr */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = fr; path = fr.lproj/Crash.strings; sourceTree = "<group>"; };
@@ -2621,8 +2617,6 @@
 				47BE1F8712369DE600E758FE /* importer */,
 				47983749072AD67800FA3CDB /* Keychain.h */,
 				4798373F072AD66D00FA3CDB /* Keychain.m */,
-				47F7AD95194ADCB2000314F1 /* KeystoreImpl.h */,
-				47F7AD96194ADCB2000314F1 /* KeystoreImpl.m */,
 			);
 			path = core;
 			sourceTree = "<group>";
@@ -3941,7 +3935,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				47B1F21B199E13EA00960511 /* Sandbox.h in Headers */,
-				47F7AD97194ADCB2000314F1 /* KeystoreImpl.h in Headers */,
 				4739EF690856981300405FD3 /* Keychain.h in Headers */,
 				47462ADD0F0A473D0075CBA9 /* EMKeychainItem.h in Headers */,
 				47462ADF0F0A473D0075CBA9 /* EMKeychainProxy.h in Headers */,
@@ -4614,7 +4607,6 @@
 			files = (
 				47B1F21C199E13F000960511 /* Sandbox.m in Sources */,
 				4739EF6B0856981300405FD3 /* Keychain.m in Sources */,
-				47F7AD98194ADCB2000314F1 /* KeystoreImpl.m in Sources */,
 				47462ADE0F0A473D0075CBA9 /* EMKeychainItem.m in Sources */,
 				47462AE00F0A473D0075CBA9 /* EMKeychainProxy.m in Sources */,
 			);
