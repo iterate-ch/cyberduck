@@ -73,7 +73,8 @@ public class UploadTransfer extends Transfer {
             = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
     public UploadTransfer(final Host host, final Path root, final Local local) {
-        this(host, Collections.singletonList(new TransferItem(root, local)), new NullFilter<Local>());
+        this(host, Collections.singletonList(new TransferItem(root, local)),
+                PreferencesFactory.get().getBoolean("queue.upload.skip.enable") ? new UploadRegexFilter() : new NullFilter<Local>());
     }
 
     public UploadTransfer(final Host host, final Path root, final Local local, final Filter<Local> f) {

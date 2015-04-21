@@ -75,7 +75,8 @@ public class DownloadTransfer extends Transfer {
     private DownloadSymlinkResolver symlinkResolver;
 
     public DownloadTransfer(final Host host, final Path root, final Local local) {
-        this(host, Collections.singletonList(new TransferItem(root, local)), new DownloadDuplicateFilter());
+        this(host, Collections.singletonList(new TransferItem(root, local)),
+                PreferencesFactory.get().getBoolean("queue.download.skip.enable") ? new DownloadRegexFilter() : new DownloadDuplicateFilter());
     }
 
     public DownloadTransfer(final Host host, final Path root, final Local local, final Filter<Path> f) {

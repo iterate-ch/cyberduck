@@ -44,7 +44,7 @@ public class DownloadTransferTest extends AbstractTestCase {
     @Test
     public void testSerializeComplete() throws Exception {
         // Test transfer to complete with existing directory
-        Transfer t = new DownloadTransfer(new Host("t"), new Path("/t", EnumSet.of(Path.Type.directory)), new NullLocal("t") {
+        final Transfer t = new DownloadTransfer(new Host("t"), new Path("/t", EnumSet.of(Path.Type.directory)), new NullLocal("t") {
             @Override
             public boolean exists() {
                 return true;
@@ -142,7 +142,7 @@ public class DownloadTransferTest extends AbstractTestCase {
     @Test
     public void testChildrenEmpty() throws Exception {
         final Path root = new Path("/t", EnumSet.of(Path.Type.directory));
-        Transfer t = new DownloadTransfer(new Host("t"), root, null);
+        final Transfer t = new DownloadTransfer(new Host("t"), root, null);
         final NullSession session = new NullSession(new Host("t")) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
@@ -297,7 +297,7 @@ public class DownloadTransferTest extends AbstractTestCase {
     @Test
     public void testActionFileExistsFalse() throws Exception {
         final Path root = new Path("t", EnumSet.of(Path.Type.file));
-        Transfer t = new DownloadTransfer(new Host("t"), root, new NullLocal("p", "t") {
+        final Transfer t = new DownloadTransfer(new Host("t"), root, new NullLocal("p", "t") {
             @Override
             public boolean exists() {
                 return false;
@@ -322,7 +322,7 @@ public class DownloadTransferTest extends AbstractTestCase {
     @Test
     public void testActionDirectoryExistsTrue() throws Exception {
         final Path root = new Path("t", EnumSet.of(Path.Type.directory));
-        Transfer t = new DownloadTransfer(new Host("t"), root, new NullLocal("p", "t") {
+        final Transfer t = new DownloadTransfer(new Host("t"), root, new NullLocal("p", "t") {
             @Override
             public boolean exists() {
                 return true;
@@ -347,7 +347,7 @@ public class DownloadTransferTest extends AbstractTestCase {
     @Test
     public void testActionDirectoryExistsFalse() throws Exception {
         final Path root = new Path("t", EnumSet.of(Path.Type.directory));
-        Transfer t = new DownloadTransfer(new Host("t"), root, new NullLocal("p", "t") {
+        final Transfer t = new DownloadTransfer(new Host("t"), root, new NullLocal("p", "t") {
             @Override
             public boolean exists() {
                 return false;
@@ -372,7 +372,7 @@ public class DownloadTransferTest extends AbstractTestCase {
     @Test
     public void testActionResume() throws Exception {
         final Path root = new Path("t", EnumSet.of(Path.Type.file));
-        Transfer t = new DownloadTransfer(new Host("t"), root, new NullLocal(System.getProperty("java.io.tmpdir")));
+        final Transfer t = new DownloadTransfer(new Host("t"), root, new NullLocal(System.getProperty("java.io.tmpdir")));
         assertEquals(TransferAction.resume, t.action(new NullSession(new Host("t")), true, false, new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
@@ -385,7 +385,7 @@ public class DownloadTransferTest extends AbstractTestCase {
     @Test
     public void testStatus() throws Exception {
         final Path parent = new Path("t", EnumSet.of(Path.Type.file));
-        Transfer t = new DownloadTransfer(new Host("t"), parent, new NullLocal(System.getProperty("java.io.tmpdir")));
+        final Transfer t = new DownloadTransfer(new Host("t"), parent, new NullLocal(System.getProperty("java.io.tmpdir")));
         assertFalse(t.isRunning());
         assertFalse(t.isReset());
         assertNull(t.getTimestamp());
@@ -394,7 +394,7 @@ public class DownloadTransferTest extends AbstractTestCase {
     @Test
     public void testRegexFilter() throws Exception {
         final Path parent = new Path("t", EnumSet.of(Path.Type.directory));
-        Transfer t = new DownloadTransfer(new Host("t"), parent, new NullLocal(System.getProperty("java.io.tmpdir")));
+        final Transfer t = new DownloadTransfer(new Host("t"), parent, new NullLocal(System.getProperty("java.io.tmpdir")));
         final NullSession session = new NullSession(new Host("t")) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
