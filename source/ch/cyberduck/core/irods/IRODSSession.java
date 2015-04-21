@@ -36,8 +36,6 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.SSLSession;
@@ -66,9 +64,6 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
 
     private IRODSFileSystemAO filesystem;
 
-    private Preferences preferences
-            = PreferencesFactory.get();
-
     public IRODSSession(final Host h) {
         super(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
     }
@@ -93,6 +88,9 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
         properties.setEncoding(this.getEncoding());
         properties.setIrodsSocketTimeout(this.timeout());
         properties.setIrodsParallelSocketTimeout(this.timeout());
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Configure client %s with properties %s", client, properties));
+        }
         client.getIrodsSession().setJargonProperties(properties);
         return client;
     }
