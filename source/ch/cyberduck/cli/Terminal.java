@@ -89,7 +89,7 @@ public class Terminal {
 
     private PathCache cache;
 
-    private enum Exit {
+    protected enum Exit {
         success,
         failure
     }
@@ -103,7 +103,7 @@ public class Terminal {
     }
 
     public Terminal(final Preferences defaults, final Options options, final CommandLine input) {
-        this.preferences = defaults;
+        PreferencesFactory.set(this.preferences = defaults);
         ProtocolFactory.register();
         this.options = options;
         if(log.isInfoEnabled()) {
@@ -127,7 +127,6 @@ public class Terminal {
      */
     public static void main(final String... args) throws IOException {
         final TerminalPreferences defaults = new TerminalPreferences();
-        PreferencesFactory.set(defaults);
         open(args, defaults);
     }
 
