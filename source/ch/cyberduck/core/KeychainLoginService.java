@@ -78,14 +78,9 @@ public class KeychainLoginService implements LoginService {
         }
         catch(LoginFailureException e) {
             listener.message(LocaleFactory.localizedString("Login failed", "Credentials"));
-            try {
-                controller.prompt(bookmark, bookmark.getCredentials(),
-                        LocaleFactory.localizedString("Login failed", "Credentials"), e.getDetail(),
-                        new LoginOptions(bookmark.getProtocol()));
-            }
-            catch(LoginCanceledException c) {
-                throw c;
-            }
+            controller.prompt(bookmark, bookmark.getCredentials(),
+                    LocaleFactory.localizedString("Login failed", "Credentials"), e.getDetail(),
+                    new LoginOptions(bookmark.getProtocol()));
             throw e;
         }
     }
