@@ -17,7 +17,6 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
-import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
@@ -80,7 +79,7 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
         }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), cache) {
             @Override
-            public void transfer(final TransferItem item, final TransferPathFilter filter) throws BackgroundException {
+            public void transfer(final TransferItem item, final TransferAction action) throws BackgroundException {
                 if(item.remote.equals(root)) {
                     assertTrue(cache.containsKey(new TransferItem(root, local)));
                 }
@@ -91,7 +90,7 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
                         l.add(new NullLocal(this.getAbsolute(), "c"));
                         return l;
                     }
-                }), filter);
+                }), action);
                 assertFalse(cache.containsKey(new TransferItem(child, local)));
             }
         }.run();
@@ -149,11 +148,11 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
         }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), cache) {
             @Override
-            public void transfer(final TransferItem item, final TransferPathFilter filter) throws BackgroundException {
+            public void transfer(final TransferItem item, final TransferAction action) throws BackgroundException {
                 if(item.remote.equals(root)) {
                     assertTrue(cache.containsKey(new TransferItem(root, local)));
                 }
-                super.transfer(item, filter);
+                super.transfer(item, action);
                 assertFalse(cache.containsKey(new TransferItem(child, local)));
             }
         }.run();
@@ -232,11 +231,11 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
         }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), cache) {
             @Override
-            public void transfer(final TransferItem item, final TransferPathFilter filter) throws BackgroundException {
+            public void transfer(final TransferItem item, final TransferAction action) throws BackgroundException {
                 if(item.remote.equals(root)) {
                     assertTrue(cache.containsKey(new TransferItem(root, local)));
                 }
-                super.transfer(new TransferItem(item.remote, new NullLocal("l")), filter);
+                super.transfer(new TransferItem(item.remote, new NullLocal("l")), action);
                 if(item.remote.equals(root)) {
                     assertFalse(cache.containsKey(new TransferItem(root, local)));
                 }
@@ -274,7 +273,7 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
             }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
                     new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), TransferItemCache.empty()) {
                 @Override
-                public void transfer(final TransferItem file, final TransferPathFilter filter) throws BackgroundException {
+                public void transfer(final TransferItem file, final TransferAction action) throws BackgroundException {
                     // Expected not found
                     fail();
                 }

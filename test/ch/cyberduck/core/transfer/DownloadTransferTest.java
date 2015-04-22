@@ -14,8 +14,8 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.TransferDictionary;
 import ch.cyberduck.core.test.NullLocal;
 import ch.cyberduck.core.test.NullSession;
+import ch.cyberduck.core.transfer.download.AbstractDownloadFilter;
 import ch.cyberduck.core.transfer.download.DownloadFilterOptions;
-import ch.cyberduck.core.transfer.download.OverwriteFilter;
 import ch.cyberduck.core.transfer.download.ResumeFilter;
 import ch.cyberduck.core.transfer.symlink.DownloadSymlinkResolver;
 import ch.cyberduck.core.worker.SingleTransferWorker;
@@ -172,8 +172,7 @@ public class DownloadTransferTest extends AbstractTestCase {
                 new TransferSpeedometer(transfer), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback());
         worker.prepare(test, new NullLocal(System.getProperty("java.io.tmpdir"), "c"), new TransferStatus().exists(true),
-                new OverwriteFilter(new DownloadSymlinkResolver(Collections.singletonList(new TransferItem(test))),
-                        session)
+                TransferAction.overwrite
         );
     }
 
@@ -198,12 +197,8 @@ public class DownloadTransferTest extends AbstractTestCase {
             }
         }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), table);
-        final DownloadFilterOptions options = new DownloadFilterOptions();
-        options.icon = false;
-        final TransferPathFilter filter = new OverwriteFilter(new DownloadSymlinkResolver(Collections.singletonList(new TransferItem(test))),
-                new NullSession(new Host("h"))).withOptions(options);
         worker.prepare(test, new NullLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString()), new TransferStatus().exists(true),
-                filter
+                TransferAction.overwrite
         );
         final TransferStatus status = new TransferStatus();
         status.setExists(false);
@@ -231,7 +226,23 @@ public class DownloadTransferTest extends AbstractTestCase {
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write("test", out);
         IOUtils.closeQuietly(out);
-        final Transfer transfer = new DownloadTransfer(host, test, local);
+        final Transfer transfer = new DownloadTransfer(host, test, local) {
+            @Override
+            public AbstractDownloadFilter filter(final Session<?> session, final TransferAction action, final ProgressListener listener) {
+                return new ResumeFilter(new DownloadSymlinkResolver(Collections.singletonList(new TransferItem(test))),
+                        new NullSession(new Host("h")), new DownloadFilterOptions(), new Read() {
+                    @Override
+                    public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    @Override
+                    public boolean offset(final Path file) throws BackgroundException {
+                        return true;
+                    }
+                });
+            }
+        };
         final Map<Path, TransferStatus> table
                 = new HashMap<Path, TransferStatus>();
         final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions(),
@@ -243,20 +254,7 @@ public class DownloadTransferTest extends AbstractTestCase {
             }
         }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), table);
-        worker.prepare(test, local, new TransferStatus().exists(true),
-                new ResumeFilter(new DownloadSymlinkResolver(Collections.singletonList(new TransferItem(test))),
-                        new NullSession(new Host("h")), new DownloadFilterOptions(), new Read() {
-                    @Override
-                    public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
-                        throw new UnsupportedOperationException();
-                    }
-
-                    @Override
-                    public boolean offset(final Path file) throws BackgroundException {
-                        return true;
-                    }
-                })
-        );
+        worker.prepare(test, local, new TransferStatus().exists(true), TransferAction.resume);
         final TransferStatus status = new TransferStatus();
         status.setExists(true);
         final TransferStatus expected = new TransferStatus();

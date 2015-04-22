@@ -14,9 +14,7 @@ import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.test.NullLocal;
 import ch.cyberduck.core.test.NullSession;
-import ch.cyberduck.core.transfer.symlink.UploadSymlinkResolver;
-import ch.cyberduck.core.transfer.upload.OverwriteFilter;
-import ch.cyberduck.core.transfer.upload.ResumeFilter;
+import ch.cyberduck.core.transfer.upload.AbstractUploadFilter;
 import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.core.worker.SingleTransferWorker;
 
@@ -248,7 +246,7 @@ public class UploadTransferTest extends AbstractTestCase {
         }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), table);
         worker.prepare(test, new Local(System.getProperty("java.io.tmpdir"), "transfer"), new TransferStatus().exists(true),
-                new OverwriteFilter(new UploadSymlinkResolver(null, Collections.<TransferItem>emptyList()), session));
+                TransferAction.overwrite);
         assertEquals(new TransferStatus().exists(true), table.get(test));
         final TransferStatus expected = new TransferStatus();
         assertEquals(expected, table.get(new Path("/transfer/" + name, EnumSet.of(Path.Type.file))));
@@ -289,7 +287,7 @@ public class UploadTransferTest extends AbstractTestCase {
         }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), table);
         worker.prepare(test, directory, new TransferStatus().exists(true),
-                new ResumeFilter(new UploadSymlinkResolver(null, Collections.<TransferItem>emptyList()), session));
+                TransferAction.resume);
         assertEquals(new TransferStatus().exists(true), table.get(test));
         final TransferStatus expected = new TransferStatus().exists(true);
         expected.setAppend(true);
@@ -386,10 +384,12 @@ public class UploadTransferTest extends AbstractTestCase {
                 status.setComplete();
                 set.set(true);
             }
+
+            @Override
+            public AbstractUploadFilter filter(final Session<?> session, final TransferAction action, final ProgressListener listener) {
+                return super.filter(session, action, listener).withOptions(new UploadFilterOptions().withTemporary(true));
+            }
         };
-        final OverwriteFilter filter = new OverwriteFilter(
-                new UploadSymlinkResolver(null, Collections.<TransferItem>emptyList()), session,
-                new UploadFilterOptions().withTemporary(true));
         final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions(),
                 new TransferSpeedometer(transfer), new DisabledTransferPrompt() {
             @Override
@@ -399,10 +399,10 @@ public class UploadTransferTest extends AbstractTestCase {
             }
         }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), table);
-        worker.prepare(test, local, new TransferStatus().exists(true), filter);
+        worker.prepare(test, local, new TransferStatus().exists(true), TransferAction.overwrite);
         assertNotNull(table.get(test));
         assertNotNull(table.get(test).getRename());
-        worker.transfer(new TransferItem(test, local), filter);
+        worker.transfer(new TransferItem(test, local), TransferAction.overwrite);
         assertTrue(set.get());
         assertTrue(moved.get());
     }
