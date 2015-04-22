@@ -22,7 +22,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.LoginConnectionService;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -53,7 +52,7 @@ public class FTPDataFallback {
      * @param listener Progress callback
      * @return True if action was successful
      */
-    protected <T> T data(final Path file, final DataConnectionAction<T> action, final ProgressListener listener)
+    protected <T> T data(final DataConnectionAction<T> action, final ProgressListener listener)
             throws IOException, BackgroundException {
         try {
             // Make sure to always configure data mode because connect event sets defaults.

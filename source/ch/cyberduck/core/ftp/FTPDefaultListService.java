@@ -57,7 +57,7 @@ public class FTPDefaultListService implements ListService {
                 // data connection in type ASCII or type EBCDIC.
                 throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
             }
-            final List<String> list = new FTPDataFallback(session).data(directory, new DataConnectionAction<List<String>>() {
+            final List<String> list = new FTPDataFallback(session).data(new DataConnectionAction<List<String>>() {
                 @Override
                 public List<String> execute() throws BackgroundException {
                     try {

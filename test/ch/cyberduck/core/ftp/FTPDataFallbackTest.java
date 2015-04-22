@@ -78,7 +78,7 @@ public class FTPDataFallbackTest extends AbstractTestCase {
                 return super.fallback(action);
             }
         };
-        f.data(path, action, new DisabledProgressListener());
+        f.data(action, new DisabledProgressListener());
         assertEquals(1, count.get());
         session.close();
     }
@@ -110,7 +110,7 @@ public class FTPDataFallbackTest extends AbstractTestCase {
                 return super.fallback(action);
             }
         };
-        f.data(new Path("test", EnumSet.of(Path.Type.file)), action, new DisabledProgressListener());
+        f.data(action, new DisabledProgressListener());
         assertEquals(1, count.get());
         session.close();
     }

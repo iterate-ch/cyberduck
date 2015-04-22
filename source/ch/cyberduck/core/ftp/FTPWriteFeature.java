@@ -49,7 +49,7 @@ public class FTPWriteFeature extends AppendWriteFeature {
             if(!session.getClient().setFileType(FTPClient.BINARY_FILE_TYPE)) {
                 throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
             }
-            final OutputStream out = new FTPDataFallback(session).data(file, new DataConnectionAction<OutputStream>() {
+            final OutputStream out = new FTPDataFallback(session).data(new DataConnectionAction<OutputStream>() {
                 @Override
                 public OutputStream execute() throws BackgroundException {
                     try {
