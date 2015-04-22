@@ -186,10 +186,15 @@ public class Terminal {
                             new TerminalCertificateStore(reader)
                     ),
                     new PreferencesX509KeyManager(new TerminalCertificateStore(reader)));
-            // Already connect here because the tilde expander may need to use the current working directory
-            this.connect(session);
-            // Expand remote path
-            final Path remote = new TildePathExpander(session).expand(new PathParser(input).parse(uri));
+            final Path remote;
+            if(new PathParser(input).parse(uri).getAbsolute().startsWith(TildePathExpander.PREFIX)) {
+                // Already connect here because the tilde expander may need to use the current working directory
+                this.connect(session);
+                remote = new TildePathExpander(session).expand(new PathParser(input).parse(uri));
+            }
+            else {
+                remote = new PathParser(input).parse(uri);
+            }
             switch(action) {
                 case edit:
                     return this.edit(session, remote);

@@ -27,6 +27,9 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class TildePathExpander {
 
+    public static final String PREFIX
+            = String.format("%s%s", Path.DELIMITER, Path.HOME);
+
     private Session session;
 
     public TildePathExpander(final Session session) {
@@ -34,7 +37,7 @@ public class TildePathExpander {
     }
 
     public Path expand(final Path remote) throws BackgroundException {
-        return this.expand(remote, String.format("%s%s", Path.DELIMITER, Path.HOME));
+        return this.expand(remote, PREFIX);
     }
 
     protected Path expand(final Path remote, final String format) throws BackgroundException {
