@@ -229,6 +229,7 @@ public class Terminal {
             return this.transfer(transfer, session);
         }
         catch(ConnectionCanceledException e) {
+            log.warn("Connection canceled", e);
             return Exit.success;
         }
         catch(BackgroundException e) {
