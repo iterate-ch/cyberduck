@@ -109,6 +109,10 @@ public abstract class Cache<T extends Referenceable> {
      */
     public AttributedList<T> remove(final T reference) {
         final AttributedList<T> removed = impl.remove(reference);
+        if(null == removed) {
+            // Not previously in cache
+            return AttributedList.emptyList();
+        }
         for(T r : removed) {
             reverse.remove(this.key(r));
         }
