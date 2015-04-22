@@ -44,7 +44,7 @@ public class Console {
     private final PrintStream out
             = AnsiConsole.out();
 
-    private final Semaphore lock
+    private static final Semaphore lock
             = new Semaphore(1);
 
     public String readLine(String format, Object... args) throws ConnectionCanceledException {
