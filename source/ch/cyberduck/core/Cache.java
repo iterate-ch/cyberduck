@@ -41,8 +41,8 @@ public abstract class Cache<T extends Referenceable> {
     public Cache(int size) {
         if(size == Integer.MAX_VALUE) {
             // Unlimited
-            impl = new LinkedHashMap<T, AttributedList<T>>();
-            reverse = new LinkedHashMap<CacheReference, T>();
+            impl = Collections.synchronizedMap(new LinkedHashMap<T, AttributedList<T>>());
+            reverse = Collections.synchronizedMap(new LinkedHashMap<CacheReference, T>());
         }
         else if(size == 0) {
             impl = Collections.emptyMap();
@@ -51,7 +51,7 @@ public abstract class Cache<T extends Referenceable> {
         else {
             // Will inflate to the given size
             impl = Collections.synchronizedMap(new LRUMap(size));
-            reverse = new LinkedHashMap<CacheReference, T>();
+            reverse = Collections.synchronizedMap(new LinkedHashMap<CacheReference, T>());
         }
     }
 
