@@ -28,15 +28,14 @@ import ch.cyberduck.core.threading.AlertCallback;
  */
 public class TerminalAlertCallback implements AlertCallback {
 
-    private TerminalProgressListener console
-            = new TerminalProgressListener();
+    private final Console console = new Console();
 
     @Override
     public boolean alert(final Host host, final BackgroundException failure, final StringBuilder transcript) {
         final StringAppender appender = new StringAppender();
         appender.append(failure.getMessage());
         appender.append(failure.getDetail());
-        console.message(appender.toString());
+        console.printf("%n%s%n", appender.toString());
         // Never repeat
         return false;
     }
