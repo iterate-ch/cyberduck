@@ -236,7 +236,7 @@ public class Terminal {
             final StringAppender b = new StringAppender();
             b.append(e.getMessage());
             b.append(e.getDetail());
-            console.printf("%n%s", b.toString());
+            console.printf("%n%s%n", b.toString());
         }
         finally {
             this.disconnect(session);
