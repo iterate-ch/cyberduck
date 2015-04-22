@@ -76,8 +76,9 @@ public class SFTPListService implements ListService {
                     type.add(Path.Type.symboliclink);
                 }
                 final Path file = new Path(directory, f.getName(), type, attributes);
-                this.post(file);
-                children.add(file);
+                if(this.post(file)) {
+                    children.add(file);
+                }
                 listener.chunk(directory, children);
             }
             handle.close();
@@ -88,7 +89,7 @@ public class SFTPListService implements ListService {
         }
     }
 
-    protected void post(final Path file) throws BackgroundException {
+    protected boolean post(final Path file) throws BackgroundException {
         if(file.isSymbolicLink()) {
             final Path target;
             Path.Type type;
@@ -131,8 +132,10 @@ public class SFTPListService implements ListService {
                 file.setSymlinkTarget(target);
             }
             catch(IOException e) {
-                throw new SFTPExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+                log.warn(String.format("Failure to read symbolic link of %s. %s", file, e.getMessage()));
+                return false;
             }
         }
+        return true;
     }
 }
