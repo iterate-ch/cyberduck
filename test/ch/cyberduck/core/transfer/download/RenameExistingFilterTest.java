@@ -68,7 +68,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
 
             @Override
             public void rename(final Local renamed) {
-                assertEquals(String.format("t-2 (%s)", UserDateFormatterFactory.get().getLongFormat(System.currentTimeMillis(), false)), renamed.getName());
+                assertTrue(renamed.getName().startsWith(String.format("t-2 (%s)", UserDateFormatterFactory.get().getLongFormat(System.currentTimeMillis(), false))));
                 r.set(true);
             }
         };
