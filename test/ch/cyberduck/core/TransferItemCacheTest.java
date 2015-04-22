@@ -23,6 +23,9 @@ import org.junit.Test;
 
 import java.util.EnumSet;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 /**
  * @version $Id$
  */
@@ -30,6 +33,8 @@ public class TransferItemCacheTest extends AbstractTestCase {
 
     @Test
     public void testRemove() throws Exception {
-        new TransferItemCache(1).remove(new TransferItem(new Path("/t", EnumSet.of(Path.Type.directory))));
+        final AttributedList<TransferItem> remove = new TransferItemCache(1).remove(new TransferItem(new Path("/t", EnumSet.of(Path.Type.directory))));
+        assertNotNull(remove);
+        assertTrue(remove.isEmpty());
     }
 }
