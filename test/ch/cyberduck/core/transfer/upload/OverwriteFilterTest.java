@@ -129,7 +129,6 @@ public class OverwriteFilterTest extends AbstractTestCase {
                 new UploadFilterOptions().withTemporary(true));
         final Path file = new Path("/t", EnumSet.of(Path.Type.file));
         final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus());
-        assertFalse(f.temporary.isEmpty());
         assertNotNull(status.getRename());
         assertTrue(status.isRename());
         assertNotEquals(file, status.getRename());
@@ -143,7 +142,6 @@ public class OverwriteFilterTest extends AbstractTestCase {
                 new UploadFilterOptions().withTemporary(true));
         final Path file = new Path("/t", EnumSet.of(Path.Type.file));
         final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus());
-        assertTrue(f.temporary.isEmpty());
         assertNull(status.getRename().remote);
     }
 
@@ -153,7 +151,6 @@ public class OverwriteFilterTest extends AbstractTestCase {
                 new UploadFilterOptions().withTemporary(true));
         final Path file = new Path("/t", EnumSet.of(Path.Type.file));
         final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus());
-        assertTrue(f.temporary.isEmpty());
         assertNull(status.getRename().local);
         assertNull(status.getRename().remote);
     }

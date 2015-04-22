@@ -53,8 +53,6 @@ import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -66,9 +64,6 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     private SymlinkResolver<Local> symlinkResolver;
 
     private Session<?> session;
-
-    protected Map<Path, Path> temporary
-            = new HashMap<Path, Path>();
 
     private UploadFilterOptions options;
 
@@ -165,9 +160,8 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 final Path renamed = new Path(file.getParent(),
                         MessageFormat.format(preferences.getProperty("queue.upload.file.temporary.format"),
                                 file.getName(), UUID.randomUUID().toString()), file.getType());
-                status.rename(renamed);
                 // File attributes should not change after calculate the hash code of the file reference
-                temporary.put(file, renamed);
+                status.rename(renamed);
             }
             status.setMime(mapping.getMime(file.getName()));
         }
@@ -265,8 +259,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             if(file.isFile()) {
                 if(this.options.temporary) {
                     final Move move = session.getFeature(Move.class);
-                    move.move(temporary.get(file), file, status.isExists(), listener);
-                    temporary.remove(file);
+                    move.move(status.getRename().remote, file, status.isExists(), listener);
                 }
             }
             if(!Permission.EMPTY.equals(status.getPermission())) {
