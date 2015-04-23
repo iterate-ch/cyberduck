@@ -69,6 +69,7 @@ public class TerminalPreferences extends MemoryPreferences {
         defaults.put("factory.logincallback.class", TerminalLoginCallback.class.getName());
         defaults.put("factory.hostkeycallback.class", TerminalHostKeyVerifier.class.getName());
         defaults.put("factory.transfererrorcallback.class", TerminalTransferErrorCallback.class.getName());
+        defaults.put("factory.notification.class", TerminalNotification.class.getName());
         for(Transfer.Type t : Transfer.Type.values()) {
             defaults.put(String.format("factory.transferpromptcallback.%s.class", t.name()), TerminalTransferPrompt.class.getName());
         }

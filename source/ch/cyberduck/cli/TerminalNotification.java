@@ -20,14 +20,13 @@ package ch.cyberduck.cli;
 
 import ch.cyberduck.core.notification.NotificationService;
 
-import org.fusesource.jansi.Ansi;
-
 /**
  * @version $Id$
  */
 public class TerminalNotification implements NotificationService {
 
-    private Console console = new Console();
+    private TerminalProgressListener console
+            = new TerminalProgressListener();
 
     @Override
     public void setup() {
@@ -41,12 +40,7 @@ public class TerminalNotification implements NotificationService {
 
     @Override
     public void notify(final String title, final String description) {
-        console.printf("\r%s%s%n%s", Ansi.ansi()
-                        .saveCursorPosition()
-                        .eraseLine(Ansi.Erase.ALL)
-                        .restoreCursorPosition(),
-                title,
-                Ansi.ansi().reset());
+        console.message(title);
     }
 
     @Override
