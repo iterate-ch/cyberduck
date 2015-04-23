@@ -22,7 +22,8 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.Preferences;
@@ -44,42 +45,41 @@ import java.io.File;
 /**
  * @version $Id$
  */
-public class IRODSUploadFeature implements Upload<Void> {
-    private static final Logger log = Logger.getLogger(IRODSUploadFeature.class);
+public class IRODSDownloadFeature implements Download {
+    private static final Logger log = Logger.getLogger(IRODSDownloadFeature.class);
 
     private IRODSSession session;
 
     private final Preferences preferences = PreferencesFactory.get();
 
-    public IRODSUploadFeature(final IRODSSession session) {
+    public IRODSDownloadFeature(final IRODSSession session) {
         this.session = session;
     }
 
     @Override
-    public boolean pooled() {
-        return true;
-    }
-
-    @Override
-    public Void upload(final Path file, final Local local, final BandwidthThrottle throttle,
-                       final StreamListener listener, final TransferStatus status,
-                       final ConnectionCallback callback) throws BackgroundException {
+    public void download(final Path file, final Local local, final BandwidthThrottle throttle,
+                         final StreamListener listener, final TransferStatus status,
+                         final ConnectionCallback callback) throws BackgroundException {
         try {
             final IRODSFileSystemAO fs = session.filesystem();
             final IRODSFile f = fs.getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
-            final TransferControlBlock block = DefaultTransferControlBlock.instance(StringUtils.EMPTY,
-                    preferences.getInteger("connection.retry"));
-            final TransferOptions options = new DefaultTransferOptionsConfigurer().configure(new TransferOptions());
-            options.setUseParallelTransfer(session.getTransferType().equals(Host.TransferType.concurrent));
-            block.setTransferOptions(options);
-            final DataTransferOperations transfer = fs.getIRODSAccessObjectFactory().getDataTransferOperations(fs.getIRODSAccount());
-            transfer.putOperation(new File(local.getAbsolute()), f, new DefaultTransferStatusCallbackListener(
-                    status, listener, block
-            ), block);
+            if(f.exists()) {
+                final TransferControlBlock block = DefaultTransferControlBlock.instance(StringUtils.EMPTY,
+                        preferences.getInteger("connection.retry"));
+                final TransferOptions options = new DefaultTransferOptionsConfigurer().configure(new TransferOptions());
+                options.setUseParallelTransfer(session.getTransferType().equals(Host.TransferType.concurrent));
+                block.setTransferOptions(options);
+                final DataTransferOperations transfer = fs.getIRODSAccessObjectFactory()
+                        .getDataTransferOperations(fs.getIRODSAccount());
+                transfer.getOperation(f, new File(local.getAbsolute()), new DefaultTransferStatusCallbackListener(status, listener, block), DefaultTransferControlBlock.instance(StringUtils.EMPTY, PreferencesFactory.get().getInteger("connection.retry")));
+            }
+            else {
+                throw new NotfoundException(file.getAbsolute());
+            }
         }
         catch(JargonException e) {
-            throw new IRODSExceptionMappingService().map(e);
+            throw new IRODSExceptionMappingService().map("Download {0} failed", e, file);
         }
-        return null;
     }
+
 }
