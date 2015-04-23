@@ -54,7 +54,8 @@ public class TerminalLoginCallback implements LoginCallback {
                      final String defaultButton, final String cancelButton, final String preference) throws ConnectionCanceledException {
         console.printf("%n%s", reason);
         if(!prompt.prompt(String.format("%s (y) or %s (n): ", defaultButton, cancelButton))) {
-            throw new ConnectionCanceledException();
+            // Switch protocol
+            throw new LoginCanceledException();
         }
     }
 
