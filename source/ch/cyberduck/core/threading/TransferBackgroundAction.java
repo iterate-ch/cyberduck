@@ -156,6 +156,7 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> im
                                     final X509TrustManager x509Trust,
                                     final X509KeyManager x509Key) {
         super(new LoginConnectionService(login, key, progress, transcript), controller, session, cache, null);
+        // Initialize worker
         this.worker = new WorkerFinder().find(login, callback, key, session, progress, transfer, options, prompt, this,
                 error, meter, stream, transcript, x509Trust, x509Key, cache);
         this.meter = meter;
@@ -182,6 +183,18 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> im
                                             final X509TrustManager x509Trust,
                                             final X509KeyManager x509Key,
                                             final PathCache cache) {
+            switch(this.type(session, transfer)) {
+                case concurrent:
+                    final int connections = PreferencesFactory.get().getInteger("queue.maxtransfers");
+                    return new ConcurrentTransferWorker(new LoginConnectionService(login, key, progress, transcript), transfer, options,
+                            meter, prompt, error, item, callback, progress, stream, x509Trust, x509Key, cache,
+                            connections);
+            }
+            return new SingleTransferWorker(session, transfer, options,
+                    meter, prompt, error, item, progress, stream, callback);
+        }
+
+        private Host.TransferType type(final Session<?> session, final Transfer transfer) {
             switch(session.getTransferType()) {
                 case concurrent:
                     switch(transfer.getType()) {
@@ -198,14 +211,11 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> im
                             // Setup concurrent worker if not already pooled internally
                             final int connections = PreferencesFactory.get().getInteger("queue.maxtransfers");
                             if(connections > 1) {
-                                return new ConcurrentTransferWorker(new LoginConnectionService(login, key, progress, transcript), transfer, options,
-                                        meter, prompt, error, item, callback, progress, stream, x509Trust, x509Key, cache,
-                                        connections);
+                                return Host.TransferType.concurrent;
                             }
                     }
             }
-            return new SingleTransferWorker(session, transfer, options,
-                    meter, prompt, error, item, progress, stream, callback);
+            return Host.TransferType.newconnection;
         }
     }
 
@@ -218,7 +228,7 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> im
     @Override
     protected boolean connect(final Session session) throws BackgroundException {
         final boolean opened;
-        switch(session.getTransferType()) {
+        switch(new WorkerFinder().type(session, transfer)) {
             case concurrent:
                 // Skip opening connection when managed in pool
                 opened = false;
