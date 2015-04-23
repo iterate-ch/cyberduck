@@ -2075,11 +2075,17 @@ namespace Ch.Cyberduck.Ui.Controller
                     string editCommand = app != null ? app.getIdentifier() : null;
                     if (Utils.IsNotBlank(editCommand))
                     {
-                        View.EditIcon =
-                            IconCache.Instance.GetFileIconFromExecutable(
-                                WindowsApplicationLauncher.GetExecutableCommand(editCommand), IconCache.IconSize.Large)
-                                .ToBitmap();
-                        return;
+                        try
+                        {
+                            View.EditIcon =
+                                IconCache.Instance.GetFileIconFromExecutable(
+                                    WindowsApplicationLauncher.GetExecutableCommand(editCommand), IconCache.IconSize.Large)
+                                    .ToBitmap();
+                            return;
+                        }
+                        catch (ObjectDisposedException)
+                        {                            
+                        }
                     }
                 }
             }
