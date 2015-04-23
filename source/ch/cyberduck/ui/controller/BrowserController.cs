@@ -958,24 +958,27 @@ namespace Ch.Cyberduck.Ui.Controller
                     Path renamed = new Path(destination, next.getName(), next.getType());
                     files.Add(next, renamed);
                 }
-                if (dropargs.Effect == DragDropEffects.Copy)
+                if (files.Count > 0)
                 {
-                    foreach (BrowserController controller in MainController.Browsers)
+                    if (dropargs.Effect == DragDropEffects.Copy)
                     {
-                        // Find source browser
-                        if (controller.View.Browser.Equals(dropargs.SourceListView))
+                        foreach (BrowserController controller in MainController.Browsers)
                         {
-                            controller.transfer(
-                                new CopyTransfer(controller.Session.getHost(), Session.getHost(),
-                                    Utils.ConvertToJavaMap(files)), new List<Path>(files.Values), false);
-                            break;
+                            // Find source browser
+                            if (controller.View.Browser.Equals(dropargs.SourceListView))
+                            {
+                                controller.transfer(
+                                    new CopyTransfer(controller.Session.getHost(), Session.getHost(),
+                                        Utils.ConvertToJavaMap(files)), new List<Path>(files.Values), false);
+                                break;
+                            }
                         }
                     }
-                }
-                if (dropargs.Effect == DragDropEffects.Move)
-                {
-                    // The file should be renamed
-                    RenamePaths(files);
+                    if (dropargs.Effect == DragDropEffects.Move)
+                    {
+                        // The file should be renamed
+                        RenamePaths(files);
+                    }
                 }
             }
         }
@@ -1396,13 +1399,16 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public void Download(IList<Path> downloads, Local downloadFolder)
         {
-            IList<TransferItem> items = new List<TransferItem>();
-            foreach (Path selected in downloads)
+            if (downloads.Count > 0)
             {
-                items.Add(new TransferItem(selected, LocalFactory.get(downloadFolder, selected.getName())));
+                IList<TransferItem> items = new List<TransferItem>();
+                foreach (Path selected in downloads)
+                {
+                    items.Add(new TransferItem(selected, LocalFactory.get(downloadFolder, selected.getName())));
+                }
+                Transfer q = new DownloadTransfer(Session.getHost(), Utils.ConvertToJavaList(items));
+                transfer(q, new List<Path>());
             }
-            Transfer q = new DownloadTransfer(Session.getHost(), Utils.ConvertToJavaList(items));
-            transfer(q, new List<Path>());
         }
 
         private void View_GotoFolder()
@@ -1650,16 +1656,16 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateNewFile()
         {
-            return IsMounted() && ((Touch) Session.getFeature(typeof (Touch))).isSupported(
-                new UploadTargetFinder(Workdir).find(SelectedPath)
-            );
+            return IsMounted() &&
+                   ((Touch) Session.getFeature(typeof (Touch))).isSupported(
+                       new UploadTargetFinder(Workdir).find(SelectedPath));
         }
 
         private bool View_ValidateUpload()
         {
-            return IsMounted() && ((Touch) Session.getFeature(typeof (Touch))).isSupported(
-                new UploadTargetFinder(Workdir).find(SelectedPath)
-            );
+            return IsMounted() &&
+                   ((Touch) Session.getFeature(typeof (Touch))).isSupported(
+                       new UploadTargetFinder(Workdir).find(SelectedPath));
         }
 
         private void View_Upload()
@@ -1668,7 +1674,7 @@ namespace Ch.Cyberduck.Ui.Controller
             // currently not possible to select a folder. May be we should provide
             // a second menu item which allows to select a folder to upload
             string[] paths = View.UploadDialog(null);
-            if (null == paths) return;
+            if (null == paths || paths.Length == 0) return;
 
             Path destination = new UploadTargetFinder(Workdir).find(SelectedPath);
             List uploads = Utils.ConvertToJavaList(paths, delegate(string path)
@@ -1689,7 +1695,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             string folder = View.DownloadToDialog(LocaleFactory.localizedString("Download To…"),
                 new DownloadDirectoryFinder().find(Session.getHost()), null);
-            if (null != folder)
+            if (null != folder && SelectedPaths.Count > 0)
             {
                 Local target = LocalFactory.get(folder);
                 new DownloadDirectoryFinder().save(Session.getHost(), target);
