@@ -2601,7 +2601,6 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             CallbackDelegate run = delegate
             {
-                Session = null;
                 _cache.clear();
                 View.WindowTitle = PreferencesFactory.get().getProperty("application.name");
                 disconnected();
