@@ -208,15 +208,6 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> im
 
     @Override
     protected boolean connect(final Session session) throws BackgroundException {
-        final boolean opened;
-        switch(new TransferTypeFinder().type(session, transfer)) {
-            case concurrent:
-                // Skip opening connection when managed in pool
-                opened = false;
-                break;
-            default:
-                opened = super.connect(session);
-        }
         switch(transfer.getType()) {
             case copy:
                 final Session target = ((CopyTransfer) transfer).getDestination();
@@ -225,7 +216,13 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> im
                     growl.notify("Connection opened", session.getHost().getHostname());
                 }
         }
-        return opened;
+        switch(new TransferTypeFinder().type(session, transfer)) {
+            case concurrent:
+                // Skip opening connection when managed in pool
+                return false;
+            default:
+                return super.connect(session);
+        }
     }
 
     @Override
