@@ -40,7 +40,6 @@ import ch.cyberduck.core.transfer.TransferListener;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
-import ch.cyberduck.core.worker.AbstractTransferWorker;
 import ch.cyberduck.core.worker.ConcurrentTransferWorker;
 import ch.cyberduck.core.worker.SingleTransferWorker;
 
@@ -157,8 +156,17 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> im
                                     final X509KeyManager x509Key) {
         super(new LoginConnectionService(login, key, progress, transcript), controller, session, cache, null);
         // Initialize worker
-        this.worker = new WorkerFinder().find(login, callback, key, session, progress, transfer, options, prompt, this,
-                error, meter, stream, transcript, x509Trust, x509Key, cache);
+        switch(new TransferTypeFinder().type(session, transfer)) {
+            case concurrent:
+                final int connections = PreferencesFactory.get().getInteger("queue.maxtransfers");
+                this.worker = new ConcurrentTransferWorker(new LoginConnectionService(login, key, progress, transcript), transfer, options,
+                        meter, prompt, error, this, callback, progress, stream, x509Trust, x509Key, cache,
+                        connections);
+                break;
+            default:
+                this.worker = new SingleTransferWorker(session, transfer, options,
+                        meter, prompt, error, this, progress, stream, callback);
+        }
         this.meter = meter;
         this.transfer = transfer.withCache(cache);
         this.options = options;
@@ -166,34 +174,7 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> im
         this.prompt = prompt;
     }
 
-    private static final class WorkerFinder {
-        private AbstractTransferWorker find(final LoginService login,
-                                            final ConnectionCallback callback,
-                                            final HostKeyCallback key,
-                                            final Session<?> session,
-                                            final ProgressListener progress,
-                                            final Transfer transfer,
-                                            final TransferOptions options,
-                                            final TransferPrompt prompt,
-                                            final TransferItemCallback item,
-                                            final TransferErrorCallback error,
-                                            final TransferSpeedometer meter,
-                                            final StreamListener stream,
-                                            final TranscriptListener transcript,
-                                            final X509TrustManager x509Trust,
-                                            final X509KeyManager x509Key,
-                                            final PathCache cache) {
-            switch(this.type(session, transfer)) {
-                case concurrent:
-                    final int connections = PreferencesFactory.get().getInteger("queue.maxtransfers");
-                    return new ConcurrentTransferWorker(new LoginConnectionService(login, key, progress, transcript), transfer, options,
-                            meter, prompt, error, item, callback, progress, stream, x509Trust, x509Key, cache,
-                            connections);
-            }
-            return new SingleTransferWorker(session, transfer, options,
-                    meter, prompt, error, item, progress, stream, callback);
-        }
-
+    private static final class TransferTypeFinder {
         private Host.TransferType type(final Session<?> session, final Transfer transfer) {
             switch(session.getTransferType()) {
                 case concurrent:
@@ -228,7 +209,7 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> im
     @Override
     protected boolean connect(final Session session) throws BackgroundException {
         final boolean opened;
-        switch(new WorkerFinder().type(session, transfer)) {
+        switch(new TransferTypeFinder().type(session, transfer)) {
             case concurrent:
                 // Skip opening connection when managed in pool
                 opened = false;
