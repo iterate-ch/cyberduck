@@ -26,15 +26,15 @@ public interface SheetCallback {
     /**
      * Use default option; 'OK'
      */
-    public final int DEFAULT_OPTION = NSPanel.NSAlertDefaultReturn;
+    int DEFAULT_OPTION = NSPanel.NSAlertDefaultReturn;
     /**
      * Cancel option
      */
-    public final int CANCEL_OPTION = NSPanel.NSAlertOtherReturn;
+    int CANCEL_OPTION = NSPanel.NSAlertOtherReturn;
     /**
      * Alternate action
      */
-    public final int ALTERNATE_OPTION = NSPanel.NSAlertAlternateReturn;
+    int ALTERNATE_OPTION = NSPanel.NSAlertAlternateReturn;
 
     /**
      * Called after the sheet has been dismissed by the user. The return codes are defined in
