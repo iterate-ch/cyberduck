@@ -47,7 +47,7 @@
 
     <property name="codesign.certificate" value="Developer ID Application: David Kocher"/>
     <property name="codesign.keychain" value="${user.home}/Library/Keychains/codesign.keychain"/>
-    <property name="codesign.entitlements" value="${home}/sandbox.plist"/>
+    <property name="codesign.entitlements" value="${home}/sandbox.entitlements"/>
     <!-- Designated requirement -->
     <property name="codesign.requirement.source" value="${setup}/app/codesign-requirement.txt"/>
     <property name="codesign.requirement" value="${setup}/app/codesign-requirement.bin"/>

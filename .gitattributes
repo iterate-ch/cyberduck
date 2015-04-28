@@ -2565,7 +2565,7 @@ ru.lproj/Sftp.strings -text svneol=unset#text/utf-16
 ru.lproj/Status.strings -text svneol=unset#text/utf-16
 ru.lproj/Support.strings -text svneol=unset#text/utf-16
 ru.lproj/Transfer.strings -text svneol=unset#text/utf-16
-/sandbox.plist -text
+/sandbox.entitlements -text
 setup/app/Info.plist.debug -text
 setup/app/container-migration.plist -text
 setup/banner.png -text
