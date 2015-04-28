@@ -45,4 +45,11 @@ public abstract class NSStatusBar extends NSObject {
      * @return An NSStatusItem object or nil if the item could not be created.
      */
     public abstract NSStatusItem statusItemWithLength(CGFloat length);
+
+    /**
+     * Removes the specified status item from the receiver
+     *
+     * @param item The NSStatusItem object to remove.
+     */
+    public abstract void removeStatusItem(NSStatusItem item);
 }

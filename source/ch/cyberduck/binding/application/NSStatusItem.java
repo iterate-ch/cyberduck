@@ -35,4 +35,12 @@ public abstract class NSStatusItem extends NSObject {
     public abstract NSMenu menu();
 
     public abstract void setMenu(NSMenu menu);
+
+    public abstract String title();
+
+    public abstract void setTitle(String title);
+
+    public abstract NSImage image();
+
+    public abstract void setImage(NSImage image);
 }
