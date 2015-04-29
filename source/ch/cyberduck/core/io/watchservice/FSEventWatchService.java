@@ -18,9 +18,9 @@ package ch.cyberduck.core.io.watchservice;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.io.watchservice.jna.CFIndex;
-import ch.cyberduck.core.io.watchservice.jna.CFRunLoopRef;
-import ch.cyberduck.core.io.watchservice.jna.CFStringRef;
+import ch.cyberduck.binding.foundation.CFIndex;
+import ch.cyberduck.binding.foundation.CFRunLoopRef;
+import ch.cyberduck.binding.foundation.CFStringRef;
 import ch.cyberduck.core.io.watchservice.jna.FSEventStreamRef;
 import ch.cyberduck.core.io.watchservice.jna.FSEvents;
 import ch.cyberduck.core.threading.NamedThreadFactory;

@@ -1,4 +1,4 @@
-package ch.cyberduck.core.io.watchservice.jna;
+package ch.cyberduck.binding.foundation;
 
 /*
  * Copyright (c) 2002-2015 David Kocher. All rights reserved.
@@ -19,6 +19,6 @@ package ch.cyberduck.core.io.watchservice.jna;
 
 import com.sun.jna.ptr.PointerByReference;
 
-public class FSEventStreamRef extends PointerByReference {
+public class CFAllocatorRef extends PointerByReference {
 
 }

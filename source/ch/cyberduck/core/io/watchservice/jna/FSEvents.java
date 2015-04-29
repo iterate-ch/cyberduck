@@ -1,5 +1,28 @@
 package ch.cyberduck.core.io.watchservice.jna;
 
+/*
+ * Copyright (c) 2002-2015 David Kocher. All rights reserved.
+ * http://cyberduck.ch/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
+ */
+
+import ch.cyberduck.binding.foundation.CFAllocatorRef;
+import ch.cyberduck.binding.foundation.CFArrayRef;
+import ch.cyberduck.binding.foundation.CFIndex;
+import ch.cyberduck.binding.foundation.CFRunLoopRef;
+import ch.cyberduck.binding.foundation.CFStringRef;
+
 import com.sun.jna.Callback;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
@@ -7,7 +30,7 @@ import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 
 public interface FSEvents extends Library {
-    final FSEvents library = (FSEvents) Native.loadLibrary("Carbon", FSEvents.class);
+    FSEvents library = (FSEvents) Native.loadLibrary("Carbon", FSEvents.class);
 
     CFArrayRef CFArrayCreate(
             CFAllocatorRef allocator, // always set to Pointer.NULL
@@ -51,7 +74,7 @@ public interface FSEvents extends Library {
 
     void CFRunLoopStop(CFRunLoopRef rl);
 
-    public interface FSEventStreamCallback extends Callback {
+    interface FSEventStreamCallback extends Callback {
         void invoke(FSEventStreamRef streamRef, Pointer clientCallBackInfo, NativeLong numEvents, Pointer eventPaths, Pointer eventFlags, Pointer eventIds);
     }
 }

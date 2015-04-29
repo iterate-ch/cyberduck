@@ -1,4 +1,4 @@
-package ch.cyberduck.core.io.watchservice.jna;
+package ch.cyberduck.binding.foundation;
 
 /*
  * Copyright (c) 2002-2015 David Kocher. All rights reserved.
@@ -17,8 +17,16 @@ package ch.cyberduck.core.io.watchservice.jna;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.io.watchservice.jna.FSEvents;
+
 import com.sun.jna.ptr.PointerByReference;
 
-public class FSEventStreamRef extends PointerByReference {
+public class CFStringRef extends PointerByReference {
+
+    public static CFStringRef toCFString(String s) {
+        final char[] chars = s.toCharArray();
+        int length = chars.length;
+        return FSEvents.library.CFStringCreateWithCharacters(null, chars, CFIndex.valueOf(length));
+    }
 
 }

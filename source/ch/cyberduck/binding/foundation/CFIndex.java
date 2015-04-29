@@ -1,4 +1,4 @@
-package ch.cyberduck.core.io.watchservice.jna;
+package ch.cyberduck.binding.foundation;
 
 /*
  * Copyright (c) 2002-2015 David Kocher. All rights reserved.
@@ -17,8 +17,14 @@ package ch.cyberduck.core.io.watchservice.jna;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import com.sun.jna.ptr.PointerByReference;
+import com.sun.jna.NativeLong;
 
-public class FSEventStreamRef extends PointerByReference {
+public class CFIndex extends NativeLong {
+    private static final long serialVersionUID = 0;
 
+    public static CFIndex valueOf(int i) {
+        CFIndex idx = new CFIndex();
+        idx.setValue(i);
+        return idx;
+    }
 }
