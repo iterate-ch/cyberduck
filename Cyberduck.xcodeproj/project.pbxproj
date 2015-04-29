@@ -67,6 +67,7 @@
 		475286CC10D2CC660029363C /* CDListView.m in Sources */ = {isa = PBXBuildFile; fileRef = 475286BF10D2CC660029363C /* CDListView.m */; };
 		475286CD10D2CC660029363C /* CDOutlineCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 475286C010D2CC660029363C /* CDOutlineCell.m */; };
 		475286CE10D2CC660029363C /* CDOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 475286C110D2CC660029363C /* CDOutlineView.m */; };
+		4759B9311AF0D40600DB909A /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4759B9301AF0D40600DB909A /* ServiceManagement.framework */; };
 		475C6D5A170C9214006535BB /* googlestorage.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 475C6D59170C9214006535BB /* googlestorage.tiff */; };
 		475D17B90805D54C00166B8A /* download5.icns in Resources */ = {isa = PBXBuildFile; fileRef = 475D17AF0805D54C00166B8A /* download5.icns */; };
 		475D17BA0805D54C00166B8A /* download7.icns in Resources */ = {isa = PBXBuildFile; fileRef = 475D17B00805D54C00166B8A /* download7.icns */; };
@@ -1029,6 +1030,7 @@
 		4759423A19C9EB89002A68F5 /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/Support.strings; sourceTree = "<group>"; };
 		4759423B19C9EB92002A68F5 /* cy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cy; path = cy.lproj/Support.strings; sourceTree = "<group>"; };
 		4759423C19C9EB92002A68F5 /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/Support.strings; sourceTree = "<group>"; };
+		4759B9301AF0D40600DB909A /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
 		475C6D59170C9214006535BB /* googlestorage.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = googlestorage.tiff; sourceTree = "<group>"; };
 		475D17AF0805D54C00166B8A /* download5.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = download5.icns; sourceTree = "<group>"; };
 		475D17B00805D54C00166B8A /* download7.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = download7.icns; sourceTree = "<group>"; };
@@ -2454,6 +2456,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4759B9311AF0D40600DB909A /* ServiceManagement.framework in Frameworks */,
 				47C88FF117269A71001A746A /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2535,6 +2538,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4759B9301AF0D40600DB909A /* ServiceManagement.framework */,
 				47D939C91A268D7F0006D4AE /* Foundation.framework */,
 				479BF77D1725A68C006854BF /* IOKit.framework */,
 				4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */,
