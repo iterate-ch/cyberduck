@@ -66,3 +66,16 @@ JNIEXPORT jobjectArray JNICALL Java_ch_cyberduck_core_local_LaunchServicesApplic
     }
     return result;
 }
+
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_LaunchServicesApplicationFinder_register(
+										JNIEnv *env,
+										jobject this,
+                                        jstring bundle)
+{
+    NSURL *url = [NSURL fileURLWithPath:JNFJavaToNSString(env, bundle)];
+    OSStatus status = LSRegisterURL((CFURLRef)url, YES);
+    if(status != noErr) {
+        return FALSE;
+    }
+    return TRUE;
+}

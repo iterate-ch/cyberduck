@@ -22,6 +22,7 @@ import ch.cyberduck.binding.application.NSWorkspace;
 import ch.cyberduck.binding.foundation.NSBundle;
 import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.binding.foundation.NSObject;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.library.Native;
 
@@ -64,6 +65,13 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
      * @return Empty array if none found
      */
     private native String[] findAllForType(String extension);
+
+    /**
+     * Uses LSRegisterURL
+     *
+     * @param path Location of application bundle
+     */
+    private native boolean register(String path);
 
     /**
      * Caching map between application bundle identifier and
@@ -221,6 +229,20 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
             }
             return NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
                     application.getIdentifier()) != null;
+        }
+    }
+
+    /**
+     * Register application in launch services database
+     *
+     * @param application Bundle identifier
+     */
+    public boolean register(final Local application) {
+        synchronized(NSWorkspace.class) {
+            if(!application.exists()) {
+                return false;
+            }
+            return this.register(application.getAbsolute());
         }
     }
 }

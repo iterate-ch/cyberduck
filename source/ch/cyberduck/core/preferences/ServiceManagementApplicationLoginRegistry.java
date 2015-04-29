@@ -18,7 +18,10 @@ package ch.cyberduck.core.preferences;
  */
 
 import ch.cyberduck.binding.foundation.ServiceManagementLibrary;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
 
 import org.apache.log4j.Logger;
 
@@ -28,12 +31,20 @@ import org.apache.log4j.Logger;
 public class ServiceManagementApplicationLoginRegistry implements ApplicationLoginRegistry {
     private static Logger log = Logger.getLogger(ServiceManagementApplicationLoginRegistry.class);
 
+    private LaunchServicesApplicationFinder finder
+            = new LaunchServicesApplicationFinder();
+
     /**
      * This function works only with executables stored in the
      * <code>Contents/Library/LoginItems</code> directory of the bundle.
      */
     @Override
     public void register(final Application application) {
+        final Local helper = LocalFactory.get(new BundleApplicationResourcesFinder().find().getParent(),
+                String.format("Library/LoginItems/%s.bundle", application.getName()));
+        if(!finder.register(helper)) {
+            log.warn(String.format("Failed to register %s with launch services", helper));
+        }
         if(!ServiceManagementLibrary.SMLoginItemSetEnabled(application.getIdentifier(), true)) {
             log.warn(String.format("Failed to register %s as login item", application));
         }
