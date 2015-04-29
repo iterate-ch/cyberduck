@@ -37,7 +37,7 @@ import org.rococoa.cocoa.foundation.NSInteger;
 /**
  * @version $Id$
  */
-public abstract class RendezvousMenuDelegate extends CollectionMenuDelegate<Host> {
+public class RendezvousMenuDelegate extends CollectionMenuDelegate<Host> {
     private static final Logger log = Logger.getLogger(RendezvousMenuDelegate.class);
 
     private RendezvousCollection collection;
@@ -62,20 +62,21 @@ public abstract class RendezvousMenuDelegate extends CollectionMenuDelegate<Host
             item.setTarget(this.id());
             item.setEnabled(true);
             item.setImage(IconCacheFactory.<NSImage>get().iconNamed(h.getProtocol().icon(), 16));
+            item.setTarget(this.id());
             item.setAction(this.getDefaultAction());
             item.setRepresentedObject(h.getUuid());
         }
         return super.menuUpdateItemAtIndex(menu, item, index, cancel);
     }
 
-    public void rendezvousMenuClicked(NSMenuItem sender) {
-        log.debug("rendezvousMenuClicked:" + sender);
-        BrowserController controller = MainController.newDocument();
+    public void menuItemClicked(NSMenuItem sender) {
+        log.debug("menuItemClicked:" + sender);
+        final BrowserController controller = MainController.newDocument();
         controller.mount(collection.lookup(sender.representedObject()));
     }
 
     @Override
     protected Selector getDefaultAction() {
-        return Foundation.selector("rendezvousMenuClicked:");
+        return Foundation.selector("menuItemClicked:");
     }
 }

@@ -131,9 +131,9 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
     }
 
     @Action
-    public void menuActionSelected(final NSMenu menu) {
+    public void menuItemClicked(final NSMenu menu) {
         if(log.isDebugEnabled()) {
-            log.debug("menuActionSelected:" + menu);
+            log.debug("menuItemClicked:" + menu);
         }
         List<DescriptiveUrl> selected = new ArrayList<DescriptiveUrl>();
         for(Path file : this.getSelected()) {
@@ -175,6 +175,6 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
 
     @Override
     protected Selector getDefaultAction() {
-        return Foundation.selector("menuActionSelected:");
+        return Foundation.selector("menuItemClicked:");
     }
 }

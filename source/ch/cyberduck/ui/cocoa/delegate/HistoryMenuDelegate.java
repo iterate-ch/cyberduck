@@ -47,7 +47,7 @@ import java.util.Date;
 /**
  * @version $Id$
  */
-public abstract class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
+public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
     private static final Logger log = Logger.getLogger(HistoryMenuDelegate.class);
 
     protected static final NSDictionary TIMESTAMP_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
@@ -98,18 +98,18 @@ public abstract class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
         }
         else if(index.intValue() < size * 2) {
             boolean label = index.intValue() % 2 == 0;
-            Host h = collection.get(index.intValue() / 2);
+            final Host h = collection.get(index.intValue() / 2);
             if(label) {
                 item.setTitle(BookmarkNameProvider.toString(h));
+                item.setTarget(this.id());
                 item.setAction(this.getDefaultAction());
                 item.setRepresentedObject(h.getUuid());
-                item.setTarget(this.id());
                 item.setEnabled(true);
                 item.setImage(IconCacheFactory.<NSImage>get().iconNamed(h.getProtocol().icon(), 16));
             }
             else {
                 // Dummy menu item with timestamp
-                Date timestamp = h.getTimestamp();
+                final Date timestamp = h.getTimestamp();
                 if(null != timestamp) {
                     item.setAttributedTitle(NSAttributedString.attributedStringWithAttributes(
                             UserDateFormatterFactory.get().getLongFormat(timestamp.getTime()), TIMESTAMP_FONT_ATTRIBUTES));
@@ -130,15 +130,15 @@ public abstract class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
         }
         else if(index.intValue() == size * 2 + 1) {
             item.setTitle(LocaleFactory.localizedString("Clear Menu"));
-            item.setAction(Foundation.selector("clearMenuItemClicked:"));
             item.setTarget(this.id());
+            item.setAction(Foundation.selector("clearMenuItemClicked:"));
             item.setEnabled(true);
         }
         return super.menuUpdateItemAtIndex(menu, item, index, cancel);
     }
 
-    public void historyMenuItemClicked(NSMenuItem sender) {
-        log.debug("historyMenuItemClicked:" + sender);
+    public void menuItemClicked(NSMenuItem sender) {
+        log.debug("menuItemClicked:" + sender);
         BrowserController controller = MainController.newDocument();
         controller.mount(collection.lookup(sender.representedObject()));
     }
@@ -150,6 +150,6 @@ public abstract class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
 
     @Override
     protected Selector getDefaultAction() {
-        return Foundation.selector("historyMenuItemClicked:");
+        return Foundation.selector("menuItemClicked:");
     }
 }

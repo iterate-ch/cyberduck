@@ -83,12 +83,12 @@ public class TransferMenuDelegate extends AbstractMenuDelegate {
     }
 
     @Action
-    public void revealMenuClicked(final NSMenuItem sender) {
+    public void menuItemClicked(final NSMenuItem sender) {
         reveal.reveal(LocalFactory.get(sender.representedObject()));
     }
 
     @Override
     protected Selector getDefaultAction() {
-        return Foundation.selector("revealMenuClicked:");
+        return Foundation.selector("menuItemClicked:");
     }
 }

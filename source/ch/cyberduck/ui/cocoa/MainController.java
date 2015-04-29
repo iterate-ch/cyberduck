@@ -411,12 +411,7 @@ public class MainController extends BundleController implements NSApplication.De
 
     public void setArchiveMenu(NSMenu archiveMenu) {
         this.archiveMenu = archiveMenu;
-        this.archiveMenuDelegate = new ArchiveMenuDelegate() {
-            @Override
-            protected ID getTarget() {
-                return MainController.getBrowser().id();
-            }
-        };
+        this.archiveMenuDelegate = new ArchiveMenuDelegate();
         this.archiveMenu.setDelegate(archiveMenuDelegate.id());
     }
 
@@ -428,12 +423,7 @@ public class MainController extends BundleController implements NSApplication.De
 
     public void setBookmarkMenu(NSMenu bookmarkMenu) {
         this.bookmarkMenu = bookmarkMenu;
-        this.bookmarkMenuDelegate = new BookmarkMenuDelegate() {
-            @Override
-            protected ID getTarget() {
-                return MainController.getBrowser().id();
-            }
-        };
+        this.bookmarkMenuDelegate = new BookmarkMenuDelegate();
         this.bookmarkMenu.setDelegate(bookmarkMenuDelegate.id());
     }
 
@@ -445,12 +435,7 @@ public class MainController extends BundleController implements NSApplication.De
 
     public void setHistoryMenu(NSMenu historyMenu) {
         this.historyMenu = historyMenu;
-        this.historyMenuDelegate = new HistoryMenuDelegate() {
-            @Override
-            protected ID getTarget() {
-                return MainController.getBrowser().id();
-            }
-        };
+        this.historyMenuDelegate = new HistoryMenuDelegate();
         this.historyMenu.setDelegate(historyMenuDelegate.id());
     }
 
@@ -462,12 +447,7 @@ public class MainController extends BundleController implements NSApplication.De
 
     public void setRendezvousMenu(NSMenu rendezvousMenu) {
         this.rendezvousMenu = rendezvousMenu;
-        this.rendezvousMenuDelegate = new RendezvousMenuDelegate() {
-            @Override
-            protected ID getTarget() {
-                return MainController.getBrowser().id();
-            }
-        };
+        this.rendezvousMenuDelegate = new RendezvousMenuDelegate();
         this.rendezvousMenu.setDelegate(rendezvousMenuDelegate.id());
     }
 
@@ -622,6 +602,7 @@ public class MainController extends BundleController implements NSApplication.De
                     alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
                     alert.setShowsHelp(true);
                     alert.setDelegate(new ProxyController() {
+                        @Action
                         public boolean alertShowHelp(NSAlert alert) {
                             StringBuilder site = new StringBuilder(preferences.getProperty("website.help"));
                             site.append("/").append("faq");
