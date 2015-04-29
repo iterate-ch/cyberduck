@@ -32,7 +32,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
-import ch.cyberduck.ui.cocoa.BrowserController;
 import ch.cyberduck.ui.cocoa.MainController;
 import ch.cyberduck.ui.cocoa.TableCellAttributes;
 
@@ -138,9 +137,10 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
     }
 
     public void menuItemClicked(NSMenuItem sender) {
-        log.debug("menuItemClicked:" + sender);
-        BrowserController controller = MainController.newDocument();
-        controller.mount(collection.lookup(sender.representedObject()));
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Menu item clicked %s", sender));
+        }
+        MainController.newDocument().mount(collection.lookup(sender.representedObject()));
     }
 
     public void clearMenuItemClicked(NSMenuItem sender) {

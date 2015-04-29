@@ -26,7 +26,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.bonjour.RendezvousCollection;
 import ch.cyberduck.core.resources.IconCacheFactory;
-import ch.cyberduck.ui.cocoa.BrowserController;
 import ch.cyberduck.ui.cocoa.MainController;
 
 import org.apache.log4j.Logger;
@@ -70,9 +69,10 @@ public class RendezvousMenuDelegate extends CollectionMenuDelegate<Host> {
     }
 
     public void menuItemClicked(NSMenuItem sender) {
-        log.debug("menuItemClicked:" + sender);
-        final BrowserController controller = MainController.newDocument();
-        controller.mount(collection.lookup(sender.representedObject()));
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Menu item clicked %s", sender));
+        }
+        MainController.newDocument().mount(collection.lookup(sender.representedObject()));
     }
 
     @Override

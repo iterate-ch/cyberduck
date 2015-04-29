@@ -29,7 +29,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.ui.cocoa.Action;
-import ch.cyberduck.ui.cocoa.BrowserController;
 import ch.cyberduck.ui.cocoa.Delegate;
 import ch.cyberduck.ui.cocoa.MainController;
 
@@ -126,9 +125,10 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
     }
 
     public void bookmarkMenuItemClicked(final NSMenuItem sender) {
-        log.debug("bookmarkMenuItemClicked:" + sender);
-        BrowserController controller = MainController.newDocument();
-        controller.mount(collection.lookup(sender.representedObject()));
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Menu item clicked %s", sender));
+        }
+        MainController.newDocument().mount(collection.lookup(sender.representedObject()));
     }
 
     @Action
