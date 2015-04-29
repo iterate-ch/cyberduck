@@ -28,6 +28,10 @@ import org.apache.log4j.Logger;
 public class ServiceManagementApplicationLoginRegistry implements ApplicationLoginRegistry {
     private static Logger log = Logger.getLogger(ServiceManagementApplicationLoginRegistry.class);
 
+    /**
+     * This function works only with executables stored in the
+     * <code>Contents/Library/LoginItems</code> directory of the bundle.
+     */
     @Override
     public void register(final Application application) {
         if(!ServiceManagementLibrary.SMLoginItemSetEnabled(application.getIdentifier(), true)) {
