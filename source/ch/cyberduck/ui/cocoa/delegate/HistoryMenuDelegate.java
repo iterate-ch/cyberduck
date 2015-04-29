@@ -32,6 +32,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
+import ch.cyberduck.ui.cocoa.Action;
 import ch.cyberduck.ui.cocoa.MainController;
 import ch.cyberduck.ui.cocoa.TableCellAttributes;
 
@@ -136,6 +137,7 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
         return super.menuUpdateItemAtIndex(menu, item, index, cancel);
     }
 
+    @Action
     public void menuItemClicked(NSMenuItem sender) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Menu item clicked %s", sender));

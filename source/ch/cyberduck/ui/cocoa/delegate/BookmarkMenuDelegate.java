@@ -124,6 +124,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
         return super.menuUpdateItemAtIndex(menu, item, row, cancel);
     }
 
+    @Action
     public void bookmarkMenuItemClicked(final NSMenuItem sender) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Menu item clicked %s", sender));
