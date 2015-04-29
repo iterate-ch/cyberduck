@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.growl;
+package ch.cyberduck.core.notification;
 
 /*
  * Copyright (c) 2002-2014 David Kocher. All rights reserved.
@@ -18,10 +18,9 @@ package ch.cyberduck.ui.growl;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.notification.NotificationService;
 import ch.cyberduck.binding.foundation.NSUserNotification;
 import ch.cyberduck.binding.foundation.NSUserNotificationCenter;
+import ch.cyberduck.core.LocaleFactory;
 
 /**
  * @version $Id$

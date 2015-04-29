@@ -48,6 +48,7 @@ import ch.cyberduck.core.local.WorkspaceIconService;
 import ch.cyberduck.core.local.WorkspaceRevealService;
 import ch.cyberduck.core.local.WorkspaceSymlinkFeature;
 import ch.cyberduck.core.local.WorkspaceTrashFeature;
+import ch.cyberduck.core.notification.NotificationCenter;
 import ch.cyberduck.core.proxy.SystemConfigurationProxy;
 import ch.cyberduck.core.resources.NSImageIconCache;
 import ch.cyberduck.core.serializer.impl.jna.HostPlistReader;
@@ -67,7 +68,6 @@ import ch.cyberduck.ui.cocoa.SyncPromptController;
 import ch.cyberduck.ui.cocoa.UploadPromptController;
 import ch.cyberduck.ui.cocoa.UserDefaultsDateFormatter;
 import ch.cyberduck.ui.cocoa.threading.AlertTransferErrorCallback;
-import ch.cyberduck.ui.growl.NotificationCenter;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
