@@ -79,9 +79,7 @@ import ch.cyberduck.ui.cocoa.delegate.ArchiveMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.BookmarkMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.CopyURLMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.EditMenuDelegate;
-import ch.cyberduck.ui.cocoa.delegate.HistoryMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.OpenURLMenuDelegate;
-import ch.cyberduck.ui.cocoa.delegate.RendezvousMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.URLMenuDelegate;
 
 import org.apache.commons.lang3.StringUtils;
@@ -425,35 +423,6 @@ public class MainController extends BundleController implements NSApplication.De
         this.bookmarkMenu = bookmarkMenu;
         this.bookmarkMenuDelegate = new BookmarkMenuDelegate();
         this.bookmarkMenu.setDelegate(bookmarkMenuDelegate.id());
-    }
-
-    @Outlet
-    private NSMenu historyMenu;
-
-    @Delegate
-    private HistoryMenuDelegate historyMenuDelegate;
-
-    public void setHistoryMenu(NSMenu historyMenu) {
-        this.historyMenu = historyMenu;
-        this.historyMenuDelegate = new HistoryMenuDelegate();
-        this.historyMenu.setDelegate(historyMenuDelegate.id());
-    }
-
-    @Outlet
-    private NSMenu rendezvousMenu;
-
-    @Delegate
-    private RendezvousMenuDelegate rendezvousMenuDelegate;
-
-    public void setRendezvousMenu(NSMenu rendezvousMenu) {
-        this.rendezvousMenu = rendezvousMenu;
-        this.rendezvousMenuDelegate = new RendezvousMenuDelegate();
-        this.rendezvousMenu.setDelegate(rendezvousMenuDelegate.id());
-    }
-
-    @Action
-    public void historyMenuClicked(NSMenuItem sender) {
-        ApplicationLauncherFactory.get().open(HistoryCollection.defaultCollection().getFolder());
     }
 
     @Action

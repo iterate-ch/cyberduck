@@ -23,9 +23,14 @@ import ch.cyberduck.binding.application.NSMenu;
 import ch.cyberduck.binding.application.NSMenuItem;
 import ch.cyberduck.core.BookmarkCollection;
 import ch.cyberduck.core.BookmarkNameProvider;
+import ch.cyberduck.core.HistoryCollection;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
+import ch.cyberduck.ui.cocoa.Action;
 import ch.cyberduck.ui.cocoa.BrowserController;
+import ch.cyberduck.ui.cocoa.Delegate;
 import ch.cyberduck.ui.cocoa.MainController;
 
 import org.apache.log4j.Logger;
@@ -39,14 +44,35 @@ import org.rococoa.cocoa.foundation.NSInteger;
 public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
     private static final Logger log = Logger.getLogger(BookmarkMenuDelegate.class);
 
+    private static final int BOOKMARKS_INDEX = 8;
+
     private BookmarkCollection collection;
 
+    private int index;
+
+    private NSMenu historyMenu = NSMenu.menu();
+
+    @Delegate
+    private HistoryMenuDelegate historyMenuDelegate
+            = new HistoryMenuDelegate();
+
+    private NSMenu rendezvousMenu = NSMenu.menu();
+
+    @Delegate
+    private RendezvousMenuDelegate rendezvousMenuDelegate
+            = new RendezvousMenuDelegate();
+
     public BookmarkMenuDelegate() {
-        super(BookmarkCollection.defaultCollection());
-        collection = BookmarkCollection.defaultCollection();
+        this(BookmarkCollection.defaultCollection(), BOOKMARKS_INDEX);
     }
 
-    private static final int BOOKMARKS_INDEX = 8;
+    public BookmarkMenuDelegate(final BookmarkCollection collection, final int index) {
+        super(collection);
+        this.index = index;
+        this.collection = collection;
+        this.historyMenu.setDelegate(historyMenuDelegate.id());
+        this.rendezvousMenu.setDelegate(rendezvousMenuDelegate.id());
+    }
 
     @Override
     public NSInteger numberOfItemsInMenu(NSMenu menu) {
@@ -69,34 +95,45 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
          * ----------------
          * ...
          */
-        return new NSInteger(collection.size() + BOOKMARKS_INDEX + 3);
+        return new NSInteger(collection.size() + index + 3);
     }
 
     @Override
-    public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean cancel) {
-        if(index.intValue() == BOOKMARKS_INDEX) {
+    public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger row, boolean cancel) {
+        if(row.intValue() == index) {
             item.setEnabled(true);
+            item.setTitle(LocaleFactory.get().localize("History", "Main"));
             item.setImage(IconCacheFactory.<NSImage>get().iconNamed("history.tiff", 16));
+            item.setTarget(this.id());
+            item.setAction(Foundation.selector("historyMenuClicked:"));
+            item.setSubmenu(historyMenu);
         }
-        if(index.intValue() == BOOKMARKS_INDEX + 1) {
+        if(row.intValue() == index + 1) {
             item.setEnabled(true);
+            item.setTitle(LocaleFactory.get().localize("Bonjour", "Main"));
             item.setImage(IconCacheFactory.<NSImage>get().iconNamed("rendezvous.tiff", 16));
+            item.setSubmenu(rendezvousMenu);
         }
-        if(index.intValue() > BOOKMARKS_INDEX + 2) {
-            Host h = collection.get(index.intValue() - (BOOKMARKS_INDEX + 3));
+        if(row.intValue() > index + 2) {
+            Host h = collection.get(row.intValue() - (index + 3));
             item.setTitle(BookmarkNameProvider.toString(h));
             item.setTarget(this.id());
             item.setImage(IconCacheFactory.<NSImage>get().iconNamed(h.getProtocol().icon(), 16));
             item.setAction(this.getDefaultAction());
             item.setRepresentedObject(h.getUuid());
         }
-        return super.menuUpdateItemAtIndex(menu, item, index, cancel);
+        return super.menuUpdateItemAtIndex(menu, item, row, cancel);
     }
 
     public void bookmarkMenuItemClicked(final NSMenuItem sender) {
         log.debug("bookmarkMenuItemClicked:" + sender);
         BrowserController controller = MainController.newDocument();
         controller.mount(collection.lookup(sender.representedObject()));
+    }
+
+    @Action
+    public void historyMenuClicked(NSMenuItem sender) {
+        ApplicationLauncherFactory.get().open(HistoryCollection.defaultCollection().getFolder());
     }
 
     @Override
