@@ -128,6 +128,7 @@ public abstract class AlertController extends SheetController {
      * @param alert Alert window
      * @return True if help request was handled.
      */
+    @Action
     public boolean alertShowHelp(final NSAlert alert) {
         this.help();
         return true;
