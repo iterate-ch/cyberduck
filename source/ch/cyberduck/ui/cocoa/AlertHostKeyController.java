@@ -96,13 +96,12 @@ public class AlertHostKeyController extends OpenSSHHostKeyVerifier {
             throw new ConnectionCanceledException();
         }
         return c.returnCode() == SheetCallback.DEFAULT_OPTION;
-
     }
 
     @Override
     protected boolean isChangedKeyAccepted(final String hostname, final PublicKey key)
             throws ConnectionCanceledException, ChecksumException {
-        NSAlert alert = NSAlert.alert(MessageFormat.format(LocaleFactory.localizedString("Changed fingerprint", "Sftp"), hostname), //title
+        final NSAlert alert = NSAlert.alert(MessageFormat.format(LocaleFactory.localizedString("Changed fingerprint", "Sftp"), hostname), //title
                 MessageFormat.format(LocaleFactory.localizedString("The fingerprint for the {1} key sent by the server is {0}.", "Sftp"),
                         new MD5ChecksumCompute().fingerprint(key),
                         KeyType.fromKey(key).name()),
