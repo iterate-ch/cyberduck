@@ -41,9 +41,10 @@ public class ServiceManagementApplicationLoginRegistry implements ApplicationLog
     @Override
     public void register(final Application application) {
         final Local helper = LocalFactory.get(new BundleApplicationResourcesFinder().find().getParent(),
-                String.format("Library/LoginItems/%s.bundle", application.getName()));
+                String.format("Library/LoginItems/%s.app", application.getName()));
         if(!finder.register(helper)) {
-            log.warn(String.format("Failed to register %s with launch services", helper));
+            log.warn(String.format("Failed to register %s (%s) with launch services", helper,
+                    finder.getDescription(application.getIdentifier())));
         }
         if(!ServiceManagementLibrary.SMLoginItemSetEnabled(application.getIdentifier(), true)) {
             log.warn(String.format("Failed to register %s as login item", application));
