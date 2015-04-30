@@ -113,6 +113,10 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
             item.setImage(IconCacheFactory.<NSImage>get().iconNamed("rendezvous.tiff", 16));
             item.setSubmenu(rendezvousMenu);
         }
+        if(row.intValue() == index + 2) {
+            menu.removeItemAtIndex(row);
+            menu.insertItem_atIndex(NSMenuItem.separatorItem(), row);
+        }
         if(row.intValue() > index + 2) {
             Host h = collection.get(row.intValue() - (index + 3));
             item.setTitle(BookmarkNameProvider.toString(h));
