@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- A container migration manifest is a special property list file containing an array of strings that identify
+the support files and directories you want to migrate when a user first launches the sandboxed version of your app.
+The file must be named container-migration.plist, and must appear in the Contents/Resources directory within your app bundle. -->
 <plist version="1.0">
-	<dict>
-	   <key>Move</key>
-	   <array>
-	      <string>${ApplicationSupport}/Cyberduck</string>
-	  </array>
-	</dict>
+    <dict>
+        <key>Move</key>
+        <array>
+            <string>${ApplicationSupport}/Cyberduck</string>
+        </array>
+    </dict>
 </plist>
