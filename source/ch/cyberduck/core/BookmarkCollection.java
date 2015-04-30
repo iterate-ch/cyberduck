@@ -64,7 +64,7 @@ public class BookmarkCollection extends AbstractHostCollection {
     /**
      * @param file Favorites Plist
      */
-    public BookmarkCollection(Local file) {
+    public BookmarkCollection(final Local file) {
         this.file = file;
     }
 
@@ -99,37 +99,37 @@ public class BookmarkCollection extends AbstractHostCollection {
     }
 
     @Override
-    public boolean contains(Object o) {
+    public boolean contains(final Object o) {
         return FolderBookmarkCollection.favoritesCollection().contains(o);
     }
 
     @Override
-    public Host get(int row) {
+    public Host get(final int row) {
         return FolderBookmarkCollection.favoritesCollection().get(row);
     }
 
     @Override
-    public boolean addAll(Collection<? extends Host> hosts) {
+    public boolean addAll(final Collection<? extends Host> hosts) {
         return FolderBookmarkCollection.favoritesCollection().addAll(hosts);
     }
 
     @Override
-    public boolean add(Host host) {
+    public boolean add(final Host host) {
         return FolderBookmarkCollection.favoritesCollection().add(host);
     }
 
     @Override
-    public void add(int row, Host host) {
+    public void add(final int row, final Host host) {
         FolderBookmarkCollection.favoritesCollection().add(row, host);
     }
 
     @Override
-    public Host remove(int row) {
+    public Host remove(final int row) {
         return FolderBookmarkCollection.favoritesCollection().remove(row);
     }
 
     @Override
-    public boolean remove(Object host) {
+    public boolean remove(final Object host) {
         return FolderBookmarkCollection.favoritesCollection().remove(host);
     }
 
@@ -139,22 +139,22 @@ public class BookmarkCollection extends AbstractHostCollection {
     }
 
     @Override
-    public int indexOf(Object elem) {
+    public int indexOf(final Object elem) {
         return FolderBookmarkCollection.favoritesCollection().indexOf(elem);
     }
 
     @Override
-    public int lastIndexOf(Object elem) {
+    public int lastIndexOf(final Object elem) {
         return FolderBookmarkCollection.favoritesCollection().lastIndexOf(elem);
     }
 
     @Override
-    public void addListener(CollectionListener<Host> l) {
+    public void addListener(final CollectionListener<Host> l) {
         FolderBookmarkCollection.favoritesCollection().addListener(l);
     }
 
     @Override
-    public void removeListener(CollectionListener<Host> l) {
+    public void removeListener(final CollectionListener<Host> l) {
         FolderBookmarkCollection.favoritesCollection().removeListener(l);
     }
 
@@ -164,12 +164,12 @@ public class BookmarkCollection extends AbstractHostCollection {
     }
 
     @Override
-    public boolean removeAll(Collection<?> c) {
+    public boolean removeAll(final Collection<?> c) {
         return FolderBookmarkCollection.favoritesCollection().removeAll(c);
     }
 
     @Override
-    public void collectionItemChanged(Host item) {
+    public void collectionItemChanged(final Host item) {
         FolderBookmarkCollection.favoritesCollection().collectionItemChanged(item);
     }
 
@@ -189,17 +189,17 @@ public class BookmarkCollection extends AbstractHostCollection {
     }
 
     @Override
-    public ListIterator<Host> listIterator(int index) {
+    public ListIterator<Host> listIterator(final int index) {
         return FolderBookmarkCollection.favoritesCollection().listIterator(index);
     }
 
     @Override
-    public List<Host> subList(int fromIndex, int toIndex) {
+    public List<Host> subList(final int fromIndex, final int toIndex) {
         return FolderBookmarkCollection.favoritesCollection().subList(fromIndex, toIndex);
     }
 
     @Override
-    public boolean containsAll(Collection<?> c) {
+    public boolean containsAll(final Collection<?> c) {
         return FolderBookmarkCollection.favoritesCollection().containsAll(c);
     }
 
