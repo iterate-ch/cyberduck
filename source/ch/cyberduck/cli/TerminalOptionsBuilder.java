@@ -18,6 +18,8 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 
@@ -32,6 +34,9 @@ import java.util.Set;
  * @version $Id$
  */
 public final class TerminalOptionsBuilder {
+
+    private static final Preferences preferences
+            = PreferencesFactory.get();
 
     private TerminalOptionsBuilder() {
         //
@@ -99,6 +104,14 @@ public final class TerminalOptionsBuilder {
                 .hasArg(true).withArgName("url")
                 .isRequired(false)
                 .create("l"));
+        if(preferences.getProperty("factory.filesystem.class") != null) {
+            options.addOption(OptionBuilder
+                    .withDescription("Mount as filesystem")
+                    .withLongOpt(TerminalAction.mount.name())
+                    .hasArg(true).withArgName("url")
+                    .isRequired(false)
+                    .create());
+        }
         options.addOption(OptionBuilder
                 .withDescription("Long list format with modification date and permission mask")
                 .withLongOpt(Params.longlist.name())

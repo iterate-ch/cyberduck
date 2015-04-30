@@ -1,8 +1,8 @@
-package ch.cyberduck.cli;
+package ch.cyberduck.fs;
 
 /*
- * Copyright (c) 2002-2014 David Kocher. All rights reserved.
- * http://cyberduck.io/
+ * Copyright (c) 2002-2015 David Kocher. All rights reserved.
+ * http://cyberduck.ch/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,21 +14,21 @@ package ch.cyberduck.cli;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * Bug fixes, suggestions and comments should be sent to:
- * feedback@cyberduck.io
+ * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
+
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
 
 /**
  * @version $Id$
  */
-public enum TerminalAction {
-    help,
-    version,
-    edit,
-    list,
-    mount,
-    download,
-    upload,
-    copy,
-    synchronize
+public interface Filesystem {
+
+    void mount(final Path workdir) throws BackgroundException;
+
+    void unmount() throws BackgroundException;
+
+    Local getMountpoint();
 }

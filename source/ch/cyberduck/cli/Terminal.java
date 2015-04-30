@@ -47,6 +47,7 @@ import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.worker.DisconnectWorker;
 import ch.cyberduck.core.worker.SessionListWorker;
 import ch.cyberduck.core.worker.Worker;
+import ch.cyberduck.fs.FilesystemBackgroundAction;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -144,6 +145,10 @@ public class Terminal {
             console.printf("Try '%s' for more options.%n", "duck --help");
             System.exit(1);
         }
+        catch(FactoryException e) {
+            console.printf("%s%n", e.getMessage());
+            System.exit(1);
+        }
         catch(Throwable error) {
             error.printStackTrace(System.err);
             System.exit(1);
@@ -200,6 +205,8 @@ public class Terminal {
                     return this.edit(session, remote);
                 case list:
                     return this.list(session, remote, input.hasOption(TerminalOptionsBuilder.Params.longlist.name()));
+                case mount:
+                    return this.mount(session);
             }
             final Transfer transfer;
             switch(action) {
@@ -236,7 +243,7 @@ public class Terminal {
             final StringAppender b = new StringAppender();
             b.append(e.getMessage());
             b.append(e.getDetail());
-            console.printf("%n%s%n", b.toString());
+            console.printf("%n%s", b.toString());
         }
         finally {
             this.disconnect(session);
@@ -326,10 +333,23 @@ public class Terminal {
         return Exit.success;
     }
 
+    protected Exit mount(final Session session) {
+        final SessionBackgroundAction action = new FilesystemBackgroundAction(
+                controller,
+                new LoginConnectionService(new TerminalLoginService(input, new TerminalLoginCallback(reader)),
+                        new TerminalHostKeyVerifier(reader), progress, transcript),
+                session, cache);
+        this.execute(action);
+        if(action.hasFailed()) {
+            return Exit.failure;
+        }
+        return Exit.success;
+    }
+
     protected Exit list(final Session session, final Path remote, final boolean verbose) {
         final SessionListWorker worker = new SessionListWorker(session, cache, remote,
                 new TerminalListProgressListener(reader, verbose));
-        final TerminalBackgroundAction action = new TerminalBackgroundAction<AttributedList<Path>>(
+        final SessionBackgroundAction action = new TerminalBackgroundAction<AttributedList<Path>>(
                 new TerminalLoginService(input, new TerminalLoginCallback(reader)), controller,
                 session, cache, worker);
         this.execute(action);
@@ -365,7 +385,7 @@ public class Terminal {
                 lock.countDown();
             }
         }, new DisabledTransferErrorCallback(), new DefaultEditorListener(controller, session, editor));
-        final TerminalBackgroundAction<Transfer> action = new TerminalBackgroundAction<Transfer>(
+        final SessionBackgroundAction action = new TerminalBackgroundAction<Transfer>(
                 new TerminalLoginService(input, new TerminalLoginCallback(reader)),
                 controller, session, cache, worker
         );
