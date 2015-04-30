@@ -30,6 +30,7 @@
     <property name="bundle.home" value="${bundle.contents}/Home"/>
     <property name="bundle.macos" value="${bundle.contents}/MacOS"/>
     <property name="bundle.library" value="${bundle.contents}/Library"/>
+    <property name="bundle.login" value="${bundle.library}/LoginItems"/>
     <property name="bundle.frameworks" value="${bundle.contents}/Frameworks"/>
     <property name="bundle.resources" value="${bundle.contents}/Resources"/>
     <property name="bundle.spotlight" value="${bundle.library}/Spotlight"/>
@@ -47,13 +48,13 @@
 
     <property name="codesign.certificate" value="Developer ID Application: David Kocher"/>
     <property name="codesign.keychain" value="${user.home}/Library/Keychains/codesign.keychain"/>
-    <property name="codesign.entitlements" value="${home}/sandbox.entitlements"/>
+    <property name="app.codesign.entitlements" value="${setup}/app/sandbox.entitlements"/>
     <!-- Designated requirement -->
     <property name="codesign.requirement.source" value="${setup}/app/codesign-requirement.txt"/>
     <property name="codesign.requirement" value="${setup}/app/codesign-requirement.bin"/>
     <property name="codesign.options" value="--timestamp=none --force"/>
     <property name="codesign.arg"
-              value="--entitlements ${codesign.entitlements} --requirements ${codesign.requirement}"/>
+              value="--entitlements ${app.codesign.entitlements} --requirements ${codesign.requirement}"/>
 
     <property name="keychain.password" value=""/>
 
@@ -90,16 +91,9 @@
         </chmod>
     </target>
 
-    <target name="_build" depends="spotlight">
-        <echo message="Building ${app.bundle}"/>
-        <local name="build.settings"/>
-        <property name="build.settings"
-                  value="${build.xcodeoptions} VERSION=${version} REVISION=${revision} SPARKLEFEED='https://version.cyberduck.io/${app.update.feed}/changelog.rss' COPYRIGHT='${copyright}'"/>
-        <echo message="Build settings ${build.settings} for feed ${app.update.feed}"/>
-        <exec dir="${home}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
-            <arg line="--verbose xcodebuild -project ${app.name}.xcodeproj -configuration Release -target app ${build.settings}"/>
-        </exec>
-        <copy todir="${app.bundle}/${bundle.frameworks}">
+    <target name="_dependencies">
+        <mkdir dir="${bundle}/${bundle.frameworks}"/>
+        <copy todir="${bundle}/${bundle.frameworks}">
             <!-- Dynamic libraries built with xcodebuild -->
             <fileset dir="${build}">
                 <include name="*.dylib"/>
@@ -109,7 +103,8 @@
                 <include name="*.dylib"/>
             </fileset>
         </copy>
-        <copy todir="${app.bundle}/${bundle.resources}">
+        <mkdir dir="${bundle}/${bundle.resources}"/>
+        <copy todir="${bundle}/${bundle.resources}">
             <fileset dir="${build}">
                 <include name="*.jar"/>
             </fileset>
@@ -117,21 +112,35 @@
                 <include name="*.jar"/>
             </fileset>
         </copy>
-        <mkdir dir="${app.bundle}/${bundle.runtime}/${bundle.home}"/>
+        <mkdir dir="${bundle}/${bundle.runtime}/${bundle.home}"/>
         <!-- Copy runtime -->
-        <echo message="Copy runtime from ${jvm.runtime.home} to ${app.bundle}/${bundle.runtime}..."/>
-        <copy todir="${app.bundle}/${bundle.runtime}" preservelastmodified="true">
+        <echo message="Copy runtime from ${jvm.runtime.home} to ${bundle}/${bundle.runtime}..."/>
+        <copy todir="${bundle}/${bundle.runtime}" preservelastmodified="true">
             <fileset followsymlinks="false" dir="${jvm.runtime.home}" excludesfile="runtime-excludes.properties"/>
         </copy>
         <antcall target="shared-library-install-name">
             <param name="oldname" value="/System/Library/Frameworks/JavaVM.framework/Versions/A/JavaVM"/>
             <param name="newname" value="${bundle.runtime.lib}"/>
-            <param name="directory" value="${app.bundle}/${bundle.frameworks}"/>
+            <param name="directory" value="${bundle}/${bundle.frameworks}"/>
         </antcall>
         <!-- Remove architectures -->
         <foreach target="lipo" param="arch" list="${build.lipo.arch.remove}">
-            <param name="directory" value="${app.bundle}"/>
+            <param name="directory" value="${bundle}"/>
         </foreach>
+    </target>
+
+    <target name="_build" depends="spotlight">
+        <echo message="Building ${app.bundle}"/>
+        <local name="build.settings"/>
+        <property name="build.settings"
+                  value="${build.xcodeoptions} VERSION=${version} REVISION=${revision} SPARKLEFEED='https://version.cyberduck.io/${app.update.feed}/changelog.rss' COPYRIGHT='${copyright}'"/>
+        <echo message="Build settings ${build.settings} for feed ${app.update.feed}"/>
+        <exec dir="${home}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
+            <arg line="--verbose xcodebuild -project ${app.name}.xcodeproj -configuration Release -target app ${build.settings}"/>
+        </exec>
+        <antcall target="_dependencies">
+            <param name="bundle" value="${app.bundle}"/>
+        </antcall>
     </target>
 
     <target name="_cli">
@@ -146,9 +155,10 @@
             <fileset dir="${build}">
                 <include name="*.dylib"/>
             </fileset>
-            <fileset dir="${lib}">
+            <fileset followsymlinks="false" dir="${lib}">
                 <!-- Include libjnidispatch.dylib -->
                 <include name="*.dylib"/>
+                <include name="*.framework"/>
             </fileset>
         </copy>
         <copy todir="${cli.bundle}/${bundle.resources}">
@@ -239,8 +249,7 @@
         <antcall target="codesign">
             <param name="bundle" value="${app.bundle}"/>
             <!-- No sandboxing enabled -->
-            <param name="codesign.arg"
-                   value="--requirements ${codesign.requirement}"/>
+            <param name="codesign.arg" value="--requirements ${codesign.requirement}"/>
             <param name="codesign.certificate" value="Developer ID Application: David Kocher"/>
         </antcall>
         <antcall target="verify-spctl">
@@ -296,7 +305,7 @@
         <delete dir="${app.bundle}/${bundle.frameworks}/Sparkle.framework"/>
         <antcall target="codesign">
             <param name="bundle" value="${app.bundle}"/>
-            <param name="codesign.arg" value="--entitlements ${codesign.entitlements}"/>
+            <param name="codesign.arg" value="--entitlements ${app.codesign.entitlements}"/>
             <param name="codesign.certificate" value="3rd Party Mac Developer Application: David Kocher (G69SCX94XU)"/>
         </antcall>
         <echo message="Building ${build.deploy}/${app.name}-${version}.${revision}.pkg"/>
