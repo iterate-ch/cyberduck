@@ -57,7 +57,7 @@ public abstract class BundleController extends ProxyController {
     protected void loadBundle() {
         final String bundleName = this.getBundleName();
         if(null == bundleName) {
-            log.debug("No bundle to load for " + this.toString());
+            log.debug(String.format("No bundle to load for controller %s", this.toString()));
             return;
         }
         this.loadBundle(bundleName);
