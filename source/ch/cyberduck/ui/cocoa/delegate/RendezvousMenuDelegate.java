@@ -42,9 +42,21 @@ public class RendezvousMenuDelegate extends CollectionMenuDelegate<Host> {
 
     private RendezvousCollection collection;
 
+    private MenuCallback callback;
+
     public RendezvousMenuDelegate() {
+        this(new MenuCallback() {
+            @Override
+            public void selected(final NSMenuItem sender) {
+                MainController.newDocument().mount(RendezvousCollection.defaultCollection().lookup(sender.representedObject()));
+            }
+        });
+    }
+
+    public RendezvousMenuDelegate(final MenuCallback callback) {
         super(RendezvousCollection.defaultCollection());
         collection = RendezvousCollection.defaultCollection();
+        this.callback = callback;
     }
 
     @Override
@@ -74,7 +86,7 @@ public class RendezvousMenuDelegate extends CollectionMenuDelegate<Host> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Menu item clicked %s", sender));
         }
-        MainController.newDocument().mount(collection.lookup(sender.representedObject()));
+        callback.selected(sender);
     }
 
     @Override

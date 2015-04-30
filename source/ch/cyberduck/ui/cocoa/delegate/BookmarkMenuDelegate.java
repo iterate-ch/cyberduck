@@ -50,28 +50,49 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
 
     private int index;
 
+    private MenuCallback callback;
+
     private NSMenu historyMenu = NSMenu.menu();
 
     @Delegate
-    private HistoryMenuDelegate historyMenuDelegate
-            = new HistoryMenuDelegate();
+    private HistoryMenuDelegate historyMenuDelegate;
 
     private NSMenu rendezvousMenu = NSMenu.menu();
 
     @Delegate
-    private RendezvousMenuDelegate rendezvousMenuDelegate
-            = new RendezvousMenuDelegate();
+    private RendezvousMenuDelegate rendezvousMenuDelegate;
 
     public BookmarkMenuDelegate() {
-        this(BookmarkCollection.defaultCollection(), BOOKMARKS_INDEX);
+        this(new HistoryMenuDelegate(), new RendezvousMenuDelegate());
     }
 
-    public BookmarkMenuDelegate(final AbstractHostCollection collection, final int index) {
+    public BookmarkMenuDelegate(final HistoryMenuDelegate history, final RendezvousMenuDelegate rendezvous) {
+        this(new MenuCallback() {
+            @Override
+            public void selected(final NSMenuItem sender) {
+                MainController.newDocument().mount(BookmarkCollection.defaultCollection().lookup(sender.representedObject()));
+            }
+        }, history, rendezvous);
+    }
+
+    public BookmarkMenuDelegate(final MenuCallback callback) {
+        this(callback, new HistoryMenuDelegate(), new RendezvousMenuDelegate());
+    }
+
+    public BookmarkMenuDelegate(final MenuCallback callback, final HistoryMenuDelegate history, final RendezvousMenuDelegate rendezvous) {
+        this(BookmarkCollection.defaultCollection(), BOOKMARKS_INDEX, callback, history, rendezvous);
+    }
+
+    public BookmarkMenuDelegate(final AbstractHostCollection collection, final int index,
+                                final MenuCallback callback, final HistoryMenuDelegate history, final RendezvousMenuDelegate rendezvous) {
         super(collection);
-        this.index = index;
         this.collection = collection;
+        this.index = index;
+        this.historyMenuDelegate = history;
+        this.rendezvousMenuDelegate = rendezvous;
         this.historyMenu.setDelegate(historyMenuDelegate.id());
         this.rendezvousMenu.setDelegate(rendezvousMenuDelegate.id());
+        this.callback = callback;
     }
 
     @Override
@@ -134,7 +155,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Menu item clicked %s", sender));
         }
-        MainController.newDocument().mount(collection.lookup(sender.representedObject()));
+        callback.selected(sender);
     }
 
     @Action

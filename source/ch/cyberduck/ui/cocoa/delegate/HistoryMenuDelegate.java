@@ -57,11 +57,23 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
                     NSAttributedString.ParagraphStyleAttributeName)
     );
 
-    private HistoryCollection collection;
+    private HistoryCollection collection
+            = HistoryCollection.defaultCollection();
+
+    private MenuCallback callback;
 
     public HistoryMenuDelegate() {
+        this(new MenuCallback() {
+            @Override
+            public void selected(final NSMenuItem sender) {
+                MainController.newDocument().mount(HistoryCollection.defaultCollection().lookup(sender.representedObject()));
+            }
+        });
+    }
+
+    public HistoryMenuDelegate(final MenuCallback callback) {
         super(HistoryCollection.defaultCollection());
-        collection = HistoryCollection.defaultCollection();
+        this.callback = callback;
     }
 
     @Override
@@ -142,7 +154,7 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Menu item clicked %s", sender));
         }
-        MainController.newDocument().mount(collection.lookup(sender.representedObject()));
+        callback.selected(sender);
     }
 
     public void clearMenuItemClicked(NSMenuItem sender) {
