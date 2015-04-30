@@ -102,14 +102,14 @@ public abstract class AlertController extends SheetController {
     }
 
     @Override
-    protected int getCallbackOption(final NSButton selected) {
-        if(selected.tag() == NSPanel.NSAlertDefaultReturn) {
+    protected int getCallbackOption(final NSButton sender) {
+        if(sender.tag() == NSPanel.NSAlertDefaultReturn) {
             return SheetCallback.DEFAULT_OPTION;
         }
-        else if(selected.tag() == NSPanel.NSAlertAlternateReturn) {
+        else if(sender.tag() == NSPanel.NSAlertAlternateReturn) {
             return SheetCallback.ALTERNATE_OPTION;
         }
-        else if(selected.tag() == NSPanel.NSAlertOtherReturn) {
+        else if(sender.tag() == NSPanel.NSAlertOtherReturn) {
             return SheetCallback.CANCEL_OPTION;
         }
         return SheetCallback.DEFAULT_OPTION;
