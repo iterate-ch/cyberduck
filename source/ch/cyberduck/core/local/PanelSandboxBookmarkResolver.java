@@ -18,9 +18,16 @@ package ch.cyberduck.core.local;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.binding.application.NSOpenPanel;
+import ch.cyberduck.binding.application.SheetCallback;
+import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSData;
+import ch.cyberduck.binding.foundation.NSEnumerator;
+import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -28,7 +35,9 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import org.apache.log4j.Logger;
 import org.rococoa.ObjCObjectByReference;
 import org.rococoa.cocoa.foundation.NSError;
+import org.rococoa.cocoa.foundation.NSInteger;
 
+import java.text.MessageFormat;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -45,7 +54,9 @@ public class PanelSandboxBookmarkResolver implements SandboxBookmarkResolver<NSU
         if(null == file.getBookmark()) {
             if(preferences.getBoolean("local.bookmark.resolve.prompt")) {
                 // Prompt user if no bookmark reference is available
-                bookmark = NSData.dataWithBase64EncodedString(this.choose(file));
+                final String reference = this.choose(file);
+                file.setBookmark(reference);
+                bookmark = NSData.dataWithBase64EncodedString(reference);
             }
             else {
                 throw new AccessDeniedException(String.format("No security scoped bookmark for %s", file));
@@ -70,38 +81,33 @@ public class PanelSandboxBookmarkResolver implements SandboxBookmarkResolver<NSU
     /**
      * @return Security scoped bookmark
      */
-
-    private String choose(final Local file) throws AccessDeniedException {
+    public String choose(final Local file) throws AccessDeniedException {
         final AtomicReference<String> bookmark = new AtomicReference<String>();
         log.warn(String.format("Prompt for file %s to obtain bookmark reference", file));
-//        this.invoke(new DefaultMainAction() {
-//            @Override
-//            public void run() {
-//                final NSOpenPanel panel = NSOpenPanel.openPanel();
-//                panel.setCanChooseDirectories(file.isDirectory());
-//                panel.setCanChooseFiles(file.isFile());
-//                panel.setAllowsMultipleSelection(false);
-//                panel.setMessage(MessageFormat.format(LocaleFactory.localizedString("Select the file {0}", "Credentials"), file.getAbsolute()));
-//                panel.setPrompt(LocaleFactory.localizedString("Choose"));
-//                final NSInteger modal = panel.runModal(file.getParent().getAbsolute(), file.getName());
-//                if(modal.intValue() == SheetCallback.DEFAULT_OPTION) {
-//                    final NSArray selected = panel.filenames();
-//                    final NSEnumerator enumerator = selected.objectEnumerator();
-//                    NSObject next;
-//                    while((next = enumerator.nextObject()) != null) {
-//                        final Local f = LocalFactory.get(next.toString());
-//                        bookmark.set(f.getBookmark());
-//                    }
-//                }
-//                panel.close();
-//            }
-//        }, true);
-        final String data = bookmark.get();
-        if(data == null) {
+        final NSOpenPanel panel = NSOpenPanel.openPanel();
+        panel.setCanChooseDirectories(file.isDirectory());
+        panel.setCanChooseFiles(file.isFile());
+        panel.setAllowsMultipleSelection(false);
+        panel.setMessage(MessageFormat.format(LocaleFactory.localizedString("Select the file {0}", "Credentials"),
+                file.getAbbreviatedPath()));
+        panel.setPrompt(LocaleFactory.localizedString("Choose"));
+        final NSInteger modal = panel.runModal(file.getParent().getAbsolute(), file.getName());
+        if(modal.intValue() == SheetCallback.DEFAULT_OPTION) {
+            final NSArray selected = panel.filenames();
+            final NSEnumerator enumerator = selected.objectEnumerator();
+            NSObject next;
+            while((next = enumerator.nextObject()) != null) {
+                final Local f = LocalFactory.get(next.toString());
+                // Save Base64 encoded scoped reference
+                bookmark.set(this.create(f));
+            }
+        }
+        panel.close();
+        final String reference = bookmark.get();
+        if(reference == null) {
             throw new AccessDeniedException(String.format("Prompt for %s canceled", file));
         }
-        file.setBookmark(data);
-        return data;
+        return reference;
     }
 
     @Override
