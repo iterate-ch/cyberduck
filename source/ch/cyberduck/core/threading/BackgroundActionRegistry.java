@@ -18,6 +18,7 @@ package ch.cyberduck.core.threading;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.BackgroundException;
 
@@ -26,10 +27,10 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public final class BackgroundActionRegistry extends AbstractActionRegistry<BackgroundAction> implements BackgroundActionListener {
-    private static final long serialVersionUID = 1721336643608575003L;
-
+public final class BackgroundActionRegistry extends Collection<BackgroundAction> implements BackgroundActionListener {
     private static final Logger log = Logger.getLogger(BackgroundActionRegistry.class);
+
+    private static final long serialVersionUID = 1721336643608575003L;
 
     private static BackgroundActionRegistry global = null;
 
