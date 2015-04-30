@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa.delegate;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSMenu;
 import ch.cyberduck.binding.application.NSMenuItem;
+import ch.cyberduck.core.AbstractHostCollection;
 import ch.cyberduck.core.BookmarkCollection;
 import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.HistoryCollection;
@@ -45,7 +46,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
 
     private static final int BOOKMARKS_INDEX = 8;
 
-    private BookmarkCollection collection;
+    private AbstractHostCollection collection;
 
     private int index;
 
@@ -65,7 +66,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
         this(BookmarkCollection.defaultCollection(), BOOKMARKS_INDEX);
     }
 
-    public BookmarkMenuDelegate(final BookmarkCollection collection, final int index) {
+    public BookmarkMenuDelegate(final AbstractHostCollection collection, final int index) {
         super(collection);
         this.index = index;
         this.collection = collection;
