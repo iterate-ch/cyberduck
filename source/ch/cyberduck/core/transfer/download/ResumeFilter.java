@@ -24,7 +24,7 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
-import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
@@ -37,20 +37,20 @@ import org.apache.log4j.Logger;
 public class ResumeFilter extends AbstractDownloadFilter {
     private static final Logger log = Logger.getLogger(ResumeFilter.class);
 
-    private Read read;
+    private Download download;
 
     private Attributes attribute;
 
     public ResumeFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session) {
         super(symlinkResolver, session, new DownloadFilterOptions());
-        this.read = session.getFeature(Read.class);
+        this.download = session.getFeature(Download.class);
         this.attribute = new DefaultAttributesFeature(session);
     }
 
     public ResumeFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session,
-                        final DownloadFilterOptions options, final Read read) {
+                        final DownloadFilterOptions options, final Download download) {
         super(symlinkResolver, session, options);
-        this.read = read;
+        this.download = download;
         this.attribute = new DefaultAttributesFeature(session);
     }
 
@@ -80,7 +80,7 @@ public class ResumeFilter extends AbstractDownloadFilter {
     @Override
     public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
         final TransferStatus status = super.prepare(file, local, parent);
-        if(read.offset(file)) {
+        if(download.offset(file)) {
             if(local.isFile()) {
                 if(local.exists()) {
                     if(local.attributes().getSize() > 0) {

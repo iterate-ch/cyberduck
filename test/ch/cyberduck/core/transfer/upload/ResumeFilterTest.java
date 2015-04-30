@@ -12,6 +12,7 @@ import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.shared.DefaultAttributesFeature;
+import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.test.NullLocal;
 import ch.cyberduck.core.test.NullSession;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -19,7 +20,6 @@ import ch.cyberduck.core.transfer.symlink.DisabledUploadSymlinkResolver;
 
 import org.junit.Test;
 
-import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
 
@@ -152,21 +152,12 @@ public class ResumeFilterTest extends AbstractTestCase {
 
     @Test
     public void testAppendEqualSize() throws Exception {
-        final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host("h")),
-                new UploadFilterOptions().withTemporary(true), new Write() {
+        final NullSession session = new NullSession(new Host("h"));
+        final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), session,
+                new UploadFilterOptions().withTemporary(true), new DefaultUploadFeature(session) {
             @Override
-            public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
-                return null;
-            }
-
-            @Override
-            public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
-                return new Append(length);
-            }
-
-            @Override
-            public boolean temporary() {
-                return true;
+            public Write.Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
+                return new Write.Append(length);
             }
         });
         final long size = 3L;
@@ -196,21 +187,12 @@ public class ResumeFilterTest extends AbstractTestCase {
 
     @Test
     public void testAppendSmallerSize() throws Exception {
-        final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host("h")),
-                new UploadFilterOptions().withTemporary(true), new Write() {
+        final NullSession session = new NullSession(new Host("h"));
+        final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), session,
+                new UploadFilterOptions().withTemporary(true), new DefaultUploadFeature(session) {
             @Override
-            public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
-                return null;
-            }
-
-            @Override
-            public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
-                return new Append(length - 1);
-            }
-
-            @Override
-            public boolean temporary() {
-                return true;
+            public Write.Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
+                return new Write.Append(length - 1);
             }
         });
         final long size = 3L;
@@ -245,21 +227,12 @@ public class ResumeFilterTest extends AbstractTestCase {
 
     @Test
     public void testAppendLargerSize() throws Exception {
-        final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host("h")),
-                new UploadFilterOptions().withTemporary(true), new Write() {
+        final NullSession session = new NullSession(new Host("h"));
+        final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), session,
+                new UploadFilterOptions().withTemporary(true), new DefaultUploadFeature(session) {
             @Override
-            public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
-                return null;
-            }
-
-            @Override
-            public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
-                return new Append(length + 1);
-            }
-
-            @Override
-            public boolean temporary() {
-                return true;
+            public Write.Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
+                return new Write.Append(length + 1);
             }
         });
         final long size = 3L;

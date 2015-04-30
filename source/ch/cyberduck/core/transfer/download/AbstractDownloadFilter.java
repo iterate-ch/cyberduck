@@ -35,7 +35,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Attributes;
-import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
@@ -194,7 +194,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                 // Make segments
                 if(status.getLength() >= preferences.getLong("queue.download.segments.threshold")
                         && status.getLength() > preferences.getLong("queue.download.segments.size")) {
-                    final Read read = session.getFeature(Read.class);
+                    final Download read = session.getFeature(Download.class);
                     if(read.offset(file)) {
                         if(log.isInfoEnabled()) {
                             log.info(String.format("Split download %s into segments", local));

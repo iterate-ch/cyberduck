@@ -192,7 +192,7 @@ public class UploadTransfer extends Transfer {
         }
         if(action.equals(TransferAction.callback)) {
             for(TransferItem upload : roots) {
-                final Write write = session.getFeature(Write.class);
+                final Upload write = session.getFeature(Upload.class);
                 final Write.Append append = write.append(upload.remote, upload.local.attributes().getSize(), cache);
                 if(append.override || append.append) {
                     // Found remote file

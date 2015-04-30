@@ -21,6 +21,7 @@ package ch.cyberduck.core.features;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
@@ -38,4 +39,6 @@ public interface Upload<Output> {
      * @return True if the write has a pool with concurrent connections implemented. Applies to multipart uploads.
      */
     boolean pooled();
+
+    Write.Append append(Path file, Long length, PathCache cache) throws BackgroundException;
 }

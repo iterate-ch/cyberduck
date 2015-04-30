@@ -31,7 +31,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.irods.jargon.core.exception.JargonException;
 import org.irods.jargon.core.packinstr.TransferOptions;
 import org.irods.jargon.core.pub.DataTransferOperations;
@@ -46,7 +45,6 @@ import java.io.File;
  * @version $Id$
  */
 public class IRODSDownloadFeature implements Download {
-    private static final Logger log = Logger.getLogger(IRODSDownloadFeature.class);
 
     private IRODSSession session;
 
@@ -82,4 +80,8 @@ public class IRODSDownloadFeature implements Download {
         }
     }
 
+    @Override
+    public boolean offset(final Path file) throws BackgroundException {
+        return false;
+    }
 }

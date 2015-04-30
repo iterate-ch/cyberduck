@@ -21,16 +21,18 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.irods.jargon.core.exception.JargonException;
 import org.irods.jargon.core.packinstr.TransferOptions;
 import org.irods.jargon.core.pub.DataTransferOperations;
@@ -45,7 +47,6 @@ import java.io.File;
  * @version $Id$
  */
 public class IRODSUploadFeature implements Upload<Void> {
-    private static final Logger log = Logger.getLogger(IRODSUploadFeature.class);
 
     private IRODSSession session;
 
@@ -81,5 +82,13 @@ public class IRODSUploadFeature implements Upload<Void> {
             throw new IRODSExceptionMappingService().map(e);
         }
         return null;
+    }
+
+    @Override
+    public Write.Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
+        if(new DefaultFindFeature(session).withCache(cache).find(file)) {
+            return Write.override;
+        }
+        return Write.notfound;
     }
 }

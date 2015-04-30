@@ -21,8 +21,10 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.io.StreamCancelation;
@@ -53,6 +55,11 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
     @Override
     public boolean pooled() {
         return false;
+    }
+
+    @Override
+    public Write.Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
+        return writer.append(file, length, cache);
     }
 
     @Override

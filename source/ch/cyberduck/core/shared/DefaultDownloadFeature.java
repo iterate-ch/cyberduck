@@ -77,4 +77,9 @@ public class DefaultDownloadFeature implements Download {
             throw new DefaultIOExceptionMappingService().map("Download {0} failed", e, file);
         }
     }
+
+    @Override
+    public boolean offset(final Path file) throws BackgroundException {
+        return reader.offset(file);
+    }
 }

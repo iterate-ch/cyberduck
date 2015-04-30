@@ -22,8 +22,10 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -64,6 +66,11 @@ public class SwiftThresholdUploadService implements Upload {
     @Override
     public boolean pooled() {
         return true;
+    }
+
+    @Override
+    public Write.Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
+        return session.getFeature(Write.class).append(file, length, cache);
     }
 
     @Override

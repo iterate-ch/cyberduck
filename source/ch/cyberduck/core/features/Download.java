@@ -32,4 +32,6 @@ public interface Download {
 
     void download(Path file, Local local, BandwidthThrottle throttle, StreamListener listener,
                   TransferStatus status, ConnectionCallback callback) throws BackgroundException;
+
+    boolean offset(final Path file) throws BackgroundException;
 }

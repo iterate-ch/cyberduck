@@ -5,7 +5,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.shared.DefaultDownloadFeature;
 import ch.cyberduck.core.test.NullLocal;
 import ch.cyberduck.core.test.NullSession;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -13,7 +13,6 @@ import ch.cyberduck.core.transfer.symlink.DisabledDownloadSymlinkResolver;
 
 import org.junit.Test;
 
-import java.io.InputStream;
 import java.util.EnumSet;
 
 import static org.junit.Assert.*;
@@ -55,13 +54,9 @@ public class ResumeFilterTest extends AbstractTestCase {
 
     @Test
     public void testPrepareFile() throws Exception {
-        ResumeFilter f = new ResumeFilter(new DisabledDownloadSymlinkResolver(), new NullSession(new Host("h")),
-                new DownloadFilterOptions(), new Read() {
-            @Override
-            public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
-                throw new UnsupportedOperationException();
-            }
-
+        final NullSession session = new NullSession(new Host("h"));
+        ResumeFilter f = new ResumeFilter(new DisabledDownloadSymlinkResolver(), session,
+                new DownloadFilterOptions(), new DefaultDownloadFeature(session) {
             @Override
             public boolean offset(final Path file) throws BackgroundException {
                 return true;
@@ -98,13 +93,9 @@ public class ResumeFilterTest extends AbstractTestCase {
 
     @Test
     public void testPrepareDirectoryExists() throws Exception {
-        ResumeFilter f = new ResumeFilter(new DisabledDownloadSymlinkResolver(), new NullSession(new Host("h")),
-                new DownloadFilterOptions(), new Read() {
-            @Override
-            public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
-                throw new UnsupportedOperationException();
-            }
-
+        final NullSession session = new NullSession(new Host("h"));
+        ResumeFilter f = new ResumeFilter(new DisabledDownloadSymlinkResolver(), session,
+                new DownloadFilterOptions(), new DefaultDownloadFeature(session) {
             @Override
             public boolean offset(final Path file) throws BackgroundException {
                 return true;
@@ -133,13 +124,9 @@ public class ResumeFilterTest extends AbstractTestCase {
 
     @Test
     public void testPrepareDirectoryExistsFalse() throws Exception {
-        ResumeFilter f = new ResumeFilter(new DisabledDownloadSymlinkResolver(), new NullSession(new Host("h")),
-                new DownloadFilterOptions(), new Read() {
-            @Override
-            public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
-                throw new UnsupportedOperationException();
-            }
-
+        final NullSession session = new NullSession(new Host("h"));
+        ResumeFilter f = new ResumeFilter(new DisabledDownloadSymlinkResolver(), session,
+                new DownloadFilterOptions(), new DefaultDownloadFeature(session) {
             @Override
             public boolean offset(final Path file) throws BackgroundException {
                 return true;

@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
@@ -34,7 +35,7 @@ import org.apache.log4j.Logger;
 public class ResumeFilter extends AbstractUploadFilter {
     private static final Logger log = Logger.getLogger(ResumeFilter.class);
 
-    private Write write;
+    private Upload upload;
 
     private PathCache cache = PathCache.empty();
 
@@ -44,13 +45,13 @@ public class ResumeFilter extends AbstractUploadFilter {
 
     public ResumeFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,
                         final UploadFilterOptions options) {
-        this(symlinkResolver, session, options, session.getFeature(Write.class));
+        this(symlinkResolver, session, options, session.getFeature(Upload.class));
     }
 
     public ResumeFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,
-                        final UploadFilterOptions options, final Write write) {
+                        final UploadFilterOptions options, final Upload upload) {
         super(symlinkResolver, session, options);
-        this.write = write;
+        this.upload = upload;
     }
 
     @Override
@@ -64,7 +65,7 @@ public class ResumeFilter extends AbstractUploadFilter {
         if(super.accept(file, local, parent)) {
             if(local.isFile()) {
                 if(parent.isExists()) {
-                    final Write.Append append = write.append(file, local.attributes().getSize(), cache);
+                    final Write.Append append = upload.append(file, local.attributes().getSize(), cache);
                     if(append.append && append.size >= local.attributes().getSize()) {
                         if(log.isInfoEnabled()) {
                             log.info(String.format("Skip file %s with remote size %d", file, append.size));
@@ -84,7 +85,7 @@ public class ResumeFilter extends AbstractUploadFilter {
         final TransferStatus status = super.prepare(file, local, parent);
         if(local.isFile()) {
             if(parent.isExists()) {
-                final Write.Append append = write.append(file, status.getLength(), cache);
+                final Write.Append append = upload.append(file, status.getLength(), cache);
                 if(append.append && append.size <= local.attributes().getSize()) {
                     // Append to existing file
                     status.setAppend(true);

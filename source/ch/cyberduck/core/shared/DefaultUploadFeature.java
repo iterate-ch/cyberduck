@@ -22,6 +22,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
@@ -80,5 +81,10 @@ public class DefaultUploadFeature implements Upload<Void> {
     @Override
     public boolean pooled() {
         return false;
+    }
+
+    @Override
+    public Write.Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
+        return writer.append(file, length, cache);
     }
 }
