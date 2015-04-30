@@ -67,6 +67,10 @@ public final class FoundationKitFunctionsLibrary {
         return instance.NSHomeDirectory();
     }
 
+    public static String NSHomeDirectoryForUser(String user) {
+        return instance.NSHomeDirectoryForUser(user);
+    }
+
     /**
      * Original signature : <code>public static NSString* NSTemporaryDirectory()</code><br>
      * <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSPathUtilities.h:52</i>
