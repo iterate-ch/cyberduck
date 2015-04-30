@@ -66,7 +66,7 @@ public class PromptLimitedListProgressListener extends LimitedListProgressListen
                 );
                 alert.setShowsSuppressionButton(true);
                 alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
-                final AlertController controller = new AlertController(PromptLimitedListProgressListener.this.controller, alert) {
+                final AlertController sheet = new AlertController(controller, alert) {
                     @Override
                     public void callback(final int returncode) {
                         if(returncode == SheetCallback.CANCEL_OPTION) {
@@ -77,7 +77,7 @@ public class PromptLimitedListProgressListener extends LimitedListProgressListen
                         }
                     }
                 };
-                controller.beginSheet();
+                sheet.beginSheet();
                 if(!c.get()) {
                     throw e;
                 }
