@@ -389,6 +389,8 @@ public abstract class NSWindow extends NSResponder {
      */
     public abstract NSUInteger styleMask();
 
+    public abstract void setStyleMask(NSUInteger mask);
+
     /**
      * Original signature : <code>NSText* fieldEditor(BOOL, id)</code><br>
      * <i>native declaration : :251</i>

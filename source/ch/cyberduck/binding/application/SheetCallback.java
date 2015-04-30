@@ -37,8 +37,7 @@ public interface SheetCallback {
     int ALTERNATE_OPTION = NSPanel.NSAlertAlternateReturn;
 
     /**
-     * Called after the sheet has been dismissed by the user. The return codes are defined in
-     * <code>ch.cyberduck.ui.cooca.CDSheetCallback</code>
+     * Called after the sheet has been dismissed by the user.
      *
      * @param returncode Selected button
      */
