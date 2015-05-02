@@ -34,7 +34,7 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public abstract class ReadPermissionWorker extends Worker<List<Permission>> {
+public class ReadPermissionWorker extends Worker<List<Permission>> {
 
     /**
      * Selected files.

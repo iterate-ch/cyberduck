@@ -31,7 +31,7 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public abstract class MoveWorker extends Worker<Boolean> {
+public class MoveWorker extends Worker<Boolean> {
 
     private Session<?> session;
 

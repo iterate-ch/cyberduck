@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public abstract class ReadSizeWorker extends Worker<Long> {
+public class ReadSizeWorker extends Worker<Long> {
 
     /**
      * Selected files.

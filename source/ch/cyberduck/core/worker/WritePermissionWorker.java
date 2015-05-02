@@ -33,7 +33,7 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public abstract class WritePermissionWorker extends Worker<Boolean> {
+public class WritePermissionWorker extends Worker<Boolean> {
 
     private Session<?> session;
 
@@ -112,9 +112,7 @@ public abstract class WritePermissionWorker extends Worker<Boolean> {
             }
         }
         else {
-            if(!permission.equals(file.attributes().getPermission())) {
-                this.write(file, permission);
-            }
+            this.write(file, permission);
         }
         if(recursive) {
             if(file.isDirectory()) {
@@ -126,13 +124,15 @@ public abstract class WritePermissionWorker extends Worker<Boolean> {
     }
 
     private void write(final Path file, final Permission permission) throws BackgroundException {
-        final Permission merged = new Permission(permission.getUser(), permission.getGroup(), permission.getOther(),
-                file.attributes().getPermission().isSticky(), file.attributes().getPermission().isSetuid(),
-                file.attributes().getPermission().isSetgid());
-        listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
-                file.getName(), merged));
-        feature.setUnixPermission(file, merged);
-        file.attributes().setPermission(merged);
+        if(!permission.equals(file.attributes().getPermission())) {
+            final Permission merged = new Permission(permission.getUser(), permission.getGroup(), permission.getOther(),
+                    file.attributes().getPermission().isSticky(), file.attributes().getPermission().isSetuid(),
+                    file.attributes().getPermission().isSetgid());
+            listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
+                    file.getName(), merged));
+            feature.setUnixPermission(file, merged);
+            file.attributes().setPermission(merged);
+        }
     }
 
     @Override

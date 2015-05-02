@@ -34,7 +34,7 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public abstract class WriteAclWorker extends Worker<Boolean> {
+public class WriteAclWorker extends Worker<Boolean> {
 
     private Session<?> session;
 

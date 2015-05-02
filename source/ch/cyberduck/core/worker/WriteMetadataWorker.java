@@ -35,7 +35,7 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public abstract class WriteMetadataWorker extends Worker<Boolean> {
+public class WriteMetadataWorker extends Worker<Boolean> {
 
     private Headers feature;
 

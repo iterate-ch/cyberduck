@@ -34,7 +34,7 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public abstract class ReadAclWorker extends Worker<List<Acl.UserAndRole>> {
+public class ReadAclWorker extends Worker<List<Acl.UserAndRole>> {
 
     private AclPermission feature;
 

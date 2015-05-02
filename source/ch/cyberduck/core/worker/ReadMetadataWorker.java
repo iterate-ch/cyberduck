@@ -36,7 +36,7 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public abstract class ReadMetadataWorker extends Worker<Map<String, String>> {
+public class ReadMetadataWorker extends Worker<Map<String, String>> {
     private static final Logger log = Logger.getLogger(ReadMetadataWorker.class);
 
     private Headers feature;

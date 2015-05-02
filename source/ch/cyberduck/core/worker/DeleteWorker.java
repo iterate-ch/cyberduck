@@ -34,7 +34,7 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public abstract class DeleteWorker extends Worker<Boolean> {
+public class DeleteWorker extends Worker<Boolean> {
 
     private Session<?> session;
 
