@@ -94,12 +94,20 @@ public class SFTPUnixPermissionFeatureTest extends AbstractTestCase {
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new DefaultHomeFinderService(session).find();
-        final long modified = System.currentTimeMillis();
-        final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new SFTPTouchFeature(session).touch(test);
-        new SFTPUnixPermissionFeature(session).setUnixPermission(test, new Permission(666));
-        assertEquals("666", session.list(home, new DisabledListProgressListener()).get(test).attributes().getPermission().getMode());
-        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        {
+            final Path file = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+            new SFTPTouchFeature(session).touch(file);
+            new SFTPUnixPermissionFeature(session).setUnixPermission(file, new Permission(666));
+            assertEquals("666", session.list(home, new DisabledListProgressListener()).get(file).attributes().getPermission().getMode());
+            new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(file), new DisabledLoginCallback(), new DisabledProgressListener());
+        }
+        {
+            final Path directory = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+            new SFTPDirectoryFeature(session).mkdir(directory);
+            new SFTPUnixPermissionFeature(session).setUnixPermission(directory, new Permission(666));
+            assertEquals("666", session.list(home, new DisabledListProgressListener()).get(directory).attributes().getPermission().getMode());
+            new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(directory), new DisabledLoginCallback(), new DisabledProgressListener());
+        }
         session.close();
     }
 
