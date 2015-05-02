@@ -31,7 +31,7 @@ import ch.cyberduck.core.ftp.FTPSession;
 
 import org.junit.Test;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
@@ -76,9 +76,8 @@ public class WritePermissionWorkerTest extends AbstractTestCase {
                     fail();
                 }
             }
-        }, Arrays.<Path>asList(path), permission, true, new DisabledProgressListener()
-        ) {
-        };
+        }, Collections.singletonList(path), permission, true, new DisabledProgressListener()
+        );
         worker.run();
     }
 
@@ -125,9 +124,8 @@ public class WritePermissionWorkerTest extends AbstractTestCase {
                     fail();
                 }
             }
-        }, Arrays.<Path>asList(a), permission, true, new DisabledProgressListener()
-        ) {
-        };
+        }, Collections.singletonList(a), permission, true, new DisabledProgressListener()
+        );
         worker.run();
     }
 
@@ -168,9 +166,8 @@ public class WritePermissionWorkerTest extends AbstractTestCase {
                     fail();
                 }
             }
-        }, Arrays.<Path>asList(path), permission, true, new DisabledProgressListener()
-        ) {
-        };
+        }, Collections.singletonList(path), permission, true, new DisabledProgressListener()
+        );
         worker.run();
     }
 }
