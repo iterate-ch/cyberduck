@@ -50,6 +50,7 @@ public class BrowserListViewModel extends BrowserTableDataSource implements NSTa
 
     @Override
     public void render(final NSTableView view, final List<Path> folders) {
+        super.render(view, folders);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Reload table view %s for changes files %s", view, folders));
         }

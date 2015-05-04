@@ -162,7 +162,9 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
      *
      * @param folders Changed files
      */
-    public abstract void render(final NSTableView view, final List<Path> folders);
+    public void render(final NSTableView view, final List<Path> folders) {
+        attributed.clear();
+    }
 
     protected AttributedList<Path> get(final Path directory) {
         return cache.get(directory).filter(controller.getComparator(), controller.getFilter());
@@ -203,12 +205,13 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             return this.iconForPath(item);
         }
         final Item key = new Item(item, identifier);
+        // Query second level cache with view items
         NSAttributedString value = attributed.get(key);
         if(null != value) {
             return value;
         }
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Lookup failed for %s in cache", key));
+        if(log.isTraceEnabled()) {
+            log.trace(String.format("Lookup failed for %s in cache", key));
         }
         if(identifier.equals(Column.filename.name())) {
             value = NSAttributedString.attributedStringWithAttributes(
