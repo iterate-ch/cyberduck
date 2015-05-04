@@ -20,6 +20,7 @@ package ch.cyberduck.cli;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
+import ch.cyberduck.core.Path;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.lang3.StringUtils;
@@ -48,7 +49,13 @@ public class UriParser {
                     host.setRegion(input.getOptionValue(TerminalOptionsBuilder.Params.region.name()));
                 }
         }
-        host.setDefaultPath(new PathParser(input).parse(uri).getParent().getAbsolute());
+        final Path directory = new PathParser(input).parse(uri);
+        if(directory.isDirectory()) {
+            host.setDefaultPath(directory.getAbsolute());
+        }
+        else {
+            host.setDefaultPath(directory.getParent().getAbsolute());
+        }
         if(input.hasOption(TerminalOptionsBuilder.Params.udt.name())) {
             host.setTransfer(Host.TransferType.udt);
         }
