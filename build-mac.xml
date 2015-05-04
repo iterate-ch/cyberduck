@@ -158,7 +158,6 @@
             <fileset followsymlinks="false" dir="${lib}">
                 <!-- Include libjnidispatch.dylib -->
                 <include name="*.dylib"/>
-                <include name="*.framework"/>
             </fileset>
         </copy>
         <copy todir="${cli.bundle}/${bundle.resources}">
