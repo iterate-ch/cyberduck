@@ -95,8 +95,7 @@ public class S3ObjectListService implements ListService {
             // not returned elsewhere in the response.
             final AttributedList<Path> children = new AttributedList<Path>();
             final Path container = containerService.getContainer(directory);
-            children.addAll(this.listObjects(container,
-                    directory, prefix, String.valueOf(Path.DELIMITER), listener));
+            children.addAll(this.listObjects(container, directory, prefix, String.valueOf(Path.DELIMITER), listener));
             if(preferences.getBoolean("s3.revisions.enable")) {
                 final Versioning feature = session.getFeature(Versioning.class);
                 if(feature != null && feature.getConfiguration(container).isEnabled()) {
@@ -146,6 +145,9 @@ public class S3ObjectListService implements ListService {
                 if(new Path(bucket, key, EnumSet.of(Path.Type.directory, Path.Type.placeholder)).equals(parent)) {
                     continue;
                 }
+                if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(parent)) {
+                    continue;
+                }
                 final EnumSet<AbstractPath.Type> types = object.isDirectoryPlaceholder()
                         ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
                 final Path file = new Path(parent, PathNormalizer.name(key), types,
@@ -192,6 +194,9 @@ public class S3ObjectListService implements ListService {
                 // Latest version already in default listing
                 final String key = PathNormalizer.normalize(marker.getKey());
                 if(new Path(bucket, key, EnumSet.of(Path.Type.directory, Path.Type.placeholder)).equals(parent)) {
+                    continue;
+                }
+                if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(parent)) {
                     continue;
                 }
                 final Path p = new Path(parent, PathNormalizer.name(key), EnumSet.of(Path.Type.file));
