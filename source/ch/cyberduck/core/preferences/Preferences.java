@@ -33,6 +33,7 @@ import ch.cyberduck.core.aquaticprime.DonationKeyFactory;
 import ch.cyberduck.core.bonjour.DisabledRendezvous;
 import ch.cyberduck.core.date.DefaultUserDateFormatter;
 import ch.cyberduck.core.formatter.DecimalSizeFormatter;
+import ch.cyberduck.core.io.watchservice.NIOEventWatchService;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.core.local.DefaultLocalTrashFeature;
 import ch.cyberduck.core.local.DefaultWorkingDirectoryFinder;
@@ -1153,6 +1154,7 @@ public abstract class Preferences {
         defaults.put("factory.workingdirectory.class", DefaultWorkingDirectoryFinder.class.getName());
         defaults.put("factory.locale.class", DisabledLocale.class.getName());
         defaults.put("factory.local.class", Local.class.getName());
+        defaults.put("factory.watchservice.class", NIOEventWatchService.class.getName());
         defaults.put("factory.proxy.class", DisabledProxyFinder.class.getName());
         defaults.put("factory.passwordstore.class", DisabledPasswordStore.class.getName());
         defaults.put("factory.dateformatter.class", DefaultUserDateFormatter.class.getName());
