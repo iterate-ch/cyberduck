@@ -158,7 +158,7 @@
                   location="${build.deploy}/${app.name}-Installer-${version}.${revision}.exe"/>
         <exec executable="${nsis.home}/makensis" failonerror="true">
             <arg value="/DBASEDIR=${build}"/>
-            <arg value="/DPRODUCT_VERSION=${version.short}"/>
+            <arg value="/DPRODUCT_VERSION=${version}"/>
             <arg value="/DSETUPFILE=${setup.file}"/>
             <arg value="${setup}/nsi/cyberduck.nsi"/>
         </exec>
