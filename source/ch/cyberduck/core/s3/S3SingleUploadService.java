@@ -18,10 +18,8 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -34,7 +32,6 @@ import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.codec.binary.Hex;
 import org.apache.log4j.Logger;
 import org.jets3t.service.model.StorageObject;
 
@@ -43,7 +40,6 @@ import java.io.InputStream;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.text.MessageFormat;
 
 /**
  * @version $Id$
@@ -113,14 +109,6 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
 
     @Override
     protected void post(final Path file, final MessageDigest digest, final StorageObject part) throws BackgroundException {
-        if(null != digest) {
-            // Obtain locally-calculated MD5 hash.
-            final String expected = Hex.encodeHexString(digest.digest());
-            if(!expected.equals(part.getETag())) {
-                throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                        MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
-                                expected, part.getETag()));
-            }
-        }
+        this.verify(file, digest, Checksum.parse(part.getETag()));
     }
 }

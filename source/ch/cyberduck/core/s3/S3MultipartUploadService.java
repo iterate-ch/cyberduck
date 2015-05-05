@@ -28,6 +28,7 @@ import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
@@ -37,7 +38,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
@@ -284,14 +284,6 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
 
     @Override
     protected void post(final Path file, final MessageDigest digest, final StorageObject part) throws BackgroundException {
-        if(null != digest) {
-            // Obtain locally-calculated MD5 hash.
-            final String expected = Hex.encodeHexString(digest.digest());
-            if(!expected.equals(part.getETag())) {
-                throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                        MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
-                                expected, part.getETag()));
-            }
-        }
+        this.verify(file, digest, Checksum.parse(part.getETag()));
     }
 }
