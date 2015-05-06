@@ -38,6 +38,8 @@ public class DefaultUrlProviderTest extends AbstractTestCase {
         ));
         assertEquals("http://test.cyberduck.ch/f",
                 new DefaultUrlProvider(host).toUrl(new Path("/f", EnumSet.of(Path.Type.directory))).find(DescriptiveUrl.Type.http).getUrl());
+        assertEquals("http://test.cyberduck.ch/f/f",
+                new DefaultUrlProvider(host).toUrl(new Path("/f/f", EnumSet.of(Path.Type.directory))).find(DescriptiveUrl.Type.http).getUrl());
     }
 
     @Test
