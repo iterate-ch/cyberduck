@@ -28,6 +28,7 @@ import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 
 import org.jets3t.service.model.container.ObjectKeyAndVersion;
 import org.junit.Test;
@@ -78,6 +79,7 @@ public class S3MultipleDeleteFeatureTest extends AbstractTestCase {
         new S3DirectoryFeature(session).mkdir(test, null);
         test.setType(EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         assertTrue(new S3FindFeature(session).find(test));
+        assertTrue(new DefaultFindFeature(session).find(test));
         new S3MultipleDeleteFeature(session).delete(Arrays.asList(test, test), new DisabledLoginCallback(), new DisabledProgressListener());
         assertFalse(new S3FindFeature(session).find(test));
         session.close();

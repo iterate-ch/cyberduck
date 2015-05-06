@@ -145,9 +145,6 @@ public class S3ObjectListService implements ListService {
                 if(new Path(bucket, key, EnumSet.of(Path.Type.directory, Path.Type.placeholder)).equals(parent)) {
                     continue;
                 }
-                if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(parent)) {
-                    continue;
-                }
                 final EnumSet<AbstractPath.Type> types = object.isDirectoryPlaceholder()
                         ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
                 final Path file = new Path(parent, PathNormalizer.name(key), types,
@@ -166,10 +163,7 @@ public class S3ObjectListService implements ListService {
                 if(new Path(bucket, key, EnumSet.of(Path.Type.directory, Path.Type.placeholder)).equals(parent)) {
                     continue;
                 }
-                if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(parent)) {
-                    continue;
-                }
-                final Path file = new Path(parent, PathNormalizer.name(key), EnumSet.of(Path.Type.directory));
+                final Path file = new Path(parent, PathNormalizer.name(key), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
                 file.attributes().setRegion(bucket.attributes().getRegion());
                 children.add(file);
             }
@@ -197,9 +191,6 @@ public class S3ObjectListService implements ListService {
                 // Latest version already in default listing
                 final String key = PathNormalizer.normalize(marker.getKey());
                 if(new Path(bucket, key, EnumSet.of(Path.Type.directory, Path.Type.placeholder)).equals(parent)) {
-                    continue;
-                }
-                if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(parent)) {
                     continue;
                 }
                 final Path p = new Path(parent, PathNormalizer.name(key), EnumSet.of(Path.Type.file));
