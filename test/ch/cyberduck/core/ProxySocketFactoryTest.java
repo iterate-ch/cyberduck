@@ -25,11 +25,14 @@ import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 
 import org.junit.Test;
 
+import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class ProxySocketFactoryTest extends AbstractTestCase {
 
@@ -64,5 +67,31 @@ public class ProxySocketFactoryTest extends AbstractTestCase {
                 }).createSocket();
         assertNotNull(socket);
         socket.connect(new InetSocketAddress("test.cyberduck.ch", 21));
+    }
+
+    @Test
+    public void testCreateSocketIPv6Localhost() throws Exception {
+        System.setProperty("java.net.preferIPv6Addresses", String.valueOf(true));
+        final Socket socket = new ProxySocketFactory(ProtocolFactory.SFTP, new TrustManagerHostnameCallback() {
+            @Override
+            public String getTarget() {
+                return "localhost";
+            }
+        }).createSocket("::1", 22);
+        assertNotNull(socket);
+        assertTrue(socket.getInetAddress() instanceof Inet6Address);
+    }
+
+    @Test
+    public void testCreateSocketDualStackGoogle() throws Exception {
+        final Socket socket = new ProxySocketFactory(ProtocolFactory.WEBDAV, new TrustManagerHostnameCallback() {
+            @Override
+            public String getTarget() {
+                return "localhost";
+            }
+        }).createSocket("ipv6test.google.com", 80);
+        assertNotNull(socket);
+        // We have set `java.net.preferIPv6Addresses` to `false` by default
+        assertTrue(socket.getInetAddress() instanceof Inet4Address);
     }
 }
