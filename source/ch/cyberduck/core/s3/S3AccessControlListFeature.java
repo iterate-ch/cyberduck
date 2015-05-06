@@ -71,15 +71,14 @@ public class S3AccessControlListFeature implements AclPermission {
                 org.jets3t.service.acl.AccessControlList list;
                 final Versioning feature = session.getFeature(Versioning.class);
                 if(feature != null && feature.getConfiguration(containerService.getContainer(file)).isEnabled()) {
-                    list = session.getClient().getVersionedObjectAcl(file.attributes().getVersionId(),
-                            containerService.getContainer(file).getName(), containerService.getKey(file));
+                    return this.convert(session.getClient().getVersionedObjectAcl(file.attributes().getVersionId(),
+                            containerService.getContainer(file).getName(), containerService.getKey(file)));
                 }
                 else {
                     // This method can be performed by anonymous services, but can only succeed if the
                     // object's existing ACL already allows read access by the anonymous user.
-                    list = session.getClient().getObjectAcl(containerService.getContainer(file).getName(), containerService.getKey(file));
+                    return this.convert(session.getClient().getObjectAcl(containerService.getContainer(file).getName(), containerService.getKey(file)));
                 }
-                return this.convert(list);
             }
             return Acl.EMPTY;
         }
