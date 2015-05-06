@@ -36,7 +36,9 @@ public class WebUrlProvider implements UrlProvider {
     public DescriptiveUrlBag toUrl(final Path file) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
         list.add(new DescriptiveUrl(URI.create(host.getWebURL()
-                + URIEncoder.encode(PathRelativizer.relativize(PathNormalizer.normalize(host.getDefaultPath(), true), file.getAbsolute()))).normalize(),
+                + URIEncoder.encode(PathRelativizer.relativize(
+                        PathNormalizer.normalize(host.getDefaultPath(), true), file.getAbsolute())
+        )).normalize(),
                 DescriptiveUrl.Type.http,
                 MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "HTTP")));
         return list;

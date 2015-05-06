@@ -44,7 +44,6 @@ import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Locale;
@@ -136,13 +135,13 @@ public class SwiftUrlProvider implements UrlProvider {
             log.info(String.format("Using X-Account-Meta-Temp-URL-Key header value %s to sign", info.getTempUrlKey()));
         }
         final String signature = this.sign(info.getTempUrlKey(),
-                String.format("GET\n%d\n%s", expiry, String.format("%s%s/%s",
+                String.format("GET\n%d\n%s", expiry, String.format("%s/%s/%s",
                         region.getStorageUrl().getRawPath(),
                         URIEncoder.encode(containerService.getContainer(file).getName()),
                         containerService.getKey(file))));
         //Compile the temporary URL
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
-        for(Scheme scheme : Arrays.asList(Scheme.valueOf(region.getStorageUrl().getScheme()))) {
+        for(Scheme scheme : Collections.singletonList(Scheme.valueOf(region.getStorageUrl().getScheme()))) {
             final int port = region.getStorageUrl().getPort();
             list.add(new DescriptiveUrl(URI.create(String.format("%s://%s%s%s?temp_url_sig=%s&temp_url_expires=%d",
                     scheme.name(), region.getStorageUrl().getHost(),

@@ -97,7 +97,8 @@ public class S3UrlProvider implements UrlProvider {
         list.addAll(new DefaultUrlProvider(session.getHost()).toUrl(file));
         list.add(new DescriptiveUrl(URI.create(String.format("s3://%s%s",
                 containerService.getContainer(file).getName(),
-                containerService.isContainer(file) ? "/" : URIEncoder.encode(containerService.getKey(file)))),
+                containerService.isContainer(file)
+                        ? "/" : String.format("/%s", URIEncoder.encode(containerService.getKey(file))))),
                 DescriptiveUrl.Type.provider,
                 MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "S3")));
         return list;
@@ -120,6 +121,7 @@ public class S3UrlProvider implements UrlProvider {
             if(hostname.startsWith(containerService.getContainer(file).getName())) {
                 url.append(hostname);
                 if(!containerService.isContainer(file)) {
+                    url.append(Path.DELIMITER);
                     url.append(URIEncoder.encode(containerService.getKey(file)));
                 }
             }

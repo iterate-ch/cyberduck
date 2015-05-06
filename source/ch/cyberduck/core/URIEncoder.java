@@ -36,7 +36,7 @@ public final class URIEncoder {
     /**
      * URL encode a path
      *
-     * @param p Absolute path
+     * @param p Path
      * @return URI encoded
      * @see java.net.URLEncoder#encode(String, String)
      */
