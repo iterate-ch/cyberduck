@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.StringTokenizer;
@@ -40,13 +42,22 @@ public final class URIEncoder {
      */
     public static String encode(final String p) {
         try {
-            StringBuilder b = new StringBuilder();
-            StringTokenizer t = new StringTokenizer(p, "/");
+            final StringBuilder b = new StringBuilder();
+            final StringTokenizer t = new StringTokenizer(p, "/");
             if(!t.hasMoreTokens()) {
                 return p;
             }
+            if(StringUtils.startsWith(p, String.valueOf(Path.DELIMITER))) {
+                b.append(Path.DELIMITER);
+            }
             while(t.hasMoreTokens()) {
-                b.append(Path.DELIMITER).append(URLEncoder.encode(t.nextToken(), "UTF-8"));
+                b.append(URLEncoder.encode(t.nextToken(), "UTF-8"));
+                if(t.hasMoreTokens()) {
+                    b.append(Path.DELIMITER);
+                }
+            }
+            if(StringUtils.endsWith(p, String.valueOf(Path.DELIMITER))) {
+                b.append(Path.DELIMITER);
             }
             // Becuase URLEncoder uses <code>application/x-www-form-urlencoded</code> we have to replace these
             // for proper URI percented encoding.
