@@ -78,7 +78,7 @@ public class S3DirectoryFeatureTest extends AbstractTestCase {
             @Override
             public void log(final boolean request, final String message) {
                 if(request) {
-                    if(("PUT /" + name + "%2F HTTP/1.1").equals(message)) {
+                    if(("PUT /" + name + "/ HTTP/1.1").equals(message)) {
                         b.set(true);
                     }
                 }
