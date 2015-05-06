@@ -44,7 +44,7 @@ public class PathContainerService {
     }
 
     /**
-     * @return Absolute path without the container name
+     * @return Path relative to the container name
      */
     public String getKey(final Path file) {
         if(file.isRoot()) {
