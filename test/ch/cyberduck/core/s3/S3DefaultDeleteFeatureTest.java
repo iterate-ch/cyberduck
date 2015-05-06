@@ -58,7 +58,7 @@ public class S3DefaultDeleteFeatureTest extends AbstractTestCase {
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("test2.cyberduck.ch", EnumSet.of(Path.Type.volume));
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new S3DirectoryFeature(session).mkdir(test, null);
         test.setType(EnumSet.of(Path.Type.directory, Path.Type.placeholder));
