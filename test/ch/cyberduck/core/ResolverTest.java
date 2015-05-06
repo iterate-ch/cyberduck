@@ -14,18 +14,17 @@ public class ResolverTest extends AbstractTestCase {
 
     @Test
     public void testResolve() throws Exception {
-        Resolver resolver = new Resolver();
-        assertEquals("54.228.253.92", resolver.resolve("cyberduck.ch").getHostAddress());
+        assertEquals("54.228.253.92", new Resolver().resolve("cyberduck.ch").getHostAddress());
     }
 
     @Test(expected = ResolveFailedException.class)
     public void testFailure() throws Exception {
-        Resolver resolver = new Resolver();
-        assertNull(resolver.resolve("non.cyberduck.ch").getHostAddress());
+        assertNull(new Resolver().resolve("non.cyberduck.ch").getHostAddress());
     }
 
     @Test
     public void testResolveIPv6Localhost() throws Exception {
         assertEquals("localhost", new Resolver().resolve("::1").getHostName());
+        assertEquals("0:0:0:0:0:0:0:1", new Resolver().resolve("::1").getHostAddress());
     }
 }
