@@ -131,12 +131,30 @@ public class S3AccessControlListFeatureTest extends AbstractTestCase {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path placeholder = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final Path placeholder = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         final Path test = new Path(placeholder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test);
         final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
         assertNotNull(f.getPermission(test));
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        session.close();
+    }
+
+    @Test
+    public void testReadDirectoryPlaceholder() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                        new Credentials(
+                                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                        )));
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path placeholder = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        new S3DirectoryFeature(session).mkdir(placeholder);
+        final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
+        assertNotNull(f.getPermission(placeholder));
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(placeholder), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }
 
