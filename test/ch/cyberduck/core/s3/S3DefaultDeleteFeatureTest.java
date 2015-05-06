@@ -16,7 +16,6 @@ import ch.cyberduck.core.gstorage.GoogleStorageProtocol;
 import ch.cyberduck.core.gstorage.GoogleStorageSession;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -114,7 +113,6 @@ public class S3DefaultDeleteFeatureTest extends AbstractTestCase {
         session.close();
     }
 
-    @Ignore
     @Test(expected = NotfoundException.class)
     public void testDeleteNotFoundKey() throws Exception {
         final S3Session session = new S3Session(

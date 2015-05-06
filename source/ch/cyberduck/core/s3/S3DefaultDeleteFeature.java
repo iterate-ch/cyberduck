@@ -23,7 +23,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 
 import org.apache.log4j.Logger;
@@ -55,17 +54,11 @@ public class S3DefaultDeleteFeature implements Delete {
             listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
                     file.getName()));
             try {
-                try {
-                    // Always returning 204 even if the key does not exist. Does not return 404 for non-existing keys
-                    session.getClient().deleteObject(containerService.getContainer(file).getName(), containerService.getKey(file));
-                }
-                catch(ServiceException e) {
-                    throw new ServiceExceptionMappingService().map("Cannot delete {0}", e, file);
-                }
+                // Always returning 204 even if the key does not exist. Does not return 404 for non-existing keys
+                session.getClient().deleteObject(containerService.getContainer(file).getName(), containerService.getKey(file));
             }
-            catch(NotfoundException e) {
-                // No real placeholder but just a delimiter returned in the object listing.
-                log.warn(e.getMessage());
+            catch(ServiceException e) {
+                throw new ServiceExceptionMappingService().map("Cannot delete {0}", e, file);
             }
         }
         for(Path file : files) {
