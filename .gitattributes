@@ -2052,7 +2052,7 @@ lib/ikvmbin-8.1.5561/lib/ikvm-api.jar -text
 lib/jackson-core-asl-1.9.13.jar -text svneol=unset#application/jar
 lib/jackson-mapper-asl-1.9.13.jar -text svneol=unset#application/jar
 lib/jansi-1.12.jar -text
-lib/jargon-core-4.0.2.1-RELEASE.jar -text
+lib/jargon-core-4.0.2.2-20150505.134341-6.jar -text
 lib/java-xmlbuilder-1.0.jar -text svneol=unset#application/zip
 lib/jets3t-0.9.4.jar -text
 lib/jna-4.1.0.jar -text svneol=unset#application/jar
