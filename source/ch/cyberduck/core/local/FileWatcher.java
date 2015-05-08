@@ -26,7 +26,6 @@ import ch.cyberduck.core.threading.ThreadPool;
 import org.apache.log4j.Logger;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.ClosedWatchServiceException;
 import java.nio.file.Path;
@@ -54,9 +53,6 @@ public final class FileWatcher {
 
     public CountDownLatch register(final Local file, final FileWatcherListener listener) throws IOException {
         // Make sure to canonicalize the watched folder
-        if(!file.exists()) {
-            throw new FileNotFoundException();
-        }
         final Path folder = new File(file.getParent().getAbsolute()).getCanonicalFile().toPath();
         if(log.isDebugEnabled()) {
             log.debug(String.format("Register folder %s watching for file %s", folder, file));
