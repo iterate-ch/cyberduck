@@ -26,6 +26,7 @@ import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.ThreadPool;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.ServiceException;
@@ -35,6 +36,7 @@ import org.jets3t.service.model.MultipartUpload;
 import org.jets3t.service.model.S3Object;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -162,8 +164,10 @@ public class S3MultipartCopyFeature implements Copy {
                         log.info(String.format("Received response %s for part number %d", part, partNumber));
                     }
                     // Populate part with response data that is accessible via the object's metadata
-                    return new MultipartPart(partNumber, part.getLastModified(),
-                            part.getEtag(), part.getSize());
+                    return new MultipartPart(partNumber,
+                            null == part.getLastModified() ? new Date(System.currentTimeMillis()) : part.getLastModified(),
+                            null == part.getEtag() ? StringUtils.EMPTY : part.getEtag(),
+                            part.getSize());
                 }
                 catch(S3ServiceException e) {
                     throw new ServiceExceptionMappingService().map("Cannot copy {0}", e, source);

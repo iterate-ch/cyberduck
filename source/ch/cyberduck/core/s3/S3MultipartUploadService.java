@@ -39,6 +39,7 @@ import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.BoundedInputStream;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.MultipartCompleted;
@@ -54,6 +55,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -251,8 +253,10 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     log.info(String.format("Received response %s for part number %d", part, partNumber));
                 }
                 // Populate part with response data that is accessible via the object's metadata
-                return new MultipartPart(partNumber, part.getLastModifiedDate(),
-                        part.getETag(), part.getContentLength());
+                return new MultipartPart(partNumber,
+                        null == part.getLastModifiedDate() ? new Date(System.currentTimeMillis()) : part.getLastModifiedDate(),
+                        null == part.getETag() ? StringUtils.EMPTY : part.getETag(),
+                        part.getContentLength());
             }
         });
     }
