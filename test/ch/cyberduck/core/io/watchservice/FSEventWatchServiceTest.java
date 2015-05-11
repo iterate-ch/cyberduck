@@ -47,12 +47,13 @@ import static org.junit.Assert.*;
 @Depends(platform = Factory.Platform.Name.mac)
 public class FSEventWatchServiceTest extends AbstractTestCase {
 
-    @Test(expected = IOException.class)
+    @Test
     public void testNotfound() throws Exception {
         final FileWatcher watcher = new FileWatcher(new FSEventWatchService());
         final Local file = new Local(System.getProperty("java.io.tmpdir") + "/notfound", UUID.randomUUID().toString());
         assertFalse(file.exists());
-        watcher.register(file, new DisabledFileWatcherListener());
+        watcher.register(file, new DisabledFileWatcherListener()).await();
+        watcher.close();
     }
 
     @Test
