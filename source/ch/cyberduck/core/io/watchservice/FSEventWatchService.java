@@ -35,6 +35,7 @@ import java.nio.file.WatchKey;
 import java.nio.file.Watchable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -154,27 +155,20 @@ public class FSEventWatchService extends AbstractWatchService {
 
     private static Map<File, Long> createLastModifiedMap(final File folder) {
         Map<File, Long> lastModifiedMap = new ConcurrentHashMap<File, Long>();
-        for(File file : recursiveListFiles(folder)) {
+        for(File file : listFiles(folder)) {
             lastModifiedMap.put(file, file.lastModified());
         }
         return lastModifiedMap;
     }
 
-    private static Set<File> recursiveListFiles(final File folder) {
+    private static Set<File> listFiles(final File folder) {
         Set<File> files = new HashSet<File>();
         if(folder.isDirectory()) {
             final File[] children = folder.listFiles();
             if(null == children) {
                 return files;
             }
-            for(File file : children) {
-                if(file.isDirectory()) {
-                    files.addAll(recursiveListFiles(file));
-                }
-                else {
-                    files.add(file);
-                }
-            }
+            Collections.addAll(files, children);
         }
         return files;
     }
@@ -271,7 +265,7 @@ public class FSEventWatchService extends AbstractWatchService {
                            Pointer eventPaths, Pointer /* array of unsigned int */ eventFlags, /* array of unsigned long */ Pointer eventIds) {
             final int length = numEvents.intValue();
             for(String folder : eventPaths.getStringArray(0, length)) {
-                final Set<File> filesOnDisk = recursiveListFiles(new File(folder));
+                final Set<File> filesOnDisk = listFiles(new File(folder));
                 for(File file : findCreatedFiles(filesOnDisk)) {
                     if(key.isReportCreateEvents()) {
                         key.signalEvent(StandardWatchEventKinds.ENTRY_CREATE, file);
