@@ -76,9 +76,6 @@ import javax.net.SocketFactory;
 public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     private static final Logger log = Logger.getLogger(S3Session.class);
 
-    private S3AccessControlListFeature acl
-            = new S3AccessControlListFeature(this);
-
     private DistributionConfiguration cdn;
 
     private Versioning versioning;
@@ -289,7 +286,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3DefaultDeleteFeature(this);
         }
         if(type == AclPermission.class) {
-            return (T) acl;
+            return (T) new S3AccessControlListFeature(this);
         }
         if(type == Headers.class) {
             return (T) new S3MetadataFeature(this);
