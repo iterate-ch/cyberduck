@@ -69,7 +69,9 @@ public class IRODSDownloadFeature implements Download {
                 block.setTransferOptions(options);
                 final DataTransferOperations transfer = fs.getIRODSAccessObjectFactory()
                         .getDataTransferOperations(fs.getIRODSAccount());
-                transfer.getOperation(f, new File(local.getAbsolute()), new DefaultTransferStatusCallbackListener(status, listener, block), DefaultTransferControlBlock.instance(StringUtils.EMPTY, PreferencesFactory.get().getInteger("connection.retry")));
+                transfer.getOperation(f, new File(local.getAbsolute()),
+                        new DefaultTransferStatusCallbackListener(status, listener, block),
+                        block);
             }
             else {
                 throw new NotfoundException(file.getAbsolute());
