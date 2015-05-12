@@ -37,6 +37,7 @@ public class DefaultTransferOptionsConfigurer {
         options.setMaxThreads(preferences.getInteger("queue.maxtransfers"));
         // Enable progress callbacks
         options.setIntraFileStatusCallbacks(true);
+        options.setIntraFileStatusCallbacksNumberCallsInterval(1);
         return options;
     }
 }
