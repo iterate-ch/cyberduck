@@ -57,8 +57,10 @@ public class DefaultTransferStatusCallbackListener implements TransferStatusCall
                 listener.sent(bytes);
                 break;
         }
-        if(t.getTotalFilesTransferredSoFar() == t.getTotalFilesToTransfer()) {
-            status.setComplete();
+        if(!t.isIntraFileStatusReport()) {
+            if(t.getTotalFilesTransferredSoFar() == t.getTotalFilesToTransfer()) {
+                status.setComplete();
+            }
         }
         if(status.isCanceled()) {
             if(log.isDebugEnabled()) {
