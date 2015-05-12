@@ -496,14 +496,11 @@ public final class TransferController extends WindowController implements NSTool
                 Rococoa.cast(cell, ControllerCell.class).setView(controller.view());
             }
 
-//            public NSView tableView_viewForTableColumn_row(final NSTableView view, final NSTableColumn tableColumn,
-//                                                           final NSInteger row) {
-//                if(!Factory.Platform.osversion.matches("10\\.(5|6).*")) {
-//                    // 10.7 or later supports view View-Based Table Views
-//                    return transferTableModel.getController(row.intValue()).view();
-//                }
-//                return null;
-//            }
+            public NSView tableView_viewForTableColumn_row(final NSTableView view, final NSTableColumn column, final NSInteger row) {
+                // 10.7 or later supports view View-Based Table Views
+                final ProgressController controller = transferTableModel.getController(row.intValue());
+                return controller.view();
+            }
 
             @Override
             public boolean isTypeSelectSupported() {

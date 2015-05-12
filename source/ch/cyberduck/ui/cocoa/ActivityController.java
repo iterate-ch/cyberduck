@@ -203,15 +203,11 @@ public final class ActivityController extends WindowController {
                 Rococoa.cast(cell, ControllerCell.class).setView(controller.view());
             }
 
-//            public NSView tableView_viewForTableColumn_row(final NSTableView view, final NSTableColumn tableColumn,
-//                                                           final NSInteger row) {
-//                if(!Factory.Platform.osversion.matches("10\\.(5|6).*")) {
-//                    // 10.7 or later supports view View-Based Table Views
-//                    final TaskController controller = getController(row);
-//                    return controller.view();
-//                }
-//                return null;
-//            }
+            public NSView tableView_viewForTableColumn_row(final NSTableView view, final NSTableColumn column, final NSInteger row) {
+                // 10.7 or later supports view View-Based Table Views
+                final TaskController controller = getController(row);
+                return controller.view();
+            }
         }).id());
         this.table.sizeToFit();
     }
