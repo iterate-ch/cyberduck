@@ -64,12 +64,7 @@ public class DeleteWorkerTest extends AbstractTestCase {
         };
         final DeleteWorker worker = new DeleteWorker(session, new DisabledLoginCallback(),
                 Collections.singletonList(new Path("/t", EnumSet.of(Path.Type.directory))),
-                new DisabledProgressListener()) {
-            @Override
-            public void cleanup(final Boolean result) {
-                //
-            }
-        };
+                new DisabledProgressListener());
         worker.run();
     }
 
@@ -94,12 +89,7 @@ public class DeleteWorkerTest extends AbstractTestCase {
         };
         final DeleteWorker worker = new DeleteWorker(session, new DisabledLoginCallback(),
                 Collections.singletonList(new Path("/s", EnumSet.of(Path.Type.directory, AbstractPath.Type.symboliclink))),
-                new DisabledProgressListener()) {
-            @Override
-            public void cleanup(final Boolean result) {
-                //
-            }
-        };
+                new DisabledProgressListener());
         worker.run();
     }
 }
