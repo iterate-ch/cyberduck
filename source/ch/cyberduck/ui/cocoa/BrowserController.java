@@ -2600,11 +2600,11 @@ public class BrowserController extends WindowController
     }
 
     private void deletePathsImpl(final List<Path> files) {
-        this.background(new WorkerBackgroundAction<Boolean>(this, session, cache,
+        this.background(new WorkerBackgroundAction<List<Path>>(this, session, cache,
                         new DeleteWorker(session, LoginCallbackFactory.get(BrowserController.this), files, this) {
                             @Override
-                            public void cleanup(final Boolean result) {
-                                reload(files, Collections.<Path>emptyList());
+                            public void cleanup(final List<Path> result) {
+                                reload(result, Collections.<Path>emptyList());
                             }
                         }
                 )
@@ -2612,10 +2612,10 @@ public class BrowserController extends WindowController
     }
 
     public void revertPaths(final List<Path> files) {
-        this.background(new WorkerBackgroundAction<Boolean>(this, session, cache,
+        this.background(new WorkerBackgroundAction<List<Path>>(this, session, cache,
                 new RevertWorker(session, files) {
                     @Override
-                    public void cleanup(final Boolean result) {
+                    public void cleanup(final List<Path> result) {
                         reload(files, files);
                     }
                 }

@@ -25,12 +25,13 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Versioning;
 
 import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * @version $Id$
  */
-public class RevertWorker extends Worker<Boolean> {
+public class RevertWorker extends Worker<List<Path>> {
 
     private Session<?> session;
 
@@ -42,7 +43,7 @@ public class RevertWorker extends Worker<Boolean> {
     }
 
     @Override
-    public Boolean run() throws BackgroundException {
+    public List<Path> run() throws BackgroundException {
         final Versioning feature = session.getFeature(Versioning.class);
         for(Path file : files) {
             if(this.isCanceled()) {
@@ -50,7 +51,7 @@ public class RevertWorker extends Worker<Boolean> {
             }
             feature.revert(file);
         }
-        return true;
+        return files;
     }
 
     @Override
@@ -60,8 +61,8 @@ public class RevertWorker extends Worker<Boolean> {
     }
 
     @Override
-    public Boolean initialize() {
-        return false;
+    public List<Path> initialize() {
+        return Collections.emptyList();
     }
 
     @Override
