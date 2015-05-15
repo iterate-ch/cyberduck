@@ -84,7 +84,7 @@ public class AbstractTestCase {
     }
 
     @BeforeClass
-    public static void setup() {
+    public static void setup() throws Exception {
         Locale.setDefault(Locale.ENGLISH);
         PreferencesFactory.set(new MemoryPreferences());
         ProtocolFactory.register();

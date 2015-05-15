@@ -27,7 +27,7 @@ import static org.junit.Assert.assertNotEquals;
 public class ProfileTest extends AbstractTestCase {
 
     @Test
-    public void testEquals() {
+    public void testEquals() throws Exception {
         assertEquals(ProfileReaderFactory.get().read(
                         new Local("profiles/S3 (Temporary Credentials).cyberduckprofile")),
                 ProfileReaderFactory.get().read(
@@ -35,7 +35,7 @@ public class ProfileTest extends AbstractTestCase {
     }
 
     @Test
-    public void testCompareTo() {
+    public void testCompareTo() throws Exception {
         assertEquals(0, ProfileReaderFactory.get().read(
                 new Local("profiles/S3 (Temporary Credentials).cyberduckprofile")).compareTo(ProfileReaderFactory.get().read(
                 new Local("profiles/S3 (Temporary Credentials).cyberduckprofile"))));
@@ -44,7 +44,7 @@ public class ProfileTest extends AbstractTestCase {
     }
 
     @Test
-    public void testCompareMultipleRegions() {
+    public void testCompareMultipleRegions() throws Exception {
         assertEquals(0, ProfileReaderFactory.get().read(
                 new Local("profiles/Verizon Cloud Storage (AMS1A).cyberduckprofile")).compareTo(ProfileReaderFactory.get().read(
                 new Local("profiles/Verizon Cloud Storage (IAD3A).cyberduckprofile"))));
