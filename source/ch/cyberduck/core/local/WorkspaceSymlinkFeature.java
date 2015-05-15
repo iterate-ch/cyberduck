@@ -21,6 +21,7 @@ import ch.cyberduck.binding.foundation.NSFileManager;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.local.features.Symlink;
 
 import org.apache.log4j.Logger;
@@ -41,10 +42,10 @@ public class WorkspaceSymlinkFeature implements Symlink {
         if(!success) {
             final NSError f = error.getValueAs(NSError.class);
             if(null == f) {
-                throw new AccessDeniedException(String.format("%s %s",
+                throw new LocalAccessDeniedException(String.format("%s %s",
                         LocaleFactory.localizedString("Cannot create file", "Error"), file.getAbsolute()));
             }
-            throw new AccessDeniedException(String.format("%s", f.localizedDescription()));
+            throw new LocalAccessDeniedException(String.format("%s", f.localizedDescription()));
         }
         if(log.isDebugEnabled()) {
             log.debug(String.format("Created symbolic link %s with target %s", file, target));

@@ -28,6 +28,7 @@ import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 
 import org.apache.log4j.Logger;
@@ -63,9 +64,9 @@ public class FinderLocalAttributes extends LocalAttributes {
         if(null == dict) {
             final NSError f = error.getValueAs(NSError.class);
             if(null == f) {
-                throw new AccessDeniedException(local.getAbsolute());
+                throw new LocalAccessDeniedException(local.getAbsolute());
             }
-            throw new AccessDeniedException(String.format("%s", f.localizedDescription()));
+            throw new LocalAccessDeniedException(String.format("%s", f.localizedDescription()));
         }
         return dict;
     }
@@ -131,9 +132,9 @@ public class FinderLocalAttributes extends LocalAttributes {
             if(!success) {
                 final NSError f = error.getValueAs(NSError.class);
                 if(null == f) {
-                    throw new AccessDeniedException(local.getAbsolute());
+                    throw new LocalAccessDeniedException(local.getAbsolute());
                 }
-                throw new AccessDeniedException(String.format("%s", f.localizedDescription()));
+                throw new LocalAccessDeniedException(String.format("%s", f.localizedDescription()));
             }
         }
     }
@@ -156,9 +157,9 @@ public class FinderLocalAttributes extends LocalAttributes {
             if(!success) {
                 final NSError f = error.getValueAs(NSError.class);
                 if(null == f) {
-                    throw new AccessDeniedException(local.getAbsolute());
+                    throw new LocalAccessDeniedException(local.getAbsolute());
                 }
-                throw new AccessDeniedException(String.format("%s", f.localizedDescription()));
+                throw new LocalAccessDeniedException(String.format("%s", f.localizedDescription()));
             }
         }
     }

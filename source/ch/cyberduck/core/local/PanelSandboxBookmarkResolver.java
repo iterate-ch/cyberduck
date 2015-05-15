@@ -29,6 +29,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -59,7 +60,7 @@ public class PanelSandboxBookmarkResolver implements SandboxBookmarkResolver<NSU
                 bookmark = NSData.dataWithBase64EncodedString(reference);
             }
             else {
-                throw new AccessDeniedException(String.format("No security scoped bookmark for %s", file));
+                throw new LocalAccessDeniedException(String.format("No security scoped bookmark for %s", file));
             }
         }
         else {
@@ -71,9 +72,9 @@ public class PanelSandboxBookmarkResolver implements SandboxBookmarkResolver<NSU
             final NSError f = error.getValueAs(NSError.class);
             log.error(String.format("Error resolving bookmark for %s to URL %s", file, f));
             if(null == f) {
-                throw new AccessDeniedException(file.getAbsolute());
+                throw new LocalAccessDeniedException(file.getAbsolute());
             }
-            throw new AccessDeniedException(String.format("%s", f.localizedDescription()));
+            throw new LocalAccessDeniedException(String.format("%s", f.localizedDescription()));
         }
         return resolved;
     }
@@ -105,7 +106,7 @@ public class PanelSandboxBookmarkResolver implements SandboxBookmarkResolver<NSU
         panel.close();
         final String reference = bookmark.get();
         if(reference == null) {
-            throw new AccessDeniedException(String.format("Prompt for %s canceled", file));
+            throw new LocalAccessDeniedException(String.format("Prompt for %s canceled", file));
         }
         return reference;
     }
@@ -121,9 +122,9 @@ public class PanelSandboxBookmarkResolver implements SandboxBookmarkResolver<NSU
                 final NSError f = error.getValueAs(NSError.class);
                 log.warn(String.format("Failure getting bookmark data for file %s %s", file, f));
                 if(null == f) {
-                    throw new AccessDeniedException(file.getAbsolute());
+                    throw new LocalAccessDeniedException(file.getAbsolute());
                 }
-                throw new AccessDeniedException(String.format("%s", f.localizedDescription()));
+                throw new LocalAccessDeniedException(String.format("%s", f.localizedDescription()));
             }
             final String encoded = data.base64Encoding();
             if(log.isDebugEnabled()) {

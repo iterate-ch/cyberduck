@@ -18,13 +18,14 @@ package ch.cyberduck.core.serializer.impl.jna;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.foundation.NSDictionary;
+import ch.cyberduck.binding.foundation.NSMutableArray;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.serializer.Writer;
-import ch.cyberduck.binding.foundation.NSDictionary;
-import ch.cyberduck.binding.foundation.NSMutableArray;
 
 import java.util.Collection;
 
@@ -40,14 +41,14 @@ public class PlistWriter<S extends Serializable> implements Writer<S> {
             list.addObject(bookmark.<NSDictionary>serialize(SerializerFactory.get()));
         }
         if(!list.writeToFile(file.getAbsolute())) {
-            throw new AccessDeniedException(String.format("Cannot create file %s", file.getAbsolute()));
+            throw new LocalAccessDeniedException(String.format("Cannot create file %s", file.getAbsolute()));
         }
     }
 
     @Override
     public void write(final S item, final Local file) throws AccessDeniedException {
         if(!item.<NSDictionary>serialize(SerializerFactory.get()).writeToFile(file.getAbsolute())) {
-            throw new AccessDeniedException(String.format("Cannot create file %s", file.getAbsolute()));
+            throw new LocalAccessDeniedException(String.format("Cannot create file %s", file.getAbsolute()));
         }
     }
 }

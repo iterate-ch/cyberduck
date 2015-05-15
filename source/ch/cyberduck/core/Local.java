@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.LocalRepeatableFileInputStream;
 import ch.cyberduck.core.local.TildeExpander;
@@ -178,7 +179,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
             return;
         }
         if(!file.mkdirs()) {
-            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
+            throw new LocalAccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
                     "Cannot create folder {0}", "Error"), path));
         }
     }
@@ -195,7 +196,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
             return;
         }
         if(!file.delete()) {
-            throw new AccessDeniedException(String.format("Delete %s failed", path));
+            throw new LocalAccessDeniedException(String.format("Delete %s failed", path));
         }
     }
 
@@ -222,7 +223,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
             }
         });
         if(null == files) {
-            throw new AccessDeniedException(String.format("Error listing files in directory %s", path));
+            throw new LocalAccessDeniedException(String.format("Error listing files in directory %s", path));
         }
         for(File file : files) {
             children.add(LocalFactory.get(file.getAbsolutePath()));
@@ -302,7 +303,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
 
     public void rename(final Local renamed) throws AccessDeniedException {
         if(!new File(path).renameTo(new File(renamed.getAbsolute()))) {
-            throw new AccessDeniedException(String.format("Rename failed for %s", renamed));
+            throw new LocalAccessDeniedException(String.format("Rename failed for %s", renamed));
         }
     }
 
@@ -394,7 +395,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
             return new FileOutputStream(new File(path), append);
         }
         catch(FileNotFoundException e) {
-            throw new AccessDeniedException(e.getMessage(), e);
+            throw new LocalAccessDeniedException(e.getMessage(), e);
         }
     }
 

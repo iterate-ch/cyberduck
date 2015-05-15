@@ -26,6 +26,7 @@ import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.LocalRepeatableFileInputStream;
 import ch.cyberduck.core.library.Native;
@@ -144,7 +145,7 @@ public class FinderLocal extends Local {
         try {
             resolved = this.lock();
         }
-        catch(AccessDeniedException e) {
+        catch(LocalAccessDeniedException e) {
             return super.getOutputStream(append);
         }
         try {
@@ -161,7 +162,7 @@ public class FinderLocal extends Local {
             };
         }
         catch(FileNotFoundException e) {
-            throw new AccessDeniedException(e.getMessage(), e);
+            throw new LocalAccessDeniedException(e.getMessage(), e);
         }
     }
 
@@ -208,7 +209,7 @@ public class FinderLocal extends Local {
             };
         }
         catch(FileNotFoundException e) {
-            throw new AccessDeniedException(e.getMessage(), e);
+            throw new LocalAccessDeniedException(e.getMessage(), e);
         }
     }
 
@@ -221,9 +222,9 @@ public class FinderLocal extends Local {
             if(null == files) {
                 final NSError f = error.getValueAs(NSError.class);
                 if(null == f) {
-                    throw new AccessDeniedException(this.getAbsolute());
+                    throw new LocalAccessDeniedException(this.getAbsolute());
                 }
-                throw new AccessDeniedException(String.format("%s", f.localizedDescription()));
+                throw new LocalAccessDeniedException(String.format("%s", f.localizedDescription()));
             }
             final NSEnumerator i = files.objectEnumerator();
             NSObject next;

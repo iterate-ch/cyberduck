@@ -20,6 +20,7 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.local.features.Touch;
 
 import org.apache.log4j.Logger;
@@ -40,7 +41,7 @@ public class DefaultLocalTouchFeature implements Touch {
         final File parent = file.getParentFile();
         if(!parent.exists()) {
             if(!parent.mkdirs()) {
-                throw new AccessDeniedException(MessageFormat.format(
+                throw new LocalAccessDeniedException(MessageFormat.format(
                         LocaleFactory.localizedString("Cannot create folder {0}", "Error"), l.getAbsolute()));
             }
             if(log.isDebugEnabled()) {
@@ -55,7 +56,7 @@ public class DefaultLocalTouchFeature implements Touch {
         }
         try {
             if(!file.createNewFile()) {
-                throw new AccessDeniedException(MessageFormat.format(
+                throw new LocalAccessDeniedException(MessageFormat.format(
                         LocaleFactory.localizedString("Cannot create {0}", "Error"), l.getAbsolute()));
             }
             if(log.isDebugEnabled()) {
@@ -63,7 +64,7 @@ public class DefaultLocalTouchFeature implements Touch {
             }
         }
         catch(IOException e) {
-            throw new AccessDeniedException(MessageFormat.format(
+            throw new LocalAccessDeniedException(MessageFormat.format(
                     LocaleFactory.localizedString("Cannot create {0}", "Error"), l.getAbsolute()), e);
         }
     }

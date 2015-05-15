@@ -36,7 +36,7 @@ public class DefaultLocalTouchFeatureTest extends AbstractTestCase {
         }
         catch(AccessDeniedException e) {
             final String s = l.getName();
-            assertEquals("Cannot create /" + s + ". Please contact your web hosting service provider for assistance.", e.getDetail());
+            assertEquals("Cannot create /" + s + ". Please verify disk permissions.", e.getDetail());
             assertEquals("Access denied", e.getMessage());
             throw e;
         }

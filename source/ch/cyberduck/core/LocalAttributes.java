@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.io.Checksum;
 
 import java.io.File;
@@ -65,7 +66,7 @@ public class LocalAttributes extends Attributes {
             return;
         }
         if(!new File(path).setLastModified(timestamp)) {
-            throw new AccessDeniedException(String.format("Cannot change timestamp for %s", path));
+            throw new LocalAccessDeniedException(String.format("Cannot change timestamp for %s", path));
         }
     }
 

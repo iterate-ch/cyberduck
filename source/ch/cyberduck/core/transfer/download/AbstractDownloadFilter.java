@@ -33,6 +33,7 @@ import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Download;
@@ -134,12 +135,12 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             if(local.exists()) {
                 if(file.getType().contains(Path.Type.file)) {
                     if(local.isDirectory()) {
-                        throw new AccessDeniedException(String.format("Cannot replace folder %s with file %s", local.getAbbreviatedPath(), file.getName()));
+                        throw new LocalAccessDeniedException(String.format("Cannot replace folder %s with file %s", local.getAbbreviatedPath(), file.getName()));
                     }
                 }
                 if(file.getType().contains(Path.Type.directory)) {
                     if(local.isFile()) {
-                        throw new AccessDeniedException(String.format("Cannot replace file %s with folder %s", local.getAbbreviatedPath(), file.getName()));
+                        throw new LocalAccessDeniedException(String.format("Cannot replace file %s with folder %s", local.getAbbreviatedPath(), file.getName()));
                     }
                 }
                 status.setExists(true);

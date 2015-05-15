@@ -18,19 +18,20 @@ package ch.cyberduck.core.importer;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSData;
 import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.binding.foundation.NSEnumerator;
 import ch.cyberduck.binding.foundation.NSKeyedUnarchiver;
 import ch.cyberduck.binding.foundation.NSObject;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -59,7 +60,7 @@ public class TransmitBookmarkCollection extends ThirdpartyBookmarkCollection {
     protected void parse(final Local file) throws AccessDeniedException {
         final NSDictionary serialized = NSDictionary.dictionaryWithContentsOfFile(file.getAbsolute());
         if(null == serialized) {
-            throw new AccessDeniedException(String.format("Invalid bookmark file %s", file));
+            throw new LocalAccessDeniedException(String.format("Invalid bookmark file %s", file));
         }
         // Adds a class translation mapping to NSKeyedUnarchiver whereby objects encoded with a given class name
         // are decoded as instances of a given class instead.
@@ -73,12 +74,12 @@ public class TransmitBookmarkCollection extends ThirdpartyBookmarkCollection {
 
         final NSData collectionsData = Rococoa.cast(serialized.objectForKey("FavoriteCollections"), NSData.class);
         if(null == collectionsData) {
-            throw new AccessDeniedException(String.format("Error unarchiving bookmark file %s", file));
+            throw new LocalAccessDeniedException(String.format("Error unarchiving bookmark file %s", file));
         }
         TransmitFavoriteCollection rootCollection
                 = Rococoa.cast(NSKeyedUnarchiver.unarchiveObjectWithData(collectionsData), TransmitFavoriteCollection.class);
         if(null == rootCollection) {
-            throw new AccessDeniedException(String.format("Error unarchiving bookmark file %s", file));
+            throw new LocalAccessDeniedException(String.format("Error unarchiving bookmark file %s", file));
         }
         NSArray collections = rootCollection.favorites(); //The root has collections
         NSEnumerator collectionsEnumerator = collections.objectEnumerator();

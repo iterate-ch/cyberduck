@@ -3,6 +3,7 @@ package ch.cyberduck.core;
 import ch.cyberduck.binding.foundation.NSAppleScript;
 import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
@@ -66,7 +67,7 @@ public class ApplescriptTerminalService implements TerminalService {
         final ObjCObjectByReference error = new ObjCObjectByReference();
         if(null == as.executeAndReturnError(error)) {
             final NSDictionary d = error.getValueAs(NSDictionary.class);
-            throw new AccessDeniedException(String.format("Failure running script in %s. %s",
+            throw new LocalAccessDeniedException(String.format("Failure running script in %s. %s",
                     application.getName(), d.objectForKey("NSAppleScriptErrorBriefMessage")));
         }
     }

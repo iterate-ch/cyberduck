@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 
 /**
  * @version $Id$
@@ -27,6 +28,6 @@ public class DisabledTerminalService implements TerminalService {
 
     @Override
     public void open(final Host host, final Path workdir) throws AccessDeniedException {
-        throw new AccessDeniedException("Disabled");
+        throw new LocalAccessDeniedException("Disabled");
     }
 }
