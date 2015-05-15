@@ -528,37 +528,45 @@ public class MainController extends BundleController implements NSApplication.De
         final Local f = LocalFactory.get(filename);
         if(f.exists()) {
             if("duck".equals(f.getExtension())) {
-                final Host bookmark = HostReaderFactory.get().read(f);
-                if(null == bookmark) {
+                final Host bookmark;
+                try {
+                    bookmark = HostReaderFactory.get().read(f);
+                    if(null == bookmark) {
+                        return false;
+                    }
+                    MainController.newDocument().mount(bookmark);
+                    return true;
+                }
+                catch(AccessDeniedException e) {
+                    log.error(e.getMessage());
                     return false;
                 }
-                MainController.newDocument().mount(bookmark);
-                return true;
             }
             else if("cyberducklicense".equals(f.getExtension())) {
                 final License l = LicenseFactory.get(f);
                 if(l.verify()) {
                     try {
                         f.copy(LocalFactory.get(preferences.getProperty("application.support.path"), f.getName()));
+                        final NSAlert alert = NSAlert.alert(
+                                l.toString(),
+                                LocaleFactory.localizedString("Thanks for your support! Your contribution helps to further advance development to make Cyberduck even better.", "License")
+                                        + "\n\n"
+                                        + LocaleFactory.localizedString("Your donation key has been copied to the Application Support folder.", "License"),
+                                LocaleFactory.localizedString("Continue", "License"), //default
+                                null, //other
+                                null
+                        );
+                        alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
+                        if(this.alert(alert) == SheetCallback.DEFAULT_OPTION) {
+                            for(BrowserController c : MainController.getBrowsers()) {
+                                c.removeDonateWindowTitle();
+                            }
+                            this.updateLicenseMenu();
+                        }
                     }
                     catch(AccessDeniedException e) {
-                        log.warn(e.getMessage());
-                    }
-                    final NSAlert alert = NSAlert.alert(
-                            l.toString(),
-                            LocaleFactory.localizedString("Thanks for your support! Your contribution helps to further advance development to make Cyberduck even better.", "License")
-                                    + "\n\n"
-                                    + LocaleFactory.localizedString("Your donation key has been copied to the Application Support folder.", "License"),
-                            LocaleFactory.localizedString("Continue", "License"), //default
-                            null, //other
-                            null
-                    );
-                    alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
-                    if(this.alert(alert) == SheetCallback.DEFAULT_OPTION) {
-                        for(BrowserController c : MainController.getBrowsers()) {
-                            c.removeDonateWindowTitle();
-                        }
-                        this.updateLicenseMenu();
+                        log.error(e.getMessage());
+                        return false;
                     }
                 }
                 else {
@@ -585,27 +593,28 @@ public class MainController extends BundleController implements NSApplication.De
                 return true;
             }
             else if("cyberduckprofile".equals(f.getExtension())) {
-                final Protocol profile = ProfileReaderFactory.get().read(f);
-                if(null == profile) {
-                    return false;
-                }
-                if(profile.isEnabled()) {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Register profile %s", profile));
+                try {
+                    final Protocol profile = ProfileReaderFactory.get().read(f);
+                    if(null == profile) {
+                        return false;
                     }
-                    ProtocolFactory.register(profile);
-                    final Host host = new Host(profile, profile.getDefaultHostname(), profile.getDefaultPort());
-                    MainController.newDocument().addBookmark(host);
-                    // Register in application support
-                    final Local profiles = LocalFactory.get(preferences.getProperty("application.support.path"),
-                            PreferencesFactory.get().getProperty("profiles.folder.name"));
-                    try {
+                    if(profile.isEnabled()) {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Register profile %s", profile));
+                        }
+                        ProtocolFactory.register(profile);
+                        final Host host = new Host(profile, profile.getDefaultHostname(), profile.getDefaultPort());
+                        MainController.newDocument().addBookmark(host);
+                        // Register in application support
+                        final Local profiles = LocalFactory.get(preferences.getProperty("application.support.path"),
+                                PreferencesFactory.get().getProperty("profiles.folder.name"));
                         profiles.mkdir();
                         f.copy(LocalFactory.get(profiles, f.getName()));
                     }
-                    catch(AccessDeniedException e) {
-                        log.warn(e.getMessage());
-                    }
+                }
+                catch(AccessDeniedException e) {
+                    log.error(e.getMessage());
+                    return false;
                 }
             }
             else {
@@ -1125,6 +1134,8 @@ public class MainController extends BundleController implements NSApplication.De
                         new FlowBookmarkCollection(), new InterarchyBookmarkCollection(), new CrossFtpBookmarkCollection(), new FireFtpBookmarkCollection());
             }
         });
+//        new ServiceManagementApplicationLoginRegistry().register(
+//                new Application("ch.iterate.mountainduck", "Mountain Duck"));
     }
 
     /**
