@@ -6,11 +6,13 @@ import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.Serializable;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.test.Depends;
 
 import org.junit.Test;
+
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -20,10 +22,15 @@ import static org.junit.Assert.*;
 @Depends(platform = Factory.Platform.Name.mac)
 public class HostPlistReaderTest extends AbstractTestCase {
 
+    @Test(expected = LocalAccessDeniedException.class)
+    public void testDeserializeNoSuchFile() throws Exception {
+        final HostPlistReader reader = new HostPlistReader(new DeserializerFactory(PlistDeserializer.class.getName()));
+        assertNull(reader.read(new Local(UUID.randomUUID().toString())));
+    }
+
     @Test
     public void testDeserializeDeprecatedProtocol() throws Exception {
         final HostPlistReader reader = new HostPlistReader(new DeserializerFactory(PlistDeserializer.class.getName()));
-        assertNull(reader.read(new Local("test")));
         assertNull(reader.read(
                 new FinderLocal("test/ch/cyberduck/core/serializer/impl/1c158c34-db8a-4c32-a732-abd9447bb27c.duck")));
     }
@@ -60,10 +67,9 @@ public class HostPlistReaderTest extends AbstractTestCase {
         assertEquals("~/.ssh/key.pem", read.getCredentials().getIdentity().getAbbreviatedPath());
     }
 
-    @Test
+    @Test(expected = LocalAccessDeniedException.class)
     public void testReadNotFound() throws Exception {
         final HostPlistReader reader = new HostPlistReader(new DeserializerFactory(PlistDeserializer.class.getName()));
-        final Serializable read = reader.read(new FinderLocal("notfound.duck"));
-        assertNull(read);
+        reader.read(new FinderLocal("notfound.duck"));
     }
 }

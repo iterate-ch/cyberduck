@@ -42,7 +42,7 @@ import static org.junit.Assert.*;
 public class ProfilePlistReaderTest extends AbstractTestCase {
 
     @Test
-    public void testDeserialize() throws Exception {
+    public void testDeserializeDropbox() throws Exception {
         final Profile profile = new ProfilePlistReader().read(
                 new Local("test/ch/cyberduck/core/serializer/impl/Dropbox.cyberduckprofile")
         );

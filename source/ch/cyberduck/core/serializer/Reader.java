@@ -21,6 +21,7 @@ package ch.cyberduck.core.serializer;
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Serializable;
+import ch.cyberduck.core.exception.AccessDeniedException;
 
 /**
  * @param <S>
@@ -32,13 +33,14 @@ public interface Reader<S extends Serializable> {
      * @param file Serialized file
      * @return Deserialized content
      */
-    Collection<S> readCollection(Local file);
+    Collection<S> readCollection(Local file) throws AccessDeniedException;
 
     /**
      * Read the serialized item from the given file
      *
      * @param file A valid dictionary
      * @return Deserialized item. Null if the file cannot be deserialized
+     * @throws AccessDeniedException If the file is not readable
      */
-    S read(Local file);
+    S read(Local file) throws AccessDeniedException;
 }

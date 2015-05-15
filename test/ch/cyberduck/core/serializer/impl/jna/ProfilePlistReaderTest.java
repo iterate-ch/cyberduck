@@ -30,7 +30,7 @@ import static org.junit.Assert.*;
 public class ProfilePlistReaderTest extends AbstractTestCase {
 
     @Test
-    public void testDeserialize() throws Exception {
+    public void testDeserializeDropbox() throws Exception {
         final ProfilePlistReader reader = new ProfilePlistReader(new DeserializerFactory(PlistDeserializer.class.getName()));
         final Profile profile = reader.read(
                 new FinderLocal("test/ch/cyberduck/core/serializer/impl/Dropbox.cyberduckprofile")

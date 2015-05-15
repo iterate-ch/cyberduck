@@ -18,14 +18,16 @@ package ch.cyberduck.core.serializer.impl.jna;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Collection;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Serializable;
-import ch.cyberduck.core.serializer.Reader;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.binding.foundation.NSEnumerator;
 import ch.cyberduck.binding.foundation.NSObject;
+import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Serializable;
+import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
+import ch.cyberduck.core.serializer.Reader;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
@@ -38,7 +40,10 @@ public abstract class PlistReader<S extends Serializable> implements Reader<S> {
     private static Logger log = Logger.getLogger(PlistReader.class);
 
     @Override
-    public Collection<S> readCollection(final Local file) {
+    public Collection<S> readCollection(final Local file) throws AccessDeniedException {
+        if(!file.exists()) {
+            throw new LocalAccessDeniedException(file.getAbsolute());
+        }
         final Collection<S> c = new Collection<S>();
         NSArray list = NSArray.arrayWithContentsOfFile(file.getAbsolute());
         if(null == list) {
@@ -63,9 +68,16 @@ public abstract class PlistReader<S extends Serializable> implements Reader<S> {
     /**
      * @param file A valid bookmark dictionary
      * @return Null if the file cannot be deserialized
+     * @throws AccessDeniedException If the file is not readable
      */
     @Override
-    public S read(final Local file) {
+    public S read(final Local file) throws AccessDeniedException {
+        if(!file.exists()) {
+            throw new LocalAccessDeniedException(file.getAbsolute());
+        }
+        if(!file.isFile()) {
+            throw new LocalAccessDeniedException(file.getAbsolute());
+        }
         NSDictionary dict = NSDictionary.dictionaryWithContentsOfFile(file.getAbsolute());
         if(null == dict) {
             log.error(String.format("Invalid bookmark file %s", file));

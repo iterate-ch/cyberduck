@@ -408,13 +408,19 @@ public class BookmarkTableDataSource extends ListDataSource {
                         final Local local = LocalFactory.get(filename);
                         if(filename.endsWith(".duck")) {
                             // Adding a previously exported bookmark file from the Finder
-                            Host bookmark = HostReaderFactory.get().read(local);
-                            if(null == bookmark) {
+                            final Host bookmark;
+                            try {
+                                bookmark = HostReaderFactory.get().read(local);
+                                if(null == bookmark) {
+                                    continue;
+                                }
+                                source.add(row.intValue(), bookmark);
+                                view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), true);
+                                view.scrollRowToVisible(row);
+                            }
+                            catch(AccessDeniedException e) {
                                 continue;
                             }
-                            source.add(row.intValue(), bookmark);
-                            view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), true);
-                            view.scrollRowToVisible(row);
                         }
                         else {
                             // The bookmark this file has been dropped onto

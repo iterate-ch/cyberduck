@@ -22,6 +22,7 @@ import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.serializer.Reader;
 
 import org.apache.log4j.Logger;
@@ -45,7 +46,7 @@ public abstract class PlistReader<S extends Serializable> implements Reader<S> {
     private static Logger log = Logger.getLogger(PlistReader.class);
 
     @Override
-    public Collection<S> readCollection(final Local file) {
+    public Collection<S> readCollection(final Local file) throws AccessDeniedException {
         final Collection<S> c = new Collection<S>();
         final NSArray list = (NSArray) this.parse(file);
         if(null == list) {
@@ -69,9 +70,16 @@ public abstract class PlistReader<S extends Serializable> implements Reader<S> {
     /**
      * @param file A valid bookmark dictionary
      * @return Null if the file cannot be deserialized
+     * @throws AccessDeniedException If the file is not readable
      */
     @Override
-    public S read(final Local file) {
+    public S read(final Local file) throws AccessDeniedException {
+        if(!file.exists()) {
+            throw new LocalAccessDeniedException(file.getAbsolute());
+        }
+        if(!file.isFile()) {
+            throw new LocalAccessDeniedException(file.getAbsolute());
+        }
         final NSDictionary dict = (NSDictionary) this.parse(file);
         if(null == dict) {
             log.error(String.format("Invalid bookmark file %s", file));
@@ -80,32 +88,12 @@ public abstract class PlistReader<S extends Serializable> implements Reader<S> {
         return this.deserialize(dict);
     }
 
-    private NSObject parse(final Local file) {
+    private NSObject parse(final Local file) throws AccessDeniedException {
         try {
             return XMLPropertyListParser.parse(file.getInputStream());
         }
-        catch(ParserConfigurationException e) {
-            log.warn(String.format("Invalid bookmark file %s", file), e);
-            return null;
-        }
-        catch(IOException e) {
-            log.warn(String.format("Invalid bookmark file %s", file), e);
-            return null;
-        }
-        catch(SAXException e) {
-            log.warn(String.format("Invalid bookmark file %s", file), e);
-            return null;
-        }
-        catch(PropertyListFormatException e) {
-            log.warn(String.format("Invalid bookmark file %s", file), e);
-            return null;
-        }
-        catch(ParseException e) {
-            log.warn(String.format("Invalid bookmark file %s", file), e);
-            return null;
-        }
-        catch(AccessDeniedException e) {
-            log.warn(String.format("Invalid bookmark file %s", file), e);
+        catch(ParserConfigurationException | IOException | SAXException | ParseException | PropertyListFormatException e) {
+            log.error(String.format("Invalid bookmark file %s", file));
             return null;
         }
     }
