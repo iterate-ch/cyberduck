@@ -26,6 +26,7 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.MessageFormat;
 
 /**
  * @version $Id$
@@ -39,8 +40,11 @@ public class DefaultLocalTouchFeature implements Touch {
         final File parent = file.getParentFile();
         if(!parent.exists()) {
             if(!parent.mkdirs()) {
-                throw new AccessDeniedException(String.format("%s %s",
-                        LocaleFactory.localizedString("Cannot create folder", "Error"), l.getAbsolute()));
+                throw new AccessDeniedException(MessageFormat.format(
+                        LocaleFactory.localizedString("Cannot create folder {0}", "Error"), l.getAbsolute()));
+            }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Created folder %s", parent));
             }
         }
         if(l.exists()) {
@@ -51,13 +55,16 @@ public class DefaultLocalTouchFeature implements Touch {
         }
         try {
             if(!file.createNewFile()) {
-                throw new AccessDeniedException(String.format("%s %s",
-                        LocaleFactory.localizedString("Cannot create file", "Error"), l.getAbsolute()));
+                throw new AccessDeniedException(MessageFormat.format(
+                        LocaleFactory.localizedString("Cannot create {0}", "Error"), l.getAbsolute()));
+            }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Created file %s", file));
             }
         }
         catch(IOException e) {
-            throw new AccessDeniedException(String.format("%s %s",
-                    LocaleFactory.localizedString("Cannot create file", "Error"), l.getAbsolute()), e);
+            throw new AccessDeniedException(MessageFormat.format(
+                    LocaleFactory.localizedString("Cannot create {0}", "Error"), l.getAbsolute()), e);
         }
     }
 }
