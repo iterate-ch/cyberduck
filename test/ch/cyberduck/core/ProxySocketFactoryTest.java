@@ -71,7 +71,6 @@ public class ProxySocketFactoryTest extends AbstractTestCase {
 
     @Test
     public void testCreateSocketIPv6Localhost() throws Exception {
-        System.setProperty("java.net.preferIPv6Addresses", String.valueOf(true));
         final Socket socket = new ProxySocketFactory(ProtocolFactory.SFTP, new TrustManagerHostnameCallback() {
             @Override
             public String getTarget() {
