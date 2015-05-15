@@ -31,14 +31,14 @@ import ch.cyberduck.core.test.NullSession;
 
 import org.junit.Test;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.NoSuchFileException;
 import java.util.EnumSet;
 import java.util.UUID;
 
 public class DefaultWatchEditorTest extends AbstractTestCase {
 
-    @Test(expected = FileNotFoundException.class)
+    @Test(expected = NoSuchFileException.class)
     public void testNotfound() throws Exception {
         final DefaultWatchEditor editor = new DefaultWatchEditor(null, new NullSession(new Host("h")),
                 new Path("/remote", EnumSet.of(Path.Type.file)), new DisabledListProgressListener());
