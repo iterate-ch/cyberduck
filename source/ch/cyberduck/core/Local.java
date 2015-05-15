@@ -327,7 +327,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
                 IOUtils.copy(in, out);
             }
             catch(IOException e) {
-                throw new AccessDeniedException(e.getMessage(), e);
+                throw new LocalAccessDeniedException(e.getMessage(), e);
             }
             finally {
                 IOUtils.closeQuietly(in);
@@ -386,7 +386,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
             return new LocalRepeatableFileInputStream(new File(path));
         }
         catch(FileNotFoundException e) {
-            throw new AccessDeniedException(e.getMessage(), e);
+            throw new LocalAccessDeniedException(e.getMessage(), e);
         }
     }
 
