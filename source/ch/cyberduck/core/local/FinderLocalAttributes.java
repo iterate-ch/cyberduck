@@ -29,6 +29,7 @@ import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
+import ch.cyberduck.core.exception.LocalNotfoundException;
 import ch.cyberduck.core.exception.NotfoundException;
 
 import org.apache.log4j.Logger;
@@ -53,7 +54,7 @@ public class FinderLocalAttributes extends LocalAttributes {
 
     private NSDictionary getNativeAttributes() throws AccessDeniedException, NotfoundException {
         if((!local.exists())) {
-            throw new NotfoundException(local.getAbsolute());
+            throw new LocalNotfoundException(local.getAbsolute());
         }
         final ObjCObjectByReference error = new ObjCObjectByReference();
         // If flag is true and path is a symbolic link, the attributes of the linked-to file are returned;

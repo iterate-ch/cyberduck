@@ -20,6 +20,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
+import ch.cyberduck.core.exception.LocalNotfoundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.LocalRepeatableFileInputStream;
 import ch.cyberduck.core.local.TildeExpander;
@@ -157,7 +158,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
             return LocalFactory.get(Paths.get(this.getAbsolute()).toRealPath().toString());
         }
         catch(InvalidPathException | IOException e) {
-            throw new NotfoundException(String.format("Resolving symlink target for %s failed", path), e);
+            throw new LocalNotfoundException(String.format("Resolving symlink target for %s failed", path), e);
         }
     }
 

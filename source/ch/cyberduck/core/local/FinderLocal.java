@@ -27,6 +27,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
+import ch.cyberduck.core.exception.LocalNotfoundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.LocalRepeatableFileInputStream;
 import ch.cyberduck.core.library.Native;
@@ -262,9 +263,9 @@ public class FinderLocal extends Local {
         if(null == destination) {
             final NSError f = error.getValueAs(NSError.class);
             if(null == f) {
-                throw new NotfoundException(this.getAbsolute());
+                throw new LocalNotfoundException(this.getAbsolute());
             }
-            throw new NotfoundException(String.format("%s", f.localizedDescription()));
+            throw new LocalNotfoundException(String.format("%s", f.localizedDescription()));
         }
         if(FilenameUtils.getPrefixLength(destination) != 0) {
             // Absolute path
