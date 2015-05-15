@@ -200,11 +200,11 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                 if(overall.isCanceled()) {
                     return null;
                 }
+                final TransferStatus status = new TransferStatus()
+                        .length(length)
+                        .skip(offset);
                 return SwiftLargeObjectUploadFeature.super.upload(
-                        segment, local, throttle, listener, new TransferStatus()
-                                .length(length)
-                                .skip(offset),
-                        overall, overall);
+                        segment, local, throttle, listener, status, overall, overall);
             }
         });
     }
