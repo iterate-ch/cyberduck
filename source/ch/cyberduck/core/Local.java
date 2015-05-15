@@ -42,6 +42,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
+import java.text.MessageFormat;
 import java.util.EnumSet;
 import java.util.Objects;
 
@@ -154,10 +155,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
             // is the path the link references.
             return LocalFactory.get(Paths.get(this.getAbsolute()).toRealPath().toString());
         }
-        catch(InvalidPathException e) {
-            throw new NotfoundException(String.format("Resolving symlink target for %s failed", path), e);
-        }
-        catch(IOException e) {
+        catch(InvalidPathException | IOException e) {
             throw new NotfoundException(String.format("Resolving symlink target for %s failed", path), e);
         }
     }
@@ -180,7 +178,8 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
             return;
         }
         if(!file.mkdirs()) {
-            throw new AccessDeniedException(String.format("Create directory %s failed", path));
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
+                    "Cannot create folder {0}", "Error"), path));
         }
     }
 
@@ -196,7 +195,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
             return;
         }
         if(!file.delete()) {
-            throw new AccessDeniedException(String.format("Delete %s failed", file.getName()));
+            throw new AccessDeniedException(String.format("Delete %s failed", path));
         }
     }
 
