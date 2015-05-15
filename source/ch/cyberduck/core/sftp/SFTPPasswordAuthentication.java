@@ -27,6 +27,9 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
+import net.schmizz.sshj.userauth.password.PasswordFinder;
+import net.schmizz.sshj.userauth.password.Resource;
+
 /**
  * @version $Id$
  */
@@ -49,7 +52,18 @@ public class SFTPPasswordAuthentication implements SFTPAuthentication {
             log.debug(String.format("Login using password authentication with credentials %s", host.getCredentials()));
         }
         try {
-            session.getClient().authPassword(host.getCredentials().getUsername(), host.getCredentials().getPassword());
+            // Use both password and keyboard-interactive
+            session.getClient().authPassword(host.getCredentials().getUsername(), new PasswordFinder() {
+                @Override
+                public char[] reqPassword(final Resource<?> resource) {
+                    return host.getCredentials().getPassword().toCharArray();
+                }
+
+                @Override
+                public boolean shouldRetry(final Resource<?> resource) {
+                    return false;
+                }
+            });
             return session.getClient().isAuthenticated();
         }
         catch(IOException e) {
