@@ -248,9 +248,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             }
         }
         if(this.options.checksum) {
-            if(attributes.getChecksum() != null) {
-                status.setChecksum(attributes.getChecksum());
-            }
+            status.setChecksum(attributes.getChecksum());
         }
         return status;
     }
