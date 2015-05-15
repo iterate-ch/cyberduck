@@ -169,10 +169,10 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             }
         }
         status.setRemote(attributes);
-        if(this.options.timestamp) {
+        if(options.timestamp) {
             status.setTimestamp(attributes.getModificationDate());
         }
-        if(this.options.permissions) {
+        if(options.permissions) {
             Permission permission = Permission.EMPTY;
             if(preferences.getBoolean("queue.download.permissions.default")) {
                 if(file.isFile()) {
@@ -248,7 +248,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                 }
             }
         }
-        if(this.options.checksum) {
+        if(options.checksum) {
             status.setChecksum(attributes.getChecksum());
         }
         return status;
