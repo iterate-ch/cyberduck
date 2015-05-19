@@ -1,11 +1,11 @@
 package ch.cyberduck.core.local;
 
+import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.test.Depends;
-import ch.cyberduck.binding.application.NSImage;
 
 import org.junit.Test;
 
@@ -26,6 +26,15 @@ public class WorkspaceIconServiceTest extends AbstractTestCase {
         final Local file = new Local(PreferencesFactory.get().getProperty("tmp.dir"),
                 UUID.randomUUID().toString());
         assertFalse(s.update(file, NSImage.imageWithContentsOfFile("img/download0.icns")));
+    }
+
+    @Test
+    public void testSetProgressFolder() throws Exception {
+        final WorkspaceIconService s = new WorkspaceIconService();
+        final Local file = new Local(PreferencesFactory.get().getProperty("tmp.dir"),
+                UUID.randomUUID().toString());
+        file.mkdir();
+        assertTrue(s.update(file, NSImage.imageWithContentsOfFile("img/download0.icns")));
     }
 
     @Test
