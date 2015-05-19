@@ -264,6 +264,8 @@ public class DownloadTransfer extends Transfer {
         }
         else if(file.isDirectory()) {
             if(!status.isExists()) {
+                listener.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
+                        local.getName()));
                 local.mkdir();
                 status.setComplete();
             }
