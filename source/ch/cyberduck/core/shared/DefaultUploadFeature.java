@@ -44,10 +44,14 @@ import java.io.OutputStream;
  */
 public class DefaultUploadFeature implements Upload<Void> {
 
-    private Write writer;
+    private final Write writer;
 
     public DefaultUploadFeature(final Session<?> session) {
-        this.writer = session.getFeature(Write.class);
+        this(session.getFeature(Write.class));
+    }
+
+    public DefaultUploadFeature(final Write writer) {
+        this.writer = writer;
     }
 
     @Override

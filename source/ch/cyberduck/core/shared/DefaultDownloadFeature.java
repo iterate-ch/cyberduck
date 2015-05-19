@@ -42,7 +42,7 @@ import java.io.OutputStream;
  */
 public class DefaultDownloadFeature implements Download {
 
-    private Read reader;
+    private final Read reader;
 
     public DefaultDownloadFeature(final Session<?> session) {
         this.reader = session.getFeature(Read.class);
