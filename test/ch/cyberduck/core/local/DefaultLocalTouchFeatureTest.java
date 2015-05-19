@@ -41,4 +41,14 @@ public class DefaultLocalTouchFeatureTest extends AbstractTestCase {
             throw e;
         }
     }
+
+    @Test
+    public void testSkipWhenFolderExists() throws Exception {
+        Local l = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final DefaultLocalTouchFeature f = new DefaultLocalTouchFeature();
+        l.mkdir();
+        assertTrue(l.exists());
+        f.touch(l);
+        assertTrue(l.exists());
+    }
 }
