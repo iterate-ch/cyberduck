@@ -313,4 +313,9 @@ public class HostParserTest extends AbstractTestCase {
         assertEquals("/sandbox", HostParser.parse("ftp://[fc01:2:3:4:5::1]:2121/sandbox").getDefaultPath());
         assertEquals("/sandbox@a", HostParser.parse("ftp://[fc01:2:3:4:5::1]:2121/sandbox@a").getDefaultPath());
     }
+
+    @Test
+    public void testParseIpv6LinkLocalZoneIndex() throws Exception {
+        assertEquals("fe80::c62c:3ff:fe0b:8670%en0", HostParser.parse("ftp://fe80::c62c:3ff:fe0b:8670%en0/~/sandbox").getHostname());
+    }
 }

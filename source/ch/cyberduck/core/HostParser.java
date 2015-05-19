@@ -26,6 +26,7 @@ import org.apache.log4j.Logger;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.regex.Pattern;
 
 /**
  * @version $Id$
@@ -109,7 +110,7 @@ public final class HostParser {
                 begin = input.indexOf('[', begin) + 1;
                 cut = input.indexOf(']', begin);
                 String address = input.substring(begin, cut);
-                if(InetAddressUtils.isIPv6Address(address)) {
+                if(isv6Address(address)) {
                     hostname = address;
                     begin += hostname.length();
                 }
@@ -118,13 +119,13 @@ public final class HostParser {
         else if(input.indexOf(Path.DELIMITER, begin) != -1) {
             cut = input.indexOf(Path.DELIMITER, begin);
             String address = input.substring(begin, cut);
-            if(InetAddressUtils.isIPv6Address(address)) {
+            if(isv6Address(address)) {
                 hostname = address;
                 begin += hostname.length();
             }
         }
         else {
-            if(InetAddressUtils.isIPv6Address(input)) {
+            if(isv6Address(input)) {
                 hostname = input;
                 begin += hostname.length();
             }
@@ -190,5 +191,16 @@ public final class HostParser {
         final Host h = new Host(protocol, hostname, port, path, new Credentials(username, password));
         h.configure();
         return h;
+    }
+
+    private static final Pattern IPV6_STD_PATTERN = Pattern.compile(
+            "(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))"
+    );
+
+    private static boolean isv6Address(final String address) {
+        if(IPV6_STD_PATTERN.matcher(address).matches()) {
+            return true;
+        }
+        return InetAddressUtils.isIPv6Address(address);
     }
 }
