@@ -21,7 +21,6 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.binding.application.AppKitFunctionsLibrary;
 import ch.cyberduck.binding.application.NSApplication;
 import ch.cyberduck.binding.application.NSButton;
-import ch.cyberduck.binding.application.NSPanel;
 import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.foundation.NSThread;
@@ -79,21 +78,6 @@ public abstract class SheetController extends WindowController implements SheetC
     }
 
     /**
-     * Translate return codes from sheet selection
-     *
-     * @param sender Button pressed
-     * @return Sheet callback constant
-     * @see SheetCallback#DEFAULT_OPTION
-     * @see SheetCallback#CANCEL_OPTION
-     */
-    protected int getCallbackOption(final NSButton sender) {
-        if(sender.tag() == NSPanel.NSCancelButton) {
-            return SheetCallback.CANCEL_OPTION;
-        }
-        return SheetCallback.DEFAULT_OPTION;
-    }
-
-    /**
      * This must be the target action for any button in the sheet dialog. Will validate the input
      * and close the sheet; #sheetDidClose will be called afterwards
      *
@@ -104,7 +88,7 @@ public abstract class SheetController extends WindowController implements SheetC
         if(log.isDebugEnabled()) {
             log.debug(String.format("Close sheet with button %s", sender.title()));
         }
-        final int option = this.getCallbackOption(sender);
+        final int option = new PanelReturnCodeMapper().getOption(sender);
         if(option == DEFAULT_OPTION || option == ALTERNATE_OPTION) {
             if(!this.validateInput()) {
                 AppKitFunctionsLibrary.beep();

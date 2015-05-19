@@ -21,10 +21,8 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSButton;
-import ch.cyberduck.binding.application.NSPanel;
 import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.binding.application.NSWindow;
-import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.foundation.NSEnumerator;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.DefaultProviderHelpService;
@@ -100,20 +98,6 @@ public abstract class AlertController extends SheetController {
      */
     public void alertDidEnd_returnCode_contextInfo(final NSAlert alert, final int returnCode, final ID contextInfo) {
         this.sheetDidClose_returnCode_contextInfo(alert.window(), returnCode, contextInfo);
-    }
-
-    @Override
-    protected int getCallbackOption(final NSButton sender) {
-        if(sender.tag() == NSPanel.NSAlertDefaultReturn) {
-            return SheetCallback.DEFAULT_OPTION;
-        }
-        else if(sender.tag() == NSPanel.NSAlertAlternateReturn) {
-            return SheetCallback.ALTERNATE_OPTION;
-        }
-        else if(sender.tag() == NSPanel.NSAlertOtherReturn) {
-            return SheetCallback.CANCEL_OPTION;
-        }
-        return SheetCallback.DEFAULT_OPTION;
     }
 
     /**
