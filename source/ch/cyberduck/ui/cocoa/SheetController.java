@@ -95,10 +95,6 @@ public abstract class SheetController extends WindowController implements SheetC
                 return;
             }
         }
-        this.closeSheet(option);
-    }
-
-    public void closeSheet(final int option) {
         NSApplication.sharedApplication().endSheet(this.window(), option);
     }
 
