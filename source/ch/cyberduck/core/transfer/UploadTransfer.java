@@ -27,7 +27,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -49,6 +48,7 @@ import ch.cyberduck.core.transfer.upload.RenameExistingFilter;
 import ch.cyberduck.core.transfer.upload.RenameFilter;
 import ch.cyberduck.core.transfer.upload.ResumeFilter;
 import ch.cyberduck.core.transfer.upload.SkipFilter;
+import ch.cyberduck.core.transfer.upload.UploadRegexPriorityComparator;
 
 import org.apache.log4j.Logger;
 
@@ -87,19 +87,7 @@ public class UploadTransfer extends Transfer {
     }
 
     public UploadTransfer(final Host host, final List<TransferItem> roots, final Filter<Local> f) {
-        this(host, roots, f, new Comparator<Local>() {
-            @Override
-            public int compare(Local o1, Local o2) {
-                final String pattern = PreferencesFactory.get().getProperty("queue.upload.priority.regex");
-                if(PathNormalizer.name(o1.getAbsolute()).matches(pattern)) {
-                    return -1;
-                }
-                if(PathNormalizer.name(o2.getAbsolute()).matches(pattern)) {
-                    return 1;
-                }
-                return 0;
-            }
-        });
+        this(host, roots, f, new UploadRegexPriorityComparator());
     }
 
     public UploadTransfer(final Host host, final List<TransferItem> roots, final Filter<Local> f, final Comparator<Local> comparator) {
@@ -258,4 +246,5 @@ public class UploadTransfer extends Transfer {
             }
         }
     }
+
 }

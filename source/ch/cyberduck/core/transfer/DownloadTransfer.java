@@ -27,7 +27,6 @@ import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -41,6 +40,7 @@ import ch.cyberduck.core.local.features.Symlink;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.download.AbstractDownloadFilter;
 import ch.cyberduck.core.transfer.download.CompareFilter;
+import ch.cyberduck.core.transfer.download.DownloadRegexPriorityComparator;
 import ch.cyberduck.core.transfer.download.IconUpdateSreamListener;
 import ch.cyberduck.core.transfer.download.OverwriteFilter;
 import ch.cyberduck.core.transfer.download.RenameExistingFilter;
@@ -89,19 +89,7 @@ public class DownloadTransfer extends Transfer {
     }
 
     public DownloadTransfer(final Host host, final List<TransferItem> roots, final Filter<Path> f) {
-        this(host, roots, f, new Comparator<Path>() {
-            @Override
-            public int compare(Path o1, Path o2) {
-                final String pattern = PreferencesFactory.get().getProperty("queue.download.priority.regex");
-                if(PathNormalizer.name(o1.getAbsolute()).matches(pattern)) {
-                    return -1;
-                }
-                if(PathNormalizer.name(o2.getAbsolute()).matches(pattern)) {
-                    return 1;
-                }
-                return 0;
-            }
-        });
+        this(host, roots, f, new DownloadRegexPriorityComparator());
     }
 
     public DownloadTransfer(final Host host, final List<TransferItem> roots, final Filter<Path> f, final Comparator<Path> comparator) {
@@ -271,4 +259,5 @@ public class DownloadTransfer extends Transfer {
             }
         }
     }
+
 }
