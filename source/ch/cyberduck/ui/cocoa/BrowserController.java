@@ -421,6 +421,7 @@ public class BrowserController extends WindowController
                             new SessionListWorker(session, cache, folder, listener) {
                                 @Override
                                 public void cleanup(final AttributedList<Path> list) {
+                                    super.cleanup(list);
                                     model.render(browser, Collections.singletonList(folder));
                                     select(selected);
                                 }

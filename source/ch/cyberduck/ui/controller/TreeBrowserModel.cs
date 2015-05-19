@@ -203,10 +203,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override void cleanup(object result)
                 {
-                    if (_controller.getActions().isEmpty())
-                    {
-                        _controller.ReloadData(_directory, true);
-                    }
+                    base.cleanup();
+                    _controller.ReloadData(_directory, true);
                 }
             }
         }

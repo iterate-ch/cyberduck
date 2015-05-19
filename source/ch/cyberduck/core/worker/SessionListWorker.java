@@ -64,23 +64,17 @@ public class SessionListWorker extends Worker<AttributedList<Path>> implements L
             if(cache.isValid(directory)) {
                 return cache.get(directory);
             }
-            final AttributedList<Path> children = session.list(directory, this);
-            cache.put(directory, children);
-            return children;
+            return session.list(directory, this);
         }
         catch(ListCanceledException e) {
-            final AttributedList<Path> chunk = e.getChunk();
-            cache.put(directory, chunk);
-            return chunk;
+            return e.getChunk();
         }
     }
 
     @Override
     public void cleanup(final AttributedList<Path> result) {
-        if(null == result) {
-            // Cache empty listing
-            cache.put(directory, AttributedList.<Path>emptyList());
-        }
+        // Cache directory listing
+        cache.put(directory, AttributedList.<Path>emptyList());
     }
 
     @Override
