@@ -35,10 +35,10 @@ public class PathPriorityComparator implements Comparator<Path> {
             return 0;
         }
         if(o1.isDirectory()) {
-            return 1;
+            return -1;
         }
         if(o2.isDirectory()) {
-            return -1;
+            return 1;
         }
         return 0;
     }
