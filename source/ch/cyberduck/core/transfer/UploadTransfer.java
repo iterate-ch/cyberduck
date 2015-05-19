@@ -48,6 +48,7 @@ import ch.cyberduck.core.transfer.upload.RenameExistingFilter;
 import ch.cyberduck.core.transfer.upload.RenameFilter;
 import ch.cyberduck.core.transfer.upload.ResumeFilter;
 import ch.cyberduck.core.transfer.upload.SkipFilter;
+import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.core.transfer.upload.UploadRegexPriorityComparator;
 
 import org.apache.log4j.Logger;
@@ -140,22 +141,24 @@ public class UploadTransfer extends Transfer {
         }
         final Symlink symlink = session.getFeature(Symlink.class);
         final UploadSymlinkResolver resolver = new UploadSymlinkResolver(symlink, roots);
+        final UploadFilterOptions options = new UploadFilterOptions();
+        options.withTemporary(options.temporary && session.getFeature(Write.class).temporary());
         if(action.equals(TransferAction.resume)) {
-            return new ResumeFilter(resolver, session).withCache(cache);
+            return new ResumeFilter(resolver, session, options).withCache(cache);
         }
         if(action.equals(TransferAction.rename)) {
-            return new RenameFilter(resolver, session).withCache(cache);
+            return new RenameFilter(resolver, session, options).withCache(cache);
         }
         if(action.equals(TransferAction.renameexisting)) {
-            return new RenameExistingFilter(resolver, session).withCache(cache);
+            return new RenameExistingFilter(resolver, session, options).withCache(cache);
         }
         if(action.equals(TransferAction.skip)) {
-            return new SkipFilter(resolver, session).withCache(cache);
+            return new SkipFilter(resolver, session, options).withCache(cache);
         }
         if(action.equals(TransferAction.comparison)) {
-            return new CompareFilter(resolver, session, listener).withCache(cache);
+            return new CompareFilter(resolver, session, options, listener).withCache(cache);
         }
-        return new OverwriteFilter(resolver, session).withCache(cache);
+        return new OverwriteFilter(resolver, session, options).withCache(cache);
     }
 
     @Override

@@ -40,6 +40,7 @@ import ch.cyberduck.core.local.features.Symlink;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.download.AbstractDownloadFilter;
 import ch.cyberduck.core.transfer.download.CompareFilter;
+import ch.cyberduck.core.transfer.download.DownloadFilterOptions;
 import ch.cyberduck.core.transfer.download.DownloadRegexPriorityComparator;
 import ch.cyberduck.core.transfer.download.IconUpdateSreamListener;
 import ch.cyberduck.core.transfer.download.OverwriteFilter;
@@ -148,25 +149,26 @@ public class DownloadTransfer extends Transfer {
             log.debug(String.format("Filter transfer with action %s", action));
         }
         final DownloadSymlinkResolver resolver = new DownloadSymlinkResolver(roots);
+        final DownloadFilterOptions options = new DownloadFilterOptions();
         if(action.equals(TransferAction.resume)) {
-            return new ResumeFilter(resolver, session).withCache(cache);
+            return new ResumeFilter(resolver, session, options).withCache(cache);
         }
         if(action.equals(TransferAction.rename)) {
-            return new RenameFilter(resolver, session).withCache(cache);
+            return new RenameFilter(resolver, session, options).withCache(cache);
         }
         if(action.equals(TransferAction.renameexisting)) {
-            return new RenameExistingFilter(resolver, session).withCache(cache);
+            return new RenameExistingFilter(resolver, session, options).withCache(cache);
         }
         if(action.equals(TransferAction.skip)) {
-            return new SkipFilter(resolver, session).withCache(cache);
+            return new SkipFilter(resolver, session, options).withCache(cache);
         }
         if(action.equals(TransferAction.trash)) {
-            return new TrashFilter(resolver, session).withCache(cache);
+            return new TrashFilter(resolver, session, options).withCache(cache);
         }
         if(action.equals(TransferAction.comparison)) {
-            return new CompareFilter(resolver, session, listener).withCache(cache);
+            return new CompareFilter(resolver, session, options, listener).withCache(cache);
         }
-        return new OverwriteFilter(resolver, session).withCache(cache);
+        return new OverwriteFilter(resolver, session, options).withCache(cache);
     }
 
     @Override

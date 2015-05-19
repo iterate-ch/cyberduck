@@ -42,7 +42,12 @@ public class ResumeFilter extends AbstractDownloadFilter {
     private Attributes attribute;
 
     public ResumeFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session) {
-        super(symlinkResolver, session, new DownloadFilterOptions());
+        this(symlinkResolver, session, new DownloadFilterOptions());
+    }
+
+    public ResumeFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session,
+                        final DownloadFilterOptions options) {
+        super(symlinkResolver, session, options);
         this.download = session.getFeature(Download.class);
         this.attribute = new DefaultAttributesFeature(session);
     }
