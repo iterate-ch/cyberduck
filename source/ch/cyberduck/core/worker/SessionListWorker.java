@@ -74,7 +74,7 @@ public class SessionListWorker extends Worker<AttributedList<Path>> implements L
     @Override
     public void cleanup(final AttributedList<Path> result) {
         // Cache directory listing
-        cache.put(directory, AttributedList.<Path>emptyList());
+        cache.put(directory, result);
     }
 
     @Override
