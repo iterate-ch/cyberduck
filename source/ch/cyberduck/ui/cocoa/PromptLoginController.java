@@ -385,7 +385,7 @@ public final class PromptLoginController implements LoginCallback {
             }
 
             @Override
-            protected void beginSheetImpl() {
+            public void beginSheet() {
                 select = NSOpenPanel.openPanel();
                 select.setCanChooseDirectories(false);
                 select.setCanChooseFiles(true);
