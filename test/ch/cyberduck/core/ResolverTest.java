@@ -27,4 +27,9 @@ public class ResolverTest extends AbstractTestCase {
         assertEquals("localhost", new Resolver().resolve("::1").getHostName());
         assertEquals("0:0:0:0:0:0:0:1", new Resolver().resolve("::1").getHostAddress());
     }
+
+    @Test
+    public void testResolveLinkLocalZoneIndexInterfaceName() throws Exception {
+        assertEquals("fe80:0:0:0:c62c:3ff:fe0b:8670%en0", new Resolver().resolve("fe80::c62c:3ff:fe0b:8670%en0").getHostName());
+    }
 }
