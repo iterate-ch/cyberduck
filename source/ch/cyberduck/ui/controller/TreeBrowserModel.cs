@@ -203,7 +203,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override void cleanup(object result)
                 {
-                    base.cleanup();
+                    base.cleanup(result);
                     _controller.ReloadData(_directory, true);
                 }
             }
