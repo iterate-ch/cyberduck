@@ -23,6 +23,7 @@ import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSPanel;
 import ch.cyberduck.binding.application.NSView;
+import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.foundation.NSEnumerator;
 import ch.cyberduck.binding.foundation.NSObject;
@@ -65,7 +66,7 @@ public abstract class AlertController extends SheetController {
     }
 
     @Override
-    protected void beginSheetImpl() {
+    protected void beginSheet(final NSWindow window) {
         parent.window().makeKeyAndOrderFront(null);
         alert.layout();
         NSEnumerator buttons = alert.buttons().objectEnumerator();

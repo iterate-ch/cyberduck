@@ -81,13 +81,13 @@ public abstract class SheetController extends WindowController implements SheetC
     /**
      * Translate return codes from sheet selection
      *
-     * @param selected Button pressed
+     * @param sender Button pressed
      * @return Sheet callback constant
      * @see SheetCallback#DEFAULT_OPTION
      * @see SheetCallback#CANCEL_OPTION
      */
-    protected int getCallbackOption(NSButton selected) {
-        if(selected.tag() == NSPanel.NSCancelButton) {
+    protected int getCallbackOption(final NSButton sender) {
+        if(sender.tag() == NSPanel.NSCancelButton) {
             return SheetCallback.CANCEL_OPTION;
         }
         return SheetCallback.DEFAULT_OPTION;
@@ -104,20 +104,25 @@ public abstract class SheetController extends WindowController implements SheetC
         if(log.isDebugEnabled()) {
             log.debug(String.format("Close sheet with button %s", sender.title()));
         }
-        if(this.getCallbackOption(sender) == DEFAULT_OPTION || this.getCallbackOption(sender) == ALTERNATE_OPTION) {
+        final int option = this.getCallbackOption(sender);
+        if(option == DEFAULT_OPTION || option == ALTERNATE_OPTION) {
             if(!this.validateInput()) {
                 AppKitFunctionsLibrary.beep();
                 return;
             }
         }
-        NSApplication.sharedApplication().endSheet(this.window(), this.getCallbackOption(sender));
+        this.closeSheet(option);
+    }
+
+    public void closeSheet(final int option) {
+        NSApplication.sharedApplication().endSheet(this.window(), option);
     }
 
     /**
      * @return The tag of the button this sheet was dismissed with
      */
     public int returnCode() {
-        return this.returncode;
+        return returncode;
     }
 
     /**
@@ -134,14 +139,14 @@ public abstract class SheetController extends WindowController implements SheetC
             signal = new CountDownLatch(1);
             if(NSThread.isMainThread()) {
                 // No need to call invoke on main thread
-                this.beginSheetImpl();
+                this.beginSheet(this.window());
             }
             else {
                 invoke(new ControllerMainAction(this) {
                     @Override
                     public void run() {
                         //Invoke again on main thread
-                        beginSheetImpl();
+                        SheetController.this.beginSheet(SheetController.this.window());
                     }
                 }, true);
                 if(log.isDebugEnabled()) {
@@ -159,10 +164,10 @@ public abstract class SheetController extends WindowController implements SheetC
         }
     }
 
-    protected void beginSheetImpl() {
+    protected void beginSheet(final NSWindow window) {
         this.loadBundle();
         parent.window().makeKeyAndOrderFront(null);
-        NSApplication.sharedApplication().beginSheet(this.window(), //window
+        NSApplication.sharedApplication().beginSheet(window, //sheet
                 parent.window(), // modalForWindow
                 this.id(), // modalDelegate
                 Foundation.selector("sheetDidClose:returnCode:contextInfo:"),
@@ -196,7 +201,7 @@ public abstract class SheetController extends WindowController implements SheetC
 
     /**
      * @return True if the class is a singleton and the object should
-     *         not be invlidated upon the sheet is closed
+     * not be invlidated upon the sheet is closed
      * @see #sheetDidClose_returnCode_contextInfo(ch.cyberduck.binding.application.NSWindow, int, org.rococoa.ID)
      */
     @Override
