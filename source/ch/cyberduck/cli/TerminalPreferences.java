@@ -28,6 +28,7 @@ import ch.cyberduck.core.editor.DefaultEditorFactory;
 import ch.cyberduck.core.editor.FSEventWatchEditorFactory;
 import ch.cyberduck.core.i18n.BundleLocale;
 import ch.cyberduck.core.i18n.RegexLocale;
+import ch.cyberduck.core.io.watchservice.FSEventWatchService;
 import ch.cyberduck.core.local.ExecApplicationLauncher;
 import ch.cyberduck.core.local.FileManagerWorkingDirectoryFinder;
 import ch.cyberduck.core.local.FinderLocal;
@@ -93,6 +94,7 @@ public class TerminalPreferences extends MemoryPreferences {
                 defaults.put("factory.filedescriptor.class", LaunchServicesFileDescriptor.class.getName());
                 defaults.put("factory.workingdirectory.class", FileManagerWorkingDirectoryFinder.class.getName());
                 defaults.put("factory.symlink.class", WorkspaceSymlinkFeature.class.getName());
+                defaults.put("factory.watchservice.class", FSEventWatchService.class.getName());
                 break;
             case windows:
                 break;
@@ -161,7 +163,6 @@ public class TerminalPreferences extends MemoryPreferences {
         }
         defaults.put("local.normalize.prefix", String.valueOf(true));
         defaults.put("connection.login.name", System.getProperty("user.name"));
-        defaults.put("queue.download.checksum", String.valueOf(true));
 
         // Disable transfer filters
         defaults.put("queue.download.skip.enable", "false");
