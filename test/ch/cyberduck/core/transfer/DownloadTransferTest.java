@@ -5,6 +5,7 @@ import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.filter.DownloadRegexFilter;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.io.DisabledStreamListener;
@@ -16,6 +17,7 @@ import ch.cyberduck.core.test.NullLocal;
 import ch.cyberduck.core.test.NullSession;
 import ch.cyberduck.core.transfer.download.AbstractDownloadFilter;
 import ch.cyberduck.core.transfer.download.DownloadFilterOptions;
+import ch.cyberduck.core.transfer.download.DownloadRegexPriorityComparator;
 import ch.cyberduck.core.transfer.download.ResumeFilter;
 import ch.cyberduck.core.transfer.symlink.DownloadSymlinkResolver;
 import ch.cyberduck.core.worker.SingleTransferWorker;
@@ -113,8 +115,8 @@ public class DownloadTransferTest extends AbstractTestCase {
             }
         };
         {
-            Transfer t = new DownloadTransfer(new Host("t"), root, new NullLocal("l"));
-            PreferencesFactory.get().setProperty("queue.download.priority.regex", ".*\\.html");
+            Transfer t = new DownloadTransfer(new Host("t"), Collections.singletonList(new TransferItem(root, new NullLocal("l"))), new DownloadRegexFilter(),
+                    new DownloadRegexPriorityComparator(".*\\.html"));
             final List<TransferItem> list = t.list(session, root, new NullLocal("t") {
                 @Override
                 public boolean exists() {
@@ -125,8 +127,8 @@ public class DownloadTransferTest extends AbstractTestCase {
             assertEquals(new Path("/t/c", EnumSet.of(Path.Type.file)), list.get(1).remote);
         }
         {
-            Transfer t = new DownloadTransfer(new Host("t"), root, new NullLocal("l"));
-            PreferencesFactory.get().deleteProperty("queue.download.priority.regex");
+            Transfer t = new DownloadTransfer(new Host("t"), Collections.singletonList(new TransferItem(root, new NullLocal("l"))), new DownloadRegexFilter(),
+                    new DownloadRegexPriorityComparator());
             final List<TransferItem> list = t.list(session, root, new NullLocal("t") {
                 @Override
                 public boolean exists() {
@@ -400,6 +402,28 @@ public class DownloadTransferTest extends AbstractTestCase {
                 new NullLocal(System.getProperty("java.io.tmpdir")), new DisabledListProgressListener());
         assertEquals(1, list.size());
         assertFalse(list.contains(new TransferItem(new Path("/t/.DS_Store", EnumSet.of(Path.Type.file)))));
-        assertTrue(list.contains(new TransferItem(new Path("/t/t", EnumSet.of(Path.Type.file)), new NullLocal(System.getProperty("java.io.tmpdir"), "t"))));
+        assertTrue(list.contains(new TransferItem(new Path("/t/t", EnumSet.of(Path.Type.file)), new Local(System.getProperty("java.io.tmpdir"), "t"))));
+    }
+
+    @Test
+    public void testDownloadDuplicateNameFolderAndFile() throws Exception {
+        final Path parent = new Path("t", EnumSet.of(Path.Type.directory));
+        final Transfer t = new DownloadTransfer(new Host("t"), parent, new NullLocal(System.getProperty("java.io.tmpdir")));
+        final NullSession session = new NullSession(new Host("t")) {
+            @Override
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
+                final AttributedList<Path> l = new AttributedList<Path>();
+                // File first in list
+                l.add(new Path("/f", EnumSet.of(Path.Type.file)));
+                l.add(new Path("/f", EnumSet.of(Path.Type.directory)));
+                return l;
+            }
+        };
+        final List<TransferItem> list = t.list(session, parent,
+                new NullLocal(System.getProperty("java.io.tmpdir")), new DisabledListProgressListener());
+        assertEquals(2, list.size());
+        // Make sure folder is first in list
+        assertTrue(list.get(0).equals(new TransferItem(new Path("/f", EnumSet.of(Path.Type.directory)), new Local(System.getProperty("java.io.tmpdir"), "f"))));
+        assertTrue(list.contains(new TransferItem(new Path("/f", EnumSet.of(Path.Type.file)), new Local(System.getProperty("java.io.tmpdir"), "f"))));
     }
 }
