@@ -25,11 +25,13 @@ import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 
 import org.junit.Test;
 
+import java.net.ConnectException;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.Arrays;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -79,6 +81,32 @@ public class ProxySocketFactoryTest extends AbstractTestCase {
         }).createSocket("::1", 22);
         assertNotNull(socket);
         assertTrue(socket.getInetAddress() instanceof Inet6Address);
+    }
+
+    @Test
+    public void testConnectIPv6LocalAddress() throws Exception {
+        for(String address : Arrays.asList("fe80::c62c:3ff:fe0b:8670%en0")) {
+            final Socket socket = new ProxySocketFactory(ProtocolFactory.SFTP, new TrustManagerHostnameCallback() {
+                @Override
+                public String getTarget() {
+                    return "localhost";
+                }
+            }).createSocket(address, 22);
+            assertNotNull(socket);
+            assertTrue(socket.getInetAddress() instanceof Inet6Address);
+        }
+    }
+
+    @Test(expected = ConnectException.class)
+    public void testCreateSocketIPv6LocalAddressConnectionRefused() throws Exception {
+        for(String address : Arrays.asList("fe80::9272:40ff:fe02:c363%en0")) {
+            final Socket socket = new ProxySocketFactory(ProtocolFactory.SFTP, new TrustManagerHostnameCallback() {
+                @Override
+                public String getTarget() {
+                    return "localhost";
+                }
+            }).createSocket(address, 22);
+        }
     }
 
     @Test
