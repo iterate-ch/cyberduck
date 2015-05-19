@@ -18,37 +18,28 @@ package ch.cyberduck.core.transfer.upload;
  */
 
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.PathNormalizer;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+
+import java.util.Comparator;
 
 /**
  * @version $Id$
  */
-public class UploadRegexPriorityComparator extends LocalPriorityComparator {
-
-    private String pattern;
-
-    public UploadRegexPriorityComparator() {
-        this(PreferencesFactory.get().getProperty("queue.upload.priority.regex"));
-    }
-
-    public UploadRegexPriorityComparator(final String pattern) {
-        this.pattern = pattern;
-    }
+public class LocalPriorityComparator implements Comparator<Local> {
 
     @Override
-    public int compare(Local o1, Local o2) {
-        final String c1 = PathNormalizer.name(o1.getAbsolute());
-        final boolean c2 = PathNormalizer.name(o2.getAbsolute()).matches(pattern);
-        if(c1.matches(pattern) && c2) {
+    public int compare(final Local o1, final Local o2) {
+        if(o1.isDirectory() && o2.isDirectory()) {
             return 0;
         }
-        if(c1.matches(pattern)) {
-            return -1;
+        if(o1.isFile() && o2.isFile()) {
+            return 0;
         }
-        if(c2) {
+        if(o1.isDirectory()) {
             return 1;
         }
-        return super.compare(o1, o2);
+        if(o2.isDirectory()) {
+            return -1;
+        }
+        return 0;
     }
 }
