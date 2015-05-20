@@ -121,4 +121,18 @@ public class ProxySocketFactoryTest extends AbstractTestCase {
         // We have set `java.net.preferIPv6Addresses` to `false` by default
         assertTrue(socket.getInetAddress() instanceof Inet4Address);
     }
+
+    @Test
+    public void testCreateSocketIPv6Only() throws Exception {
+        for(String address : Arrays.asList("ftp6.netbsd.org")) {
+            final Socket socket = new ProxySocketFactory(ProtocolFactory.SFTP, new TrustManagerHostnameCallback() {
+                @Override
+                public String getTarget() {
+                    return "ftp6.netbsd.org";
+                }
+            }).createSocket(address, 22);
+            assertNotNull(socket);
+            assertTrue(socket.getInetAddress() instanceof Inet6Address);
+        }
+    }
 }
