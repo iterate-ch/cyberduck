@@ -8,10 +8,17 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.threading.CancelCallback;
+import ch.cyberduck.core.transfer.TransferStatus;
+
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * @version $Id$
@@ -73,6 +80,37 @@ public class NullSession extends Session<Void> {
 
     @Override
     public <T> T getFeature(Class<T> type) {
+        if(type == Write.class) {
+            return (T) new Write() {
+                @Override
+                public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
+                    throw new BackgroundException();
+                }
+
+                @Override
+                public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
+                    return Write.override;
+                }
+
+                @Override
+                public boolean temporary() {
+                    return false;
+                }
+            };
+        }
+        if(type == Read.class) {
+            return (T) new Read() {
+                @Override
+                public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
+                    throw new UnsupportedOperationException();
+                }
+
+                @Override
+                public boolean offset(final Path file) throws BackgroundException {
+                    return false;
+                }
+            };
+        }
         return super.getFeature(type);
     }
 }
