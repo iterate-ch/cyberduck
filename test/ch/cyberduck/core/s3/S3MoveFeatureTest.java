@@ -10,7 +10,6 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.AccessDeniedException;
 
 import org.junit.Test;
 
@@ -73,7 +72,7 @@ public class S3MoveFeatureTest extends AbstractTestCase {
         assertTrue(new S3MoveFeature(null).isSupported(new Path("/c/f", EnumSet.of(Path.Type.directory))));
     }
 
-    @Test(expected = AccessDeniedException.class)
+    @Test
     public void testMoveWithServerSideEncryptionBucketPolicy() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")

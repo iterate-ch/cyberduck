@@ -47,32 +47,32 @@ public class S3MoveFeature implements Move {
     }
 
     @Override
-    public void move(final Path file, final Path renamed, boolean exists, final ProgressListener listener) throws BackgroundException {
+    public void move(final Path source, final Path renamed, boolean exists, final ProgressListener listener) throws BackgroundException {
         try {
-            if(file.isFile() || file.isPlaceholder()) {
+            if(source.isFile() || source.isPlaceholder()) {
                 final StorageObject destination = new StorageObject(containerService.getKey(renamed));
                 // Keep same storage class
-                destination.setStorageClass(file.attributes().getStorageClass());
+                destination.setStorageClass(new S3StorageClassFeature(session).getClass(source));
                 // Keep encryption setting
-                destination.setServerSideEncryptionAlgorithm(file.attributes().getEncryption());
+                destination.setServerSideEncryptionAlgorithm(new S3EncryptionFeature(session).getEncryption(source));
                 // Apply non standard ACL
                 final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-                destination.setAcl(acl.convert(acl.getPermission(file)));
+                destination.setAcl(acl.convert(acl.getPermission(source)));
                 // Moving the object retaining the metadata of the original.
                 final Map<String, Object> headers = session.getClient().copyObject(
-                        containerService.getContainer(file).getName(),
-                        containerService.getKey(file),
+                        containerService.getContainer(source).getName(),
+                        containerService.getKey(source),
                         containerService.getContainer(renamed).getName(),
                         destination, false);
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Received response headers for copy %s", headers));
                 }
                 session.getClient().deleteObject(
-                        containerService.getContainer(file).getName(),
-                        containerService.getKey(file));
+                        containerService.getContainer(source).getName(),
+                        containerService.getKey(source));
             }
-            if(file.isDirectory()) {
-                for(Path i : session.list(file, new DisabledListProgressListener() {
+            if(source.isDirectory()) {
+                for(Path i : session.list(source, new DisabledListProgressListener() {
                     @Override
                     public void message(final String message) {
                         listener.message(message);
@@ -83,7 +83,7 @@ public class S3MoveFeature implements Move {
             }
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot rename {0}", e, file);
+            throw new ServiceExceptionMappingService().map("Cannot rename {0}", e, source);
         }
     }
 
