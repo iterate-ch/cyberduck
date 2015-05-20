@@ -11,8 +11,6 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.openstack.SwiftSession;
-import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.test.NullLocal;
 import ch.cyberduck.core.test.NullSession;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -134,25 +132,6 @@ public class OverwriteFilterTest extends AbstractTestCase {
         assertNotEquals(file, status.getRename());
         assertNull(status.getRename().local);
         assertNotNull(status.getRename().remote);
-    }
-
-    @Test
-    public void testTemporaryDisabledLageUpload() throws Exception {
-        final OverwriteFilter f = new OverwriteFilter(new DisabledUploadSymlinkResolver(), new SwiftSession(new Host("h")),
-                new UploadFilterOptions().withTemporary(true));
-        final Path file = new Path("/t", EnumSet.of(Path.Type.file));
-        final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus());
-        assertNull(status.getRename().remote);
-    }
-
-    @Test
-    public void testTemporaryDisabledMultipartUpload() throws Exception {
-        final OverwriteFilter f = new OverwriteFilter(new DisabledUploadSymlinkResolver(), new S3Session(new Host("h")),
-                new UploadFilterOptions().withTemporary(true));
-        final Path file = new Path("/t", EnumSet.of(Path.Type.file));
-        final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus());
-        assertNull(status.getRename().local);
-        assertNull(status.getRename().remote);
     }
 
     @Test(expected = AccessDeniedException.class)

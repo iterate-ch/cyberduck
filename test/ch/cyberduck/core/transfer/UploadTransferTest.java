@@ -6,16 +6,19 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.filter.UploadRegexFilter;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.local.LocalTouchFactory;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.openstack.SwiftSession;
+import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.test.NullLocal;
 import ch.cyberduck.core.test.NullSession;
 import ch.cyberduck.core.transfer.upload.AbstractUploadFilter;
 import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
+import ch.cyberduck.core.transfer.upload.UploadRegexPriorityComparator;
 import ch.cyberduck.core.worker.SingleTransferWorker;
 
 import org.apache.commons.io.IOUtils;
@@ -81,15 +84,15 @@ public class UploadTransferTest extends AbstractTestCase {
             }
         };
         final Path root = new Path("/t", EnumSet.of(Path.Type.file));
-        Transfer t = new UploadTransfer(new Host("t"), root, local);
         {
-            PreferencesFactory.get().setProperty("queue.upload.priority.regex", ".*\\.html");
+            Transfer t = new UploadTransfer(new Host("t"), Collections.singletonList(new TransferItem(root, local)),
+                    new UploadRegexFilter(), new UploadRegexPriorityComparator(".*\\.html"));
             final List<TransferItem> list = t.list(new NullSession(new Host("t")), root, local, new DisabledListProgressListener());
             assertEquals(new NullLocal(local.getAbsolute(), "c.html"), list.get(0).local);
             assertEquals(new NullLocal(local.getAbsolute(), "c"), list.get(1).local);
         }
         {
-            PreferencesFactory.get().deleteProperty("queue.upload.priority.regex");
+            Transfer t = new UploadTransfer(new Host("t"), root, local, new UploadRegexFilter());
             final List<TransferItem> list = t.list(new NullSession(new Host("t")), root, local, new DisabledListProgressListener());
             assertEquals(new NullLocal(local.getAbsolute(), "c.html"), list.get(1).local);
             assertEquals(new NullLocal(local.getAbsolute(), "c"), list.get(0).local);
@@ -406,4 +409,27 @@ public class UploadTransferTest extends AbstractTestCase {
         assertTrue(set.get());
         assertTrue(moved.get());
     }
+
+    @Test
+    public void testTemporaryDisabledLargeUpload() throws Exception {
+        final Host h = new Host("h");
+        final AbstractUploadFilter f = new UploadTransfer(h, Collections.<TransferItem>emptyList())
+                .filter(new SwiftSession(h), TransferAction.overwrite, new DisabledProgressListener());
+        final Path file = new Path("/t", EnumSet.of(Path.Type.file));
+        final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus());
+        assertNull(status.getRename().local);
+        assertNull(status.getRename().remote);
+    }
+
+    @Test
+    public void testTemporaryDisabledMultipartUpload() throws Exception {
+        final Host h = new Host("h");
+        final AbstractUploadFilter f = new UploadTransfer(h, Collections.<TransferItem>emptyList())
+                .filter(new S3Session(h), TransferAction.overwrite, new DisabledProgressListener());
+        final Path file = new Path("/t", EnumSet.of(Path.Type.file));
+        final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus());
+        assertNull(status.getRename().local);
+        assertNull(status.getRename().remote);
+    }
+
 }
