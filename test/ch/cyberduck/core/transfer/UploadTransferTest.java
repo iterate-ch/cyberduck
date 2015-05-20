@@ -221,6 +221,7 @@ public class UploadTransferTest extends AbstractTestCase {
             }
         }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback()).run();
+        assertEquals(1, c.get());
     }
 
     @Test
