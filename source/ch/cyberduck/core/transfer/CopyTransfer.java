@@ -74,10 +74,12 @@ public class CopyTransfer extends Transfer {
     /**
      * Mapping source to destination files
      */
-    protected Map<Path, Path> files
-            = Collections.emptyMap();
+    protected final Map<Path, Path> files;
 
     private Session<?> destination;
+
+    private PathCache cache
+            = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
     /**
      * @param files Source to destination mapping
@@ -108,6 +110,7 @@ public class CopyTransfer extends Transfer {
 
     @Override
     public Transfer withCache(final PathCache cache) {
+        this.cache = cache;
         return this;
     }
 
@@ -160,7 +163,7 @@ public class CopyTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action));
         }
-        return new CopyTransferFilter(session, destination, files);
+        return new CopyTransferFilter(session, destination, files).withCache(cache);
     }
 
     @Override
@@ -234,8 +237,8 @@ public class CopyTransfer extends Transfer {
      * @param status   Transfer status
      */
     private void copy(final Session<?> session, final Path file, final Session<?> target, final Path copy,
-                     final BandwidthThrottle throttle, final StreamListener streamListener,
-                     final TransferStatus status) throws BackgroundException {
+                      final BandwidthThrottle throttle, final StreamListener streamListener,
+                      final TransferStatus status) throws BackgroundException {
         InputStream in = null;
         OutputStream out = null;
         try {
