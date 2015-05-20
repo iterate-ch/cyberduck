@@ -31,5 +31,11 @@ public class ResolverTest extends AbstractTestCase {
     @Test
     public void testResolveLinkLocalZoneIndexInterfaceName() throws Exception {
         assertEquals("fe80:0:0:0:c62c:3ff:fe0b:8670%en0", new Resolver().resolve("fe80::c62c:3ff:fe0b:8670%en0").getHostName());
+        assertEquals("fe80:0:0:0:c62c:3ff:fe0b:8670%en0", new Resolver().resolve("fe80::c62c:3ff:fe0b:8670%en0").getHostAddress());
+    }
+
+    @Test
+    public void testResolvePublicDNSIPv6Only() throws Exception {
+        assertEquals("2001:470:a085:999:0:0:0:21", new Resolver().resolve("ftp6.netbsd.org").getHostAddress());
     }
 }
