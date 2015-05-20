@@ -21,7 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Encryption;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -37,7 +37,7 @@ public class S3EncryptionFeature implements Encryption {
 
     @Override
     public List<String> getAlgorithms() {
-        return Arrays.asList("AES256");
+        return Collections.singletonList("AES256");
     }
 
     @Override
