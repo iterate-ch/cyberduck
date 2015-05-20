@@ -42,12 +42,14 @@ public abstract class TransferAction {
     public static List<TransferAction> forTransfer(final Transfer.Type t) {
         switch(t) {
             case sync:
-                return Arrays.asList(TransferAction.download,
+                return Arrays.asList(
+                        TransferAction.download,
                         TransferAction.upload,
                         TransferAction.mirror
                 );
             default:
-                return Arrays.asList(TransferAction.resume,
+                return Arrays.asList(
+                        TransferAction.resume,
                         TransferAction.overwrite,
                         TransferAction.rename,
                         TransferAction.renameexisting,
