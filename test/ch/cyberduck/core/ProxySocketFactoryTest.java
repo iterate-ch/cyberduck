@@ -45,7 +45,7 @@ public class ProxySocketFactoryTest extends AbstractTestCase {
             public String getTarget() {
                 return "localhost";
             }
-        }).createSocket());
+        }).createSocket("localhost", 22));
     }
 
     @Test(expected = SocketException.class)
@@ -85,7 +85,7 @@ public class ProxySocketFactoryTest extends AbstractTestCase {
 
     @Test
     public void testConnectIPv6LocalAddress() throws Exception {
-        for(String address : Arrays.asList("fe80::c62c:3ff:fe0b:8670%en0")) {
+        for(String address : Arrays.asList("fe80::c62c:3ff:fe0b:8670")) {
             final Socket socket = new ProxySocketFactory(ProtocolFactory.SFTP, new TrustManagerHostnameCallback() {
                 @Override
                 public String getTarget() {
@@ -99,7 +99,7 @@ public class ProxySocketFactoryTest extends AbstractTestCase {
 
     @Test(expected = ConnectException.class)
     public void testCreateSocketIPv6LocalAddressConnectionRefused() throws Exception {
-        for(String address : Arrays.asList("fe80::9272:40ff:fe02:c363%en0")) {
+        for(String address : Arrays.asList("fe80::9272:40ff:fe02:c363")) {
             final Socket socket = new ProxySocketFactory(ProtocolFactory.SFTP, new TrustManagerHostnameCallback() {
                 @Override
                 public String getTarget() {
@@ -125,12 +125,12 @@ public class ProxySocketFactoryTest extends AbstractTestCase {
     @Test
     public void testCreateSocketIPv6Only() throws Exception {
         for(String address : Arrays.asList("ftp6.netbsd.org")) {
-            final Socket socket = new ProxySocketFactory(ProtocolFactory.SFTP, new TrustManagerHostnameCallback() {
+            final Socket socket = new ProxySocketFactory(ProtocolFactory.FTP, new TrustManagerHostnameCallback() {
                 @Override
                 public String getTarget() {
                     return "ftp6.netbsd.org";
                 }
-            }).createSocket(address, 22);
+            }).createSocket(address, 21);
             assertNotNull(socket);
             assertTrue(socket.getInetAddress() instanceof Inet6Address);
         }
