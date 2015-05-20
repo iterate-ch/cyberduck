@@ -285,6 +285,9 @@ public class ConnectionController extends SheetController {
 
                 @Override
                 public Boolean run() throws BackgroundException {
+                    if(!preferences.getBoolean("connection.hostname.check")) {
+                        return reachable = true;
+                    }
                     return reachable = ReachabilityFactory.get().isReachable(new Host(hostname));
                 }
 

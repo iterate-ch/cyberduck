@@ -637,6 +637,9 @@ public class BookmarkController extends WindowController {
 
                 @Override
                 public Boolean run() throws BackgroundException {
+                    if(!preferences.getBoolean("connection.hostname.check")) {
+                        return reachable = true;
+                    }
                     return reachable = ReachabilityFactory.get().isReachable(host);
                 }
 
