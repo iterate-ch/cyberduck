@@ -2297,6 +2297,7 @@ profiles/Memset[!!-~](1.0).cyberduckprofile -text svneol=unset#application/octet
 profiles/Memset[!!-~](Keystone).cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Oktawave[!!-~]Cloud[!!-~]Storage.cyberduckprofile -text
 profiles/Openstack[!!-~]Swift[!!-~](HTTP).cyberduckprofile -text svneol=unset#application/octet-stream
+profiles/Openstack[!!-~]Swift[!!-~](Keystone[!!-~]3).cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Openstack[!!-~]Swift[!!-~](Keystone[!!-~]HTTP).cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Openstack[!!-~]Swift[!!-~](Keystone).cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Openstack[!!-~]Swift[!!-~](Swauth[!!-~]HTTP).cyberduckprofile -text svneol=unset#application/octet-stream

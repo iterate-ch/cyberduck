@@ -7,12 +7,12 @@
         <key>Vendor</key>
         <string>cyberduck</string>
         <key>Context</key>
-        <string>/v2.0/tokens</string>
+        <string>/v3/tokens</string>
         <key>Description</key>
-        <string>Openstack Swift (Keystone 2.0)</string>
+        <string>Openstack Swift (Keystone 3)</string>
         <key>Username Placeholder</key>
-        <string>Tenant ID:Access Key</string>
+        <string>Project:Username</string>
         <key>Password Placeholder</key>
-        <string>Secret Key</string>
+        <string>Password</string>
     </dict>
 </plist>
