@@ -32,6 +32,7 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.aquaticprime.DonationKeyFactory;
 import ch.cyberduck.core.bonjour.DisabledRendezvous;
 import ch.cyberduck.core.date.DefaultUserDateFormatter;
+import ch.cyberduck.core.diagnostics.DefaultInetAddressReachability;
 import ch.cyberduck.core.formatter.DecimalSizeFormatter;
 import ch.cyberduck.core.io.watchservice.NIOEventWatchService;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
@@ -1168,6 +1169,7 @@ public abstract class Preferences {
         defaults.put("factory.applicationfinder.class", DisabledApplicationFinder.class.getName());
         defaults.put("factory.applicationlauncher.class", DisabledApplicationLauncher.class.getName());
         defaults.put("factory.browserlauncher.class", DisabledBrowserLauncher.class.getName());
+        defaults.put("factory.reachability.class", DefaultInetAddressReachability.class.getName());
     }
 
     /**
