@@ -25,6 +25,7 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.Socket;
+import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
@@ -35,7 +36,7 @@ public class NetworkInterfaceAwareSocketFactoryTest extends AbstractTestCase {
 
     @Test
     public void testFindEn0Default() throws Exception {
-        final Socket socket = new NetworkInterfaceAwareSocketFactory().createSocket(InetAddress.getByName("::1"), 22);
+        final Socket socket = new NetworkInterfaceAwareSocketFactory(Arrays.<String>asList("awdl0")).createSocket(InetAddress.getByName("::1"), 22);
         assertNotNull(socket);
         assertTrue(socket.getInetAddress() instanceof Inet6Address);
         assertEquals(((Inet6Address) socket.getInetAddress()).getScopeId(),

@@ -17,7 +17,6 @@ package ch.cyberduck.core.socket;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
 
@@ -42,14 +41,30 @@ import sun.net.util.IPAddressUtil;
 public class NetworkInterfaceAwareSocketFactory extends DefaultSocketFactory {
     private static final Logger log = Logger.getLogger(ProxySocketFactory.class);
 
-    private Preferences preferences = PreferencesFactory.get();
+    private List<String> blacklisted;
 
     public NetworkInterfaceAwareSocketFactory() {
-        super();
+        this(PreferencesFactory.get().getList("network.interface.blacklist"), null);
     }
 
     public NetworkInterfaceAwareSocketFactory(final java.net.Proxy proxy) {
+        this(PreferencesFactory.get().getList("network.interface.blacklist"), proxy);
+    }
+
+    /**
+     * @param blacklisted Network interface names to ignore
+     */
+    public NetworkInterfaceAwareSocketFactory(final List<String> blacklisted) {
+        this(blacklisted, null);
+    }
+
+    /**
+     * @param blacklisted Network interface names to ignore
+     * @param proxy       Proxy or null for direct connection
+     */
+    public NetworkInterfaceAwareSocketFactory(final List<String> blacklisted, final java.net.Proxy proxy) {
         super(proxy);
+        this.blacklisted = blacklisted;
     }
 
     @Override
@@ -60,7 +75,7 @@ public class NetworkInterfaceAwareSocketFactory extends DefaultSocketFactory {
     @Override
     public Socket createSocket(final InetAddress address, final int port) throws IOException {
         if(address instanceof Inet6Address) {
-            if(preferences.getList("network.interface.blacklist").isEmpty()) {
+            if(blacklisted.isEmpty()) {
                 return super.createSocket(address, port);
             }
             // If we find an interface name en0 that supports IPv6 make it the default.
@@ -78,7 +93,7 @@ public class NetworkInterfaceAwareSocketFactory extends DefaultSocketFactory {
                 if(!n.isUp()) {
                     continue;
                 }
-                if(preferences.getList("network.interface.blacklist").contains(n.getName())) {
+                if(blacklisted.contains(n.getName())) {
                     log.warn(String.format("Ignore network interface %s", n));
                     continue;
                 }
