@@ -67,12 +67,12 @@ public class ComparisonServiceFilter implements ComparePathFilter {
     }
 
     public ComparisonServiceFilter withFinder(final Find finder) {
-        this.finder = finder.withCache(cache);
+        this.finder = finder;
         return this;
     }
 
     public ComparisonServiceFilter withAttributes(final Attributes attribute) {
-        this.attribute = attribute.withCache(cache);
+        this.attribute = attribute;
         return this;
     }
 
