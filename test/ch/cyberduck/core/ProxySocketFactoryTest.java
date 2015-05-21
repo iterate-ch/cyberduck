@@ -23,6 +23,7 @@ import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -155,6 +156,7 @@ public class ProxySocketFactoryTest extends AbstractTestCase {
     }
 
     @Test
+    @Ignore
     public void testDefaultNetworkInterfaceForIP6Address() throws Exception {
         assertEquals(InetAddress.getByName("::1"), InetAddress.getByName("::1%en0"));
         // Bug. Defaults to awdl0 on OS X
