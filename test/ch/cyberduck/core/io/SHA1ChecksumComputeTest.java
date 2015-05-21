@@ -30,7 +30,7 @@ public class SHA1ChecksumComputeTest extends AbstractTestCase {
     @Test
     public void testCompute() throws Exception {
         assertEquals("da39a3ee5e6b4b0d3255bfef95601890afd80709",
-                new SHA1ChecksumCompute().compute(new NullInputStream(0)));
+                new SHA1ChecksumCompute().compute(new NullInputStream(0)).hash);
 
     }
 }

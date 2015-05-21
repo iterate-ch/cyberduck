@@ -30,6 +30,6 @@ public class SHA256ChecksumComputeTest extends AbstractTestCase {
     @Test
     public void testCompute() throws Exception {
         assertEquals("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-                new SHA256ChecksumCompute().compute(new NullInputStream(0)));
+                new SHA256ChecksumCompute().compute(new NullInputStream(0)).hash);
     }
 }

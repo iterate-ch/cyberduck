@@ -18,7 +18,7 @@ public class MD5ChecksumComputeTest extends AbstractTestCase {
     @Test
     public void testCompute() throws Exception {
         assertEquals("a43c1b0aa53a0c908810c06ab1ff3967",
-                new MD5ChecksumCompute().compute(IOUtils.toInputStream("input")));
+                new MD5ChecksumCompute().compute(IOUtils.toInputStream("input")).hash);
     }
 
     @Test

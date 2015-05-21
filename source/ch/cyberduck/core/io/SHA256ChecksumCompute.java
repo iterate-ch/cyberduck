@@ -30,7 +30,7 @@ import java.io.InputStream;
 public class SHA256ChecksumCompute extends AbstractChecksumCompute {
 
     @Override
-    public String compute(final InputStream in) throws ChecksumException {
-        return Hex.encodeHexString(this.digest("SHA-256", in));
+    public Checksum compute(final InputStream in) throws ChecksumException {
+        return new Checksum(HashAlgorithm.sha256, Hex.encodeHexString(this.digest("SHA-256", in)));
     }
 }

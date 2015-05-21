@@ -39,9 +39,7 @@ import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.MD5ChecksumCompute;
-import ch.cyberduck.core.io.SHA1ChecksumCompute;
-import ch.cyberduck.core.io.SHA256ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.local.ApplicationLauncher;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.IconService;
@@ -58,7 +56,6 @@ import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
@@ -306,27 +303,13 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                 if(this.options.checksum) {
                     final Checksum checksum = status.getChecksum();
                     if(null != checksum) {
-                        final ChecksumCompute compute;
-                        switch(checksum.algorithm) {
-                            case md5:
-                                compute = new MD5ChecksumCompute();
-                                break;
-                            case sha1:
-                                compute = new SHA1ChecksumCompute();
-                                break;
-                            case sha256:
-                                compute = new SHA256ChecksumCompute();
-                                break;
-                            default:
-                                log.warn(String.format("Unsupported checksum algorithm %s", checksum.algorithm));
-                                compute = null;
-                        }
-                        final String download = compute.compute(local.getInputStream());
-                        if(!StringUtils.equals(download, checksum.hash)) {
+                        final ChecksumCompute compute = ChecksumComputeFactory.get(checksum.algorithm);
+                        final Checksum download = compute.compute(local.getInputStream());
+                        if(!checksum.equals(download)) {
                             throw new ChecksumException(
                                     MessageFormat.format(LocaleFactory.localizedString("Download {0} failed", "Error"), file.getName()),
                                     MessageFormat.format("Mismatch between MD5 hash {0} of downloaded data and ETag {1} returned by the server",
-                                            download, checksum.hash));
+                                            download.hash, checksum.hash));
                         }
                     }
                 }

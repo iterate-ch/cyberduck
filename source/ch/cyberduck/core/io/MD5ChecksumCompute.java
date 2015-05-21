@@ -34,8 +34,8 @@ import net.schmizz.sshj.common.Buffer;
 public class MD5ChecksumCompute extends AbstractChecksumCompute {
 
     @Override
-    public String compute(final InputStream in) throws ChecksumException {
-        return Hex.encodeHexString(this.digest("MD5", in));
+    public Checksum compute(final InputStream in) throws ChecksumException {
+        return new Checksum(HashAlgorithm.md5, Hex.encodeHexString(this.digest("MD5", in)));
     }
 
     public String fingerprint(final PublicKey key) throws ChecksumException {
@@ -44,7 +44,7 @@ public class MD5ChecksumCompute extends AbstractChecksumCompute {
     }
 
     public String fingerprint(final InputStream in) throws ChecksumException {
-        final String undelimited = this.compute(in);
+        final String undelimited = this.compute(in).hash;
         StringBuilder fp = new StringBuilder(undelimited.substring(0, 2));
         for(int i = 2; i <= undelimited.length() - 2; i += 2) {
             fp.append(":").append(undelimited.substring(i, i + 2));

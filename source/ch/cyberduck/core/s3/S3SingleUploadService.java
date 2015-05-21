@@ -24,7 +24,6 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamListener;
@@ -64,9 +63,7 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
         final S3Protocol.AuthenticationHeaderSignatureVersion signatureVersion = session.getSignatureVersion();
         switch(signatureVersion) {
             case AWS4HMACSHA256:
-                status.setChecksum(new Checksum(HashAlgorithm.sha256,
-                                checksum.compute(local.getInputStream()))
-                );
+                status.setChecksum(checksum.compute(local.getInputStream()));
                 break;
         }
         try {

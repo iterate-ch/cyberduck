@@ -36,7 +36,7 @@ import java.security.NoSuchAlgorithmException;
  */
 public abstract class AbstractChecksumCompute implements ChecksumCompute {
 
-    public String compute(final String data) throws ChecksumException {
+    public Checksum compute(final String data) throws ChecksumException {
         try {
             return this.compute(new ByteArrayInputStream(Hex.decodeHex(data.toCharArray())));
         }

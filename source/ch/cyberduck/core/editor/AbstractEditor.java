@@ -25,6 +25,7 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
@@ -40,7 +41,6 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.worker.Worker;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -72,8 +72,7 @@ public abstract class AbstractEditor implements Editor {
     /**
      * Store checksum of downloaded file to detect modifications
      */
-    private String checksum
-            = StringUtils.EMPTY;
+    private Checksum checksum;
 
     /**
      * Session for transfers
@@ -212,7 +211,7 @@ public abstract class AbstractEditor implements Editor {
     @Override
     public Worker<Transfer> save(final TransferErrorCallback error) {
         // If checksum still the same no need for save
-        final String current;
+        final Checksum current;
         try {
             listener.message(MessageFormat.format(
                     LocaleFactory.localizedString("Compute MD5 hash of {0}", "Status"), local.getName()));
@@ -222,7 +221,7 @@ public abstract class AbstractEditor implements Editor {
             log.warn(String.format("Error computing checksum for %s", local));
             return Worker.empty();
         }
-        if(StringUtils.equals(checksum, current)) {
+        if(current.equals(checksum)) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("File %s not modified with checksum %s", local, current));
             }

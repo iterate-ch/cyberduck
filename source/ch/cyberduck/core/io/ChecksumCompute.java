@@ -27,5 +27,9 @@ import java.io.InputStream;
  */
 public interface ChecksumCompute {
 
-    String compute(InputStream in) throws ChecksumException;
+    /**
+     * @param in Stream that will be closed when the checksum is computed
+     * @return Calculated fingerprint
+     */
+    Checksum compute(InputStream in) throws ChecksumException;
 }

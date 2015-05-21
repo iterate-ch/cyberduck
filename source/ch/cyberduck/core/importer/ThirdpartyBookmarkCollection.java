@@ -27,6 +27,8 @@ import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
@@ -77,7 +79,7 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
             if(log.isInfoEnabled()) {
                 log.info(String.format("Found bookmarks file at %s", file));
             }
-            String current = null;
+            Checksum current = null;
             try {
                 current = new MD5ChecksumCompute().compute(file.getInputStream());
                 if(log.isDebugEnabled()) {
@@ -89,11 +91,12 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
             }
             if(preferences.getBoolean(this.getConfiguration())) {
                 // Previously imported
-                final String previous = preferences.getProperty(String.format("%s.checksum", this.getConfiguration()));
+                final Checksum previous = new Checksum(HashAlgorithm.md5,
+                        preferences.getProperty(String.format("%s.checksum", this.getConfiguration())));
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Saved previous checksum %s for bookmark %s", previous, file));
                 }
-                if(StringUtils.isNotBlank(previous)) {
+                if(StringUtils.isNotBlank(previous.hash)) {
                     if(previous.equals(current)) {
                         if(log.isInfoEnabled()) {
                             log.info(String.format("Skip importing bookmarks from %s with previously saved checksum %s", file, previous));
@@ -119,8 +122,8 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
                 this.parse(file);
             }
             // Save last checksum
-            if(StringUtils.isNotBlank(current)) {
-                preferences.setProperty(String.format("%s.checksum", this.getConfiguration()), current);
+            if(current != null) {
+                preferences.setProperty(String.format("%s.checksum", this.getConfiguration()), current.hash);
             }
         }
         else {
