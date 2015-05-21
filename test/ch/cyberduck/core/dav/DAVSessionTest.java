@@ -21,7 +21,10 @@ import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.ssl.CertificateStoreX509KeyManager;
 import ch.cyberduck.core.ssl.CertificateStoreX509TrustManager;
+import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
@@ -442,8 +445,36 @@ public class DAVSessionTest extends AbstractTestCase {
         session.close();
     }
 
+    @Test(expected = LoginFailureException.class)
+    public void testInteroperabilityDocumentsEpflTLSv1() throws Exception {
+        final Host host = new Host(new DAVSSLProtocol(), "documents.epfl.ch");
+        final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
+                new CustomTrustSSLProtocolSocketFactory(new DisabledX509TrustManager(), new DefaultX509KeyManager(), "TLSv1"));
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        assertTrue(session.isConnected());
+        assertTrue(session.isSecured());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        assertNotNull(session.workdir());
+        assertFalse(session.getAcceptedIssuers().isEmpty());
+        session.close();
+    }
+
+    @Test(expected = InteroperabilityException.class)
+    public void testInteroperabilityDocumentsEpflFailure() throws Exception {
+        final Host host = new Host(new DAVSSLProtocol(), "documents.epfl.ch");
+        final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
+                new CustomTrustSSLProtocolSocketFactory(new DisabledX509TrustManager(), new DefaultX509KeyManager(), "TLSv12"));
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        assertTrue(session.isConnected());
+        assertTrue(session.isSecured());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        assertNotNull(session.workdir());
+        assertFalse(session.getAcceptedIssuers().isEmpty());
+        session.close();
+    }
+
     @Test
-    public void testdavpixime() throws Exception {
+    public void testInteroperabilitydavpixime() throws Exception {
         // no SSLv3, supports TLSv1-1.2 - Apache/mod_dav framework)
         final Host host = new Host(new DAVSSLProtocol(), "dav.pixi.me", new Credentials(
                 "webdav", "webdav"
@@ -459,7 +490,7 @@ public class DAVSessionTest extends AbstractTestCase {
     }
 
     @Test
-    public void testtlsv11pixime() throws Exception {
+    public void testInteroperabilitytlsv11pixime() throws Exception {
         // no SSLv3, supports TLSv1.1 only -Apache/mod_dav framework
         final Host host = new Host(new DAVSSLProtocol(), "tlsv11.pixi.me", new Credentials(
                 "webdav", "webdav"
@@ -475,7 +506,7 @@ public class DAVSessionTest extends AbstractTestCase {
     }
 
     @Test
-    public void testtlsv12pixime() throws Exception {
+    public void testInteroperabilitytlsv12pixime() throws Exception {
         // no SSLv3, supports TLSv1.2 only - Apache/mod_dav framework
         final Host host = new Host(new DAVSSLProtocol(), "tlsv12.pixi.me", new Credentials(
                 "webdav", "webdav"

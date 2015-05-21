@@ -37,7 +37,6 @@ import java.net.Socket;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -56,8 +55,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
      */
     private SSLContext context;
 
-    private static final List<String> ENABLED_SSL_PROTOCOLS
-            = new ArrayList<String>();
+    private final String[] protocols;
 
     private final AtomicBoolean initializer
             = new AtomicBoolean(false);
@@ -78,12 +76,6 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
         }
     }
 
-    static {
-        for(String protocol : PreferencesFactory.get().getProperty("connection.ssl.protocols").split(",")) {
-            ENABLED_SSL_PROTOCOLS.add(protocol.trim());
-        }
-    }
-
     private X509TrustManager trust;
 
     private X509KeyManager key;
@@ -93,6 +85,11 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
      * @param key   Key manager for client certificate selection
      */
     public CustomTrustSSLProtocolSocketFactory(final X509TrustManager trust, final X509KeyManager key) {
+        this(trust, key, PreferencesFactory.get().getProperty("connection.ssl.protocols").split(","));
+    }
+
+    public CustomTrustSSLProtocolSocketFactory(final X509TrustManager trust, final X509KeyManager key,
+                                               final String... protocols) {
         this.trust = trust;
         this.key = key;
         try {
@@ -106,6 +103,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
         catch(NoSuchAlgorithmException | KeyManagementException e) {
             throw new FactoryException(e.getMessage(), e);
         }
+        this.protocols = protocols;
     }
 
     /**
@@ -164,7 +162,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
         }
         // Configure socket
         final Socket socket = f.create();
-        this.configure(socket, ENABLED_SSL_PROTOCOLS.toArray(new String[ENABLED_SSL_PROTOCOLS.size()]));
+        this.configure(socket, protocols);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Handshake for socket %s", socket));
         }
