@@ -17,6 +17,8 @@ package ch.cyberduck.core.socket;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
 
 import org.apache.commons.net.DefaultSocketFactory;
@@ -28,6 +30,9 @@ import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 
 import sun.net.util.IPAddressUtil;
 
@@ -36,6 +41,8 @@ import sun.net.util.IPAddressUtil;
  */
 public class NetworkInterfaceAwareSocketFactory extends DefaultSocketFactory {
     private static final Logger log = Logger.getLogger(ProxySocketFactory.class);
+
+    private Preferences preferences = PreferencesFactory.get();
 
     public NetworkInterfaceAwareSocketFactory() {
         super();
@@ -58,24 +65,32 @@ public class NetworkInterfaceAwareSocketFactory extends DefaultSocketFactory {
             // set the scope id to '0' referencing the awdl0 interface that is first in the list of enumerated
             // network interfaces instead of its correct index in <code>java.net.Inet6Address</code>
             // Use private API to defer the numeric format for the address
-            final NetworkInterface en0 = NetworkInterface.getByName("en0");
-            if(null == en0) {
-                // Interface is not found when link is down #fail
-                log.warn("No network interface named en0");
-                return super.createSocket(address, port);
+            List<Integer> indexes = new ArrayList<Integer>();
+            final Enumeration<NetworkInterface> enumeration = NetworkInterface.getNetworkInterfaces();
+            while(enumeration.hasMoreElements()) {
+                indexes.add(enumeration.nextElement().getIndex());
             }
-            if(!en0.isUp()) {
-                log.warn(String.format("Network interface %s is down", en0));
-                return super.createSocket(address, port);
-            }
-            for(InterfaceAddress i : en0.getInterfaceAddresses()) {
-                if(i.getAddress() instanceof Inet6Address) {
-                    // Append network interface. Workaround for issue #8802
-                    return super.createSocket(Inet6Address.getByAddress(address.getHostAddress(),
-                            IPAddressUtil.textToNumericFormatV6(address.getHostAddress()), en0.getIndex()), port);
+            for(Integer index : indexes) {
+                final NetworkInterface n = NetworkInterface.getByIndex(index);
+                if(!n.isUp()) {
+                    continue;
                 }
+                if(preferences.getList("network.interface.blacklist").contains(n.getName())) {
+                    log.warn(String.format("Ignore network interface %s", n));
+                    continue;
+                }
+                for(InterfaceAddress i : n.getInterfaceAddresses()) {
+                    if(i.getAddress() instanceof Inet6Address) {
+                        log.info(String.format("Selected network interface %s", n));
+                        // Append network interface. Workaround for issue #8802
+                        return super.createSocket(Inet6Address.getByAddress(address.getHostAddress(),
+                                IPAddressUtil.textToNumericFormatV6(address.getHostAddress()), n.getIndex()), port);
+                    }
+                }
+                log.warn(String.format("No IPv6 for interface %s", n));
             }
-            log.warn(String.format("No IPv6 for interface %s", en0));
+            log.warn("No network interface found for IPv6");
+            return super.createSocket(address, port);
         }
         if(log.isDebugEnabled()) {
             log.debug(String.format("Use default network interface to bind %s", address));
