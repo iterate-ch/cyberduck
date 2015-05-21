@@ -879,7 +879,7 @@ public abstract class Preferences {
         defaults.put(String.format("connection.unsecure.warning.%s", Scheme.http), String.valueOf(true));
 
         defaults.put("connection.ssl.provider.bouncycastle.position", String.valueOf(1));
-        defaults.put("connection.ssl.protocols", "TLSv1.2, TLSv1.1, TLSv1");
+        defaults.put("connection.ssl.protocols", "TLSv1.2,TLSv1.1,TLSv1");
         defaults.put("connection.ssl.cipher.blacklist", StringUtils.EMPTY);
 
         defaults.put("connection.ssl.x509.revocation.online", String.valueOf(false));
