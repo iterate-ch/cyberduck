@@ -31,6 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -53,6 +54,11 @@ public class TerminalOptionsInputValidator {
                 return false;
             }
         }
+        final TerminalAction action = TerminalActionFinder.get(input);
+        if(null == action) {
+            console.printf("%s%n", "Missing argument");
+            return false;
+        }
         if(input.hasOption(TerminalOptionsBuilder.Params.existing.name())) {
             final String arg = input.getOptionValue(TerminalOptionsBuilder.Params.existing.name());
             if(null == TransferAction.forName(arg)) {
@@ -62,11 +68,28 @@ public class TerminalOptionsInputValidator {
                         arg, TerminalOptionsBuilder.Params.existing.name(), Arrays.toString(actions.toArray()));
                 return false;
             }
-        }
-        final TerminalAction action = TerminalActionFinder.get(input);
-        if(null == action) {
-            console.printf("%s%n", "Missing argument");
-            return false;
+            switch(action) {
+                case download:
+                    if(!validate(arg, Transfer.Type.download)) {
+                        return false;
+                    }
+                    break;
+                case upload:
+                    if(!validate(arg, Transfer.Type.upload)) {
+                        return false;
+                    }
+                    break;
+                case synchronize:
+                    if(!validate(arg, Transfer.Type.sync)) {
+                        return false;
+                    }
+                    break;
+                case copy:
+                    if(!validate(arg, Transfer.Type.copy)) {
+                        return false;
+                    }
+                    break;
+            }
         }
         // Validate arguments
         switch(action) {
@@ -83,6 +106,16 @@ public class TerminalOptionsInputValidator {
                     return false;
                 }
                 break;
+        }
+        return true;
+    }
+
+    private boolean validate(final String arg, final Transfer.Type type) {
+        final List<TransferAction> actions = TransferAction.forTransfer(type);
+        if(!actions.contains(TransferAction.forName(arg))) {
+            console.printf("Invalid argument '%s' for option %s. Must be one of %s%n",
+                    arg, TerminalOptionsBuilder.Params.existing.name(), Arrays.toString(actions.toArray()));
+            return false;
         }
         return true;
     }
