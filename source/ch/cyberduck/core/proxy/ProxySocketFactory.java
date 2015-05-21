@@ -21,9 +21,9 @@ import ch.cyberduck.core.DefaultSocketConfigurator;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.SocketConfigurator;
+import ch.cyberduck.core.socket.NetworkInterfaceAwareSocketFactory;
 import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 
-import org.apache.commons.net.DefaultSocketFactory;
 import org.apache.log4j.Logger;
 
 import javax.net.SocketFactory;
@@ -77,7 +77,7 @@ public class ProxySocketFactory extends SocketFactory {
     }
 
     /**
-     * @param target Proxy hostname
+     * @param target Hostname
      * @return Socket factory configured with SOCKS proxy if route is determined to be proxied. Otherwise
      * direct connection socket factory.
      */
@@ -85,24 +85,24 @@ public class ProxySocketFactory extends SocketFactory {
         final Proxy proxy = proxyFinder.find(new Host(protocol, target));
         if(!types.contains(proxy.getType())) {
             log.warn(String.format("Use of %s proxy is disabled for socket factory %s", proxy.getType(), this));
-            return new DefaultSocketFactory();
+            return new NetworkInterfaceAwareSocketFactory();
         }
         switch(proxy.getType()) {
             case SOCKS:
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Configured to use SOCKS proxy %s", proxy));
                 }
-                return new DefaultSocketFactory(new java.net.Proxy(
+                return new NetworkInterfaceAwareSocketFactory(new java.net.Proxy(
                         java.net.Proxy.Type.SOCKS, new InetSocketAddress(proxy.getHostname(), proxy.getPort())));
             case HTTP:
             case HTTPS:
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Configured to use HTTP proxy %s", proxy));
                 }
-                return new DefaultSocketFactory(new java.net.Proxy(
+                return new NetworkInterfaceAwareSocketFactory(new java.net.Proxy(
                         java.net.Proxy.Type.HTTP, new InetSocketAddress(proxy.getHostname(), proxy.getPort())));
         }
-        return new DefaultSocketFactory();
+        return new NetworkInterfaceAwareSocketFactory();
     }
 
     @Override

@@ -29,14 +29,15 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.NetworkInterface;
 import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Arrays;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class ProxySocketFactoryTest extends AbstractTestCase {
 
@@ -142,5 +143,36 @@ public class ProxySocketFactoryTest extends AbstractTestCase {
             assertNotNull(socket);
             assertTrue(socket.getInetAddress() instanceof Inet6Address);
         }
+    }
+
+    @Test
+    public void testSpecificNetworkInterfaceForIP6Address() throws Exception {
+        final InetAddress loopback = InetAddress.getByName("::1%en0");
+        assertNotNull(loopback);
+        assertTrue(loopback.isLoopbackAddress());
+        assertTrue(loopback instanceof Inet6Address);
+        assertEquals(NetworkInterface.getByName("en0").getIndex(), ((Inet6Address) loopback).getScopeId());
+    }
+
+    @Test
+    public void testDefaultNetworkInterfaceForIP6Address() throws Exception {
+        assertEquals(InetAddress.getByName("::1"), InetAddress.getByName("::1%en0"));
+        // Bug. Defaults to awdl0 on OS X
+        assertEquals(((Inet6Address) InetAddress.getByName("::1")).getScopeId(),
+                ((Inet6Address) InetAddress.getByName("::1%en0")).getScopeId());
+    }
+
+    @Test
+    public void testFixDefaultNetworkInterface() throws Exception {
+        final ProxySocketFactory factory = new ProxySocketFactory(ProtocolFactory.WEBDAV, new TrustManagerHostnameCallback() {
+            @Override
+            public String getTarget() {
+                return "localhost";
+            }
+        });
+        assertEquals(
+                ((Inet6Address) factory.createSocket("::1%en0", 80).getInetAddress()).getScopeId(),
+                ((Inet6Address) factory.createSocket("::1", 80).getInetAddress()).getScopeId()
+        );
     }
 }
