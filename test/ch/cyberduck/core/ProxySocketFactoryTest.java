@@ -84,7 +84,7 @@ public class ProxySocketFactoryTest extends AbstractTestCase {
             public String getTarget() {
                 return "localhost";
             }
-        }).createSocket("::1", 22);
+        }).withBlacklistedNetworkInterfaces(Arrays.asList("awdl0")).createSocket("::1", 22);
         assertNotNull(socket);
         assertTrue(socket.getInetAddress() instanceof Inet6Address);
     }
@@ -97,7 +97,7 @@ public class ProxySocketFactoryTest extends AbstractTestCase {
                 public String getTarget() {
                     return "localhost";
                 }
-            }).createSocket(address, 22);
+            }).withBlacklistedNetworkInterfaces(Arrays.asList("awdl0")).createSocket(address, 22);
             assertNotNull(socket);
             assertTrue(socket.getInetAddress() instanceof Inet6Address);
         }
@@ -111,7 +111,7 @@ public class ProxySocketFactoryTest extends AbstractTestCase {
                 public String getTarget() {
                     return "localhost";
                 }
-            }).createSocket(address, 22);
+            }).withBlacklistedNetworkInterfaces(Arrays.asList("awdl0")).createSocket(address, 22);
         }
     }
 
@@ -144,7 +144,7 @@ public class ProxySocketFactoryTest extends AbstractTestCase {
                     assertEquals(((Inet6Address) socket.getInetAddress()).getScopeId(),
                             ((Inet6Address) InetAddress.getByName("::1%en0")).getScopeId());
                 }
-            }).createSocket(address, 21);
+            }).withBlacklistedNetworkInterfaces(Arrays.asList("awdl0")).createSocket(address, 21);
             assertNotNull(socket);
             assertTrue(socket.getInetAddress() instanceof Inet6Address);
         }
@@ -175,7 +175,7 @@ public class ProxySocketFactoryTest extends AbstractTestCase {
             public String getTarget() {
                 return "localhost";
             }
-        });
+        }).withBlacklistedNetworkInterfaces(Arrays.asList("awdl0"));
         assertEquals(
                 ((Inet6Address) factory.createSocket("::1%en0", 80).getInetAddress()).getScopeId(),
                 ((Inet6Address) factory.createSocket("::1", 80).getInetAddress()).getScopeId()
