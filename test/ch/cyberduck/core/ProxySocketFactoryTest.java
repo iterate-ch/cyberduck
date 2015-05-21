@@ -21,6 +21,8 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
+import ch.cyberduck.core.socket.DefaultSocketConfigurator;
+import ch.cyberduck.core.socket.SocketConfigurator;
 import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 
 import org.junit.Ignore;

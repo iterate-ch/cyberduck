@@ -13,6 +13,7 @@ import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
+import ch.cyberduck.core.socket.DefaultSocketConfigurator;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.test.NullLocal;
 

@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.socket;
 
 /*
  * Copyright (c) 2002-2014 David Kocher. All rights reserved.

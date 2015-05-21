@@ -19,6 +19,7 @@ import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.socket.DefaultSocketConfigurator;
 import ch.cyberduck.core.ssl.CertificateStoreX509KeyManager;
 import ch.cyberduck.core.ssl.CertificateStoreX509TrustManager;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;

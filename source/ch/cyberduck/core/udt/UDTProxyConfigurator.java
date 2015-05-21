@@ -18,11 +18,9 @@ package ch.cyberduck.core.udt;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.DefaultSocketConfigurator;
 import ch.cyberduck.core.Header;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.SocketConfigurator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.http.DisabledX509HostnameVerifier;
@@ -30,6 +28,8 @@ import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.TemporaryApplicationResourcesFinder;
+import ch.cyberduck.core.socket.DefaultSocketConfigurator;
+import ch.cyberduck.core.socket.SocketConfigurator;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;

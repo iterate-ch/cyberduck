@@ -17,11 +17,11 @@ package ch.cyberduck.core.proxy;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DefaultSocketConfigurator;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.SocketConfigurator;
+import ch.cyberduck.core.socket.DefaultSocketConfigurator;
 import ch.cyberduck.core.socket.NetworkInterfaceAwareSocketFactory;
+import ch.cyberduck.core.socket.SocketConfigurator;
 import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 
 import org.apache.log4j.Logger;

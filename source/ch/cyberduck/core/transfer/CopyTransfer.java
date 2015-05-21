@@ -35,6 +35,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
@@ -155,7 +156,30 @@ public class CopyTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Find transfer action for Resume=%s,Reload=%s", resumeRequested, reloadRequested));
         }
-        return TransferAction.overwrite;
+        // Use default
+        final TransferAction action = TransferAction.forName(
+                PreferencesFactory.get().getProperty("queue.copy.action"));
+        if(action.equals(TransferAction.callback)) {
+            for(TransferItem upload : roots) {
+                final Upload write = session.getFeature(Upload.class);
+                final Path copy = files.get(upload.remote);
+                final Write.Append append = write.append(upload.remote, copy.attributes().getSize(), cache);
+                if(append.override || append.append) {
+                    // Found remote file
+                    if(upload.remote.isDirectory()) {
+                        if(this.list(session, upload.remote, upload.local, new DisabledListProgressListener()).isEmpty()) {
+                            // Do not prompt for existing empty directories
+                            continue;
+                        }
+                    }
+                    // Prompt user to choose a filter
+                    return prompt.prompt(upload);
+                }
+            }
+            // No files exist yet therefore it is most straightforward to use the overwrite action
+            return TransferAction.overwrite;
+        }
+        return action;
     }
 
     @Override
