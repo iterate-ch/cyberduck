@@ -444,6 +444,7 @@ public class DAVSessionTest extends AbstractTestCase {
 
     @Test
     public void testdavpixime() throws Exception {
+        // no SSLv3, supports TLSv1-1.2 - Apache/mod_dav framework)
         final Host host = new Host(new DAVSSLProtocol(), "dav.pixi.me", new Credentials(
                 "webdav", "webdav"
         ));
@@ -459,6 +460,7 @@ public class DAVSessionTest extends AbstractTestCase {
 
     @Test
     public void testtlsv11pixime() throws Exception {
+        // no SSLv3, supports TLSv1.1 only -Apache/mod_dav framework
         final Host host = new Host(new DAVSSLProtocol(), "tlsv11.pixi.me", new Credentials(
                 "webdav", "webdav"
         ));
@@ -474,6 +476,7 @@ public class DAVSessionTest extends AbstractTestCase {
 
     @Test
     public void testtlsv12pixime() throws Exception {
+        // no SSLv3, supports TLSv1.2 only - Apache/mod_dav framework
         final Host host = new Host(new DAVSSLProtocol(), "tlsv12.pixi.me", new Credentials(
                 "webdav", "webdav"
         ));
