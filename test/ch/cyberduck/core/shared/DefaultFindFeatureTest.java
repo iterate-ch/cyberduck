@@ -54,6 +54,16 @@ public class DefaultFindFeatureTest extends AbstractTestCase {
     }
 
     @Test
+    public void testFindPlaceholder() throws Exception {
+        assertTrue(new DefaultFindFeature(new NullSession(new Host(("t"))) {
+            @Override
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
+                return new AttributedList<>(Collections.singletonList(new Path("/a/b", EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
+            }
+        }).find(new Path("/a/b", EnumSet.of(Path.Type.directory))));
+    }
+
+    @Test
     public void testCaseInsensitive() throws Exception {
         assertTrue(new DefaultFindFeature(new NullSession(new Host(("t"))) {
             @Override
