@@ -766,7 +766,7 @@ public abstract class Preferences {
         defaults.put("webdav.redirect.PUT.follow", String.valueOf(false));
         defaults.put("webdav.redirect.PROPFIND.follow", String.valueOf(true));
 
-        defaults.put("webdav.upload.checksum", String.valueOf(false));
+        defaults.put("webdav.upload.md5", String.valueOf(false));
 
         defaults.put("analytics.provider.qloudstat.setup", "https://qloudstat.com/configuration/add");
         defaults.put("analytics.provider.qloudstat.iam.policy",
