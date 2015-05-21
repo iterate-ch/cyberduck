@@ -21,6 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
@@ -29,6 +30,7 @@ import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -59,6 +61,8 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
 
     private Find finder;
 
+    private Attributes attributes;
+
     private Preferences preferences
             = PreferencesFactory.get();
 
@@ -81,14 +85,16 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
             = preferences.getMap("s3.metadata.default");
 
     public S3WriteFeature(final S3Session session) {
-        this(session, new S3MultipartService(session), new DefaultFindFeature(session));
+        this(session, new S3MultipartService(session), new DefaultFindFeature(session), new DefaultAttributesFeature(session));
     }
 
-    public S3WriteFeature(final S3Session session, final S3MultipartService multipartService, final Find finder) {
-        super(session);
+    public S3WriteFeature(final S3Session session, final S3MultipartService multipartService,
+                          final Find finder, final Attributes attributes) {
+        super(finder, attributes);
         this.session = session;
         this.multipartService = multipartService;
         this.finder = finder;
+        this.attributes = attributes;
     }
 
     public S3WriteFeature withStorage(final String storage) {
@@ -189,7 +195,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
             }
         }
         if(finder.withCache(cache).find(file)) {
-            return Write.override;
+            return new Append(true, attributes.withCache(cache).find(file).getSize());
         }
         return Write.notfound;
     }
