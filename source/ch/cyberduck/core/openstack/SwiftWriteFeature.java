@@ -24,6 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
@@ -31,6 +32,7 @@ import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -63,6 +65,8 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
 
     private Find finder;
 
+    private Attributes attributes;
+
     private Preferences preferences
             = PreferencesFactory.get();
 
@@ -80,11 +84,18 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
 
     public SwiftWriteFeature(final SwiftSession session, final SwiftObjectListService listService,
                              final SwiftSegmentService segmentService, final Find finder) {
-        super(session);
+        this(session, listService, segmentService, finder, new DefaultAttributesFeature(session));
+    }
+
+    public SwiftWriteFeature(final SwiftSession session, final SwiftObjectListService listService,
+                             final SwiftSegmentService segmentService,
+                             final Find finder, final Attributes attributes) {
+        super(finder, attributes);
         this.session = session;
         this.listService = listService;
         this.segmentService = segmentService;
         this.finder = finder;
+        this.attributes = attributes;
     }
 
     public SwiftWriteFeature withMetadata(final Map<String, String> metadata) {
@@ -151,7 +162,7 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
             }
         }
         if(finder.withCache(cache).find(file)) {
-            return Write.override;
+            return new Append(true, attributes.withCache(cache).find(file).getSize());
         }
         return Write.notfound;
     }
