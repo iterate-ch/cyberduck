@@ -60,6 +60,9 @@ public class NetworkInterfaceAwareSocketFactory extends DefaultSocketFactory {
     @Override
     public Socket createSocket(final InetAddress address, final int port) throws IOException {
         if(address instanceof Inet6Address) {
+            if(preferences.getList("network.interface.blacklist").isEmpty()) {
+                return super.createSocket(address, port);
+            }
             // If we find an interface name en0 that supports IPv6 make it the default.
             // We must use the index of the network interface. Referencing the interface by name will still
             // set the scope id to '0' referencing the awdl0 interface that is first in the list of enumerated

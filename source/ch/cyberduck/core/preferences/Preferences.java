@@ -980,7 +980,7 @@ public abstract class Preferences {
         defaults.put("terminal.command", "do script \"{0}\"");
         defaults.put("terminal.command.ssh", "ssh -t {0} {1}@{2} -p {3} \"cd {4} && exec \\$SHELL\"");
 
-        defaults.put("network.interface.blacklist", "awdl0");
+        defaults.put("network.interface.blacklist", StringUtils.EMPTY);
     }
 
     protected void setLogging() {
