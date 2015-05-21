@@ -112,7 +112,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
      * @param socket    Socket to configure
      * @param protocols Enabled SSL protocol versions
      */
-    private void configure(final Socket socket, final String[] protocols) throws IOException {
+    protected void configure(final Socket socket, final String[] protocols) throws IOException {
         if(socket instanceof SSLSocket) {
             try {
                 if(log.isDebugEnabled()) {
@@ -154,7 +154,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
      * @return Configured socket
      * @throws IOException Error creating socket
      */
-    private Socket handshake(final SocketGetter f) throws IOException {
+    protected Socket handshake(final SocketGetter f) throws IOException {
         if(!initializer.get()) {
             // Load trust store before handshake
             trust.init();
