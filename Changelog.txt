@@ -10,6 +10,7 @@ Changelog. Last modified: $Date$
 - [Bugfix] Second level cache not invalidated when reloading browser (#8774)
 - [Bugfix] Subfolder appearing inside folder of same name (S3) (#8769)
 - [Bugfix] Directory removal fails silently (S3) (#8803)
+- [Bugfix] Resuming upload with nested folders (S3)
 
 4.7 [https://trac.cyberduck.io/milestone/4.7]
 - [Feature] Support multiple connections per transfer (#1135)
