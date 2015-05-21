@@ -24,6 +24,8 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
@@ -67,11 +69,23 @@ public class ResumeFilter extends AbstractUploadFilter {
                 if(parent.isExists()) {
                     final Write.Append append = upload.append(file, local.attributes().getSize(), cache);
                     if(append.size == local.attributes().getSize()) {
-                        if(log.isInfoEnabled()) {
-                            log.info(String.format("Skip file %s with remote size %d", file, append.size));
+                        if(append.checksum != null) {
+                            final ChecksumCompute compute = ChecksumComputeFactory.get(append.checksum.algorithm);
+                            if(compute.compute(local.getInputStream()).equals(append.checksum)) {
+                                if(log.isInfoEnabled()) {
+                                    log.info(String.format("Skip file %s with checksum %s", file, local.attributes().getChecksum()));
+                                }
+                                return false;
+                            }
+                            log.warn(String.format("Checksum mismatch for %s and %s", file, local));
                         }
-                        // No need to resume completed transfers
-                        return false;
+                        else {
+                            if(log.isInfoEnabled()) {
+                                log.info(String.format("Skip file %s with remote size %d", file, append.size));
+                            }
+                            // No need to resume completed transfers
+                            return false;
+                        }
                     }
                 }
             }

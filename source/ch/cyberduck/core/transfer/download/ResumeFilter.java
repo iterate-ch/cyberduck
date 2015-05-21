@@ -25,6 +25,8 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Download;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
@@ -70,12 +72,24 @@ public class ResumeFilter extends AbstractDownloadFilter {
             if(local.exists()) {
                 // Read remote attributes
                 final PathAttributes attributes = attribute.find(file);
-                if(local.attributes().getSize() >= attributes.getSize()) {
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Skip file %s with local size %d", file, local.attributes().getSize()));
+                if(local.attributes().getSize() == attributes.getSize()) {
+                    if(attributes.getChecksum() != null) {
+                        final ChecksumCompute compute = ChecksumComputeFactory.get(attributes.getChecksum().algorithm);
+                        if(compute.compute(local.getInputStream()).equals(attributes.getChecksum())) {
+                            if(log.isInfoEnabled()) {
+                                log.info(String.format("Skip file %s with checksum %s", file, local.attributes().getChecksum()));
+                            }
+                            return false;
+                        }
+                        log.warn(String.format("Checksum mismatch for %s and %s", file, local));
                     }
-                    // No need to resume completed transfers
-                    return false;
+                    else {
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("Skip file %s with local size %d", file, local.attributes().getSize()));
+                        }
+                        // No need to resume completed transfers
+                        return false;
+                    }
                 }
             }
         }
