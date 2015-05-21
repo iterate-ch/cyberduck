@@ -25,10 +25,12 @@ import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 
 import org.junit.Test;
 
+import java.io.IOException;
 import java.net.ConnectException;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetSocketAddress;
+import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Arrays;
@@ -122,13 +124,19 @@ public class ProxySocketFactoryTest extends AbstractTestCase {
         assertTrue(socket.getInetAddress() instanceof Inet4Address);
     }
 
-    @Test
+    // We have no IPv6 in the test environment
+    @Test(expected = NoRouteToHostException.class)
     public void testCreateSocketIPv6Only() throws Exception {
         for(String address : Arrays.asList("ftp6.netbsd.org")) {
             final Socket socket = new ProxySocketFactory(ProtocolFactory.FTP, new TrustManagerHostnameCallback() {
                 @Override
                 public String getTarget() {
                     return "ftp6.netbsd.org";
+                }
+            }, new SocketConfigurator() {
+                @Override
+                public void configure(final Socket socket) throws IOException {
+                    assertTrue(socket.getInetAddress() instanceof Inet6Address);
                 }
             }).createSocket(address, 21);
             assertNotNull(socket);
