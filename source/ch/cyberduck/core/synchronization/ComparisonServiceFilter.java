@@ -28,7 +28,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.io.MD5ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -92,7 +92,8 @@ public class ComparisonServiceFilter implements ComparePathFilter {
                     if(attributes.getChecksum() != null) {
                         progress.message(MessageFormat.format(
                                 LocaleFactory.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
-                        local.attributes().setChecksum(new MD5ChecksumCompute().compute(local.getInputStream()));
+                        local.attributes().setChecksum(ChecksumComputeFactory.get(attributes.getChecksum().algorithm)
+                                .compute(local.getInputStream()));
                         final Comparison comparison = checksum.compare(attributes, local.attributes());
                         if(!Comparison.notequal.equals(comparison)) {
                             // Decision is available
