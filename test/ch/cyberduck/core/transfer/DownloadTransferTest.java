@@ -284,7 +284,7 @@ public class DownloadTransferTest extends AbstractTestCase {
                 prompt.set(true);
                 return TransferAction.callback;
             }
-        }));
+        }, new DisabledListProgressListener()));
         assertTrue(prompt.get());
     }
 
@@ -309,7 +309,7 @@ public class DownloadTransferTest extends AbstractTestCase {
                 fail();
                 return TransferAction.callback;
             }
-        }));
+        }, new DisabledListProgressListener()));
         assertFalse(prompt.get());
     }
 
@@ -334,7 +334,7 @@ public class DownloadTransferTest extends AbstractTestCase {
                 prompt.set(true);
                 return TransferAction.callback;
             }
-        }));
+        }, new DisabledListProgressListener()));
         assertTrue(prompt.get());
     }
 
@@ -359,7 +359,7 @@ public class DownloadTransferTest extends AbstractTestCase {
                 fail();
                 return TransferAction.callback;
             }
-        }));
+        }, new DisabledListProgressListener()));
         assertFalse(prompt.get());
     }
 
@@ -373,7 +373,7 @@ public class DownloadTransferTest extends AbstractTestCase {
                 fail();
                 return null;
             }
-        }));
+        }, new DisabledListProgressListener()));
     }
 
     @Test

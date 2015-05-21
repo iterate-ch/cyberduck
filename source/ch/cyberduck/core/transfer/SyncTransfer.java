@@ -179,7 +179,7 @@ public class SyncTransfer extends Transfer {
 
     @Override
     public TransferAction action(final Session<?> session, final boolean resumeRequested, final boolean reloadRequested,
-                                 final TransferPrompt prompt) throws BackgroundException {
+                                 final TransferPrompt prompt, final ListProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Find transfer action for Resume=%s,Reload=%s", resumeRequested, reloadRequested));
         }

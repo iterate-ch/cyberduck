@@ -66,7 +66,7 @@ public class SyncTransferTest extends AbstractTestCase {
                 prompt.set(true);
                 return null;
             }
-        }));
+        }, new DisabledListProgressListener()));
         assertTrue(prompt.get());
     }
 
@@ -89,7 +89,7 @@ public class SyncTransferTest extends AbstractTestCase {
             public TransferAction prompt(final TransferItem file) {
                 return TransferAction.upload;
             }
-        });
+        }, new DisabledListProgressListener());
         final Transfer serialized = new TransferDictionary().deserialize(transfer.serialize(SerializerFactory.get()));
         assertNotSame(transfer, serialized);
         assertEquals(TransferAction.upload, serialized.action(null, true, false, new DisabledTransferPrompt() {
@@ -98,7 +98,7 @@ public class SyncTransferTest extends AbstractTestCase {
                 fail();
                 return null;
             }
-        }));
+        }, new DisabledListProgressListener()));
     }
 
 

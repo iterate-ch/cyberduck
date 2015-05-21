@@ -268,10 +268,11 @@ public abstract class Transfer implements Serializable {
      * @param resumeRequested Requested resume
      * @param reloadRequested Requested overwrite
      * @param prompt          Callback
+     * @param listener        Listener
      * @return Duplicate file strategy from preferences or user selection
      */
     public abstract TransferAction action(Session<?> session, boolean resumeRequested, boolean reloadRequested,
-                                          TransferPrompt prompt) throws BackgroundException;
+                                          TransferPrompt prompt, ListProgressListener listener) throws BackgroundException;
 
     /**
      * Returns the children of this path filtering it with the default regex filter

@@ -18,6 +18,7 @@ package ch.cyberduck.core.editor;
  */
 
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.NullFilter;
@@ -69,7 +70,7 @@ public class EditSaveWorker extends Worker<Transfer> {
             @Override
             public TransferAction action(final Session<?> session,
                                          final boolean resumeRequested, final boolean reloadRequested,
-                                         final TransferPrompt prompt) throws BackgroundException {
+                                         final TransferPrompt prompt, final ListProgressListener listener) throws BackgroundException {
                 return TransferAction.overwrite;
             }
 

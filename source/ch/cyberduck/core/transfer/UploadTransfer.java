@@ -18,7 +18,6 @@ package ch.cyberduck.core.transfer;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
@@ -163,7 +162,7 @@ public class UploadTransfer extends Transfer {
 
     @Override
     public TransferAction action(final Session<?> session, final boolean resumeRequested, final boolean reloadRequested,
-                                 final TransferPrompt prompt) throws BackgroundException {
+                                 final TransferPrompt prompt, final ListProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Find transfer action for Resume=%s,Reload=%s", resumeRequested, reloadRequested));
         }
@@ -188,7 +187,7 @@ public class UploadTransfer extends Transfer {
                 if(append.override || append.append) {
                     // Found remote file
                     if(upload.remote.isDirectory()) {
-                        if(this.list(session, upload.remote, upload.local, new DisabledListProgressListener()).isEmpty()) {
+                        if(this.list(session, upload.remote, upload.local, listener).isEmpty()) {
                             // Do not prompt for existing empty directories
                             continue;
                         }

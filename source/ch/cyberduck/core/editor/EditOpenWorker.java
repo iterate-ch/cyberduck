@@ -19,6 +19,7 @@ package ch.cyberduck.core.editor;
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
@@ -78,7 +79,7 @@ public class EditOpenWorker extends Worker<Transfer> {
                 new DownloadDuplicateFilter()) {
             @Override
             public TransferAction action(final Session<?> session, final boolean resumeRequested, final boolean reloadRequested,
-                                         final TransferPrompt prompt) throws BackgroundException {
+                                         final TransferPrompt prompt, final ListProgressListener listener) throws BackgroundException {
                 return TransferAction.trash;
             }
         };
