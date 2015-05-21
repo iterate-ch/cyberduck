@@ -136,8 +136,8 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
                     ((SSLSocket) socket).addHandshakeCompletedListener(new HandshakeCompletedListener() {
                         @Override
                         public void handshakeCompleted(final HandshakeCompletedEvent event) {
-                            log.info(String.format("Completed handshake with negotiated cipher suite %s",
-                                    event.getCipherSuite()));
+                            log.info(String.format("Completed handshake with %s and negotiated cipher suite %s",
+                                    event.getSession().getProtocol(), event.getCipherSuite()));
                             ((SSLSocket) socket).removeHandshakeCompletedListener(this);
                         }
                     });
