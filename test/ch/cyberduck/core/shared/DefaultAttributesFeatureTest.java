@@ -18,9 +18,11 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPSession;
+import ch.cyberduck.core.test.NullSession;
 
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -70,5 +72,15 @@ public class DefaultAttributesFeatureTest extends AbstractTestCase {
         // Test cache
         assertEquals(0L, f.find(file).getSize());
         assertTrue(cache.containsKey(file.getParent()));
+    }
+
+    @Test
+    public void testFindPlaceholder() throws Exception {
+        assertNotNull(new DefaultAttributesFeature(new NullSession(new Host(("t"))) {
+            @Override
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
+                return new AttributedList<>(Collections.singletonList(new Path("/a/b", EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
+            }
+        }).find(new Path("/a/b", EnumSet.of(Path.Type.directory))));
     }
 }

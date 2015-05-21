@@ -30,6 +30,8 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Attributes;
 
+import java.util.EnumSet;
+
 /**
  * @version $Id$
  */
@@ -66,6 +68,12 @@ public class DefaultAttributesFeature implements Attributes {
         }
         if(list.contains(file)) {
             return list.get(file).attributes();
+        }
+        if(file.isDirectory()) {
+            final Path placeholder = new Path(file.getAbsolute(), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+            if(list.contains(placeholder)) {
+                return list.get(placeholder).attributes();
+            }
         }
         throw new NotfoundException(file.getAbsolute());
     }
