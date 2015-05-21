@@ -139,6 +139,8 @@ public class ProxySocketFactoryTest extends AbstractTestCase {
                 @Override
                 public void configure(final Socket socket) throws IOException {
                     assertTrue(socket.getInetAddress() instanceof Inet6Address);
+                    assertEquals(((Inet6Address) socket.getInetAddress()).getScopeId(),
+                            ((Inet6Address) InetAddress.getByName("::1%en0")).getScopeId());
                 }
             }).createSocket(address, 21);
             assertNotNull(socket);
