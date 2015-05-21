@@ -2,6 +2,7 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StreamCopier;
@@ -50,7 +51,9 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
         assertTrue(new SwiftFindFeature(session).find(test));
         final PathAttributes attributes = session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
         assertEquals(content.length, attributes.getSize());
-        assertEquals(0L, new SwiftWriteFeature(session).append(test, status.getLength(), PathCache.empty()).size, 0L);
+        final Write.Append append = new SwiftWriteFeature(session).append(test, status.getLength(), PathCache.empty());
+        assertTrue(append.override);
+        assertEquals(content.length, append.size, 0L);
         final byte[] buffer = new byte[content.length];
         final InputStream in = new SwiftReadFeature(session).read(test, new TransferStatus());
         IOUtils.readFully(in, buffer);
@@ -141,11 +144,20 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
             public Find withCache(final PathCache cache) {
                 return this;
             }
+        }, new Attributes() {
+            @Override
+            public PathAttributes find(final Path file) throws BackgroundException {
+                return new PathAttributes();
+            }
+
+            @Override
+            public Attributes withCache(final PathCache cache) {
+                return this;
+            }
         }
         ).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 1024L, PathCache.empty());
         assertFalse(append.append);
         assertTrue(append.override);
-        assertEquals(Write.override, append);
         assertFalse(list.get());
         assertTrue(find.get());
     }
