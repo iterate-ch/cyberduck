@@ -118,15 +118,18 @@ public abstract class SheetController extends WindowController implements SheetC
         synchronized(parent.window()) {
             signal = new CountDownLatch(1);
             if(NSThread.isMainThread()) {
+                this.loadBundle();
                 // No need to call invoke on main thread
                 this.beginSheet(this.window());
             }
             else {
+                final SheetController controller = this;
                 invoke(new ControllerMainAction(this) {
                     @Override
                     public void run() {
+                        controller.loadBundle();
                         //Invoke again on main thread
-                        SheetController.this.beginSheet(SheetController.this.window());
+                        controller.beginSheet(controller.window());
                     }
                 }, true);
                 if(log.isDebugEnabled()) {
@@ -145,7 +148,6 @@ public abstract class SheetController extends WindowController implements SheetC
     }
 
     protected void beginSheet(final NSWindow window) {
-        this.loadBundle();
         parent.window().makeKeyAndOrderFront(null);
         NSApplication.sharedApplication().beginSheet(window, //sheet
                 parent.window(), // modalForWindow
