@@ -18,18 +18,18 @@ package ch.cyberduck.core.diagnostics;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.FactoryException;
-import ch.cyberduck.core.diagnostics.ReachabilityFactory;
 
 import org.junit.Test;
+
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @version $Id$
  */
 public class ReachabilityFactoryTest extends AbstractTestCase {
 
-    @Test(expected = FactoryException.class)
+    @Test
     public void testGet() throws Exception {
-        ReachabilityFactory.get();
+        assertNotNull(ReachabilityFactory.get());
     }
 }
