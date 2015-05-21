@@ -18,6 +18,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -195,7 +196,8 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
             }
         }
         if(finder.withCache(cache).find(file)) {
-            return new Append(true, attributes.withCache(cache).find(file).getSize());
+            final PathAttributes attributes = this.attributes.withCache(cache).find(file);
+            return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());
         }
         return Write.notfound;
     }

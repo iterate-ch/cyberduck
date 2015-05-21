@@ -68,34 +68,19 @@ public interface Write {
         public Checksum checksum;
 
         /**
-         * No file exists
-         */
-        private Append() {
-            this.override = false;
-            this.append = false;
-        }
-
-        /**
          * Append
          *
          * @param size Remote file size
          */
         public Append(final Long size) {
             this.append = true;
+            this.override = false;
             this.size = size;
         }
 
-        public Append(final boolean override, final Long size) {
+        public Append(final boolean append, final boolean override) {
+            this.append = append;
             this.override = override;
-            this.size = size;
-        }
-
-        /**
-         * Override
-         */
-        private Append(final boolean override) {
-            this.override = override;
-            this.append = false;
         }
 
         public Append withChecksum(final Checksum checksum) {
@@ -103,15 +88,19 @@ public interface Write {
             return this;
         }
 
+        public Append withSize(final Long size) {
+            this.size = size;
+            return this;
+        }
     }
 
     /**
      * Existing remote file found
      */
-    Append override = new Append(true);
+    Append override = new Append(false, true);
 
     /**
      * No file found
      */
-    Append notfound = new Append();
+    Append notfound = new Append(false, false);
 }

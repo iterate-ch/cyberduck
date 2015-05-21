@@ -21,6 +21,7 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -162,7 +163,8 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
             }
         }
         if(finder.withCache(cache).find(file)) {
-            return new Append(true, attributes.withCache(cache).find(file).getSize());
+            final PathAttributes attributes = this.attributes.withCache(cache).find(file);
+            return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());
         }
         return Write.notfound;
     }
