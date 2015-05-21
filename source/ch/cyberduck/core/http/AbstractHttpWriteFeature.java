@@ -20,6 +20,8 @@ package ch.cyberduck.core.http;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.threading.NamedThreadFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -57,6 +59,10 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature {
 
     protected AbstractHttpWriteFeature(final Session<?> session) {
         super(session);
+    }
+
+    public AbstractHttpWriteFeature(final Find finder, final Attributes attributes) {
+        super(finder, attributes);
     }
 
     /**

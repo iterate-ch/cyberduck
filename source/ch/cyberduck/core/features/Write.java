@@ -82,6 +82,11 @@ public interface Write {
             this.size = size;
         }
 
+        public Append(final boolean override, final Long size) {
+            this.override = override;
+            this.size = size;
+        }
+
         /**
          * Override
          */

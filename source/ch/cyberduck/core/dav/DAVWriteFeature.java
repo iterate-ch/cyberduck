@@ -20,6 +20,8 @@ package ch.cyberduck.core.dav;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
@@ -58,6 +60,12 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
 
     public DAVWriteFeature(final DAVSession session, final boolean expect) {
         super(session);
+        this.session = session;
+        this.expect = expect;
+    }
+
+    public DAVWriteFeature(final DAVSession session, final Find finder, final Attributes attributes, final boolean expect) {
+        super(finder, attributes);
         this.session = session;
         this.expect = expect;
     }
