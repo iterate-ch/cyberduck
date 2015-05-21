@@ -443,7 +443,6 @@ public class DAVSessionTest extends AbstractTestCase {
     }
 
     @Test
-    @Ignore
     public void testdavpixime() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "dav.pixi.me", new Credentials(
                 "webdav", "webdav"
@@ -459,7 +458,6 @@ public class DAVSessionTest extends AbstractTestCase {
     }
 
     @Test
-    @Ignore
     public void testtlsv11pixime() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "tlsv11.pixi.me", new Credentials(
                 "webdav", "webdav"
@@ -475,7 +473,6 @@ public class DAVSessionTest extends AbstractTestCase {
     }
 
     @Test
-    @Ignore
     public void testtlsv12pixime() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "tlsv12.pixi.me", new Credentials(
                 "webdav", "webdav"

@@ -20,19 +20,20 @@ package ch.cyberduck.core.ssl;
 
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 
 /**
  * @version $Id$
  */
 public class DisabledX509TrustManager extends AbstractX509TrustManager {
     @Override
-    public void checkClientTrusted(final X509Certificate[] x509Certificates, final String s) throws CertificateException {
-        //
+    public void checkClientTrusted(final X509Certificate[] certs, final String cipher) throws CertificateException {
+        this.accept(Arrays.asList(certs));
     }
 
     @Override
-    public void checkServerTrusted(final X509Certificate[] x509Certificates, final String s) throws CertificateException {
-        //
+    public void checkServerTrusted(final X509Certificate[] certs, final String cipher) throws CertificateException {
+        this.accept(Arrays.asList(certs));
     }
 
     @Override
@@ -42,6 +43,6 @@ public class DisabledX509TrustManager extends AbstractX509TrustManager {
 
     @Override
     public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
-        //
+        this.accept(Arrays.asList(certs));
     }
 }
