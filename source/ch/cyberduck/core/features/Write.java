@@ -21,6 +21,7 @@ package ch.cyberduck.core.features;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.OutputStream;
@@ -64,6 +65,8 @@ public interface Write {
          */
         public Long size = 0L;
 
+        public Checksum checksum;
+
         /**
          * No file exists
          */
@@ -94,6 +97,12 @@ public interface Write {
             this.override = override;
             this.append = false;
         }
+
+        public Append withChecksum(final Checksum checksum) {
+            this.checksum = checksum;
+            return this;
+        }
+
     }
 
     /**
