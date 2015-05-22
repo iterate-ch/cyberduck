@@ -25,7 +25,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.io.Checksum;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -69,7 +68,6 @@ public class DAVListService implements ListService {
                     attributes.setSize(resource.getContentLength());
                 }
                 if(StringUtils.isNotBlank(resource.getEtag())) {
-                    attributes.setChecksum(Checksum.parse(resource.getEtag()));
                     attributes.setETag(resource.getEtag());
                 }
                 children.add(new Path(directory, PathNormalizer.name(href),

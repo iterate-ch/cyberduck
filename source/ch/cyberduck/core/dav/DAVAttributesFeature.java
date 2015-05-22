@@ -70,7 +70,6 @@ public class DAVAttributesFeature implements Attributes {
             }
             if(headers.containsKey(HttpHeaders.ETAG)) {
                 attributes.setETag(headers.get(HttpHeaders.ETAG));
-                attributes.setChecksum(Checksum.parse(headers.get(HttpHeaders.ETAG)));
             }
             if(headers.containsKey(HttpHeaders.CONTENT_MD5)) {
                 attributes.setChecksum(Checksum.parse(headers.get(HttpHeaders.CONTENT_MD5)));
