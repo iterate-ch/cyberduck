@@ -130,6 +130,53 @@ public class WritePermissionWorkerTest extends AbstractTestCase {
     }
 
     @Test
+    public void testRunRecursiveSetDirectoryExecute() throws Exception {
+        final Path a = new Path("a", EnumSet.of(Path.Type.directory));
+        a.attributes().setPermission(new Permission(774));
+        final Path f = new Path("f", EnumSet.of(Path.Type.file));
+        final Path d = new Path("d", EnumSet.of(Path.Type.directory));
+        final WritePermissionWorker worker = new WritePermissionWorker(new FTPSession(new Host("h")) {
+            @Override
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
+                if(file.equals(a)) {
+                    final AttributedList<Path> children = new AttributedList<Path>();
+                    d.attributes().setPermission(new Permission(774));
+                    children.add(d);
+                    d.attributes().setPermission(new Permission(666));
+                    children.add(f);
+                    return children;
+                }
+                return AttributedList.emptyList();
+            }
+        }, new UnixPermission() {
+            @Override
+            public void setUnixOwner(final Path file, final String owner) throws BackgroundException {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void setUnixGroup(final Path file, final String group) throws BackgroundException {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void setUnixPermission(final Path file, final Permission permission) throws BackgroundException {
+                if(file.equals(a)) {
+                    assertEquals(file.toString(), new Permission(775), permission);
+                }
+                if(file.equals(d)) {
+                    assertEquals(file.toString(), new Permission(775), permission);
+                }
+                if(file.equals(f)) {
+                    assertEquals(file.toString(), new Permission(664), permission);
+                }
+            }
+        }, Collections.singletonList(a), new Permission(775), true, new DisabledProgressListener()
+        );
+        worker.run();
+    }
+
+    @Test
     public void testRetainStickyBit() throws Exception {
         final Permission permission = new Permission(744);
         final Path path = new Path("a", EnumSet.of(Path.Type.directory));
