@@ -26,11 +26,13 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.logging.LoggingConfiguration;
 
 import org.junit.Test;
 
 import java.util.EnumSet;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -55,5 +57,33 @@ public class S3LoggingFeatureTest extends AbstractTestCase {
         assertEquals("log.cyberduck.ch", configuration.getLoggingTarget());
         assertTrue(configuration.isEnabled());
         session.close();
+    }
+
+    @Test(expected = NotfoundException.class)
+    public void testReadNotFound() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                        new Credentials(
+                                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                        )));
+        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        new S3LoggingFeature(session).getConfiguration(
+                new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory))
+        );
+    }
+
+    @Test(expected = NotfoundException.class)
+    public void testWriteNotFound() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                        new Credentials(
+                                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                        )));
+        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        new S3LoggingFeature(session).setConfiguration(
+                new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new LoggingConfiguration(false)
+        );
     }
 }
