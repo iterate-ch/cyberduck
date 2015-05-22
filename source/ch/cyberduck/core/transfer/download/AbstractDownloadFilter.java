@@ -300,19 +300,6 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                 log.debug(String.format("Run completion for file %s with status %s", local, status));
             }
             if(file.isFile()) {
-                if(this.options.checksum) {
-                    final Checksum checksum = status.getChecksum();
-                    if(null != checksum) {
-                        final ChecksumCompute compute = ChecksumComputeFactory.get(checksum.algorithm);
-                        final Checksum download = compute.compute(local.getInputStream());
-                        if(!checksum.equals(download)) {
-                            throw new ChecksumException(
-                                    MessageFormat.format(LocaleFactory.localizedString("Download {0} failed", "Error"), file.getName()),
-                                    MessageFormat.format("Mismatch between MD5 hash {0} of downloaded data and ETag {1} returned by the server",
-                                            download.hash, checksum.hash));
-                        }
-                    }
-                }
                 // Remove custom icon if complete. The Finder will display the default icon for this file type
                 if(this.options.icon) {
                     icon.set(local, status);
@@ -364,6 +351,21 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                 catch(AccessDeniedException e) {
                     // Ignore
                     log.warn(e.getMessage());
+                }
+            }
+            if(file.isFile()) {
+                if(this.options.checksum) {
+                    final Checksum checksum = status.getChecksum();
+                    if(null != checksum) {
+                        final ChecksumCompute compute = ChecksumComputeFactory.get(checksum.algorithm);
+                        final Checksum download = compute.compute(local.getInputStream());
+                        if(!checksum.equals(download)) {
+                            throw new ChecksumException(
+                                    MessageFormat.format(LocaleFactory.localizedString("Download {0} failed", "Error"), file.getName()),
+                                    MessageFormat.format("Mismatch between MD5 hash {0} of downloaded data and ETag {1} returned by the server",
+                                            download.hash, checksum.hash));
+                        }
+                    }
                 }
             }
             launcher.bounce(local);
