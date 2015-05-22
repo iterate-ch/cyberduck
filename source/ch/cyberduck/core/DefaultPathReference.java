@@ -20,6 +20,8 @@ package ch.cyberduck.core;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.EnumSet;
+
 /**
  * @version $Id$
  */
@@ -47,6 +49,13 @@ public class DefaultPathReference implements CacheReference<Path> {
         return qualifier;
     }
 
+    private String type() {
+        final EnumSet<Path.Type> types = EnumSet.copyOf(file.getType());
+        types.remove(Path.Type.placeholder);
+        types.remove(Path.Type.volume);
+        return String.valueOf(types);
+    }
+
     @Override
     public int hashCode() {
         return this.toString().hashCode();
@@ -59,7 +68,7 @@ public class DefaultPathReference implements CacheReference<Path> {
      */
     @Override
     public String toString() {
-        return String.valueOf(file.getType()) + "-" + this.attributes() + file.getAbsolute();
+        return this.type() + "-" + this.attributes() + file.getAbsolute();
     }
 
     /**

@@ -31,8 +31,6 @@ import ch.cyberduck.core.features.Find;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.util.EnumSet;
-
 /**
  * @version $Id$
  */
@@ -76,11 +74,6 @@ public class DefaultFindFeature implements Find {
                                 return true;
                             }
                         }
-                }
-                if(file.isDirectory()) {
-                    if(list.contains(new Path(file.getAbsolute(), EnumSet.of(Path.Type.directory, Path.Type.placeholder)))) {
-                        return true;
-                    }
                 }
             }
             return found;
