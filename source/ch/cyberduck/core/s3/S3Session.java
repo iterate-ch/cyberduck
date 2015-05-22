@@ -60,7 +60,6 @@ import ch.cyberduck.core.udt.qloudsonic.QloudsonicTransferOption;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
 import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.ServiceException;
@@ -197,13 +196,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         configuration.setProperty("storage-service.internal-error-retry-max", String.valueOf(0));
         configuration.setProperty("storage-service.request-signature-version", authenticationHeaderSignatureVersion.toString());
         return configuration;
-    }
-
-    @Override
-    public HttpClientBuilder builder() {
-        final HttpClientBuilder builder = super.builder();
-        builder.disableContentCompression();
-        return builder;
     }
 
     @Override

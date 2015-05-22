@@ -78,6 +78,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
                 new PreferencesUseragentProvider().get(), null, configuration);
         this.session = session;
         final HttpClientBuilder builder = session.builder();
+        builder.disableContentCompression();
         builder.setRetryHandler(new S3HttpRequestRetryHandler(this, preferences.getInteger("http.connections.retry")));
         this.setHttpClient(builder.build());
     }

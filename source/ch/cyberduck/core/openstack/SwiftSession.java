@@ -102,14 +102,9 @@ public class SwiftSession extends HttpSession<Client> {
 
     @Override
     public Client connect(final HostKeyCallback key) throws BackgroundException {
-        return new Client(this.builder().build());
-    }
-
-    @Override
-    public HttpClientBuilder builder() {
-        final HttpClientBuilder builder = super.builder();
+        final HttpClientBuilder builder = this.builder();
         builder.disableContentCompression();
-        return builder;
+        return new Client(builder.build());
     }
 
     @Override
