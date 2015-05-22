@@ -20,12 +20,16 @@ package ch.cyberduck.core.irods;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -33,8 +37,11 @@ import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+import org.irods.jargon.core.checksum.ChecksumValue;
 import org.irods.jargon.core.exception.JargonException;
 import org.irods.jargon.core.packinstr.TransferOptions;
+import org.irods.jargon.core.pub.DataObjectChecksumUtilitiesAO;
 import org.irods.jargon.core.pub.DataTransferOperations;
 import org.irods.jargon.core.pub.IRODSFileSystemAO;
 import org.irods.jargon.core.pub.io.IRODSFile;
@@ -42,11 +49,13 @@ import org.irods.jargon.core.transfer.DefaultTransferControlBlock;
 import org.irods.jargon.core.transfer.TransferControlBlock;
 
 import java.io.File;
+import java.text.MessageFormat;
 
 /**
  * @version $Id$
  */
-public class IRODSUploadFeature implements Upload<Void> {
+public class IRODSUploadFeature implements Upload<Checksum> {
+    private static final Logger log = Logger.getLogger(IRODSUploadFeature.class);
 
     private IRODSSession session;
 
@@ -62,9 +71,9 @@ public class IRODSUploadFeature implements Upload<Void> {
     }
 
     @Override
-    public Void upload(final Path file, final Local local, final BandwidthThrottle throttle,
-                       final StreamListener listener, final TransferStatus status,
-                       final ConnectionCallback callback) throws BackgroundException {
+    public Checksum upload(final Path file, final Local local, final BandwidthThrottle throttle,
+                           final StreamListener listener, final TransferStatus status,
+                           final ConnectionCallback callback) throws BackgroundException {
         try {
             final IRODSFileSystemAO fs = session.filesystem();
             final IRODSFile f = fs.getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
@@ -77,11 +86,28 @@ public class IRODSUploadFeature implements Upload<Void> {
             transfer.putOperation(new File(local.getAbsolute()), f, new DefaultTransferStatusCallbackListener(
                     status, listener, block
             ), block);
+            final DataObjectChecksumUtilitiesAO checksum = fs
+                    .getIRODSAccessObjectFactory()
+                    .getDataObjectChecksumUtilitiesAO(fs.getIRODSAccount());
+            final ChecksumValue value = checksum.retrieveExistingChecksumForDataObject(f.getAbsolutePath());
+            final Checksum fingerprint = Checksum.parse(value.getChecksumStringValue());
+            if(null == fingerprint) {
+                log.warn(String.format("Unsupported checksum algorithm %s", value.getChecksumEncoding()));
+            }
+            else {
+                final Checksum expected = ChecksumComputeFactory.get(fingerprint.algorithm).compute(local.getInputStream());
+                if(!expected.equals(fingerprint)) {
+                    throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
+                            MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
+                                    expected, fingerprint.hash));
+                }
+            }
+
+            return fingerprint;
         }
         catch(JargonException e) {
             throw new IRODSExceptionMappingService().map(e);
         }
-        return null;
     }
 
     @Override
