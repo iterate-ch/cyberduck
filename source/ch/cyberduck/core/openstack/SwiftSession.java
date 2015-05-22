@@ -84,9 +84,6 @@ public class SwiftSession extends HttpSession<Client> {
     protected Map<Region, AccountInfo> accounts
             = new HashMap<Region, AccountInfo>();
 
-    private final ThreadPool pool
-            = new ThreadPool(5, "accounts");
-
     public SwiftSession(final Host h) {
         super(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
     }
@@ -119,7 +116,6 @@ public class SwiftSession extends HttpSession<Client> {
     protected void logout() throws BackgroundException {
         try {
             client.disconnect();
-            pool.shutdown(false);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
@@ -155,23 +151,30 @@ public class SwiftSession extends HttpSession<Client> {
                 }
                 cancel.verify();
             }
-            pool.execute(new Runnable() {
-                @Override
-                public void run() {
-                    for(Region region : client.getRegions()) {
-                        try {
-                            final AccountInfo info = client.getAccountInfo(region);
-                            if(log.isInfoEnabled()) {
-                                log.info(String.format("Signing key is %s", info.getTempUrlKey()));
+            final ThreadPool pool = new ThreadPool(5, "accounts");
+            try {
+                pool.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        for(Region region : client.getRegions()) {
+                            try {
+                                final AccountInfo info = client.getAccountInfo(region);
+                                if(log.isInfoEnabled()) {
+                                    log.info(String.format("Signing key is %s", info.getTempUrlKey()));
+                                }
+                                accounts.put(region, info);
                             }
-                            accounts.put(region, info);
-                        }
-                        catch(IOException e) {
-                            log.warn(String.format("Failure loading account info for region %s", region));
+                            catch(IOException e) {
+                                log.warn(String.format("Failure loading account info for region %s", region));
+                            }
                         }
                     }
-                }
-            });
+                });
+            }
+            finally {
+                // Shutdown gracefully
+                pool.shutdown();
+            }
         }
         catch(GenericException e) {
             throw new SwiftExceptionMappingService().map(e);
