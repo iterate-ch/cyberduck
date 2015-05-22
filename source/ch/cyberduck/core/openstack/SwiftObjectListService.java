@@ -107,7 +107,6 @@ public class SwiftObjectListService implements ListService {
             }
             while(list.size() == limit);
             return children;
-
         }
         catch(GenericException e) {
             throw new SwiftExceptionMappingService().map("Listing directory {0} failed", e, directory);
