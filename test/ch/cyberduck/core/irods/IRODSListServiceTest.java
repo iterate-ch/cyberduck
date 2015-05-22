@@ -31,8 +31,12 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProfileReaderFactory;
+import ch.cyberduck.core.exception.NotfoundException;
 
 import org.junit.Test;
+
+import java.util.EnumSet;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -71,4 +75,19 @@ public class IRODSListServiceTest extends AbstractTestCase {
         session.close();
     }
 
+    @Test(expected = NotfoundException.class)
+    public void testListNotfound() throws Exception {
+        final Profile profile = ProfileReaderFactory.get().read(
+                new Local("profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
+                properties.getProperty("irods.key"), properties.getProperty("irods.secret")
+        ));
+
+        final IRODSSession session = new IRODSSession(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path f = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final IRODSListService service = new IRODSListService(session);
+        service.list(f, new DisabledListProgressListener());
+    }
 }

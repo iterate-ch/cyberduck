@@ -24,6 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.Checksum;
 
 import org.apache.commons.io.filefilter.TrueFileFilter;
@@ -53,6 +54,9 @@ public class IRODSListService implements ListService {
             final AttributedList<Path> children = new AttributedList<Path>();
             final IRODSFileSystemAO fs = session.filesystem();
             final IRODSFile f = fs.getIRODSFileFactory().instanceIRODSFile(directory.getAbsolute());
+            if(!f.exists()) {
+                throw new NotfoundException(directory.getAbsolute());
+            }
             for(File file : fs.getListInDirWithFileFilter(f, TrueFileFilter.TRUE)) {
                 final String normalized = PathNormalizer.normalize(file.getAbsolutePath(), true);
                 if(StringUtils.equals(normalized, directory.getAbsolute())) {
