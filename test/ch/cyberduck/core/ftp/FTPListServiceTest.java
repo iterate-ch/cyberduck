@@ -20,12 +20,14 @@ package ch.cyberduck.core.ftp;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ListCanceledException;
+import ch.cyberduck.core.exception.NotfoundException;
 
 import org.junit.Test;
 
 import java.net.SocketTimeoutException;
 import java.util.EnumSet;
 import java.util.TimeZone;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
@@ -171,5 +173,18 @@ public class FTPListServiceTest extends AbstractTestCase {
         assertTrue(list.contains(
                 new Path(directory, "test", EnumSet.of(Path.Type.file))));
         service.list(directory, new DisabledListProgressListener());
+    }
+
+    @Test(expected = NotfoundException.class)
+    public void testListNotfound() throws Exception {
+        final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
+                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+        ));
+        final FTPSession session = new FTPSession(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path f = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final FTPListService service = new FTPListService(session, null, TimeZone.getDefault());
+        service.list(f, new DisabledListProgressListener());
     }
 }

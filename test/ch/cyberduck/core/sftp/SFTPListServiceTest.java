@@ -18,11 +18,13 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import org.junit.Test;
 
 import java.util.EnumSet;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -67,5 +69,18 @@ public class SFTPListServiceTest extends AbstractTestCase {
         assertTrue(list.contains(new Path(home, "notfound", EnumSet.of(Path.Type.file, Path.Type.symboliclink))));
         assertEquals(new Path(home, "test.symlink-invalid", EnumSet.of(Path.Type.file)),
                 list.get(new Path(home, "notfound", EnumSet.of(Path.Type.file, Path.Type.symboliclink))).getSymlinkTarget());
+    }
+
+    @Test(expected = NotfoundException.class)
+    public void testListNotfound() throws Exception {
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
+                properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
+        ));
+        final SFTPSession session = new SFTPSession(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path f = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final SFTPListService service = new SFTPListService(session);
+        service.list(f, new DisabledListProgressListener());
     }
 }
