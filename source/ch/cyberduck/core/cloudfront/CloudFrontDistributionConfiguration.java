@@ -337,10 +337,17 @@ public class CloudFrontDistributionConfiguration
             final List<String> keys = new ArrayList<String>();
             for(Path file : files) {
                 if(containerService.isContainer(file)) {
-                    keys.add(String.valueOf(Path.DELIMITER));
+                    // To invalidate all of the objects in a distribution
+                    keys.add(String.format("%s*", String.valueOf(Path.DELIMITER)));
                 }
                 else {
-                    keys.add(containerService.getKey(file));
+                    if(file.isDirectory()) {
+                        // The *, which replaces 0 or more characters, must be the last character in the invalidation path
+                        keys.add(String.format("%s*", containerService.getKey(file)));
+                    }
+                    else {
+                        keys.add(containerService.getKey(file));
+                    }
                 }
             }
             if(keys.isEmpty()) {

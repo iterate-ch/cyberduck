@@ -33,6 +33,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -218,5 +219,22 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
         assertNotNull(d.getFeature(DistributionLogging.class, Distribution.DOWNLOAD));
         assertNotNull(d.getFeature(Cname.class, Distribution.DOWNLOAD));
         assertNotNull(d.getFeature(IdentityConfiguration.class, Distribution.DOWNLOAD));
+    }
+
+    @Test
+    public void testInvalidateWithWildcards() throws Exception {
+        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
+        host.setCredentials(properties.getProperty("s3.key"), properties.getProperty("s3.secret"));
+        final S3Session session = new S3Session(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final CloudFrontDistributionConfiguration configuration
+                = new CloudFrontDistributionConfiguration(session);
+        final Path container = new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path directory = new Path("/test.cyberduck.ch/directory", EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        final Distribution distribution = configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginCallback());
+        assertEquals("E2N9XG26504TZI", distribution.getId());
+        configuration.invalidate(container, Distribution.DOWNLOAD, Collections.singletonList(container), new DisabledLoginCallback());
+        configuration.invalidate(container, Distribution.DOWNLOAD, Collections.singletonList(directory), new DisabledLoginCallback());
     }
 }

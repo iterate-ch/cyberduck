@@ -5,6 +5,7 @@ Changelog. Last modified: $Date$
 
 4.8 [https://trac.cyberduck.io/milestone/4.8]
 - [Feature] Support for authentication with Keystone v3 API (OpenStack Swift) (#8813)
+- [Feature] Invalidate multiple files using wildcards (CloudFront)
 - [Bugfix] Accessibility for blind users in Transfer window (VoiceOver) (#1343)
 - [Bugfix] Interoperability with Ceph S3 (#8779)
 - [Bugfix] Second level cache not invalidated when reloading browser (#8774)
