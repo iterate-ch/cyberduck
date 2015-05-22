@@ -20,7 +20,6 @@ package ch.cyberduck.core.transfer;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
@@ -49,7 +48,8 @@ import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
-import ch.cyberduck.core.transfer.copy.CopyTransferFilter;
+import ch.cyberduck.core.transfer.copy.ChecksumFilter;
+import ch.cyberduck.core.transfer.copy.OverwriteFilter;
 import ch.cyberduck.core.transfer.normalizer.CopyRootPathsNormalizer;
 import ch.cyberduck.core.transfer.symlink.DownloadSymlinkResolver;
 
@@ -78,39 +78,40 @@ public class CopyTransfer extends Transfer {
 
     private Session<?> destination;
 
-    private PathCache cache
-            = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
-
     /**
      * @param files Source to destination mapping
      */
-    public CopyTransfer(final Host host, final Host target, final Map<Path, Path> files) {
-        this(host, target, files,
+    public CopyTransfer(final Host source, final Host target, final Map<Path, Path> files) {
+        this(source, target, files,
                 new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(target)),
                 new KeychainX509KeyManager());
     }
 
-    public CopyTransfer(final Host host, final Host target, final Map<Path, Path> files,
+    public CopyTransfer(final Host source, final Host target, final Map<Path, Path> files,
                         final X509TrustManager trust, final X509KeyManager key) {
-        this(host, target, new CopyRootPathsNormalizer().normalize(files),
+        this(source, target, new CopyRootPathsNormalizer().normalize(files),
                 new BandwidthThrottle(PreferencesFactory.get().getFloat("queue.download.bandwidth.bytes")),
                 trust, key);
     }
 
-    private CopyTransfer(final Host host, final Host target,
-                         final Map<Path, Path> selected, final BandwidthThrottle bandwidth,
-                         final X509TrustManager trust, final X509KeyManager key) {
-        super(host, new ArrayList<TransferItem>(), bandwidth);
-        this.destination = SessionFactory.create(target, trust, key);
+    protected CopyTransfer(final Host source, final Host target,
+                           final Map<Path, Path> selected, final BandwidthThrottle bandwidth,
+                           final X509TrustManager trust, final X509KeyManager key) {
+        this(source, SessionFactory.create(target, trust, key), selected, bandwidth);
+    }
+
+    protected CopyTransfer(final Host source, final Session destination,
+                           final Map<Path, Path> selected, final BandwidthThrottle bandwidth) {
+        super(source, new ArrayList<TransferItem>(), bandwidth);
+        this.destination = destination;
         this.files = selected;
-        for(Path source : selected.keySet()) {
-            roots.add(new TransferItem(source));
+        for(Path s : selected.keySet()) {
+            roots.add(new TransferItem(s));
         }
     }
 
     @Override
     public Transfer withCache(final PathCache cache) {
-        this.cache = cache;
         return this;
     }
 
@@ -155,7 +156,20 @@ public class CopyTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Find transfer action for Resume=%s,Reload=%s", resumeRequested, reloadRequested));
         }
-        return TransferAction.overwrite;
+        if(resumeRequested) {
+            return TransferAction.comparison;
+        }
+        final TransferAction action;
+        if(reloadRequested) {
+            action = TransferAction.forName(
+                    PreferencesFactory.get().getProperty("queue.copy.reload.action"));
+        }
+        else {
+            // Use default
+            action = TransferAction.forName(
+                    PreferencesFactory.get().getProperty("queue.copy.action"));
+        }
+        return action;
     }
 
     @Override
@@ -163,7 +177,10 @@ public class CopyTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action));
         }
-        return new CopyTransferFilter(session, destination, files).withCache(cache);
+        if(action.equals(TransferAction.comparison)) {
+            return new ChecksumFilter(session, destination, files);
+        }
+        return new OverwriteFilter(session, destination, files);
     }
 
     @Override
@@ -180,7 +197,7 @@ public class CopyTransfer extends Transfer {
             return Collections.emptyList();
         }
         else {
-            final AttributedList<Path> list = session.list(directory, new DisabledListProgressListener());
+            final AttributedList<Path> list = session.list(directory, listener);
             final Path copy = files.get(directory);
             for(Path p : list) {
                 files.put(p, new Path(copy, p.getName(), p.getType(), p.attributes()));

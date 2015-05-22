@@ -411,11 +411,13 @@ public abstract class Preferences {
          */
         defaults.put("queue.download.action", TransferAction.callback.name());
         defaults.put("queue.upload.action", TransferAction.callback.name());
+        defaults.put("queue.copy.action", TransferAction.comparison.name());
         /**
          * When triggered manually using 'Reload' in the Transfer window
          */
         defaults.put("queue.download.reload.action", TransferAction.callback.name());
         defaults.put("queue.upload.reload.action", TransferAction.callback.name());
+        defaults.put("queue.copy.reload.action", TransferAction.comparison.name());
 
         defaults.put("queue.upload.permissions.change", String.valueOf(false));
         defaults.put("queue.upload.permissions.default", String.valueOf(false));

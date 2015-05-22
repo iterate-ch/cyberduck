@@ -47,6 +47,11 @@ public abstract class TransferAction {
                         TransferAction.upload,
                         TransferAction.mirror
                 );
+            case copy:
+                return Arrays.asList(
+                        TransferAction.overwrite,
+                        TransferAction.comparison
+                );
             default:
                 return Arrays.asList(
                         TransferAction.resume,

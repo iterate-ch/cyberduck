@@ -49,61 +49,59 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public class CopyTransferFilter implements TransferPathFilter {
-    private static final Logger log = Logger.getLogger(CopyTransferFilter.class);
+public abstract class AbstractCopyFilter implements TransferPathFilter {
+    private static final Logger log = Logger.getLogger(AbstractCopyFilter.class);
 
     private Session<?> destination;
 
-    private Find find;
+    protected Find find;
 
-    private Attributes attribute;
+    protected Attributes attribute;
 
     private AclPermission acl;
 
-    private final Map<Path, Path> files;
+    protected final Map<Path, Path> files;
 
     private UploadFilterOptions options;
 
-    public CopyTransferFilter(final Session<?> source, final Session<?> destination, final Map<Path, Path> files) {
+    public AbstractCopyFilter(final Session<?> source, final Session<?> destination, final Map<Path, Path> files) {
         this(source, destination, files, new UploadFilterOptions(),
                 new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size")));
     }
 
-    public CopyTransferFilter(final Session<?> source, final Session<?> destination,
+    public AbstractCopyFilter(final Session<?> source, final Session<?> destination,
                               final Map<Path, Path> files, final UploadFilterOptions options, final PathCache cache) {
         this.destination = destination;
         this.files = files;
         this.options = options;
-        this.find = new DefaultFindFeature(destination).withCache(cache);
+        // Find feature for target host
+        this.find = new DefaultFindFeature(destination).withCache(new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size")));
+        // Attribute feature for source host
         this.attribute = new DefaultAttributesFeature(source).withCache(cache);
         this.acl = source.getFeature(AclPermission.class);
     }
 
     @Override
     public TransferPathFilter withCache(final PathCache cache) {
+        // With cache from source host
         attribute.withCache(cache);
         return this;
     }
 
-    public CopyTransferFilter withFinder(final Find finder) {
+    public AbstractCopyFilter withFinder(final Find finder) {
         this.find = finder;
         return this;
     }
 
-    public CopyTransferFilter withAttributes(final Attributes attribute) {
+    public AbstractCopyFilter withAttributes(final Attributes attribute) {
         this.attribute = attribute;
         return this;
     }
 
     @Override
-    public boolean accept(final Path source, final Local local, final TransferStatus parent) throws BackgroundException {
-        return true;
-    }
-
-    @Override
     public TransferStatus prepare(final Path source, final Local local, final TransferStatus parent) throws BackgroundException {
         final TransferStatus status = new TransferStatus();
-        // Read remote attributes
+        // Read remote attributes from source
         final PathAttributes attributes = attribute.find(source);
         if(source.isFile()) {
             // Content length
@@ -124,6 +122,7 @@ public class CopyTransferFilter implements TransferPathFilter {
         if(parent.isExists()) {
             // Do not attempt to create a directory that already exists
             final Path destination = files.get(source);
+            // Look for file in target host
             if(find.find(destination)) {
                 status.setExists(true);
             }

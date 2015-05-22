@@ -26,9 +26,9 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.ftp.FTPProtocol;
+import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.TransferDictionary;
 import ch.cyberduck.core.sftp.SFTPProtocol;
-import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.test.NullSession;
 
 import org.junit.Test;
@@ -48,7 +48,7 @@ public class CopyTransferTest extends AbstractTestCase {
     public void testSerialize() throws Exception {
         final Path test = new Path("t", EnumSet.of(Path.Type.file));
         CopyTransfer t = new CopyTransfer(new Host(new SFTPProtocol(), "t"),
-                new Host(new FTPProtocol(), "t"), Collections.<Path, Path>singletonMap(test, new Path("d", EnumSet.of(Path.Type.file))));
+                new Host(new FTPProtocol(), "t"), Collections.singletonMap(test, new Path("d", EnumSet.of(Path.Type.file))));
         t.addSize(4L);
         t.addTransferred(3L);
         final Transfer serialized = new TransferDictionary().deserialize(t.serialize(SerializerFactory.get()));
@@ -64,8 +64,17 @@ public class CopyTransferTest extends AbstractTestCase {
     public void testAction() throws Exception {
         final Path test = new Path("t", EnumSet.of(Path.Type.file));
         CopyTransfer t = new CopyTransfer(new Host(new SFTPProtocol(), "t"),
-                new Host(new FTPProtocol(), "t"), Collections.<Path, Path>singletonMap(test, new Path("d", EnumSet.of(Path.Type.file))));
-        assertEquals(TransferAction.overwrite, t.action(new SFTPSession(new Host(new SFTPProtocol(), "t")), false, true, new DisabledTransferPrompt(), new DisabledListProgressListener()));
+                new NullSession(new Host(new FTPProtocol(), "t")),
+                Collections.singletonMap(test, new Path("d", EnumSet.of(Path.Type.file))), new BandwidthThrottle(BandwidthThrottle.UNLIMITED));
+        assertEquals(TransferAction.cancel, t.action(new NullSession(new Host(new SFTPProtocol(), "t")), false, true,
+                new DisabledTransferPrompt(), new DisabledListProgressListener()));
+        assertEquals(TransferAction.comparison, t.action(new NullSession(new Host(new SFTPProtocol(), "t")), false, true,
+                new DisabledTransferPrompt() {
+                    @Override
+                    public TransferAction prompt(final TransferItem file) {
+                        return TransferAction.comparison;
+                    }
+                }, new DisabledListProgressListener()));
     }
 
     @Test
@@ -81,7 +90,7 @@ public class CopyTransferTest extends AbstractTestCase {
                 return children;
             }
         };
-        assertEquals(Collections.<TransferItem>singletonList(new TransferItem(new Path("/s/c", EnumSet.of(Path.Type.file)))),
+        assertEquals(Collections.singletonList(new TransferItem(new Path("/s/c", EnumSet.of(Path.Type.file)))),
                 t.list(session, new Path("/s", EnumSet.of(Path.Type.directory)), null, new DisabledListProgressListener())
         );
     }
