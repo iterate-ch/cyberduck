@@ -59,17 +59,15 @@ public class IRODSDeleteFeature implements Delete {
             }
             listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"), file.getName()));
             try {
-                IRODSFile f = session.filesystem().getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
-                if(f.exists()) {
-                    if(f.isFile()) {
-                        session.filesystem().fileDeleteNoForce(f);
-                    }
-                    else if(f.isDirectory()) {
-                        session.filesystem().directoryDeleteNoForce(f);
-                    }
-                }
-                else {
+                final IRODSFile f = session.filesystem().getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
+                if(!f.exists()) {
                     throw new NotfoundException(String.format("%s doesn't exist", file.getAbsolute()));
+                }
+                if(f.isFile()) {
+                    session.filesystem().fileDeleteNoForce(f);
+                }
+                else if(f.isDirectory()) {
+                    session.filesystem().directoryDeleteNoForce(f);
                 }
             }
             catch(JargonException e) {

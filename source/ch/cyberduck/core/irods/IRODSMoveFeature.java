@@ -43,13 +43,11 @@ public class IRODSMoveFeature implements Move {
         try {
             final IRODSFileSystemAO fs = session.filesystem();
             final IRODSFile s = fs.getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
-            if(s.exists()) {
-                final IRODSFile d = fs.getIRODSFileFactory().instanceIRODSFile(renamed.getAbsolute());
-                s.renameTo(d);
-            }
-            else {
+            if(!s.exists()) {
                 throw new NotfoundException(String.format("%s doesn't exist", file.getAbsolute()));
             }
+            final IRODSFile d = fs.getIRODSFileFactory().instanceIRODSFile(renamed.getAbsolute());
+            s.renameTo(d);
         }
         catch(JargonException e) {
             throw new IRODSExceptionMappingService().map("Cannot rename {0}", e, file);
