@@ -71,11 +71,15 @@ public class DefaultPathReferenceTest extends AbstractTestCase {
     public void testIgnoreVolumeFlag() throws Exception {
         assertEquals(new DefaultPathReference(new Path("/container", EnumSet.of(Path.Type.directory, Path.Type.volume))),
                 new DefaultPathReference(new Path("/container", EnumSet.of(Path.Type.directory))));
+        assertEquals(new DefaultPathReference(new Path("/container", EnumSet.of(Path.Type.directory, Path.Type.volume))),
+                new DefaultPathReference(new Path("/container", EnumSet.of(Path.Type.directory, Path.Type.volume))));
     }
 
     @Test
     public void testIgnorePlaceholderFlag() throws Exception {
         assertEquals(new DefaultPathReference(new Path("/container/p", EnumSet.of(Path.Type.directory, Path.Type.placeholder))),
+                new DefaultPathReference(new Path("/container/p", EnumSet.of(Path.Type.directory))));
+        assertEquals(new DefaultPathReference(new Path("/container/p", EnumSet.of(Path.Type.directory))),
                 new DefaultPathReference(new Path("/container/p", EnumSet.of(Path.Type.directory))));
     }
 }
