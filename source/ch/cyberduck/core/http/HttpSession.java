@@ -169,9 +169,6 @@ public abstract class HttpSession<C> extends SSLSession<C> {
         super(host, trust, key);
         this.socketFactory = defaultSocketFactory;
         this.sslSocketFactory = sslSocketFactory;
-        // Always register HTTP for possible use with proxy. Contains a number of protocol properties such as the
-        // default port and the socket factory to be used to create the java.net.Socket instances for the given protocol
-        final Registry<ConnectionSocketFactory> registry = this.registry().build();
         // Use HTTP Connect proxy implementation provided here instead of
         // relying on internal proxy support in socket factory
         final Proxy proxy = proxyFinder.find(host);
@@ -189,9 +186,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
             }
             builder.setProxy(h);
         }
-        final HttpClientConnectionManager manager = this.pool(registry);
         builder.setUserAgent(new PreferencesUseragentProvider().get());
-        builder.setConnectionManager(manager);
         builder.setDefaultSocketConfig(SocketConfig.custom()
                 .setTcpNoDelay(true)
                 .setSoTimeout(this.timeout())
@@ -220,9 +215,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
         if(!preferences.getBoolean("http.compression.enable")) {
             builder.disableContentCompression();
         }
-        builder.setRequestExecutor(
-                new LoggingHttpRequestExecutor(this)
-        );
+        builder.setRequestExecutor(new LoggingHttpRequestExecutor(this));
         builder.setDefaultAuthSchemeRegistry(RegistryBuilder.<AuthSchemeProvider>create()
                 .register(AuthSchemes.BASIC, new BasicSchemeFactory(
                         Charset.forName(preferences.getProperty("http.credentials.charset"))))
@@ -235,6 +228,11 @@ public abstract class HttpSession<C> extends SSLSession<C> {
     }
 
     public HttpClientBuilder builder() {
+        // Always register HTTP for possible use with proxy. Contains a number of protocol properties such as the
+        // default port and the socket factory to be used to create the java.net.Socket instances for the given protocol
+        final Registry<ConnectionSocketFactory> registry = this.registry().build();
+        final HttpClientConnectionManager manager = this.pool(registry);
+        builder.setConnectionManager(manager);
         return builder;
     }
 
