@@ -31,7 +31,6 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.UseragentProvider;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
@@ -99,12 +98,10 @@ public class CloudFrontDistributionConfiguration
     private Map<Path, Distribution> cache
             = new HashMap<Path, Distribution>();
 
-    private UseragentProvider ua = new PreferencesUseragentProvider();
-
     public CloudFrontDistributionConfiguration(final S3Session session) {
         this.session = session;
         this.client = new CloudFrontService(
-                new AWSCredentials(null, null), ua.get(), null, this.configure()) {
+                new AWSCredentials(null, null), new PreferencesUseragentProvider().get(), null, this.configure()) {
             @Override
             public ProviderCredentials getAWSCredentials() {
                 return new AWSCredentials(session.getHost().getCredentials().getUsername(),
@@ -328,7 +325,7 @@ public class CloudFrontDistributionConfiguration
      * You can make any number of invalidation requests, but you can have only three invalidation requests
      * in progress at one time. Each request can contain up to 1,000 objects to invalidate. If you
      * exceed these limits, you get an error message.
-     * <p/>
+     * <p>
      * It usually takes 10 to 15 minutes to complete your invalidation request, depending on
      * the size of your request.
      */
