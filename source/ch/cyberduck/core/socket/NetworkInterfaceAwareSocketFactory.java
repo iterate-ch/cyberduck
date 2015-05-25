@@ -81,7 +81,7 @@ public class NetworkInterfaceAwareSocketFactory extends DefaultSocketFactory {
                 if(endpoint instanceof InetSocketAddress) {
                     final InetSocketAddress address = (InetSocketAddress) endpoint;
                     if(address.getAddress() instanceof Inet6Address) {
-                        final NetworkInterface network = findIPv6Interface();
+                        final NetworkInterface network = findIPv6Interface((Inet6Address) address.getAddress());
                         if(null != network) {
                             super.connect(new InetSocketAddress(
                                     NetworkInterfaceAwareSocketFactory.this.getByAddressForInterface(network, address.getAddress()),
@@ -103,7 +103,7 @@ public class NetworkInterfaceAwareSocketFactory extends DefaultSocketFactory {
     @Override
     public Socket createSocket(final InetAddress address, final int port, final InetAddress localAddr, final int localPort) throws IOException {
         if(address instanceof Inet6Address) {
-            final NetworkInterface network = this.findIPv6Interface();
+            final NetworkInterface network = this.findIPv6Interface((Inet6Address) address);
             if(null == network) {
                 return super.createSocket(address, port, localAddr, localPort);
             }
@@ -123,7 +123,7 @@ public class NetworkInterfaceAwareSocketFactory extends DefaultSocketFactory {
     @Override
     public Socket createSocket(final InetAddress address, final int port) throws IOException {
         if(address instanceof Inet6Address) {
-            final NetworkInterface network = this.findIPv6Interface();
+            final NetworkInterface network = this.findIPv6Interface((Inet6Address) address);
             if(null == network) {
                 return super.createSocket(address, port);
             }
@@ -145,10 +145,16 @@ public class NetworkInterfaceAwareSocketFactory extends DefaultSocketFactory {
                 IPAddressUtil.textToNumericFormatV6(address.getHostAddress()), network.getIndex());
     }
 
-    private NetworkInterface findIPv6Interface() throws IOException {
+    private NetworkInterface findIPv6Interface(Inet6Address address) throws IOException {
         if(blacklisted.isEmpty()) {
             if(log.isDebugEnabled()) {
                 log.debug("Ignore IP6 default network interface setup with empty blacklist");
+            }
+            return null;
+        }
+        if(address.getScopeId() != 0) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Ignore IP6 default network interface setup for address with scope identifier %d", address.getScopeId()));
             }
             return null;
         }

@@ -37,8 +37,19 @@ import static org.junit.Assert.*;
 public class NetworkInterfaceAwareSocketFactoryTest extends AbstractTestCase {
 
     @Test
+    public void testFindWithExplicitInterfaceZoneId() throws Exception {
+        final Socket socket = new NetworkInterfaceAwareSocketFactory(Arrays.<String>asList("awdl0", "utun0"))
+                .createSocket(InetAddress.getByName("::1%awdl0"), 22);
+        assertNotNull(socket);
+        assertTrue(socket.getInetAddress() instanceof Inet6Address);
+        assertEquals(((Inet6Address) socket.getInetAddress()).getScopeId(),
+                NetworkInterface.getByName("awdl0").getIndex());
+    }
+
+    @Test
     public void testFindEn0DefaultWithInetAddress() throws Exception {
-        final Socket socket = new NetworkInterfaceAwareSocketFactory(Arrays.<String>asList("awdl0")).createSocket(InetAddress.getByName("::1"), 22);
+        final Socket socket = new NetworkInterfaceAwareSocketFactory(Arrays.<String>asList("awdl0", "utun0"))
+                .createSocket(InetAddress.getByName("::1"), 22);
         assertNotNull(socket);
         assertTrue(socket.getInetAddress() instanceof Inet6Address);
         assertEquals(((Inet6Address) socket.getInetAddress()).getScopeId(),
@@ -47,7 +58,8 @@ public class NetworkInterfaceAwareSocketFactoryTest extends AbstractTestCase {
 
     @Test
     public void testFindEn0DefaultWithHostname() throws Exception {
-        final Socket socket = new NetworkInterfaceAwareSocketFactory(Arrays.<String>asList("awdl0")).createSocket("::1", 22);
+        final Socket socket = new NetworkInterfaceAwareSocketFactory(Arrays.<String>asList("awdl0", "utun0"))
+                .createSocket("::1", 22);
         assertNotNull(socket);
         assertTrue(socket.getInetAddress() instanceof Inet6Address);
         assertEquals(((Inet6Address) socket.getInetAddress()).getScopeId(),
@@ -58,7 +70,7 @@ public class NetworkInterfaceAwareSocketFactoryTest extends AbstractTestCase {
     @Ignore
     @Test
     public void testFindEn0DefaultWithUnknownHost() throws Exception {
-        final Socket socket = new NetworkInterfaceAwareSocketFactory(Arrays.<String>asList("awdl0")).createSocket();
+        final Socket socket = new NetworkInterfaceAwareSocketFactory(Arrays.<String>asList("awdl0", "utun0")).createSocket();
         assertNotNull(socket);
         assertNull(socket.getInetAddress());
         socket.connect(new InetSocketAddress("ftp6.netbsd.org", 22), 0);
