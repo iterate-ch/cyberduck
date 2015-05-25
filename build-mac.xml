@@ -136,7 +136,7 @@
                   value="${build.xcodeoptions} VERSION=${version} REVISION=${revision} SPARKLEFEED='https://version.cyberduck.io/${app.update.feed}/changelog.rss' COPYRIGHT='${copyright}'"/>
         <echo message="Build settings ${build.settings} for feed ${app.update.feed}"/>
         <exec dir="${home}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
-            <arg line="--verbose xcodebuild -project ${app.name}.xcodeproj -configuration Release -target app ${build.settings}"/>
+            <arg line="--verbose xcodebuild -project '${app.name}.xcodeproj' -configuration Release -target app ${build.settings}"/>
         </exec>
         <antcall target="_dependencies">
             <param name="bundle" value="${app.bundle}"/>
@@ -148,7 +148,7 @@
         <property name="build.settings"
                   value="MACOSX_DEPLOYMENT_TARGET=${app.runtime.system.min} VERSION=${version} REVISION=${revision} COPYRIGHT='${copyright}'"/>
         <exec dir="${home}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
-            <arg line="--verbose xcodebuild -project ${app.name}.xcodeproj -configuration Release -target cli ${build.settings}"/>
+            <arg line="--verbose xcodebuild -project '${app.name}.xcodeproj' -configuration Release -target cli ${build.settings}"/>
         </exec>
         <copy todir="${cli.bundle}/${bundle.frameworks}">
             <!-- Dynamic libraries built with xcodebuild -->
@@ -413,14 +413,14 @@
     <target name="verify-signature">
         <echo message="Print codesign requirement for ${bundle}..."/>
         <exec executable="/usr/bin/codesign" failonerror="true">
-            <arg line="-d -r- --deep-verify ${bundle}"/>
+            <arg line="-d -r- --deep-verify '${bundle}'"/>
         </exec>
     </target>
 
     <target name="verify-spctl">
         <echo message="Print system policy verification for ${bundle}..."/>
         <exec executable="/usr/sbin/spctl" failonerror="true">
-            <arg line="-v --assess --type execute ${bundle}"/>
+            <arg line="-v --assess --type execute '${bundle}'"/>
         </exec>
     </target>
 
