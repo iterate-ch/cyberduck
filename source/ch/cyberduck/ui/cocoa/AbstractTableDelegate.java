@@ -192,7 +192,12 @@ public abstract class AbstractTableDelegate<E> extends ProxyController implement
     }
 
     public boolean tableView_shouldTypeSelectForEvent_withCurrentSearchString(
-            NSTableView tableView, NSEvent event, String searchString) {
+            final NSTableView view, final NSEvent event, final String searchString) {
+        return this.isTypeSelectSupported();
+    }
+
+    public boolean outlineView_shouldTypeSelectForEvent_withCurrentSearchString(
+            final NSOutlineView view, final NSEvent event, final String searchString) {
         return this.isTypeSelectSupported();
     }
 
