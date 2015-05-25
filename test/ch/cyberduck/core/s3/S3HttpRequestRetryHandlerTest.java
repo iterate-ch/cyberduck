@@ -25,11 +25,6 @@ public class S3HttpRequestRetryHandlerTest extends AbstractTestCase {
     public void testRetryRequest() throws Exception {
         final S3HttpRequestRetryHandler h = new S3HttpRequestRetryHandler(new JetS3tRequestAuthorizer() {
             @Override
-            public void authorizeHttpRequest(final HttpUriRequest httpMethod, final HttpContext context) throws ServiceException {
-                //
-            }
-
-            @Override
             public void authorizeHttpRequest(final HttpUriRequest httpUriRequest, final HttpContext httpContext, final String s) throws ServiceException {
                 //
             }
