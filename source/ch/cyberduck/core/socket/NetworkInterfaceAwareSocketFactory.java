@@ -76,6 +76,9 @@ public class NetworkInterfaceAwareSocketFactory extends DefaultSocketFactory {
     public Socket createSocket(final InetAddress address, final int port) throws IOException {
         if(address instanceof Inet6Address) {
             if(blacklisted.isEmpty()) {
+                if(log.isDebugEnabled()) {
+                    log.debug("Ignore IP6 default network interface setup with empty blacklist");
+                }
                 return super.createSocket(address, port);
             }
             // If we find an interface name en0 that supports IPv6 make it the default.
@@ -90,16 +93,24 @@ public class NetworkInterfaceAwareSocketFactory extends DefaultSocketFactory {
             }
             for(Integer index : indexes) {
                 final NetworkInterface n = NetworkInterface.getByIndex(index);
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Evaluate interface with %s index %d", n, index));
+                }
                 if(!n.isUp()) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Ignore interface %s not up", n));
+                    }
                     continue;
                 }
                 if(blacklisted.contains(n.getName())) {
-                    log.warn(String.format("Ignore network interface %s", n));
+                    log.warn(String.format("Ignore network interface %s disabled with blacklist", n));
                     continue;
                 }
                 for(InterfaceAddress i : n.getInterfaceAddresses()) {
                     if(i.getAddress() instanceof Inet6Address) {
-                        log.info(String.format("Selected network interface %s", n));
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("Selected network interface %s", n));
+                        }
                         // Append network interface. Workaround for issue #8802
                         return super.createSocket(Inet6Address.getByAddress(address.getHostAddress(),
                                 IPAddressUtil.textToNumericFormatV6(address.getHostAddress()), n.getIndex()), port);
