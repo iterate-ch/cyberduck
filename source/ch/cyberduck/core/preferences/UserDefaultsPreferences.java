@@ -62,6 +62,7 @@ import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.core.urlhandler.LaunchServicesSchemeHandler;
 import ch.cyberduck.ui.browser.Column;
 import ch.cyberduck.ui.cocoa.AlertHostKeyController;
+import ch.cyberduck.ui.cocoa.CopyPromptController;
 import ch.cyberduck.ui.cocoa.DownloadPromptController;
 import ch.cyberduck.ui.cocoa.PromptLoginController;
 import ch.cyberduck.ui.cocoa.SyncPromptController;
@@ -285,6 +286,7 @@ public class UserDefaultsPreferences extends Preferences {
         defaults.put("factory.transfererrorcallback.class", AlertTransferErrorCallback.class.getName());
         defaults.put("factory.transferpromptcallback.download.class", DownloadPromptController.class.getName());
         defaults.put("factory.transferpromptcallback.upload.class", UploadPromptController.class.getName());
+        defaults.put("factory.transferpromptcallback.copy.class", CopyPromptController.class.getName());
         defaults.put("factory.transferpromptcallback.sync.class", SyncPromptController.class.getName());
         defaults.put("factory.proxy.class", SystemConfigurationProxy.class.getName());
         defaults.put("factory.sleeppreventer.class", IOKitSleepPreventer.class.getName());

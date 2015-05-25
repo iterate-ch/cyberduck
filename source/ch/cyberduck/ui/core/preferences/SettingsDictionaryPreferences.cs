@@ -362,6 +362,8 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
                 typeof (DownloadPromptController).AssemblyQualifiedName);
             defaults.put("factory.transferpromptcallback.upload.class",
                 typeof (UploadPromptController).AssemblyQualifiedName);
+            defaults.put("factory.transferpromptcallback.copy.class",
+                typeof (UploadPromptController).AssemblyQualifiedName);
             defaults.put("factory.transferpromptcallback.sync.class",
                 typeof (SyncPromptController).AssemblyQualifiedName);
             defaults.put("factory.proxy.class", typeof (SystemProxy).AssemblyQualifiedName);
