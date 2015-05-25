@@ -52,7 +52,7 @@ public class S3HttpRequestRetryHandler extends ExtendedHttpRequestRetryHandler {
                 log.warn(String.format("Retrying request %s", method));
                 try {
                     // Build the authorization string for the method.
-                    authorizer.authorizeHttpRequest(method, context);
+                    authorizer.authorizeHttpRequest(method, context, null);
                     return true;
                 }
                 catch(ServiceException e) {
