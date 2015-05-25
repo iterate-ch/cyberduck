@@ -130,7 +130,7 @@ public class ProxySocketFactoryTest extends AbstractTestCase {
 
     // We have no IPv6 in the test environment
     @Test(expected = NoRouteToHostException.class)
-    public void testCreateSocketIPv6Only() throws Exception {
+    public void testCreateSocketIPv6OnlyWithInetAddress() throws Exception {
         for(String address : Arrays.asList("ftp6.netbsd.org")) {
             final Socket socket = new ProxySocketFactory(ProtocolFactory.FTP, new TrustManagerHostnameCallback() {
                 @Override
@@ -146,6 +146,32 @@ public class ProxySocketFactoryTest extends AbstractTestCase {
                 }
             }).withBlacklistedNetworkInterfaces(Arrays.asList("awdl0")).createSocket(address, 21);
             assertNotNull(socket);
+            assertTrue(socket.getInetAddress() instanceof Inet6Address);
+        }
+    }
+
+    // We have no IPv6 in the test environment
+    @Test(expected = NoRouteToHostException.class)
+    public void testCreateSocketIPv6OnlyUnknownDestination() throws Exception {
+        for(String address : Arrays.asList("ftp6.netbsd.org")) {
+            final Socket socket = new ProxySocketFactory(ProtocolFactory.FTP, new TrustManagerHostnameCallback() {
+                @Override
+                public String getTarget() {
+                    return "ftp6.netbsd.org";
+                }
+            }, new SocketConfigurator() {
+                @Override
+                public void configure(final Socket socket) throws IOException {
+                    // Not yet connected
+                    assertNull(socket.getInetAddress());
+                }
+            }).withBlacklistedNetworkInterfaces(Arrays.asList("awdl0")).createSocket();
+            assertNotNull(socket);
+            assertNull(socket.getInetAddress());
+            socket.connect(new InetSocketAddress(address, 21), 0);
+            assertTrue(socket.getInetAddress() instanceof Inet6Address);
+            assertEquals(((Inet6Address) socket.getInetAddress()).getScopeId(),
+                    ((Inet6Address) InetAddress.getByName("::1%en0")).getScopeId());
             assertTrue(socket.getInetAddress() instanceof Inet6Address);
         }
     }

@@ -23,6 +23,7 @@ import org.junit.Test;
 
 import java.net.Inet6Address;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.Socket;
 import java.util.Arrays;
@@ -47,6 +48,17 @@ public class NetworkInterfaceAwareSocketFactoryTest extends AbstractTestCase {
     public void testFindEn0DefaultWithHostname() throws Exception {
         final Socket socket = new NetworkInterfaceAwareSocketFactory(Arrays.<String>asList("awdl0")).createSocket("::1", 22);
         assertNotNull(socket);
+        assertTrue(socket.getInetAddress() instanceof Inet6Address);
+        assertEquals(((Inet6Address) socket.getInetAddress()).getScopeId(),
+                NetworkInterface.getByName("en0").getIndex());
+    }
+
+    @Test
+    public void testFindEn0DefaultWithUnknownHost() throws Exception {
+        final Socket socket = new NetworkInterfaceAwareSocketFactory(Arrays.<String>asList("awdl0")).createSocket();
+        assertNotNull(socket);
+        assertNull(socket.getInetAddress());
+        socket.connect(new InetSocketAddress("ftp6.netbsd.org", 22), 0);
         assertTrue(socket.getInetAddress() instanceof Inet6Address);
         assertEquals(((Inet6Address) socket.getInetAddress()).getScopeId(),
                 NetworkInterface.getByName("en0").getIndex());
