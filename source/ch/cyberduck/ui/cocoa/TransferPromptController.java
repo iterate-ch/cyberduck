@@ -273,31 +273,33 @@ public abstract class TransferPromptController extends SheetController
                     localModificationField.setStringValue(StringUtils.EMPTY);
                 }
                 else {
-                    final TransferItem file = cache.lookup(new NSObjectPathReference(
+                    final TransferItem item = cache.lookup(new NSObjectPathReference(
                             browserView.itemAtRow(browserView.selectedRow())));
-                    localURLField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                            file.local.getAbsolute(),
-                            TRUNCATE_MIDDLE_ATTRIBUTES));
-                    if(file.local.attributes().getSize() == -1) {
-                        localSizeField.setAttributedStringValue(UNKNOWN_STRING);
-                    }
-                    else {
-                        localSizeField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                                SizeFormatterFactory.get().format(file.local.attributes().getSize()),
+                    if(item.local != null) {
+                        localURLField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
+                                item.local.getAbsolute(),
                                 TRUNCATE_MIDDLE_ATTRIBUTES));
-                    }
-                    if(file.local.attributes().getModificationDate() == -1) {
-                        localModificationField.setAttributedStringValue(UNKNOWN_STRING);
-                    }
-                    else {
-                        localModificationField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                                UserDateFormatterFactory.get().getLongFormat(file.local.attributes().getModificationDate()),
-                                TRUNCATE_MIDDLE_ATTRIBUTES));
+                        if(item.local.attributes().getSize() == -1) {
+                            localSizeField.setAttributedStringValue(UNKNOWN_STRING);
+                        }
+                        else {
+                            localSizeField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
+                                    SizeFormatterFactory.get().format(item.local.attributes().getSize()),
+                                    TRUNCATE_MIDDLE_ATTRIBUTES));
+                        }
+                        if(item.local.attributes().getModificationDate() == -1) {
+                            localModificationField.setAttributedStringValue(UNKNOWN_STRING);
+                        }
+                        else {
+                            localModificationField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
+                                    UserDateFormatterFactory.get().getLongFormat(item.local.attributes().getModificationDate()),
+                                    TRUNCATE_MIDDLE_ATTRIBUTES));
+                        }
                     }
                     remoteURLField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                            new DefaultUrlProvider(transfer.getHost()).toUrl(file.remote).find(DescriptiveUrl.Type.provider).getUrl(),
+                            new DefaultUrlProvider(transfer.getHost()).toUrl(item.remote).find(DescriptiveUrl.Type.provider).getUrl(),
                             TRUNCATE_MIDDLE_ATTRIBUTES));
-                    final TransferStatus status = browserModel.getStatus(file);
+                    final TransferStatus status = browserModel.getStatus(item);
                     if(status.getRemote().getSize() == -1) {
                         remoteSizeField.setAttributedStringValue(UNKNOWN_STRING);
                     }

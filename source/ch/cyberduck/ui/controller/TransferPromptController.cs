@@ -159,23 +159,26 @@ namespace Ch.Cyberduck.Ui.Controller
                 TransferItem selected = View.SelectedItem;
                 if (null != selected)
                 {
-                    View.LocalFileUrl = selected.local.getAbsolute();
-                    if (selected.local.attributes().getSize() == -1)
+                    if (null != selected.local)
                     {
-                        View.LocalFileSize = UnknownString;
-                    }
-                    else
-                    {
-                        View.LocalFileSize = SizeFormatterFactory.get().format(selected.local.attributes().getSize());
-                    }
-                    if (selected.local.attributes().getModificationDate() == -1)
-                    {
-                        View.LocalFileModificationDate = UnknownString;
-                    }
-                    else
-                    {
-                        View.LocalFileModificationDate =
-                            UserDateFormatterFactory.get().getLongFormat(selected.local.attributes().getModificationDate());
+                        View.LocalFileUrl = selected.local.getAbsolute();
+                        if (selected.local.attributes().getSize() == -1)
+                        {
+                            View.LocalFileSize = UnknownString;
+                        }
+                        else
+                        {
+                            View.LocalFileSize = SizeFormatterFactory.get().format(selected.local.attributes().getSize());
+                        }
+                        if (selected.local.attributes().getModificationDate() == -1)
+                        {
+                            View.LocalFileModificationDate = UnknownString;
+                        }
+                        else
+                        {
+                            View.LocalFileModificationDate =
+                                UserDateFormatterFactory.get().getLongFormat(selected.local.attributes().getModificationDate());
+                        }
                     }
                     View.RemoteFileUrl =
                         new DefaultUrlProvider(Transfer.getHost()).toUrl(selected.remote)
