@@ -55,11 +55,6 @@ public class FTPListService implements ListService {
 
     private FTPSession session;
 
-    /**
-     * Directory listing parser depending on response for SYST command
-     */
-    private CompositeFileEntryParser parser;
-
     protected Map<Command, ListService> implementations
             = new HashMap<Command, ListService>();
 
@@ -72,11 +67,11 @@ public class FTPListService implements ListService {
         private FTPCmd command;
         private String arg;
 
-        private Command(FTPCmd command) {
+        Command(FTPCmd command) {
             this(command, null);
         }
 
-        private Command(FTPCmd command, String arg) {
+        Command(FTPCmd command, String arg) {
             this.command = command;
             this.arg = arg;
         }
@@ -101,7 +96,8 @@ public class FTPListService implements ListService {
 
     public FTPListService(final FTPSession session, final String system, final TimeZone zone) {
         this.session = session;
-        this.parser = new FTPParserSelector().getParser(system, zone);
+        // Directory listing parser depending on response for SYST command
+        final CompositeFileEntryParser parser = new FTPParserSelector().getParser(system, zone);
         this.implementations.put(Command.list, new FTPDefaultListService(session, parser, Command.list));
         if(PreferencesFactory.get().getBoolean("ftp.command.stat")) {
             if(StringUtils.isNotBlank(system)) {
@@ -137,10 +133,7 @@ public class FTPListService implements ListService {
                     try {
                         return this.post(directory, implementations.get(Command.mlsd).list(directory, listener));
                     }
-                    catch(InteroperabilityException e) {
-                        this.remove(Command.mlsd);
-                    }
-                    catch(FTPInvalidListException e) {
+                    catch(InteroperabilityException | FTPInvalidListException e) {
                         this.remove(Command.mlsd);
                     }
                 }
@@ -152,10 +145,7 @@ public class FTPListService implements ListService {
                 try {
                     return this.post(directory, implementations.get(Command.stat).list(directory, listener));
                 }
-                catch(FTPInvalidListException e) {
-                    this.remove(Command.stat);
-                }
-                catch(InteroperabilityException e) {
+                catch(FTPInvalidListException | InteroperabilityException e) {
                     this.remove(Command.stat);
                 }
                 catch(BackgroundException e) {
