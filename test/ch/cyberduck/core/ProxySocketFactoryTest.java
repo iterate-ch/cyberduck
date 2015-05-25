@@ -29,13 +29,11 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.net.ConnectException;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
-import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Arrays;
@@ -90,6 +88,7 @@ public class ProxySocketFactoryTest extends AbstractTestCase {
     }
 
     @Test
+    @Ignore
     public void testConnectIPv6LocalAddress() throws Exception {
         for(String address : Arrays.asList("fe80::c62c:3ff:fe0b:8670")) {
             final Socket socket = new ProxySocketFactory(ProtocolFactory.SFTP, new TrustManagerHostnameCallback() {
@@ -103,7 +102,7 @@ public class ProxySocketFactoryTest extends AbstractTestCase {
         }
     }
 
-    @Test(expected = ConnectException.class)
+    @Test(expected = SocketException.class)
     public void testCreateSocketIPv6LocalAddressConnectionRefused() throws Exception {
         for(String address : Arrays.asList("fe80::9272:40ff:fe02:c363")) {
             final Socket socket = new ProxySocketFactory(ProtocolFactory.SFTP, new TrustManagerHostnameCallback() {
@@ -129,7 +128,8 @@ public class ProxySocketFactoryTest extends AbstractTestCase {
     }
 
     // We have no IPv6 in the test environment
-    @Test(expected = NoRouteToHostException.class)
+    @Ignore
+    @Test
     public void testCreateSocketIPv6OnlyWithInetAddress() throws Exception {
         for(String address : Arrays.asList("ftp6.netbsd.org")) {
             final Socket socket = new ProxySocketFactory(ProtocolFactory.FTP, new TrustManagerHostnameCallback() {
@@ -142,7 +142,7 @@ public class ProxySocketFactoryTest extends AbstractTestCase {
                 public void configure(final Socket socket) throws IOException {
                     assertTrue(socket.getInetAddress() instanceof Inet6Address);
                     assertEquals(((Inet6Address) socket.getInetAddress()).getScopeId(),
-                            ((Inet6Address) InetAddress.getByName("::1%en0")).getScopeId());
+                            ((Inet6Address) InetAddress.getByName("::1%en0")).getScopedInterface().getIndex());
                 }
             }).withBlacklistedNetworkInterfaces(Arrays.asList("awdl0")).createSocket(address, 21);
             assertNotNull(socket);
@@ -151,7 +151,8 @@ public class ProxySocketFactoryTest extends AbstractTestCase {
     }
 
     // We have no IPv6 in the test environment
-    @Test(expected = NoRouteToHostException.class)
+    @Ignore
+    @Test
     public void testCreateSocketIPv6OnlyUnknownDestination() throws Exception {
         for(String address : Arrays.asList("ftp6.netbsd.org")) {
             final Socket socket = new ProxySocketFactory(ProtocolFactory.FTP, new TrustManagerHostnameCallback() {
@@ -171,7 +172,7 @@ public class ProxySocketFactoryTest extends AbstractTestCase {
             socket.connect(new InetSocketAddress(address, 21), 0);
             assertTrue(socket.getInetAddress() instanceof Inet6Address);
             assertEquals(((Inet6Address) socket.getInetAddress()).getScopeId(),
-                    ((Inet6Address) InetAddress.getByName("::1%en0")).getScopeId());
+                    ((Inet6Address) InetAddress.getByName("::1%en0")).getScopedInterface().getIndex());
             assertTrue(socket.getInetAddress() instanceof Inet6Address);
         }
     }
@@ -182,7 +183,8 @@ public class ProxySocketFactoryTest extends AbstractTestCase {
         assertNotNull(loopback);
         assertTrue(loopback.isLoopbackAddress());
         assertTrue(loopback instanceof Inet6Address);
-        assertEquals(NetworkInterface.getByName("en0").getIndex(), ((Inet6Address) loopback).getScopeId());
+        assertEquals(NetworkInterface.getByName("en0").getIndex(),
+                ((Inet6Address) loopback).getScopedInterface().getIndex());
     }
 
     @Test
