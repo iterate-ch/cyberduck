@@ -18,7 +18,6 @@ package ch.cyberduck.core.socket;
  */
 
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.proxy.ProxySocketFactory;
 
 import org.apache.commons.net.DefaultSocketFactory;
 import org.apache.log4j.Logger;
@@ -39,7 +38,7 @@ import sun.net.util.IPAddressUtil;
  * Override default network interface for IPv6 to en0 instead of awdl0 set in <code>java.net.DefaultInterface#getDefault()</code>.
  */
 public class NetworkInterfaceAwareSocketFactory extends DefaultSocketFactory {
-    private static final Logger log = Logger.getLogger(ProxySocketFactory.class);
+    private static final Logger log = Logger.getLogger(NetworkInterfaceAwareSocketFactory.class);
 
     private List<String> blacklisted;
 
