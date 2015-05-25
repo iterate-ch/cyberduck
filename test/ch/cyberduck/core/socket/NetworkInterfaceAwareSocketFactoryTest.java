@@ -25,6 +25,7 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
+import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.util.Arrays;
 
@@ -53,7 +54,8 @@ public class NetworkInterfaceAwareSocketFactoryTest extends AbstractTestCase {
                 NetworkInterface.getByName("en0").getIndex());
     }
 
-    @Test
+    // We have no IPv6 in the test environment
+    @Test(expected = NoRouteToHostException.class)
     public void testFindEn0DefaultWithUnknownHost() throws Exception {
         final Socket socket = new NetworkInterfaceAwareSocketFactory(Arrays.<String>asList("awdl0")).createSocket();
         assertNotNull(socket);
