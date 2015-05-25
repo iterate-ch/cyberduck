@@ -2,7 +2,7 @@ package ch.cyberduck.core.udt;
 
 /*
  * Copyright (c) 2002-2015 David Kocher. All rights reserved.
- * http://cyberduck.io/
+ * http://cyberduck.ch/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,14 +14,15 @@ package ch.cyberduck.core.udt;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * Bug fixes, suggestions and comments should be sent to:
- * feedback@cyberduck.io
+ * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
 /**
  * @version $Id$
  */
-public interface UDTCallback {
-
-    void socketCreated(UDTSocket socket);
+public class DisabledUDTSocketCallback implements UDTSocketCallback {
+    @Override
+    public void socketCreated(UDTSocket socket) {
+        //
+    }
 }

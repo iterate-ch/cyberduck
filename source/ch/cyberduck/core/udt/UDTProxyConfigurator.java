@@ -26,8 +26,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.http.DisabledX509HostnameVerifier;
 import ch.cyberduck.core.http.HttpConnectionPoolBuilder;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.preferences.TemporaryApplicationResourcesFinder;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.socket.DefaultSocketConfigurator;
@@ -52,7 +51,6 @@ import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
 import org.apache.http.impl.conn.DefaultSchemePortResolver;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpRequestExecutor;
@@ -71,9 +69,6 @@ import com.barchart.udt.ResourceUDT;
 public class UDTProxyConfigurator implements TrustManagerHostnameCallback {
     private static final Logger log = Logger.getLogger(UDTProxyConfigurator.class);
 
-    private Preferences preferences
-            = PreferencesFactory.get();
-
     private Location.Name location;
 
     /**
@@ -85,17 +80,14 @@ public class UDTProxyConfigurator implements TrustManagerHostnameCallback {
 
     private X509KeyManager key;
 
-    private UDTCallback callback;
-
-    private SocketConfigurator configurator
-            = new DefaultSocketConfigurator();
+    private UDTSocketCallback callback;
 
     public UDTProxyConfigurator(final Location.Name location, final UDTProxyProvider provider) {
         this.location = location;
         this.provider = provider;
         this.trust = new KeychainX509TrustManager(this);
         this.key = new KeychainX509KeyManager();
-        this.callback = new DisabledUDTCallback();
+        this.callback = new DisabledUDTSocketCallback();
     }
 
     public UDTProxyConfigurator(final Location.Name location, final UDTProxyProvider provider,
@@ -104,7 +96,7 @@ public class UDTProxyConfigurator implements TrustManagerHostnameCallback {
         this.provider = provider;
         this.trust = trust;
         this.key = new KeychainX509KeyManager();
-        this.callback = new DisabledUDTCallback();
+        this.callback = new DisabledUDTSocketCallback();
     }
 
     public UDTProxyConfigurator(final Location.Name location, final UDTProxyProvider provider,
@@ -113,12 +105,12 @@ public class UDTProxyConfigurator implements TrustManagerHostnameCallback {
         this.provider = provider;
         this.trust = trust;
         this.key = key;
-        this.callback = new DisabledUDTCallback();
+        this.callback = new DisabledUDTSocketCallback();
     }
 
     public UDTProxyConfigurator(final Location.Name location, final UDTProxyProvider provider,
                                 final X509TrustManager trust, final X509KeyManager key,
-                                final UDTCallback callback) {
+                                final UDTSocketCallback callback) {
         this.location = location;
         this.provider = provider;
         this.trust = trust;
@@ -138,49 +130,134 @@ public class UDTProxyConfigurator implements TrustManagerHostnameCallback {
     /**
      * Configure the HTTP Session to proxy through UDT
      */
-    public void configure(final Host host, final TranscriptListener listener) throws BackgroundException {
+    public void configure(final HttpSession session, final TranscriptListener listener) throws BackgroundException {
         // Add X-Qloudsonic-* headers
         final List<Header> headers = provider.headers();
         if(log.isInfoEnabled()) {
             log.info(String.format("Obtained headers %s fro provider %s", headers, provider));
         }
         // Run through secured proxy only if direct connection has transport security
-        final Host proxy = provider.find(location, host.getProtocol().isSecure());
-        final HttpClientBuilder builder = new HttpConnectionPoolBuilder(host, trust, key, new DisabledProxyFinder()).build(listener);
-        builder.setRequestExecutor(
-                new HttpRequestExecutor() {
-                    @Override
-                    public HttpResponse execute(final HttpRequest request, final HttpClientConnection conn, final HttpContext context) throws IOException, HttpException {
-                        for(Header h : headers) {
-                            request.addHeader(new BasicHeader(h.getName(), h.getValue()));
-                        }
-                        return super.execute(request, conn, context);
-                    }
-                }
-        );
-        builder.setRoutePlanner(new DefaultProxyRoutePlanner(
-                new HttpHost(proxy.getHostname(), proxy.getPort(), proxy.getProtocol().getScheme().name()),
-                new DefaultSchemePortResolver()));
-        final RegistryBuilder<ConnectionSocketFactory> registry = RegistryBuilder.create();
-        if(proxy.getProtocol().isSecure()) {
-            registry.register(proxy.getProtocol().getScheme().toString(), new SSLConnectionSocketFactory(
-                    new CustomTrustSSLProtocolSocketFactory(trust, key),
-                    new DisabledX509HostnameVerifier() {
-                        @Override
-                        public boolean verify(final String host, final javax.net.ssl.SSLSession sslSession) {
-                            if(trust instanceof ThreadLocalHostnameDelegatingTrustManager) {
-                                ((ThreadLocalHostnameDelegatingTrustManager) trust).setTarget(host);
+        final Host proxy = provider.find(location, session.getHost().getProtocol().isSecure());
+        final HttpConnectionPoolBuilder builder
+                = new UDTHttpConnectionPoolBuilder(session.getHost(), proxy, headers, trust, key, callback);
+        // Inject connection builder into session
+        session.setBuilder(builder);
+    }
+
+    private static final class CustomHeaderHttpRequestExecutor extends HttpRequestExecutor {
+        private final List<Header> headers;
+
+        public CustomHeaderHttpRequestExecutor(final List<Header> headers) {
+            this.headers = headers;
+        }
+
+        @Override
+        public HttpResponse execute(final HttpRequest request, final HttpClientConnection conn, final HttpContext context) throws IOException, HttpException {
+            for(Header h : headers) {
+                request.addHeader(new BasicHeader(h.getName(), h.getValue()));
+            }
+            return super.execute(request, conn, context);
+        }
+    }
+
+    private static final class UDTHttpConnectionPoolBuilder extends HttpConnectionPoolBuilder {
+
+        private SocketConfigurator configurator
+                = new DefaultSocketConfigurator();
+
+        private final Host proxy;
+
+        private X509TrustManager trust;
+
+        private X509KeyManager key;
+
+        private UDTSocketCallback callback;
+
+        private List<Header> headers;
+
+        public UDTHttpConnectionPoolBuilder(final Host host, final Host proxy, final List<Header> headers,
+                                            final X509TrustManager trust, final X509KeyManager key,
+                                            final UDTSocketCallback callback) {
+            super(host, trust, key, new DisabledProxyFinder());
+            this.proxy = proxy;
+            this.trust = trust;
+            this.key = key;
+            this.callback = callback;
+        }
+
+        @Override
+        public HttpClientBuilder build(final TranscriptListener listener) {
+            final HttpClientBuilder builder = super.build(listener);
+            // Add filter to inject custom headers to authenticate with proxy
+            builder.setRequestExecutor(
+                    new CustomHeaderHttpRequestExecutor(headers)
+            );
+            // Set proxy router planer
+            builder.setRoutePlanner(new DefaultProxyRoutePlanner(
+                    new HttpHost(proxy.getHostname(), proxy.getPort(), proxy.getProtocol().getScheme().name()),
+                    new DefaultSchemePortResolver()));
+            return builder;
+        }
+
+        @Override
+        protected RegistryBuilder<ConnectionSocketFactory> registry() {
+            final RegistryBuilder<ConnectionSocketFactory> registry = RegistryBuilder.create();
+            if(proxy.getProtocol().isSecure()) {
+                registry.register(proxy.getProtocol().getScheme().toString(), new SSLConnectionSocketFactory(
+                        new CustomTrustSSLProtocolSocketFactory(trust, key),
+                        new DisabledX509HostnameVerifier() {
+                            @Override
+                            public boolean verify(final String host, final javax.net.ssl.SSLSession sslSession) {
+                                if(trust instanceof ThreadLocalHostnameDelegatingTrustManager) {
+                                    ((ThreadLocalHostnameDelegatingTrustManager) trust).setTarget(host);
+                                }
+                                return true;
                             }
-                            return true;
                         }
+
+                ) {
+                    @Override
+                    public Socket createSocket(final HttpContext context) throws IOException {
+                        final UDTSocket socket = new UDTSocket();
+                        configurator.configure(socket);
+                        callback.socketCreated(socket);
+                        return socket;
                     }
+
+                    @Override
+                    public Socket connectSocket(final int connectTimeout,
+                                                final Socket socket,
+                                                final HttpHost host,
+                                                final InetSocketAddress remoteAddress,
+                                                final InetSocketAddress localAddress,
+                                                final HttpContext context) throws IOException {
+                        if(trust instanceof ThreadLocalHostnameDelegatingTrustManager) {
+                            ((ThreadLocalHostnameDelegatingTrustManager) trust).setTarget(remoteAddress.getHostName());
+                        }
+                        return super.connectSocket(connectTimeout, socket, host, remoteAddress, localAddress, context);
+                    }
+                });
+            }
+            else {
+                registry.register(proxy.getProtocol().getScheme().toString(), new PlainConnectionSocketFactory() {
+                    @Override
+                    public Socket createSocket(final HttpContext context) throws IOException {
+                        final UDTSocket socket = new UDTSocket();
+                        configurator.configure(socket);
+                        callback.socketCreated(socket);
+                        return socket;
+                    }
+                });
+            }
+            registry.register(Scheme.https.toString(), new SSLConnectionSocketFactory(
+                    new CustomTrustSSLProtocolSocketFactory(trust, key),
+                    new DisabledX509HostnameVerifier()
 
             ) {
                 @Override
-                public Socket createSocket(final HttpContext context) throws IOException {
-                    final UDTSocket socket = new UDTSocket();
+                public Socket createSocket(HttpContext context) throws IOException {
+                    final Socket socket = super.createSocket(context);
                     configurator.configure(socket);
-                    callback.socketCreated(socket);
                     return socket;
                 }
 
@@ -197,46 +274,7 @@ public class UDTProxyConfigurator implements TrustManagerHostnameCallback {
                     return super.connectSocket(connectTimeout, socket, host, remoteAddress, localAddress, context);
                 }
             });
+            return registry;
         }
-        else {
-            registry.register(proxy.getProtocol().getScheme().toString(), new PlainConnectionSocketFactory() {
-                @Override
-                public Socket createSocket(final HttpContext context) throws IOException {
-                    final UDTSocket socket = new UDTSocket();
-                    configurator.configure(socket);
-                    callback.socketCreated(socket);
-                    return socket;
-                }
-            });
-        }
-        registry.register(Scheme.https.toString(), new SSLConnectionSocketFactory(
-                new CustomTrustSSLProtocolSocketFactory(trust, key),
-                new DisabledX509HostnameVerifier()
-
-        ) {
-            @Override
-            public Socket createSocket(HttpContext context) throws IOException {
-                final Socket socket = super.createSocket(context);
-                configurator.configure(socket);
-                return socket;
-            }
-
-            @Override
-            public Socket connectSocket(final int connectTimeout,
-                                        final Socket socket,
-                                        final HttpHost host,
-                                        final InetSocketAddress remoteAddress,
-                                        final InetSocketAddress localAddress,
-                                        final HttpContext context) throws IOException {
-                if(trust instanceof ThreadLocalHostnameDelegatingTrustManager) {
-                    ((ThreadLocalHostnameDelegatingTrustManager) trust).setTarget(remoteAddress.getHostName());
-                }
-                return super.connectSocket(connectTimeout, socket, host, remoteAddress, localAddress, context);
-            }
-        });
-        final PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager(registry.build());
-        manager.setMaxTotal(preferences.getInteger("http.connections.total"));
-        manager.setDefaultMaxPerRoute(preferences.getInteger("http.connections.route"));
-        builder.setConnectionManager(manager);
     }
 }

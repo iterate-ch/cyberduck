@@ -52,6 +52,9 @@ public abstract class HttpSession<C> extends SSLSession<C> {
         this.builder = new HttpConnectionPoolBuilder(host, trust, key, ProxyFactory.get(), socketFactory);
     }
 
+    public void setBuilder(final HttpConnectionPoolBuilder builder) {
+        this.builder = builder;
+    }
 
     @Override
     public <T> T getFeature(Class<T> type) {
