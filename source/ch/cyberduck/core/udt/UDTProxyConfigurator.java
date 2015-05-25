@@ -180,6 +180,7 @@ public class UDTProxyConfigurator implements TrustManagerHostnameCallback {
                                             final UDTSocketCallback callback) {
             super(host, trust, key, new DisabledProxyFinder());
             this.proxy = proxy;
+            this.headers = headers;
             this.trust = trust;
             this.key = key;
             this.callback = callback;
