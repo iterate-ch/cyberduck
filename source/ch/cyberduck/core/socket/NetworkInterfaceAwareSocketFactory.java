@@ -82,8 +82,7 @@ public class NetworkInterfaceAwareSocketFactory extends DefaultSocketFactory {
                             super.connect(new InetSocketAddress(
                                     NetworkInterfaceAwareSocketFactory.this.getByAddressForInterface(network, address.getAddress()),
                                     address.getPort()), timeout);
-
-
+                            return;
                         }
                     }
                 }
