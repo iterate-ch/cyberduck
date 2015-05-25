@@ -266,7 +266,7 @@ public class UserDefaultsPreferences extends Preferences {
 
         defaults.put("browser.sort.column", Column.filename.name());
 
-        defaults.put("network.interface.blacklist", "awdl0");
+        defaults.put("network.interface.blacklist", "awdl0,utun0");
     }
 
     @Override
