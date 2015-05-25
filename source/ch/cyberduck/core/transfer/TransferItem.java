@@ -41,7 +41,7 @@ public class TransferItem implements Referenceable, Serializable {
     }
 
     public TransferItem getParent() {
-        return new TransferItem(remote.getParent(), local.getParent());
+        return new TransferItem(remote.getParent(), null == local ? null : local.getParent());
     }
 
     @Override
