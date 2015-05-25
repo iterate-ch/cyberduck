@@ -24,6 +24,8 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
 import org.jets3t.service.CloudFrontService;
 import org.jets3t.service.CloudFrontServiceException;
@@ -48,14 +50,15 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
     public void testGetMethods() throws Exception {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
         assertEquals(Arrays.asList(Distribution.DOWNLOAD, Distribution.STREAMING),
-                new CloudFrontDistributionConfiguration(session).getMethods(new Path("/bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))));
+                new CloudFrontDistributionConfiguration(session,
+                        new DisabledX509TrustManager(), new DefaultX509KeyManager()).getMethods(new Path("/bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))));
     }
 
     @Test
     public void testGetName() throws Exception {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
         final DistributionConfiguration configuration = new CloudFrontDistributionConfiguration(
-                session);
+                session, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertEquals("Amazon CloudFront", configuration.getName());
         assertEquals("Amazon CloudFront", configuration.getName(Distribution.CUSTOM));
     }
@@ -64,7 +67,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
     public void testGetOrigin() throws Exception {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
         final CloudFrontDistributionConfiguration configuration
-                = new CloudFrontDistributionConfiguration(session);
+                = new CloudFrontDistributionConfiguration(session, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertEquals("bbb.s3.amazonaws.com",
                 configuration.getOrigin(new Path("/bbb", EnumSet.of(Path.Type.directory, Path.Type.volume)), Distribution.DOWNLOAD).getHost());
     }
@@ -77,7 +80,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final DistributionConfiguration configuration
-                = new CloudFrontDistributionConfiguration(session);
+                = new CloudFrontDistributionConfiguration(session, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Distribution distribution = configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginCallback());
         assertEquals("E2N9XG26504TZI", distribution.getId());
@@ -97,7 +100,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final DistributionConfiguration configuration
-                = new CloudFrontDistributionConfiguration(session);
+                = new CloudFrontDistributionConfiguration(session, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Distribution distribution = configuration.read(container, Distribution.STREAMING, new DisabledLoginCallback());
         assertEquals("EB86EC8N0TBBE", distribution.getId());
@@ -112,7 +115,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
         final S3Session session = new S3Session(host);
         final DistributionConfiguration configuration
-                = new CloudFrontDistributionConfiguration(session);
+                = new CloudFrontDistributionConfiguration(session, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginCallback());
     }
@@ -132,7 +135,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
         host.getCredentials().setPassword(null);
         assertNull(host.getCredentials().getPassword());
         final DistributionConfiguration configuration
-                = new CloudFrontDistributionConfiguration(session);
+                = new CloudFrontDistributionConfiguration(session, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final AtomicBoolean set = new AtomicBoolean();
         configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginCallback() {
@@ -154,7 +157,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final DistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session) {
+        final DistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session, new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
             @Override
             protected void updateDistribution(final Distribution current, final CloudFrontService client, final Path container, final Distribution distribution, final LoggingStatus logging) throws CloudFrontServiceException, IOException, ConnectionCanceledException {
                 set.set(true);
@@ -179,7 +182,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final DistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session) {
+        final DistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session, new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
             @Override
             protected void updateDistribution(final Distribution current, final CloudFrontService client, final Path container, final Distribution distribution, final LoggingStatus logging) throws CloudFrontServiceException, IOException, ConnectionCanceledException {
                 fail();
@@ -199,14 +202,16 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
     @Test
     public void testProtocol() {
         assertEquals("cloudfront.amazonaws.com", new CloudFrontDistributionConfiguration(
-                new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()))
+                new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname())),
+                new DisabledX509TrustManager(), new DefaultX509KeyManager()
         ).getHostname());
     }
 
     @Test
     public void testFeatures() {
         final CloudFrontDistributionConfiguration d = new CloudFrontDistributionConfiguration(
-                new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()))
+                new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname())),
+                new DisabledX509TrustManager(), new DefaultX509KeyManager()
         );
         assertNotNull(d.getFeature(Purge.class, Distribution.DOWNLOAD));
         assertNotNull(d.getFeature(Purge.class, Distribution.WEBSITE_CDN));
@@ -229,7 +234,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final CloudFrontDistributionConfiguration configuration
-                = new CloudFrontDistributionConfiguration(session);
+                = new CloudFrontDistributionConfiguration(session, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final Path container = new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path directory = new Path("/test.cyberduck.ch/directory", EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         final Distribution distribution = configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginCallback());

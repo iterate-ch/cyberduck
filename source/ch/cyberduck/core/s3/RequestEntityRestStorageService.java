@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.http.HttpConnectionPoolBuilder;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -62,6 +63,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
 
     public RequestEntityRestStorageService(final S3Session session,
                                            final Jets3tProperties configuration,
+                                           final HttpConnectionPoolBuilder pool,
                                            final TranscriptListener listener) {
         super(session.getHost().getCredentials().isAnonymousLogin() ? null :
                         new AWSCredentials(null, null) {
@@ -77,7 +79,8 @@ public class RequestEntityRestStorageService extends RestS3Service {
                         },
                 new PreferencesUseragentProvider().get(), null, configuration);
         this.session = session;
-        final HttpClientBuilder builder = session.builder();
+        // Always inject new pool to builder on connect because the pool is shutdown on disconnect
+        final HttpClientBuilder builder = pool.build(listener);
         builder.disableContentCompression();
         builder.setRetryHandler(new S3HttpRequestRetryHandler(this, preferences.getInteger("http.connections.retry")));
         this.setHttpClient(builder.build());

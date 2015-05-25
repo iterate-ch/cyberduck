@@ -67,7 +67,7 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
                                                            final TranscriptListener transcript) {
         // Configure with the same host as S3 to get the same credentials from the keychain.
         super(new S3Session(new Host(ProtocolFactory.S3_SSL,
-                ProtocolFactory.S3_SSL.getDefaultHostname(), origin.getCdnCredentials()), trust, key));
+                ProtocolFactory.S3_SSL.getDefaultHostname(), origin.getCdnCredentials()), trust, key), trust, key);
         this.origin = origin;
         this.transcript = transcript;
     }

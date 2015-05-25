@@ -21,13 +21,15 @@ package ch.cyberduck.core.udt;
 import ch.cyberduck.core.Header;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.http.DisabledX509HostnameVerifier;
-import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.http.HttpConnectionPoolBuilder;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.TemporaryApplicationResourcesFinder;
+import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.socket.DefaultSocketConfigurator;
 import ch.cyberduck.core.socket.SocketConfigurator;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
@@ -136,15 +138,15 @@ public class UDTProxyConfigurator implements TrustManagerHostnameCallback {
     /**
      * Configure the HTTP Session to proxy through UDT
      */
-    public void configure(final HttpSession session) throws BackgroundException {
+    public void configure(final Host host, final TranscriptListener listener) throws BackgroundException {
         // Add X-Qloudsonic-* headers
         final List<Header> headers = provider.headers();
         if(log.isInfoEnabled()) {
             log.info(String.format("Obtained headers %s fro provider %s", headers, provider));
         }
         // Run through secured proxy only if direct connection has transport security
-        final Host proxy = provider.find(location, session.getHost().getProtocol().isSecure());
-        final HttpClientBuilder builder = session.builder();
+        final Host proxy = provider.find(location, host.getProtocol().isSecure());
+        final HttpClientBuilder builder = new HttpConnectionPoolBuilder(host, trust, key, new DisabledProxyFinder()).build(listener);
         builder.setRequestExecutor(
                 new HttpRequestExecutor() {
                     @Override

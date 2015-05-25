@@ -67,8 +67,6 @@ import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
 import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.security.ProviderCredentials;
 
-import javax.net.SocketFactory;
-
 /**
  * @version $Id$
  */
@@ -98,10 +96,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
 
     public S3Session(final Host host, final X509TrustManager trust, final X509KeyManager key, final ProxyFinder proxy) {
         super(host, trust, key, proxy);
-    }
-
-    public S3Session(final Host host, final X509TrustManager trust, final X509KeyManager key, final SocketFactory socketFactory) {
-        super(host, trust, key, socketFactory);
     }
 
     @Override
@@ -200,7 +194,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
 
     @Override
     public RequestEntityRestStorageService connect(final HostKeyCallback key) throws BackgroundException {
-        return new RequestEntityRestStorageService(this, this.configure(), this);
+        return new RequestEntityRestStorageService(this, this.configure(), builder, this);
     }
 
     @Override
@@ -347,7 +341,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         if(type == DistributionConfiguration.class) {
             if(null == cdn) {
-                cdn = new WebsiteCloudFrontDistributionConfiguration(S3Session.this);
+                cdn = new WebsiteCloudFrontDistributionConfiguration(S3Session.this, trust, key);
             }
             return (T) cdn;
         }

@@ -80,7 +80,7 @@ public class UDTProxyConfiguratorTest extends AbstractTestCase {
                     }
                 });
         final S3Session tunneled = new S3Session(host);
-        proxy.configure(tunneled);
+        proxy.configure(host, new DisabledTranscriptListener());
         try {
             assertNotNull(tunneled.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
             tunneled.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(),
@@ -103,7 +103,7 @@ public class UDTProxyConfiguratorTest extends AbstractTestCase {
         final UDTProxyConfigurator proxy = new UDTProxyConfigurator(new S3LocationFeature.S3Region("ap-northeast-1"),
                 new QloudsonicProxyProvider());
         final S3Session tunneled = new S3Session(host);
-        proxy.configure(tunneled);
+        proxy.configure(host, new DisabledTranscriptListener());
         tunneled.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
     }
 
@@ -135,7 +135,7 @@ public class UDTProxyConfiguratorTest extends AbstractTestCase {
             }
         });
         final S3Session tunneled = new S3Session(host);
-        proxy.configure(tunneled);
+        proxy.configure(host, new DisabledTranscriptListener());
         assertNotNull(tunneled.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         tunneled.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(),
                 PathCache.empty());
@@ -156,7 +156,7 @@ public class UDTProxyConfiguratorTest extends AbstractTestCase {
                     }
                 });
         final S3Session tunneled = new S3Session(host);
-        proxy.configure(tunneled);
+        proxy.configure(host, new DisabledTranscriptListener());
         assertNotNull(tunneled.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         assertTrue(tunneled.isConnected());
 
@@ -190,7 +190,7 @@ public class UDTProxyConfiguratorTest extends AbstractTestCase {
         final UDTProxyConfigurator proxy = new UDTProxyConfigurator(new S3LocationFeature.S3Region("ap-northeast-1"),
                 new LocalhostProxyProvider());
         final S3Session tunneled = new S3Session(host);
-        proxy.configure(tunneled);
+        proxy.configure(host, new DisabledTranscriptListener());
         assertNotNull(tunneled.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         tunneled.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(),
                 PathCache.empty());
@@ -207,7 +207,7 @@ public class UDTProxyConfiguratorTest extends AbstractTestCase {
         final UDTProxyConfigurator proxy = new UDTProxyConfigurator(new S3LocationFeature.S3Region("ap-northeast-1"),
                 new LocalhostProxyProvider());
         final S3Session tunneled = new S3Session(host);
-        proxy.configure(tunneled);
+        proxy.configure(host, new DisabledTranscriptListener());
         assertNotNull(tunneled.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         assertTrue(tunneled.isConnected());
         tunneled.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(),
@@ -258,7 +258,7 @@ public class UDTProxyConfiguratorTest extends AbstractTestCase {
         final UDTProxyConfigurator proxy = new UDTProxyConfigurator(new S3LocationFeature.S3Region("ap-northeast-1"),
                 new LocalhostProxyProvider());
         final S3Session tunneled = new S3Session(host);
-        proxy.configure(tunneled);
+        proxy.configure(host, new DisabledTranscriptListener());
         assertNotNull(tunneled.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         assertTrue(tunneled.isConnected());
         tunneled.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(),

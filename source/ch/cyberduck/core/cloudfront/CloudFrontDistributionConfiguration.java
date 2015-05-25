@@ -43,11 +43,15 @@ import ch.cyberduck.core.cdn.features.Purge;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.http.HttpConnectionPoolBuilder;
 import ch.cyberduck.core.iam.AmazonIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.s3.S3BucketListService;
 import ch.cyberduck.core.s3.S3Session;
+import ch.cyberduck.core.ssl.X509KeyManager;
+import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.HttpClient;
@@ -98,7 +102,7 @@ public class CloudFrontDistributionConfiguration
     private Map<Path, Distribution> cache
             = new HashMap<Path, Distribution>();
 
-    public CloudFrontDistributionConfiguration(final S3Session session) {
+    public CloudFrontDistributionConfiguration(final S3Session session, final X509TrustManager trust, final X509KeyManager key) {
         this.session = session;
         this.client = new CloudFrontService(
                 new AWSCredentials(null, null), new PreferencesUseragentProvider().get(), null, this.configure()) {
@@ -110,7 +114,7 @@ public class CloudFrontDistributionConfiguration
 
             @Override
             protected HttpClient initHttpConnection() {
-                return session.builder().build();
+                return new HttpConnectionPoolBuilder(session.getHost(), trust, key, ProxyFactory.get()).build(session).build();
             }
         };
     }

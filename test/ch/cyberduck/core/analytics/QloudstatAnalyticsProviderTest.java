@@ -8,6 +8,8 @@ import ch.cyberduck.core.cloudfront.CloudFrontDistributionConfiguration;
 import ch.cyberduck.core.gstorage.GoogleStorageProtocol;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -43,7 +45,8 @@ public class QloudstatAnalyticsProviderTest extends AbstractTestCase {
         QloudstatAnalyticsProvider q = new QloudstatAnalyticsProvider();
         Assert.assertEquals("https://qloudstat.com/configuration/add?setup=cHJvdmlkZXI9Y2xvdWRmcm9udC5hbWF6b25hd3MuY29tLHByb3RvY29sPXJ0bXAsZW5kcG9pbnQ9Y3liZXJkdWNrLXRlc3Rpbmcsa2V5PXFsb3Vkc3RhdCxzZWNyZXQ9c2VjcmV0",
                 q.getSetup(new CloudFrontDistributionConfiguration(
-                        new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()))
+                        new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname())),
+                        new DisabledX509TrustManager(), new DefaultX509KeyManager()
                 ).getHostname(), Scheme.rtmp, "cyberduck-testing", new Credentials("qloudstat", "secret")).getUrl());
     }
 }
