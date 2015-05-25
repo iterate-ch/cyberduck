@@ -35,8 +35,17 @@ import static org.junit.Assert.*;
 public class NetworkInterfaceAwareSocketFactoryTest extends AbstractTestCase {
 
     @Test
-    public void testFindEn0Default() throws Exception {
+    public void testFindEn0DefaultWithInetAddress() throws Exception {
         final Socket socket = new NetworkInterfaceAwareSocketFactory(Arrays.<String>asList("awdl0")).createSocket(InetAddress.getByName("::1"), 22);
+        assertNotNull(socket);
+        assertTrue(socket.getInetAddress() instanceof Inet6Address);
+        assertEquals(((Inet6Address) socket.getInetAddress()).getScopeId(),
+                NetworkInterface.getByName("en0").getIndex());
+    }
+
+    @Test
+    public void testFindEn0DefaultWithHostname() throws Exception {
+        final Socket socket = new NetworkInterfaceAwareSocketFactory(Arrays.<String>asList("awdl0")).createSocket("::1", 22);
         assertNotNull(socket);
         assertTrue(socket.getInetAddress() instanceof Inet6Address);
         assertEquals(((Inet6Address) socket.getInetAddress()).getScopeId(),
