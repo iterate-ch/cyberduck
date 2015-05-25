@@ -28,6 +28,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
+import java.net.Proxy;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.UnknownHostException;
@@ -42,6 +43,8 @@ import sun.net.util.IPAddressUtil;
  */
 public class NetworkInterfaceAwareSocketFactory extends DefaultSocketFactory {
     private static final Logger log = Logger.getLogger(NetworkInterfaceAwareSocketFactory.class);
+
+    private final Proxy proxy;
 
     private List<String> blacklisted;
 
@@ -67,11 +70,12 @@ public class NetworkInterfaceAwareSocketFactory extends DefaultSocketFactory {
     public NetworkInterfaceAwareSocketFactory(final List<String> blacklisted, final java.net.Proxy proxy) {
         super(proxy);
         this.blacklisted = blacklisted;
+        this.proxy = null == proxy ? Proxy.NO_PROXY : proxy;
     }
 
     @Override
     public Socket createSocket() throws IOException {
-        return new Socket() {
+        return new Socket(proxy) {
             @Override
             public void connect(final SocketAddress endpoint, final int timeout) throws IOException {
                 if(endpoint instanceof InetSocketAddress) {
