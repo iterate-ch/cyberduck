@@ -2528,9 +2528,9 @@ public class BrowserController extends WindowController
                 alertText.append(String.format("\n%s ...)", Character.toString('\u2022')));
             }
             final NSAlert alert = NSAlert.alert(
-                    rename ? LocaleFactory.localizedString("Rename") : LocaleFactory.localizedString("Move"), //title
+                    rename ? LocaleFactory.localizedString("Rename", "Transfer") : LocaleFactory.localizedString("Move", "Transfer"), //title
                     alertText.toString(),
-                    rename ? LocaleFactory.localizedString("Rename") : LocaleFactory.localizedString("Move"), // default button
+                    rename ? LocaleFactory.localizedString("Rename", "Transfer") : LocaleFactory.localizedString("Move", "Transfer"), // default button
                     LocaleFactory.localizedString("Cancel"), //alternative button
                     null //other button
             );

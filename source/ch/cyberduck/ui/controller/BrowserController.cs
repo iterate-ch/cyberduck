@@ -2691,10 +2691,10 @@ namespace Ch.Cyberduck.Ui.Controller
                     content.Append("\n" + Character.toString('\u2022') + " ...)");
                 }
                 bool result = false;
-                CommandBox(rename ? LocaleFactory.localizedString("Rename") : LocaleFactory.localizedString("Move"),
+                CommandBox(rename ? LocaleFactory.localizedString("Rename", "Transfer") : LocaleFactory.localizedString("Move", "Transfer"),
                     alertText.ToString(), content.ToString(),
                     String.Format("{0}",
-                        rename ? LocaleFactory.localizedString("Rename") : LocaleFactory.localizedString("Move")), true,
+                        rename ? LocaleFactory.localizedString("Rename", "Transfer") : LocaleFactory.localizedString("Move", "Transfer")), true,
                     LocaleFactory.localizedString("Don't ask again", "Configuration"), SysIcons.Question,
                     delegate(int option, bool verificationChecked)
                     {
