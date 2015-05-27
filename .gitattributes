@@ -2085,7 +2085,7 @@ lib/sshj-0.11.0.jar -text
 lib/sunec.dll -text
 lib/sunmscapi.dll -text
 lib/sunmscapi.jar -text
-lib/swift-2.2.jar -text svneol=unset#application/zip
+lib/swift-2.3.jar -text
 lv.lproj/Alert.strings -text svneol=unset#text/utf-16
 lv.lproj/Archive.strings -text svneol=unset#text/utf-16
 lv.lproj/Azure.strings -text svneol=unset#text/utf-16
