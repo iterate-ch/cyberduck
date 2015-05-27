@@ -1026,7 +1026,7 @@ public abstract class Preferences {
         final URL configuration;
         final String file = defaults.get("logging.config");
         if(null == file) {
-            configuration = Preferences.class.getClassLoader().getResource("log4j-cli.xml");
+            configuration = Preferences.class.getClassLoader().getResource("log4j-default.xml");
         }
         else {
             configuration = Preferences.class.getClassLoader().getResource(file);
