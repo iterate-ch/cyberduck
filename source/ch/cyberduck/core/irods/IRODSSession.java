@@ -97,20 +97,26 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
         return client;
     }
 
+    protected String getRegion() {
+        if(StringUtils.contains(host.getRegion(), ':')) {
+            return StringUtils.splitPreserveAllTokens(host.getRegion(), ':')[0];
+        }
+        return host.getRegion();
+    }
+
+    protected String getResource() {
+        if(StringUtils.contains(host.getRegion(), ':')) {
+            return StringUtils.splitPreserveAllTokens(host.getRegion(), ':')[1];
+        }
+        return StringUtils.EMPTY;
+    }
+
     @Override
     public void login(final PasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
                       final Cache<Path> cache) throws BackgroundException {
         try {
-            final String region;
-            final String resource;
-            if(StringUtils.contains(host.getRegion(), ':')) {
-                region = StringUtils.splitPreserveAllTokens(host.getRegion(), ':')[0];
-                resource = StringUtils.splitPreserveAllTokens(host.getRegion(), ':')[1];
-            }
-            else {
-                region = host.getRegion();
-                resource = StringUtils.EMPTY;
-            }
+            final String region = this.getRegion();
+            final String resource = this.getResource();
             final IRODSAccount account = IRODSAccount.instance(host.getHostname(), host.getPort(),
                     host.getCredentials().getUsername(), host.getCredentials().getPassword(),
                     this.workdir().getAbsolute(), region, resource);
@@ -189,7 +195,7 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
     @Override
     public Path workdir() {
         return new Path(new StringBuilder()
-                .append(Path.DELIMITER).append(host.getRegion())
+                .append(Path.DELIMITER).append(this.getRegion())
                 .append(Path.DELIMITER).append("home")
                 .append(Path.DELIMITER).append(host.getCredentials().getUsername())
                 .toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
