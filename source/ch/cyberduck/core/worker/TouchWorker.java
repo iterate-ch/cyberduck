@@ -44,7 +44,11 @@ public class TouchWorker extends Worker<Path> {
         final Touch feature = session.getFeature(Touch.class);
         feature.touch(file);
         return file;
+    }
 
+    @Override
+    public Path initialize() {
+        return file;
     }
 
     @Override
