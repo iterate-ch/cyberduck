@@ -30,12 +30,12 @@ public interface SandboxBookmarkResolver<B> {
      * @param file File outside of sandbox
      * @return Reference to file by bookmark
      */
-    public B resolve(Local file) throws AccessDeniedException;
+    B resolve(Local file) throws AccessDeniedException;
 
     /**
      * @param file File outside of sandbox
      * @return Security scoped bookmark
      * @throws AccessDeniedException
      */
-    public String create(Local file) throws AccessDeniedException;
+    String create(Local file) throws AccessDeniedException;
 }
