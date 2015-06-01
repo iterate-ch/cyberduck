@@ -104,7 +104,7 @@ public class FolderController extends FileController {
         final BrowserController c = (BrowserController) this.parent;
         final Path folder = new Path(parent, filename, EnumSet.of(Path.Type.directory));
         c.background(new WorkerBackgroundAction<Path>(c, c.getSession(), c.getCache(),
-                new CreateDirectoryWorker(c.getSession(), folder) {
+                new CreateDirectoryWorker(c.getSession(), folder, hasLocation() ? regionPopup.selectedItem().representedObject() : null) {
                     @Override
                     public void cleanup(final Path folder) {
                         if(filename.charAt(0) == '.') {
