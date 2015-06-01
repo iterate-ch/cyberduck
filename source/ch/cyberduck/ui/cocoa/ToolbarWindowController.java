@@ -147,11 +147,11 @@ public abstract class ToolbarWindowController extends WindowController implement
         super.invalidate();
     }
 
-    private String windowTitle;
+    private String title;
 
     @Override
     public void setWindow(final NSWindow window) {
-        windowTitle = window.title();
+        this.title = window.title();
         window.setShowsToolbarButton(false);
         super.setWindow(window);
     }
@@ -271,7 +271,7 @@ public abstract class ToolbarWindowController extends WindowController implement
     }
 
     protected void setTitle(final String title) {
-        window.setTitle(String.format("%s – %s", windowTitle, title));
+        window.setTitle(String.format("%s – %s", this.title, title));
     }
 
     protected double getMinWindowHeight() {
