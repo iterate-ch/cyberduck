@@ -26,6 +26,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @version $Id$
@@ -81,6 +82,15 @@ public class ThreadPool {
                 log.info(String.format("Shutdown pool %s now", pool));
             }
             pool.shutdownNow();
+        }
+    }
+
+    public void await(long timeout, TimeUnit unit) {
+        try {
+            pool.awaitTermination(timeout, unit);
+        }
+        catch(InterruptedException e) {
+            log.warn(e.getMessage());
         }
     }
 
