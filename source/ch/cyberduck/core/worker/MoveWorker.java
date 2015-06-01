@@ -52,6 +52,9 @@ public class MoveWorker extends Worker<Boolean> {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
+            if(!feature.isSupported(entry.getKey())) {
+                continue;
+            }
             feature.move(entry.getKey(), entry.getValue(), false, listener);
         }
         return true;
