@@ -37,7 +37,7 @@ public final class PanelReturnCodeMapper {
      * @see SheetCallback#DEFAULT_OPTION
      * @see SheetCallback#CANCEL_OPTION
      */
-    protected int getOption(final NSButton sender) {
+    public int getOption(final NSButton sender) {
         if(sender.tag() == NSPanel.NSOKButton) {
             return SheetCallback.DEFAULT_OPTION;
         }
