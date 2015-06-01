@@ -21,8 +21,10 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.io.watchservice.RegisterWatchService;
+import ch.cyberduck.core.io.watchservice.WatchServiceFactory;
 import ch.cyberduck.core.threading.ThreadPool;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -45,6 +47,10 @@ public final class FileWatcher {
     private RegisterWatchService monitor;
 
     private ThreadPool pool;
+
+    public FileWatcher() {
+        this(WatchServiceFactory.get());
+    }
 
     public FileWatcher(final RegisterWatchService monitor) {
         this.monitor = monitor;
@@ -95,8 +101,9 @@ public final class FileWatcher {
                             break;
                         }
                         // The filename is the context of the event. May be absolute or relative path name.
-                        if(matches(LocalFactory.get(event.context().toString()), LocalFactory.get(folder.toString(), file.getName()))) {
-                            callback(event, listener);
+                        if(matches(normalize(LocalFactory.get(folder.toString()), event.context().toString()),
+                                LocalFactory.get(folder.toString(), file.getName()))) {
+                            callback(LocalFactory.get(folder.toString()), event, listener);
                         }
                         else {
                             log.warn(String.format("Ignored file system event for unknown file %s", event.context()));
@@ -112,6 +119,13 @@ public final class FileWatcher {
             }
         });
         return lock;
+    }
+
+    protected Local normalize(final Local parent, final String name) {
+        if(StringUtils.startsWith(name, String.valueOf(parent.getDelimiter()))) {
+            return normalize(LocalFactory.get(name));
+        }
+        return normalize(LocalFactory.get(parent, name));
     }
 
     protected Local normalize(final Local file) {
@@ -131,19 +145,19 @@ public final class FileWatcher {
         return this.normalize(context).equals(this.normalize(file));
     }
 
-    private void callback(final WatchEvent<?> event, final FileWatcherListener l) {
+    private void callback(final Local folder, final WatchEvent<?> event, final FileWatcherListener l) {
         final WatchEvent.Kind<?> kind = event.kind();
         if(log.isInfoEnabled()) {
             log.info(String.format("Process file system event %s for %s", kind.name(), event.context()));
         }
         if(ENTRY_MODIFY == kind) {
-            l.fileWritten(LocalFactory.get(event.context().toString()));
+            l.fileWritten(this.normalize(folder, event.context().toString()));
         }
         else if(ENTRY_DELETE == kind) {
-            l.fileDeleted(LocalFactory.get(event.context().toString()));
+            l.fileDeleted(this.normalize(folder, event.context().toString()));
         }
         else if(ENTRY_CREATE == kind) {
-            l.fileCreated(LocalFactory.get(event.context().toString()));
+            l.fileCreated(this.normalize(folder, event.context().toString()));
         }
         else {
             log.debug(String.format("Ignored file system event %s for %s", kind.name(), event.context()));
@@ -156,7 +170,7 @@ public final class FileWatcher {
             pool.shutdown();
         }
         catch(IOException e) {
-            log.error(String.format("Failure closing file watcher monitor"), e);
+            log.error("Failure closing file watcher monitor", e);
         }
     }
 }
