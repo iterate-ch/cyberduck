@@ -167,7 +167,7 @@ public final class FileWatcher {
     public void close() {
         try {
             monitor.close();
-            pool.shutdown();
+            pool.shutdown(false);
         }
         catch(IOException e) {
             log.error("Failure closing file watcher monitor", e);
