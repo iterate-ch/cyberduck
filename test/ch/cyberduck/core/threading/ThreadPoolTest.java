@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertEquals;
@@ -57,11 +58,13 @@ public class ThreadPoolTest extends AbstractTestCase {
             pool.execute(new Callable<Integer>() {
                 @Override
                 public Integer call() throws Exception {
+                    Thread.sleep(10L);
                     return counter.decrementAndGet();
                 }
             });
         }
         pool.shutdown(true);
+        pool.await(1000L, TimeUnit.SECONDS);
         assertEquals(0, counter.get());
     }
 
