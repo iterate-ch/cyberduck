@@ -26,12 +26,15 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Move;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
  * @version $Id$
  */
-public class MoveWorker extends Worker<Boolean> {
+public class MoveWorker extends Worker<List<Path>> {
 
     private Session<?> session;
 
@@ -46,7 +49,7 @@ public class MoveWorker extends Worker<Boolean> {
     }
 
     @Override
-    public Boolean run() throws BackgroundException {
+    public List<Path> run() throws BackgroundException {
         final Move feature = session.getFeature(Move.class);
         for(Map.Entry<Path, Path> entry : files.entrySet()) {
             if(this.isCanceled()) {
@@ -57,7 +60,10 @@ public class MoveWorker extends Worker<Boolean> {
             }
             feature.move(entry.getKey(), entry.getValue(), false, listener);
         }
-        return true;
+        final List<Path> changed = new ArrayList<Path>();
+        changed.addAll(files.keySet());
+        changed.addAll(files.values());
+        return changed;
     }
 
     @Override
@@ -67,8 +73,8 @@ public class MoveWorker extends Worker<Boolean> {
     }
 
     @Override
-    public Boolean initialize() {
-        return false;
+    public List<Path> initialize() {
+        return Collections.emptyList();
     }
 
     @Override

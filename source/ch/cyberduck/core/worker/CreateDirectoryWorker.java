@@ -62,6 +62,11 @@ public class CreateDirectoryWorker extends Worker<Path> {
     }
 
     @Override
+    public Path initialize() {
+        return folder;
+    }
+
+    @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
                 folder.getName());
