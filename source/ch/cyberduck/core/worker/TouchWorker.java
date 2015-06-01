@@ -42,7 +42,9 @@ public class TouchWorker extends Worker<Path> {
     @Override
     public Path run() throws BackgroundException {
         final Touch feature = session.getFeature(Touch.class);
-        feature.touch(file);
+        if(feature.isSupported(file.getParent())) {
+            feature.touch(file);
+        }
         return file;
     }
 
