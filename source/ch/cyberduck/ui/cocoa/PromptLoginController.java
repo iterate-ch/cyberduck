@@ -281,18 +281,14 @@ public final class PromptLoginController implements LoginCallback {
             public void pkCheckboxSelectionChanged(final NSButton sender) {
                 if(sender.state() == NSCell.NSOnState) {
                     try {
-                        select(this, new SheetCallback() {
+                        final Local selected = select(this, new SheetCallback() {
                             @Override
                             public void callback(final int returncode) {
-                                if(returncode == SheetCallback.DEFAULT_OPTION) {
-                                    final NSObject selected = select.filenames().lastObject();
-                                    if(selected != null) {
-                                        credentials.setIdentity(LocalFactory.get(selected.toString()));
-                                        update();
-                                    }
-                                }
+                                //
                             }
                         });
+                        credentials.setIdentity(selected);
+                        update();
                     }
                     catch(LoginCanceledException e) {
                         //
