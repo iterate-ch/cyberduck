@@ -25,15 +25,13 @@ import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
+import ch.cyberduck.core.threading.WorkerBackgroundAction;
+import ch.cyberduck.core.worker.CreateDirectoryWorker;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
-import ch.cyberduck.ui.cocoa.threading.BrowserControllerBackgroundAction;
 
-import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
@@ -105,33 +103,15 @@ public class FolderController extends FileController {
     protected void run(final Path parent, final String filename) {
         final BrowserController c = (BrowserController) this.parent;
         final Path folder = new Path(parent, filename, EnumSet.of(Path.Type.directory));
-        c.background(new BrowserControllerBackgroundAction<Path>(c) {
-            @Override
-            public Path run() throws BackgroundException {
-                final Directory feature = c.getSession().getFeature(Directory.class);
-                if(hasLocation()) {
-                    feature.mkdir(folder, regionPopup.selectedItem().representedObject());
-                }
-                else {
-                    feature.mkdir(folder);
-                }
-                return folder;
-            }
-
-            @Override
-            public String getActivity() {
-                return MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
-                        folder.getName());
-            }
-
-            @Override
-            public void cleanup() {
-                super.cleanup();
-                if(filename.charAt(0) == '.') {
-                    c.setShowHiddenFiles(true);
-                }
-                c.reload(Collections.singletonList(folder), Collections.singletonList(folder));
-            }
-        });
+        c.background(new WorkerBackgroundAction<Path>(c, c.getSession(), c.getCache(),
+                new CreateDirectoryWorker(c.getSession(), folder) {
+                    @Override
+                    public void cleanup(final Path folder) {
+                        if(filename.charAt(0) == '.') {
+                            c.setShowHiddenFiles(true);
+                        }
+                        c.reload(Collections.singletonList(folder), Collections.singletonList(folder));
+                    }
+                }));
     }
 }

@@ -23,16 +23,13 @@ import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.editor.EditorFactory;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.resources.IconCacheFactory;
+import ch.cyberduck.core.threading.WorkerBackgroundAction;
+import ch.cyberduck.core.worker.TouchWorker;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
-import ch.cyberduck.ui.cocoa.threading.BrowserControllerBackgroundAction;
 
-import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.EnumSet;
 
@@ -66,33 +63,19 @@ public class CreateFileController extends FileController {
     protected void run(final Path parent, final String filename, final boolean edit) {
         final BrowserController c = (BrowserController) this.parent;
         final Path file = new Path(parent, filename, EnumSet.of(Path.Type.file));
-        c.background(new BrowserControllerBackgroundAction<Path>(c) {
-            @Override
-            public Path run() throws BackgroundException {
-                final Session<?> session = c.getSession();
-                final Touch feature = session.getFeature(Touch.class);
-                feature.touch(file);
-                if(edit) {
-                    file.attributes().setSize(0L);
-                    c.edit(file);
-                }
-                return file;
-            }
-
-            @Override
-            public String getActivity() {
-                return MessageFormat.format(LocaleFactory.localizedString("Uploading {0}", "Status"),
-                        file.getName());
-            }
-
-            @Override
-            public void cleanup() {
-                super.cleanup();
-                if(filename.charAt(0) == '.') {
-                    c.setShowHiddenFiles(true);
-                }
-                c.reload(Collections.singletonList(file), Collections.singletonList(file));
-            }
-        });
+        c.background(new WorkerBackgroundAction<Path>(c, c.getSession(), c.getCache(),
+                new TouchWorker(c.getSession(), file) {
+                    @Override
+                    public void cleanup(final Path file) {
+                        if(filename.charAt(0) == '.') {
+                            c.setShowHiddenFiles(true);
+                        }
+                        c.reload(Collections.singletonList(file), Collections.singletonList(file));
+                        if(edit) {
+                            file.attributes().setSize(0L);
+                            c.edit(file);
+                        }
+                    }
+                }));
     }
 }
