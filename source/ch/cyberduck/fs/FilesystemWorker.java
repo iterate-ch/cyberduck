@@ -23,12 +23,15 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.worker.Worker;
 
+import org.apache.log4j.Logger;
+
 import java.util.Objects;
 
 /**
  * @version $Id$
  */
 public class FilesystemWorker extends Worker<Void> {
+    private static final Logger log = Logger.getLogger(FilesystemWorker.class);
 
     private final Session<?> session;
 
@@ -46,6 +49,16 @@ public class FilesystemWorker extends Worker<Void> {
     public Void run() throws BackgroundException {
         fs.mount(session.getFeature(Home.class).find());
         return null;
+    }
+
+    @Override
+    public void cancel() {
+        try {
+            fs.unmount();
+        }
+        catch(BackgroundException e) {
+            log.warn(e.getMessage());
+        }
     }
 
     @Override
