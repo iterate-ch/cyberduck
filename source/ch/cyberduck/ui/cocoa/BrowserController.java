@@ -2443,14 +2443,11 @@ public class BrowserController extends WindowController
         this.checkMove(selected, new DefaultMainAction() {
             @Override
             public void run() {
-                final ArrayList<Path> changed = new ArrayList<Path>();
-                changed.addAll(selected.keySet());
-                changed.addAll(selected.values());
-                background(new WorkerBackgroundAction<Boolean>(BrowserController.this, session, cache,
+                background(new WorkerBackgroundAction<List<Path>>(BrowserController.this, session, cache,
                                 new MoveWorker(session, selected, BrowserController.this) {
                                     @Override
-                                    public void cleanup(final Boolean result) {
-                                        reload(changed, new ArrayList<Path>(selected.values()));
+                                    public void cleanup(final List<Path> moved) {
+                                        reload(moved, new ArrayList<Path>(selected.values()));
                                     }
                                 }
                         )
