@@ -793,6 +793,7 @@ img/connection@2x.png -text svneol=unset#image/png
 img/delete.png -text svneol=unset#image/png
 img/delete.tiff -text svneol=unset#image/tiff
 img/delete@2x.png -text svneol=unset#image/png
+img/disk.icns -text
 img/download.png -text svneol=unset#image/png
 img/download.tiff -text svneol=unset#image/tiff
 img/download0.icns -text
