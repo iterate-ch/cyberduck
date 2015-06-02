@@ -47,10 +47,13 @@ public abstract class FileController extends AlertController {
         this.inputField = inputField;
     }
 
+    protected BrowserController parent;
+
     private Cache<Path> cache;
 
-    public FileController(final WindowController parent, final Cache<Path> cache, final NSAlert alert) {
+    public FileController(final BrowserController parent, final Cache<Path> cache, final NSAlert alert) {
         super(parent, alert);
+        this.parent = parent;
         this.cache = cache;
         alert.setShowsHelp(true);
     }
@@ -79,21 +82,21 @@ public abstract class FileController extends AlertController {
      * @return The current working directory or selected folder
      */
     protected Path getWorkdir() {
-        if(((BrowserController) parent).getSelectionCount() == 1) {
-            final Path selected = ((BrowserController) parent).getSelectedPath();
+        if(parent.getSelectionCount() == 1) {
+            final Path selected = parent.getSelectedPath();
             if(null != selected) {
                 return selected.getParent();
             }
         }
-        return ((BrowserController) parent).workdir();
+        return parent.workdir();
     }
 
     protected Path getSelected() {
-        return ((BrowserController) parent).getSelectedPath();
+        return parent.getSelectedPath();
     }
 
     protected Session getSession() {
-        return ((BrowserController) parent).getSession();
+        return parent.getSession();
     }
 
     @Override

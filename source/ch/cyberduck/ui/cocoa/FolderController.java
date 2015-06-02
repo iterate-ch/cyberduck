@@ -57,7 +57,9 @@ public class FolderController extends FileController {
 
     private Set<Location.Name> regions;
 
-    public FolderController(final WindowController parent, final Cache<Path> cache, final Set<Location.Name> regions) {
+    private BrowserController parent;
+
+    public FolderController(final BrowserController parent, final Cache<Path> cache, final Set<Location.Name> regions) {
         super(parent, cache, NSAlert.alert(
                 LocaleFactory.localizedString("Create new folder", "Folder"),
                 LocaleFactory.localizedString("Enter the name for the new folder:", "Folder"),
@@ -66,6 +68,7 @@ public class FolderController extends FileController {
                 LocaleFactory.localizedString("Cancel", "Folder")
         ));
         alert.setIcon(IconCacheFactory.<NSImage>get().iconNamed("newfolder.tiff", 64));
+        this.parent = parent;
         this.regions = regions;
     }
 
@@ -100,17 +103,16 @@ public class FolderController extends FileController {
         }
     }
 
-    protected void run(final Path parent, final String filename) {
-        final BrowserController c = (BrowserController) this.parent;
-        final Path folder = new Path(parent, filename, EnumSet.of(Path.Type.directory));
-        c.background(new WorkerBackgroundAction<Path>(c, c.getSession(), c.getCache(),
-                new CreateDirectoryWorker(c.getSession(), folder, hasLocation() ? regionPopup.selectedItem().representedObject() : null) {
+    protected void run(final Path directory, final String filename) {
+        final Path folder = new Path(directory, filename, EnumSet.of(Path.Type.directory));
+        parent.background(new WorkerBackgroundAction<Path>(parent, parent.getSession(), parent.getCache(),
+                new CreateDirectoryWorker(parent.getSession(), folder, hasLocation() ? regionPopup.selectedItem().representedObject() : null) {
                     @Override
                     public void cleanup(final Path folder) {
                         if(filename.charAt(0) == '.') {
-                            c.setShowHiddenFiles(true);
+                            parent.setShowHiddenFiles(true);
                         }
-                        c.reload(Collections.singletonList(folder), Collections.singletonList(folder));
+                        parent.reload(Collections.singletonList(folder), Collections.singletonList(folder));
                     }
                 }));
     }

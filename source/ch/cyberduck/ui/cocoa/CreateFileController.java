@@ -38,7 +38,7 @@ import java.util.EnumSet;
  */
 public class CreateFileController extends FileController {
 
-    public CreateFileController(final WindowController parent, final Cache<Path> cache) {
+    public CreateFileController(final BrowserController parent, final Cache<Path> cache) {
         super(parent, cache, NSAlert.alert(
                 LocaleFactory.localizedString("Create new file", "File"),
                 LocaleFactory.localizedString("Enter the name for the new file:", "File"),
@@ -60,20 +60,19 @@ public class CreateFileController extends FileController {
         }
     }
 
-    protected void run(final Path parent, final String filename, final boolean edit) {
-        final BrowserController c = (BrowserController) this.parent;
-        final Path file = new Path(parent, filename, EnumSet.of(Path.Type.file));
-        c.background(new WorkerBackgroundAction<Path>(c, c.getSession(), c.getCache(),
-                new TouchWorker(c.getSession(), file) {
+    protected void run(final Path directory, final String filename, final boolean edit) {
+        final Path file = new Path(directory, filename, EnumSet.of(Path.Type.file));
+        parent.background(new WorkerBackgroundAction<Path>(parent, parent.getSession(), parent.getCache(),
+                new TouchWorker(parent.getSession(), file) {
                     @Override
                     public void cleanup(final Path file) {
                         if(filename.charAt(0) == '.') {
-                            c.setShowHiddenFiles(true);
+                            parent.setShowHiddenFiles(true);
                         }
-                        c.reload(Collections.singletonList(file), Collections.singletonList(file));
+                        parent.reload(Collections.singletonList(file), Collections.singletonList(file));
                         if(edit) {
                             file.attributes().setSize(0L);
-                            c.edit(file);
+                            parent.edit(file);
                         }
                     }
                 }));

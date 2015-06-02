@@ -66,7 +66,6 @@ import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
-import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.core.threading.TransferBackgroundAction;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.transfer.CopyTransfer;
@@ -83,10 +82,8 @@ import ch.cyberduck.core.transfer.TransferProgress;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
-import ch.cyberduck.core.worker.DeleteWorker;
 import ch.cyberduck.core.worker.DisconnectWorker;
 import ch.cyberduck.core.worker.MountWorker;
-import ch.cyberduck.core.worker.MoveWorker;
 import ch.cyberduck.core.worker.RevertWorker;
 import ch.cyberduck.core.worker.SessionListWorker;
 import ch.cyberduck.ui.browser.Column;
@@ -211,7 +208,7 @@ public class BrowserController extends WindowController
     private NSOutlineView browserOutlineView;
 
     @Delegate
-    private AbstractBrowserTableDelegate<Path> browserOutlineViewDelegate;
+    private AbstractBrowserTableDelegate browserOutlineViewDelegate;
 
     @Delegate
     private BrowserListViewModel browserListModel;
@@ -220,7 +217,7 @@ public class BrowserController extends WindowController
     private NSTableView browserListView;
 
     @Delegate
-    private AbstractBrowserTableDelegate<Path> browserListViewDelegate;
+    private AbstractBrowserTableDelegate browserListViewDelegate;
 
     private NSToolbar toolbar;
 
@@ -538,7 +535,7 @@ public class BrowserController extends WindowController
      * @return All selected paths or an empty list if there is no selection
      */
     protected List<Path> getSelectedPaths() {
-        final AbstractBrowserTableDelegate<Path> delegate = this.getSelectedBrowserDelegate();
+        final AbstractBrowserTableDelegate delegate = this.getSelectedBrowserDelegate();
         final NSTableView view = this.getSelectedBrowserView();
         final NSIndexSet iterator = view.selectedRowIndexes();
         final List<Path> selected = new ArrayList<Path>();
@@ -709,7 +706,7 @@ public class BrowserController extends WindowController
         throw new FactoryException("No selected browser view");
     }
 
-    public AbstractBrowserTableDelegate<Path> getSelectedBrowserDelegate() {
+    public AbstractBrowserTableDelegate getSelectedBrowserDelegate() {
         switch(this.browserSwitchView.selectedSegment()) {
             case SWITCH_LIST_VIEW: {
                 return browserListViewDelegate;
@@ -1040,7 +1037,7 @@ public class BrowserController extends WindowController
         this.setStatus();
     }
 
-    private abstract class AbstractBrowserOutlineViewDelegate<E> extends AbstractBrowserTableDelegate<E>
+    private abstract class AbstractBrowserOutlineViewDelegate extends AbstractBrowserTableDelegate
             implements NSOutlineView.Delegate {
 
         protected AbstractBrowserOutlineViewDelegate(final NSTableColumn selectedColumn) {
@@ -1078,7 +1075,7 @@ public class BrowserController extends WindowController
         }
     }
 
-    private abstract class AbstractBrowserListViewDelegate<E> extends AbstractBrowserTableDelegate<E>
+    private abstract class AbstractBrowserListViewDelegate<E> extends AbstractBrowserTableDelegate
             implements NSTableView.Delegate {
 
         protected AbstractBrowserListViewDelegate(final NSTableColumn selectedColumn) {
@@ -1117,7 +1114,7 @@ public class BrowserController extends WindowController
         }
     }
 
-    private abstract class AbstractBrowserTableDelegate<E> extends AbstractPathTableDelegate {
+    private abstract class AbstractBrowserTableDelegate extends AbstractPathTableDelegate {
 
         protected AbstractBrowserTableDelegate(final NSTableColumn selectedColumn) {
             super(selectedColumn);
@@ -1309,7 +1306,7 @@ public class BrowserController extends WindowController
             browserOutlineView.setOutlineTableColumn(c);
         }
         browserOutlineView.setDataSource((browserOutlineModel = new BrowserOutlineViewModel(this, cache)).id());
-        browserOutlineView.setDelegate((browserOutlineViewDelegate = new AbstractBrowserOutlineViewDelegate<Path>(
+        browserOutlineView.setDelegate((browserOutlineViewDelegate = new AbstractBrowserOutlineViewDelegate(
                 browserOutlineView.tableColumnWithIdentifier(Column.filename.name())
         ) {
             @Override
@@ -1536,7 +1533,7 @@ public class BrowserController extends WindowController
                 NSIndexSet.indexSetWithIndexesInRange(NSRange.NSMakeRange(new NSUInteger(0), new NSUInteger(bookmarkTable.numberOfRows()))));
     }
 
-    private void _updateBrowserColumns(final NSTableView table, final AbstractBrowserTableDelegate<Path> delegate) {
+    private void _updateBrowserColumns(final NSTableView table, final AbstractBrowserTableDelegate delegate) {
         table.removeTableColumn(table.tableColumnWithIdentifier(Column.size.name()));
         if(preferences.getBoolean(String.format("browser.column.%s", Column.size.name()))) {
             NSTableColumn c = browserListColumnsFactory.create(Column.size.name());
@@ -2418,7 +2415,7 @@ public class BrowserController extends WindowController
      *                 files as the value
      */
     protected void duplicatePaths(final Map<Path, Path> selected) {
-        this.checkOverwrite(new ArrayList<Path>(selected.values()), new DefaultMainAction() {
+        new OverwriteController(this).overwrite(new ArrayList<Path>(selected.values()), new DefaultMainAction() {
             @Override
             public void run() {
                 transfer(new CopyTransfer(session.getHost(), session.getHost(), selected),
@@ -2440,116 +2437,7 @@ public class BrowserController extends WindowController
      *                 files as the value
      */
     protected void renamePaths(final Map<Path, Path> selected) {
-        this.checkMove(selected, new DefaultMainAction() {
-            @Override
-            public void run() {
-                background(new WorkerBackgroundAction<List<Path>>(BrowserController.this, session, cache,
-                                new MoveWorker(session, selected, BrowserController.this) {
-                                    @Override
-                                    public void cleanup(final List<Path> moved) {
-                                        reload(moved, new ArrayList<Path>(selected.values()));
-                                    }
-                                }
-                        )
-                );
-            }
-        });
-    }
-
-    /**
-     * Displays a warning dialog about already existing files
-     *
-     * @param selected The files to check
-     */
-    private void checkOverwrite(final List<Path> selected, final MainAction action) {
-        StringBuilder alertText = new StringBuilder(
-                LocaleFactory.localizedString("A file with the same name already exists. Do you want to replace the existing file?"));
-        int i = 0;
-        Iterator<Path> iter;
-        boolean shouldWarn = false;
-        for(iter = selected.iterator(); iter.hasNext(); ) {
-            final Path item = iter.next();
-            if(cache.get(item.getParent()).contains(item)) {
-                if(i < 10) {
-                    alertText.append("\n").append(Character.toString('\u2022')).append(" ").append(item.getName());
-                }
-                shouldWarn = true;
-            }
-            i++;
-        }
-        if(i >= 10) {
-            alertText.append("\n").append(Character.toString('\u2022')).append(" ...)");
-        }
-        if(shouldWarn) {
-            NSAlert alert = NSAlert.alert(
-                    LocaleFactory.localizedString("Overwrite"), //title
-                    alertText.toString(),
-                    LocaleFactory.localizedString("Overwrite"), // defaultbutton
-                    LocaleFactory.localizedString("Cancel"), //alternative button
-                    null //other button
-            );
-            this.alert(alert, new SheetCallback() {
-                @Override
-                public void callback(final int returncode) {
-                    if(returncode == DEFAULT_OPTION) {
-                        action.run();
-                    }
-                }
-            });
-        }
-        else {
-            action.run();
-        }
-    }
-
-    /**
-     * Displays a warning dialog about files to be moved
-     *
-     * @param selected The files to check for existence
-     */
-    private void checkMove(final Map<Path, Path> selected, final MainAction action) {
-        if(preferences.getBoolean("browser.move.confirm")) {
-            StringBuilder alertText = new StringBuilder(
-                    LocaleFactory.localizedString("Do you want to move the selected files?"));
-            int i = 0;
-            boolean rename = false;
-            Iterator<Map.Entry<Path, Path>> iter;
-            for(iter = selected.entrySet().iterator(); i < 10 && iter.hasNext(); ) {
-                final Map.Entry<Path, Path> next = iter.next();
-                if(next.getKey().getParent().equals(next.getValue().getParent())) {
-                    rename = true;
-                }
-                alertText.append(String.format("\n%s %s", Character.toString('\u2022'), next.getKey().getName()));
-                i++;
-            }
-            if(iter.hasNext()) {
-                alertText.append(String.format("\n%s ...)", Character.toString('\u2022')));
-            }
-            final NSAlert alert = NSAlert.alert(
-                    rename ? LocaleFactory.localizedString("Rename", "Transfer") : LocaleFactory.localizedString("Move", "Transfer"), //title
-                    alertText.toString(),
-                    rename ? LocaleFactory.localizedString("Rename", "Transfer") : LocaleFactory.localizedString("Move", "Transfer"), // default button
-                    LocaleFactory.localizedString("Cancel"), //alternative button
-                    null //other button
-            );
-            alert.setShowsSuppressionButton(true);
-            alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't ask again", "Configuration"));
-            this.alert(alert, new SheetCallback() {
-                @Override
-                public void callback(final int returncode) {
-                    if(alert.suppressionButton().state() == NSCell.NSOnState) {
-                        // Never show again.
-                        preferences.setProperty("browser.move.confirm", false);
-                    }
-                    if(returncode == DEFAULT_OPTION) {
-                        checkOverwrite(new ArrayList<Path>(selected.values()), action);
-                    }
-                }
-            });
-        }
-        else {
-            this.checkOverwrite(new ArrayList<Path>(selected.values()), action);
-        }
+        new MoveController(this).rename(selected);
     }
 
     /**
@@ -2567,47 +2455,7 @@ public class BrowserController extends WindowController
      * @param selected The files selected in the browser to delete
      */
     public void deletePaths(final List<Path> selected) {
-        final List<Path> normalized = PathNormalizer.normalize(selected);
-        if(normalized.isEmpty()) {
-            return;
-        }
-        StringBuilder alertText =
-                new StringBuilder(LocaleFactory.localizedString("Really delete the following files? This cannot be undone."));
-        int i = 0;
-        Iterator<Path> iter;
-        for(iter = normalized.iterator(); i < 10 && iter.hasNext(); ) {
-            alertText.append("\n").append(Character.toString('\u2022')).append(" ").append(iter.next().getName());
-            i++;
-        }
-        if(iter.hasNext()) {
-            alertText.append("\n").append(Character.toString('\u2022')).append(" " + "…");
-        }
-        NSAlert alert = NSAlert.alert(LocaleFactory.localizedString("Delete"), //title
-                alertText.toString(),
-                LocaleFactory.localizedString("Delete"), // defaultbutton
-                LocaleFactory.localizedString("Cancel"), //alternative button
-                null //other button
-        );
-        this.alert(alert, new SheetCallback() {
-            @Override
-            public void callback(final int returncode) {
-                if(returncode == DEFAULT_OPTION) {
-                    BrowserController.this.deletePathsImpl(normalized);
-                }
-            }
-        });
-    }
-
-    private void deletePathsImpl(final List<Path> files) {
-        this.background(new WorkerBackgroundAction<List<Path>>(this, session, cache,
-                        new DeleteWorker(session, LoginCallbackFactory.get(BrowserController.this), files, this) {
-                            @Override
-                            public void cleanup(final List<Path> result) {
-                                reload(result, Collections.<Path>emptyList());
-                            }
-                        }
-                )
-        );
+        new DeleteController(this).delete(selected);
     }
 
     public void revertPaths(final List<Path> files) {
@@ -2637,32 +2485,32 @@ public class BrowserController extends WindowController
 
     @Action
     public void gotoButtonClicked(final ID sender) {
-        SheetController sheet = new GotoController(this, cache);
+        final SheetController sheet = new GotoController(this, cache);
         sheet.beginSheet();
     }
 
     @Action
     public void createFileButtonClicked(final ID sender) {
-        SheetController sheet = new CreateFileController(this, cache);
+        final SheetController sheet = new CreateFileController(this, cache);
         sheet.beginSheet();
     }
 
     @Action
     public void createSymlinkButtonClicked(final ID sender) {
-        SheetController sheet = new CreateSymlinkController(this, cache);
+        final SheetController sheet = new CreateSymlinkController(this, cache);
         sheet.beginSheet();
     }
 
     @Action
     public void duplicateFileButtonClicked(final ID sender) {
-        SheetController sheet = new DuplicateFileController(this, cache);
+        final SheetController sheet = new DuplicateFileController(this, cache);
         sheet.beginSheet();
     }
 
     @Action
     public void createFolderButtonClicked(final ID sender) {
         final Location feature = session.getFeature(Location.class);
-        SheetController sheet = new FolderController(this, cache,
+        final SheetController sheet = new FolderController(this, cache,
                 feature != null ? feature.getLocations() : Collections.<Location.Name>emptySet());
         sheet.beginSheet();
     }
@@ -3080,9 +2928,9 @@ public class BrowserController extends WindowController
 
     /**
      * NSService
-     * <p/>
+     * <p>
      * Indicates whether the receiver can send and receive the specified pasteboard types.
-     * <p/>
+     * <p>
      * Either sendType or returnType—but not both—may be empty. If sendType is empty,
      * the service doesn’t require input from the application requesting the service.
      * If returnType is empty, the service doesn’t return data.
@@ -3109,7 +2957,7 @@ public class BrowserController extends WindowController
 
     /**
      * NSService
-     * <p/>
+     * <p>
      * Reads data from the pasteboard and uses it to replace the current selection.
      *
      * @param pboard Pasteboard
@@ -3121,7 +2969,7 @@ public class BrowserController extends WindowController
 
     /**
      * NSService
-     * <p/>
+     * <p>
      * Writes the current selection to the pasteboard.
      *
      * @param pboard Pasteboard
@@ -3260,7 +3108,7 @@ public class BrowserController extends WindowController
      */
     private void archiveClicked(final Archive archive) {
         final List<Path> changed = this.getSelectedPaths();
-        this.checkOverwrite(Collections.singletonList(archive.getArchive(changed)), new DefaultMainAction() {
+        new OverwriteController(this).overwrite(Collections.singletonList(archive.getArchive(changed)), new DefaultMainAction() {
             @Override
             public void run() {
                 background(new BrowserControllerBackgroundAction(BrowserController.this) {
@@ -3296,7 +3144,7 @@ public class BrowserController extends WindowController
             if(null == archive) {
                 continue;
             }
-            this.checkOverwrite(archive.getExpanded(Collections.singletonList(s)), new DefaultMainAction() {
+            new OverwriteController(this).overwrite(archive.getExpanded(Collections.singletonList(s)), new DefaultMainAction() {
                 @Override
                 public void run() {
                     background(new BrowserControllerBackgroundAction(BrowserController.this) {

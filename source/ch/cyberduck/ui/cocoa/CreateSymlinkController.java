@@ -24,7 +24,6 @@ import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -43,7 +42,7 @@ import java.util.EnumSet;
  */
 public class CreateSymlinkController extends FileController {
 
-    public CreateSymlinkController(final WindowController parent, final Cache<Path> cache) {
+    public CreateSymlinkController(final BrowserController parent, final Cache<Path> cache) {
         super(parent, cache, NSAlert.alert(
                 LocaleFactory.localizedString("Create new symbolic link", "File"),
                 StringUtils.EMPTY,
@@ -66,10 +65,8 @@ public class CreateSymlinkController extends FileController {
     }
 
     protected void run(final Path selected, final String symlink, final boolean edit) {
-        final BrowserController c = (BrowserController) parent;
-        final Session<?> session = this.getSession();
         final Path link = new Path(this.getWorkdir(), symlink, EnumSet.of(Path.Type.file));
-        c.background(new BrowserControllerBackgroundAction<Path>(c) {
+        parent.background(new BrowserControllerBackgroundAction<Path>(parent) {
             @Override
             public Path run() throws BackgroundException {
                 // Symlink pointing to existing file
@@ -94,9 +91,9 @@ public class CreateSymlinkController extends FileController {
             public void cleanup() {
                 super.cleanup();
                 if(symlink.charAt(0) == '.') {
-                    c.setShowHiddenFiles(true);
+                    parent.setShowHiddenFiles(true);
                 }
-                c.reload(Collections.singletonList(link), Collections.singletonList(link));
+                parent.reload(Collections.singletonList(link), Collections.singletonList(link));
             }
         });
     }
