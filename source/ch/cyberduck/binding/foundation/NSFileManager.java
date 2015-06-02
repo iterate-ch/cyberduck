@@ -432,6 +432,6 @@ public abstract class NSFileManager extends NSObject {
      * @return When called with a valid group identifier, this method returns the location of that directory as a
      * n NSURL object. This method also creates the directory if it does not yet exist.
      */
-    public abstract NSURL containerURLForSecurityApplicationGroupIdentifier(NSString groupIdentifier);
+    public abstract NSURL containerURLForSecurityApplicationGroupIdentifier(String groupIdentifier);
 
 }
