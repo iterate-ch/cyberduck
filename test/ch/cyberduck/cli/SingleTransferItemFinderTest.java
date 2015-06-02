@@ -24,9 +24,9 @@ import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.transfer.TransferItem;
 
-import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
 import org.junit.Test;
 
 import java.util.EnumSet;
@@ -39,7 +39,7 @@ public class SingleTransferItemFinderTest extends AbstractTestCase {
 
     @Test
     public void testNoLocalInOptionsDownload() throws Exception {
-        final CommandLineParser parser = new BasicParser();
+        final CommandLineParser parser = new DefaultParser();
         final CommandLine input = parser.parse(TerminalOptionsBuilder.options(), new String[]{"--download", "rackspace://cdn.cyberduck.ch/remote"});
 
         final Set<TransferItem> found = new SingleTransferItemFinder().find(input, TerminalAction.download, new Path("/cdn.cyberduck.ch/remote", EnumSet.of(Path.Type.file)));
@@ -50,7 +50,7 @@ public class SingleTransferItemFinderTest extends AbstractTestCase {
 
     @Test
     public void testLocalInOptionsDownload() throws Exception {
-        final CommandLineParser parser = new BasicParser();
+        final CommandLineParser parser = new DefaultParser();
         final CommandLine input = parser.parse(TerminalOptionsBuilder.options(), new String[]{"--download", "rackspace://cdn.cyberduck.ch/remote", "/tmp/f"});
 
         final Set<TransferItem> found = new SingleTransferItemFinder().find(input, TerminalAction.download, new Path("/cdn.cyberduck.ch/remote", EnumSet.of(Path.Type.file)));
@@ -62,7 +62,7 @@ public class SingleTransferItemFinderTest extends AbstractTestCase {
 
     @Test
     public void testNoLocalInOptionsUploadFile() throws Exception {
-        final CommandLineParser parser = new BasicParser();
+        final CommandLineParser parser = new DefaultParser();
         final CommandLine input = parser.parse(TerminalOptionsBuilder.options(), new String[]{"--upload", "rackspace://cdn.cyberduck.ch/remote"});
 
         final Set<TransferItem> found = new SingleTransferItemFinder().find(input, TerminalAction.upload, new Path("/cdn.cyberduck.ch/remote", EnumSet.of(Path.Type.file)));
@@ -71,7 +71,7 @@ public class SingleTransferItemFinderTest extends AbstractTestCase {
 
     @Test
     public void testDeferUploadNameFromLocal() throws Exception {
-        final CommandLineParser parser = new BasicParser();
+        final CommandLineParser parser = new DefaultParser();
         final CommandLine input = parser.parse(TerminalOptionsBuilder.options(), new String[]{"--upload", "ftps://test.cyberduck.ch/remote/", "/tmp/f"});
 
         final Set<TransferItem> found = new SingleTransferItemFinder().find(input, TerminalAction.upload, new Path("/remote/", EnumSet.of(Path.Type.directory)));
@@ -82,7 +82,7 @@ public class SingleTransferItemFinderTest extends AbstractTestCase {
 
     @Test
     public void testUploadDirectory() throws Exception {
-        final CommandLineParser parser = new BasicParser();
+        final CommandLineParser parser = new DefaultParser();
         final CommandLine input = parser.parse(TerminalOptionsBuilder.options(), new String[]{"--upload", "ftps://test.cyberduck.ch/remote/", "/tmp"});
 
         final Set<TransferItem> found = new SingleTransferItemFinder().find(input, TerminalAction.upload, new Path("/remote/", EnumSet.of(Path.Type.directory)));
@@ -95,7 +95,7 @@ public class SingleTransferItemFinderTest extends AbstractTestCase {
 
     @Test
     public void testDownloadFileToDirectoryTarget() throws Exception {
-        final CommandLineParser parser = new BasicParser();
+        final CommandLineParser parser = new DefaultParser();
         final CommandLine input = parser.parse(TerminalOptionsBuilder.options(), new String[]{"--download", "ftps://test.cyberduck.ch/remote/f", "/tmp"});
 
         final Set<TransferItem> found = new SingleTransferItemFinder().find(input, TerminalAction.download, new Path("/remote/f", EnumSet.of(Path.Type.file)));
@@ -107,7 +107,7 @@ public class SingleTransferItemFinderTest extends AbstractTestCase {
 
     @Test
     public void testDownloadDirectoryTarget() throws Exception {
-        final CommandLineParser parser = new BasicParser();
+        final CommandLineParser parser = new DefaultParser();
         final CommandLine input = parser.parse(TerminalOptionsBuilder.options(), new String[]{"--download", "ftps://test.cyberduck.ch/remote/", "/tmp"});
 
         final Set<TransferItem> found = new SingleTransferItemFinder().find(input, TerminalAction.download, new Path("/remote/", EnumSet.of(Path.Type.directory)));

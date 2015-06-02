@@ -27,8 +27,8 @@ import ch.cyberduck.core.test.NullLocal;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 
-import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -43,7 +43,7 @@ public class TerminalTransferFactoryTest extends AbstractTestCase {
 
     @Test
     public void testCreate() throws Exception {
-        final CommandLineParser parser = new BasicParser();
+        final CommandLineParser parser = new DefaultParser();
 
         final Transfer transfer = new TerminalTransferFactory().create(parser.parse(TerminalOptionsBuilder.options(), new String[]{"--download", "rackspace://cdn.cyberduck.ch/remote"}),
                 new Host("localhost"), new Path("/remote", EnumSet.of(Path.Type.directory)), Collections.<TransferItem>emptyList());
@@ -52,7 +52,7 @@ public class TerminalTransferFactoryTest extends AbstractTestCase {
 
     @Test
     public void testFilter() throws Exception {
-        final CommandLineParser parser = new BasicParser();
+        final CommandLineParser parser = new DefaultParser();
 
         final Transfer transfer = new TerminalTransferFactory().create(parser.parse(TerminalOptionsBuilder.options(), new String[]{"--download", "rackspace://cdn.cyberduck.ch/remote/*.css"}),
                 new Host("localhost"), new Path("/remote/*.css", EnumSet.of(Path.Type.directory)), Collections.<TransferItem>emptyList());
