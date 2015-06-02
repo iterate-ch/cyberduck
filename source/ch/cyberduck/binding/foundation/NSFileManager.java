@@ -422,4 +422,16 @@ public abstract class NSFileManager extends NSObject {
      */
     public abstract boolean replaceItemAtURL_withItemAtURL_backupItemName_options_resultingItemURL_error(NSURL originalItemURL, NSURL newItemURL, String backupItemName, NSUInteger options, ObjCObjectByReference resultingURL, ObjCObjectByReference error);
     /// <i>native declaration : NSFileManager.h</i>
+
+    /**
+     * As explained in App Sandbox Design Guide, groups of sandboxed apps that need to share files and other information
+     * can request a container directory as part of their entitlements. These directories are stored
+     * in ~/Library/Group Containers/.
+     * <p>
+     *
+     * @return When called with a valid group identifier, this method returns the location of that directory as a
+     * n NSURL object. This method also creates the directory if it does not yet exist.
+     */
+    public abstract NSURL containerURLForSecurityApplicationGroupIdentifier(NSString groupIdentifier);
+
 }
