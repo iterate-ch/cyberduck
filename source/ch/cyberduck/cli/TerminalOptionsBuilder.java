@@ -65,13 +65,13 @@ public final class TerminalOptionsBuilder {
         options.addOption(Option.builder("d")
                 .desc("Download file or folder. Denote a folder with a trailing '/'")
                 .longOpt(TerminalAction.download.name())
-                .numberOfArgs(2).argName("url> <[file]").valueSeparator(' ')
+                .numberOfArgs(2).argName("url> <[file]").optionalArg(true).valueSeparator(' ')
                 .required(false)
                 .build());
         options.addOption(Option.builder()
                 .desc("Upload file or folder recursively")
                 .longOpt(TerminalAction.upload.name())
-                .numberOfArgs(2).argName("url> <file").valueSeparator(' ')
+                .numberOfArgs(2).argName("url> <file").optionalArg(true).valueSeparator(' ')
                 .required(false)
                 .build());
         options.addOption(Option.builder()
