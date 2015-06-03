@@ -182,7 +182,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             if(StringUtils.isNotBlank(value.toString()) && !item.getName().equals(value.toString())) {
                 final Path renamed = new Path(
                         item.getParent(), value.toString(), item.getType());
-                controller.renamePath(item, renamed);
+                new MoveController(controller).rename(item, renamed);
             }
         }
     }
@@ -394,7 +394,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                                 destination, next.getName(), next.getType());
                         files.put(next, renamed);
                     }
-                    controller.renamePaths(files);
+                    new MoveController(controller).rename(files);
                 }
                 pasteboard.clear();
             }
@@ -579,7 +579,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         }
         final PathPasteboard pasteboard = controller.getPasteboard();
         if(NSDraggingInfo.NSDragOperationDelete.intValue() == operation.intValue()) {
-            controller.deletePaths(pasteboard);
+            new DeleteController(controller).delete(pasteboard);
         }
         pasteboard.clear();
     }

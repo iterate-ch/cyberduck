@@ -27,11 +27,11 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.DefaultMainAction;
-import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.worker.MoveWorker;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -51,11 +51,43 @@ public class MoveController extends ProxyController {
     }
 
     /**
+     * @param path    The existing file
+     * @param renamed The renamed file
+     */
+    public void rename(final Path path, final Path renamed) {
+        this.rename(Collections.singletonMap(path, renamed));
+    }
+
+    /**
+     * @param selected A map with the original files as the key and the destination
+     *                 files as the value
+     */
+    public void rename(final Map<Path, Path> selected) {
+        final DefaultMainAction action = new DefaultMainAction() {
+            @Override
+            public void run() {
+                background(new WorkerBackgroundAction<List<Path>>(parent, parent.getSession(), parent.getCache(),
+                                new MoveWorker(parent.getSession(), selected, parent) {
+                                    @Override
+                                    public void cleanup(final List<Path> moved) {
+                                        parent.reload(moved, new ArrayList<Path>(selected.values()));
+                                    }
+                                }
+                        )
+                );
+            }
+        };
+        this.rename(selected, action);
+    }
+
+    /**
      * Displays a warning dialog about files to be moved
      *
-     * @param selected The files to check for existence
+     * @param selected A map with the original files as the key and the destination
+     *                 files as the value
+     * @param action   Background task
      */
-    private void checkMove(final Map<Path, Path> selected, final MainAction action) {
+    public void rename(final Map<Path, Path> selected, final DefaultMainAction action) {
         if(preferences.getBoolean("browser.move.confirm")) {
             StringBuilder alertText = new StringBuilder(
                     LocaleFactory.localizedString("Do you want to move the selected files?"));
@@ -98,22 +130,5 @@ public class MoveController extends ProxyController {
         else {
             new OverwriteController(parent).overwrite(new ArrayList<Path>(selected.values()), action);
         }
-    }
-
-    public void rename(final Map<Path, Path> selected) {
-        this.checkMove(selected, new DefaultMainAction() {
-            @Override
-            public void run() {
-                background(new WorkerBackgroundAction<List<Path>>(parent, parent.getSession(), parent.getCache(),
-                                new MoveWorker(parent.getSession(), selected, parent) {
-                                    @Override
-                                    public void cleanup(final List<Path> moved) {
-                                        parent.reload(moved, new ArrayList<Path>(selected.values()));
-                                    }
-                                }
-                        )
-                );
-            }
-        });
     }
 }

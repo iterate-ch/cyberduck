@@ -68,7 +68,6 @@ import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.threading.TransferBackgroundAction;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
-import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.SyncTransfer;
@@ -84,7 +83,6 @@ import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
 import ch.cyberduck.core.worker.DisconnectWorker;
 import ch.cyberduck.core.worker.MountWorker;
-import ch.cyberduck.core.worker.RevertWorker;
 import ch.cyberduck.core.worker.SessionListWorker;
 import ch.cyberduck.ui.browser.Column;
 import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
@@ -2403,73 +2401,6 @@ public class BrowserController extends WindowController
     }
 
     /**
-     * @param source      The original file to duplicate
-     * @param destination The destination of the duplicated file
-     */
-    protected void duplicatePath(final Path source, final Path destination) {
-        this.duplicatePaths(Collections.singletonMap(source, destination));
-    }
-
-    /**
-     * @param selected A map with the original files as the key and the destination
-     *                 files as the value
-     */
-    protected void duplicatePaths(final Map<Path, Path> selected) {
-        new OverwriteController(this).overwrite(new ArrayList<Path>(selected.values()), new DefaultMainAction() {
-            @Override
-            public void run() {
-                transfer(new CopyTransfer(session.getHost(), session.getHost(), selected),
-                        new ArrayList<Path>(selected.values()), true);
-            }
-        });
-    }
-
-    /**
-     * @param path    The existing file
-     * @param renamed The renamed file
-     */
-    protected void renamePath(final Path path, final Path renamed) {
-        this.renamePaths(Collections.singletonMap(path, renamed));
-    }
-
-    /**
-     * @param selected A map with the original files as the key and the destination
-     *                 files as the value
-     */
-    protected void renamePaths(final Map<Path, Path> selected) {
-        new MoveController(this).rename(selected);
-    }
-
-    /**
-     * Recursively deletes the file
-     *
-     * @param file File or directory
-     */
-    public void deletePath(final Path file) {
-        this.deletePaths(Collections.singletonList(file));
-    }
-
-    /**
-     * Recursively deletes the files
-     *
-     * @param selected The files selected in the browser to delete
-     */
-    public void deletePaths(final List<Path> selected) {
-        new DeleteController(this).delete(selected);
-    }
-
-    public void revertPaths(final List<Path> files) {
-        this.background(new WorkerBackgroundAction<List<Path>>(this, session, cache,
-                new RevertWorker(session, files) {
-                    @Override
-                    public void cleanup(final List<Path> result) {
-                        reload(files, files);
-                    }
-                }
-        ));
-    }
-
-    /**
      * @param selected File
      * @return True if the selected path is editable (not a directory and no known binary file)
      */
@@ -2592,12 +2523,12 @@ public class BrowserController extends WindowController
 
     @Action
     public void revertFileButtonClicked(final ID sender) {
-        this.revertPaths(this.getSelectedPaths());
+        new RevertController(this).revert(this.getSelectedPaths());
     }
 
     @Action
     public void deleteFileButtonClicked(final ID sender) {
-        this.deletePaths(this.getSelectedPaths());
+        new DeleteController(this).delete(this.getSelectedPaths());
     }
 
     private NSOpenPanel downloadToPanel;
@@ -3037,10 +2968,10 @@ public class BrowserController extends WindowController
             }
             pasteboard.clear();
             if(pasteboard.isCut()) {
-                this.renamePaths(files);
+                new MoveController(this).rename(files);
             }
             if(pasteboard.isCopy()) {
-                this.duplicatePaths(files);
+                new DuplicateFileController(this, cache).duplicate(files);
             }
         }
     }

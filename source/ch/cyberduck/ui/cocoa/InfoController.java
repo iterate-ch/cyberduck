@@ -2262,7 +2262,7 @@ public class InfoController extends ToolbarWindowController {
                 else {
                     final Path renamed = new Path(
                             current.getParent(), filenameField.stringValue(), current.getType());
-                    controller.renamePath(current, renamed);
+                    new MoveController(controller).rename(current, renamed);
                     this.initWebUrl();
                 }
             }

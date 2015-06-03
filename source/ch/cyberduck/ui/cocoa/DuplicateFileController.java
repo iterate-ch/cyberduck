@@ -26,11 +26,16 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
+import ch.cyberduck.core.threading.DefaultMainAction;
+import ch.cyberduck.core.transfer.CopyTransfer;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * @version $Id$
@@ -57,12 +62,35 @@ public class DuplicateFileController extends FileController {
     @Override
     public void callback(final int returncode) {
         if(returncode == DEFAULT_OPTION) {
-            this.run(this.getSelected(), inputField.stringValue());
+            this.duplicate(this.getSelected(), inputField.stringValue());
         }
     }
 
-    private void run(final Path selected, final String filename) {
+    public void duplicate(final Path selected, final String filename) {
         final Path duplicate = new Path(selected.getParent(), filename, selected.getType());
-        parent.duplicatePath(selected, duplicate);
+        this.duplicate(selected, duplicate);
     }
+
+    /**
+     * @param source      The original file to duplicate
+     * @param destination The destination of the duplicated file
+     */
+    public void duplicate(final Path source, final Path destination) {
+        this.duplicate(Collections.singletonMap(source, destination));
+    }
+
+    /**
+     * @param selected A map with the original files as the key and the destination
+     *                 files as the value
+     */
+    public void duplicate(final Map<Path, Path> selected) {
+        new OverwriteController(parent).overwrite(new ArrayList<Path>(selected.values()), new DefaultMainAction() {
+            @Override
+            public void run() {
+                parent.transfer(new CopyTransfer(parent.getSession().getHost(), parent.getSession().getHost(), selected),
+                        new ArrayList<Path>(selected.values()), true);
+            }
+        });
+    }
+
 }

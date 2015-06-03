@@ -81,7 +81,22 @@ public class DeleteController extends ProxyController {
         });
     }
 
-    private void deletePathsImpl(final List<Path> files) {
+
+    /**
+     * Recursively deletes the file
+     *
+     * @param file File or directory
+     */
+    public void delete(final Path file) {
+        this.delete(Collections.singletonList(file));
+    }
+
+    /**
+     * Recursively deletes the files
+     *
+     * @param files The files selected in the browser to delete
+     */
+    public void deletePathsImpl(final List<Path> files) {
         this.background(new WorkerBackgroundAction<List<Path>>(this, parent.getSession(), parent.getCache(),
                         new DeleteWorker(parent.getSession(), LoginCallbackFactory.get(parent), files, this) {
                             @Override
