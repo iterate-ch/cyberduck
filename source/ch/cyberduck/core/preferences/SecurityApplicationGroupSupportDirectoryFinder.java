@@ -33,14 +33,22 @@ import org.rococoa.Foundation;
 public class SecurityApplicationGroupSupportDirectoryFinder implements SupportDirectoryFinder {
     private static final Logger log = Logger.getLogger(SecurityApplicationGroupSupportDirectoryFinder.class);
 
-    private final Preferences preferences = PreferencesFactory.get();
+    private final String identifier;
+
+    public SecurityApplicationGroupSupportDirectoryFinder() {
+        this("G69SCX94XU.duck");
+    }
+
+    public SecurityApplicationGroupSupportDirectoryFinder(final String identifier) {
+        this.identifier = identifier;
+    }
 
     @Override
     public Local find() {
         final NSFileManager manager = NSFileManager.defaultManager();
         if(manager.respondsToSelector(Foundation.selector("containerURLForSecurityApplicationGroupIdentifier:"))) {
             final NSURL group = manager
-                    .containerURLForSecurityApplicationGroupIdentifier("G69SCX94XU.duck");
+                    .containerURLForSecurityApplicationGroupIdentifier(identifier);
             if(null == group) {
                 log.warn("Missing com.apple.security.application-groups in sandbox entitlements");
             }
