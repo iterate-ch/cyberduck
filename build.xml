@@ -212,19 +212,19 @@
         </taskdef>
         <var name="manifest.lib.classpath" unset="true"/>
         <manifestclasspath property="manifest.lib.classpath"
-                           jarfile="${lib}/cli.jar">
+                           jarfile="${lib}/cli-${version}.jar">
             <!-- Convert paths relative to target jarfile -->
             <classpath refid="build.classpath"/>
         </manifestclasspath>
         <var name="manifest.build.classpath" unset="true"/>
         <manifestclasspath property="manifest.build.classpath"
-                           jarfile="${build}/cli.jar">
+                           jarfile="${build}/cli-${version}.jar">
             <!-- Convert paths relative to target jarfile -->
             <classpath>
                 <fileset dir="${build}" includes="*.jar"/>
             </classpath>
         </manifestclasspath>
-        <jar jarfile="${build}/cli.jar"
+        <jar jarfile="${build}/cli-${version}.jar"
              update="yes">
             <fileset dir="${build.classes}">
                 <include name="ch/cyberduck/cli/*.class"/>
