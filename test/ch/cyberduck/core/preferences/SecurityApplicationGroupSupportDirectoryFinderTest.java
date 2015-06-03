@@ -33,6 +33,7 @@ public class SecurityApplicationGroupSupportDirectoryFinderTest extends Abstract
     @Test
     public void testFind() throws Exception {
         assertNotNull(new SecurityApplicationGroupSupportDirectoryFinder().find());
-        assertEquals("~/Library/Group Containers/G69SCX94XU.duck", new SecurityApplicationGroupSupportDirectoryFinder().find().getAbbreviatedPath());
+        assertEquals("~/Library/Group Containers/G69SCX94XU.duck/Library/Application Support/duck",
+                new SecurityApplicationGroupSupportDirectoryFinder().find().getAbbreviatedPath());
     }
 }

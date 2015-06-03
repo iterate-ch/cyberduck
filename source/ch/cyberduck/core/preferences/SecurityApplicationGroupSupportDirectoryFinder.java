@@ -22,6 +22,7 @@ import ch.cyberduck.binding.foundation.NSFileManager;
 import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.exception.AccessDeniedException;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
@@ -31,6 +32,8 @@ import org.rococoa.Foundation;
  */
 public class SecurityApplicationGroupSupportDirectoryFinder implements SupportDirectoryFinder {
     private static final Logger log = Logger.getLogger(SecurityApplicationGroupSupportDirectoryFinder.class);
+
+    private final Preferences preferences = PreferencesFactory.get();
 
     @Override
     public Local find() {
@@ -42,7 +45,18 @@ public class SecurityApplicationGroupSupportDirectoryFinder implements SupportDi
                 log.warn("Missing com.apple.security.application-groups in sandbox entitlements");
             }
             else {
-                return LocalFactory.get(group.path());
+                // You should organize the contents of this directory in the same way that any other Library folder is organized
+                final String application = "duck";
+                final Local folder = LocalFactory.get(String.format("%s/Library/Application Support", group.path()), application);
+                try {
+                    // In previous versions of OS X, although the group container directory is part of your sandbox,
+                    // the directory itself is not created automatically.
+                    folder.mkdir();
+                    return folder;
+                }
+                catch(AccessDeniedException e) {
+                    log.warn(String.format("Failure creating security application group directiry. %s", e.getMessage()));
+                }
             }
         }
         log.warn("Missing support for security application groups. Default to application support directory");
