@@ -37,6 +37,9 @@ public class DefaultProxyFinder implements ProxyFinder {
     private Preferences preferences
             = PreferencesFactory.get();
 
+    private HostUrlProvider provider
+            = new ProxyHostUrlProvider();
+
     @Override
     public boolean usePassiveFTP() {
         return true;
@@ -47,7 +50,7 @@ public class DefaultProxyFinder implements ProxyFinder {
         if(!preferences.getBoolean("connection.proxy.enable")) {
             return Proxy.DIRECT;
         }
-        for(java.net.Proxy proxy : selector.select(URI.create(new HostUrlProvider().get(target)))) {
+        for(java.net.Proxy proxy : selector.select(URI.create(provider.get(target)))) {
             switch(proxy.type()) {
                 case DIRECT: {
                     return Proxy.DIRECT;
