@@ -19,6 +19,8 @@ package ch.cyberduck.core.proxy;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import java.net.InetSocketAddress;
 import java.net.ProxySelector;
@@ -32,6 +34,9 @@ public class DefaultProxyFinder implements ProxyFinder {
     private final ProxySelector selector
             = ProxySelector.getDefault();
 
+    private Preferences preferences
+            = PreferencesFactory.get();
+
     @Override
     public boolean usePassiveFTP() {
         return true;
@@ -39,6 +44,9 @@ public class DefaultProxyFinder implements ProxyFinder {
 
     @Override
     public Proxy find(final Host target) {
+        if(!preferences.getBoolean("connection.proxy.enable")) {
+            return Proxy.DIRECT;
+        }
         for(java.net.Proxy proxy : selector.select(URI.create(new HostUrlProvider().get(target)))) {
             switch(proxy.type()) {
                 case DIRECT: {
