@@ -162,7 +162,7 @@
     </target>
 
     <target name="archive" depends="compile, manifest" description="Create archives">
-        <jar jarfile="${build}/config.jar"
+        <jar jarfile="${build}/config-${version}.jar"
              update="yes"
              manifest="${build}/MANIFEST.MF">
             <fileset dir="${lib}">
@@ -170,21 +170,21 @@
                 <include name="log4j-*.xml"/>
             </fileset>
         </jar>
-        <jar jarfile="${build}/core.jar"
+        <jar jarfile="${build}/core-${version}.jar"
              update="yes"
              manifest="${build}/MANIFEST.MF">
             <fileset dir="${build.classes}">
                 <include name="ch/cyberduck/core/**/*.class"/>
             </fileset>
         </jar>
-        <jar jarfile="${build}/fs.jar"
+        <jar jarfile="${build}/fs-${version}.jar"
              update="yes"
              manifest="${build}/MANIFEST.MF">
             <fileset dir="${build.classes}">
                 <include name="ch/cyberduck/fs/**/*.class"/>
             </fileset>
         </jar>
-        <jar jarfile="${build}/ui.jar"
+        <jar jarfile="${build}/ui-${version}.jar"
              update="yes"
              manifest="${build}/MANIFEST.MF">
             <fileset dir="${build.classes}/">
@@ -192,14 +192,14 @@
                 <exclude name="ch/cyberduck/ui/cocoa/**/*.class"/>
             </fileset>
         </jar>
-        <jar jarfile="${build}/binding.jar"
+        <jar jarfile="${build}/binding-${version}.jar"
              update="yes"
              manifest="${build}/MANIFEST.MF">
             <fileset dir="${build.classes}/">
                 <include name="ch/cyberduck/binding/**/*.class"/>
             </fileset>
         </jar>
-        <jar jarfile="${build}/cocoa.jar"
+        <jar jarfile="${build}/cocoa-${version}.jar"
              update="yes"
              manifest="${build}/MANIFEST.MF">
             <fileset dir="${build.classes}/">

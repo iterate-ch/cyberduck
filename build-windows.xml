@@ -109,10 +109,10 @@
         </taskdef>
         <ikvmc target="library" out="${build}/core.dll" home="${ikvm.home}"
                version="${version.full}" debug="false" verbose="true">
-            <fileset file="${build}/config.jar"/>
-            <fileset file="${build}/core.jar"/>
-            <fileset file="${build}/cli.jar"/>
-            <fileset file="${build}/ui.jar"/>
+            <fileset file="${build}/config-*.jar"/>
+            <fileset file="${build}/core-*.jar"/>
+            <fileset file="${build}/cli-*.jar"/>
+            <fileset file="${build}/ui-*.jar"/>
             <fileset dir="${lib}">
                 <include name="*.jar"/>
                 <include name="1.8.0*/Contents/Home/lib/ext/sunec.jar"/>
