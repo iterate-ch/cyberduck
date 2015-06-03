@@ -31,6 +31,15 @@
 		471F77B918043A0300A4C196 /* FoundationProgressIconService.m in Sources */ = {isa = PBXBuildFile; fileRef = 471F77B518043A0300A4C196 /* FoundationProgressIconService.m */; };
 		4732BDA813182C7F00CBC46B /* Download.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4732BD8613182C7F00CBC46B /* Download.strings */; };
 		4734425B102DEABD00C04C43 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4734425A102DEABD00C04C43 /* Quartz.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		4738A1F11B1BA5EA005EA4AE /* UKCrashReporter.m in Sources */ = {isa = PBXBuildFile; fileRef = 47457F8D09980270002C93C3 /* UKCrashReporter.m */; };
+		4738A1F31B1BA61A005EA4AE /* CTGradient.m in Sources */ = {isa = PBXBuildFile; fileRef = 47AC356C0DA1025000CC1426 /* CTGradient.m */; };
+		4738A1F51B1BA61A005EA4AE /* CTGradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = 47AC356E0DA1025000CC1426 /* CTGradientView.m */; };
+		4738A1F61B1BA62F005EA4AE /* UKSystemInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 477FA95A0E9A7826009E7857 /* UKSystemInfo.m */; };
+		4738A1F71B1BA645005EA4AE /* CDBookmarkCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 475286BD10D2CC660029363C /* CDBookmarkCell.m */; };
+		4738A1F81B1BA645005EA4AE /* CDControllerCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 475286BE10D2CC660029363C /* CDControllerCell.m */; };
+		4738A1F91B1BA645005EA4AE /* CDListView.m in Sources */ = {isa = PBXBuildFile; fileRef = 475286BF10D2CC660029363C /* CDListView.m */; };
+		4738A1FA1B1BA645005EA4AE /* CDOutlineCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 475286C010D2CC660029363C /* CDOutlineCell.m */; };
+		4738A1FB1B1BA645005EA4AE /* CDOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 475286C110D2CC660029363C /* CDOutlineView.m */; };
 		4739EF690856981300405FD3 /* Keychain.h in Headers */ = {isa = PBXBuildFile; fileRef = 47983749072AD67800FA3CDB /* Keychain.h */; };
 		4739EF6B0856981300405FD3 /* Keychain.m in Sources */ = {isa = PBXBuildFile; fileRef = 4798373F072AD66D00FA3CDB /* Keychain.m */; };
 		4739EF6E0856981300405FD3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
@@ -57,16 +66,6 @@
 		47462AE00F0A473D0075CBA9 /* EMKeychainProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 47462ADC0F0A473D0075CBA9 /* EMKeychainProxy.m */; };
 		47472EF5177F788E0090A595 /* Rackspace US.cyberduckprofile in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4718F4AA175F432400B424AD /* Rackspace US.cyberduckprofile */; };
 		4751799E097943FA008F671F /* Credentials.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4751799C097943FA008F671F /* Credentials.strings */; };
-		475286C210D2CC660029363C /* CDBookmarkCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 475286B510D2CC660029363C /* CDBookmarkCell.h */; };
-		475286C310D2CC660029363C /* CDControllerCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 475286B610D2CC660029363C /* CDControllerCell.h */; };
-		475286C410D2CC660029363C /* CDListView.h in Headers */ = {isa = PBXBuildFile; fileRef = 475286B710D2CC660029363C /* CDListView.h */; };
-		475286C510D2CC660029363C /* CDOutlineCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 475286B810D2CC660029363C /* CDOutlineCell.h */; };
-		475286C610D2CC660029363C /* CDOutlineView.h in Headers */ = {isa = PBXBuildFile; fileRef = 475286B910D2CC660029363C /* CDOutlineView.h */; };
-		475286CA10D2CC660029363C /* CDBookmarkCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 475286BD10D2CC660029363C /* CDBookmarkCell.m */; };
-		475286CB10D2CC660029363C /* CDControllerCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 475286BE10D2CC660029363C /* CDControllerCell.m */; };
-		475286CC10D2CC660029363C /* CDListView.m in Sources */ = {isa = PBXBuildFile; fileRef = 475286BF10D2CC660029363C /* CDListView.m */; };
-		475286CD10D2CC660029363C /* CDOutlineCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 475286C010D2CC660029363C /* CDOutlineCell.m */; };
-		475286CE10D2CC660029363C /* CDOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 475286C110D2CC660029363C /* CDOutlineView.m */; };
 		4759B9311AF0D40600DB909A /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4759B9301AF0D40600DB909A /* ServiceManagement.framework */; };
 		475C6D5A170C9214006535BB /* googlestorage.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 475C6D59170C9214006535BB /* googlestorage.tiff */; };
 		475D17B90805D54C00166B8A /* download5.icns in Resources */ = {isa = PBXBuildFile; fileRef = 475D17AF0805D54C00166B8A /* download5.icns */; };
@@ -153,17 +152,6 @@
 		477A10E10FD08DE900BAD4AD /* ProxyForJava.m in Sources */ = {isa = PBXBuildFile; fileRef = 477A108B0FD08DE800BAD4AD /* ProxyForJava.m */; };
 		477A10E20FD08DE900BAD4AD /* Rococoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 477A108C0FD08DE800BAD4AD /* Rococoa.h */; };
 		477A10E30FD08DE900BAD4AD /* Rococoa.m in Sources */ = {isa = PBXBuildFile; fileRef = 477A108D0FD08DE800BAD4AD /* Rococoa.m */; };
-		477A11070FD08E8E00BAD4AD /* UKCrashReporter.h in Headers */ = {isa = PBXBuildFile; fileRef = 47457F8C09980270002C93C3 /* UKCrashReporter.h */; };
-		477A11090FD08E8E00BAD4AD /* SNDisclosableView.h in Headers */ = {isa = PBXBuildFile; fileRef = 477B1B7C0AF384350023BA7F /* SNDisclosableView.h */; };
-		477A110C0FD08E8E00BAD4AD /* CTGradient.h in Headers */ = {isa = PBXBuildFile; fileRef = 47AC356B0DA1025000CC1426 /* CTGradient.h */; };
-		477A110D0FD08E8E00BAD4AD /* CTGradientView.h in Headers */ = {isa = PBXBuildFile; fileRef = 47AC356D0DA1025000CC1426 /* CTGradientView.h */; };
-		477A110E0FD08E8E00BAD4AD /* QLPreviewPanel.h in Headers */ = {isa = PBXBuildFile; fileRef = 473240070DABC00800BF67D2 /* QLPreviewPanel.h */; };
-		477A110F0FD08E8E00BAD4AD /* UKSystemInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 477FA9590E9A7826009E7857 /* UKSystemInfo.h */; };
-		477A11120FD08EAB00BAD4AD /* UKCrashReporter.m in Sources */ = {isa = PBXBuildFile; fileRef = 47457F8D09980270002C93C3 /* UKCrashReporter.m */; };
-		477A11140FD08EAB00BAD4AD /* SNDisclosableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 477B1B7D0AF384350023BA7F /* SNDisclosableView.m */; };
-		477A11170FD08EAB00BAD4AD /* CTGradient.m in Sources */ = {isa = PBXBuildFile; fileRef = 47AC356C0DA1025000CC1426 /* CTGradient.m */; };
-		477A11180FD08EAB00BAD4AD /* CTGradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = 47AC356E0DA1025000CC1426 /* CTGradientView.m */; };
-		477A11190FD08EAB00BAD4AD /* UKSystemInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 477FA95A0E9A7826009E7857 /* UKSystemInfo.m */; };
 		4781AF410828423100B3E0FA /* download0.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4781AF400828423100B3E0FA /* download0.icns */; };
 		4781DFE5162FF6FE001F4993 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
 		4781DFE6162FF703001F4993 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
@@ -182,7 +170,6 @@
 		478F0DF412FB03DC000FE33C /* update.pem in Resources */ = {isa = PBXBuildFile; fileRef = 478F0DF312FB03DC000FE33C /* update.pem */; };
 		47911A180B84C4E8001A29AE /* Acknowledgments.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 47911A170B84C4E8001A29AE /* Acknowledgments.rtf */; };
 		4792112912F6F4FD00E35E16 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4792112812F6F4FD00E35E16 /* Sparkle.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
-		4792113912F6F8FA00E35E16 /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4792112812F6F4FD00E35E16 /* Sparkle.framework */; };
 		479450BD162FF74F00FC7FF9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
 		4797D2751628276C00340E1C /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47BEDBD20B9296C800141EB4 /* ApplicationServices.framework */; };
 		4797D28E162829F800340E1C /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 474522C51076B68E00823467 /* ApplicationServices.framework */; };
@@ -208,8 +195,6 @@
 		47B6074A0DA420880068282C /* Keychain.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47B6072E0DA420880068282C /* Keychain.strings */; };
 		47B888A917984584004E298A /* Folder.nib in Resources */ = {isa = PBXBuildFile; fileRef = 47B888A817984584004E298A /* Folder.nib */; };
 		47BCF18E13BB4EC700D26E4C /* setup/app/container-migration.plist in Resources */ = {isa = PBXBuildFile; fileRef = 47BCF18D13BB4EC700D26E4C /* setup/app/container-migration.plist */; };
-		47BE1F8B12369DF100E758FE /* CDTransmitImporter.h in Headers */ = {isa = PBXBuildFile; fileRef = 47BE1F8912369DF100E758FE /* CDTransmitImporter.h */; };
-		47BE1F8C12369DF100E758FE /* CDTransmitImporter.m in Sources */ = {isa = PBXBuildFile; fileRef = 47BE1F8A12369DF100E758FE /* CDTransmitImporter.m */; };
 		47BEDBD30B9296C800141EB4 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47BEDBD20B9296C800141EB4 /* ApplicationServices.framework */; };
 		47C57EAC162F45F200A272BC /* FinderLocal.h in Headers */ = {isa = PBXBuildFile; fileRef = 47C57EAA162F45F200A272BC /* FinderLocal.h */; };
 		47C57EAD162F45F200A272BC /* FinderLocal.m in Sources */ = {isa = PBXBuildFile; fileRef = 47C57EAB162F45F200A272BC /* FinderLocal.m */; };
@@ -228,26 +213,6 @@
 		47CE3BFB1799309F0031DB9F /* transfer-move.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47CE3BF81799309F0031DB9F /* transfer-move.tiff */; };
 		47CE3BFC1799309F0031DB9F /* transfer-sync.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47CE3BF91799309F0031DB9F /* transfer-sync.tiff */; };
 		47D939CA1A268D7F0006D4AE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47D939C91A268D7F0006D4AE /* Foundation.framework */; };
-		47D939EA1A2693430006D4AE /* libKeychain.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4739EF730856981400405FD3 /* libKeychain.dylib */; };
-		47D939EB1A2693430006D4AE /* libProxy.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4739EFB00856990900405FD3 /* libProxy.dylib */; };
-		47D939EC1A2693430006D4AE /* libLocal.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4739EFC10856991300405FD3 /* libLocal.dylib */; };
-		47D939ED1A2693440006D4AE /* libDiagnostics.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4762DAC509FC42EC0034C662 /* libDiagnostics.dylib */; };
-		47D939EE1A2693440006D4AE /* libLaunchServicesSchemeHandler.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47BEDB030B92960400141EB4 /* libLaunchServicesSchemeHandler.dylib */; };
-		47D939EF1A2693440006D4AE /* libQuickLook.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 478ECD180DAD5743008A5B1F /* libQuickLook.dylib */; };
-		47D939F11A2693440006D4AE /* librococoa.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 477A104D0FD08DBA00BAD4AD /* librococoa.dylib */; };
-		47D939F21A2693440006D4AE /* libLaunchServicesApplicationFinder.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4797D27A1628276C00340E1C /* libLaunchServicesApplicationFinder.dylib */; };
-		47D939F31A2693440006D4AE /* libLaunchServicesQuarantineService.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47F102B91628D57500923FDE /* libLaunchServicesQuarantineService.dylib */; };
-		47D939F41A2693440006D4AE /* libLaunchServicesFileDescriptor.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47C57EBA162F471700A272BC /* libLaunchServicesFileDescriptor.dylib */; };
-		47D939F51A2693440006D4AE /* libIOKitSleepPreventer.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47FB9C6B1725A5CC00FE33C1 /* libIOKitSleepPreventer.dylib */; };
-		47D939F61A2693440006D4AE /* libFoundationProgressService.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 471F77B3180439B500A4C196 /* libFoundationProgressService.dylib */; };
-		47D939F91A275DFE0006D4AE /* libProxy.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4739EFB00856990900405FD3 /* libProxy.dylib */; };
-		47D939FA1A275DFE0006D4AE /* libLocal.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4739EFC10856991300405FD3 /* libLocal.dylib */; };
-		47D939FB1A275DFE0006D4AE /* libDiagnostics.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4762DAC509FC42EC0034C662 /* libDiagnostics.dylib */; };
-		47D939FC1A275DFE0006D4AE /* libLaunchServicesSchemeHandler.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47BEDB030B92960400141EB4 /* libLaunchServicesSchemeHandler.dylib */; };
-		47D939FE1A275DFE0006D4AE /* libLaunchServicesApplicationFinder.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4797D27A1628276C00340E1C /* libLaunchServicesApplicationFinder.dylib */; };
-		47D939FF1A275DFE0006D4AE /* libLaunchServicesQuarantineService.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47F102B91628D57500923FDE /* libLaunchServicesQuarantineService.dylib */; };
-		47D93A001A275DFE0006D4AE /* libLaunchServicesFileDescriptor.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47C57EBA162F471700A272BC /* libLaunchServicesFileDescriptor.dylib */; };
-		47D93A011A275DFE0006D4AE /* libIOKitSleepPreventer.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47FB9C6B1725A5CC00FE33C1 /* libIOKitSleepPreventer.dylib */; };
 		47D93A031A27602E0006D4AE /* License.txt in Resources */ = {isa = PBXBuildFile; fileRef = 474163AF06C4F64100AC0BD2 /* License.txt */; };
 		47D93A051A2760810006D4AE /* Rackspace US.cyberduckprofile in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4718F4AA175F432400B424AD /* Rackspace US.cyberduckprofile */; };
 		47D93A061A2762A40006D4AE /* Acknowledgments.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 47911A170B84C4E8001A29AE /* Acknowledgments.rtf */; };
@@ -279,7 +244,6 @@
 		47F102B41628D57500923FDE /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 474522C51076B68E00823467 /* ApplicationServices.framework */; };
 		47F102CA1628D5CE00923FDE /* LaunchServicesQuarantineService.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F102BD1628D5CE00923FDE /* LaunchServicesQuarantineService.h */; };
 		47F102CE1628D5CE00923FDE /* LaunchServicesQuarantineService.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F102BF1628D5CE00923FDE /* LaunchServicesQuarantineService.m */; };
-		47FA2CF21A28A1B70058614E /* librococoa.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 477A104D0FD08DBA00BAD4AD /* librococoa.dylib */; };
 		47FB9C641725A5CC00FE33C1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
 		47FB9C661725A5CC00FE33C1 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */; };
 		47FC190C099FB8AF0082431D /* Crash.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47FC190A099FB8AF0082431D /* Crash.strings */; };
@@ -459,46 +423,6 @@
 			dstSubfolderSpec = 7;
 			files = (
 				47472EF5177F788E0090A595 /* Rackspace US.cyberduckprofile in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		4749573207EDEC4E00B34D53 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				47D939EA1A2693430006D4AE /* libKeychain.dylib in CopyFiles */,
-				47D939EB1A2693430006D4AE /* libProxy.dylib in CopyFiles */,
-				47D939EC1A2693430006D4AE /* libLocal.dylib in CopyFiles */,
-				47D939ED1A2693440006D4AE /* libDiagnostics.dylib in CopyFiles */,
-				47D939EE1A2693440006D4AE /* libLaunchServicesSchemeHandler.dylib in CopyFiles */,
-				47D939EF1A2693440006D4AE /* libQuickLook.dylib in CopyFiles */,
-				47D939F11A2693440006D4AE /* librococoa.dylib in CopyFiles */,
-				47D939F21A2693440006D4AE /* libLaunchServicesApplicationFinder.dylib in CopyFiles */,
-				47D939F31A2693440006D4AE /* libLaunchServicesQuarantineService.dylib in CopyFiles */,
-				47D939F41A2693440006D4AE /* libLaunchServicesFileDescriptor.dylib in CopyFiles */,
-				47D939F51A2693440006D4AE /* libIOKitSleepPreventer.dylib in CopyFiles */,
-				47D939F61A2693440006D4AE /* libFoundationProgressService.dylib in CopyFiles */,
-				4792113912F6F8FA00E35E16 /* Sparkle.framework in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		47D939F81A275DD20006D4AE /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				47FA2CF21A28A1B70058614E /* librococoa.dylib in CopyFiles */,
-				47D939F91A275DFE0006D4AE /* libProxy.dylib in CopyFiles */,
-				47D939FA1A275DFE0006D4AE /* libLocal.dylib in CopyFiles */,
-				47D939FB1A275DFE0006D4AE /* libDiagnostics.dylib in CopyFiles */,
-				47D939FC1A275DFE0006D4AE /* libLaunchServicesSchemeHandler.dylib in CopyFiles */,
-				47D939FE1A275DFE0006D4AE /* libLaunchServicesApplicationFinder.dylib in CopyFiles */,
-				47D939FF1A275DFE0006D4AE /* libLaunchServicesQuarantineService.dylib in CopyFiles */,
-				47D93A001A275DFE0006D4AE /* libLaunchServicesFileDescriptor.dylib in CopyFiles */,
-				47D93A011A275DFE0006D4AE /* libIOKitSleepPreventer.dylib in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1174,6 +1098,7 @@
 		477B1B7C0AF384350023BA7F /* SNDisclosableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SNDisclosableView.h; sourceTree = "<group>"; };
 		477B1B7D0AF384350023BA7F /* SNDisclosableView.m */ = {isa = PBXFileReference; fileEncoding = 4; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = SNDisclosableView.m; sourceTree = "<group>"; };
 		477BE2330FD9B38C00F5CB50 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/Main.nib; sourceTree = "<group>"; };
+		477CFC7E1AF0FAFB001E81AF /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		477FA9590E9A7826009E7857 /* UKSystemInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UKSystemInfo.h; sourceTree = "<group>"; };
 		477FA95A0E9A7826009E7857 /* UKSystemInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UKSystemInfo.m; sourceTree = "<group>"; };
 		4780ACC617634CD6007D9DD5 /* HP Cloud Object Storage.cyberduckprofile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "HP Cloud Object Storage.cyberduckprofile"; sourceTree = "<group>"; };
@@ -2538,6 +2463,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				477CFC7E1AF0FAFB001E81AF /* Cocoa.framework */,
 				4759B9301AF0D40600DB909A /* ServiceManagement.framework */,
 				47D939C91A268D7F0006D4AE /* Foundation.framework */,
 				479BF77D1725A68C006854BF /* IOKit.framework */,
@@ -3973,20 +3899,8 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				477A11070FD08E8E00BAD4AD /* UKCrashReporter.h in Headers */,
-				477A11090FD08E8E00BAD4AD /* SNDisclosableView.h in Headers */,
-				477A110C0FD08E8E00BAD4AD /* CTGradient.h in Headers */,
-				477A110D0FD08E8E00BAD4AD /* CTGradientView.h in Headers */,
-				477A110E0FD08E8E00BAD4AD /* QLPreviewPanel.h in Headers */,
-				477A110F0FD08E8E00BAD4AD /* UKSystemInfo.h in Headers */,
 				477A10E00FD08DE900BAD4AD /* ProxyForJava.h in Headers */,
 				477A10E20FD08DE900BAD4AD /* Rococoa.h in Headers */,
-				475286C210D2CC660029363C /* CDBookmarkCell.h in Headers */,
-				475286C310D2CC660029363C /* CDControllerCell.h in Headers */,
-				475286C410D2CC660029363C /* CDListView.h in Headers */,
-				475286C510D2CC660029363C /* CDOutlineCell.h in Headers */,
-				475286C610D2CC660029363C /* CDOutlineView.h in Headers */,
-				47BE1F8B12369DF100E758FE /* CDTransmitImporter.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4059,7 +3973,6 @@
 				471D2C0E05A2505500675163 /* Resources */,
 				4735940F0CE76EE50085DEAC /* Prune NIBs */,
 				47C2724412E99D8600A13758 /* Frameworks */,
-				4749573207EDEC4E00B34D53 /* CopyFiles */,
 				470C646B1328CBDD00146FB6 /* CopyFiles */,
 				47472EEF177F78620090A595 /* CopyFiles */,
 			);
@@ -4254,7 +4167,6 @@
 				47C2AD7C1A268C880047B67A /* Sources */,
 				47C2AD7D1A268C880047B67A /* Frameworks */,
 				47C2AD7E1A268C880047B67A /* Resources */,
-				47D939F81A275DD20006D4AE /* CopyFiles */,
 				47D93A041A27607A0006D4AE /* CopyFiles */,
 			);
 			buildRules = (
@@ -4644,19 +4556,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				477A11120FD08EAB00BAD4AD /* UKCrashReporter.m in Sources */,
-				477A11140FD08EAB00BAD4AD /* SNDisclosableView.m in Sources */,
-				477A11170FD08EAB00BAD4AD /* CTGradient.m in Sources */,
-				477A11180FD08EAB00BAD4AD /* CTGradientView.m in Sources */,
-				477A11190FD08EAB00BAD4AD /* UKSystemInfo.m in Sources */,
 				477A10E10FD08DE900BAD4AD /* ProxyForJava.m in Sources */,
 				477A10E30FD08DE900BAD4AD /* Rococoa.m in Sources */,
-				475286CA10D2CC660029363C /* CDBookmarkCell.m in Sources */,
-				475286CB10D2CC660029363C /* CDControllerCell.m in Sources */,
-				475286CC10D2CC660029363C /* CDListView.m in Sources */,
-				475286CD10D2CC660029363C /* CDOutlineCell.m in Sources */,
-				475286CE10D2CC660029363C /* CDOutlineView.m in Sources */,
-				47BE1F8C12369DF100E758FE /* CDTransmitImporter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4688,6 +4589,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4738A1F71B1BA645005EA4AE /* CDBookmarkCell.m in Sources */,
+				4738A1F81B1BA645005EA4AE /* CDControllerCell.m in Sources */,
+				4738A1F91B1BA645005EA4AE /* CDListView.m in Sources */,
+				4738A1FA1B1BA645005EA4AE /* CDOutlineCell.m in Sources */,
+				4738A1FB1B1BA645005EA4AE /* CDOutlineView.m in Sources */,
+				4738A1F61B1BA62F005EA4AE /* UKSystemInfo.m in Sources */,
+				4738A1F31B1BA61A005EA4AE /* CTGradient.m in Sources */,
+				4738A1F51B1BA61A005EA4AE /* CTGradientView.m in Sources */,
+				4738A1F11B1BA5EA005EA4AE /* UKCrashReporter.m in Sources */,
 				47121FF71611F94000E2547D /* main.m in Sources */,
 				47ADB0801A288CC100E4F69B /* launcher.m in Sources */,
 			);
