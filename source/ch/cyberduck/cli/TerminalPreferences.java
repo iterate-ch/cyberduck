@@ -44,7 +44,7 @@ import ch.cyberduck.core.preferences.ApplicationSupportDirectoryFinder;
 import ch.cyberduck.core.preferences.BundleApplicationResourcesFinder;
 import ch.cyberduck.core.preferences.StaticApplicationResourcesFinder;
 import ch.cyberduck.core.preferences.UserHomeSupportDirectoryFinder;
-import ch.cyberduck.core.proxy.DefaultProxyFinder;
+import ch.cyberduck.core.proxy.EnvironmentVariableProxyFinder;
 import ch.cyberduck.core.proxy.SystemConfigurationProxy;
 import ch.cyberduck.core.resources.NSImageIconCache;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
@@ -104,7 +104,7 @@ public class TerminalPreferences extends MemoryPreferences {
                 defaults.put("factory.locale.class", RegexLocale.class.getName());
                 defaults.put("factory.applicationlauncher.class", ExecApplicationLauncher.class.getName());
                 defaults.put("factory.editorfactory.class", DefaultEditorFactory.class.getName());
-                defaults.put("factory.proxy.class", DefaultProxyFinder.class.getName());
+                defaults.put("factory.proxy.class", EnvironmentVariableProxyFinder.class.getName());
                 defaults.put("factory.symlink.class", DefaultSymlinkFeature.class.getName());
                 break;
         }
