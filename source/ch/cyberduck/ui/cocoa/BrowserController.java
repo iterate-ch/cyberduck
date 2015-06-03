@@ -65,7 +65,6 @@ import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.threading.BackgroundAction;
-import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.threading.TransferBackgroundAction;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
@@ -100,7 +99,6 @@ import ch.cyberduck.ui.cocoa.quicklook.QLPreviewPanel;
 import ch.cyberduck.ui.cocoa.quicklook.QLPreviewPanelController;
 import ch.cyberduck.ui.cocoa.quicklook.QuickLook;
 import ch.cyberduck.ui.cocoa.quicklook.QuickLookFactory;
-import ch.cyberduck.ui.cocoa.threading.BrowserControllerBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.view.BookmarkCell;
 import ch.cyberduck.ui.cocoa.view.OutlineCell;
@@ -3035,73 +3033,15 @@ public class BrowserController extends WindowController
     }
 
     /**
-     * @param archive Archive format
+     * @param format Archive format
      */
-    private void archiveClicked(final Archive archive) {
-        final List<Path> changed = this.getSelectedPaths();
-        new OverwriteController(this).overwrite(Collections.singletonList(archive.getArchive(changed)), new DefaultMainAction() {
-            @Override
-            public void run() {
-                background(new BrowserControllerBackgroundAction(BrowserController.this) {
-                    @Override
-                    public Boolean run() throws BackgroundException {
-                        final Compress feature = BrowserController.this.session.getFeature(Compress.class);
-                        feature.archive(archive, workdir, changed, this, transcript);
-                        return true;
-                    }
-
-                    @Override
-                    public void cleanup() {
-                        super.cleanup();
-                        // Update Selection
-                        reload(changed, Collections.singletonList(archive.getArchive(changed)));
-                    }
-
-                    @Override
-                    public String getActivity() {
-                        return archive.getCompressCommand(workdir, changed);
-                    }
-                });
-            }
-        });
+    private void archiveClicked(final Archive format) {
+        new ArchiveController(this).archive(format, this.getSelectedPaths());
     }
 
     @Action
     public void unarchiveButtonClicked(final ID sender) {
-        final List<Path> expanded = new ArrayList<Path>();
-        final List<Path> selected = this.getSelectedPaths();
-        for(final Path s : selected) {
-            final Archive archive = Archive.forName(s.getName());
-            if(null == archive) {
-                continue;
-            }
-            new OverwriteController(this).overwrite(archive.getExpanded(Collections.singletonList(s)), new DefaultMainAction() {
-                @Override
-                public void run() {
-                    background(new BrowserControllerBackgroundAction(BrowserController.this) {
-                        @Override
-                        public Boolean run() throws BackgroundException {
-                            final Compress feature = BrowserController.this.session.getFeature(Compress.class);
-                            feature.unarchive(archive, s, this, transcript);
-                            return true;
-                        }
-
-                        @Override
-                        public void cleanup() {
-                            super.cleanup();
-                            expanded.addAll(archive.getExpanded(Collections.singletonList(s)));
-                            // Update Selection
-                            reload(selected, expanded);
-                        }
-
-                        @Override
-                        public String getActivity() {
-                            return archive.getDecompressCommand(s);
-                        }
-                    });
-                }
-            });
-        }
+        new ArchiveController(this).unarchive(this.getSelectedPaths());
     }
 
     /**
