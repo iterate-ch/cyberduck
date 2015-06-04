@@ -31,6 +31,7 @@ import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSEnumerator;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSObject;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 
@@ -56,6 +57,8 @@ import java.util.Map;
  */
 public abstract class ToolbarWindowController extends WindowController implements NSToolbar.Delegate, NSTabView.Delegate {
     private static Logger log = Logger.getLogger(ToolbarWindowController.class);
+
+    private final Preferences preferences = PreferencesFactory.get();
 
     protected NSTabView tabView;
 
@@ -85,7 +88,7 @@ public abstract class ToolbarWindowController extends WindowController implement
     @Override
     public void awakeFromNib() {
         // Insert all panels into tab view
-        Iterator<String> identifiers = this.getPanelIdentifiers().iterator();
+        final Iterator<String> identifiers = this.getPanelIdentifiers().iterator();
         for(NSView panel : this.getPanels()) {
             int i = tabView.indexOfTabViewItemWithIdentifier(identifiers.next());
             tabView.tabViewItemAtIndex(i).setView(panel);
@@ -101,7 +104,7 @@ public abstract class ToolbarWindowController extends WindowController implement
         window.setToolbar(toolbar);
 
         // Change selection to last selected item in preferences
-        this.setSelectedPanel(PreferencesFactory.get().getInteger(String.format("%s.selected", this.getToolbarName())));
+        this.setSelectedPanel(preferences.getInteger(String.format("%s.selected", this.getToolbarName())));
         this.setTitle(this.getTitle(tabView.selectedTabViewItem()));
 
         super.awakeFromNib();
@@ -207,7 +210,7 @@ public abstract class ToolbarWindowController extends WindowController implement
 
     @Override
     public NSArray toolbarAllowedItemIdentifiers(final NSToolbar toolbar) {
-        List<String> identifiers = this.getPanelIdentifiers();
+        final List<String> identifiers = this.getPanelIdentifiers();
         return NSArray.arrayWithObjects(identifiers.toArray(new String[identifiers.size()]));
     }
 
@@ -266,8 +269,7 @@ public abstract class ToolbarWindowController extends WindowController implement
     public void tabView_didSelectTabViewItem(final NSTabView view, final NSTabViewItem item) {
         this.setTitle(this.getTitle(item));
         this.resize();
-        PreferencesFactory.get().setProperty(String.format("%s.selected",
-                this.getToolbarName()), view.indexOfTabViewItem(item));
+        preferences.setProperty(String.format("%s.selected", this.getToolbarName()), view.indexOfTabViewItem(item));
     }
 
     protected void setTitle(final String title) {
