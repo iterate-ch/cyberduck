@@ -1,9 +1,7 @@
-package ch.cyberduck.ui.threading;
+package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.AbstractController;
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.threading.ControllerMainAction;
-import ch.cyberduck.core.threading.MainAction;
 
 import org.junit.Test;
 
