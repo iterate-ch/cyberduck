@@ -87,7 +87,7 @@ public class MoveController extends ProxyController {
      *                 files as the value
      * @param action   Background task
      */
-    public void rename(final Map<Path, Path> selected, final DefaultMainAction action) {
+    private void rename(final Map<Path, Path> selected, final DefaultMainAction action) {
         if(preferences.getBoolean("browser.move.confirm")) {
             StringBuilder alertText = new StringBuilder(
                     LocaleFactory.localizedString("Do you want to move the selected files?"));

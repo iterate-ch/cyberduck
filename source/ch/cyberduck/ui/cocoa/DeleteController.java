@@ -25,8 +25,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallbackFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.worker.DeleteWorker;
 
@@ -39,16 +37,17 @@ import java.util.List;
  */
 public class DeleteController extends ProxyController {
 
-    private Preferences preferences
-            = PreferencesFactory.get();
-
     private BrowserController parent;
 
     public DeleteController(final BrowserController parent) {
         this.parent = parent;
     }
 
-
+    /**
+     * Recursively deletes the files
+     *
+     * @param selected The files selected in the browser to delete
+     */
     public void delete(final List<Path> selected) {
         final List<Path> normalized = PathNormalizer.normalize(selected);
         if(normalized.isEmpty()) {
@@ -75,7 +74,7 @@ public class DeleteController extends ProxyController {
             @Override
             public void callback(final int returncode) {
                 if(returncode == DEFAULT_OPTION) {
-                    deletePathsImpl(normalized);
+                    run(normalized);
                 }
             }
         });
@@ -91,14 +90,9 @@ public class DeleteController extends ProxyController {
         this.delete(Collections.singletonList(file));
     }
 
-    /**
-     * Recursively deletes the files
-     *
-     * @param files The files selected in the browser to delete
-     */
-    public void deletePathsImpl(final List<Path> files) {
-        this.background(new WorkerBackgroundAction<List<Path>>(this, parent.getSession(), parent.getCache(),
-                        new DeleteWorker(parent.getSession(), LoginCallbackFactory.get(parent), files, this) {
+    private void run(final List<Path> files) {
+        this.background(new WorkerBackgroundAction<List<Path>>(parent, parent.getSession(), parent.getCache(),
+                        new DeleteWorker(parent.getSession(), LoginCallbackFactory.get(parent), files, parent) {
                             @Override
                             public void cleanup(final List<Path> result) {
                                 parent.reload(result, Collections.<Path>emptyList());

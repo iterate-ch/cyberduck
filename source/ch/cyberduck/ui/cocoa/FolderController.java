@@ -103,7 +103,7 @@ public class FolderController extends FileController {
         }
     }
 
-    protected void run(final Path directory, final String filename) {
+    private void run(final Path directory, final String filename) {
         final Path folder = new Path(directory, filename, EnumSet.of(Path.Type.directory));
         parent.background(new WorkerBackgroundAction<Path>(parent, parent.getSession(), parent.getCache(),
                 new CreateDirectoryWorker(parent.getSession(), folder, hasLocation() ? regionPopup.selectedItem().representedObject() : null) {

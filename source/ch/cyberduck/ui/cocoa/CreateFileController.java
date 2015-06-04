@@ -60,7 +60,7 @@ public class CreateFileController extends FileController {
         }
     }
 
-    protected void run(final Path directory, final String filename, final boolean edit) {
+    private void run(final Path directory, final String filename, final boolean edit) {
         final Path file = new Path(directory, filename, EnumSet.of(Path.Type.file));
         parent.background(new WorkerBackgroundAction<Path>(parent, parent.getSession(), parent.getCache(),
                 new TouchWorker(parent.getSession(), file) {
