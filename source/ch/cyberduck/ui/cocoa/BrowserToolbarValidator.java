@@ -46,7 +46,7 @@ import org.rococoa.Selector;
 /**
  * @version $Id$
  */
-public class BrowserToolbarValidator {
+public class BrowserToolbarValidator implements ToolbarValidator {
 
     private final QuickLook quicklook = QuickLookFactory.get();
 
@@ -56,6 +56,7 @@ public class BrowserToolbarValidator {
         this.controller = controller;
     }
 
+    @Override
     public boolean validate(final NSToolbarItem item) {
         final String identifier = item.itemIdentifier();
         switch(identifier) {
@@ -116,6 +117,7 @@ public class BrowserToolbarValidator {
      * @param action the method selector
      * @return true if the item by that identifier should be enabled
      */
+    @Override
     public boolean validate(final Selector action) {
         if(action.equals(Foundation.selector("cut:"))) {
             return this.isBrowser() && controller.isMounted() && controller.getSelectionCount() > 0;

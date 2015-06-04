@@ -49,7 +49,7 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public class BrowserToolbarFactory {
+public class BrowserToolbarFactory implements ToolbarFactory {
 
     protected static final String TOOLBAR_NEW_CONNECTION = "New Connection";
     protected static final String TOOLBAR_BROWSER_VIEW = "Browser View";
@@ -96,6 +96,7 @@ public class BrowserToolbarFactory {
         this.controller = controller;
     }
 
+    @Override
     public NSToolbarItem create(final String itemIdentifier) {
         if(!toolbarItems.containsKey(itemIdentifier)) {
             toolbarItems.put(itemIdentifier, NSToolbarItem.itemWithIdentifier(itemIdentifier));
@@ -327,6 +328,7 @@ public class BrowserToolbarFactory {
         return null;
     }
 
+    @Override
     public NSArray getDefault() {
         return NSArray.arrayWithObjects(
                 TOOLBAR_NEW_CONNECTION,
@@ -341,6 +343,7 @@ public class BrowserToolbarFactory {
         );
     }
 
+    @Override
     public NSArray getAllowed() {
         return NSArray.arrayWithObjects(
                 TOOLBAR_NEW_CONNECTION,
