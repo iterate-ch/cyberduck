@@ -69,7 +69,7 @@ public final class Queue {
     }
 
     /**
-     * Idle this transfer until a free slot is avilable depending on
+     * Idle this transfer until a free slot is available depending on
      * the maximum number of concurrent transfers allowed in the Preferences.
      *
      * @param t This transfer should respect the settings for maximum number of transfers
