@@ -39,7 +39,7 @@ public class ServiceManagementApplicationLoginRegistry implements ApplicationLog
      * <code>Contents/Library/LoginItems</code> directory of the bundle.
      */
     @Override
-    public void register(final Application application) {
+    public boolean register(final Application application) {
         final Local helper = LocalFactory.get(new BundleApplicationResourcesFinder().find().getParent(),
                 String.format("Library/LoginItems/%s.app", application.getName()));
         if(!finder.register(helper)) {
@@ -48,13 +48,17 @@ public class ServiceManagementApplicationLoginRegistry implements ApplicationLog
         }
         if(!ServiceManagementLibrary.SMLoginItemSetEnabled(application.getIdentifier(), true)) {
             log.warn(String.format("Failed to register %s as login item", application));
+            return false;
         }
+        return true;
     }
 
     @Override
-    public void unregister(final Application application) {
+    public boolean unregister(final Application application) {
         if(!ServiceManagementLibrary.SMLoginItemSetEnabled(application.getIdentifier(), false)) {
             log.warn(String.format("Failed to remove %s as login item", application));
+            return false;
         }
+        return true;
     }
 }

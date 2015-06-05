@@ -28,8 +28,13 @@ public interface ApplicationLoginRegistry {
      * Register helper application to be launched when the user logs in to the system
      *
      * @param application Bundle identifier
+     * @return False on failure
      */
-    void register(Application application);
+    boolean register(Application application);
 
-    void unregister(Application application);
+    /**
+     * @param application
+     * @return False on failure
+     */
+    boolean unregister(Application application);
 }
