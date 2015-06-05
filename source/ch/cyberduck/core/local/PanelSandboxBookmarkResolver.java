@@ -60,7 +60,7 @@ public class PanelSandboxBookmarkResolver implements SandboxBookmarkResolver<NSU
                 bookmark = NSData.dataWithBase64EncodedString(reference);
             }
             else {
-                throw new LocalAccessDeniedException(String.format("No security scoped bookmark for %s", file));
+                throw new LocalAccessDeniedException(String.format("No security scoped bookmark for %s", file.getAbsolute()));
             }
         }
         else {
@@ -106,7 +106,7 @@ public class PanelSandboxBookmarkResolver implements SandboxBookmarkResolver<NSU
         panel.close();
         final String reference = bookmark.get();
         if(reference == null) {
-            throw new LocalAccessDeniedException(String.format("Prompt for %s canceled", file));
+            throw new LocalAccessDeniedException(String.format("Prompt for %s canceled", file.getAbsolute()));
         }
         return reference;
     }
