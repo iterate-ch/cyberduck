@@ -37,12 +37,9 @@ public class FilesystemWorker extends Worker<Void> {
 
     private final Filesystem fs;
 
-    private final String url;
-
     public FilesystemWorker(final Session<?> session, final Filesystem fs) {
         this.session = session;
         this.fs = fs;
-        this.url = new HostUrlProvider(true, true).get(session.getHost());
     }
 
     @Override
@@ -70,11 +67,12 @@ public class FilesystemWorker extends Worker<Void> {
             return false;
         }
         final FilesystemWorker that = (FilesystemWorker) o;
-        return Objects.equals(url, that.url);
+        return Objects.equals(new HostUrlProvider(true, true).get(session.getHost()),
+                new HostUrlProvider(true, true).get(that.session.getHost()));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(url);
+        return Objects.hash(new HostUrlProvider(true, true).get(session.getHost()));
     }
 }
