@@ -26,6 +26,7 @@ import org.junit.Test;
 
 import java.util.EnumSet;
 import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -38,10 +39,21 @@ public class QueueTest extends AbstractTestCase {
 
     @Test
     public void testAddRemove() throws Exception {
-        final Queue queue = new Queue();
-        final DownloadTransfer transfer = new DownloadTransfer(new Host("t"), new Path("/t", EnumSet.of(Path.Type.directory)), null);
-        queue.add(transfer, new DisabledProgressListener());
-        queue.remove(transfer);
+        final Queue queue = new Queue(1);
+        final DownloadTransfer d1 = new DownloadTransfer(new Host("t"), new Path("/t1", EnumSet.of(Path.Type.directory)), null);
+        final DownloadTransfer d2 = new DownloadTransfer(new Host("t"), new Path("/t2", EnumSet.of(Path.Type.directory)), null);
+        queue.add(d1, new DisabledProgressListener());
+        final CountDownLatch c = new CountDownLatch(1);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                queue.add(d2, new DisabledProgressListener());
+                c.countDown();
+            }
+        }).start();
+        assertTrue(c.getCount() == 1);
+        queue.remove(d1);
+        assertTrue(c.getCount() == 0);
     }
 
     @Test
@@ -59,10 +71,7 @@ public class QueueTest extends AbstractTestCase {
                 try {
                     wait.await();
                 }
-                catch(InterruptedException e) {
-                    fail();
-                }
-                catch(BrokenBarrierException e) {
+                catch(InterruptedException | BrokenBarrierException e) {
                     fail();
                 }
             }
