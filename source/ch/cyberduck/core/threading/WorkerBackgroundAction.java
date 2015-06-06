@@ -110,11 +110,11 @@ public class WorkerBackgroundAction<T> extends BrowserBackgroundAction<Boolean> 
 
     @Override
     public void cancel() {
-        super.cancel();
         if(log.isDebugEnabled()) {
             log.debug(String.format("Cancel worker %s", worker));
         }
         worker.cancel();
+        super.cancel();
     }
 
     @Override
