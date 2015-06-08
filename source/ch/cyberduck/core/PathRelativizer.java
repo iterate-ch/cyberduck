@@ -32,7 +32,9 @@ public final class PathRelativizer {
         if(StringUtils.isBlank(root)) {
             return path;
         }
-        root = root + String.valueOf(Path.DELIMITER);
+        if(!StringUtils.equals(root, String.valueOf(Path.DELIMITER))) {
+            root = root + String.valueOf(Path.DELIMITER);
+        }
         if(StringUtils.contains(path, root)) {
             return path.substring(path.indexOf(root) + root.length());
         }

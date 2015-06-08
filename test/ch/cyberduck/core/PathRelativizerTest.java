@@ -11,6 +11,7 @@ public class PathRelativizerTest extends AbstractTestCase {
 
     @Test
     public void testRelativize() throws Exception {
+        assertEquals("a", PathRelativizer.relativize("/", "/a"));
         assertEquals("/b/path", PathRelativizer.relativize("/a", "/b/path"));
         assertEquals("path", PathRelativizer.relativize("/a", "/a/path"));
         assertEquals("a/path", PathRelativizer.relativize("public_html", "/home/user/public_html/a/path"));
