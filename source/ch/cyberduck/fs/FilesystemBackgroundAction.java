@@ -17,11 +17,16 @@ package ch.cyberduck.fs;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Controller;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
+import ch.cyberduck.core.worker.Worker;
 
 /**
  * @version $Id$
@@ -48,7 +53,17 @@ public class FilesystemBackgroundAction extends WorkerBackgroundAction<Void> {
                                       final Session<?> session,
                                       final PathCache cache,
                                       final FilesystemWorker worker) {
-        super(connection, controller, session, cache, worker);
+        this(connection, controller, session, cache, worker, controller, controller);
+    }
+
+    public FilesystemBackgroundAction(final ConnectionService connection,
+                                      final Controller controller,
+                                      final Session<?> session,
+                                      final Cache<Path> cache,
+                                      final Worker<Void> worker,
+                                      final ProgressListener progress,
+                                      final TranscriptListener transcript) {
+        super(connection, controller, session, cache, worker, progress, transcript);
     }
 
     @Override

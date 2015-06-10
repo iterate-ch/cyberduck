@@ -23,7 +23,9 @@ import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.LoginService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.worker.Worker;
@@ -64,6 +66,16 @@ public class WorkerBackgroundAction<T> extends BrowserBackgroundAction<Boolean> 
         this.worker = worker;
     }
 
+    public WorkerBackgroundAction(final ConnectionService connection,
+                                  final Controller controller,
+                                  final Session<?> session,
+                                  final Cache<Path> cache,
+                                  final Worker<T> worker,
+                                  final ProgressListener progress,
+                                  final TranscriptListener transcript) {
+        super(connection, controller, session, cache, progress, transcript);
+    }
+
     public WorkerBackgroundAction(final Controller controller,
                                   final Session session,
                                   final Cache<Path> cache,
@@ -71,6 +83,7 @@ public class WorkerBackgroundAction<T> extends BrowserBackgroundAction<Boolean> 
         super(controller, session, cache);
         this.worker = worker;
     }
+
 
     @Override
     protected void reset() throws BackgroundException {
