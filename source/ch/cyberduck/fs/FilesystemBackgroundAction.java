@@ -53,11 +53,11 @@ public class FilesystemBackgroundAction extends WorkerBackgroundAction<Void> {
                                       final Session<?> session,
                                       final PathCache cache,
                                       final FilesystemWorker worker) {
-        this(connection, controller, session, cache, worker, controller, controller);
+        this(controller, connection, session, cache, worker, controller, controller);
     }
 
-    public FilesystemBackgroundAction(final ConnectionService connection,
-                                      final Controller controller,
+    public FilesystemBackgroundAction(final Controller controller,
+                                      final ConnectionService connection,
                                       final Session<?> session,
                                       final Cache<Path> cache,
                                       final Worker<Void> worker,
