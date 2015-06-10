@@ -26,7 +26,6 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
-import ch.cyberduck.core.worker.Worker;
 
 /**
  * @version $Id$
@@ -60,7 +59,7 @@ public class FilesystemBackgroundAction extends WorkerBackgroundAction<Void> {
                                       final ConnectionService connection,
                                       final Session<?> session,
                                       final Cache<Path> cache,
-                                      final Worker<Void> worker,
+                                      final FilesystemWorker worker,
                                       final ProgressListener progress,
                                       final TranscriptListener transcript) {
         super(connection, controller, session, cache, worker, progress, transcript);
