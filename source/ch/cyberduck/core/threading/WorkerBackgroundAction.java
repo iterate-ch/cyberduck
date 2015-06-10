@@ -74,6 +74,7 @@ public class WorkerBackgroundAction<T> extends BrowserBackgroundAction<Boolean> 
                                   final ProgressListener progress,
                                   final TranscriptListener transcript) {
         super(connection, controller, session, cache, progress, transcript);
+        this.worker = worker;
     }
 
     public WorkerBackgroundAction(final Controller controller,
