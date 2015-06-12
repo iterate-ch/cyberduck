@@ -29,20 +29,15 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.security.DigestInputStream;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -176,13 +171,13 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                 log.debug(String.format("Creating SLO manifest %s for %s", manifest, file));
             }
             final StorageObject stored = new StorageObject(manifest);
-            // ETag returned by server for manifest file
-            final String checksum = session.getClient().createSLOManifestObject(new SwiftRegionService(session).lookup(
+            session.getClient().createSLOManifestObject(new SwiftRegionService(session).lookup(
                             containerService.getContainer(file)),
                     containerService.getContainer(file).getName(),
                     status.getMime(),
                     containerService.getKey(file), manifest, Collections.<String, String>emptyMap());
-            stored.setMd5sum(StringUtils.removePattern(checksum, "\""));
+            // The value of the Content-Length header is the total size of all segment objects, and the value of the ETag header is calculated by taking
+            // the ETag value of each segment, concatenating them together, and then returning the MD5 checksum of the result.
             return stored;
         }
         catch(GenericException e) {
@@ -209,35 +204,5 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                         segment, local, throttle, listener, status, overall, overall);
             }
         });
-    }
-
-    @Override
-    protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
-        if(null == digest) {
-            log.warn("MD5 calculation disabled");
-            return super.decorate(in, null);
-        }
-        else {
-            return new DigestInputStream(super.decorate(in, digest), digest);
-        }
-    }
-
-    @Override
-    protected MessageDigest digest() throws IOException {
-        MessageDigest digest = null;
-        if(PreferencesFactory.get().getBoolean("openstack.upload.md5")) {
-            try {
-                digest = MessageDigest.getInstance("MD5");
-            }
-            catch(NoSuchAlgorithmException e) {
-                throw new IOException(e.getMessage(), e);
-            }
-        }
-        return digest;
-    }
-
-    @Override
-    protected void post(final Path file, final MessageDigest digest, final StorageObject response) throws BackgroundException {
-        this.verify(file, digest, Checksum.parse(response.getMd5sum()));
     }
 }
