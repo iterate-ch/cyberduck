@@ -14,8 +14,10 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
@@ -30,6 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
+
+import ch.iterate.openstack.swift.model.StorageObject;
 
 import static org.junit.Assert.*;
 
@@ -102,8 +106,11 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractTestCase {
                 new SwiftObjectListService(session),
                 new SwiftSegmentService(session, ".segments-test/"), new SwiftWriteFeature(session), (long) (content.length / 2), 4);
 
-        upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+        final StorageObject object = upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status, new DisabledConnectionCallback());
+        assertNull(Checksum.parse(object.getMd5sum()));
+        assertNull(new SwiftAttributesFeature(session).find(test).getChecksum());
+        assertNull(new DefaultAttributesFeature(session).find(test).getChecksum());
 
         assertEquals(1048576 + 1048576 + 1, status.getOffset());
         assertTrue(status.isComplete());
