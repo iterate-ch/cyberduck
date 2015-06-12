@@ -9,7 +9,10 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.MD5ChecksumCompute;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -58,6 +61,25 @@ public class SwiftSegmentServiceTest extends AbstractTestCase {
         b.setSize(1L);
         final String manifest = service.manifest(container.getName(), Arrays.asList(a, b));
         assertEquals("[{\"path\":\"/test.cyberduck.ch/a\",\"etag\":\"m1\",\"size_bytes\":1},{\"path\":\"/test.cyberduck.ch/b\",\"etag\":\"m2\",\"size_bytes\":1}]", manifest);
+    }
+
+    @Test
+    public void testChecksum() throws Exception {
+        final SwiftSession session = new SwiftSession(
+                new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
+                        new Credentials(
+                                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+                        )));
+        final SwiftSegmentService service = new SwiftSegmentService(session);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final StorageObject a = new StorageObject("a");
+        a.setMd5sum("m1");
+        a.setSize(1L);
+        final StorageObject b = new StorageObject("b");
+        b.setMd5sum("m2");
+        b.setSize(1L);
+        final Checksum checksum = service.checksum(new MD5ChecksumCompute(), Arrays.asList(a, b));
+        assertEquals(new MD5ChecksumCompute().compute(IOUtils.toInputStream("m1m2")), checksum);
     }
 
     @Test

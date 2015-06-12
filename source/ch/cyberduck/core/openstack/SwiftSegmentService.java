@@ -23,9 +23,12 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.date.ISO8601DateParser;
 import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -136,4 +139,19 @@ public class SwiftSegmentService {
         return manifestSLO.toString();
     }
 
+    /**
+     * The value of the ETag header is calculated by taking
+     * the ETag value of each segment, concatenating them together, and then returning the MD5 checksum of the result.
+     *
+     * @param checksum Checksum compute service
+     * @param objects  Files
+     * @return Concatenated checksum
+     */
+    public Checksum checksum(final ChecksumCompute checksum, final List<StorageObject> objects) throws ChecksumException {
+        final StringBuilder concatenated = new StringBuilder();
+        for(StorageObject s : objects) {
+            concatenated.append(s.getMd5sum());
+        }
+        return checksum.compute(IOUtils.toInputStream(concatenated.toString()));
+    }
 }
