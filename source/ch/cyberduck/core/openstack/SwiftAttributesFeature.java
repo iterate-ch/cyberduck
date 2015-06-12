@@ -34,6 +34,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
+import ch.iterate.openstack.swift.Constants;
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.ContainerInfo;
 import ch.iterate.openstack.swift.model.ObjectMetadata;
@@ -83,8 +84,15 @@ public class SwiftAttributesFeature implements Attributes {
                     }
                     if(StringUtils.isNotBlank(metadata.getETag())) {
                         final String etag = StringUtils.removePattern(metadata.getETag(), "\"");
-                        attributes.setChecksum(Checksum.parse(etag));
-                        attributes.setETag(StringUtils.removePattern(metadata.getETag(), "\""));
+                        attributes.setETag(etag);
+                        if(metadata.getMetaData().containsKey(Constants.X_STATIC_LARGE_OBJECT)) {
+                            // For manifest files, the ETag in the response for a GET or HEAD on the manifest file is the MD5 sum of
+                            // the concatenated string of ETags for each of the segments in the manifest.
+                            attributes.setChecksum(null);
+                        }
+                        else {
+                            attributes.setChecksum(Checksum.parse(etag));
+                        }
                     }
                 }
                 else {
