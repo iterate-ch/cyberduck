@@ -82,8 +82,9 @@ public class SwiftAttributesFeature implements Attributes {
                         log.warn(String.format("%s is not RFC 1123 format %s", metadata.getLastModified(), e.getMessage()));
                     }
                     if(StringUtils.isNotBlank(metadata.getETag())) {
-                        attributes.setChecksum(Checksum.parse(metadata.getETag()));
-                        attributes.setETag(metadata.getETag());
+                        final String etag = StringUtils.removePattern(metadata.getETag(), "\"");
+                        attributes.setChecksum(Checksum.parse(etag));
+                        attributes.setETag(StringUtils.removePattern(metadata.getETag(), "\""));
                     }
                 }
                 else {

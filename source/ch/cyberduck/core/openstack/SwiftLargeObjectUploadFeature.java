@@ -35,6 +35,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -175,12 +176,13 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                 log.debug(String.format("Creating SLO manifest %s for %s", manifest, file));
             }
             final StorageObject stored = new StorageObject(manifest);
+            // ETag returned by server for manifest file
             final String checksum = session.getClient().createSLOManifestObject(new SwiftRegionService(session).lookup(
                             containerService.getContainer(file)),
                     containerService.getContainer(file).getName(),
                     status.getMime(),
                     containerService.getKey(file), manifest, Collections.<String, String>emptyMap());
-            stored.setMd5sum(checksum);
+            stored.setMd5sum(StringUtils.removePattern(checksum, "\""));
             return stored;
         }
         catch(GenericException e) {
