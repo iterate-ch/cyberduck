@@ -101,6 +101,7 @@
             <fileset dir="${lib}">
                 <!-- Include libjnidispatch.dylib -->
                 <include name="*.dylib"/>
+                <include name="*.framework/**"/>
             </fileset>
         </copy>
         <mkdir dir="${bundle}/${bundle.resources}"/>
