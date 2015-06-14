@@ -152,6 +152,7 @@
 		477A10E10FD08DE900BAD4AD /* ProxyForJava.m in Sources */ = {isa = PBXBuildFile; fileRef = 477A108B0FD08DE800BAD4AD /* ProxyForJava.m */; };
 		477A10E20FD08DE900BAD4AD /* Rococoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 477A108C0FD08DE800BAD4AD /* Rococoa.h */; };
 		477A10E30FD08DE900BAD4AD /* Rococoa.m in Sources */ = {isa = PBXBuildFile; fileRef = 477A108D0FD08DE800BAD4AD /* Rococoa.m */; };
+		477F379F1B2E06B40025EACA /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4792112812F6F4FD00E35E16 /* Sparkle.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4781AF410828423100B3E0FA /* download0.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4781AF400828423100B3E0FA /* download0.icns */; };
 		4781DFE5162FF6FE001F4993 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
 		4781DFE6162FF703001F4993 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
@@ -423,6 +424,16 @@
 			dstSubfolderSpec = 7;
 			files = (
 				47472EF5177F788E0090A595 /* Rackspace US.cyberduckprofile in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		477F379E1B2E06AA0025EACA /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				477F379F1B2E06B40025EACA /* Sparkle.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3975,6 +3986,7 @@
 				47C2724412E99D8600A13758 /* Frameworks */,
 				470C646B1328CBDD00146FB6 /* CopyFiles */,
 				47472EEF177F78620090A595 /* CopyFiles */,
+				477F379E1B2E06AA0025EACA /* CopyFiles */,
 			);
 			buildRules = (
 			);
