@@ -77,33 +77,7 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
                 LocalTouchFactory.get().touch(file);
             }
             in = file.getInputStream();
-            database = new OpenSSHKnownHosts(new File(file.getAbsolute())) {
-                @Override
-                protected boolean hostKeyUnverifiableAction(String hostname, PublicKey key) {
-                    try {
-                        return isUnknownKeyAccepted(hostname, key);
-                    }
-                    catch(ConnectionCanceledException e) {
-                        return false;
-                    }
-                    catch(ChecksumException e) {
-                        return false;
-                    }
-                }
-
-                @Override
-                protected boolean hostKeyChangedAction(HostEntry entry, String hostname, PublicKey key) {
-                    try {
-                        return isChangedKeyAccepted(hostname, key);
-                    }
-                    catch(ConnectionCanceledException e) {
-                        return false;
-                    }
-                    catch(ChecksumException e) {
-                        return false;
-                    }
-                }
-            };
+            database = new DelegatingOpenSSHKnownHosts(file);
         }
         catch(IOException | SSHRuntimeException e) {
             log.error(String.format("Cannot read known hosts file %s", file), e);
@@ -197,5 +171,37 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
         sb.append("database=").append(database);
         sb.append('}');
         return sb.toString();
+    }
+
+    private final class DelegatingOpenSSHKnownHosts extends OpenSSHKnownHosts {
+        public DelegatingOpenSSHKnownHosts(final Local file) throws IOException {
+            super(new File(file.getAbsolute()));
+        }
+
+        @Override
+        protected boolean hostKeyUnverifiableAction(String hostname, PublicKey key) {
+            try {
+                return isUnknownKeyAccepted(hostname, key);
+            }
+            catch(ConnectionCanceledException e) {
+                return false;
+            }
+            catch(ChecksumException e) {
+                return false;
+            }
+        }
+
+        @Override
+        protected boolean hostKeyChangedAction(HostEntry entry, String hostname, PublicKey key) {
+            try {
+                return isChangedKeyAccepted(hostname, key);
+            }
+            catch(ConnectionCanceledException e) {
+                return false;
+            }
+            catch(ChecksumException e) {
+                return false;
+            }
+        }
     }
 }
