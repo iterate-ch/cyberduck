@@ -13,6 +13,9 @@ Changelog. Last modified: $Date$
 - [Bugfix] Directory removal fails silently (S3) (#8803)
 - [Bugfix] Resuming upload with nested folders (S3)
 - [Bugfix] Routing failure when connecting to IPv6 address because of wrong default network interface (#8802)
+- [Bugfix] MD5 checksum failure for downloads (WebDAV) (#8798)
+- [Bugfix] MD5 checksum failure for large object downloads (OpenStack Swift) (#8861)
+- [Bugfix] Segmented upload marked as incomplete (OpenStack Swift) (#8859)
 
 4.7 [https://trac.cyberduck.io/milestone/4.7]
 - [Feature] Support multiple connections per transfer (#1135)
