@@ -4,6 +4,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -62,8 +63,8 @@ public class FTPSessionTest extends AbstractTestCase {
         assertFalse(session.isConnected());
     }
 
-    @Test
-    public void testConnectHttpProxy() throws Exception {
+    @Test(expected = ConnectionRefusedException.class)
+    public void testConnectHttpProxyForbiddenHttpResponse() throws Exception {
         final Host host = new Host(new FTPProtocol(), "mirror.switch.ch", new Credentials(
                 PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
