@@ -19,6 +19,7 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -98,12 +99,13 @@ public class SwiftDeleteFeatureTest extends AbstractTestCase {
         assertFalse(find.find(placeholder));
         final SwiftObjectListService list = new SwiftObjectListService(session);
         // Must contain placeholder object returned
-        assertTrue(list.list(placeholder.getParent(), new DisabledListProgressListener()).contains(new Path(
+        final AttributedList<Path> children = list.list(placeholder.getParent(), new DisabledListProgressListener());
+        assertTrue(children.contains(new Path(
                 new Path(container, "t", EnumSet.of(Path.Type.directory)),
                 name, EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
         // No directory file at this level
-        assertFalse(list.list(placeholder.getParent(), new DisabledListProgressListener()).contains(placeholder));
-        assertFalse(list.list(placeholder.getParent(), new DisabledListProgressListener()).contains(test));
+        assertTrue(children.contains(placeholder));
+        assertFalse(children.contains(test));
         assertTrue(list.list(placeholder, new DisabledListProgressListener()).contains(test));
         assertTrue(find.find(test));
         new SwiftDeleteFeature(session).delete(Arrays.asList(placeholder, test), new DisabledLoginCallback(), new DisabledProgressListener());
