@@ -81,9 +81,7 @@ public abstract class NSKeyedUnarchiver extends NSCoder {
      * Original signature : <code>+(void)setClass:(Class) forClassName:(String*)</code><br>
      * <i>native declaration : NSKeyedArchiver.h:104</i>
      */
-    public static void setClass_forClassName(ObjCClass cls, String codedName) {
-        CLASS.setClass_forClassName(cls, codedName);
-    }
+    public abstract void setClass_forClassName(ObjCClass cls, String codedName);
 
     /**
      * Original signature : <code>+(Class)classForClassName:(String*)</code><br>

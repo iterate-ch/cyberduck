@@ -64,28 +64,34 @@ public class TransmitBookmarkCollection extends ThirdpartyBookmarkCollection {
         }
         // Adds a class translation mapping to NSKeyedUnarchiver whereby objects encoded with a given class name
         // are decoded as instances of a given class instead.
-        final TransmitFavoriteCollection c = Rococoa.createClass("CDTransmitImportFavoriteCollection", TransmitFavoriteCollection.class);
-        NSKeyedUnarchiver.setClass_forClassName(c, "FavoriteCollection");
-        NSKeyedUnarchiver.setClass_forClassName(c, "HistoryCollection");
-
-        final TransmitFavorite f = Rococoa.createClass("CDTransmitImportFavorite", TransmitFavorite.class);
-        NSKeyedUnarchiver.setClass_forClassName(f, "Favorite");
-        NSKeyedUnarchiver.setClass_forClassName(f, "DotMacFavorite");
+        final TransmitFavoriteCollection c = Rococoa.createClass("TransmitFavoriteCollection", TransmitFavoriteCollection.class);
+        final TransmitFavorite f = Rococoa.createClass("TransmitFavorite", TransmitFavorite.class);
 
         final NSData collectionsData = Rococoa.cast(serialized.objectForKey("FavoriteCollections"), NSData.class);
         if(null == collectionsData) {
             throw new LocalAccessDeniedException(String.format("Error unarchiving bookmark file %s", file));
         }
-        TransmitFavoriteCollection rootCollection
-                = Rococoa.cast(NSKeyedUnarchiver.unarchiveObjectWithData(collectionsData), TransmitFavoriteCollection.class);
+        final NSKeyedUnarchiver reader = NSKeyedUnarchiver.createForReadingWithData(collectionsData);
+        reader.setClass_forClassName(c, "FavoriteCollection");
+        reader.setClass_forClassName(c, "HistoryCollection");
+        reader.setClass_forClassName(f, "Favorite");
+        reader.setClass_forClassName(f, "DotMacFavorite");
+
+        if(!reader.containsValueForKey("FavoriteCollection")) {
+            log.warn("Missing key FavoriteCollection");
+            return;
+        }
+        final TransmitFavoriteCollection rootCollection
+                = Rococoa.cast(reader.decodeObjectForKey("FavoriteCollection"), TransmitFavoriteCollection.class);
+        reader.finishDecoding();
         if(null == rootCollection) {
             throw new LocalAccessDeniedException(String.format("Error unarchiving bookmark file %s", file));
         }
-        NSArray collections = rootCollection.favorites(); //The root has collections
-        NSEnumerator collectionsEnumerator = collections.objectEnumerator();
+        final NSArray collections = rootCollection.favorites(); //The root has collections
+        final NSEnumerator collectionsEnumerator = collections.objectEnumerator();
         NSObject next;
         while(((next = collectionsEnumerator.nextObject()) != null)) {
-            TransmitFavoriteCollection collection = Rococoa.cast(next, TransmitFavoriteCollection.class);
+            final TransmitFavoriteCollection collection = Rococoa.cast(next, TransmitFavoriteCollection.class);
             if("History".equals(collection.name())) {
                 continue;
             }
