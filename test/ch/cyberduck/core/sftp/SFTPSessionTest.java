@@ -4,6 +4,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.features.Compress;
@@ -259,7 +260,7 @@ public class SFTPSessionTest extends AbstractTestCase {
         session.close();
     }
 
-    @Test
+    @Test(expected = ConnectionRefusedException.class)
     public void testConnectHttpProxy() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
                 properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
@@ -283,7 +284,13 @@ public class SFTPSessionTest extends AbstractTestCase {
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
                 new DisabledProgressListener(), new DisabledTranscriptListener());
-        c.connect(session, PathCache.empty());
+        try {
+            c.connect(session, PathCache.empty());
+        }
+        catch(ConnectionRefusedException e) {
+            assertEquals("Invalid response HTTP/1.1 403 Forbidden from HTTP proxy localhost. The connection attempt was rejected. The server may be down, or your network may not be properly configured.", e.getDetail());
+            throw e;
+        }
         assertTrue(session.isConnected());
         session.close();
     }

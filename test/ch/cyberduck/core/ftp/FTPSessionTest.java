@@ -86,7 +86,13 @@ public class FTPSessionTest extends AbstractTestCase {
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
                 new DisabledProgressListener(), new DisabledTranscriptListener());
-        c.connect(session, PathCache.empty());
+        try {
+            c.connect(session, PathCache.empty());
+        }
+        catch(ConnectionRefusedException e) {
+            assertEquals("Invalid response HTTP/1.1 403 Forbidden from HTTP proxy localhost. The connection attempt was rejected. The server may be down, or your network may not be properly configured.", e.getDetail());
+            throw e;
+        }
         assertTrue(session.isConnected());
         session.close();
     }

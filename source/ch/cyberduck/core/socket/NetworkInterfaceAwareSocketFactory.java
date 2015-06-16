@@ -22,6 +22,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import org.apache.commons.net.DefaultSocketFactory;
 import org.apache.log4j.Logger;
 
+import javax.net.SocketFactory;
 import java.io.IOException;
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -41,41 +42,55 @@ import sun.net.util.IPAddressUtil;
 /**
  * Override default network interface for IPv6 to en0 instead of awdl0 set in <code>java.net.DefaultInterface#getDefault()</code>.
  */
-public class NetworkInterfaceAwareSocketFactory extends DefaultSocketFactory {
+public class NetworkInterfaceAwareSocketFactory extends SocketFactory {
     private static final Logger log = Logger.getLogger(NetworkInterfaceAwareSocketFactory.class);
 
     private final Proxy proxy;
 
     private List<String> blacklisted;
 
+    private SocketFactory delegate;
+
     public NetworkInterfaceAwareSocketFactory() {
-        this(PreferencesFactory.get().getList("network.interface.blacklist"), null);
+        this(new DefaultSocketFactory());
+    }
+
+    public NetworkInterfaceAwareSocketFactory(final SocketFactory delegate) {
+        this(delegate, PreferencesFactory.get().getList("network.interface.blacklist"), null);
     }
 
     public NetworkInterfaceAwareSocketFactory(final java.net.Proxy proxy) {
-        this(PreferencesFactory.get().getList("network.interface.blacklist"), proxy);
+        this(new DefaultSocketFactory(), proxy);
+    }
+
+    public NetworkInterfaceAwareSocketFactory(final SocketFactory delegate, final java.net.Proxy proxy) {
+        this(delegate, PreferencesFactory.get().getList("network.interface.blacklist"), proxy);
     }
 
     /**
      * @param blacklisted Network interface names to ignore
      */
     public NetworkInterfaceAwareSocketFactory(final List<String> blacklisted) {
-        this(blacklisted, null);
+        this(new DefaultSocketFactory(), blacklisted);
+    }
+
+    public NetworkInterfaceAwareSocketFactory(final SocketFactory delegate, final List<String> blacklisted) {
+        this(delegate, blacklisted, null);
     }
 
     /**
      * @param blacklisted Network interface names to ignore
      * @param proxy       Proxy or null for direct connection
      */
-    public NetworkInterfaceAwareSocketFactory(final List<String> blacklisted, final java.net.Proxy proxy) {
-        super(proxy);
+    public NetworkInterfaceAwareSocketFactory(final SocketFactory delegate, final List<String> blacklisted, final java.net.Proxy proxy) {
+        this.delegate = delegate;
         this.blacklisted = blacklisted;
         this.proxy = null == proxy ? Proxy.NO_PROXY : proxy;
     }
 
     @Override
     public Socket createSocket() throws IOException {
-        return new Socket(proxy) {
+        return new HttpProxyAwareSocket(proxy) {
             @Override
             public void connect(final SocketAddress endpoint, final int timeout) throws IOException {
                 if(endpoint instanceof InetSocketAddress) {
@@ -105,14 +120,14 @@ public class NetworkInterfaceAwareSocketFactory extends DefaultSocketFactory {
         if(address instanceof Inet6Address) {
             final NetworkInterface network = this.findIPv6Interface((Inet6Address) address);
             if(null == network) {
-                return super.createSocket(address, port, localAddr, localPort);
+                return delegate.createSocket(address, port, localAddr, localPort);
             }
-            return super.createSocket(this.getByAddressForInterface(network, address), port, localAddr, localPort);
+            return delegate.createSocket(this.getByAddressForInterface(network, address), port, localAddr, localPort);
         }
         if(log.isDebugEnabled()) {
             log.debug(String.format("Use default network interface to bind %s", address));
         }
-        return super.createSocket(address, port, localAddr, localPort);
+        return delegate.createSocket(address, port, localAddr, localPort);
     }
 
     @Override
@@ -125,14 +140,14 @@ public class NetworkInterfaceAwareSocketFactory extends DefaultSocketFactory {
         if(address instanceof Inet6Address) {
             final NetworkInterface network = this.findIPv6Interface((Inet6Address) address);
             if(null == network) {
-                return super.createSocket(address, port);
+                return delegate.createSocket(address, port);
             }
-            return super.createSocket(this.getByAddressForInterface(network, address), port);
+            return delegate.createSocket(this.getByAddressForInterface(network, address), port);
         }
         if(log.isDebugEnabled()) {
             log.debug(String.format("Use default network interface to bind %s", address));
         }
-        return super.createSocket(address, port);
+        return delegate.createSocket(address, port);
     }
 
     /**

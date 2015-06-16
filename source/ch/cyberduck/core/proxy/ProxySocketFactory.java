@@ -21,10 +21,12 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.socket.DefaultSocketConfigurator;
+import ch.cyberduck.core.socket.HttpProxySocketFactory;
 import ch.cyberduck.core.socket.NetworkInterfaceAwareSocketFactory;
 import ch.cyberduck.core.socket.SocketConfigurator;
 import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 
+import org.apache.commons.net.DefaultSocketFactory;
 import org.apache.log4j.Logger;
 
 import javax.net.SocketFactory;
@@ -97,24 +99,26 @@ public class ProxySocketFactory extends SocketFactory {
         final Proxy proxy = proxyFinder.find(new Host(protocol, target));
         if(!types.contains(proxy.getType())) {
             log.warn(String.format("Use of %s proxy is disabled for socket factory %s", proxy.getType(), this));
-            return new NetworkInterfaceAwareSocketFactory(blacklisted);
+            return new NetworkInterfaceAwareSocketFactory(new DefaultSocketFactory(), blacklisted);
         }
         switch(proxy.getType()) {
             case SOCKS:
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Configured to use SOCKS proxy %s", proxy));
                 }
-                return new NetworkInterfaceAwareSocketFactory(blacklisted, new java.net.Proxy(
-                        java.net.Proxy.Type.SOCKS, new InetSocketAddress(proxy.getHostname(), proxy.getPort())));
+                final java.net.Proxy socksProxy = new java.net.Proxy(
+                        java.net.Proxy.Type.SOCKS, new InetSocketAddress(proxy.getHostname(), proxy.getPort()));
+                return new NetworkInterfaceAwareSocketFactory(new DefaultSocketFactory(), blacklisted, socksProxy);
             case HTTP:
             case HTTPS:
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Configured to use HTTP proxy %s", proxy));
                 }
-                return new NetworkInterfaceAwareSocketFactory(blacklisted, new java.net.Proxy(
-                        java.net.Proxy.Type.HTTP, new InetSocketAddress(proxy.getHostname(), proxy.getPort())));
+                final java.net.Proxy httpProxy = new java.net.Proxy(
+                        java.net.Proxy.Type.HTTP, new InetSocketAddress(proxy.getHostname(), proxy.getPort()));
+                return new NetworkInterfaceAwareSocketFactory(new HttpProxySocketFactory(httpProxy), blacklisted, httpProxy);
         }
-        return new NetworkInterfaceAwareSocketFactory(blacklisted);
+        return new NetworkInterfaceAwareSocketFactory(new DefaultSocketFactory(), blacklisted);
     }
 
     @Override
