@@ -2,6 +2,7 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
+import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Command;
@@ -13,6 +14,7 @@ import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
+import ch.cyberduck.core.sftp.openssh.OpenSSHHostKeyVerifier;
 import ch.cyberduck.core.socket.DefaultSocketConfigurator;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.test.NullLocal;
@@ -284,5 +286,43 @@ public class SFTPSessionTest extends AbstractTestCase {
         c.connect(session, PathCache.empty());
         assertTrue(session.isConnected());
         session.close();
+    }
+
+    @Test
+    public void testHostKeySave() throws Exception {
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials("u1", "p1"));
+        final Session session = new SFTPSession(host);
+        final Local f = new Local("test/ch/cyberduck/core/sftp", "known_hosts");
+        try {
+            assertNotNull(session.open(new OpenSSHHostKeyVerifier(f) {
+                @Override
+                protected boolean isUnknownKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
+                    this.allow(hostname, key, true);
+                    return true;
+                }
+
+                @Override
+                protected boolean isChangedKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
+                    fail();
+                    return false;
+                }
+            }, new DisabledTranscriptListener()));
+            session.close();
+            assertNotNull(session.open(new OpenSSHHostKeyVerifier(f) {
+                @Override
+                protected boolean isUnknownKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
+                    return false;
+                }
+
+                @Override
+                protected boolean isChangedKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
+                    return false;
+                }
+            }, new DisabledTranscriptListener()));
+            session.close();
+        }
+        finally {
+            f.delete();
+        }
     }
 }
