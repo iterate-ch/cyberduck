@@ -21,5 +21,9 @@
         <key>com.apple.security.print</key>
         <!-- The ability to print -->
         <true/>
+        <key>com.apple.security.application-groups</key>
+        <array>
+            <string>G69SCX94XU.duck</string>
+        </array>
     </dict>
 </plist>
