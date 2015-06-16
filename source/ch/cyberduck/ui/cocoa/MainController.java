@@ -1455,14 +1455,7 @@ public class MainController extends BundleController implements NSApplication.De
             }
         });
         if(StringUtils.isNotBlank(frame)) {
-            if(!controller.window().setFrameUsingName(frame)) {
-                if(!browsers.isEmpty()) {
-                    controller.cascade();
-                }
-            }
-        }
-        else if(!browsers.isEmpty()) {
-            controller.cascade();
+            controller.window().setFrameUsingName(frame);
         }
         controller.window().makeKeyAndOrderFront(null);
         browsers.add(controller);

@@ -19,7 +19,6 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.binding.application.NSAlert;
-import ch.cyberduck.binding.application.NSApplication;
 import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.NSPrintInfo;
@@ -30,7 +29,6 @@ import ch.cyberduck.binding.application.NSTextView;
 import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
-import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.binding.foundation.NSNotification;
@@ -45,9 +43,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
-import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSPoint;
-import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -189,15 +185,8 @@ public abstract class WindowController extends BundleController implements NSWin
     /**
      * Position this controller's window relative to other open windows
      */
-    protected void cascade() {
-        NSArray windows = NSApplication.sharedApplication().windows();
-        int count = windows.count().intValue();
-        if(count != 0) {
-            NSWindow w = Rococoa.cast(windows.objectAtIndex(new NSUInteger(count - 1)), NSWindow.class);
-            NSPoint origin = w.frame().origin;
-            origin = new NSPoint(origin.x.doubleValue(), origin.y.doubleValue() + w.frame().size.height.doubleValue());
-            window.setFrameTopLeftPoint(window.cascadeTopLeftFromPoint(origin));
-        }
+    protected NSPoint cascade(final NSPoint point) {
+        return window.cascadeTopLeftFromPoint(point);
     }
 
     /**

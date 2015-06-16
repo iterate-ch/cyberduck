@@ -543,10 +543,11 @@ public class BrowserController extends WindowController
         return this.getSelectedBrowserView().numberOfSelectedRows().intValue();
     }
 
+    private static NSPoint cascade = new NSPoint(0, 0);
+
     @Override
     public void setWindow(NSWindow window) {
         window.setTitle(preferences.getProperty("application.name"));
-        window.setFrameAutosaveName("Browser");
         window.setMiniwindowImage(IconCacheFactory.<NSImage>get().iconNamed("cyberduck-document.icns"));
         window.setMovableByWindowBackground(true);
         window.setCollectionBehavior(window.collectionBehavior() | NSWindow.NSWindowCollectionBehavior.NSWindowCollectionBehaviorFullScreenPrimary);
@@ -554,6 +555,7 @@ public class BrowserController extends WindowController
         // Accept file promises made myself
         window.registerForDraggedTypes(NSArray.arrayWithObject(NSPasteboard.FilesPromisePboardType));
         super.setWindow(window);
+        cascade = this.cascade(cascade);
     }
 
     /**

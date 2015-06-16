@@ -104,6 +104,7 @@ public class ConnectionController extends SheetController {
 
     @Override
     public void setWindow(final NSWindow window) {
+        window.setFrameAutosaveName("Connection");
         window.setContentMinSize(window.frame().size);
         window.setContentMaxSize(new NSSize(600, window.frame().size.height.doubleValue()));
         super.setWindow(window);

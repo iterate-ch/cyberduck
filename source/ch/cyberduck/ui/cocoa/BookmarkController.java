@@ -53,6 +53,7 @@ import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSSize;
 
 import java.util.Arrays;
@@ -549,7 +550,6 @@ public class BookmarkController extends WindowController {
 
     @Override
     public void awakeFromNib() {
-        this.cascade();
         this.init();
         this.setState(this.toggleOptionsButton, preferences.getBoolean("bookmark.toggle.options"));
         this.reachable();
@@ -558,11 +558,15 @@ public class BookmarkController extends WindowController {
         super.awakeFromNib();
     }
 
+    private static NSPoint cascade = new NSPoint(0, 0);
+
     @Override
     public void setWindow(NSWindow window) {
+        window.setFrameAutosaveName("Bookmark");
         window.setContentMinSize(window.frame().size);
         window.setContentMaxSize(new NSSize(600, window.frame().size.height.doubleValue()));
         super.setWindow(window);
+        cascade = this.cascade(cascade);
     }
 
     @Outlet

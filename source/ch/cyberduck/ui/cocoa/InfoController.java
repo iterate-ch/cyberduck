@@ -1314,13 +1314,18 @@ public class InfoController extends ToolbarWindowController {
         this.iconImageView = iconImageView;
     }
 
+    private static NSPoint cascade = new NSPoint(0, 0);
+
     @Override
     public void setWindow(final NSWindow window) {
-        window.setFrameAutosaveName("Browser");
+        window.setFrameAutosaveName("Info");
         window.setShowsResizeIndicator(true);
         window.setContentMinSize(window.frame().size);
         window.setContentMaxSize(new NSSize(600, window.frame().size.height.doubleValue()));
         super.setWindow(window);
+        if(!preferences.getBoolean("browser.info.inspector")) {
+            cascade = this.cascade(cascade);
+        }
     }
 
     @Override
@@ -1398,9 +1403,7 @@ public class InfoController extends ToolbarWindowController {
     }
 
     @Override
-    public NSToolbarItem toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(NSToolbar toolbar,
-                                                                                 final String identifier,
-                                                                                 boolean flag) {
+    public NSToolbarItem toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(final NSToolbar toolbar, final String identifier, final boolean flag) {
         NSToolbarItem item = super.toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(toolbar, identifier, flag);
         final Session session = controller.getSession();
         switch(InfoToolbarItem.valueOf(identifier)) {
@@ -1542,22 +1545,8 @@ public class InfoController extends ToolbarWindowController {
         this.setTitle(this.getTitle(tabView.selectedTabViewItem()));
     }
 
-    private static NSPoint cascadedWindowPoint;
-
-    @Override
-    protected void cascade() {
-        if(null == cascadedWindowPoint) {
-            cascadedWindowPoint = window.cascadeTopLeftFromPoint(window.frame().origin);
-        }
-        else {
-            cascadedWindowPoint = window.cascadeTopLeftFromPoint(cascadedWindowPoint);
-        }
-    }
-
     @Override
     public void awakeFromNib() {
-        this.cascade();
-
         this.ownerr.setTarget(this.id());
         final Selector s = Foundation.selector("permissionSelectionChanged:");
         this.ownerr.setAction(s);
