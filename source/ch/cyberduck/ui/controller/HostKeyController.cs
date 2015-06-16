@@ -56,7 +56,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         String.Format(
                             LocaleFactory.localizedString(
                                 "The fingerprint for the {1} key sent by the server is {0}.", "Sftp"),
-                                new MD5ChecksumCompute().fingerprint(key), KeyType.fromKey(key).name()),
+                                new SSHFingerprintGenerator().fingerprint(key), KeyType.fromKey(key).name()),
                         String.Format("{0}|{1}", LocaleFactory.localizedString("Allow"),
                                       LocaleFactory.localizedString("Deny")), false,
                         LocaleFactory.localizedString("Always"), SysIcons.Question,
@@ -86,7 +86,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         String.Format(LocaleFactory.localizedString("Changed fingerprint", "Sftp"), hostname),
                         String.Format(LocaleFactory.localizedString("Changed fingerprint", "Sftp"), hostname),
                         String.Format(LocaleFactory.localizedString("The fingerprint for the {1} key sent by the server is {0}.", "Sftp"),
-                                                                    new MD5ChecksumCompute().fingerprint(key), KeyType.fromKey(key).name()),
+                                                                    new SSHFingerprintGenerator().fingerprint(key), KeyType.fromKey(key).name()),
                         String.Format("{0}|{1}", LocaleFactory.localizedString("Allow"),
                                       LocaleFactory.localizedString("Deny")), false,
                         LocaleFactory.localizedString("Always"), SysIcons.Warning,

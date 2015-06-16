@@ -28,8 +28,8 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.sftp.SSHFingerprintGenerator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHHostKeyVerifier;
 
 import org.apache.log4j.Logger;
@@ -65,7 +65,7 @@ public class AlertHostKeyController extends OpenSSHHostKeyVerifier {
             throws ConnectionCanceledException, ChecksumException {
         final NSAlert alert = NSAlert.alert(MessageFormat.format(LocaleFactory.localizedString("Unknown fingerprint", "Sftp"), hostname), //title
                 MessageFormat.format(LocaleFactory.localizedString("The fingerprint for the {1} key sent by the server is {0}.", "Sftp"),
-                        new MD5ChecksumCompute().fingerprint(key),
+                        new SSHFingerprintGenerator().fingerprint(key),
                         KeyType.fromKey(key).name()),
                 LocaleFactory.localizedString("Allow"), // default button
                 LocaleFactory.localizedString("Deny"), // alternate button
@@ -103,7 +103,7 @@ public class AlertHostKeyController extends OpenSSHHostKeyVerifier {
             throws ConnectionCanceledException, ChecksumException {
         final NSAlert alert = NSAlert.alert(MessageFormat.format(LocaleFactory.localizedString("Changed fingerprint", "Sftp"), hostname), //title
                 MessageFormat.format(LocaleFactory.localizedString("The fingerprint for the {1} key sent by the server is {0}.", "Sftp"),
-                        new MD5ChecksumCompute().fingerprint(key),
+                        new SSHFingerprintGenerator().fingerprint(key),
                         KeyType.fromKey(key).name()),
                 LocaleFactory.localizedString("Allow"), // defaultbutton
                 LocaleFactory.localizedString("Deny"), //alternative button

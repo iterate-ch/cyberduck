@@ -22,8 +22,8 @@ import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.sftp.SSHFingerprintGenerator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHHostKeyVerifier;
 
 import java.security.PublicKey;
@@ -56,7 +56,7 @@ public class TerminalHostKeyVerifier extends OpenSSHHostKeyVerifier {
     protected boolean isUnknownKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
         final String message = String.format("%s. %s %s?", LocaleFactory.localizedString("Unknown fingerprint", "Sftp"),
                 MessageFormat.format(LocaleFactory.localizedString("The fingerprint for the {1} key sent by the server is {0}.", "Sftp"),
-                        new MD5ChecksumCompute().fingerprint(key),
+                        new SSHFingerprintGenerator().fingerprint(key),
                         KeyType.fromKey(key).name()),
                 LocaleFactory.localizedString("Continue", "Credentials"));
         if(!prompt.prompt(message)) {
@@ -70,7 +70,7 @@ public class TerminalHostKeyVerifier extends OpenSSHHostKeyVerifier {
     protected boolean isChangedKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
         final String message = String.format("%s. %s %s?", LocaleFactory.localizedString("Changed fingerprint", "Sftp"),
                 MessageFormat.format(LocaleFactory.localizedString("The fingerprint for the {1} key sent by the server is {0}.", "Sftp"),
-                        new MD5ChecksumCompute().fingerprint(key),
+                        new SSHFingerprintGenerator().fingerprint(key),
                         KeyType.fromKey(key).name()),
                 LocaleFactory.localizedString("Continue", "Credentials"));
         if(!prompt.prompt(message)) {
