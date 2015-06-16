@@ -20,12 +20,11 @@ package ch.cyberduck.core.transfer.copy;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.transfer.TransferPathFilter;
+import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 
@@ -42,25 +41,13 @@ public class ChecksumFilter extends AbstractCopyFilter {
 
     private Upload upload;
 
-    private PathCache source = PathCache.empty();
-
-    private PathCache cache = PathCache.empty();
-
     public ChecksumFilter(final Session<?> source, final Session<?> destination, final Map<Path, Path> files) {
         super(source, destination, files);
         this.upload = destination.getFeature(Upload.class);
     }
 
-    public ChecksumFilter(final Session<?> source, final Session<?> destination, final Map<Path, Path> files,
-                          final UploadFilterOptions options, final PathCache cache) {
-        super(source, destination, files, options, cache);
-        this.upload = destination.getFeature(Upload.class);
-    }
-
-    @Override
-    public TransferPathFilter withCache(final PathCache cache) {
-        this.cache = cache;
-        return super.withCache(cache);
+    public ChecksumFilter(final Session<?> source, final Session<?> destination, final Map<Path, Path> files, final UploadFilterOptions options) {
+        super(source, destination, files, options);
     }
 
     @Override
@@ -68,8 +55,8 @@ public class ChecksumFilter extends AbstractCopyFilter {
         final Path target = files.get(source);
         if(source.isFile()) {
             if(parent.isExists()) {
-                final PathAttributes attributes = attribute.find(source);
-                final Write.Append append = upload.append(target, attributes.getSize(), cache);
+                final PathAttributes attributes = new DefaultAttributesFeature(sourceSession).withCache(sourceCache).find(source);
+                final Write.Append append = upload.append(target, attributes.getSize(), destinationCache);
                 // Compare source with target attributes
                 if(append.size == attributes.getSize()) {
                     if(append.checksum != null) {

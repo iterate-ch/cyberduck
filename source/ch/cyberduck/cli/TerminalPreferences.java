@@ -49,6 +49,7 @@ import ch.cyberduck.core.proxy.SystemConfigurationProxy;
 import ch.cyberduck.core.resources.NSImageIconCache;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferAction;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -165,6 +166,8 @@ public class TerminalPreferences extends MemoryPreferences {
         defaults.put("queue.download.skip.enable", "false");
         defaults.put("queue.upload.skip.enable", "false");
 
+        defaults.put("queue.copy.action", TransferAction.comparison.name());
+        defaults.put("queue.copy.reload.action", TransferAction.comparison.name());
     }
 
     @Override

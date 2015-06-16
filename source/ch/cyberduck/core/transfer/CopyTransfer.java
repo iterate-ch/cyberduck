@@ -17,23 +17,12 @@ package ch.cyberduck.core.transfer;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Serializable;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
@@ -51,7 +40,6 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.transfer.copy.ChecksumFilter;
 import ch.cyberduck.core.transfer.copy.OverwriteFilter;
 import ch.cyberduck.core.transfer.normalizer.CopyRootPathsNormalizer;
-import ch.cyberduck.core.transfer.symlink.DownloadSymlinkResolver;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
@@ -61,7 +49,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -70,6 +58,10 @@ import java.util.Map;
  */
 public class CopyTransfer extends Transfer {
     private static final Logger log = Logger.getLogger(CopyTransfer.class);
+
+    private Filter<Path> filter = new NullFilter<Path>();
+
+    private Comparator<Path> comparator = new NullComparator<Path>();
 
     /**
      * Mapping source to destination files
@@ -169,6 +161,27 @@ public class CopyTransfer extends Transfer {
             action = TransferAction.forName(
                     PreferencesFactory.get().getProperty("queue.copy.action"));
         }
+        if(action.equals(TransferAction.callback)) {
+            for(TransferItem upload : roots) {
+                final Upload write = destination.getFeature(Upload.class);
+                final Path copy = files.get(upload.remote);
+                final Write.Append append = write.append(copy, upload.remote.attributes().getSize(), PathCache.empty());
+                if(append.override || append.append) {
+                    // Found remote file
+                    if(upload.remote.isDirectory()) {
+                        // List files in target directory
+                        if(this.list(destination, copy, null, listener).isEmpty()) {
+                            // Do not prompt for existing empty directories
+                            continue;
+                        }
+                    }
+                    // Prompt user to choose a filter
+                    return prompt.prompt(upload);
+                }
+            }
+            // No files exist yet therefore it is most straightforward to use the overwrite action
+            return TransferAction.overwrite;
+        }
         return action;
     }
 
@@ -189,25 +202,16 @@ public class CopyTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("List children for %s", directory));
         }
-        if(directory.isSymbolicLink()
-                && new DownloadSymlinkResolver(roots).resolve(directory)) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Do not list children for symbolic link %s", directory));
-            }
-            return Collections.emptyList();
+        final AttributedList<Path> list = session.list(directory, listener).filter(comparator, filter);
+        final Path copy = files.get(directory);
+        for(Path p : list) {
+            files.put(p, new Path(copy, p.getName(), p.getType(), p.attributes()));
         }
-        else {
-            final AttributedList<Path> list = session.list(directory, listener);
-            final Path copy = files.get(directory);
-            for(Path p : list) {
-                files.put(p, new Path(copy, p.getName(), p.getType(), p.attributes()));
-            }
-            final List<TransferItem> nullified = new ArrayList<TransferItem>();
-            for(Path p : list) {
-                nullified.add(new TransferItem(p));
-            }
-            return nullified;
+        final List<TransferItem> nullified = new ArrayList<TransferItem>();
+        for(Path p : list) {
+            nullified.add(new TransferItem(p));
         }
+        return nullified;
     }
 
     @Override

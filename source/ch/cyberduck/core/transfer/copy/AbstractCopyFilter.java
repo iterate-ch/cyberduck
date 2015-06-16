@@ -29,8 +29,6 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
-import ch.cyberduck.core.features.Attributes;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -52,49 +50,36 @@ import java.util.Map;
 public abstract class AbstractCopyFilter implements TransferPathFilter {
     private static final Logger log = Logger.getLogger(AbstractCopyFilter.class);
 
-    private Session<?> destination;
+    protected Session<?> sourceSession;
 
-    protected Find find;
+    protected Session<?> destinationSession;
 
-    protected Attributes attribute;
+    protected PathCache sourceCache
+            = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
-    private AclPermission acl;
+    protected PathCache destinationCache
+            = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
     protected final Map<Path, Path> files;
 
     private UploadFilterOptions options;
 
     public AbstractCopyFilter(final Session<?> source, final Session<?> destination, final Map<Path, Path> files) {
-        this(source, destination, files, new UploadFilterOptions(),
-                new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size")));
+        this(source, destination, files, new UploadFilterOptions());
     }
 
     public AbstractCopyFilter(final Session<?> source, final Session<?> destination,
-                              final Map<Path, Path> files, final UploadFilterOptions options, final PathCache cache) {
-        this.destination = destination;
+                              final Map<Path, Path> files, final UploadFilterOptions options) {
+        this.sourceSession = source;
+        this.destinationSession = destination;
         this.files = files;
         this.options = options;
-        // Find feature for target host
-        this.find = new DefaultFindFeature(destination).withCache(new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size")));
-        // Attribute feature for source host
-        this.attribute = new DefaultAttributesFeature(source).withCache(cache);
-        this.acl = source.getFeature(AclPermission.class);
     }
 
     @Override
     public TransferPathFilter withCache(final PathCache cache) {
         // With cache from source host
-        attribute.withCache(cache);
-        return this;
-    }
-
-    public AbstractCopyFilter withFinder(final Find finder) {
-        this.find = finder;
-        return this;
-    }
-
-    public AbstractCopyFilter withAttributes(final Attributes attribute) {
-        this.attribute = attribute;
+        this.sourceCache = cache;
         return this;
     }
 
@@ -102,7 +87,7 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
     public TransferStatus prepare(final Path source, final Local local, final TransferStatus parent) throws BackgroundException {
         final TransferStatus status = new TransferStatus();
         // Read remote attributes from source
-        final PathAttributes attributes = attribute.find(source);
+        final PathAttributes attributes = new DefaultAttributesFeature(sourceSession).withCache(sourceCache).find(source);
         if(source.isFile()) {
             // Content length
             status.setLength(attributes.getSize());
@@ -115,15 +100,16 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
             status.setTimestamp(attributes.getModificationDate());
         }
         if(this.options.acl) {
-            if(acl != null) {
-                status.setAcl(acl.getPermission(source));
+            final AclPermission feature = sourceSession.getFeature(AclPermission.class);
+            if(feature != null) {
+                status.setAcl(feature.getPermission(source));
             }
         }
         if(parent.isExists()) {
             // Do not attempt to create a directory that already exists
-            final Path destination = files.get(source);
+            final Path target = files.get(source);
             // Look for file in target host
-            if(find.find(destination)) {
+            if(new DefaultFindFeature(destinationSession).withCache(destinationCache).find(target)) {
                 status.setExists(true);
             }
         }
@@ -144,7 +130,7 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
         }
         if(status.isComplete()) {
             if(!Permission.EMPTY.equals(status.getPermission())) {
-                final UnixPermission feature = destination.getFeature(UnixPermission.class);
+                final UnixPermission feature = destinationSession.getFeature(UnixPermission.class);
                 if(feature != null) {
                     if(!Permission.EMPTY.equals(status.getPermission())) {
                         try {
@@ -160,7 +146,7 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
                 }
             }
             if(!Acl.EMPTY.equals(status.getAcl())) {
-                final AclPermission feature = destination.getFeature(AclPermission.class);
+                final AclPermission feature = destinationSession.getFeature(AclPermission.class);
                 if(feature != null) {
                     try {
                         listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
@@ -174,7 +160,7 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
                 }
             }
             if(status.getTimestamp() != null) {
-                final Timestamp timestamp = destination.getFeature(Timestamp.class);
+                final Timestamp timestamp = destinationSession.getFeature(Timestamp.class);
                 if(timestamp != null) {
                     listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing timestamp of {0} to {1}", "Status"),
                             source.getName(), UserDateFormatterFactory.get().getShortFormat(status.getTimestamp())));

@@ -19,7 +19,6 @@ package ch.cyberduck.core.transfer.copy;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -36,8 +35,8 @@ public class OverwriteFilter extends AbstractCopyFilter {
         super(source, destination, files);
     }
 
-    public OverwriteFilter(final Session<?> source, final Session<?> destination, final Map<Path, Path> files, final UploadFilterOptions options, final PathCache cache) {
-        super(source, destination, files, options, cache);
+    public OverwriteFilter(final Session<?> source, final Session<?> destination, final Map<Path, Path> files, final UploadFilterOptions options) {
+        super(source, destination, files, options);
     }
 
     @Override

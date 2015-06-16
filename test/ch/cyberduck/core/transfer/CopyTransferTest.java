@@ -66,15 +66,8 @@ public class CopyTransferTest extends AbstractTestCase {
         CopyTransfer t = new CopyTransfer(new Host(new SFTPProtocol(), "t"),
                 new NullSession(new Host(new FTPProtocol(), "t")),
                 Collections.singletonMap(test, new Path("d", EnumSet.of(Path.Type.file))), new BandwidthThrottle(BandwidthThrottle.UNLIMITED));
-        assertEquals(TransferAction.cancel, t.action(new NullSession(new Host(new SFTPProtocol(), "t")), false, true,
-                new DisabledTransferPrompt(), new DisabledListProgressListener()));
         assertEquals(TransferAction.comparison, t.action(new NullSession(new Host(new SFTPProtocol(), "t")), false, true,
-                new DisabledTransferPrompt() {
-                    @Override
-                    public TransferAction prompt(final TransferItem file) {
-                        return TransferAction.comparison;
-                    }
-                }, new DisabledListProgressListener()));
+                new DisabledTransferPrompt(), new DisabledListProgressListener()));
     }
 
     @Test
