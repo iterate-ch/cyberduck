@@ -26,17 +26,26 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
+import ch.cyberduck.core.worker.Worker;
 
 /**
  * @version $Id$
  */
 public class FilesystemBackgroundAction extends WorkerBackgroundAction<Void> {
 
+
+    public FilesystemBackgroundAction(final Controller controller,
+                                      final Session session,
+                                      final Cache<Path> cache,
+                                      final Worker<Void> worker) {
+        super(controller, session, cache, worker);
+    }
+
     public FilesystemBackgroundAction(final Controller controller,
                                       final ConnectionService connection,
                                       final Session<?> session,
                                       final PathCache cache) {
-        this(controller, FilesystemFactory.get(connection, session, cache), connection, session, cache);
+        this(controller, FilesystemFactory.get(session, cache), connection, session, cache);
     }
 
     public FilesystemBackgroundAction(final Controller controller,

@@ -30,6 +30,6 @@ public class FilesystemFactoryTest extends AbstractTestCase {
 
     @Test(expected = FactoryException.class)
     public void testFactory() throws Exception {
-        FilesystemFactory.get(null, null, PathCache.empty());
+        FilesystemFactory.get(null, PathCache.empty());
     }
 }

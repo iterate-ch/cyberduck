@@ -17,7 +17,6 @@ package ch.cyberduck.fs;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.PathCache;
@@ -38,7 +37,7 @@ public class FilesystemFactory extends Factory<Filesystem> {
     private static final Preferences preferences
             = PreferencesFactory.get();
 
-    public Filesystem create(final ConnectionService connection, final Session<?> session, final PathCache cache) {
+    public Filesystem create(final Session<?> session, final PathCache cache) {
         final String clazz = preferences.getProperty("factory.filesystem.class");
         if(null == clazz) {
             throw new FactoryException(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
@@ -46,15 +45,15 @@ public class FilesystemFactory extends Factory<Filesystem> {
         try {
             final Class<Filesystem> name = (Class<Filesystem>) Class.forName(clazz);
             final Constructor<Filesystem> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name,
-                    connection.getClass(), session.getClass(), cache.getClass());
-            return constructor.newInstance(connection, session, cache);
+                    session.getClass(), cache.getClass());
+            return constructor.newInstance(session, cache);
         }
         catch(InstantiationException | InvocationTargetException | ClassNotFoundException | IllegalAccessException e) {
             throw new FactoryException(e.getMessage(), e);
         }
     }
 
-    public static Filesystem get(final ConnectionService connection, final Session<?> session, final PathCache cache) {
-        return new FilesystemFactory().create(connection, session, cache);
+    public static Filesystem get(final Session<?> session, final PathCache cache) {
+        return new FilesystemFactory().create(session, cache);
     }
 }
