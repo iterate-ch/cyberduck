@@ -19,6 +19,7 @@ package ch.cyberduck.fs;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 
 /**
@@ -29,6 +30,8 @@ public interface Filesystem {
     void mount(final Path workdir) throws BackgroundException;
 
     void unmount() throws BackgroundException;
+
+    Session getSession();
 
     Local getMountpoint();
 }
