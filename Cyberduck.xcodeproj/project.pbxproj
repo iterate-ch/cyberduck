@@ -236,6 +236,7 @@
 		47D93A171A2762A40006D4AE /* Support.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47990FD0195C63AE009EBB7C /* Support.strings */; };
 		47DD76731AE1340A005F08A0 /* SystemConfigurationProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 47DD76711AE1340A005F08A0 /* SystemConfigurationProxy.h */; };
 		47DD76741AE1340A005F08A0 /* SystemConfigurationProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 47DD76721AE1340A005F08A0 /* SystemConfigurationProxy.m */; };
+		47E0709A1B32DC7100B8B073 /* SNDisclosableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 477B1B7D0AF384350023BA7F /* SNDisclosableView.m */; };
 		47E987600D689A280077733F /* S3.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47E9875E0D689A280077733F /* S3.strings */; };
 		47EA2451162B5CE0002E23E2 /* LaunchServicesSchemeHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 47EA244F162B5CE0002E23E2 /* LaunchServicesSchemeHandler.h */; };
 		47EA2452162B5CE0002E23E2 /* LaunchServicesSchemeHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 47EA2450162B5CE0002E23E2 /* LaunchServicesSchemeHandler.m */; };
@@ -4601,6 +4602,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				47E0709A1B32DC7100B8B073 /* SNDisclosableView.m in Sources */,
 				4738A1F71B1BA645005EA4AE /* CDBookmarkCell.m in Sources */,
 				4738A1F81B1BA645005EA4AE /* CDControllerCell.m in Sources */,
 				4738A1F91B1BA645005EA4AE /* CDListView.m in Sources */,
