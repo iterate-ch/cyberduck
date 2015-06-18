@@ -157,6 +157,7 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
         callback.selected(sender);
     }
 
+    @Action
     public void clearMenuItemClicked(NSMenuItem sender) {
         // Delete all bookmark files
         collection.clear();
