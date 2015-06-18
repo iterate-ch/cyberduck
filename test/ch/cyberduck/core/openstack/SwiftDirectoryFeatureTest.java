@@ -30,6 +30,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -48,6 +49,7 @@ import static org.junit.Assert.assertTrue;
 public class SwiftDirectoryFeatureTest extends AbstractTestCase {
 
     @Test
+    @Ignore
     public void testCreateContainer() throws Exception {
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")

@@ -32,6 +32,7 @@ import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -47,6 +48,7 @@ import static org.junit.Assert.assertTrue;
 public class S3DirectoryFeatureTest extends AbstractTestCase {
 
     @Test
+    @Ignore
     public void testCreateBucket() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
