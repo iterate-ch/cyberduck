@@ -67,14 +67,18 @@ public abstract class NSMenu extends NSObject implements NSCopying {
         NSMenu alloc();
     }
 
+    public static interface Validation {
+        boolean validateMenuItem(NSMenuItem item);
+    }
+
     public static interface Delegate {
         /**
          * @param menu
          * @return If you return a positive value, the menu is resized by either removing or adding items.
-         *         Newly created items are blank. After the menu is resized, your menu:updateItem:atIndex:shouldCancel: method
-         *         is called for each item. If you return a negative value, the number of items is left unchanged
-         *         and menu:updateItem:atIndex:shouldCancel: is not called. If you can populate the menu quickly,
-         *         you can implement menuNeedsUpdate: instead of numberOfItemsInMenu: and menu:updateItem:atIndex:shouldCancel:.
+         * Newly created items are blank. After the menu is resized, your menu:updateItem:atIndex:shouldCancel: method
+         * is called for each item. If you return a negative value, the number of items is left unchanged
+         * and menu:updateItem:atIndex:shouldCancel: is not called. If you can populate the menu quickly,
+         * you can implement menuNeedsUpdate: instead of numberOfItemsInMenu: and menu:updateItem:atIndex:shouldCancel:.
          */
         NSInteger numberOfItemsInMenu(NSMenu menu);
 

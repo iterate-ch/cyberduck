@@ -32,7 +32,7 @@ import org.rococoa.cocoa.foundation.NSInteger;
 /**
  * @version $Id$
  */
-public abstract class AbstractMenuDelegate extends ProxyController implements NSMenu.Delegate {
+public abstract class AbstractMenuDelegate extends ProxyController implements NSMenu.Delegate, NSMenu.Validation {
     private static final Logger log = Logger.getLogger(AbstractMenuDelegate.class);
 
     /**
@@ -159,6 +159,7 @@ public abstract class AbstractMenuDelegate extends ProxyController implements NS
      *
      * @return False if menu item should be disabled.
      */
+    @Override
     public boolean validateMenuItem(NSMenuItem item) {
         return true;
     }
