@@ -24,7 +24,7 @@ id proxyForJavaObject(void* methodInvokedCallback, void* methodSignatureCallback
 }
 
 @interface ProxyForJava (Private)
-+ (char *)cstringPtrForSelector:(CFStringRef) cfstring;
++ (const char *)cstringPtrForSelector:(CFStringRef) cfstring;
 @end
 
 @implementation ProxyForJava
@@ -73,10 +73,17 @@ id proxyForJavaObject(void* methodInvokedCallback, void* methodSignatureCallback
 }
 
 + (const char *)cstringPtrForSelector:(CFStringRef) selectorName {
-	const char* selectorNameChar = CFStringGetCStringPtr(selectorName, CFStringGetFastestEncoding(selectorName));
+    static CFStringEncoding encoding = kCFStringEncodingUTF8;
+	const char* selectorNameChar = CFStringGetCStringPtr(selectorName, encoding);
 	if (NULL == selectorNameChar) {
-		// NSLog(@"CFStringGetCStringPtr failed for selector %@", selectorName);
-		return NULL;
+		// NSLog(@"CFStringGetCStringPtr failed for selector %@ with encoding %u", selectorName, encoding);
+        // May return NULL at any time. NULL if the internal storage of theString does not allow this to be returned efficiently.
+        CFIndex maxSize = CFStringGetMaximumSizeForEncoding(CFStringGetLength(selectorName), encoding);
+        char *buffer = (char *)malloc(maxSize);
+        if(CFStringGetCString(selectorName, buffer, maxSize, encoding)) {
+            return buffer;
+        }
+		NSLog(@"CFStringGetCString failed for selector %@ with encoding %u", selectorName, encoding);
 	}
 	return selectorNameChar;
 }
