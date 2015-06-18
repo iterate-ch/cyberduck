@@ -39,11 +39,11 @@ public class NetworkInterfaceAwareSocketFactoryTest extends AbstractTestCase {
     @Test
     public void testFindWithExplicitInterfaceZoneId() throws Exception {
         final Socket socket = new NetworkInterfaceAwareSocketFactory(Arrays.<String>asList("awdl0", "utun0"))
-                .createSocket(InetAddress.getByName("::1%awdl0"), 22);
+                .createSocket(InetAddress.getByName("::1%lo0"), 22);
         assertNotNull(socket);
         assertTrue(socket.getInetAddress() instanceof Inet6Address);
         assertEquals(((Inet6Address) socket.getInetAddress()).getScopeId(),
-                NetworkInterface.getByName("awdl0").getIndex());
+                NetworkInterface.getByName("lo0").getIndex());
     }
 
     @Test
