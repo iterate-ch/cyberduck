@@ -18,60 +18,22 @@ package ch.cyberduck.fs;
  */
 
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.worker.Worker;
 
 /**
  * @version $Id$
  */
-public class FilesystemBackgroundAction extends WorkerBackgroundAction<Void> {
-
+public class FilesystemBackgroundAction<T> extends WorkerBackgroundAction<T> {
 
     public FilesystemBackgroundAction(final Controller controller,
-                                      final Session session,
+                                      final Session<?> session,
                                       final Cache<Path> cache,
-                                      final Worker<Void> worker) {
+                                      final Worker<T> worker) {
         super(controller, session, cache, worker);
-    }
-
-    public FilesystemBackgroundAction(final Controller controller,
-                                      final ConnectionService connection,
-                                      final Session<?> session,
-                                      final PathCache cache) {
-        this(controller, FilesystemFactory.get(session, cache), connection, session, cache);
-    }
-
-    public FilesystemBackgroundAction(final Controller controller,
-                                      final Filesystem fs,
-                                      final ConnectionService connection,
-                                      final Session<?> session,
-                                      final PathCache cache) {
-        this(controller, connection, session, cache, new FilesystemWorker(session, fs));
-    }
-
-    public FilesystemBackgroundAction(final Controller controller,
-                                      final ConnectionService connection,
-                                      final Session<?> session,
-                                      final PathCache cache,
-                                      final FilesystemWorker worker) {
-        this(controller, connection, session, cache, worker, controller, controller);
-    }
-
-    public FilesystemBackgroundAction(final Controller controller,
-                                      final ConnectionService connection,
-                                      final Session<?> session,
-                                      final Cache<Path> cache,
-                                      final FilesystemWorker worker,
-                                      final ProgressListener progress,
-                                      final TranscriptListener transcript) {
-        super(connection, controller, session, cache, worker, progress, transcript);
     }
 
     @Override

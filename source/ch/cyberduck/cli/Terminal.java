@@ -48,6 +48,8 @@ import ch.cyberduck.core.worker.DisconnectWorker;
 import ch.cyberduck.core.worker.SessionListWorker;
 import ch.cyberduck.core.worker.Worker;
 import ch.cyberduck.fs.FilesystemBackgroundAction;
+import ch.cyberduck.fs.FilesystemFactory;
+import ch.cyberduck.fs.FilesystemWorker;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -334,11 +336,8 @@ public class Terminal {
     }
 
     protected Exit mount(final Session session) {
-        final SessionBackgroundAction action = new FilesystemBackgroundAction(
-                controller,
-                new LoginConnectionService(new TerminalLoginService(input, new TerminalLoginCallback(reader)),
-                        new TerminalHostKeyVerifier(reader), progress, transcript),
-                session, cache);
+        final SessionBackgroundAction action = new FilesystemBackgroundAction<Void>(
+                controller, session, cache, new FilesystemWorker(session, FilesystemFactory.get(controller, session, cache)));
         this.execute(action);
         if(action.hasFailed()) {
             return Exit.failure;
