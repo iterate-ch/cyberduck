@@ -65,7 +65,7 @@ public class DeleteWorkerTest extends AbstractTestCase {
         final DeleteWorker worker = new DeleteWorker(session, new DisabledLoginCallback(),
                 Collections.singletonList(new Path("/t", EnumSet.of(Path.Type.directory))),
                 new DisabledProgressListener());
-        worker.run();
+        assertEquals(Collections.singletonList(new Path("/t", EnumSet.of(Path.Type.directory))), worker.run());
     }
 
     @Test

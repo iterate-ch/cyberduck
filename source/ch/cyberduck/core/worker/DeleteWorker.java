@@ -67,7 +67,7 @@ public class DeleteWorker extends Worker<List<Path>> {
         }
         final Delete feature = session.getFeature(Delete.class);
         feature.delete(recursive, prompt, listener);
-        return recursive;
+        return files;
     }
 
     protected List<Path> compile(final Path file) throws BackgroundException {
