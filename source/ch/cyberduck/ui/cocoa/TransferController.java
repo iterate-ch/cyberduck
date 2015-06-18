@@ -87,7 +87,7 @@ import java.util.StringTokenizer;
 /**
  * @version $Id$
  */
-public final class TransferController extends WindowController implements NSToolbar.Delegate {
+public final class TransferController extends WindowController implements NSToolbar.Delegate, NSMenu.Validation {
     private static final Logger log = Logger.getLogger(TransferController.class);
 
     private final TransferToolbarFactory toolbarFactory = new TransferToolbarFactory(this);
@@ -968,7 +968,7 @@ public final class TransferController extends WindowController implements NSTool
      * @param item Menu item
      * @return True if enabled
      */
-    @Action
+    @Override
     public boolean validateMenuItem(final NSMenuItem item) {
         final Selector action = item.action();
         if(action.equals(Foundation.selector("paste:"))) {
