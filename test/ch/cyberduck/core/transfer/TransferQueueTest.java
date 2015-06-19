@@ -54,7 +54,8 @@ public class TransferQueueTest extends AbstractTestCase {
         }).start();
         assertTrue(c.getCount() == 1);
         queue.remove(d1);
-        c.await(1, TimeUnit.SECONDS);
+        assertTrue(c.await(1, TimeUnit.SECONDS));
+        assertTrue(c.getCount() == 0);
     }
 
     @Test
