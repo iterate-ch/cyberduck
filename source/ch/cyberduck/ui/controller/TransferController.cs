@@ -366,7 +366,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_QueueSizeChangedEvent()
         {
             PreferencesFactory.get().setProperty("queue.maxtransfers", View.QueueSize);
-            QueueFactory.get().resize(PreferencesFactory.get().getInteger("queue.maxtransfers"));
+            TransferQueueFactory.get().resize(PreferencesFactory.get().getInteger("queue.maxtransfers"));
         }
 
         private void View_BandwidthChangedEvent()

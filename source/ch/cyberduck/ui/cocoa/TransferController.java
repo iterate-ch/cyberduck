@@ -54,13 +54,13 @@ import ch.cyberduck.core.threading.ControllerMainAction;
 import ch.cyberduck.core.threading.TransferBackgroundAction;
 import ch.cyberduck.core.threading.TransferCollectionBackgroundAction;
 import ch.cyberduck.core.transfer.DownloadTransfer;
-import ch.cyberduck.core.transfer.QueueFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferCallback;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferListener;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferProgress;
+import ch.cyberduck.core.transfer.TransferQueueFactory;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
 import ch.cyberduck.ui.cocoa.delegate.AbstractMenuDelegate;
@@ -248,7 +248,7 @@ public final class TransferController extends WindowController implements NSTool
     @Action
     public void queueSizeStepperChanged(final NSStepper sender) {
         // Queue size propery is changed using key value observer
-        QueueFactory.get().resize(sender.intValue());
+        TransferQueueFactory.get().resize(sender.intValue());
     }
 
     @Outlet

@@ -31,41 +31,31 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * @version $Id$
  */
-public final class Queue {
-    private static final Logger log = Logger.getLogger(Queue.class);
+public final class TransferQueue {
+    private static final Logger log = Logger.getLogger(TransferQueue.class);
 
     private ApplicationBadgeLabeler label = ApplicationBadgeLabelerFactory.get();
 
-    /**
-     * One transfer at least is always allowed to run. Queued accesses for threads blocked
-     * on insertion or removal, are processed in FIFO order
-     */
-    private ArrayBlockingQueue<Transfer> overflow
-            = new ArrayBlockingQueue<Transfer>(1, true);
+    private BlockingQueue<Transfer> running;
 
     private NotificationService growl = NotificationServiceFactory.get();
 
-    /**
-     * All running transfers.
-     */
-    private List<Transfer> running
-            = Collections.synchronizedList(new ArrayList<Transfer>());
+    final List<Transfer> temporary = new ArrayList<Transfer>();
 
-    private int size;
-
-    public Queue() {
+    public TransferQueue() {
         this(PreferencesFactory.get().getInteger("queue.maxtransfers"));
     }
 
-    public Queue(final int size) {
-        this.size = size;
+    public TransferQueue(final int size) {
+        this.running = new ArrayBlockingQueue<Transfer>(size, true);
     }
 
     /**
@@ -76,28 +66,25 @@ public final class Queue {
      */
     public void add(final Transfer t, final ProgressListener listener) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Add transfer %s", t));
+            log.debug(String.format("Add transfer %s to queue", t));
         }
-        if(running.size() >= size) {
-            listener.message(LocaleFactory.localizedString("Maximum allowed connections exceeded. Waiting", "Status"));
+        if(0 == running.remainingCapacity()) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Queuing transfer %s", t));
             }
+            listener.message(LocaleFactory.localizedString("Maximum allowed connections exceeded. Waiting", "Status"));
             growl.notify("Transfer queued", t.getHost().getHostname());
-            while(running.size() >= size) {
-                // The maximum number of transfers is already reached. Wait for transfer slot.
-                try {
-                    overflow.put(t);
-                }
-                catch(InterruptedException e) {
-                    log.error(e.getMessage());
-                }
-            }
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Released from queue %s", t));
-            }
         }
-        running.add(t);
+        // The maximum number of transfers is already reached. Wait for transfer slot.
+        try {
+            running.put(t);
+        }
+        catch(InterruptedException e) {
+            log.error(String.format("Error waiting for slot in queue. %s", e.getMessage()));
+        }
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Released from queue %s", t));
+        }
         label.badge(String.valueOf(running.size()));
     }
 
@@ -105,6 +92,9 @@ public final class Queue {
      * @param t Transfer to drop from queue
      */
     public void remove(final Transfer t) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Remove %s from queue", t));
+        }
         if(running.remove(t)) {
             if(0 == running.size()) {
                 label.badge(StringUtils.EMPTY);
@@ -112,13 +102,12 @@ public final class Queue {
             else {
                 label.badge(String.valueOf(running.size()));
             }
-            // Transfer has finished.
-            this.poll();
         }
         else {
-            // Transfer was still in the queue and has not started yet.
-            overflow.remove(t);
+            temporary.remove(t);
         }
+        // Transfer has finished.
+        this.poll();
     }
 
     /**
@@ -128,21 +117,23 @@ public final class Queue {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Resize queue to %d", newsize));
         }
-        size = newsize;
-        int counter = running.size();
-        while(counter < size) {
-            if(overflow.isEmpty()) {
-                log.debug("No more waiting transfers in queue");
-                break;
-            }
-            this.poll();
-            counter++;
-        }
+        running.drainTo(temporary);
+        running.clear();
+        running = new ArrayBlockingQueue<Transfer>(newsize);
+        this.poll();
     }
 
+    /**
+     * Poll temporary queue
+     */
     private void poll() {
-        log.debug("poll");
-        // Clear space for other transfer from the head of the queue
-        overflow.poll();
+        if(log.isDebugEnabled()) {
+            log.debug("Polling overflow queue");
+        }
+        for(Iterator<Transfer> t = temporary.iterator(); t.hasNext(); ) {
+            if(running.offer(t.next())) {
+                t.remove();
+            }
+        }
     }
 }

@@ -26,11 +26,11 @@ import ch.cyberduck.core.TransferCollection;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.transfer.Queue;
-import ch.cyberduck.core.transfer.QueueFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferListener;
 import ch.cyberduck.core.transfer.TransferOptions;
+import ch.cyberduck.core.transfer.TransferQueue;
+import ch.cyberduck.core.transfer.TransferQueueFactory;
 
 import org.apache.log4j.Logger;
 
@@ -40,7 +40,7 @@ import org.apache.log4j.Logger;
 public class TransferCollectionBackgroundAction extends TransferBackgroundAction {
     private static final Logger log = Logger.getLogger(TransferCollectionBackgroundAction.class);
 
-    private Queue queue = QueueFactory.get();
+    private TransferQueue queue = TransferQueueFactory.get();
 
     private Transfer transfer;
 
@@ -66,6 +66,15 @@ public class TransferCollectionBackgroundAction extends TransferBackgroundAction
     public void prepare() throws ConnectionCanceledException {
         queue.add(transfer, progressListener);
         super.prepare();
+    }
+
+    @Override
+    public void cancel() {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Cancel background action for transfer %s", transfer));
+        }
+        queue.remove(transfer);
+        super.cancel();
     }
 
     @Override

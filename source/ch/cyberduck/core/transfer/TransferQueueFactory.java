@@ -17,19 +17,25 @@ package ch.cyberduck.core.transfer;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-
-import org.junit.Test;
-
-import static org.junit.Assert.assertTrue;
-
 /**
  * @version $Id$
  */
-public class QueueFactoryTest extends AbstractTestCase {
+public final class TransferQueueFactory {
 
-    @Test
-    public void testGet() throws Exception {
-        assertTrue(QueueFactory.get() == QueueFactory.get());
+    private static TransferQueue instance;
+
+    private static final Object lock = new Object();
+
+    public static TransferQueue get() {
+        synchronized(lock) {
+            if(null == instance) {
+                instance = new TransferQueue();
+            }
+            return instance;
+        }
+    }
+
+    private TransferQueueFactory() {
+        //
     }
 }

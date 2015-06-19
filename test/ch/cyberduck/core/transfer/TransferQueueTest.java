@@ -28,6 +28,7 @@ import java.util.EnumSet;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
@@ -35,11 +36,11 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class QueueTest extends AbstractTestCase {
+public class TransferQueueTest extends AbstractTestCase {
 
     @Test
     public void testAddRemove() throws Exception {
-        final Queue queue = new Queue(1);
+        final TransferQueue queue = new TransferQueue(1);
         final DownloadTransfer d1 = new DownloadTransfer(new Host("t"), new Path("/t1", EnumSet.of(Path.Type.directory)), null);
         final DownloadTransfer d2 = new DownloadTransfer(new Host("t"), new Path("/t2", EnumSet.of(Path.Type.directory)), null);
         queue.add(d1, new DisabledProgressListener());
@@ -53,12 +54,12 @@ public class QueueTest extends AbstractTestCase {
         }).start();
         assertTrue(c.getCount() == 1);
         queue.remove(d1);
-        assertTrue(c.getCount() == 0);
+        c.await(1, TimeUnit.SECONDS);
     }
 
     @Test
     public void testConcurrent() throws Exception {
-        final Queue queue = new Queue(1);
+        final TransferQueue queue = new TransferQueue(1);
         final DownloadTransfer transfer = new DownloadTransfer(new Host("t"), new Path("/t", EnumSet.of(Path.Type.directory)), null);
         queue.add(transfer, new DisabledProgressListener());
         final AtomicBoolean added = new AtomicBoolean();
@@ -80,5 +81,33 @@ public class QueueTest extends AbstractTestCase {
         queue.remove(transfer);
         wait.await();
         assertTrue(added.get());
+    }
+
+    @Test
+    public void testResize() throws Exception {
+        final TransferQueue queue = new TransferQueue(1);
+        final DownloadTransfer d1 = new DownloadTransfer(new Host("t"), new Path("/t1", EnumSet.of(Path.Type.directory)), null);
+        final DownloadTransfer d2 = new DownloadTransfer(new Host("t"), new Path("/t2", EnumSet.of(Path.Type.directory)), null);
+        queue.add(d1, new DisabledProgressListener());
+        final CountDownLatch c = new CountDownLatch(1);
+        final AtomicBoolean set = new AtomicBoolean();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                queue.add(d2, new DisabledProgressListener() {
+                    @Override
+                    public void message(final String message) {
+                        assertEquals("Maximum allowed connections exceeded. Waiting", message);
+                        set.set(true);
+                    }
+                });
+                c.countDown();
+            }
+        }).start();
+        assertTrue(c.getCount() == 1);
+        assertFalse(c.await(1, TimeUnit.SECONDS));
+        queue.resize(2);
+        c.await(1, TimeUnit.SECONDS);
+        assertTrue(set.get());
     }
 }
