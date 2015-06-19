@@ -64,8 +64,10 @@ public class TransferCollectionBackgroundAction extends TransferBackgroundAction
 
     @Override
     public void prepare() throws ConnectionCanceledException {
-        queue.add(transfer, progressListener);
+        // Update status to running
         super.prepare();
+        // Wait for slot in queue
+        queue.add(transfer, progressListener);
     }
 
     @Override

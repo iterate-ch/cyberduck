@@ -201,12 +201,6 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> im
     }
 
     @Override
-    protected void reset() throws BackgroundException {
-        super.reset();
-        transfer.start();
-    }
-
-    @Override
     protected boolean connect(final Session session) throws BackgroundException {
         switch(transfer.getType()) {
             case copy:
@@ -244,6 +238,7 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> im
     @Override
     public void prepare() throws ConnectionCanceledException {
         super.prepare();
+        transfer.start();
         listener.start(transfer);
         timerPool = new ScheduledThreadPool();
         progressTimer = timerPool.repeat(new Runnable() {

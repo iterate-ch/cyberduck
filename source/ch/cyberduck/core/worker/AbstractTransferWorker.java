@@ -195,7 +195,6 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
     public Boolean run() throws BackgroundException {
         final String lock = sleep.lock();
         try {
-            transfer.start();
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Start transfer with prompt %s and options %s", prompt, options));
             }
@@ -239,7 +238,6 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
             this.await();
         }
         finally {
-            transfer.stop();
             if(transfer.isReset()) {
                 growl.notify(transfer.isComplete() ?
                         String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) : "Transfer incomplete", transfer.getName());
