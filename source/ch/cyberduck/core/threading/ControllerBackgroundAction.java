@@ -46,6 +46,17 @@ public abstract class ControllerBackgroundAction<T> extends SessionBackgroundAct
         this.controller = controller;
     }
 
+    public ControllerBackgroundAction(final Controller controller,
+                                      final Session<?> session,
+                                      final Cache<Path> cache,
+                                      final ProgressListener progress,
+                                      final TranscriptListener transcript) {
+        super(session, cache, controller, progress, transcript,
+                LoginCallbackFactory.get(controller),
+                HostKeyCallbackFactory.get(controller, session.getHost().getProtocol()));
+        this.controller = controller;
+    }
+
     public ControllerBackgroundAction(final ConnectionService connection,
                                       final Controller controller,
                                       final Session<?> session,

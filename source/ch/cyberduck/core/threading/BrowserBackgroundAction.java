@@ -48,6 +48,14 @@ public abstract class BrowserBackgroundAction<T> extends ControllerBackgroundAct
         super(controller, session, cache);
     }
 
+    public BrowserBackgroundAction(final Controller controller,
+                                   final Session<?> session,
+                                   final Cache<Path> cache,
+                                   final ProgressListener progress,
+                                   final TranscriptListener transcript) {
+        super(controller, session, cache, progress, transcript);
+    }
+
     public BrowserBackgroundAction(final ConnectionService connection,
                                    final Controller controller,
                                    final Session<?> session,

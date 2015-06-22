@@ -20,7 +20,9 @@ package ch.cyberduck.fs;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.worker.Worker;
 
@@ -34,6 +36,15 @@ public class FilesystemBackgroundAction<T> extends WorkerBackgroundAction<T> {
                                       final Cache<Path> cache,
                                       final Worker<T> worker) {
         super(controller, session, cache, worker);
+    }
+
+    public FilesystemBackgroundAction(final Controller controller,
+                                      final Session<?> session,
+                                      final Cache<Path> cache,
+                                      final Worker<T> worker,
+                                      final ProgressListener progress,
+                                      final TranscriptListener transcript) {
+        super(controller, session, cache, worker, progress, transcript);
     }
 
     @Override

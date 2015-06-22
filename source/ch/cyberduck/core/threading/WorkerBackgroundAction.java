@@ -85,6 +85,15 @@ public class WorkerBackgroundAction<T> extends BrowserBackgroundAction<Boolean> 
         this.worker = worker;
     }
 
+    public WorkerBackgroundAction(final Controller controller,
+                                  final Session<?> session,
+                                  final Cache<Path> cache,
+                                  final Worker<T> worker,
+                                  final ProgressListener progress,
+                                  final TranscriptListener transcript) {
+        super(controller, session, cache, progress, transcript);
+        this.worker = worker;
+    }
 
     @Override
     protected void reset() throws BackgroundException {
