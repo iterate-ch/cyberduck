@@ -13,6 +13,7 @@ A command line interface (CLI) version is now available from https://duck.sh/ fo
 - [Bugfix] MD5 checksum failure for large object downloads (OpenStack Swift) (#8861)
 - [Bugfix] Segmented upload marked as incomplete (OpenStack Swift) (#8859)
 - [Bugfix] Failure cancelling queued transfer (#8844)
+- [Bugfix] Support retrieving files from buckets from Requester Pays Buckets (S3) (#8893)
 
 4.7 [https://trac.cyberduck.io/milestone/4.7]
 - [Feature] Support multiple connections per transfer (#1135)

@@ -189,6 +189,8 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         configuration.setProperty("httpclient.retry-max", String.valueOf(0));
         configuration.setProperty("storage-service.internal-error-retry-max", String.valueOf(0));
         configuration.setProperty("storage-service.request-signature-version", authenticationHeaderSignatureVersion.toString());
+        configuration.setProperty("httpclient.requester-pays-buckets-enabled", String.valueOf(
+                preferences.getBoolean("s3.bucket.requesterpays")));
         return configuration;
     }
 
