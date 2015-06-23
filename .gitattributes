@@ -2081,8 +2081,8 @@ lib/rococoa-core-0.6.jar -text svneol=unset#application/zip
 lib/sardine-5.5.jar -text
 lib/signpost-commonshttp4-1.2.1.2.jar -text
 lib/signpost-core-1.2.1.2.jar -text
-lib/slf4j-api-1.7.1.jar -text
-lib/slf4j-log4j12-1.7.1.jar -text
+lib/slf4j-api-1.7.12.jar -text
+lib/slf4j-log4j12-1.7.12.jar -text
 lib/sshj-0.12.0.jar -text
 lib/sunec.dll -text
 lib/sunmscapi.dll -text
