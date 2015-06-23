@@ -18,6 +18,7 @@ Changelog. Last modified: $Date$
 - [Bugfix] Segmented upload marked as incomplete (OpenStack Swift) (#8859)
 - [Bugfix] Failure cancelling queued transfer (#8844)
 - [Bugfix] Copy & Paste menu items disabled (Mac) (#8849)
+- [Bugfix] Support retrieving files from buckets from Requester Pays Buckets (S3) (#8893)
 
 4.7 [https://trac.cyberduck.io/milestone/4.7]
 - [Feature] Support multiple connections per transfer (#1135)
