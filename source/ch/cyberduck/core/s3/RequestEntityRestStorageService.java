@@ -102,6 +102,13 @@ public class RequestEntityRestStorageService extends RestS3Service {
                 request.addHeader(HTTP.EXPECT_DIRECTIVE, HTTP.EXPECT_CONTINUE);
             }
         }
+        if(preferences.getBoolean("s3.bucket.requesterpays")) {
+            // Downloading Objects in Requester Pays Buckets
+            if("GET".equals(request.getMethod()) || "POST".equals(request.getMethod())) {
+                // For GET and POST requests, include x-amz-request-payer : requester in the header
+                request.addHeader("x-amz-request-payer", "requester");
+            }
+        }
         return request;
     }
 
