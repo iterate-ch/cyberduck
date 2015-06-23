@@ -155,4 +155,33 @@ public class TransferQueueTest extends AbstractTestCase {
         assertTrue(c.await(1, TimeUnit.SECONDS));
         assertTrue(c.getCount() == 0);
     }
+
+    @Test
+    public void testRemoveWhileWaiting() throws Exception {
+        final TransferQueue queue = new TransferQueue(1);
+        final DownloadTransfer d1 = new DownloadTransfer(new Host("t"), new Path("/t1", EnumSet.of(Path.Type.directory)), null);
+        final DownloadTransfer d2 = new DownloadTransfer(new Host("t"), new Path("/t2", EnumSet.of(Path.Type.directory)), null);
+        queue.add(d1, new DisabledProgressListener());
+        final CountDownLatch c = new CountDownLatch(1);
+        final AtomicBoolean set = new AtomicBoolean();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                queue.add(d2, new DisabledProgressListener() {
+                    @Override
+                    public void message(final String message) {
+                        assertEquals("Maximum allowed connections exceeded. Waiting", message);
+                        set.set(true);
+                    }
+                });
+                c.countDown();
+            }
+        }).start();
+        assertFalse(c.await(1, TimeUnit.SECONDS));
+        assertTrue(c.getCount() == 1);
+        assertTrue(set.get());
+        queue.remove(d2);
+        assertTrue(c.await(1, TimeUnit.SECONDS));
+        assertTrue(c.getCount() == 0);
+    }
 }

@@ -31,8 +31,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -42,13 +44,19 @@ import java.util.concurrent.BlockingQueue;
 public final class TransferQueue {
     private static final Logger log = Logger.getLogger(TransferQueue.class);
 
-    private ApplicationBadgeLabeler label = ApplicationBadgeLabelerFactory.get();
+    private final ApplicationBadgeLabeler label
+            = ApplicationBadgeLabelerFactory.get();
 
     private BlockingQueue<Transfer> running;
 
-    private NotificationService growl = NotificationServiceFactory.get();
+    private final NotificationService growl
+            = NotificationServiceFactory.get();
 
-    final List<Transfer> temporary = new ArrayList<Transfer>();
+    private final List<Transfer> temporary
+            = new ArrayList<Transfer>();
+
+    private final Map<Transfer, Thread> threads
+            = new HashMap<Transfer, Thread>();
 
     public TransferQueue() {
         this(PreferencesFactory.get().getInteger("queue.maxtransfers"));
@@ -77,10 +85,14 @@ public final class TransferQueue {
         }
         // The maximum number of transfers is already reached. Wait for transfer slot.
         try {
+            threads.put(t, Thread.currentThread());
             running.put(t);
         }
         catch(InterruptedException e) {
             log.error(String.format("Error waiting for slot in queue. %s", e.getMessage()));
+        }
+        finally {
+            threads.remove(t);
         }
         if(log.isInfoEnabled()) {
             log.info(String.format("Released from queue %s", t));
@@ -104,6 +116,7 @@ public final class TransferQueue {
             }
         }
         else {
+            threads.remove(t).interrupt();
             temporary.remove(t);
         }
         // Transfer has finished.
