@@ -74,14 +74,6 @@ public abstract class Cache<T extends Referenceable> {
             }
         }
         log.warn(String.format("Lookup failed for %s in reverse cache", reference));
-        for(AttributedList<T> list : impl.values()) {
-            for(T entry : list) {
-                if(this.key(entry).equals(reference)) {
-                    return entry;
-                }
-            }
-        }
-        log.error(String.format("Lookup failed for %s in cache", reference));
         return null;
     }
 
