@@ -113,28 +113,22 @@ public class PanelSandboxBookmarkResolver implements SandboxBookmarkResolver<NSU
 
     @Override
     public String create(final Local file) throws AccessDeniedException {
-        if(file.exists()) {
-            // Create new security scoped bookmark
-            final ObjCObjectByReference error = new ObjCObjectByReference();
-            final NSData data = NSURL.fileURLWithPath(file.getAbsolute()).bookmarkDataWithOptions_includingResourceValuesForKeys_relativeToURL_error(
-                    NSURL.NSURLBookmarkCreationOptions.NSURLBookmarkCreationWithSecurityScope, null, null, error);
-            if(null == data) {
-                final NSError f = error.getValueAs(NSError.class);
-                log.warn(String.format("Failure getting bookmark data for file %s %s", file, f));
-                if(null == f) {
-                    throw new LocalAccessDeniedException(file.getAbsolute());
-                }
-                throw new LocalAccessDeniedException(String.format("%s", f.localizedDescription()));
+        // Create new security scoped bookmark
+        final ObjCObjectByReference error = new ObjCObjectByReference();
+        final NSData data = NSURL.fileURLWithPath(file.getAbsolute()).bookmarkDataWithOptions_includingResourceValuesForKeys_relativeToURL_error(
+                NSURL.NSURLBookmarkCreationOptions.NSURLBookmarkCreationWithSecurityScope, null, null, error);
+        if(null == data) {
+            final NSError f = error.getValueAs(NSError.class);
+            log.warn(String.format("Failure getting bookmark data for file %s %s", file, f));
+            if(null == f) {
+                throw new LocalAccessDeniedException(file.getAbsolute());
             }
-            final String encoded = data.base64Encoding();
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Encoded bookmark for %s as %s", file, encoded));
-            }
-            return encoded;
+            throw new LocalAccessDeniedException(String.format("%s", f.localizedDescription()));
         }
-        else {
-            log.warn(String.format("Skip creating bookmark for file not found %s", file));
-            return null;
+        final String encoded = data.base64Encoding();
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Encoded bookmark for %s as %s", file, encoded));
         }
+        return encoded;
     }
 }
