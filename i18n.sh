@@ -16,33 +16,32 @@
 
 #!/bin/bash
 
-# From Xcode 2.5 Developer Tools installation
-nibtool="nibtool"
+nibtool="ibtool"
 base_language="en.lproj"
 arch="x86_64"
 tx="/usr/local/bin/tx"
+extension=".xib"
 
 usage() {
 	echo ""
 	echo "	  Usage: i18n.sh [-l <language>] --status"
 	echo "	  Usage: i18n.sh [-l <language>] --init"
-	echo "	  Usage: i18n.sh [-l <language>] [-n <nib>] [--force] --update"
+	echo "	  Usage: i18n.sh [-l <language>] [-n <$extension>] [--force] --update"
 	echo "	  Usage: i18n.sh [-l <language>] --run"
 	echo ""
 	echo "<language> must be Japanese.lproj, French.lproj, Spanish.lproj, ..."
-	echo "<nib> must be Preferences.nib, Main.nib, ..."
+	echo "<$extension> must be Preferences.$extension, Main.$extension, ..."
 	echo ""
-	echo "Call with no parameters to update all languages and all nib files"
+	echo "Call with no parameters to update all languages and all $extension files"
 	echo ""
 }
 
 init() {
 	mkdir -p $language
-	for nibfile in `ls $base_language | grep .nib | grep -v ~.nib`; do
+	for n in `ls $base_language | grep .$extension | grep -v ~.$extension`; do
 	{
-		echo "Copying $nibfile"
-		cp -R $base_language/$nibfile $language/$nibfile
-		rm -rf $language/$nibfile/.svn
+		echo "Copying $n"
+		cp -R $base_language/$n $language/$n
 	}
 	done
 	for stringsfile in `ls $base_language | grep .strings | grep -v ~.strings`; do
@@ -61,84 +60,44 @@ test() {
 	done;
 }
 
-open() {
-	nib=`basename $nibfile .nib`
-	if [ "$language" = "all" ] ; then
-	{
-		for lproj in `ls . | grep lproj`; do
-			if [ $lproj != $base_language ]; then
-				echo "*** Opening $lproj/$nib.strings"
-				/usr/bin/open $lproj/$nib.strings
-			fi;
-		done;
-	}
-	else
-	{
-		echo "*** Opening $language/$nib.strings"
-		/usr/bin/open $language/$nib.strings
-	}
-	fi;
-}
-
 run() {
 	echo "Running app using `basename $language .lproj`...";
 	arch -arch $arch ./build/Cyberduck.app/Contents/MacOS/Cyberduck -AppleLanguages "(`basename $language .lproj`)"
 }
 
-status() {
-	if [ "$language" = "all" ] ; then
-	{
-		for lproj in `ls . | grep lproj`; do
-			language=$lproj;
-			if [ $language != "$base_language" ]; then
-				echo "*** Status of $language Localization...";
-				polyglot -b en -l `basename $language .lproj` .
-			fi;
-		done;
-	}
-	else
-	{
-		echo "*** Status of $language Localization...";
-		polyglot -b en -l `basename $language .lproj` .
-	}
-	fi;
-}
-
 nib() {
 	#Changes to the .strings has precedence over the NIBs
-	updateNibFromStrings;
+	import_strings;
 	#Update the .strings with new values from NIBs
-	udpateStringsFromNib;
+	export_strings;
 }
 
-updateNibFromStrings() {
-	rm -rf $language/$nibfile.bak 
-	mv $language/$nibfile $language/$nibfile.bak
-
+import_strings() {
 	if($force == true); then
 	{
 		# force update
 		echo "*** Updating $nib... (force) in $language..."
-		$nibtool --write $language/$nibfile --dictionary $language/$nib.strings $base_language/$nibfile
+		$nibtool --reference-external-strings-file \
+		        --write $language/$nibfile \
+		        --import-strings-file $language/$nib.strings \
+		        $base_language/$nibfile
 	}
 	else
 	{
 		# incremental update
 		echo "*** Updating $nib... (incremental) in $language..."
 		$nibtool --write $language/$nibfile \
-				--incremental $language/$nibfile.bak \
-				--dictionary $language/$nib.strings $base_language/$nibfile
+		        --incremental-file $language/$nibfile \
+		        --previous-file $base_language/$nibfile \
+				--import-strings-file $language/$nib.strings \
+				--localize-incremental $base_language/$nibfile
 	}
 	fi;
-	cp -R $language/$nibfile.bak/.svn $language/$nibfile/.svn
-	rm -rf $language/$nibfile.bak
 }
 
-udpateStringsFromNib() {
+export_strings() {
 	echo "*** Updating $nib.strings in $language..."
-	$nibtool --previous $base_language/$nibfile \
-			--incremental $language/$nibfile \
-			--localizable-strings $base_language/$nibfile > $language/$nib.strings
+	$nibtool --export-strings-file $language/$nib.strings $language/$nibfile
 }
 
 update() {
@@ -152,15 +111,15 @@ update() {
 				echo "*** Updating $language Localization...";
 				if [ "$nibfile" = "all" ] ; then
 					echo "*** Updating all NIBs...";
-					for nibfile in `ls $language | grep .nib | grep -v ~.nib`; do
-						nib=`basename $nibfile .nib`
-						$nibtool --localizable-strings $base_language/$nibfile > $base_language/$nib.strings
+					for nibfile in `ls $language | grep $extension | grep -v ~$extension`; do
+						nib=`basename $nibfile $extension`
+						$nibtool --export-strings-file $base_language/$nib.strings $base_language/$nibfile
 						nib;
 					done;
 				fi;
 				if [ "$nibfile" != "all" ] ; then
-						nib=`basename $nibfile .nib`
-						$nibtool --localizable-strings $base_language/$nibfile > $base_language/$nib.strings
+						nib=`basename $nibfile $extension`
+						$nibtool --export-strings-file $base_language/$nib.strings $base_language/$nibfile
 						nib;
 				fi;
 			}
@@ -172,16 +131,16 @@ update() {
 		echo "*** Updating $language Localization...";
 		if [ "$nibfile" = "all" ] ; then
 			echo "*** Updating all NIBs...";
-			for nibfile in `ls $language | grep .nib | grep -v ~.nib`; do
-				nib=`basename $nibfile .nib`;
-				$nibtool --localizable-strings $base_language/$nibfile > $base_language/$nib.strings
+			for nibfile in `ls $language | grep $extension | grep -v ~$extension`; do
+				nib=`basename $nibfile $extension`;
+                $nibtool --export-strings-file $base_language/$nib.strings $base_language/$nibfile
 				nib;
 			done;
 		fi;
 		if [ "$nibfile" != "all" ] ; then
 		{
-			nib=`basename $nibfile .nib`;
-			$nibtool --localizable-strings $base_language/$nibfile > $base_language/$nib.strings
+			nib=`basename $nibfile $extension`;
+            $nibtool --export-strings-file $base_language/$nib.strings $base_language/$nibfile
 			nib;
 		}
 		fi;
@@ -265,24 +224,12 @@ while [ "$1" != "" ] # When there are arguments...
 				echo "*** DONE. ***";
 				exit 0;
 			;; 
-			-s | --status)
-				echo "Status of localization...";
-				status;
-				echo "*** DONE. ***";
-				exit 0;
-			;; 
 			-u | --update)
 				echo "Updating localization...";
 				update;
 				echo "*** DONE. ***";
 				exit 0;
 			;;
-			-o | --open)
-				echo "Opening localization .strings files...";
-				open;
-				echo "*** DONE. ***";
-				exit 0;
-			;; 
 			-r | --run)
 				run;
 				echo "*** DONE. ***";
@@ -294,13 +241,13 @@ while [ "$1" != "" ] # When there are arguments...
 				echo "Running architecture:$arch";
 				shift;
 			;;
-			-tx-push)
+			--tx-push)
 				echo "Updating .tx...";
 				tx_push;
 				echo "*** DONE. ***";
 				exit 0;
 			;;
-			-tx-pull)
+			--tx-pull)
 				echo "Updating .tx...";
 				tx_pull;
 				echo "*** DONE. ***";
@@ -312,7 +259,7 @@ while [ "$1" != "" ] # When there are arguments...
 				exit 0;
 			;;
 			*)
-				echo "Option [$1] not one of  [--status, --update, --open, --init]"; # Error (!)
+				echo "Option [$1] not one of  [--update, --init, --tx-push, --tx-pull]"; # Error (!)
 				exit 1
 			;; # Abort Script Now
 	esac;

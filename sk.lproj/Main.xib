@@ -1,0 +1,575 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7706" systemVersion="15A204h" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+    <dependencies>
+        <deployment version="1050" identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7706"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="CDMainController">
+            <connections>
+                <outlet property="applicationMenu" destination="227" id="355"/>
+                <outlet property="archiveMenu" destination="273" id="356"/>
+                <outlet property="bookmarkMenu" destination="323" id="357"/>
+                <outlet property="columnMenu" destination="296" id="358"/>
+                <outlet property="editMenu" destination="259" id="359"/>
+                <outlet property="encodingMenu" destination="303" id="360"/>
+                <outlet property="openUrlMenu" destination="257" id="361"/>
+                <outlet property="urlMenu" destination="287" id="362"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application"/>
+        <customObject id="223" customClass="NSApplication"/>
+        <customObject id="224" customClass="NSApplication">
+            <connections>
+                <outlet property="delegate" destination="-2" id="363"/>
+                <outlet property="dockMenu" destination="351" id="364"/>
+                <outlet property="menu" destination="225" id="365"/>
+            </connections>
+        </customObject>
+        <menu title="Hlavná ponuka" systemMenu="main" id="225">
+            <items>
+                <menuItem title="Cyberduck" id="226">
+                    <menu key="submenu" title="Cyberduck" systemMenu="apple" id="227">
+                        <items>
+                            <menuItem title="O aplikácii Cyberduck" id="228">
+                                <attributedString key="attributedTitle"/>
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="aboutMenuClicked:" target="-2" id="366"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Aktualizovať…" id="229">
+                                <connections>
+                                    <action selector="updateMenuClicked:" target="-2" id="367"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="230">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Nastavenia…" keyEquivalent="," id="231">
+                                <connections>
+                                    <action selector="preferencesMenuClicked:" target="-2" id="368"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Podporiť…" id="232">
+                                <connections>
+                                    <action selector="donateMenuClicked:" target="-2" id="369"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem id="233">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="234">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Služby" id="235">
+                                <menu key="submenu" title="Služby" systemMenu="services" id="236"/>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="237">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Skryť Cyberduck" keyEquivalent="h" id="238">
+                                <connections>
+                                    <action selector="hide:" target="224" id="370"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Skryť ostatné" keyEquivalent="h" id="239">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="hideOtherApplications:" target="224" id="371"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Zobraziť všetky" id="240">
+                                <connections>
+                                    <action selector="unhideAllApplications:" target="224" id="372"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="241">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Ukončiť Cyberduck" keyEquivalent="q" id="242">
+                                <connections>
+                                    <action selector="terminate:" target="224" id="373"/>
+                                </connections>
+                            </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
+                <menuItem title="Súbor" id="243">
+                    <attributedString key="attributedTitle">
+                        <fragment content="File">
+                            <attributes>
+                                <color key="NSColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                <font key="NSFont" size="14" name="LucidaGrande"/>
+                            </attributes>
+                        </fragment>
+                    </attributedString>
+                    <menu key="submenu" title="Súbor" id="244">
+                        <items>
+                            <menuItem title="Nový prehliadač" tag="1" keyEquivalent="n" id="245">
+                                <attributedString key="attributedTitle"/>
+                                <connections>
+                                    <action selector="newBrowserMenuClicked:" target="-2" id="374"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Nadviazať spojenie…" keyEquivalent="o" id="246">
+                                <connections>
+                                    <action selector="connectButtonClicked:" target="-1" id="375"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="247">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Nové prevzatie" keyEquivalent="" id="248">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="newDownloadMenuClicked:" target="-2" id="376"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="249">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Nový priečinok…" keyEquivalent="N" id="250">
+                                <connections>
+                                    <action selector="createFolderButtonClicked:" target="-1" id="377"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Nový súbor…" keyEquivalent="f" id="251">
+                                <connections>
+                                    <action selector="createFileButtonClicked:" target="-1" id="378"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Nový symbolický odkaz…" id="252">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="createSymlinkButtonClicked:" target="-1" id="379"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Premenovať súbor…" id="253">
+                                <connections>
+                                    <action selector="renameFileButtonClicked:" target="-1" id="380"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Duplikovať súbor…" keyEquivalent="d" id="254">
+                                <connections>
+                                    <action selector="duplicateFileButtonClicked:" target="-1" id="381"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="255">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Otvoriť umiestnenie" id="256">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" title="Otvoriť umiestnenie" id="257"/>
+                            </menuItem>
+                            <menuItem title="Upraviť v editore" id="258">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" title="Upraviť v editore" id="259"/>
+                            </menuItem>
+                            <menuItem title="Quick Look" image="NSQuickLookTemplate" id="260">
+                                <attributedString key="attributedTitle"/>
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="quicklookButtonClicked:" target="-1" id="382"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Informácie" tag="2" keyEquivalent="i" id="261">
+                                <connections>
+                                    <action selector="infoButtonClicked:" target="-1" id="383"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="262">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Prevziať" keyEquivalent="" id="263">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES"/>
+                                <connections>
+                                    <action selector="downloadButtonClicked:" target="-1" id="384"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Prevziať ako…" keyEquivalent="" id="264">
+                                <modifierMask key="keyEquivalentModifierMask" shift="YES" option="YES"/>
+                                <connections>
+                                    <action selector="downloadAsButtonClicked:" target="-1" id="385"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Prevziať do…" id="265">
+                                <connections>
+                                    <action selector="downloadToButtonClicked:" target="-1" id="386"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Odoslať…" keyEquivalent="" id="266">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES"/>
+                                <connections>
+                                    <action selector="uploadButtonClicked:" target="-1" id="387"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Synchronizovať…" id="267">
+                                <connections>
+                                    <action selector="syncButtonClicked:" target="-1" id="388"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="268"/>
+                            <menuItem title="Odstrániť" id="269">
+                                <string key="keyEquivalent" base64-UTF8="YES">
+CA
+</string>
+                                <connections>
+                                    <action selector="deleteFileButtonClicked:" target="-1" id="389"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Vrátiť" id="270">
+                                <connections>
+                                    <action selector="revertFileButtonClicked:" target="-1" id="390"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="271">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Vytvoriť archív" id="272">
+                                <menu key="submenu" title="Vytvoriť archív" id="273"/>
+                            </menuItem>
+                            <menuItem title="Rozbaliť archív" id="274">
+                                <connections>
+                                    <action selector="unarchiveButtonClicked:" target="-1" id="391"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="275">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Tlačiť…" keyEquivalent="p" id="276">
+                                <connections>
+                                    <action selector="printDocument:" target="-1" id="392"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="277">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Zatvoriť okno" keyEquivalent="w" id="278">
+                                <connections>
+                                    <action selector="performClose:" target="-1" id="393"/>
+                                </connections>
+                            </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
+                <menuItem title="Upraviť" id="279">
+                    <menu key="submenu" title="Upraviť" id="280">
+                        <items>
+                            <menuItem title="Odvolať" keyEquivalent="z" id="281">
+                                <connections>
+                                    <action selector="undo:" target="-1" id="394"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Obnoviť" keyEquivalent="Z" id="282">
+                                <connections>
+                                    <action selector="redo:" target="-1" id="395"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="283">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Vystrihnúť" keyEquivalent="x" id="284">
+                                <connections>
+                                    <action selector="cut:" target="-1" id="396"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Kopírovať" keyEquivalent="c" id="285">
+                                <connections>
+                                    <action selector="copy:" target="-1" id="397"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Kopírovať umiestnenie" id="286">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" title="Kopírovať umiestnenie" id="287"/>
+                            </menuItem>
+                            <menuItem title="Vložiť" keyEquivalent="v" id="288">
+                                <connections>
+                                    <action selector="paste:" target="-1" id="398"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Označiť všetko" keyEquivalent="a" id="289">
+                                <connections>
+                                    <action selector="selectAll:" target="-1" id="399"/>
+                                </connections>
+                            </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
+                <menuItem title="Zobraziť" id="290">
+                    <menu key="submenu" title="Zobraziť" id="291">
+                        <items>
+                            <menuItem title="Stručný zoznam" keyEquivalent="1" id="292">
+                                <connections>
+                                    <action selector="browserSwitchMenuClicked:" target="-1" id="400"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Rozšírený zoznam" tag="1" keyEquivalent="2" id="293">
+                                <connections>
+                                    <action selector="browserSwitchMenuClicked:" target="-1" id="401"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="294">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Stĺpce" id="295">
+                                <menu key="submenu" title="Stĺpce" id="296"/>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="297">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Skryť panel s nástrojmi" id="298">
+                                <connections>
+                                    <action selector="toggleToolbarShown:" target="-1" id="402"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Upraviť panel s nástrojmi…" tag="1" id="299">
+                                <connections>
+                                    <action selector="runToolbarCustomizationPalette:" target="-1" id="403"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="300">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Zobraziť skryté súbory" keyEquivalent="R" id="301">
+                                <connections>
+                                    <action selector="showHiddenFilesClicked:" target="-1" id="404"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Kódovanie textu" id="302">
+                                <menu key="submenu" title="Kódovanie textu" id="303"/>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" tag="2" id="304">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Zobraziť/skryť záznamy" keyEquivalent="l" id="305">
+                                <connections>
+                                    <action selector="toggleLogDrawer:" target="-1" id="405"/>
+                                </connections>
+                            </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
+                <menuItem title="Prejsť" id="306">
+                    <menu key="submenu" title="Prejsť" id="307">
+                        <items>
+                            <menuItem title="Obnoviť zobrazenie" keyEquivalent="r" id="308">
+                                <connections>
+                                    <action selector="reloadButtonClicked:" target="-1" id="406"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="309">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Do priečinka…" keyEquivalent="g" id="310">
+                                <connections>
+                                    <action selector="gotoButtonClicked:" target="-1" id="407"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Späť" keyEquivalent="" id="311">
+                                <connections>
+                                    <action selector="backButtonClicked:" target="-1" id="408"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Vpred" keyEquivalent="" id="312">
+                                <connections>
+                                    <action selector="forwardButtonClicked:" target="-1" id="409"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Do nadradeného priečinka" keyEquivalent="" id="313">
+                                <connections>
+                                    <action selector="upButtonClicked:" target="-1" id="410"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Dovnútra" keyEquivalent="" id="314">
+                                <connections>
+                                    <action selector="insideButtonClicked:" target="-1" id="411"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Hľadať…" keyEquivalent="/" id="315">
+                                <connections>
+                                    <action selector="searchButtonClicked:" target="-1" id="412"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="316">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Poslať príkaz…" keyEquivalent="c" id="317">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="sendCustomCommandClicked:" target="-1" id="413"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Otvoriť v aplikácii Terminal" id="318">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="openTerminalButtonClicked:" target="-1" id="414"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="319">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Zastaviť" keyEquivalent="." id="320">
+                                <connections>
+                                    <action selector="interruptButtonClicked:" target="-1" id="415"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Odpojiť" keyEquivalent="y" id="321">
+                                <connections>
+                                    <action selector="disconnectButtonClicked:" target="-1" id="416"/>
+                                </connections>
+                            </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
+                <menuItem title="Záložky" id="322">
+                    <menu key="submenu" title="Záložky" id="323">
+                        <items>
+                            <menuItem title="Zobraziť/skryť záložky" keyEquivalent="b" id="324">
+                                <connections>
+                                    <action selector="bookmarkSwitchClicked:" target="-1" id="417"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Triediť podľa" id="325">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" title="Triediť podľa" id="326">
+                                    <items>
+                                        <menuItem title="Popisu" keyEquivalent="1" id="327">
+                                            <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="sortBookmarksByNickame:" target="-1" id="418"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Adresy servera" keyEquivalent="2" id="328">
+                                            <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="sortBookmarksByHostname:" target="-1" id="419"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Protokolu" keyEquivalent="3" id="329">
+                                            <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="sortBookmarksByProtocol:" target="-1" id="420"/>
+                                            </connections>
+                                        </menuItem>
+                                    </items>
+                                </menu>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="330">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Nová záložka" keyEquivalent="B" id="331">
+                                <connections>
+                                    <action selector="addBookmarkButtonClicked:" target="-1" id="421"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Odstrániť záložku" id="332">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="deleteBookmarkButtonClicked:" target="-1" id="422"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Upraviť záložku…" keyEquivalent="e" id="333">
+                                <connections>
+                                    <action selector="editBookmarkButtonClicked:" target="-1" id="423"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Duplikovať záložku" id="334">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="duplicateBookmarkButtonClicked:" target="-1" id="424"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="335">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
+                <menuItem title="Okno" id="336">
+                    <menu key="submenu" title="Okno" systemMenu="window" id="337">
+                        <items>
+                            <menuItem title="Minimalizovať" keyEquivalent="m" id="338">
+                                <connections>
+                                    <action selector="performMiniaturize:" target="-1" id="425"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" tag="1" id="339">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Priebeh" keyEquivalent="t" id="340">
+                                <connections>
+                                    <action selector="showTransferQueueClicked:" target="-1" id="426"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Činnosť" keyEquivalent="0" id="341">
+                                <connections>
+                                    <action selector="showActivityWindowClicked:" target="-1" id="427"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="342">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Presunúť všetky do popredia" tag="2" id="343">
+                                <connections>
+                                    <action selector="arrangeInFront:" target="-1" id="428"/>
+                                </connections>
+                            </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
+                <menuItem title="Pomocník" id="344">
+                    <menu key="submenu" title="Pomocník" id="345">
+                        <items>
+                            <menuItem title="Pomocník pre Cyberduck" keyEquivalent="?" id="346">
+                                <connections>
+                                    <action selector="helpMenuClicked:" target="-2" id="429"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Licencia" id="347">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="licenseMenuClicked:" target="-2" id="430"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Poďakovanie" id="348">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="acknowledgmentsMenuClicked:" target="-2" id="431"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="349">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Nahlásiť chybu" id="350">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="bugreportMenuClicked:" target="-2" id="432"/>
+                                </connections>
+                            </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
+            </items>
+        </menu>
+        <menu title="Ponuka" id="351">
+            <items>
+                <menuItem title="Nový prehliadač" keyEquivalent="n" id="352">
+                    <connections>
+                        <action selector="newBrowserMenuClicked:" target="-2" id="433"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Priebeh" keyEquivalent="t" id="353">
+                    <connections>
+                        <action selector="showTransferQueueClicked:" target="-1" id="434"/>
+                    </connections>
+                </menuItem>
+            </items>
+        </menu>
+        <customObject id="354" customClass="UKCrashReporter"/>
+    </objects>
+    <resources>
+        <image name="NSQuickLookTemplate" width="19" height="12"/>
+    </resources>
+</document>
