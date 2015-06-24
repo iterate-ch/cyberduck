@@ -156,14 +156,14 @@ tx_push() {
             strings=`basename $stringsfile .strings`
             echo "*** Updating $strings.strings...";
             $tx --traceback set --auto-local -r cyberduck.$strings '<lang>'.lproj/$strings.strings --source-language en --type=STRINGS --execute
-            $tx --traceback push --source --translations --resource=cyberduck.$strings --force --no-interactive
+            $tx --traceback push --source --translations --resource=cyberduck.$strings --force --no-interactive --skip
         done;
     fi;
     if [ "$stringsfile" != "all" ] ; then
         strings=`basename $stringsfile .strings`
         echo "*** Updating $strings.strings...";
         $tx --traceback set --auto-local -r cyberduck.$strings '<lang>'.lproj/$strings.strings --source-language en --type=STRINGS --execute
-        $tx --traceback push --source --translations --resource=cyberduck.$strings --force --no-interactive
+        $tx --traceback push --source --translations --resource=cyberduck.$strings --force --no-interactive --skip
     fi;
 }
 
