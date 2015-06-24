@@ -47,6 +47,7 @@ public class PanelSandboxBookmarkResolverTest extends AbstractTestCase {
     @Test
     public void testCreate() throws Exception {
         FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"));
+        l.mkdir();
         assertNotNull(new PanelSandboxBookmarkResolver().create(l));
     }
 }
