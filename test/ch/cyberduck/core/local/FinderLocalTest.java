@@ -4,7 +4,7 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.test.Depends;
 
@@ -36,7 +36,7 @@ public class FinderLocalTest extends AbstractTestCase {
         assertNotSame(other, l);
     }
 
-    @Test(expected = AccessDeniedException.class)
+    @Test(expected = LocalAccessDeniedException.class)
     public void testReadNoFile() throws Exception {
         final String name = UUID.randomUUID().toString();
         FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
@@ -58,10 +58,17 @@ public class FinderLocalTest extends AbstractTestCase {
         assertFalse(new FinderLocal("profiles").list().isEmpty());
     }
 
-    @Test(expected = AccessDeniedException.class)
+    @Test(expected = LocalAccessDeniedException.class)
     public void testListNotFound() throws Exception {
-        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        l.list();
+        final String name = UUID.randomUUID().toString();
+        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
+        try {
+            l.list();
+        }
+        catch(LocalAccessDeniedException e) {
+            assertEquals("The folder “" + name + "” doesn’t exist. Please verify disk permissions.", e.getDetail());
+            throw e;
+        }
     }
 
     @Test
