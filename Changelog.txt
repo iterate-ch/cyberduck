@@ -21,6 +21,7 @@ Changelog. Last modified: $Date$
 - [Bugfix] Support retrieving files from buckets from Requester Pays Buckets (S3) (#8893)
 
 4.7 [https://trac.cyberduck.io/milestone/4.7]
+- [Feature] Support to access iRODS (Integrated Rule-Oriented Data System)
 - [Feature] Support multiple connections per transfer (#1135)
 - [Feature] Connecting with temporary access credentials from EC2 (S3) (#8610)
 - [Feature] Verify checksum for downloads if available (WebDAV, S3, OpenStack Swift)
