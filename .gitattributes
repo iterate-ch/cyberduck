@@ -2302,27 +2302,13 @@ pt_PT.lproj/Sftp.strings -text svneol=unset#text/utf-16
 pt_PT.lproj/Status.strings -text svneol=unset#text/utf-16
 pt_PT.lproj/Support.strings -text svneol=unset#text/utf-16
 pt_PT.lproj/Transfer.strings -text svneol=unset#text/utf-16
-resources/Activity.nib/classes.nib -text
-resources/Activity.nib/info.nib -text
-resources/Activity.nib/keyedobjects.nib -text
-resources/Error.nib/classes.nib -text
-resources/Error.nib/info.nib -text
-resources/Error.nib/keyedobjects.nib -text
-resources/Folder.nib/classes.nib -text svneol=unset#application/xml
-resources/Folder.nib/info.nib -text svneol=unset#application/xml
-resources/Folder.nib/keyedobjects.nib -text
-resources/Progress.nib/classes.nib -text
-resources/Progress.nib/info.nib -text
-resources/Progress.nib/keyedobjects.nib -text
-resources/Task.nib/classes.nib -text
-resources/Task.nib/info.nib -text
-resources/Task.nib/keyedobjects.nib -text
-resources/Transcript.nib/classes.nib -text
-resources/Transcript.nib/info.nib -text
-resources/Transcript.nib/keyedobjects.nib -text
-resources/Transfer.nib/classes.nib -text
-resources/Transfer.nib/info.nib -text
-resources/Transfer.nib/keyedobjects.nib -text
+resources/Activity.xib -text
+resources/Error.xib -text
+resources/Folder.xib -text
+resources/Progress.xib -text
+resources/Task.xib -text
+resources/Transcript.xib -text
+resources/Transfer.xib -text
 ro.lproj/Alert.strings -text svneol=unset#text/utf-16
 ro.lproj/Archive.strings -text svneol=unset#text/utf-16
 ro.lproj/Azure.strings -text svneol=unset#text/utf-16
