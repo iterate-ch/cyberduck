@@ -21,6 +21,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.LocalTrashFactory;
 import ch.cyberduck.core.local.features.Trash;
@@ -53,7 +54,13 @@ public class TrashFilter extends AbstractDownloadFilter {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Trash file %s", local));
             }
-            feature.trash(local);
+            try {
+                feature.trash(local);
+            }
+            catch(AccessDeniedException e) {
+                // Ignore. See #8670
+                log.warn(e.getMessage());
+            }
         }
         super.apply(file, local, status, listener);
     }
