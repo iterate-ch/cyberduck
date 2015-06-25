@@ -66,11 +66,9 @@ public abstract class Cache<T extends Referenceable> {
      */
     public T lookup(final CacheReference reference) {
         final T parent = reverse.get(reference);
-        if(null != parent) {
-            for(T entry : impl.get(parent)) {
-                if(this.key(entry).equals(reference)) {
-                    return entry;
-                }
+        for(T entry : impl.get(parent)) {
+            if(this.key(entry).equals(reference)) {
+                return entry;
             }
         }
         log.warn(String.format("Lookup failed for %s in reverse cache", reference));
