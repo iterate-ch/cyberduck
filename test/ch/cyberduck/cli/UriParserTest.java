@@ -25,8 +25,8 @@ import ch.cyberduck.core.ProtocolFactory;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
+import org.apache.commons.cli.PosixParser;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
@@ -35,7 +35,7 @@ public class UriParserTest extends AbstractTestCase {
 
     @Test
     public void testParse() throws Exception {
-        final CommandLineParser parser = new DefaultParser();
+        final CommandLineParser parser = new PosixParser();
         final CommandLine input = parser.parse(new Options(), new String[]{});
 
         assertTrue(new Host(ProtocolFactory.S3_SSL, "s3.amazonaws.com", 443, "/cyberduck-test/key", new Credentials("AWS456", null))
@@ -46,7 +46,7 @@ public class UriParserTest extends AbstractTestCase {
 
     @Test
     public void testProfile() throws Exception {
-        final CommandLineParser parser = new DefaultParser();
+        final CommandLineParser parser = new PosixParser();
         final CommandLine input = parser.parse(new Options(), new String[]{});
 
         assertTrue(new Host(ProtocolFactory.forName("rackspace"), "identity.api.rackspacecloud.com", 443, "/cdn.cyberduck.ch/", new Credentials("u", null))

@@ -26,7 +26,7 @@ import ch.cyberduck.core.transfer.TransferItem;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.PosixParser;
 import org.junit.Test;
 
 import java.io.File;
@@ -39,7 +39,7 @@ public class GlobTransferItemFinderTest extends AbstractTestCase {
 
     @Test
     public void testNoLocalInOptionsDownload() throws Exception {
-        final CommandLineParser parser = new DefaultParser();
+        final CommandLineParser parser = new PosixParser();
         final CommandLine input = parser.parse(TerminalOptionsBuilder.options(), new String[]{"--download", "rackspace://cdn.cyberduck.ch/remote"});
 
         final Set<TransferItem> found = new GlobTransferItemFinder().find(input, TerminalAction.download, new Path("/cdn.cyberduck.ch/remote", EnumSet.of(Path.Type.file)));
@@ -51,7 +51,7 @@ public class GlobTransferItemFinderTest extends AbstractTestCase {
 
     @Test
     public void testNoLocalInOptionsUploadFile() throws Exception {
-        final CommandLineParser parser = new DefaultParser();
+        final CommandLineParser parser = new PosixParser();
         final CommandLine input = parser.parse(TerminalOptionsBuilder.options(), new String[]{"--upload", "rackspace://cdn.cyberduck.ch/remote"});
 
         final Set<TransferItem> found = new GlobTransferItemFinder().find(input, TerminalAction.upload, new Path("/cdn.cyberduck.ch/remote", EnumSet.of(Path.Type.file)));
@@ -64,7 +64,7 @@ public class GlobTransferItemFinderTest extends AbstractTestCase {
         final File f = File.createTempFile("temp", ".duck");
         File.createTempFile("temp", ".false");
 
-        final CommandLineParser parser = new DefaultParser();
+        final CommandLineParser parser = new PosixParser();
         final CommandLine input = parser.parse(TerminalOptionsBuilder.options(), new String[]{"--upload", "rackspace://cdn.cyberduck.ch/remote", f.getParent() + "/*.duck"});
 
         final Set<TransferItem> found = new GlobTransferItemFinder().find(input, TerminalAction.upload, new Path("/cdn.cyberduck.ch/remote", EnumSet.of(Path.Type.file)));

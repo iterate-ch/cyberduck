@@ -29,8 +29,8 @@ import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
+import org.apache.commons.cli.PosixParser;
 import org.junit.Test;
 
 import java.util.EnumSet;
@@ -42,7 +42,7 @@ public class PathParserTest extends AbstractTestCase {
 
     @Test
     public void testParse() throws Exception {
-        final CommandLineParser parser = new DefaultParser();
+        final CommandLineParser parser = new PosixParser();
         final CommandLine input = parser.parse(new Options(), new String[]{});
 
         assertEquals(new Path("/", EnumSet.of(Path.Type.directory)),
@@ -62,7 +62,7 @@ public class PathParserTest extends AbstractTestCase {
         assertNotNull(profile);
         ProtocolFactory.register(profile);
 
-        final CommandLineParser parser = new DefaultParser();
+        final CommandLineParser parser = new PosixParser();
         final CommandLine input = parser.parse(new Options(), new String[]{});
 
         assertEquals(new Path("/cdn.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume)),
@@ -71,7 +71,7 @@ public class PathParserTest extends AbstractTestCase {
 
     @Test
     public void testParseRackspaceRoot() throws Exception {
-        final CommandLineParser parser = new DefaultParser();
+        final CommandLineParser parser = new PosixParser();
         final CommandLine input = parser.parse(new Options(), new String[]{});
         assertEquals(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)),
                 new PathParser(input).parse("rackspace:///"));

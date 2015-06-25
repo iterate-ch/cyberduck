@@ -51,11 +51,11 @@ import ch.cyberduck.fs.FilesystemBackgroundAction;
 import ch.cyberduck.fs.FilesystemFactory;
 import ch.cyberduck.fs.FilesystemWorker;
 
-import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Logger;
@@ -130,7 +130,7 @@ public class Terminal {
         final Options options = TerminalOptionsBuilder.options();
         final Console console = new Console();
         try {
-            final CommandLineParser parser = new BasicParser();
+            final CommandLineParser parser = new PosixParser();
             final CommandLine input = parser.parse(options, args);
             final Terminal terminal = new Terminal(defaults, options, input);
             switch(terminal.execute()) {
