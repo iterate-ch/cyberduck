@@ -82,8 +82,7 @@ public class SynchronizationPathFilter implements TransferPathFilter {
         if(compare.equals(Comparison.local)) {
             return uploadFilter.prepare(file, local, parent);
         }
-        // Equal comparison
-        return uploadFilter.prepare(file, local, parent);
+        return new TransferStatus().exists(true);
     }
 
     @Override
@@ -91,7 +90,7 @@ public class SynchronizationPathFilter implements TransferPathFilter {
             throws BackgroundException {
         final Comparison compare = comparison.compare(file, local);
         if(compare.equals(Comparison.equal)) {
-            return file.isDirectory();
+            return false;
         }
         if(compare.equals(Comparison.remote)) {
             if(action.equals(TransferAction.upload)) {

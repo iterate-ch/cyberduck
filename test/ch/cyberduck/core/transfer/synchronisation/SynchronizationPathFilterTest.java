@@ -57,6 +57,11 @@ public class SynchronizationPathFilterTest extends AbstractTestCase {
             public boolean isFile() {
                 return true;
             }
+
+            @Override
+            public boolean exists() {
+                return true;
+            }
         };
         final SynchronizationPathFilter mirror = new SynchronizationPathFilter(
                 new ComparisonServiceFilter(session, TimeZone.getDefault(), new DisabledProgressListener()),
@@ -93,6 +98,6 @@ public class SynchronizationPathFilterTest extends AbstractTestCase {
                 new ch.cyberduck.core.transfer.upload.OverwriteFilter(new UploadSymlinkResolver(null, Collections.<TransferItem>emptyList()), session),
                 TransferAction.mirror
         );
-        assertTrue(mirror.accept(new Path("/p", EnumSet.of(Path.Type.directory)), null, new TransferStatus().exists(true)));
+        assertFalse(mirror.accept(new Path("/p", EnumSet.of(Path.Type.directory)), null, new TransferStatus().exists(true)));
     }
 }
