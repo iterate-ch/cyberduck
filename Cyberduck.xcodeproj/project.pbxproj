@@ -66,7 +66,6 @@
 		47462AE00F0A473D0075CBA9 /* EMKeychainProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 47462ADC0F0A473D0075CBA9 /* EMKeychainProxy.m */; };
 		47472EF5177F788E0090A595 /* Rackspace US.cyberduckprofile in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4718F4AA175F432400B424AD /* Rackspace US.cyberduckprofile */; };
 		4751799E097943FA008F671F /* Credentials.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4751799C097943FA008F671F /* Credentials.strings */; };
-		4759B9311AF0D40600DB909A /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4759B9301AF0D40600DB909A /* ServiceManagement.framework */; };
 		475C6D5A170C9214006535BB /* googlestorage.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 475C6D59170C9214006535BB /* googlestorage.tiff */; };
 		475D17B90805D54C00166B8A /* download5.icns in Resources */ = {isa = PBXBuildFile; fileRef = 475D17AF0805D54C00166B8A /* download5.icns */; };
 		475D17BA0805D54C00166B8A /* download7.icns in Resources */ = {isa = PBXBuildFile; fileRef = 475D17B00805D54C00166B8A /* download7.icns */; };
@@ -2426,7 +2425,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4759B9311AF0D40600DB909A /* ServiceManagement.framework in Frameworks */,
 				47C88FF117269A71001A746A /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
