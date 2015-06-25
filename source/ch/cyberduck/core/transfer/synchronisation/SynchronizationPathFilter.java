@@ -90,7 +90,7 @@ public class SynchronizationPathFilter implements TransferPathFilter {
             throws BackgroundException {
         final Comparison compare = comparison.compare(file, local);
         if(compare.equals(Comparison.equal)) {
-            return false;
+            return file.isDirectory();
         }
         if(compare.equals(Comparison.remote)) {
             if(action.equals(TransferAction.upload)) {

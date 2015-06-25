@@ -98,6 +98,6 @@ public class SynchronizationPathFilterTest extends AbstractTestCase {
                 new ch.cyberduck.core.transfer.upload.OverwriteFilter(new UploadSymlinkResolver(null, Collections.<TransferItem>emptyList()), session),
                 TransferAction.mirror
         );
-        assertFalse(mirror.accept(new Path("/p", EnumSet.of(Path.Type.directory)), null, new TransferStatus().exists(true)));
+        assertTrue(mirror.accept(new Path("/p", EnumSet.of(Path.Type.directory)), null, new TransferStatus().exists(true)));
     }
 }
