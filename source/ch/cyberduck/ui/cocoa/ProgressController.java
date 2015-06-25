@@ -135,14 +135,19 @@ public class ProgressController extends BundleController implements TransferList
         this.progress(progress.getProgress());
         final double transferred = progress.getTransferred();
         final double size = progress.getSize();
-        if(transferred > 0 && size > 0) {
-            progressBar.setIndeterminate(false);
-            progressBar.setMaxValue(size);
-            progressBar.setDoubleValue(transferred);
-        }
-        else {
-            progressBar.setIndeterminate(true);
-        }
+        invoke(new DefaultMainAction() {
+            @Override
+            public void run() {
+                if(transferred > 0 && size > 0) {
+                    progressBar.setIndeterminate(false);
+                    progressBar.setMaxValue(size);
+                    progressBar.setDoubleValue(transferred);
+                }
+                else {
+                    progressBar.setIndeterminate(true);
+                }
+            }
+        });
     }
 
     private void progress(final String message) {
