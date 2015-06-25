@@ -128,7 +128,7 @@ import java.util.Set;
  * @version $Id$
  */
 public class BrowserController extends WindowController
-        implements ProgressListener, TranscriptListener, NSToolbar.Delegate, QLPreviewPanelController {
+        implements ProgressListener, TranscriptListener, NSToolbar.Delegate, NSMenu.Validation, QLPreviewPanelController {
     private static Logger log = Logger.getLogger(BrowserController.class);
 
     /**
@@ -873,16 +873,19 @@ public class BrowserController extends WindowController
         b.setShowsBorderOnlyWhileMouseInside(true);
     }
 
+    @Action
     public void sortBookmarksByNickame(final ID sender) {
         bookmarks.sortByNickname();
         this.reloadBookmarks();
     }
 
+    @Action
     public void sortBookmarksByHostname(final ID sender) {
         bookmarks.sortByHostname();
         this.reloadBookmarks();
     }
 
+    @Action
     public void sortBookmarksByProtocol(final ID sender) {
         bookmarks.sortByProtocol();
         this.reloadBookmarks();
@@ -2164,6 +2167,7 @@ public class BrowserController extends WindowController
                 NAVIGATION_UP_SEGMENT_BUTTON);
     }
 
+    @Action
     public void upButtonClicked(final ID sender) {
         final Path previous = this.workdir();
         this.setWorkdir(previous.getParent(), previous);
@@ -3400,7 +3404,8 @@ public class BrowserController extends WindowController
      * @param item Menu item
      * @return True if the menu should be enabled
      */
-    public boolean validateMenuItem(NSMenuItem item) {
+    @Override
+    public boolean validateMenuItem(final NSMenuItem item) {
         final Selector action = item.action();
         if(action.equals(Foundation.selector("paste:"))) {
             final String title = "Paste {0}";
@@ -3493,6 +3498,10 @@ public class BrowserController extends WindowController
             item.setKeyEquivalent(" ");
             item.setKeyEquivalentModifierMask(0);
         }
+        return this.validate(action);
+    }
+
+    private boolean validate(final Selector action) {
         return new BrowserToolbarValidator(this).validate(action);
     }
 
