@@ -18,6 +18,7 @@ package ch.cyberduck.core.serializer;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
@@ -36,7 +37,7 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-public class TransferDictionaryTest {
+public class TransferDictionaryTest extends AbstractTestCase {
 
     @Test
     public void testSerializeDownloadTransfer() throws Exception {
