@@ -111,7 +111,7 @@
                                                 <rect key="frame" x="1" y="1" width="601" height="335"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="sequential" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="45" id="17">
+                                                    <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="sequential" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="45" id="17" customClass="CDListView">
                                                         <rect key="frame" x="0.0" y="0.0" width="0.0" height="47"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <animations/>
@@ -210,7 +210,7 @@
                                                 <rect key="frame" x="1" y="0.0" width="587" height="396"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
-                                                    <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" alternatingRowBackgroundColors="YES" columnSelection="YES" autosaveName="ListBrowserView" headerView="36" id="33">
+                                                    <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" alternatingRowBackgroundColors="YES" columnSelection="YES" autosaveName="ListBrowserView" headerView="36" id="33" customClass="CDListView">
                                                         <rect key="frame" x="0.0" y="0.0" width="0.0" height="19"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <animations/>
@@ -310,7 +310,7 @@
                                 <rect key="frame" x="562" y="2" width="18" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES"/>
                                 <animations/>
-                                <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="E725BBD8-073C-4C6C-BB9F-247C2F4FE658" imagePosition="only" alignment="left" id="48">
+                                <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="18AC2E9D-012A-4A39-9229-C45A8B55CEB0" imagePosition="only" alignment="left" id="48">
                                     <behavior key="behavior" lightByContents="YES"/>
                                     <font key="font" metaFont="label"/>
                                 </buttonCell>
@@ -347,7 +347,9 @@
                                 <segmentedCell key="cell" borderStyle="border" alignment="left" style="automatic" trackingMode="momentary" id="54">
                                     <font key="font" metaFont="system"/>
                                     <segments>
-                                        <segment image="bookmarks" imageScaling="none" width="35" tag="-1"/>
+                                        <segment image="bookmarks" imageScaling="none" width="35" tag="-1">
+                                            <nil key="label"/>
+                                        </segment>
                                     </segments>
                                 </segmentedCell>
                             </segmentedControl>
@@ -368,7 +370,9 @@
                                 <segmentedCell key="cell" borderStyle="border" alignment="left" style="automatic" trackingMode="momentary" id="58">
                                     <font key="font" metaFont="system"/>
                                     <segments>
-                                        <segment imageScaling="none" width="35"/>
+                                        <segment imageScaling="none" width="35">
+                                            <nil key="label"/>
+                                        </segment>
                                     </segments>
                                 </segmentedCell>
                             </segmentedControl>
@@ -393,8 +397,12 @@
                                 <segmentedCell key="cell" borderStyle="border" alignment="left" style="automatic" trackingMode="momentary" id="64">
                                     <font key="font" metaFont="system"/>
                                     <segments>
-                                        <segment imageScaling="none" width="35"/>
-                                        <segment imageScaling="none" width="35" tag="1"/>
+                                        <segment imageScaling="none" width="35">
+                                            <nil key="label"/>
+                                        </segment>
+                                        <segment imageScaling="none" width="35" tag="1">
+                                            <nil key="label"/>
+                                        </segment>
                                     </segments>
                                 </segmentedCell>
                             </segmentedControl>
@@ -676,7 +684,7 @@ DQ
         </view>
     </objects>
     <resources>
-        <image name="E725BBD8-073C-4C6C-BB9F-247C2F4FE658" width="1" height="1">
+        <image name="18AC2E9D-012A-4A39-9229-C45A8B55CEB0" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPj9YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQsLzI4O1UkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
