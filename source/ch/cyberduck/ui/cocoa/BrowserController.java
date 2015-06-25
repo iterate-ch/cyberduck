@@ -58,6 +58,7 @@ import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.threading.BackgroundAction;
+import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.threading.TransferBackgroundAction;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
@@ -2297,13 +2298,23 @@ public class BrowserController extends WindowController
 
     @Override
     public void stop(final BackgroundAction action) {
-        statusSpinner.stopAnimation(null);
+        this.invoke(new DefaultMainAction() {
+            @Override
+            public void run() {
+                statusSpinner.stopAnimation(null);
+            }
+        });
         super.stop(action);
     }
 
     @Override
     public void start(final BackgroundAction action) {
-        statusSpinner.startAnimation(null);
+        this.invoke(new DefaultMainAction() {
+            @Override
+            public void run() {
+                statusSpinner.startAnimation(null);
+            }
+        });
         super.start(action);
     }
 
