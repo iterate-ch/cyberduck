@@ -28,8 +28,6 @@
 #define JVM_STARTONMAINTHREAD_KEY "StartOnMainThread"
 #define JVM_OPTIONS_KEY "VMOptions"
 
-#define UNSPECIFIED_ERROR "An unknown error occurred."
-
 #define APP_ROOT_PREFIX "$APP_PACKAGE"
 
 typedef int (JNICALL *JLI_Launch_t)(int argc, char ** argv, /* main argc, argc */
@@ -60,7 +58,7 @@ int launch(int argc, char *argv[]) {
     NSBundle *mainBundle = [NSBundle mainBundle];
     if (mainBundle == nil) {
         [[NSException exceptionWithName:@JAVA_LAUNCH_ERROR
-            reason:NSLocalizedString(@"Main bundle not found", @UNSPECIFIED_ERROR)
+            reason:NSLocalizedString(@"Main bundle not found", nil)
             userInfo:nil] raise];
     }
     // Canonicalized absolute pathname
@@ -81,14 +79,14 @@ int launch(int argc, char *argv[]) {
     NSString *mainClassName = [javaDict objectForKey:@JVM_MAIN_CLASS_NAME_KEY];
     if (mainClassName == nil) {
         [[NSException exceptionWithName:@JAVA_LAUNCH_ERROR
-            reason:NSLocalizedString(@"Main class name required in Info.plist", @UNSPECIFIED_ERROR)
+            reason:NSLocalizedString(@"Main class name required in Info.plist", nil)
             userInfo:nil] raise];
     }
 
     NSString *javaPath = [[javaDict objectForKey:@JVM_WORKING_DIRECTORY_KEY] stringByReplacingOccurrencesOfString:@APP_ROOT_PREFIX withString:[mainBundle bundlePath]];
     if (javaPath == nil) {
         [[NSException exceptionWithName:@JAVA_LAUNCH_ERROR
-            reason:NSLocalizedString(@"Working directory path required in Info.plist", @UNSPECIFIED_ERROR)
+            reason:NSLocalizedString(@"Working directory path required in Info.plist", nil)
             userInfo:nil] raise];
     }
     NSMutableString *classPath = [NSMutableString stringWithFormat:@"-Djava.class.path=%@", javaPath];
@@ -141,7 +139,7 @@ int launch(int argc, char *argv[]) {
     CFBundleRef runtimeBundle = CFBundleCreate(NULL, (CFURLRef)[NSURL fileURLWithPath:runtimePath]);
     if (!runtimeBundle) {
         [[NSException exceptionWithName:@JAVA_LAUNCH_ERROR
-                                 reason:NSLocalizedString(@"Error loading runtime bundle.", @UNSPECIFIED_ERROR)
+                                 reason:NSLocalizedString(@"Error loading runtime bundle.", nil)
                                userInfo:nil] raise];
     }
     JLI_Launch_t jli_LaunchFxnPtr = NULL;
@@ -151,7 +149,7 @@ int launch(int argc, char *argv[]) {
         JLI_Launch_t jli_LaunchFxnPtr = CFBundleGetFunctionPointerForName(runtimeBundle, CFSTR("JLI_Launch"));
         if (jli_LaunchFxnPtr == NULL) {
             [[NSException exceptionWithName:@JAVA_LAUNCH_ERROR
-                                     reason:NSLocalizedString(@"Error getting launcher function.", @UNSPECIFIED_ERROR)
+                                     reason:NSLocalizedString(@"Error getting launcher function.", nil)
                                    userInfo:nil] raise];
         }
     }
@@ -164,7 +162,7 @@ int launch(int argc, char *argv[]) {
         }
         if(jli_LaunchFxnPtr == NULL) {
             [[NSException exceptionWithName:@JAVA_LAUNCH_ERROR
-                                     reason:NSLocalizedString(@"Error loading runtime executable.", @UNSPECIFIED_ERROR)
+                                     reason:NSLocalizedString(@"Error loading runtime executable.", nil)
                                    userInfo:nil] raise];
         }
     }
