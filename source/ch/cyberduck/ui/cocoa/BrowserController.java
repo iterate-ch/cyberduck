@@ -2298,11 +2298,13 @@ public class BrowserController extends WindowController
     @Override
     public void stop(final BackgroundAction action) {
         statusSpinner.stopAnimation(null);
+        super.stop(action);
     }
 
     @Override
     public void start(final BackgroundAction action) {
         statusSpinner.startAnimation(null);
+        super.start(action);
     }
 
     /**
