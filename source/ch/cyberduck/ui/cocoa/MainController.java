@@ -1134,8 +1134,6 @@ public class MainController extends BundleController implements NSApplication.De
                         new FlowBookmarkCollection(), new InterarchyBookmarkCollection(), new CrossFtpBookmarkCollection(), new FireFtpBookmarkCollection());
             }
         });
-//        new ServiceManagementApplicationLoginRegistry().register(
-//                new Application("ch.iterate.mountainduck", "Mountain Duck"));
     }
 
     /**
