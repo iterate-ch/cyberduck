@@ -36,6 +36,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.threading.BackgroundAction;
+import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferItem;
@@ -477,11 +478,21 @@ public abstract class TransferPromptController extends SheetController
 
     @Override
     public void stop(final BackgroundAction action) {
-        statusIndicator.stopAnimation(null);
+        this.invoke(new DefaultMainAction() {
+            @Override
+            public void run() {
+                statusIndicator.stopAnimation(null);
+            }
+        });
     }
 
     @Override
     public void start(final BackgroundAction action) {
-        statusIndicator.startAnimation(null);
+        this.invoke(new DefaultMainAction() {
+            @Override
+            public void run() {
+                statusIndicator.startAnimation(null);
+            }
+        });
     }
 }
