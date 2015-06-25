@@ -95,9 +95,6 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
      */
     @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean cancel) {
-        if(cancel) {
-            return false;
-        }
         final int size = collection.size();
         if(size == 0) {
             item.setTitle(LocaleFactory.localizedString("No recently connected servers available"));
