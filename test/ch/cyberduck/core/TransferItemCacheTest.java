@@ -37,4 +37,13 @@ public class TransferItemCacheTest extends AbstractTestCase {
         assertNotNull(remove);
         assertTrue(remove.isEmpty());
     }
+
+    @Test
+    public void testLookup() throws Exception {
+        final TransferItemCache c = new TransferItemCache(1);
+        final AttributedList<TransferItem> list = new AttributedList<>();
+        list.add(new TransferItem(new Path("/r2", EnumSet.of(Path.Type.file)), new Local("/l2")));
+        c.put(new TransferItem(new Path("/r", EnumSet.of(Path.Type.directory)), new Local("/l")), list);
+        assertNotNull(c.lookup(new DefaultPathReference(new Path("/r2", EnumSet.of(Path.Type.file)))));
+    }
 }
