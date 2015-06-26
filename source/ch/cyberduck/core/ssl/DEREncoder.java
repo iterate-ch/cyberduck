@@ -25,18 +25,17 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public class DEREncoder {
+public class DEREncoder implements CertificateEncoder {
 
     /**
      * @param certificates Chain of certificates
      * @return ASN.1 DER encoded
      */
-    public Object[] getEncoded(final List<X509Certificate> certificates) throws CertificateException {
+    @Override
+    public Object[] encode(final List<X509Certificate> certificates) throws CertificateException {
         final Object[] encoded = new Object[certificates.size()];
-        int i = 0;
-        for(X509Certificate certificate : certificates) {
-            encoded[i] = certificate.getEncoded();
-            i++;
+        for(int i = 0; i < certificates.size(); i++) {
+            encoded[i] = certificates.get(i).getEncoded();
         }
         return encoded;
     }

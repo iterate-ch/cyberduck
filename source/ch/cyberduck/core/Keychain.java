@@ -110,7 +110,7 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
         if(certificates.isEmpty()) {
             return false;
         }
-        final Object[] encoded = new DEREncoder().getEncoded(certificates);
+        final Object[] encoded = new DEREncoder().encode(certificates);
         final AtomicBoolean trusted = new AtomicBoolean(false);
         new ProxyController() {
             //
@@ -139,7 +139,7 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
         if(certificates.isEmpty()) {
             return false;
         }
-        final Object[] encoded = new DEREncoder().getEncoded(certificates);
+        final Object[] encoded = new DEREncoder().encode(certificates);
         final AtomicBoolean accepted = new AtomicBoolean(false);
         new ProxyController() {
             //
@@ -172,7 +172,7 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
             certificates.add(manager.getCertificate(alias, keyTypes, issuers));
         }
         try {
-            final Object[] encoded = new DEREncoder().getEncoded(certificates);
+            final Object[] encoded = new DEREncoder().encode(certificates);
             final AtomicReference<byte[]> select = new AtomicReference<byte[]>();
             new ProxyController() {
                 //
