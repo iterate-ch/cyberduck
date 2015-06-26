@@ -676,7 +676,7 @@ public class DAVSessionTest extends AbstractTestCase {
         }
     }
 
-    @Test
+    @Test(expected = LoginCanceledException.class)
     public void testTrustChain1() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "dav.pixi.me", new Credentials(
                 PreferencesFactory.get().getProperty("connection.login.anon.name"),
