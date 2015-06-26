@@ -1,7 +1,6 @@
 A command line interface (CLI) version is now available from https://duck.sh/ for Windows, Linux & Mac.
 
 4.7.1 [https://trac.cyberduck.io/milestone/4.7.1]
-- [Feature] Support for authentication with Keystone v3 API (OpenStack Swift) (#8813)
 - [Feature] Invalidate multiple files using wildcards (CloudFront)
 - [Bugfix] Interoperability with Ceph S3 (#8779)
 - [Bugfix] Second level cache not invalidated when reloading browser (#8774)
