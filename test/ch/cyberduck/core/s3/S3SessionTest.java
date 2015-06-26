@@ -19,7 +19,10 @@ import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.identity.IdentityConfiguration;
+import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.KeychainX509KeyManager;
+import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.junit.Ignore;
@@ -299,5 +302,35 @@ public class S3SessionTest extends AbstractTestCase {
             assertEquals(ConnectionTimeoutException.class, e.getCause().getClass());
             throw e;
         }
+    }
+
+    @Test
+    public void testTrustChain() throws Exception {
+        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
+                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+        ));
+        final AtomicBoolean verified = new AtomicBoolean();
+        final S3Session session = new S3Session(host, new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(host)) {
+            @Override
+            public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
+                assertEquals(3, certs.length);
+                assertEquals("CN=VeriSign Class 3 Public Primary Certification Authority - G5,OU=(c) 2006 VeriSign\\, Inc. - For authorized use only,OU=VeriSign Trust Network,O=VeriSign\\, Inc.,C=US",
+                        certs[certs.length - 1].getSubjectX500Principal().getName());
+                assertEquals("C=US,ST=Washington,L=Seattle,O=Amazon.com\\, Inc.,CN=s3.amazonaws.com",
+                        certs[0].getSubjectDN().getName());
+                verified.set(true);
+                super.verify(hostname, certs, cipher);
+            }
+        },
+                new KeychainX509KeyManager(new DisabledCertificateStore()));
+        final LoginConnectionService c = new LoginConnectionService(
+                new DisabledLoginCallback(),
+                new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(),
+                new DisabledProgressListener(),
+                new DisabledTranscriptListener());
+        c.connect(session, PathCache.empty());
+        assertTrue(verified.get());
+        session.close();
     }
 }
