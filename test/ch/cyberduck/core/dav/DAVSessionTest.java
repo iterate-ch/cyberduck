@@ -682,6 +682,7 @@ public class DAVSessionTest extends AbstractTestCase {
                 PreferencesFactory.get().getProperty("connection.login.anon.name"),
                 PreferencesFactory.get().getProperty("connection.login.anon.pass"))
         );
+        final AtomicBoolean verified = new AtomicBoolean();
         final DAVSession session = new DAVSession(host, new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(host)) {
             @Override
             public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
@@ -690,6 +691,7 @@ public class DAVSessionTest extends AbstractTestCase {
                         certs[certs.length - 1].getSubjectX500Principal().getName());
                 assertEquals("OU=GT79990730,OU=See www.rapidssl.com/resources/cps (c)15,OU=Domain Control Validated - RapidSSL(R),CN=*.pixi.me",
                         certs[0].getSubjectDN().getName());
+                verified.set(true);
                 super.verify(hostname, certs, cipher);
             }
         },
@@ -701,6 +703,7 @@ public class DAVSessionTest extends AbstractTestCase {
                 new DisabledProgressListener(),
                 new DisabledTranscriptListener());
         c.connect(session, PathCache.empty());
+        assertTrue(verified.get());
         session.close();
     }
 
@@ -710,6 +713,7 @@ public class DAVSessionTest extends AbstractTestCase {
                 PreferencesFactory.get().getProperty("connection.login.anon.name"),
                 PreferencesFactory.get().getProperty("connection.login.anon.pass"))
         );
+        final AtomicBoolean verified = new AtomicBoolean();
         final DAVSession session = new DAVSession(host, new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(host)) {
             @Override
             public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
@@ -718,6 +722,7 @@ public class DAVSessionTest extends AbstractTestCase {
                         certs[certs.length - 1].getSubjectX500Principal().getName());
                 assertEquals("2.5.4.13=ip1NjJWcr2wjLBL6,C=CH,ST=Bern,L=Bern,O=iterate GmbH,CN=*.cyberduck.io,E=hostmaster@cyberduck.io",
                         certs[0].getSubjectDN().getName());
+                verified.set(true);
                 super.verify(hostname, certs, cipher);
             }
         },
@@ -729,6 +734,7 @@ public class DAVSessionTest extends AbstractTestCase {
                 new DisabledProgressListener(),
                 new DisabledTranscriptListener());
         c.connect(session, PathCache.empty());
+        assertTrue(verified.get());
         session.close();
     }
 }
