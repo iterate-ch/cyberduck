@@ -35,6 +35,7 @@ import org.junit.Test;
 
 import javax.security.auth.x500.X500Principal;
 import java.security.Principal;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Collections;
@@ -112,7 +113,8 @@ public class DAVSessionTest extends AbstractTestCase {
                 new DisabledLoginCallback(),
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
-                new DisabledProgressListener(), new DisabledTranscriptListener());
+                new DisabledProgressListener(),
+                new DisabledTranscriptListener());
         c.connect(session, PathCache.empty());
     }
 
@@ -464,7 +466,13 @@ public class DAVSessionTest extends AbstractTestCase {
         final Host host = new Host(new DAVSSLProtocol(), "dav.pixi.me", new Credentials(
                 "webdav", "webdav"
         ));
-        final DAVSession session = new DAVSession(host);
+        final DAVSession session = new DAVSession(host, new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(host)) {
+            @Override
+            public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
+                assertEquals("ECDHE_RSA", cipher);
+                super.verify(hostname, certs, cipher);
+            }
+        }, new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         assertTrue(session.isConnected());
         assertTrue(session.isSecured());
@@ -480,7 +488,13 @@ public class DAVSessionTest extends AbstractTestCase {
         final Host host = new Host(new DAVSSLProtocol(), "tlsv11.pixi.me", new Credentials(
                 "webdav", "webdav"
         ));
-        final DAVSession session = new DAVSession(host);
+        final DAVSession session = new DAVSession(host, new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(host)) {
+            @Override
+            public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
+                assertEquals("ECDHE_RSA", cipher);
+                super.verify(hostname, certs, cipher);
+            }
+        }, new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         assertTrue(session.isConnected());
         assertTrue(session.isSecured());
@@ -496,7 +510,13 @@ public class DAVSessionTest extends AbstractTestCase {
         final Host host = new Host(new DAVSSLProtocol(), "tlsv12.pixi.me", new Credentials(
                 "webdav", "webdav"
         ));
-        final DAVSession session = new DAVSession(host);
+        final DAVSession session = new DAVSession(host, new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(host)) {
+            @Override
+            public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
+                assertEquals("ECDHE_RSA", cipher);
+                super.verify(hostname, certs, cipher);
+            }
+        }, new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         assertTrue(session.isConnected());
         assertTrue(session.isSecured());
@@ -606,7 +626,8 @@ public class DAVSessionTest extends AbstractTestCase {
                 new DisabledLoginCallback(),
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
-                new DisabledProgressListener(), new DisabledTranscriptListener());
+                new DisabledProgressListener(),
+                new DisabledTranscriptListener());
         try {
             c.connect(session, PathCache.empty());
         }
@@ -623,7 +644,13 @@ public class DAVSessionTest extends AbstractTestCase {
                 PreferencesFactory.get().getProperty("connection.login.anon.pass"))
         );
         host.setDefaultPath("/dav");
-        final DAVSession session = new DAVSession(host, new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(host)),
+        final DAVSession session = new DAVSession(host, new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(host)) {
+            @Override
+            public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
+                assertEquals(2, certs.length);
+                super.verify(hostname, certs, cipher);
+            }
+        },
                 new KeychainX509KeyManager(new DisabledCertificateStore() {
                     @Override
                     public X509Certificate choose(String[] keyTypes, Principal[] issuers, String hostname, String prompt)
@@ -638,7 +665,8 @@ public class DAVSessionTest extends AbstractTestCase {
                 new DisabledLoginCallback(),
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
-                new DisabledProgressListener(), new DisabledTranscriptListener());
+                new DisabledProgressListener(),
+                new DisabledTranscriptListener());
         try {
             c.connect(session, PathCache.empty());
         }
@@ -646,5 +674,61 @@ public class DAVSessionTest extends AbstractTestCase {
             assertEquals("Handshake failure. Unable to negotiate an acceptable set of security parameters. Please contact your web hosting service provider for assistance.", e.getDetail());
             throw e;
         }
+    }
+
+    @Test
+    public void testTrustChain1() throws Exception {
+        final Host host = new Host(new DAVSSLProtocol(), "dav.pixi.me", new Credentials(
+                PreferencesFactory.get().getProperty("connection.login.anon.name"),
+                PreferencesFactory.get().getProperty("connection.login.anon.pass"))
+        );
+        final DAVSession session = new DAVSession(host, new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(host)) {
+            @Override
+            public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
+                assertEquals(2, certs.length);
+                assertEquals("CN=RapidSSL SHA256 CA - G3,O=GeoTrust Inc.,C=US",
+                        certs[certs.length - 1].getSubjectX500Principal().getName());
+                assertEquals("OU=GT79990730,OU=See www.rapidssl.com/resources/cps (c)15,OU=Domain Control Validated - RapidSSL(R),CN=*.pixi.me",
+                        certs[0].getSubjectDN().getName());
+                super.verify(hostname, certs, cipher);
+            }
+        },
+                new KeychainX509KeyManager(new DisabledCertificateStore()));
+        final LoginConnectionService c = new LoginConnectionService(
+                new DisabledLoginCallback(),
+                new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(),
+                new DisabledProgressListener(),
+                new DisabledTranscriptListener());
+        c.connect(session, PathCache.empty());
+        session.close();
+    }
+
+    @Test
+    public void testTrustChain2() throws Exception {
+        final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io", new Credentials(
+                PreferencesFactory.get().getProperty("connection.login.anon.name"),
+                PreferencesFactory.get().getProperty("connection.login.anon.pass"))
+        );
+        final DAVSession session = new DAVSession(host, new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(host)) {
+            @Override
+            public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
+                assertEquals(2, certs.length);
+                assertEquals("CN=StartCom Class 2 Primary Intermediate Server CA,OU=Secure Digital Certificate Signing,O=StartCom Ltd.,C=IL",
+                        certs[certs.length - 1].getSubjectX500Principal().getName());
+                assertEquals("2.5.4.13=ip1NjJWcr2wjLBL6,C=CH,ST=Bern,L=Bern,O=iterate GmbH,CN=*.cyberduck.io,E=hostmaster@cyberduck.io",
+                        certs[0].getSubjectDN().getName());
+                super.verify(hostname, certs, cipher);
+            }
+        },
+                new KeychainX509KeyManager(new DisabledCertificateStore()));
+        final LoginConnectionService c = new LoginConnectionService(
+                new DisabledLoginCallback(),
+                new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(),
+                new DisabledProgressListener(),
+                new DisabledTranscriptListener());
+        c.connect(session, PathCache.empty());
+        session.close();
     }
 }
