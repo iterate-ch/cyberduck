@@ -20,6 +20,10 @@
                 <inherited>false</inherited>
                 <executions>
                     <execution>
+                        <id>default-install</id>
+                        <phase>none</phase>
+                    </execution>
+                    <execution>
                         <id>install-config</id>
                         <phase>package</phase>
                         <goals>

@@ -36,6 +36,10 @@
                 <version>2.5.2</version>
                 <inherited>false</inherited>
                 <executions>
+                    <execution>
+                        <id>default-install</id>
+                        <phase>none</phase>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>

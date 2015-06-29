@@ -190,6 +190,10 @@
                 <inherited>false</inherited>
                 <executions>
                     <execution>
+                        <id>default-install</id>
+                        <phase>none</phase>
+                    </execution>
+                    <execution>
                         <id>install-core</id>
                         <phase>package</phase>
                         <goals>
