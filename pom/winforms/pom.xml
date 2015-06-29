@@ -43,22 +43,6 @@
                         <artifactId>build-helper-maven-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>install-core-dll</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>attach-artifact</goal>
-                                </goals>
-                                <configuration>
-                                    <artifacts>
-                                        <artifact>
-                                            <classifier>native</classifier>
-                                            <type>dll</type>
-                                            <file>${project.basedir}/../../build/core.dll</file>
-                                        </artifact>
-                                    </artifacts>
-                                </configuration>
-                            </execution>
-                            <execution>
                                 <id>install-winforms-dll</id>
                                 <phase>package</phase>
                                 <goals>
