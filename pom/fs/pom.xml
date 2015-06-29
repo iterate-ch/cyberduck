@@ -31,7 +31,8 @@
                             <artifactId>fs</artifactId>
                             <version>${project.version}</version>
                             <packaging>jar</packaging>
-                            <file>${project.basedir}/../../build/core-${project.version}.jar</file>
+                            <file>${project.basedir}/../../build/fs-${project.version}.jar</file>
+                            <pomFile>${project.basedir}/../../pom/fs/pom.xml</pomFile>
                         </configuration>
                     </execution>
                 </executions>

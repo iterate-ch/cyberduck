@@ -190,21 +190,6 @@
                 <inherited>false</inherited>
                 <executions>
                     <execution>
-                        <id>install-config</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                        <configuration>
-                            <groupId>ch.cyberduck</groupId>
-                            <artifactId>config</artifactId>
-                            <version>${project.version}</version>
-                            <packaging>jar</packaging>
-                            <file>${project.basedir}/../../build/config-${project.version}.jar</file>
-                            <pomFile>${project.basedir}/../../pom/config/pom.xml</pomFile>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>install-core</id>
                         <phase>package</phase>
                         <goals>

@@ -30,7 +30,7 @@
                             <artifactId>cocoa</artifactId>
                             <version>${project.version}</version>
                             <packaging>jar</packaging>
-                            <file>${project.basedir}/../../build/binding-${project.version}.jar</file>
+                            <file>${project.basedir}/../../build/cocoa-${project.version}.jar</file>
                             <pomFile>${project.basedir}/../../pom/cocoa/pom.xml</pomFile>
                         </configuration>
                     </execution>

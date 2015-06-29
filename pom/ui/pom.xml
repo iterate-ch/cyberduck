@@ -31,6 +31,7 @@
                             <version>${project.version}</version>
                             <packaging>jar</packaging>
                             <file>${project.basedir}/../../build/ui-${project.version}.jar</file>
+                            <pomFile>${project.basedir}/../../pom/ui/pom.xml</pomFile>
                         </configuration>
                     </execution>
                 </executions>

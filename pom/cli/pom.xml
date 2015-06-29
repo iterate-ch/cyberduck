@@ -31,7 +31,7 @@
                             <artifactId>cli</artifactId>
                             <version>${project.version}</version>
                             <packaging>jar</packaging>
-                            <file>${project.basedir}/../../build/core-${project.version}.jar</file>
+                            <file>${project.basedir}/../../build/cli-${project.version}.jar</file>
                             <pomFile>${project.basedir}/../../pom/cli/pom.xml</pomFile>
                         </configuration>
                     </execution>
