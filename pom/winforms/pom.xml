@@ -52,7 +52,7 @@
                                     <artifacts>
                                         <artifact>
                                             <classifier>native</classifier>
-                                            <packaging>dll</packaging>
+                                            <type>dll</type>
                                             <file>${project.basedir}/../../build/core.dll</file>
                                         </artifact>
                                     </artifacts>
@@ -68,7 +68,7 @@
                                     <artifacts>
                                         <artifact>
                                             <classifier>native</classifier>
-                                            <packaging>dll</packaging>
+                                            <type>dll</type>
                                             <file>${project.basedir}/../../build/cyberduck.windows.core.dll</file>
                                         </artifact>
                                     </artifacts>
