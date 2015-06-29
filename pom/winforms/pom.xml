@@ -25,7 +25,7 @@
         <version>4.8.0-SNAPSHOT</version>
     </parent>
     <artifactId>winforms</artifactId>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
     <version>4.8.0-SNAPSHOT</version>
 
     <build>

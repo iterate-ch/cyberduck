@@ -9,7 +9,7 @@
         <version>4.8.0-SNAPSHOT</version>
     </parent>
     <artifactId>cli</artifactId>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
     <version>4.8.0-SNAPSHOT</version>
 
     <build>
