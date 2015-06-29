@@ -15,26 +15,22 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-install-plugin</artifactId>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
                 <executions>
-                    <execution>
-                        <id>default-install</id>
-                        <phase>none</phase>
-                    </execution>
                     <execution>
                         <id>install-cli</id>
                         <phase>package</phase>
                         <goals>
-                            <goal>install-file</goal>
+                            <goal>attach-artifact</goal>
                         </goals>
                         <configuration>
-                            <groupId>ch.cyberduck</groupId>
-                            <artifactId>cli</artifactId>
-                            <version>${project.version}</version>
-                            <packaging>jar</packaging>
-                            <file>${project.basedir}/../../build/cli-${project.version}.jar</file>
-                            <pomFile>${project.basedir}/../../pom/cli/pom.xml</pomFile>
+                            <artifacts>
+                                <artifact>
+                                    <type>jar</type>
+                                    <file>${project.basedir}/../../build/cli-${project.version}.jar</file>
+                                </artifact>
+                            </artifacts>
                         </configuration>
                     </execution>
                 </executions>
