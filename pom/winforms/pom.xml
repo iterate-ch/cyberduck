@@ -24,7 +24,7 @@
         <relativePath>../../pom.xml</relativePath>
         <version>4.8.0-SNAPSHOT</version>
     </parent>
-    <artifactId>ui</artifactId>
+    <artifactId>winforms</artifactId>
     <packaging>jar</packaging>
     <version>4.8.0-SNAPSHOT</version>
 
