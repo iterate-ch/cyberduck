@@ -219,6 +219,11 @@ Section "MainSection" SEC01
   File "${BASEDIR}\update\Updater.exe"
   File "${BASEDIR}\update\*.wyc"
 
+  ; Microsoft Visual C++ 2010 SP1 Redistributable Package (x86)
+  File "vcredist_x86.exe"
+  ExecWait "vcredist_x86.exe /q /norestart" $0
+  Delete "$INSTDIR\vcredist_x86.exe"
+
   ${If} $BonjourCheckbox_State == ${BST_CHECKED}
         ;Bonjour
         ${If} ${RunningX64}
