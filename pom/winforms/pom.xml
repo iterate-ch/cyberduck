@@ -51,11 +51,8 @@
                                 <configuration>
                                     <artifacts>
                                         <artifact>
-                                            <groupId>ch.cyberduck</groupId>
-                                            <artifactId>core</artifactId>
                                             <classifier>native</classifier>
                                             <packaging>dll</packaging>
-                                            <version>${project.version}</version>
                                             <file>${project.basedir}/../../build/core.dll</file>
                                         </artifact>
                                     </artifacts>
@@ -70,11 +67,8 @@
                                 <configuration>
                                     <artifacts>
                                         <artifact>
-                                            <groupId>ch.cyberduck</groupId>
-                                            <artifactId>winforms</artifactId>
                                             <classifier>native</classifier>
                                             <packaging>dll</packaging>
-                                            <version>${project.version}</version>
                                             <file>${project.basedir}/../../build/cyberduck.windows.core.dll</file>
                                         </artifact>
                                     </artifacts>
