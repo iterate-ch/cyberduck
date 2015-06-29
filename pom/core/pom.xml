@@ -53,9 +53,9 @@
             <version>2.1.0</version>
         </dependency>
         <dependency>
-            <groupId>com.hierynomus</groupId>
+            <groupId>net.schmizz</groupId>
             <artifactId>sshj</artifactId>
-            <version>0.13.0-SNAPSHOT</version>
+            <version>0.12.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.jcraft</groupId>
