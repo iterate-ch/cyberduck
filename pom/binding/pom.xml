@@ -11,6 +11,34 @@
     <packaging>jar</packaging>
     <version>4.8.0-SNAPSHOT</version>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.5.2</version>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <id>install-binding</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <groupId>ch.cyberduck</groupId>
+                            <artifactId>binding</artifactId>
+                            <version>${project.version}</version>
+                            <packaging>jar</packaging>
+                            <file>${project.basedir}/../../build/binding-${project.version}.jar</file>
+                            <pomFile>${project.basedir}/../../pom/binding/pom.xml</pomFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
     <dependencies>
         <dependency>
             <groupId>ch.cyberduck</groupId>

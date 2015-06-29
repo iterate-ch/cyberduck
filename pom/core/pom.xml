@@ -13,11 +13,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>ch.cyberduck</groupId>
-            <artifactId>config</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpcore</artifactId>
             <version>4.4.1</version>
@@ -153,5 +148,80 @@
             <version>2.2.2</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <id>run-ant-clean-target</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <property name="version" value="${project.version}"/>
+                                <ant antfile="${project.basedir}/../../build.xml" target="clean" dir="../.."/>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>run-ant-build-target</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <property name="version" value="${project.version}"/>
+                                <ant antfile="${project.basedir}/../../build.xml" target="build" dir="../.."/>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.5.2</version>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <id>install-config</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <groupId>ch.cyberduck</groupId>
+                            <artifactId>config</artifactId>
+                            <version>${project.version}</version>
+                            <packaging>jar</packaging>
+                            <file>${project.basedir}/../../build/config-${project.version}.jar</file>
+                            <pomFile>${project.basedir}/../../pom/config/pom.xml</pomFile>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-core</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <groupId>ch.cyberduck</groupId>
+                            <artifactId>core</artifactId>
+                            <version>${project.version}</version>
+                            <packaging>jar</packaging>
+                            <file>${project.basedir}/../../build/core-${project.version}.jar</file>
+                            <pomFile>${project.basedir}/../../pom/core/pom.xml</pomFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
 
