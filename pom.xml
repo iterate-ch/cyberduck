@@ -16,6 +16,7 @@
         <module>pom/fs</module>
         <module>pom/binding</module>
         <module>pom/cocoa</module>
+        <module>pom/winforms</module>
         <module>pom/cli</module>
     </modules>
 
