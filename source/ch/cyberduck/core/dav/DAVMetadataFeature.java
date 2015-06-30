@@ -20,6 +20,7 @@ package ch.cyberduck.core.dav;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Headers;
 
 import org.apache.log4j.Logger;
@@ -54,7 +55,14 @@ public class DAVMetadataFeature implements Headers {
             return Collections.emptyMap();
         }
         catch(SardineException e) {
-            throw new DAVExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+            try {
+                throw new DAVExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+            }
+            catch(InteroperabilityException i) {
+                log.warn(String.format("Failure to obtain attributes of %s. %s", file, i.getDetail()));
+                // Workaround for #8902
+                return Collections.emptyMap();
+            }
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e, file);
