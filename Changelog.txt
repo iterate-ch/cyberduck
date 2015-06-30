@@ -19,6 +19,7 @@ Changelog. Last modified: $Date$
 - [Bugfix] Failure cancelling queued transfer (#8844)
 - [Bugfix] Copy & Paste menu items disabled (Mac) (#8849)
 - [Bugfix] Support retrieving files from buckets from Requester Pays Buckets (S3) (#8893)
+- [Bugfix] Missing C++ Redistributable Package library installation (Windows) (#8162)
 
 4.7 [https://trac.cyberduck.io/milestone/4.7]
 - [Feature] Support to access iRODS (Integrated Rule-Oriented Data System)

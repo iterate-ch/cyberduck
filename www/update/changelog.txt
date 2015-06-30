@@ -14,6 +14,7 @@ A command line interface (CLI) version is now available from https://duck.sh/ fo
 - [Bugfix] Segmented upload marked as incomplete (OpenStack Swift) (#8859)
 - [Bugfix] Failure cancelling queued transfer (#8844)
 - [Bugfix] Support retrieving files from buckets from Requester Pays Buckets (S3) (#8893)
+- [Bugfix] Missing C++ Redistributable Package library installation (#8162)
 
 4.7 [https://trac.cyberduck.io/milestone/4.7]
 - [Feature] Support to access iRODS (Integrated Rule-Oriented Data System)
