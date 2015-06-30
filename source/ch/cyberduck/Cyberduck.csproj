@@ -65,7 +65,8 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(OutputType)' == 'Library'">
-    <OutputPath>..\..\..\build\</OutputPath>
+    <StartupObject></StartupObject>
+    <OutputPath>..\..\..\build\dll</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Optimize>true</Optimize>
