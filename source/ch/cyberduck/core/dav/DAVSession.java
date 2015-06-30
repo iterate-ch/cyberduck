@@ -249,7 +249,7 @@ public class DAVSession extends HttpSession<DAVClient> {
             return (T) new DAVMoveFeature(this);
         }
         if(type == Headers.class) {
-            return (T) new DAVHeadersFeature(this);
+            return (T) new DAVMetadataFeature(this);
         }
         if(type == Copy.class) {
             return (T) new DAVCopyFeature(this);

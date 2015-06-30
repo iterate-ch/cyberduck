@@ -43,7 +43,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class DAVHeadersFeatureTest extends AbstractTestCase {
+public class DAVMetadataFeatureTest extends AbstractTestCase {
 
     @Test
     public void testGetMetadataFolder() throws Exception {
@@ -53,7 +53,7 @@ public class DAVHeadersFeatureTest extends AbstractTestCase {
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Map<String, String> metadata = new DAVHeadersFeature(session).getMetadata(new Path("/trunk", EnumSet.of(Path.Type.directory)));
+        final Map<String, String> metadata = new DAVMetadataFeature(session).getMetadata(new Path("/trunk", EnumSet.of(Path.Type.directory)));
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("repository-uuid"));
         assertEquals("9e2dff1d-8f06-0410-b5b1-4d70b6340adc", metadata.get("repository-uuid"));
@@ -68,7 +68,7 @@ public class DAVHeadersFeatureTest extends AbstractTestCase {
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Map<String, String> metadata = new DAVHeadersFeature(session).getMetadata(new Path("/trunk/README.txt", EnumSet.of(Path.Type.file)));
+        final Map<String, String> metadata = new DAVMetadataFeature(session).getMetadata(new Path("/trunk/README.txt", EnumSet.of(Path.Type.file)));
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("repository-uuid"));
         assertEquals("9e2dff1d-8f06-0410-b5b1-4d70b6340adc", metadata.get("repository-uuid"));
@@ -89,8 +89,8 @@ public class DAVHeadersFeatureTest extends AbstractTestCase {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(test);
         final String v = UUID.randomUUID().toString();
-        new DAVHeadersFeature(session).setMetadata(test, Collections.<String, String>singletonMap("Test", v));
-        final Map<String, String> metadata = new DAVHeadersFeature(session).getMetadata(test);
+        new DAVMetadataFeature(session).setMetadata(test, Collections.<String, String>singletonMap("Test", v));
+        final Map<String, String> metadata = new DAVMetadataFeature(session).getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("Test"));
         assertEquals(v, metadata.get("Test"));
@@ -111,8 +111,8 @@ public class DAVHeadersFeatureTest extends AbstractTestCase {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new DAVDirectoryFeature(session).mkdir(test, null);
         final String v = UUID.randomUUID().toString();
-        new DAVHeadersFeature(session).setMetadata(test, Collections.<String, String>singletonMap("Test", v));
-        final Map<String, String> metadata = new DAVHeadersFeature(session).getMetadata(test);
+        new DAVMetadataFeature(session).setMetadata(test, Collections.<String, String>singletonMap("Test", v));
+        final Map<String, String> metadata = new DAVMetadataFeature(session).getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("Test"));
         assertEquals(v, metadata.get("Test"));

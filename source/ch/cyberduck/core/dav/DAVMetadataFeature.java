@@ -35,12 +35,12 @@ import com.github.sardine.impl.SardineException;
 /**
  * @version $Id$
  */
-public class DAVHeadersFeature implements Headers {
-    private static final Logger log = Logger.getLogger(DAVHeadersFeature.class);
+public class DAVMetadataFeature implements Headers {
+    private static final Logger log = Logger.getLogger(DAVMetadataFeature.class);
 
     private DAVSession session;
 
-    public DAVHeadersFeature(final DAVSession session) {
+    public DAVMetadataFeature(final DAVSession session) {
         this.session = session;
     }
 
