@@ -7,6 +7,7 @@ Changelog. Last modified: $Date$
 - [Feature] Invalidate multiple files using wildcards (CloudFront)
 - [Bugfix] Accessibility for blind users in Transfer window (VoiceOver) (#1343)
 - [Bugfix] Interoperability with Ceph S3 (#8779)
+- [Bugfix] Interoperability with Oracle Service Cloud (#8902)
 - [Bugfix] Second level cache not invalidated when reloading browser (#8774)
 - [Bugfix] Subfolder appearing inside folder of same name (S3) (#8769)
 - [Bugfix] Directory removal fails silently (S3) (#8803)

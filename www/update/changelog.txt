@@ -3,6 +3,7 @@ A command line interface (CLI) version is now available from https://duck.sh/ fo
 4.7.1 [https://trac.cyberduck.io/milestone/4.7.1]
 - [Feature] Invalidate multiple files using wildcards (CloudFront)
 - [Bugfix] Interoperability with Ceph S3 (#8779)
+- [Bugfix] Interoperability with Oracle Service Cloud (#8902)
 - [Bugfix] Second level cache not invalidated when reloading browser (#8774)
 - [Bugfix] Subfolder appearing inside folder of same name (S3) (#8769)
 - [Bugfix] Directory removal fails silently (S3) (#8803)
