@@ -111,6 +111,8 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
             if(status.isAppend()) {
                 multipart = multipartService.find(file);
             }
+            final List<MultipartPart> completed = new ArrayList<MultipartPart>();
+            // Not found or new upload
             if(null == multipart) {
                 if(log.isInfoEnabled()) {
                     log.info("No pending multipart upload found");
@@ -124,9 +126,11 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                             multipart.getObjectKey(), multipart.getUploadId()));
                 }
             }
-            final List<MultipartPart> completed = new ArrayList<MultipartPart>();
-            if(status.isAppend()) {
-                completed.addAll(multipartService.list(multipart));
+            else {
+                if(status.isAppend()) {
+                    // Add already completed parts
+                    completed.addAll(multipartService.list(multipart));
+                }
             }
             try {
                 final List<Future<MultipartPart>> parts = new ArrayList<Future<MultipartPart>>();

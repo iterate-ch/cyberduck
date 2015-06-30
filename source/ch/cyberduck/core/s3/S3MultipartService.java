@@ -30,6 +30,9 @@ import org.jets3t.service.model.MultipartPart;
 import org.jets3t.service.model.MultipartUpload;
 
 import java.text.MessageFormat;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -76,7 +79,15 @@ public class S3MultipartService {
                 }
                 throw failure;
             }
-            for(MultipartUpload upload : chunk.getUploads()) {
+            final List<MultipartUpload> uploads = Arrays.asList(chunk.getUploads());
+            // Sort with newest upload first in list
+            Collections.sort(uploads, new Comparator<MultipartUpload>() {
+                @Override
+                public int compare(final MultipartUpload o1, final MultipartUpload o2) {
+                    return -o1.getInitiatedDate().compareTo(o2.getInitiatedDate());
+                }
+            });
+            for(MultipartUpload upload : uploads) {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Found multipart upload %s for %s", upload.getUploadId(), file));
                 }
