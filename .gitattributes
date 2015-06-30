@@ -2163,6 +2163,7 @@ pl.lproj/Sftp.strings -text svneol=unset#text/utf-16
 pl.lproj/Status.strings -text svneol=unset#text/utf-16
 pl.lproj/Support.strings -text svneol=unset#text/utf-16
 pl.lproj/Transfer.strings -text svneol=unset#text/utf-16
+pom/cyberduck/pom.xml -text
 profiles/Box.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Cloud.ca[!!-~]Object[!!-~]Store[!!-~]East-1[!!-~]Region.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/DreamObjects.cyberduckprofile -text
