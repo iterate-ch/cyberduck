@@ -562,7 +562,6 @@ public class BookmarkController extends WindowController {
 
     @Override
     public void setWindow(NSWindow window) {
-        window.setFrameAutosaveName("Bookmark");
         window.setContentMinSize(window.frame().size);
         window.setContentMaxSize(new NSSize(600, window.frame().size.height.doubleValue()));
         super.setWindow(window);
