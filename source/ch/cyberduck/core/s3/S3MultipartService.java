@@ -57,6 +57,9 @@ public class S3MultipartService {
     }
 
     public MultipartUpload find(final Path file) throws BackgroundException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Finding multipart uploads for %s", file));
+        }
         // This operation lists in-progress multipart uploads. An in-progress multipart upload is a
         // multipart upload that has been initiated, using the Initiate Multipart Upload request, but has
         // not yet been completed or aborted.
@@ -80,6 +83,9 @@ public class S3MultipartService {
                 throw failure;
             }
             final List<MultipartUpload> uploads = Arrays.asList(chunk.getUploads());
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Found %d previous multipart uploads for %s", uploads.size(), file));
+            }
             // Sort with newest upload first in list
             Collections.sort(uploads, new Comparator<MultipartUpload>() {
                 @Override
@@ -89,7 +95,7 @@ public class S3MultipartService {
             });
             for(MultipartUpload upload : uploads) {
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Found multipart upload %s for %s", upload.getUploadId(), file));
+                    log.info(String.format("Found multipart upload %s for %s", upload, file));
                 }
                 return upload;
             }
