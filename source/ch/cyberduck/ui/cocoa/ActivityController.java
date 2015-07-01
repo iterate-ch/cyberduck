@@ -18,7 +18,6 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.NSTableColumn;
 import ch.cyberduck.binding.application.NSTableView;
 import ch.cyberduck.binding.application.NSView;
@@ -29,7 +28,6 @@ import ch.cyberduck.core.AbstractCollectionListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
-import ch.cyberduck.ui.cocoa.view.ControllerCell;
 
 import org.apache.log4j.Logger;
 import org.rococoa.ID;
@@ -46,7 +44,6 @@ import java.util.Map;
  */
 public final class ActivityController extends WindowController {
     private static Logger log = Logger.getLogger(ActivityController.class);
-
 
     private BackgroundActionRegistry registry
             = BackgroundActionRegistry.global();
@@ -141,11 +138,10 @@ public final class ActivityController extends WindowController {
         this.table = table;
         this.table.setRowHeight(new CGFloat(42));
         {
-            NSTableColumn c = tableColumnsFactory.create("Default");
+            final NSTableColumn c = tableColumnsFactory.create("Default");
             c.setMinWidth(80f);
             c.setWidth(300f);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
-            c.setDataCell(prototype);
             this.table.addTableColumn(c);
         }
         this.table.setDataSource((model = new ListDataSource() {
@@ -197,14 +193,7 @@ public final class ActivityController extends WindowController {
                 return false;
             }
 
-            public void tableView_willDisplayCell_forTableColumn_row(final NSTableView view, final NSCell cell,
-                                                                     final NSTableColumn column, final NSInteger row) {
-                final TaskController controller = getController(row);
-                Rococoa.cast(cell, ControllerCell.class).setView(controller.view());
-            }
-
             public NSView tableView_viewForTableColumn_row(final NSTableView view, final NSTableColumn column, final NSInteger row) {
-                // 10.7 or later supports view View-Based Table Views
                 final TaskController controller = getController(row);
                 return controller.view();
             }
@@ -215,8 +204,6 @@ public final class ActivityController extends WindowController {
     protected TaskController getController(final NSInteger row) {
         return tasks.values().toArray(new TaskController[tasks.size()])[row.intValue()];
     }
-
-    private final NSCell prototype = ControllerCell.controllerCell();
 
     @Override
     protected String getBundleName() {

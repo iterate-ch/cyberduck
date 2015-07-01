@@ -65,7 +65,6 @@ import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
 import ch.cyberduck.ui.cocoa.delegate.AbstractMenuDelegate;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
-import ch.cyberduck.ui.cocoa.view.ControllerCell;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -448,7 +447,6 @@ public final class TransferController extends WindowController implements NSTool
             c.setMinWidth(80f);
             c.setWidth(300f);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
-            c.setDataCell(prototype);
             this.transferTable.addTableColumn(c);
         }
         this.transferTable.setDataSource((transferTableModel = new TransferTableDataSource()).id());
@@ -494,14 +492,7 @@ public final class TransferController extends WindowController implements NSTool
                                 NSRange.NSMakeRange(new NSUInteger(0), new NSUInteger(transferTable.numberOfRows()))));
             }
 
-            public void tableView_willDisplayCell_forTableColumn_row(final NSTableView view, final NSCell cell,
-                                                                     final NSTableColumn column, final NSInteger row) {
-                final ProgressController controller = transferTableModel.getController(row.intValue());
-                Rococoa.cast(cell, ControllerCell.class).setView(controller.view());
-            }
-
             public NSView tableView_viewForTableColumn_row(final NSTableView view, final NSTableColumn column, final NSInteger row) {
-                // 10.7 or later supports view View-Based Table Views
                 final ProgressController controller = transferTableModel.getController(row.intValue());
                 return controller.view();
             }
@@ -539,8 +530,6 @@ public final class TransferController extends WindowController implements NSTool
     public TransferTableDataSource getTransferTableModel() {
         return transferTableModel;
     }
-
-    private final NSCell prototype = ControllerCell.controllerCell();
 
     /**
      * Update highlighted rows
