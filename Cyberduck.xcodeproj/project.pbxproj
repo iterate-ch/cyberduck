@@ -36,7 +36,6 @@
 		4738A1F51B1BA61A005EA4AE /* CTGradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = 47AC356E0DA1025000CC1426 /* CTGradientView.m */; };
 		4738A1F61B1BA62F005EA4AE /* UKSystemInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 477FA95A0E9A7826009E7857 /* UKSystemInfo.m */; };
 		4738A1F71B1BA645005EA4AE /* CDBookmarkCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 475286BD10D2CC660029363C /* CDBookmarkCell.m */; };
-		4738A1F81B1BA645005EA4AE /* CDControllerCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 475286BE10D2CC660029363C /* CDControllerCell.m */; };
 		4738A1F91B1BA645005EA4AE /* CDListView.m in Sources */ = {isa = PBXBuildFile; fileRef = 475286BF10D2CC660029363C /* CDListView.m */; };
 		4738A1FA1B1BA645005EA4AE /* CDOutlineCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 475286C010D2CC660029363C /* CDOutlineCell.m */; };
 		4738A1FB1B1BA645005EA4AE /* CDOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 475286C110D2CC660029363C /* CDOutlineView.m */; };
@@ -933,12 +932,10 @@
 		475179BD097945D5008F671F /* de */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = de; path = de.lproj/Credentials.strings; sourceTree = "<group>"; };
 		475179BE097945DC008F671F /* da */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = da; path = da.lproj/Credentials.strings; sourceTree = "<group>"; };
 		475286B510D2CC660029363C /* CDBookmarkCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDBookmarkCell.h; path = view/CDBookmarkCell.h; sourceTree = "<group>"; };
-		475286B610D2CC660029363C /* CDControllerCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDControllerCell.h; path = view/CDControllerCell.h; sourceTree = "<group>"; };
 		475286B710D2CC660029363C /* CDListView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDListView.h; path = view/CDListView.h; sourceTree = "<group>"; };
 		475286B810D2CC660029363C /* CDOutlineCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDOutlineCell.h; path = view/CDOutlineCell.h; sourceTree = "<group>"; };
 		475286B910D2CC660029363C /* CDOutlineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDOutlineView.h; path = view/CDOutlineView.h; sourceTree = "<group>"; };
 		475286BD10D2CC660029363C /* CDBookmarkCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDBookmarkCell.m; path = view/CDBookmarkCell.m; sourceTree = "<group>"; };
-		475286BE10D2CC660029363C /* CDControllerCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDControllerCell.m; path = view/CDControllerCell.m; sourceTree = "<group>"; };
 		475286BF10D2CC660029363C /* CDListView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDListView.m; path = view/CDListView.m; sourceTree = "<group>"; };
 		475286C010D2CC660029363C /* CDOutlineCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDOutlineCell.m; path = view/CDOutlineCell.m; sourceTree = "<group>"; };
 		475286C110D2CC660029363C /* CDOutlineView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDOutlineView.m; path = view/CDOutlineView.m; sourceTree = "<group>"; };
@@ -2862,12 +2859,10 @@
 			isa = PBXGroup;
 			children = (
 				475286B510D2CC660029363C /* CDBookmarkCell.h */,
-				475286B610D2CC660029363C /* CDControllerCell.h */,
 				475286B710D2CC660029363C /* CDListView.h */,
 				475286B810D2CC660029363C /* CDOutlineCell.h */,
 				475286B910D2CC660029363C /* CDOutlineView.h */,
 				475286BD10D2CC660029363C /* CDBookmarkCell.m */,
-				475286BE10D2CC660029363C /* CDControllerCell.m */,
 				475286BF10D2CC660029363C /* CDListView.m */,
 				475286C010D2CC660029363C /* CDOutlineCell.m */,
 				475286C110D2CC660029363C /* CDOutlineView.m */,
@@ -4637,7 +4632,6 @@
 			files = (
 				47E0709A1B32DC7100B8B073 /* SNDisclosableView.m in Sources */,
 				4738A1F71B1BA645005EA4AE /* CDBookmarkCell.m in Sources */,
-				4738A1F81B1BA645005EA4AE /* CDControllerCell.m in Sources */,
 				4738A1F91B1BA645005EA4AE /* CDListView.m in Sources */,
 				4738A1FA1B1BA645005EA4AE /* CDOutlineCell.m in Sources */,
 				4738A1FB1B1BA645005EA4AE /* CDOutlineView.m in Sources */,
