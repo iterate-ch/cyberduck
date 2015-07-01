@@ -18,6 +18,7 @@
 
 #import "Keychain.h"
 #import <Security/Security.h>
+#import <SecurityInterface/SFCertificatePanel.h>
 #import <SecurityInterface/SFCertificateTrustPanel.h>
 #import <SecurityInterface/SFChooseIdentityPanel.h>
 #import <JavaNativeFoundation/JNFString.h>
@@ -333,7 +334,7 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_isTrustedNative(JNIEn
 	}
 	// Displays a modal panel that shows the results of a certificate trust evaluation and
 	// that allows the user to edit trust settings.
-	int result = [panel runModalForTrust:trustRef message:nil];
+	NSInteger result = [panel runModalForTrust:trustRef message:nil];
 	[panel release];
 	if(policyRef) {
 		CFRelease(policyRef);
@@ -354,7 +355,7 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_displayCertificatesNa
 		[panel setShowsHelp:NO];
 	}
 	NSInteger result = [panel runModalForCertificates:certificates showGroup:YES];
-	if(result == NSOKButton) {
+	if(NSOKButton == result) {
 		return TRUE;
 	}
 	return FALSE;
