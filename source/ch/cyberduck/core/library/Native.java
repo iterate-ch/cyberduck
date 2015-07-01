@@ -40,7 +40,7 @@ public final class Native {
      * @param library Library name
      * @return False if loading library failed
      */
-    public static boolean load(String library) {
+    public static boolean load(final String library) {
         synchronized(lock) {
             final String path = Native.getPath(library);
             try {
