@@ -1,20 +1,20 @@
 ﻿// 
-// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2015 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
-// 
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-// 
+//
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
-// 
+//
 
 using System;
 using System.Collections.Generic;
@@ -50,7 +50,6 @@ using java.util;
 using org.apache.log4j;
 using StructureMap;
 using Application = ch.cyberduck.core.local.Application;
-using Boolean = java.lang.Boolean;
 using Exception = System.Exception;
 using Path = ch.cyberduck.core.Path;
 using String = System.String;
@@ -2079,12 +2078,12 @@ namespace Ch.Cyberduck.Ui.Controller
                         {
                             View.EditIcon =
                                 IconCache.Instance.GetFileIconFromExecutable(
-                                    WindowsApplicationLauncher.GetExecutableCommand(editCommand), IconCache.IconSize.Large)
-                                    .ToBitmap();
+                                    WindowsApplicationLauncher.GetExecutableCommand(editCommand),
+                                    IconCache.IconSize.Large).ToBitmap();
                             return;
                         }
                         catch (ObjectDisposedException)
-                        {                            
+                        {
                         }
                     }
                 }
@@ -2691,10 +2690,14 @@ namespace Ch.Cyberduck.Ui.Controller
                     content.Append("\n" + Character.toString('\u2022') + " ...)");
                 }
                 bool result = false;
-                CommandBox(rename ? LocaleFactory.localizedString("Rename", "Transfer") : LocaleFactory.localizedString("Move", "Transfer"),
-                    alertText.ToString(), content.ToString(),
+                CommandBox(
+                    rename
+                        ? LocaleFactory.localizedString("Rename", "Transfer")
+                        : LocaleFactory.localizedString("Move", "Transfer"), alertText.ToString(), content.ToString(),
                     String.Format("{0}",
-                        rename ? LocaleFactory.localizedString("Rename", "Transfer") : LocaleFactory.localizedString("Move", "Transfer")), true,
+                        rename
+                            ? LocaleFactory.localizedString("Rename", "Transfer")
+                            : LocaleFactory.localizedString("Move", "Transfer")), true,
                     LocaleFactory.localizedString("Don't ask again", "Configuration"), SysIcons.Question,
                     delegate(int option, bool verificationChecked)
                     {
@@ -3031,10 +3034,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override void cleanup(object result)
                 {
-                    if (((Boolean) result).booleanValue())
-                    {
-                        _controller.RefreshParentPaths((IList<Path>) Utils.ConvertFromJavaList<Path>(_files));
-                    }
+                    _controller.RefreshParentPaths((IList<Path>) Utils.ConvertFromJavaList<Path>((List) result));
                 }
             }
         }
@@ -3235,7 +3235,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override void cleanup(object result)
                 {
-                    _controller.RefreshParentPaths(_files);
+                    _controller.RefreshParentPaths((IList<Path>) Utils.ConvertFromJavaList<Path>((List) result));
                 }
             }
         }
