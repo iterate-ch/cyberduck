@@ -659,7 +659,7 @@
 		471F5C2912AD1B6B0005D323 /* ru */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = ru; path = ru.lproj/Alert.strings; sourceTree = "<group>"; };
 		471F5C2C12AD1B6B0005D323 /* sl */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sl; path = sl.lproj/Alert.strings; sourceTree = "<group>"; };
 		471F5C2D12AD1B6B0005D323 /* sk */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sk; path = sk.lproj/Alert.strings; sourceTree = "<group>"; };
-		471F77B3180439B500A4C196 /* .dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = .dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		471F77B3180439B500A4C196 /* libfoundationprogressservice.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libfoundationprogressservice.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		471F77B418043A0300A4C196 /* FoundationProgressIconService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FoundationProgressIconService.h; sourceTree = "<group>"; };
 		471F77B518043A0300A4C196 /* FoundationProgressIconService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FoundationProgressIconService.m; sourceTree = "<group>"; };
 		4725396B10F4D10B00DF0F02 /* sr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = sr; path = sr.lproj/Bookmark.xib; sourceTree = "<group>"; };
@@ -742,9 +742,9 @@
 		47341E0609A09CDC0065FF57 /* no */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = no; path = no.lproj/Crash.strings; sourceTree = "<group>"; };
 		47341E0A09A09CE90065FF57 /* sv */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sv; path = sv.lproj/Crash.strings; sourceTree = "<group>"; };
 		4734425A102DEABD00C04C43 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = /System/Library/Frameworks/Quartz.framework; sourceTree = "<absolute>"; };
-		4739EF730856981400405FD3 /* .dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = .dylib; sourceTree = BUILT_PRODUCTS_DIR; };
-		4739EFB00856990900405FD3 /* .dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = .dylib; sourceTree = BUILT_PRODUCTS_DIR; };
-		4739EFC10856991300405FD3 /* .dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = .dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		4739EF730856981400405FD3 /* libkeychain.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libkeychain.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		4739EFB00856990900405FD3 /* libproxy.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libproxy.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		4739EFC10856991300405FD3 /* liblocal.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = liblocal.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		473BF0851892968E0068B4C1 /* azure.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = azure.tiff; sourceTree = "<group>"; };
 		474163A406C4F64000AC0BD2 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = en; path = en.lproj/Info.xib; sourceTree = "<group>"; };
 		474163A606C4F64100AC0BD2 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = en; path = en.lproj/Browser.xib; sourceTree = "<group>"; };
@@ -1003,7 +1003,7 @@
 		475EBE9112DA462C00E5C3A2 /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
 		475EBE9212DA462C00E5C3A2 /* nl */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
 		475EBE9312DA462C00E5C3A2 /* da */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
-		4762DAC509FC42EC0034C662 /* .dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = .dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		4762DAC509FC42EC0034C662 /* libdiagnostics.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libdiagnostics.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		47652CEA1202BED200745031 /* ko */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = ko; path = ko.lproj/Azure.strings; sourceTree = "<group>"; };
 		47652CEB1202BED200745031 /* ka */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = ka; path = ka.lproj/Azure.strings; sourceTree = "<group>"; };
 		47652CEC1202BED200745031 /* sl */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sl; path = sl.lproj/Azure.strings; sourceTree = "<group>"; };
@@ -1100,7 +1100,7 @@
 		476C7C2D07F5A31800CF6032 /* sv */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sv; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
 		476C7C2E07F5A32200CF6032 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text; name = sv; path = sv.lproj/License.txt; sourceTree = "<group>"; };
 		476DEBE10629C6FB005EF4B1 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = /System/Library/Frameworks/CoreFoundation.framework; sourceTree = "<absolute>"; };
-		477A104D0FD08DBA00BAD4AD /* .dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = .dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		477A104D0FD08DBA00BAD4AD /* librococoa.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = librococoa.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		477A108A0FD08DE800BAD4AD /* ProxyForJava.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProxyForJava.h; sourceTree = "<group>"; };
 		477A108B0FD08DE800BAD4AD /* ProxyForJava.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProxyForJava.m; sourceTree = "<group>"; };
 		477A108C0FD08DE800BAD4AD /* Rococoa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rococoa.h; sourceTree = "<group>"; };
@@ -1141,7 +1141,7 @@
 		4786CB6A0E253B800029848F /* Task.xib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = Task.xib; path = resources/Task.xib; sourceTree = "<group>"; };
 		478ECC9A0DAD1B0C008A5B1F /* QuickLook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QuickLook.h; sourceTree = "<group>"; };
 		478ECC9B0DAD1B0C008A5B1F /* QuickLook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QuickLook.m; sourceTree = "<group>"; };
-		478ECD180DAD5743008A5B1F /* .dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = .dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		478ECD180DAD5743008A5B1F /* libquickLook.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libquickLook.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		478F0DF312FB03DC000FE33C /* update.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = update.pem; path = www/update/update.pem; sourceTree = "<group>"; };
 		4790762A0764903900676C18 /* cs */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = cs; path = cs.lproj/Localizable.strings; sourceTree = "<group>"; };
 		47911A170B84C4E8001A29AE /* Acknowledgments.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = Acknowledgments.rtf; sourceTree = "<group>"; };
@@ -1203,7 +1203,7 @@
 		4796E530195C692E000864F4 /* sv */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sv; path = sv.lproj/Support.strings; sourceTree = "<group>"; };
 		4796E531195C692E000864F4 /* sk */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sk; path = sk.lproj/Support.strings; sourceTree = "<group>"; };
 		4796E532195C692E000864F4 /* zh_CN */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = zh_CN; path = zh_CN.lproj/Support.strings; sourceTree = "<group>"; };
-		4797D27A1628276C00340E1C /* .dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = .dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		4797D27A1628276C00340E1C /* liblaunchservicesapplicationfinder.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = liblaunchservicesapplicationfinder.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		479814C907280B2B00FA3CDB /* no */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = no; path = no.lproj/Localizable.strings; sourceTree = "<group>"; };
 		479814CA07280B2B00FA3CDB /* no */ = {isa = PBXFileReference; lastKnownFileType = text; name = no; path = no.lproj/License.txt; sourceTree = "<group>"; };
 		479814CB07280B2B00FA3CDB /* no */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = no; path = no.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -1397,7 +1397,7 @@
 		47BCF18D13BB4EC700D26E4C /* setup/app/container-migration.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "setup/app/container-migration.plist"; sourceTree = "<group>"; };
 		47BE1F8912369DF100E758FE /* CDTransmitImporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDTransmitImporter.h; path = importer/CDTransmitImporter.h; sourceTree = "<group>"; };
 		47BE1F8A12369DF100E758FE /* CDTransmitImporter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDTransmitImporter.m; path = importer/CDTransmitImporter.m; sourceTree = "<group>"; };
-		47BEDB030B92960400141EB4 /* .dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = .dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		47BEDB030B92960400141EB4 /* liblaunchservicesschemehandler.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = liblaunchservicesschemehandler.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		47BEDBD20B9296C800141EB4 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
 		47C2AD801A268C880047B67A /* duck.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = duck.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		47C4D6CB08798D0C007A1D39 /* cs */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = cs; path = cs.lproj/Command.xib; sourceTree = "<group>"; };
@@ -1429,7 +1429,7 @@
 		47C4E8140879EC2F007A1D39 /* sv */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = sv; path = sv.lproj/Donate.xib; sourceTree = "<group>"; };
 		47C57EAA162F45F200A272BC /* FinderLocal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FinderLocal.h; sourceTree = "<group>"; };
 		47C57EAB162F45F200A272BC /* FinderLocal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FinderLocal.m; sourceTree = "<group>"; };
-		47C57EBA162F471700A272BC /* .dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = .dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		47C57EBA162F471700A272BC /* liblaunchservicesfiledescriptor.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = liblaunchservicesfiledescriptor.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		47C57EBB162F479900A272BC /* LaunchServicesFileDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LaunchServicesFileDescriptor.h; sourceTree = "<group>"; };
 		47C57EBC162F479900A272BC /* LaunchServicesFileDescriptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LaunchServicesFileDescriptor.m; sourceTree = "<group>"; };
 		47C59A560880165B00CC2FA5 /* ja */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = ja; path = ja.lproj/Command.xib; sourceTree = "<group>"; };
@@ -2279,10 +2279,10 @@
 		47F0B7EC087AD34B00439978 /* ca */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = ca; path = ca.lproj/Status.strings; sourceTree = "<group>"; };
 		47F0CB46087B237F00439978 /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		47F0CB8C087B23A900439978 /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = en; path = en.lproj/Status.strings; sourceTree = "<group>"; };
-		47F102B91628D57500923FDE /* .dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = .dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		47F102B91628D57500923FDE /* liblaunchservicesquarantineservice.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = liblaunchservicesquarantineservice.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		47F102BD1628D5CE00923FDE /* LaunchServicesQuarantineService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LaunchServicesQuarantineService.h; sourceTree = "<group>"; };
 		47F102BF1628D5CE00923FDE /* LaunchServicesQuarantineService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LaunchServicesQuarantineService.m; sourceTree = "<group>"; };
-		47FB9C6B1725A5CC00FE33C1 /* .dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = .dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		47FB9C6B1725A5CC00FE33C1 /* libiokitsleeppreventer.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libiokitsleeppreventer.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		47FC190B099FB8AF0082431D /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = en; path = en.lproj/Crash.strings; sourceTree = "<group>"; };
 		47FC191F099FC1290082431D /* fr */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = fr; path = fr.lproj/Crash.strings; sourceTree = "<group>"; };
 		47FC1943099FDB310082431D /* it */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = it; path = it.lproj/Crash.strings; sourceTree = "<group>"; };
@@ -2471,18 +2471,18 @@
 			isa = PBXGroup;
 			children = (
 				471D2C5505A2505600675163 /* Cyberduck.app */,
-				4739EF730856981400405FD3 /* .dylib */,
-				4739EFB00856990900405FD3 /* .dylib */,
-				4739EFC10856991300405FD3 /* .dylib */,
-				4762DAC509FC42EC0034C662 /* .dylib */,
-				47BEDB030B92960400141EB4 /* .dylib */,
-				478ECD180DAD5743008A5B1F /* .dylib */,
-				477A104D0FD08DBA00BAD4AD /* .dylib */,
-				4797D27A1628276C00340E1C /* .dylib */,
-				47F102B91628D57500923FDE /* .dylib */,
-				47C57EBA162F471700A272BC /* .dylib */,
-				47FB9C6B1725A5CC00FE33C1 /* .dylib */,
-				471F77B3180439B500A4C196 /* .dylib */,
+				4739EF730856981400405FD3 /* libkeychain.dylib */,
+				4739EFB00856990900405FD3 /* libproxy.dylib */,
+				4739EFC10856991300405FD3 /* liblocal.dylib */,
+				4762DAC509FC42EC0034C662 /* libdiagnostics.dylib */,
+				47BEDB030B92960400141EB4 /* liblaunchservicesschemehandler.dylib */,
+				478ECD180DAD5743008A5B1F /* libquickLook.dylib */,
+				477A104D0FD08DBA00BAD4AD /* librococoa.dylib */,
+				4797D27A1628276C00340E1C /* liblaunchservicesapplicationfinder.dylib */,
+				47F102B91628D57500923FDE /* liblaunchservicesquarantineservice.dylib */,
+				47C57EBA162F471700A272BC /* liblaunchservicesfiledescriptor.dylib */,
+				47FB9C6B1725A5CC00FE33C1 /* libiokitsleeppreventer.dylib */,
+				471F77B3180439B500A4C196 /* libfoundationprogressservice.dylib */,
 				47C2AD801A268C880047B67A /* duck.bundle */,
 			);
 			name = Products;
@@ -4052,7 +4052,7 @@
 			name = libfoundationprogressservice;
 			productInstallPath = /usr/local/lib;
 			productName = keychainLib;
-			productReference = 471F77B3180439B500A4C196 /* .dylib */;
+			productReference = 471F77B3180439B500A4C196 /* libfoundationprogressservice.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		4739EF670856981300405FD3 /* libkeychain */ = {
@@ -4070,7 +4070,7 @@
 			name = libkeychain;
 			productInstallPath = /usr/local/lib;
 			productName = keychainLib;
-			productReference = 4739EF730856981400405FD3 /* .dylib */;
+			productReference = 4739EF730856981400405FD3 /* libkeychain.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		4739EFA30856990900405FD3 /* libproxy */ = {
@@ -4088,7 +4088,7 @@
 			name = libproxy;
 			productInstallPath = /usr/local/lib;
 			productName = keychainLib;
-			productReference = 4739EFB00856990900405FD3 /* .dylib */;
+			productReference = 4739EFB00856990900405FD3 /* libproxy.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		4739EFB10856991200405FD3 /* liblocal */ = {
@@ -4106,7 +4106,7 @@
 			name = liblocal;
 			productInstallPath = /usr/local/lib;
 			productName = keychainLib;
-			productReference = 4739EFC10856991300405FD3 /* .dylib */;
+			productReference = 4739EFC10856991300405FD3 /* liblocal.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		4762DAB809FC42EC0034C662 /* libdiagnostics */ = {
@@ -4124,7 +4124,7 @@
 			name = libdiagnostics;
 			productInstallPath = /usr/local/lib;
 			productName = keychainLib;
-			productReference = 4762DAC509FC42EC0034C662 /* .dylib */;
+			productReference = 4762DAC509FC42EC0034C662 /* libdiagnostics.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		477A10400FD08DBA00BAD4AD /* librococoa */ = {
@@ -4142,7 +4142,7 @@
 			name = librococoa;
 			productInstallPath = /usr/local/lib;
 			productName = keychainLib;
-			productReference = 477A104D0FD08DBA00BAD4AD /* .dylib */;
+			productReference = 477A104D0FD08DBA00BAD4AD /* librococoa.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		478ECD000DAD5743008A5B1F /* libquickLook */ = {
@@ -4160,7 +4160,7 @@
 			name = libquickLook;
 			productInstallPath = /usr/local/lib;
 			productName = keychainLib;
-			productReference = 478ECD180DAD5743008A5B1F /* .dylib */;
+			productReference = 478ECD180DAD5743008A5B1F /* libquickLook.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		4797D26E1628276C00340E1C /* liblaunchservicesapplicationfinder */ = {
@@ -4178,7 +4178,7 @@
 			name = liblaunchservicesapplicationfinder;
 			productInstallPath = /usr/local/lib;
 			productName = keychainLib;
-			productReference = 4797D27A1628276C00340E1C /* .dylib */;
+			productReference = 4797D27A1628276C00340E1C /* liblaunchservicesapplicationfinder.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		47BEDAF60B92960400141EB4 /* liblaunchservicesschemehandler */ = {
@@ -4196,7 +4196,7 @@
 			name = liblaunchservicesschemehandler;
 			productInstallPath = /usr/local/lib;
 			productName = keychainLib;
-			productReference = 47BEDB030B92960400141EB4 /* .dylib */;
+			productReference = 47BEDB030B92960400141EB4 /* liblaunchservicesschemehandler.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		47C2AD7F1A268C880047B67A /* cli */ = {
@@ -4242,7 +4242,7 @@
 			name = liblaunchservicesfiledescriptor;
 			productInstallPath = /usr/local/lib;
 			productName = keychainLib;
-			productReference = 47C57EBA162F471700A272BC /* .dylib */;
+			productReference = 47C57EBA162F471700A272BC /* liblaunchservicesfiledescriptor.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		47F102AD1628D57500923FDE /* liblaunchservicesquarantineservice */ = {
@@ -4260,7 +4260,7 @@
 			name = liblaunchservicesquarantineservice;
 			productInstallPath = /usr/local/lib;
 			productName = keychainLib;
-			productReference = 47F102B91628D57500923FDE /* .dylib */;
+			productReference = 47F102B91628D57500923FDE /* liblaunchservicesquarantineservice.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		47FB9C5E1725A5CC00FE33C1 /* libiokitsleeppreventer */ = {
@@ -4278,7 +4278,7 @@
 			name = libiokitsleeppreventer;
 			productInstallPath = /usr/local/lib;
 			productName = keychainLib;
-			productReference = 47FB9C6B1725A5CC00FE33C1 /* .dylib */;
+			productReference = 47FB9C6B1725A5CC00FE33C1 /* libiokitsleeppreventer.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 /* End PBXNativeTarget section */
@@ -6122,6 +6122,7 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libfoundationprogressservice;
 			};
 			name = Release;
 		};
@@ -6136,6 +6137,7 @@
 				);
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libfoundationprogressservice;
 			};
 			name = Debug;
 		};
@@ -6149,6 +6151,7 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libkeychain;
 			};
 			name = Release;
 		};
@@ -6162,6 +6165,7 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libproxy;
 			};
 			name = Release;
 		};
@@ -6175,6 +6179,7 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = liblocal;
 			};
 			name = Release;
 		};
@@ -6188,6 +6193,7 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libdiagnostics;
 			};
 			name = Release;
 		};
@@ -6201,6 +6207,7 @@
 					"\"$(SRCROOT)/lib\"",
 				);
 				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = librococoa;
 			};
 			name = Release;
 		};
@@ -6214,6 +6221,7 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libquickLook;
 			};
 			name = Release;
 		};
@@ -6227,6 +6235,7 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = liblaunchservicesapplicationfinder;
 			};
 			name = Release;
 		};
@@ -6241,6 +6250,7 @@
 				);
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = liblaunchservicesapplicationfinder;
 			};
 			name = Debug;
 		};
@@ -6294,6 +6304,7 @@
 				);
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libkeychain;
 			};
 			name = Debug;
 		};
@@ -6308,6 +6319,7 @@
 				);
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libproxy;
 			};
 			name = Debug;
 		};
@@ -6322,6 +6334,7 @@
 				);
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = liblocal;
 			};
 			name = Debug;
 		};
@@ -6336,6 +6349,7 @@
 				);
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libdiagnostics;
 			};
 			name = Debug;
 		};
@@ -6350,6 +6364,7 @@
 				);
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = liblaunchservicesschemehandler;
 			};
 			name = Debug;
 		};
@@ -6364,6 +6379,7 @@
 				);
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libquickLook;
 			};
 			name = Debug;
 		};
@@ -6378,6 +6394,7 @@
 				);
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = librococoa;
 			};
 			name = Debug;
 		};
@@ -6391,6 +6408,7 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = liblaunchservicesschemehandler;
 			};
 			name = Release;
 		};
@@ -6496,6 +6514,7 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = liblaunchservicesfiledescriptor;
 			};
 			name = Release;
 		};
@@ -6510,6 +6529,7 @@
 				);
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = liblaunchservicesfiledescriptor;
 			};
 			name = Debug;
 		};
@@ -6559,6 +6579,7 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = liblaunchservicesquarantineservice;
 			};
 			name = Release;
 		};
@@ -6573,6 +6594,7 @@
 				);
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = liblaunchservicesquarantineservice;
 			};
 			name = Debug;
 		};
@@ -6586,6 +6608,7 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libiokitsleeppreventer;
 			};
 			name = Release;
 		};
@@ -6600,6 +6623,7 @@
 				);
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libiokitsleeppreventer;
 			};
 			name = Debug;
 		};
