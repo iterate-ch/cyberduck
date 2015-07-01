@@ -44,6 +44,7 @@ import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
+import ch.cyberduck.core.worker.DeleteWorker;
 import ch.cyberduck.core.worker.DisconnectWorker;
 import ch.cyberduck.core.worker.SessionListWorker;
 import ch.cyberduck.core.worker.Worker;
@@ -63,6 +64,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 
@@ -209,6 +211,8 @@ public class Terminal {
                     return this.list(session, remote, input.hasOption(TerminalOptionsBuilder.Params.longlist.name()));
                 case mount:
                     return this.mount(session);
+                case delete:
+                    return this.delete(session, remote);
             }
             final Transfer transfer;
             switch(action) {
@@ -349,6 +353,28 @@ public class Terminal {
         final SessionListWorker worker = new SessionListWorker(session, cache, remote,
                 new TerminalListProgressListener(reader, verbose));
         final SessionBackgroundAction action = new TerminalBackgroundAction<AttributedList<Path>>(
+                new TerminalLoginService(input, new TerminalLoginCallback(reader)), controller,
+                session, cache, worker);
+        this.execute(action);
+        if(action.hasFailed()) {
+            return Exit.failure;
+        }
+        return Exit.success;
+    }
+
+    protected Exit delete(final Session session, final Path remote) throws BackgroundException {
+        final List<Path> files = new ArrayList<Path>();
+        for(TransferItem i : new DeletePathFinder().find(input, TerminalAction.delete, remote)) {
+            files.add(i.remote);
+        }
+        final DeleteWorker worker;
+        if(StringUtils.containsAny(remote.getName(), '*')) {
+            worker = new DeleteWorker(session, new TerminalLoginCallback(reader), files, progress, new DownloadGlobFilter(remote.getName()));
+        }
+        else {
+            worker = new DeleteWorker(session, new TerminalLoginCallback(reader), files, progress);
+        }
+        final SessionBackgroundAction action = new TerminalBackgroundAction<List<Path>>(
                 new TerminalLoginService(input, new TerminalLoginCallback(reader)), controller,
                 session, cache, worker);
         this.execute(action);

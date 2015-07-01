@@ -100,6 +100,12 @@ public final class TerminalOptionsBuilder {
                 .isRequired(false)
                 .create("l"));
         options.addOption(OptionBuilder
+                .withDescription("Delete")
+                .withLongOpt(TerminalAction.delete.name())
+                .hasArg(true).withArgName("url")
+                .isRequired(false)
+                .create("d"));
+        options.addOption(OptionBuilder
                 .withDescription("Long list format with modification date and permission mask")
                 .withLongOpt(Params.longlist.name())
                 .hasArg(false)

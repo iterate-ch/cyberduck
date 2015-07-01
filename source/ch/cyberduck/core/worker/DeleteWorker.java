@@ -18,8 +18,10 @@ package ch.cyberduck.core.worker;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
@@ -48,12 +50,18 @@ public class DeleteWorker extends Worker<List<Path>> {
 
     private ProgressListener listener;
 
-    public DeleteWorker(final Session session, final LoginCallback prompt, final List<Path> files,
-                        final ProgressListener listener) {
+    private Filter<Path> filter;
+
+    public DeleteWorker(final Session<?> session, final LoginCallback prompt, final List<Path> files, final ProgressListener listener) {
+        this(session, prompt, files, listener, new NullFilter<Path>());
+    }
+
+    public DeleteWorker(final Session<?> session, final LoginCallback prompt, final List<Path> files, final ProgressListener listener, final Filter<Path> filter) {
         this.session = session;
-        this.prompt = prompt;
         this.files = files;
+        this.prompt = prompt;
         this.listener = listener;
+        this.filter = filter;
     }
 
     @Override
@@ -77,7 +85,7 @@ public class DeleteWorker extends Worker<List<Path>> {
             recursive.add(file);
         }
         else if(file.isDirectory()) {
-            for(Path child : session.list(file, new ActionListProgressListener(this, listener))) {
+            for(Path child : session.list(file, new ActionListProgressListener(this, listener)).filter(filter)) {
                 if(this.isCanceled()) {
                     throw new ConnectionCanceledException();
                 }

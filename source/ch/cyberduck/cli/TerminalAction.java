@@ -30,5 +30,6 @@ public enum TerminalAction {
     download,
     upload,
     copy,
-    synchronize
+    synchronize,
+    delete
 }
