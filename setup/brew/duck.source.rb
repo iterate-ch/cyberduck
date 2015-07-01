@@ -1,4 +1,5 @@
 class Duck < Formula
+  desc "Command-line interface for Cyberduck (a multi-protocol file transfer tool)"
   homepage "https://duck.sh/"
   url "${SOURCE}"
   sha1 "${SOURCE.SHA1}"
