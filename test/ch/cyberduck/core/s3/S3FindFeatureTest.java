@@ -78,7 +78,7 @@ public class S3FindFeatureTest extends AbstractTestCase {
     @Test
     public void testCacheNotFound() throws Exception {
         final PathCache cache = new PathCache(1);
-        final AttributedList<Path> list = AttributedList.emptyList();
+        final AttributedList<Path> list = new AttributedList<Path>();
         list.attributes().addHidden(new Path("/g/gd", EnumSet.of(Path.Type.file)));
         cache.put(new Path("/g", EnumSet.of(Path.Type.directory)), list);
         final Find finder = new S3FindFeature(new S3Session(new Host("t")) {

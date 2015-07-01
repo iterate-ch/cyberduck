@@ -83,7 +83,7 @@ public class SwiftFindFeatureTest extends AbstractTestCase {
     @Test
     public void testNoCacheNotFound() throws Exception {
         final PathCache cache = new PathCache(1);
-        final AttributedList<Path> list = AttributedList.emptyList();
+        final AttributedList<Path> list = new AttributedList<Path>();
         cache.put(new Path("/g", EnumSet.of(Path.Type.directory)), list);
         final AtomicBoolean b = new AtomicBoolean();
         final Find finder = new SwiftFindFeature(new SwiftMetadataFeature(new SwiftSession(new Host("t")) {
@@ -106,7 +106,7 @@ public class SwiftFindFeatureTest extends AbstractTestCase {
     @Test
     public void testCacheNotFound() throws Exception {
         final PathCache cache = new PathCache(1);
-        final AttributedList<Path> list = AttributedList.emptyList();
+        final AttributedList<Path> list = new AttributedList<Path>();
         final String name = UUID.randomUUID().toString();
         list.attributes().addHidden(new Path("/g/" + name, EnumSet.of(Path.Type.file)));
         cache.put(new Path("/g", EnumSet.of(Path.Type.directory)), list);
