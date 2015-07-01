@@ -27,7 +27,7 @@ public class TransferItemCache extends Cache<TransferItem> {
     public static TransferItemCache empty() {
         return new TransferItemCache(0) {
             @Override
-            public AttributedList<TransferItem> put(TransferItem item, AttributedList<TransferItem> children) {
+            public AttributedList<TransferItem> put(final TransferItem item, final AttributedList<TransferItem> children) {
                 return AttributedList.emptyList();
             }
         };

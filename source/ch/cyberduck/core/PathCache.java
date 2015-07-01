@@ -27,7 +27,7 @@ public class PathCache extends Cache<Path> {
     public static PathCache empty() {
         return new PathCache(0) {
             @Override
-            public AttributedList<Path> put(Path directory, AttributedList<Path> children) {
+            public AttributedList<Path> put(final Path directory, final AttributedList<Path> children) {
                 return AttributedList.emptyList();
             }
         };
