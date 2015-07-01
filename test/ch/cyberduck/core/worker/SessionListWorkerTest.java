@@ -89,4 +89,12 @@ public class SessionListWorkerTest extends AbstractTestCase {
         assertNotNull(task.get());
         assertTrue(cache.containsKey(new Path("/home/notfound", EnumSet.of(Path.Type.directory))));
     }
+
+    @Test
+    public void testInitialValueOnFailure() throws Exception {
+        final SessionListWorker worker = new SessionListWorker(null, PathCache.empty(),
+                new Path("/home/notfound", EnumSet.of(Path.Type.directory)),
+                new DisabledListProgressListener());
+        assertSame(AttributedList.emptyList(), worker.initialize());
+    }
 }

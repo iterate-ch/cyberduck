@@ -36,6 +36,8 @@ public class AttributedList<E extends Referenceable> extends ArrayList<E> {
 
     private static final long serialVersionUID = 8900332123622028341L;
 
+    private static final AttributedList EMPTY = new AttributedList();
+
     /**
      * Metadata of file listing
      */
@@ -57,7 +59,7 @@ public class AttributedList<E extends Referenceable> extends ArrayList<E> {
     }
 
     public static <T extends Referenceable> AttributedList<T> emptyList() {
-        return new AttributedList<T>();
+        return (AttributedList<T>) EMPTY;
     }
 
     /**
