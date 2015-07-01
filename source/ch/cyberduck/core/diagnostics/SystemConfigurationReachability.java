@@ -30,7 +30,7 @@ import ch.cyberduck.core.library.Native;
 public final class SystemConfigurationReachability implements Reachability {
 
     static {
-        Native.load("Diagnostics");
+        Native.load("diagnostics");
     }
 
     public SystemConfigurationReachability() {

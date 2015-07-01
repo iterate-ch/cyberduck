@@ -57,7 +57,7 @@ public class FinderLocal extends Local {
     private static final Logger log = Logger.getLogger(FinderLocal.class);
 
     static {
-        Native.load("Local");
+        Native.load("local");
     }
 
     /**

@@ -659,7 +659,7 @@
 		471F5C2912AD1B6B0005D323 /* ru */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = ru; path = ru.lproj/Alert.strings; sourceTree = "<group>"; };
 		471F5C2C12AD1B6B0005D323 /* sl */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sl; path = sl.lproj/Alert.strings; sourceTree = "<group>"; };
 		471F5C2D12AD1B6B0005D323 /* sk */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sk; path = sk.lproj/Alert.strings; sourceTree = "<group>"; };
-		471F77B3180439B500A4C196 /* libFoundationProgressService.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libFoundationProgressService.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		471F77B3180439B500A4C196 /* .dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = .dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		471F77B418043A0300A4C196 /* FoundationProgressIconService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FoundationProgressIconService.h; sourceTree = "<group>"; };
 		471F77B518043A0300A4C196 /* FoundationProgressIconService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FoundationProgressIconService.m; sourceTree = "<group>"; };
 		4725396B10F4D10B00DF0F02 /* sr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = sr; path = sr.lproj/Bookmark.xib; sourceTree = "<group>"; };
@@ -742,9 +742,9 @@
 		47341E0609A09CDC0065FF57 /* no */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = no; path = no.lproj/Crash.strings; sourceTree = "<group>"; };
 		47341E0A09A09CE90065FF57 /* sv */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sv; path = sv.lproj/Crash.strings; sourceTree = "<group>"; };
 		4734425A102DEABD00C04C43 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = /System/Library/Frameworks/Quartz.framework; sourceTree = "<absolute>"; };
-		4739EF730856981400405FD3 /* libKeychain.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libKeychain.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
-		4739EFB00856990900405FD3 /* libProxy.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libProxy.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
-		4739EFC10856991300405FD3 /* libLocal.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libLocal.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		4739EF730856981400405FD3 /* .dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = .dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		4739EFB00856990900405FD3 /* .dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = .dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		4739EFC10856991300405FD3 /* .dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = .dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		473BF0851892968E0068B4C1 /* azure.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = azure.tiff; sourceTree = "<group>"; };
 		474163A406C4F64000AC0BD2 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = en; path = en.lproj/Info.xib; sourceTree = "<group>"; };
 		474163A606C4F64100AC0BD2 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = en; path = en.lproj/Browser.xib; sourceTree = "<group>"; };
@@ -1003,7 +1003,7 @@
 		475EBE9112DA462C00E5C3A2 /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
 		475EBE9212DA462C00E5C3A2 /* nl */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
 		475EBE9312DA462C00E5C3A2 /* da */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
-		4762DAC509FC42EC0034C662 /* libDiagnostics.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libDiagnostics.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		4762DAC509FC42EC0034C662 /* .dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = .dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		47652CEA1202BED200745031 /* ko */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = ko; path = ko.lproj/Azure.strings; sourceTree = "<group>"; };
 		47652CEB1202BED200745031 /* ka */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = ka; path = ka.lproj/Azure.strings; sourceTree = "<group>"; };
 		47652CEC1202BED200745031 /* sl */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sl; path = sl.lproj/Azure.strings; sourceTree = "<group>"; };
@@ -1100,7 +1100,7 @@
 		476C7C2D07F5A31800CF6032 /* sv */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sv; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
 		476C7C2E07F5A32200CF6032 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text; name = sv; path = sv.lproj/License.txt; sourceTree = "<group>"; };
 		476DEBE10629C6FB005EF4B1 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = /System/Library/Frameworks/CoreFoundation.framework; sourceTree = "<absolute>"; };
-		477A104D0FD08DBA00BAD4AD /* librococoa.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = librococoa.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		477A104D0FD08DBA00BAD4AD /* .dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = .dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		477A108A0FD08DE800BAD4AD /* ProxyForJava.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProxyForJava.h; sourceTree = "<group>"; };
 		477A108B0FD08DE800BAD4AD /* ProxyForJava.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProxyForJava.m; sourceTree = "<group>"; };
 		477A108C0FD08DE800BAD4AD /* Rococoa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rococoa.h; sourceTree = "<group>"; };
@@ -1141,7 +1141,7 @@
 		4786CB6A0E253B800029848F /* Task.xib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = Task.xib; path = resources/Task.xib; sourceTree = "<group>"; };
 		478ECC9A0DAD1B0C008A5B1F /* QuickLook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QuickLook.h; sourceTree = "<group>"; };
 		478ECC9B0DAD1B0C008A5B1F /* QuickLook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QuickLook.m; sourceTree = "<group>"; };
-		478ECD180DAD5743008A5B1F /* libQuickLook.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libQuickLook.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		478ECD180DAD5743008A5B1F /* .dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = .dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		478F0DF312FB03DC000FE33C /* update.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = update.pem; path = www/update/update.pem; sourceTree = "<group>"; };
 		4790762A0764903900676C18 /* cs */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = cs; path = cs.lproj/Localizable.strings; sourceTree = "<group>"; };
 		47911A170B84C4E8001A29AE /* Acknowledgments.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = Acknowledgments.rtf; sourceTree = "<group>"; };
@@ -1203,7 +1203,7 @@
 		4796E530195C692E000864F4 /* sv */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sv; path = sv.lproj/Support.strings; sourceTree = "<group>"; };
 		4796E531195C692E000864F4 /* sk */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sk; path = sk.lproj/Support.strings; sourceTree = "<group>"; };
 		4796E532195C692E000864F4 /* zh_CN */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = zh_CN; path = zh_CN.lproj/Support.strings; sourceTree = "<group>"; };
-		4797D27A1628276C00340E1C /* libLaunchServicesApplicationFinder.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libLaunchServicesApplicationFinder.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		4797D27A1628276C00340E1C /* .dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = .dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		479814C907280B2B00FA3CDB /* no */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = no; path = no.lproj/Localizable.strings; sourceTree = "<group>"; };
 		479814CA07280B2B00FA3CDB /* no */ = {isa = PBXFileReference; lastKnownFileType = text; name = no; path = no.lproj/License.txt; sourceTree = "<group>"; };
 		479814CB07280B2B00FA3CDB /* no */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = no; path = no.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -1397,7 +1397,7 @@
 		47BCF18D13BB4EC700D26E4C /* setup/app/container-migration.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "setup/app/container-migration.plist"; sourceTree = "<group>"; };
 		47BE1F8912369DF100E758FE /* CDTransmitImporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDTransmitImporter.h; path = importer/CDTransmitImporter.h; sourceTree = "<group>"; };
 		47BE1F8A12369DF100E758FE /* CDTransmitImporter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDTransmitImporter.m; path = importer/CDTransmitImporter.m; sourceTree = "<group>"; };
-		47BEDB030B92960400141EB4 /* libLaunchServicesSchemeHandler.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libLaunchServicesSchemeHandler.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		47BEDB030B92960400141EB4 /* .dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = .dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		47BEDBD20B9296C800141EB4 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
 		47C2AD801A268C880047B67A /* duck.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = duck.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		47C4D6CB08798D0C007A1D39 /* cs */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = cs; path = cs.lproj/Command.xib; sourceTree = "<group>"; };
@@ -1429,7 +1429,7 @@
 		47C4E8140879EC2F007A1D39 /* sv */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = sv; path = sv.lproj/Donate.xib; sourceTree = "<group>"; };
 		47C57EAA162F45F200A272BC /* FinderLocal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FinderLocal.h; sourceTree = "<group>"; };
 		47C57EAB162F45F200A272BC /* FinderLocal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FinderLocal.m; sourceTree = "<group>"; };
-		47C57EBA162F471700A272BC /* libLaunchServicesFileDescriptor.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libLaunchServicesFileDescriptor.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		47C57EBA162F471700A272BC /* .dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = .dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		47C57EBB162F479900A272BC /* LaunchServicesFileDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LaunchServicesFileDescriptor.h; sourceTree = "<group>"; };
 		47C57EBC162F479900A272BC /* LaunchServicesFileDescriptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LaunchServicesFileDescriptor.m; sourceTree = "<group>"; };
 		47C59A560880165B00CC2FA5 /* ja */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = ja; path = ja.lproj/Command.xib; sourceTree = "<group>"; };
@@ -2279,10 +2279,10 @@
 		47F0B7EC087AD34B00439978 /* ca */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = ca; path = ca.lproj/Status.strings; sourceTree = "<group>"; };
 		47F0CB46087B237F00439978 /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		47F0CB8C087B23A900439978 /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = en; path = en.lproj/Status.strings; sourceTree = "<group>"; };
-		47F102B91628D57500923FDE /* libLaunchServicesQuarantineService.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libLaunchServicesQuarantineService.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		47F102B91628D57500923FDE /* .dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = .dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		47F102BD1628D5CE00923FDE /* LaunchServicesQuarantineService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LaunchServicesQuarantineService.h; sourceTree = "<group>"; };
 		47F102BF1628D5CE00923FDE /* LaunchServicesQuarantineService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LaunchServicesQuarantineService.m; sourceTree = "<group>"; };
-		47FB9C6B1725A5CC00FE33C1 /* libIOKitSleepPreventer.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libIOKitSleepPreventer.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		47FB9C6B1725A5CC00FE33C1 /* .dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = .dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		47FC190B099FB8AF0082431D /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = en; path = en.lproj/Crash.strings; sourceTree = "<group>"; };
 		47FC191F099FC1290082431D /* fr */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = fr; path = fr.lproj/Crash.strings; sourceTree = "<group>"; };
 		47FC1943099FDB310082431D /* it */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = it; path = it.lproj/Crash.strings; sourceTree = "<group>"; };
@@ -2471,18 +2471,18 @@
 			isa = PBXGroup;
 			children = (
 				471D2C5505A2505600675163 /* Cyberduck.app */,
-				4739EF730856981400405FD3 /* libKeychain.dylib */,
-				4739EFB00856990900405FD3 /* libProxy.dylib */,
-				4739EFC10856991300405FD3 /* libLocal.dylib */,
-				4762DAC509FC42EC0034C662 /* libDiagnostics.dylib */,
-				47BEDB030B92960400141EB4 /* libLaunchServicesSchemeHandler.dylib */,
-				478ECD180DAD5743008A5B1F /* libQuickLook.dylib */,
-				477A104D0FD08DBA00BAD4AD /* librococoa.dylib */,
-				4797D27A1628276C00340E1C /* libLaunchServicesApplicationFinder.dylib */,
-				47F102B91628D57500923FDE /* libLaunchServicesQuarantineService.dylib */,
-				47C57EBA162F471700A272BC /* libLaunchServicesFileDescriptor.dylib */,
-				47FB9C6B1725A5CC00FE33C1 /* libIOKitSleepPreventer.dylib */,
-				471F77B3180439B500A4C196 /* libFoundationProgressService.dylib */,
+				4739EF730856981400405FD3 /* .dylib */,
+				4739EFB00856990900405FD3 /* .dylib */,
+				4739EFC10856991300405FD3 /* .dylib */,
+				4762DAC509FC42EC0034C662 /* .dylib */,
+				47BEDB030B92960400141EB4 /* .dylib */,
+				478ECD180DAD5743008A5B1F /* .dylib */,
+				477A104D0FD08DBA00BAD4AD /* .dylib */,
+				4797D27A1628276C00340E1C /* .dylib */,
+				47F102B91628D57500923FDE /* .dylib */,
+				47C57EBA162F471700A272BC /* .dylib */,
+				47FB9C6B1725A5CC00FE33C1 /* .dylib */,
+				471F77B3180439B500A4C196 /* .dylib */,
 				47C2AD801A268C880047B67A /* duck.bundle */,
 			);
 			name = Products;
@@ -4037,9 +4037,9 @@
 			productReference = 471D2C5505A2505600675163 /* Cyberduck.app */;
 			productType = "com.apple.product-type.application";
 		};
-		471F77A7180439B500A4C196 /* libFoundationProgressService */ = {
+		471F77A7180439B500A4C196 /* libfoundationprogressservice */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 471F77B0180439B500A4C196 /* Build configuration list for PBXNativeTarget "libFoundationProgressService" */;
+			buildConfigurationList = 471F77B0180439B500A4C196 /* Build configuration list for PBXNativeTarget "libfoundationprogressservice" */;
 			buildPhases = (
 				471F77A8180439B500A4C196 /* Headers */,
 				471F77AA180439B500A4C196 /* Sources */,
@@ -4049,15 +4049,15 @@
 			);
 			dependencies = (
 			);
-			name = libFoundationProgressService;
+			name = libfoundationprogressservice;
 			productInstallPath = /usr/local/lib;
 			productName = keychainLib;
-			productReference = 471F77B3180439B500A4C196 /* libFoundationProgressService.dylib */;
+			productReference = 471F77B3180439B500A4C196 /* .dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
-		4739EF670856981300405FD3 /* libKeychain */ = {
+		4739EF670856981300405FD3 /* libkeychain */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 4739EF710856981300405FD3 /* Build configuration list for PBXNativeTarget "libKeychain" */;
+			buildConfigurationList = 4739EF710856981300405FD3 /* Build configuration list for PBXNativeTarget "libkeychain" */;
 			buildPhases = (
 				4739EF680856981300405FD3 /* Headers */,
 				4739EF6A0856981300405FD3 /* Sources */,
@@ -4067,15 +4067,15 @@
 			);
 			dependencies = (
 			);
-			name = libKeychain;
+			name = libkeychain;
 			productInstallPath = /usr/local/lib;
 			productName = keychainLib;
-			productReference = 4739EF730856981400405FD3 /* libKeychain.dylib */;
+			productReference = 4739EF730856981400405FD3 /* .dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
-		4739EFA30856990900405FD3 /* libProxy */ = {
+		4739EFA30856990900405FD3 /* libproxy */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 4739EFAE0856990900405FD3 /* Build configuration list for PBXNativeTarget "libProxy" */;
+			buildConfigurationList = 4739EFAE0856990900405FD3 /* Build configuration list for PBXNativeTarget "libproxy" */;
 			buildPhases = (
 				4739EFA40856990900405FD3 /* Headers */,
 				4739EFA60856990900405FD3 /* Sources */,
@@ -4085,15 +4085,15 @@
 			);
 			dependencies = (
 			);
-			name = libProxy;
+			name = libproxy;
 			productInstallPath = /usr/local/lib;
 			productName = keychainLib;
-			productReference = 4739EFB00856990900405FD3 /* libProxy.dylib */;
+			productReference = 4739EFB00856990900405FD3 /* .dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
-		4739EFB10856991200405FD3 /* libLocal */ = {
+		4739EFB10856991200405FD3 /* liblocal */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 4739EFBF0856991200405FD3 /* Build configuration list for PBXNativeTarget "libLocal" */;
+			buildConfigurationList = 4739EFBF0856991200405FD3 /* Build configuration list for PBXNativeTarget "liblocal" */;
 			buildPhases = (
 				4739EFB20856991200405FD3 /* Headers */,
 				4739EFB60856991200405FD3 /* Sources */,
@@ -4103,15 +4103,15 @@
 			);
 			dependencies = (
 			);
-			name = libLocal;
+			name = liblocal;
 			productInstallPath = /usr/local/lib;
 			productName = keychainLib;
-			productReference = 4739EFC10856991300405FD3 /* libLocal.dylib */;
+			productReference = 4739EFC10856991300405FD3 /* .dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
-		4762DAB809FC42EC0034C662 /* libDiagnostics */ = {
+		4762DAB809FC42EC0034C662 /* libdiagnostics */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 4762DAC309FC42EC0034C662 /* Build configuration list for PBXNativeTarget "libDiagnostics" */;
+			buildConfigurationList = 4762DAC309FC42EC0034C662 /* Build configuration list for PBXNativeTarget "libdiagnostics" */;
 			buildPhases = (
 				4762DAB909FC42EC0034C662 /* Headers */,
 				4762DABB09FC42EC0034C662 /* Sources */,
@@ -4121,15 +4121,15 @@
 			);
 			dependencies = (
 			);
-			name = libDiagnostics;
+			name = libdiagnostics;
 			productInstallPath = /usr/local/lib;
 			productName = keychainLib;
-			productReference = 4762DAC509FC42EC0034C662 /* libDiagnostics.dylib */;
+			productReference = 4762DAC509FC42EC0034C662 /* .dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
-		477A10400FD08DBA00BAD4AD /* libRococoa */ = {
+		477A10400FD08DBA00BAD4AD /* librococoa */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 477A104B0FD08DBA00BAD4AD /* Build configuration list for PBXNativeTarget "libRococoa" */;
+			buildConfigurationList = 477A104B0FD08DBA00BAD4AD /* Build configuration list for PBXNativeTarget "librococoa" */;
 			buildPhases = (
 				477A10410FD08DBA00BAD4AD /* Headers */,
 				477A10440FD08DBA00BAD4AD /* Sources */,
@@ -4139,15 +4139,15 @@
 			);
 			dependencies = (
 			);
-			name = libRococoa;
+			name = librococoa;
 			productInstallPath = /usr/local/lib;
 			productName = keychainLib;
-			productReference = 477A104D0FD08DBA00BAD4AD /* librococoa.dylib */;
+			productReference = 477A104D0FD08DBA00BAD4AD /* .dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
-		478ECD000DAD5743008A5B1F /* libQuickLook */ = {
+		478ECD000DAD5743008A5B1F /* libquickLook */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 478ECD160DAD5743008A5B1F /* Build configuration list for PBXNativeTarget "libQuickLook" */;
+			buildConfigurationList = 478ECD160DAD5743008A5B1F /* Build configuration list for PBXNativeTarget "libquickLook" */;
 			buildPhases = (
 				478ECD010DAD5743008A5B1F /* Headers */,
 				478ECD0B0DAD5743008A5B1F /* Sources */,
@@ -4157,15 +4157,15 @@
 			);
 			dependencies = (
 			);
-			name = libQuickLook;
+			name = libquickLook;
 			productInstallPath = /usr/local/lib;
 			productName = keychainLib;
-			productReference = 478ECD180DAD5743008A5B1F /* libQuickLook.dylib */;
+			productReference = 478ECD180DAD5743008A5B1F /* .dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
-		4797D26E1628276C00340E1C /* libLaunchServicesApplicationFinder */ = {
+		4797D26E1628276C00340E1C /* liblaunchservicesapplicationfinder */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 4797D2771628276C00340E1C /* Build configuration list for PBXNativeTarget "libLaunchServicesApplicationFinder" */;
+			buildConfigurationList = 4797D2771628276C00340E1C /* Build configuration list for PBXNativeTarget "liblaunchservicesapplicationfinder" */;
 			buildPhases = (
 				4797D26F1628276C00340E1C /* Headers */,
 				4797D2711628276C00340E1C /* Sources */,
@@ -4175,15 +4175,15 @@
 			);
 			dependencies = (
 			);
-			name = libLaunchServicesApplicationFinder;
+			name = liblaunchservicesapplicationfinder;
 			productInstallPath = /usr/local/lib;
 			productName = keychainLib;
-			productReference = 4797D27A1628276C00340E1C /* libLaunchServicesApplicationFinder.dylib */;
+			productReference = 4797D27A1628276C00340E1C /* .dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
-		47BEDAF60B92960400141EB4 /* libLaunchServicesSchemeHandler */ = {
+		47BEDAF60B92960400141EB4 /* liblaunchservicesschemehandler */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 47BEDB010B92960400141EB4 /* Build configuration list for PBXNativeTarget "libLaunchServicesSchemeHandler" */;
+			buildConfigurationList = 47BEDB010B92960400141EB4 /* Build configuration list for PBXNativeTarget "liblaunchservicesschemehandler" */;
 			buildPhases = (
 				47BEDAF70B92960400141EB4 /* Headers */,
 				47BEDAF90B92960400141EB4 /* Sources */,
@@ -4193,10 +4193,10 @@
 			);
 			dependencies = (
 			);
-			name = libLaunchServicesSchemeHandler;
+			name = liblaunchservicesschemehandler;
 			productInstallPath = /usr/local/lib;
 			productName = keychainLib;
-			productReference = 47BEDB030B92960400141EB4 /* libLaunchServicesSchemeHandler.dylib */;
+			productReference = 47BEDB030B92960400141EB4 /* .dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		47C2AD7F1A268C880047B67A /* cli */ = {
@@ -4227,9 +4227,9 @@
 			productReference = 47C2AD801A268C880047B67A /* duck.bundle */;
 			productType = "com.apple.product-type.bundle";
 		};
-		47C57EAE162F471700A272BC /* libLaunchServicesFileDescriptor */ = {
+		47C57EAE162F471700A272BC /* liblaunchservicesfiledescriptor */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 47C57EB7162F471700A272BC /* Build configuration list for PBXNativeTarget "libLaunchServicesFileDescriptor" */;
+			buildConfigurationList = 47C57EB7162F471700A272BC /* Build configuration list for PBXNativeTarget "liblaunchservicesfiledescriptor" */;
 			buildPhases = (
 				47C57EAF162F471700A272BC /* Headers */,
 				47C57EB1162F471700A272BC /* Sources */,
@@ -4239,15 +4239,15 @@
 			);
 			dependencies = (
 			);
-			name = libLaunchServicesFileDescriptor;
+			name = liblaunchservicesfiledescriptor;
 			productInstallPath = /usr/local/lib;
 			productName = keychainLib;
-			productReference = 47C57EBA162F471700A272BC /* libLaunchServicesFileDescriptor.dylib */;
+			productReference = 47C57EBA162F471700A272BC /* .dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
-		47F102AD1628D57500923FDE /* libLaunchServicesQuarantineService */ = {
+		47F102AD1628D57500923FDE /* liblaunchservicesquarantineservice */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 47F102B61628D57500923FDE /* Build configuration list for PBXNativeTarget "libLaunchServicesQuarantineService" */;
+			buildConfigurationList = 47F102B61628D57500923FDE /* Build configuration list for PBXNativeTarget "liblaunchservicesquarantineservice" */;
 			buildPhases = (
 				47F102AE1628D57500923FDE /* Headers */,
 				47F102B01628D57500923FDE /* Sources */,
@@ -4257,15 +4257,15 @@
 			);
 			dependencies = (
 			);
-			name = libLaunchServicesQuarantineService;
+			name = liblaunchservicesquarantineservice;
 			productInstallPath = /usr/local/lib;
 			productName = keychainLib;
-			productReference = 47F102B91628D57500923FDE /* libLaunchServicesQuarantineService.dylib */;
+			productReference = 47F102B91628D57500923FDE /* .dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
-		47FB9C5E1725A5CC00FE33C1 /* libIOKitSleepPreventer */ = {
+		47FB9C5E1725A5CC00FE33C1 /* libiokitsleeppreventer */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 47FB9C681725A5CC00FE33C1 /* Build configuration list for PBXNativeTarget "libIOKitSleepPreventer" */;
+			buildConfigurationList = 47FB9C681725A5CC00FE33C1 /* Build configuration list for PBXNativeTarget "libiokitsleeppreventer" */;
 			buildPhases = (
 				47FB9C5F1725A5CC00FE33C1 /* Headers */,
 				47FB9C611725A5CC00FE33C1 /* Sources */,
@@ -4275,10 +4275,10 @@
 			);
 			dependencies = (
 			);
-			name = libIOKitSleepPreventer;
+			name = libiokitsleeppreventer;
 			productInstallPath = /usr/local/lib;
 			productName = keychainLib;
-			productReference = 47FB9C6B1725A5CC00FE33C1 /* libIOKitSleepPreventer.dylib */;
+			productReference = 47FB9C6B1725A5CC00FE33C1 /* .dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 /* End PBXNativeTarget section */
@@ -4346,18 +4346,18 @@
 			projectRoot = "";
 			targets = (
 				471D2C0B05A2505500675163 /* app */,
-				4739EF670856981300405FD3 /* libKeychain */,
-				4739EFA30856990900405FD3 /* libProxy */,
-				4739EFB10856991200405FD3 /* libLocal */,
-				4762DAB809FC42EC0034C662 /* libDiagnostics */,
-				478ECD000DAD5743008A5B1F /* libQuickLook */,
-				477A10400FD08DBA00BAD4AD /* libRococoa */,
-				47BEDAF60B92960400141EB4 /* libLaunchServicesSchemeHandler */,
-				4797D26E1628276C00340E1C /* libLaunchServicesApplicationFinder */,
-				47F102AD1628D57500923FDE /* libLaunchServicesQuarantineService */,
-				47C57EAE162F471700A272BC /* libLaunchServicesFileDescriptor */,
-				47FB9C5E1725A5CC00FE33C1 /* libIOKitSleepPreventer */,
-				471F77A7180439B500A4C196 /* libFoundationProgressService */,
+				4739EF670856981300405FD3 /* libkeychain */,
+				4739EFA30856990900405FD3 /* libproxy */,
+				4739EFB10856991200405FD3 /* liblocal */,
+				4762DAB809FC42EC0034C662 /* libdiagnostics */,
+				478ECD000DAD5743008A5B1F /* libquickLook */,
+				477A10400FD08DBA00BAD4AD /* librococoa */,
+				47BEDAF60B92960400141EB4 /* liblaunchservicesschemehandler */,
+				4797D26E1628276C00340E1C /* liblaunchservicesapplicationfinder */,
+				47F102AD1628D57500923FDE /* liblaunchservicesquarantineservice */,
+				47C57EAE162F471700A272BC /* liblaunchservicesfiledescriptor */,
+				47FB9C5E1725A5CC00FE33C1 /* libiokitsleeppreventer */,
+				471F77A7180439B500A4C196 /* libfoundationprogressservice */,
 				47C2AD7F1A268C880047B67A /* cli */,
 			);
 		};
@@ -4682,112 +4682,112 @@
 /* Begin PBXTargetDependency section */
 		471E214C0A1734D7009E164E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 4739EF670856981300405FD3 /* libKeychain */;
+			target = 4739EF670856981300405FD3 /* libkeychain */;
 			targetProxy = 471E214B0A1734D7009E164E /* PBXContainerItemProxy */;
 		};
 		471E21520A1734D7009E164E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 4739EFA30856990900405FD3 /* libProxy */;
+			target = 4739EFA30856990900405FD3 /* libproxy */;
 			targetProxy = 471E21510A1734D7009E164E /* PBXContainerItemProxy */;
 		};
 		471E21540A1734D7009E164E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 4739EFB10856991200405FD3 /* libLocal */;
+			target = 4739EFB10856991200405FD3 /* liblocal */;
 			targetProxy = 471E21530A1734D7009E164E /* PBXContainerItemProxy */;
 		};
 		471E21580A1734D7009E164E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 4762DAB809FC42EC0034C662 /* libDiagnostics */;
+			target = 4762DAB809FC42EC0034C662 /* libdiagnostics */;
 			targetProxy = 471E21570A1734D7009E164E /* PBXContainerItemProxy */;
 		};
 		471F77BB18043A3800A4C196 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 471F77A7180439B500A4C196 /* libFoundationProgressService */;
+			target = 471F77A7180439B500A4C196 /* libfoundationprogressservice */;
 			targetProxy = 471F77BA18043A3800A4C196 /* PBXContainerItemProxy */;
 		};
 		4726A8D40DAD6E27001BC01D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 478ECD000DAD5743008A5B1F /* libQuickLook */;
+			target = 478ECD000DAD5743008A5B1F /* libquickLook */;
 			targetProxy = 4726A8D30DAD6E27001BC01D /* PBXContainerItemProxy */;
 		};
 		477A11D40FD0942800BAD4AD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 477A10400FD08DBA00BAD4AD /* libRococoa */;
+			target = 477A10400FD08DBA00BAD4AD /* librococoa */;
 			targetProxy = 477A11D30FD0942800BAD4AD /* PBXContainerItemProxy */;
 		};
 		479737AD162F4962002809CC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 47C57EAE162F471700A272BC /* libLaunchServicesFileDescriptor */;
+			target = 47C57EAE162F471700A272BC /* liblaunchservicesfiledescriptor */;
 			targetProxy = 479737AC162F4962002809CC /* PBXContainerItemProxy */;
 		};
 		4797D28D1628299700340E1C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 4797D26E1628276C00340E1C /* libLaunchServicesApplicationFinder */;
+			target = 4797D26E1628276C00340E1C /* liblaunchservicesapplicationfinder */;
 			targetProxy = 4797D28C1628299700340E1C /* PBXContainerItemProxy */;
 		};
 		479BF7811725A6FE006854BF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 47FB9C5E1725A5CC00FE33C1 /* libIOKitSleepPreventer */;
+			target = 47FB9C5E1725A5CC00FE33C1 /* libiokitsleeppreventer */;
 			targetProxy = 479BF7801725A6FE006854BF /* PBXContainerItemProxy */;
 		};
 		47BEDCEF0B92A23B00141EB4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 47BEDAF60B92960400141EB4 /* libLaunchServicesSchemeHandler */;
+			target = 47BEDAF60B92960400141EB4 /* liblaunchservicesschemehandler */;
 			targetProxy = 47BEDCEE0B92A23B00141EB4 /* PBXContainerItemProxy */;
 		};
 		47D939CD1A268E430006D4AE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 4739EFA30856990900405FD3 /* libProxy */;
+			target = 4739EFA30856990900405FD3 /* libproxy */;
 			targetProxy = 47D939CC1A268E430006D4AE /* PBXContainerItemProxy */;
 		};
 		47D939CF1A268E430006D4AE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 4739EFB10856991200405FD3 /* libLocal */;
+			target = 4739EFB10856991200405FD3 /* liblocal */;
 			targetProxy = 47D939CE1A268E430006D4AE /* PBXContainerItemProxy */;
 		};
 		47D939D11A268E430006D4AE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 47BEDAF60B92960400141EB4 /* libLaunchServicesSchemeHandler */;
+			target = 47BEDAF60B92960400141EB4 /* liblaunchservicesschemehandler */;
 			targetProxy = 47D939D01A268E430006D4AE /* PBXContainerItemProxy */;
 		};
 		47D939D31A268E430006D4AE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 4797D26E1628276C00340E1C /* libLaunchServicesApplicationFinder */;
+			target = 4797D26E1628276C00340E1C /* liblaunchservicesapplicationfinder */;
 			targetProxy = 47D939D21A268E430006D4AE /* PBXContainerItemProxy */;
 		};
 		47D939D51A268E430006D4AE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 47F102AD1628D57500923FDE /* libLaunchServicesQuarantineService */;
+			target = 47F102AD1628D57500923FDE /* liblaunchservicesquarantineservice */;
 			targetProxy = 47D939D41A268E430006D4AE /* PBXContainerItemProxy */;
 		};
 		47D939D71A268E430006D4AE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 47C57EAE162F471700A272BC /* libLaunchServicesFileDescriptor */;
+			target = 47C57EAE162F471700A272BC /* liblaunchservicesfiledescriptor */;
 			targetProxy = 47D939D61A268E430006D4AE /* PBXContainerItemProxy */;
 		};
 		47D939D91A268E430006D4AE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 47FB9C5E1725A5CC00FE33C1 /* libIOKitSleepPreventer */;
+			target = 47FB9C5E1725A5CC00FE33C1 /* libiokitsleeppreventer */;
 			targetProxy = 47D939D81A268E430006D4AE /* PBXContainerItemProxy */;
 		};
 		47D93D221A27825C0006D4AE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 4762DAB809FC42EC0034C662 /* libDiagnostics */;
+			target = 4762DAB809FC42EC0034C662 /* libdiagnostics */;
 			targetProxy = 47D93D211A27825C0006D4AE /* PBXContainerItemProxy */;
 		};
 		47F102DA1628D61A00923FDE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 47F102AD1628D57500923FDE /* libLaunchServicesQuarantineService */;
+			target = 47F102AD1628D57500923FDE /* liblaunchservicesquarantineservice */;
 			targetProxy = 47F102D91628D61A00923FDE /* PBXContainerItemProxy */;
 		};
 		47FA2CEF1A28A10B0058614E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 4739EF670856981300405FD3 /* libKeychain */;
+			target = 4739EF670856981300405FD3 /* libkeychain */;
 			targetProxy = 47FA2CEE1A28A10B0058614E /* PBXContainerItemProxy */;
 		};
 		47FA2CF11A28A17E0058614E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 477A10400FD08DBA00BAD4AD /* libRococoa */;
+			target = 477A10400FD08DBA00BAD4AD /* librococoa */;
 			targetProxy = 47FA2CF01A28A17E0058614E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -6122,7 +6122,6 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libFoundationProgressService;
 			};
 			name = Release;
 		};
@@ -6137,7 +6136,6 @@
 				);
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libFoundationProgressService;
 			};
 			name = Debug;
 		};
@@ -6151,7 +6149,6 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libKeychain;
 			};
 			name = Release;
 		};
@@ -6165,7 +6162,6 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libProxy;
 			};
 			name = Release;
 		};
@@ -6179,7 +6175,6 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libLocal;
 			};
 			name = Release;
 		};
@@ -6193,7 +6188,6 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libDiagnostics;
 			};
 			name = Release;
 		};
@@ -6207,7 +6201,6 @@
 					"\"$(SRCROOT)/lib\"",
 				);
 				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = librococoa;
 			};
 			name = Release;
 		};
@@ -6221,7 +6214,6 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libQuickLook;
 			};
 			name = Release;
 		};
@@ -6235,7 +6227,6 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libLaunchServicesApplicationFinder;
 			};
 			name = Release;
 		};
@@ -6250,7 +6241,6 @@
 				);
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libLaunchServicesApplicationFinder;
 			};
 			name = Debug;
 		};
@@ -6304,7 +6294,6 @@
 				);
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libKeychain;
 			};
 			name = Debug;
 		};
@@ -6319,7 +6308,6 @@
 				);
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libProxy;
 			};
 			name = Debug;
 		};
@@ -6334,7 +6322,6 @@
 				);
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libLocal;
 			};
 			name = Debug;
 		};
@@ -6349,7 +6336,6 @@
 				);
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libDiagnostics;
 			};
 			name = Debug;
 		};
@@ -6364,7 +6350,6 @@
 				);
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libLaunchServicesSchemeHandler;
 			};
 			name = Debug;
 		};
@@ -6379,7 +6364,6 @@
 				);
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libQuickLook;
 			};
 			name = Debug;
 		};
@@ -6394,7 +6378,6 @@
 				);
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = librococoa;
 			};
 			name = Debug;
 		};
@@ -6408,7 +6391,6 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libLaunchServicesSchemeHandler;
 			};
 			name = Release;
 		};
@@ -6514,7 +6496,6 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libLaunchServicesFileDescriptor;
 			};
 			name = Release;
 		};
@@ -6529,7 +6510,6 @@
 				);
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libLaunchServicesFileDescriptor;
 			};
 			name = Debug;
 		};
@@ -6579,7 +6559,6 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libLaunchServicesQuarantineService;
 			};
 			name = Release;
 		};
@@ -6594,7 +6573,6 @@
 				);
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libLaunchServicesQuarantineService;
 			};
 			name = Debug;
 		};
@@ -6608,7 +6586,6 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libIOKitSleepPreventer;
 			};
 			name = Release;
 		};
@@ -6623,14 +6600,13 @@
 				);
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libIOKitSleepPreventer;
 			};
 			name = Debug;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		471F77B0180439B500A4C196 /* Build configuration list for PBXNativeTarget "libFoundationProgressService" */ = {
+		471F77B0180439B500A4C196 /* Build configuration list for PBXNativeTarget "libfoundationprogressservice" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				471F77B1180439B500A4C196 /* Release */,
@@ -6639,7 +6615,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		4739EF710856981300405FD3 /* Build configuration list for PBXNativeTarget "libKeychain" */ = {
+		4739EF710856981300405FD3 /* Build configuration list for PBXNativeTarget "libkeychain" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4739EF720856981300405FD3 /* Release */,
@@ -6648,7 +6624,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		4739EFAE0856990900405FD3 /* Build configuration list for PBXNativeTarget "libProxy" */ = {
+		4739EFAE0856990900405FD3 /* Build configuration list for PBXNativeTarget "libproxy" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4739EFAF0856990900405FD3 /* Release */,
@@ -6657,7 +6633,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		4739EFBF0856991200405FD3 /* Build configuration list for PBXNativeTarget "libLocal" */ = {
+		4739EFBF0856991200405FD3 /* Build configuration list for PBXNativeTarget "liblocal" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4739EFC00856991200405FD3 /* Release */,
@@ -6666,7 +6642,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		4762DAC309FC42EC0034C662 /* Build configuration list for PBXNativeTarget "libDiagnostics" */ = {
+		4762DAC309FC42EC0034C662 /* Build configuration list for PBXNativeTarget "libdiagnostics" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4762DAC409FC42EC0034C662 /* Release */,
@@ -6675,7 +6651,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		477A104B0FD08DBA00BAD4AD /* Build configuration list for PBXNativeTarget "libRococoa" */ = {
+		477A104B0FD08DBA00BAD4AD /* Build configuration list for PBXNativeTarget "librococoa" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				477A104C0FD08DBA00BAD4AD /* Release */,
@@ -6684,7 +6660,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		478ECD160DAD5743008A5B1F /* Build configuration list for PBXNativeTarget "libQuickLook" */ = {
+		478ECD160DAD5743008A5B1F /* Build configuration list for PBXNativeTarget "libquickLook" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				478ECD170DAD5743008A5B1F /* Release */,
@@ -6693,7 +6669,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		4797D2771628276C00340E1C /* Build configuration list for PBXNativeTarget "libLaunchServicesApplicationFinder" */ = {
+		4797D2771628276C00340E1C /* Build configuration list for PBXNativeTarget "liblaunchservicesapplicationfinder" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4797D2781628276C00340E1C /* Release */,
@@ -6702,7 +6678,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		47BEDB010B92960400141EB4 /* Build configuration list for PBXNativeTarget "libLaunchServicesSchemeHandler" */ = {
+		47BEDB010B92960400141EB4 /* Build configuration list for PBXNativeTarget "liblaunchservicesschemehandler" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				47BEDB020B92960400141EB4 /* Release */,
@@ -6720,7 +6696,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		47C57EB7162F471700A272BC /* Build configuration list for PBXNativeTarget "libLaunchServicesFileDescriptor" */ = {
+		47C57EB7162F471700A272BC /* Build configuration list for PBXNativeTarget "liblaunchservicesfiledescriptor" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				47C57EB8162F471700A272BC /* Release */,
@@ -6747,7 +6723,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		47F102B61628D57500923FDE /* Build configuration list for PBXNativeTarget "libLaunchServicesQuarantineService" */ = {
+		47F102B61628D57500923FDE /* Build configuration list for PBXNativeTarget "liblaunchservicesquarantineservice" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				47F102B71628D57500923FDE /* Release */,
@@ -6756,7 +6732,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		47FB9C681725A5CC00FE33C1 /* Build configuration list for PBXNativeTarget "libIOKitSleepPreventer" */ = {
+		47FB9C681725A5CC00FE33C1 /* Build configuration list for PBXNativeTarget "libiokitsleeppreventer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				47FB9C691725A5CC00FE33C1 /* Release */,

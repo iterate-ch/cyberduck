@@ -46,7 +46,7 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
     private static final Logger log = Logger.getLogger(Keychain.class);
 
     static {
-        Native.load("Keychain");
+        Native.load("keychain");
     }
 
     /**

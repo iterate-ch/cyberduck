@@ -43,7 +43,7 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
     private static final Logger log = Logger.getLogger(LaunchServicesApplicationFinder.class);
 
     static {
-        Native.load("LaunchServicesApplicationFinder");
+        Native.load("launchservicesapplicationfinder");
     }
 
     public LaunchServicesApplicationFinder() {

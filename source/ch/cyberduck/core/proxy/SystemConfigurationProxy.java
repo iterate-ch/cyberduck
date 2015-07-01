@@ -37,7 +37,7 @@ public final class SystemConfigurationProxy extends AbstractProxyFinder implemen
     private static final Logger log = Logger.getLogger(SystemConfigurationProxy.class);
 
     static {
-        Native.load("Proxy");
+        Native.load("proxy");
     }
 
     private HostUrlProvider provider

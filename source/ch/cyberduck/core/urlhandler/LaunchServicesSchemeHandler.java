@@ -34,7 +34,7 @@ import java.util.List;
 public final class LaunchServicesSchemeHandler extends AbstractSchemeHandler {
 
     static {
-        Native.load("LaunchServicesSchemeHandler");
+        Native.load("launchservicesschemehandler");
     }
 
     private ApplicationFinder applicationFinder;

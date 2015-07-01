@@ -31,7 +31,7 @@ public final class LaunchServicesQuarantineService implements QuarantineService 
     private static final Logger log = Logger.getLogger(LaunchServicesQuarantineService.class);
 
     static {
-        Native.load("LaunchServicesQuarantineService");
+        Native.load("launchservicesquarantineservice");
     }
 
     private static final Object lock = new Object();

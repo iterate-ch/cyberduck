@@ -28,7 +28,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 public final class FoundationProgressIconService implements IconService {
 
     static {
-        Native.load("FoundationProgressService");
+        Native.load("foundationprogressservice");
     }
 
     @Override

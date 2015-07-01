@@ -29,7 +29,7 @@ public final class Sandbox {
     private static final Logger log = Logger.getLogger(Sandbox.class);
 
     static {
-        Native.load("Keychain");
+        Native.load("keychain");
     }
 
     public static Sandbox get() {

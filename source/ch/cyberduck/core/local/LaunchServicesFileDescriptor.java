@@ -30,7 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 public final class LaunchServicesFileDescriptor extends AbstractFileDescriptor {
 
     static {
-        Native.load("LaunchServicesFileDescriptor");
+        Native.load("launchservicesfiledescriptor");
     }
 
     @Override

@@ -27,7 +27,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 public final class IOKitSleepPreventer implements SleepPreventer {
 
     static {
-        Native.load("IOKitSleepPreventer");
+        Native.load("iokitsleeppreventer");
     }
 
     private static final String reason
