@@ -99,7 +99,7 @@ public class SwiftFindFeatureTest extends AbstractTestCase {
                 return Collections.emptyMap();
             }
         }).withCache(cache);
-        assertTrue(finder.find(new Path("/g/gd", EnumSet.of(Path.Type.file))));
+        assertTrue(finder.find(new Path("/g/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
         assertTrue(b.get());
     }
 
@@ -107,7 +107,8 @@ public class SwiftFindFeatureTest extends AbstractTestCase {
     public void testCacheNotFound() throws Exception {
         final PathCache cache = new PathCache(1);
         final AttributedList<Path> list = AttributedList.emptyList();
-        list.attributes().addHidden(new Path("/g/gd", EnumSet.of(Path.Type.file)));
+        final String name = UUID.randomUUID().toString();
+        list.attributes().addHidden(new Path("/g/" + name, EnumSet.of(Path.Type.file)));
         cache.put(new Path("/g", EnumSet.of(Path.Type.directory)), list);
         final Find finder = new SwiftFindFeature(new SwiftMetadataFeature(new SwiftSession(new Host("t")) {
             @Override
@@ -122,13 +123,14 @@ public class SwiftFindFeatureTest extends AbstractTestCase {
                 return null;
             }
         }).withCache(cache);
-        assertFalse(finder.find(new Path("/g/gd", EnumSet.of(Path.Type.file))));
+        assertFalse(finder.find(new Path("/g/" + name, EnumSet.of(Path.Type.file))));
     }
 
     @Test
     public void testCacheFound() throws Exception {
         final PathCache cache = new PathCache(1);
-        final AttributedList<Path> list = new AttributedList<Path>(Collections.singletonList(new Path("/g/gd", EnumSet.of(Path.Type.file))));
+        final String name = UUID.randomUUID().toString();
+        final AttributedList<Path> list = new AttributedList<Path>(Collections.singletonList(new Path("/g/" + name, EnumSet.of(Path.Type.file))));
         cache.put(new Path("/g", EnumSet.of(Path.Type.directory)), list);
         final Find finder = new SwiftFindFeature(new SwiftMetadataFeature(new SwiftSession(new Host("t")) {
             @Override
@@ -143,6 +145,6 @@ public class SwiftFindFeatureTest extends AbstractTestCase {
                 return null;
             }
         }).withCache(cache);
-        assertTrue(finder.find(new Path("/g/gd", EnumSet.of(Path.Type.file))));
+        assertTrue(finder.find(new Path("/g/" + name, EnumSet.of(Path.Type.file))));
     }
 }
