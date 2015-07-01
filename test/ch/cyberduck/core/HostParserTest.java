@@ -267,19 +267,19 @@ public class HostParserTest extends AbstractTestCase {
     @Test
     public void testParseColonInPath() {
         final Host host = HostParser.parse("rackspace://cdn.duck.sh/duck-4.6.2.16174:16179M.pkg");
-        assertEquals("cdn.duck.sh", host.getHostname());
+        assertEquals("identity.api.rackspacecloud.com", host.getHostname());
         assertEquals(Protocol.Type.swift, host.getProtocol().getType());
         assertEquals(443, host.getPort());
-        assertEquals("/duck-4.6.2.16174:16179M.pkg", host.getDefaultPath());
+        assertEquals("/cdn.duck.sh/duck-4.6.2.16174:16179M.pkg", host.getDefaultPath());
     }
 
     @Test
     public void testParseColonInPathPlusPort() {
         final Host host = HostParser.parse("rackspace://cdn.duck.sh:444/duck-4.6.2.16174:16179M.pkg");
-        assertEquals("cdn.duck.sh", host.getHostname());
+        assertEquals("identity.api.rackspacecloud.com", host.getHostname());
         assertEquals(Protocol.Type.swift, host.getProtocol().getType());
         assertEquals(444, host.getPort());
-        assertEquals("/duck-4.6.2.16174:16179M.pkg", host.getDefaultPath());
+        assertEquals("/cdn.duck.sh/duck-4.6.2.16174:16179M.pkg", host.getDefaultPath());
     }
 
     @Test
@@ -317,5 +317,26 @@ public class HostParserTest extends AbstractTestCase {
     @Test
     public void testParseIpv6LinkLocalZoneIndex() throws Exception {
         assertEquals("fe80::c62c:3ff:fe0b:8670%en0", HostParser.parse("ftp://fe80::c62c:3ff:fe0b:8670%en0/~/sandbox").getHostname());
+    }
+
+    @Test
+    public void testParseS3Scheme() throws Exception {
+        final Host host = HostParser.parse("s3://bucketname/key");
+        assertEquals("s3.amazonaws.com", host.getHostname());
+        assertEquals(Protocol.Type.s3, host.getProtocol().getType());
+        assertEquals("/bucketname/key", host.getDefaultPath());
+    }
+
+    @Test
+    public void testParseS3SchemeAccessKey() throws Exception {
+        assertTrue(new Host(ProtocolFactory.S3_SSL, "s3.amazonaws.com", 443, "/cyberduck-test/key", new Credentials("AWS456", null))
+                .compareTo(HostParser.parse("s3://AWS456@cyberduck-test/key")) == 0);
+    }
+
+    @Test
+    public void testParseRackspaceScheme() throws Exception {
+        assertTrue(new Host(ProtocolFactory.forName("rackspace"), "identity.api.rackspacecloud.com", 443, "/cdn.cyberduck.ch/", new Credentials("u", null))
+                .compareTo(HostParser.parse("rackspace://u@cdn.cyberduck.ch/")) == 0);
+
     }
 }

@@ -31,7 +31,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
 
-public class UriParserTest extends AbstractTestCase {
+public class CommandLineUriParserTest extends AbstractTestCase {
 
     @Test
     public void testParse() throws Exception {
@@ -39,9 +39,9 @@ public class UriParserTest extends AbstractTestCase {
         final CommandLine input = parser.parse(new Options(), new String[]{});
 
         assertTrue(new Host(ProtocolFactory.S3_SSL, "s3.amazonaws.com", 443, "/cyberduck-test/key", new Credentials("AWS456", null))
-                .compareTo(new UriParser(input).parse("s3://AWS456@cyberduck-test/key")) == 0);
+                .compareTo(new CommandLineUriParser(input).parse("s3://AWS456@cyberduck-test/key")) == 0);
         assertTrue(new Host(ProtocolFactory.FTP_TLS, "cyberduck.io", 55, "/cyberduck-test/key", new Credentials("anonymous", null))
-                .compareTo(new UriParser(input).parse("ftps://cyberduck.io:55/folder")) == 0);
+                .compareTo(new CommandLineUriParser(input).parse("ftps://cyberduck.io:55/folder")) == 0);
     }
 
     @Test
@@ -50,7 +50,7 @@ public class UriParserTest extends AbstractTestCase {
         final CommandLine input = parser.parse(new Options(), new String[]{});
 
         assertTrue(new Host(ProtocolFactory.forName("rackspace"), "identity.api.rackspacecloud.com", 443, "/cdn.cyberduck.ch/", new Credentials("u", null))
-                .compareTo(new UriParser(input).parse("rackspace://u@cdn.cyberduck.ch/")) == 0);
+                .compareTo(new CommandLineUriParser(input).parse("rackspace://u@cdn.cyberduck.ch/")) == 0);
 
     }
 }

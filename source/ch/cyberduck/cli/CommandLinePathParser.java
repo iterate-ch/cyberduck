@@ -18,47 +18,42 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.DelimiterPathKindDetector;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathKindDetector;
 
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.lang3.StringUtils;
+
+import java.util.EnumSet;
 
 /**
  * @version $Id$
  */
-public class UriParser {
+public class CommandLinePathParser {
+
+    private final PathKindDetector detector
+            = new DelimiterPathKindDetector();
 
     private final CommandLine input;
 
-    public UriParser(final CommandLine input) {
+    public CommandLinePathParser(final CommandLine input) {
         this.input = input;
     }
 
-    public Host parse(final String uri) {
+    public Path parse(final String uri) {
         final Host host = HostParser.parse(uri);
         switch(host.getProtocol().getType()) {
             case s3:
             case googlestorage:
             case swift:
-                if(StringUtils.isNotBlank(host.getProtocol().getDefaultHostname())) {
-                    host.setHostname(host.getProtocol().getDefaultHostname());
-                }
+                final PathAttributes attributes = new PathAttributes();
                 if(input.hasOption(TerminalOptionsBuilder.Params.region.name())) {
-                    host.setRegion(input.getOptionValue(TerminalOptionsBuilder.Params.region.name()));
+                    attributes.setRegion(input.getOptionValue(TerminalOptionsBuilder.Params.region.name()));
                 }
         }
-        final Path directory = new PathParser(input).parse(uri);
-        if(directory.isDirectory()) {
-            host.setDefaultPath(directory.getAbsolute());
-        }
-        else {
-            host.setDefaultPath(directory.getParent().getAbsolute());
-        }
-        if(input.hasOption(TerminalOptionsBuilder.Params.udt.name())) {
-            host.setTransfer(Host.TransferType.udt);
-        }
-        return host;
+        return new Path(host.getDefaultPath(), EnumSet.of(detector.detect(host.getDefaultPath())));
     }
 }

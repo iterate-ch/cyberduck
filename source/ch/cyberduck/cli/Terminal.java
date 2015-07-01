@@ -186,7 +186,7 @@ public class Terminal {
                 return Exit.failure;
             }
             final String uri = input.getOptionValue(action.name());
-            final Host host = new UriParser(input).parse(uri);
+            final Host host = new CommandLineUriParser(input).parse(uri);
             session = SessionFactory.create(host,
                     new CertificateStoreX509TrustManager(
                             new DefaultTrustManagerHostnameCallback(host),
@@ -194,13 +194,13 @@ public class Terminal {
                     ),
                     new PreferencesX509KeyManager(new TerminalCertificateStore(reader)));
             final Path remote;
-            if(new PathParser(input).parse(uri).getAbsolute().startsWith(TildePathExpander.PREFIX)) {
+            if(new CommandLinePathParser(input).parse(uri).getAbsolute().startsWith(TildePathExpander.PREFIX)) {
                 // Already connect here because the tilde expander may need to use the current working directory
                 this.connect(session);
-                remote = new TildePathExpander(session).expand(new PathParser(input).parse(uri));
+                remote = new TildePathExpander(session).expand(new CommandLinePathParser(input).parse(uri));
             }
             else {
-                remote = new PathParser(input).parse(uri);
+                remote = new CommandLinePathParser(input).parse(uri);
             }
             switch(action) {
                 case edit:
@@ -219,10 +219,10 @@ public class Terminal {
                             new ArrayList<TransferItem>(new SingleTransferItemFinder().find(input, action, remote)));
                     break;
                 case copy:
-                    final Host target = new UriParser(input).parse(input.getOptionValues(action.name())[1]);
+                    final Host target = new CommandLineUriParser(input).parse(input.getOptionValues(action.name())[1]);
                     transfer = new CopyTransfer(host, target,
                             Collections.singletonMap(
-                                    remote, new PathParser(input).parse(input.getOptionValues(action.name())[1])
+                                    remote, new CommandLinePathParser(input).parse(input.getOptionValues(action.name())[1])
                             ),
                             new CertificateStoreX509TrustManager(
                                     new DefaultTrustManagerHostnameCallback(target),

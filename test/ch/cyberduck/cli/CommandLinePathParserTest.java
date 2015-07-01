@@ -38,7 +38,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class PathParserTest extends AbstractTestCase {
+public class CommandLinePathParserTest extends AbstractTestCase {
 
     @Test
     public void testParse() throws Exception {
@@ -46,11 +46,11 @@ public class PathParserTest extends AbstractTestCase {
         final CommandLine input = parser.parse(new Options(), new String[]{});
 
         assertEquals(new Path("/", EnumSet.of(Path.Type.directory)),
-                new PathParser(input).parse("ftps://u@test.cyberduck.ch/"));
+                new CommandLinePathParser(input).parse("ftps://u@test.cyberduck.ch/"));
         assertEquals(new Path("/d", EnumSet.of(Path.Type.directory)),
-                new PathParser(input).parse("ftps://u@test.cyberduck.ch/d/"));
+                new CommandLinePathParser(input).parse("ftps://u@test.cyberduck.ch/d/"));
         assertEquals(new Path("/d", EnumSet.of(Path.Type.file)),
-                new PathParser(input).parse("ftps://u@test.cyberduck.ch/d"));
+                new CommandLinePathParser(input).parse("ftps://u@test.cyberduck.ch/d"));
     }
 
     @Test
@@ -66,7 +66,7 @@ public class PathParserTest extends AbstractTestCase {
         final CommandLine input = parser.parse(new Options(), new String[]{});
 
         assertEquals(new Path("/cdn.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume)),
-                new PathParser(input).parse("rackspace://u@cdn.cyberduck.ch/"));
+                new CommandLinePathParser(input).parse("rackspace://u@cdn.cyberduck.ch/"));
     }
 
     @Test
@@ -74,6 +74,6 @@ public class PathParserTest extends AbstractTestCase {
         final CommandLineParser parser = new PosixParser();
         final CommandLine input = parser.parse(new Options(), new String[]{});
         assertEquals(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)),
-                new PathParser(input).parse("rackspace:///"));
+                new CommandLinePathParser(input).parse("rackspace:///"));
     }
 }

@@ -188,9 +188,26 @@ public final class HostParser {
                 log.error(e.getMessage(), e);
             }
         }
-        final Host h = new Host(protocol, hostname, port, path, new Credentials(username, password));
-        h.configure();
-        return h;
+        switch(protocol.getType()) {
+            case s3:
+            case googlestorage:
+            case swift:
+                if(StringUtils.isNotBlank(protocol.getDefaultHostname())) {
+                    if(StringUtils.isNotBlank(hostname)) {
+                        // Replace with static hostname and prefix path with bucket
+                        if(StringUtils.isBlank(path)) {
+                            path = PathNormalizer.normalize(hostname);
+                        }
+                        else {
+                            path = PathNormalizer.normalize(hostname) + PathNormalizer.normalize(path);
+                        }
+                        hostname = protocol.getDefaultHostname();
+                    }
+                }
+        }
+        final Host host = new Host(protocol, hostname, port, path, new Credentials(username, password));
+        host.configure();
+        return host;
     }
 
     private static final Pattern IPV6_STD_PATTERN = Pattern.compile(
