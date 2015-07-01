@@ -81,7 +81,7 @@ public abstract class AbstractTableDelegate<E> extends ProxyController implement
     /**
      * @see NSTableView.DataSource
      */
-    public boolean tableView_shouldEditTableColumn_row(NSTableView view, NSTableColumn c, NSInteger row) {
+    public boolean tableView_shouldEditTableColumn_row(final NSTableView view, final NSTableColumn c, final NSInteger row) {
         return this.isColumnRowEditable(c, row.intValue());
     }
 
