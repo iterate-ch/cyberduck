@@ -354,12 +354,13 @@ public class BrowserController extends WindowController
      */
     protected void reload() {
         if(this.isMounted()) {
-            this.reload(Collections.singleton(workdir), this.getSelectedPaths(), false);
+            this.reload(workdir, Collections.singleton(workdir), this.getSelectedPaths(), false);
         }
         else {
             final NSTableView browser = this.getSelectedBrowserView();
             final BrowserTableDataSource model = this.getSelectedBrowserModel();
             model.render(browser, Collections.<Path>emptyList());
+            this.setStatus();
         }
     }
 
@@ -368,8 +369,8 @@ public class BrowserController extends WindowController
      *
      * @param selected The items to be selected
      */
-    protected void reload(final List<Path> changed, final List<Path> selected) {
-        this.reload(new PathReloadFinder().find(changed), selected, true);
+    protected void reload(final Path workdir, final List<Path> changed, final List<Path> selected) {
+        this.reload(workdir, new PathReloadFinder().find(changed), selected, true);
     }
 
     /**
@@ -378,11 +379,11 @@ public class BrowserController extends WindowController
      * @param folders  Folders to render
      * @param selected The items to be selected
      */
-    protected void reload(final Set<Path> folders, final List<Path> selected) {
-        this.reload(folders, selected, true);
+    protected void reload(final Path workdir, final Set<Path> folders, final List<Path> selected) {
+        this.reload(workdir, folders, selected, true);
     }
 
-    protected void reload(final Set<Path> folders, final List<Path> selected, final boolean invalidate) {
+    protected void reload(final Path workdir, final Set<Path> folders, final List<Path> selected, final boolean invalidate) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Reload data with selected files %s", selected));
         }
@@ -399,8 +400,7 @@ public class BrowserController extends WindowController
             }
             else {
                 if(cache.isCached(folder)) {
-                    model.render(browser, Collections.singletonList(folder));
-                    select(selected);
+                    reload(browser, model, workdir, selected, folder);
                     return;
                 }
             }
@@ -410,13 +410,31 @@ public class BrowserController extends WindowController
                                 @Override
                                 public void cleanup(final AttributedList<Path> list) {
                                     super.cleanup(list);
-                                    model.render(browser, Collections.singletonList(folder));
-                                    select(selected);
+                                    // Update the working directory if listing is successful
+                                    if(!(this.initialize() == list)) {
+                                        reload(browser, model, workdir, selected, folder);
+                                    }
                                 }
                             }
                     )
             );
         }
+        this.setStatus();
+    }
+
+    /**
+     * @param browser  Browser view
+     * @param model    Browser Model
+     * @param workdir  Working directory
+     * @param selected Selected files in browser
+     * @param folder   Folder to render
+     */
+    private void reload(final NSTableView browser, final BrowserTableDataSource model, final Path workdir, final List<Path> selected, final Path folder) {
+        this.workdir = workdir;
+        this.setNavigation(true);
+        this.setStatus();
+        model.render(browser, Collections.singletonList(folder));
+        this.select(selected);
     }
 
     private void select(final List<Path> selected) {
@@ -426,7 +444,7 @@ public class BrowserController extends WindowController
         }
         browser.deselectAll(null);
         for(Path path : selected) {
-            select(path, true, true);
+            this.select(path, true, true);
         }
     }
 
@@ -1391,7 +1409,7 @@ public class BrowserController extends WindowController
                 if(null == directory) {
                     return;
                 }
-                reload(Collections.singleton(directory), getSelectedPaths(), false);
+                reload(workdir, Collections.singleton(directory), getSelectedPaths(), false);
             }
 
             /**
@@ -2422,7 +2440,7 @@ public class BrowserController extends WindowController
                 }
             }
             folders.add(workdir);
-            this.reload(folders, this.getSelectedPaths(), true);
+            this.reload(workdir, folders, this.getSelectedPaths(), true);
         }
     }
 
@@ -2778,7 +2796,7 @@ public class BrowserController extends WindowController
                 invoke(new WindowMainAction(BrowserController.this) {
                     @Override
                     public void run() {
-                        reload(selected, selected);
+                        reload(workdir, selected, selected);
                     }
                 });
             }
@@ -3120,15 +3138,7 @@ public class BrowserController extends WindowController
         this.setPathFilter(null);
         final NSTableView browser = this.getSelectedBrowserView();
         window.endEditingFor(browser);
-        // Update the working directory if listing is successful
-        workdir = directory;
-        if(this.isMounted()) {
-            this.reload(Collections.singleton(directory), selected, false);
-        }
-        else {
-            this.reload(Collections.<Path>emptySet(), selected, false);
-        }
-        this.setNavigation(this.isMounted());
+        this.reload(directory, Collections.singleton(directory), selected, false);
     }
 
     private void setNavigation(boolean enabled) {

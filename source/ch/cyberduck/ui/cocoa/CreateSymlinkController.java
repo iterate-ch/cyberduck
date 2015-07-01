@@ -93,7 +93,7 @@ public class CreateSymlinkController extends FileController {
                 if(symlink.charAt(0) == '.') {
                     parent.setShowHiddenFiles(true);
                 }
-                parent.reload(Collections.singletonList(link), Collections.singletonList(link));
+                parent.reload(parent.workdir(), Collections.singletonList(link), Collections.singletonList(link));
             }
         });
     }

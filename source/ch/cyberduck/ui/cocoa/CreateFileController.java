@@ -69,7 +69,7 @@ public class CreateFileController extends FileController {
                         if(filename.charAt(0) == '.') {
                             parent.setShowHiddenFiles(true);
                         }
-                        parent.reload(Collections.singletonList(file), Collections.singletonList(file));
+                        parent.reload(parent.workdir(), Collections.singletonList(file), Collections.singletonList(file));
                         if(edit) {
                             file.attributes().setSize(0L);
                             parent.edit(file);

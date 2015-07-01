@@ -57,10 +57,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
         if(log.isDebugEnabled()) {
             log.debug(String.format("Reload table view %s for changes files %s", view, folders));
         }
-        if(folders.isEmpty()) {
-            view.reloadData();
-        }
-        else {
+        if(controller.isMounted()) {
             final NSOutlineView outline = (NSOutlineView) view;
             for(Path folder : folders) {
                 if(folder.equals(controller.workdir())) {
@@ -72,7 +69,9 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
                 }
             }
         }
-        controller.setStatus();
+        else {
+            view.reloadData();
+        }
     }
 
     @Override

@@ -57,7 +57,7 @@ public class ArchiveController extends ProxyController {
                     public void cleanup() {
                         super.cleanup();
                         // Update Selection
-                        parent.reload(selected, Collections.singletonList(format.getArchive(selected)));
+                        parent.reload(parent.workdir(), selected, Collections.singletonList(format.getArchive(selected)));
                     }
 
                     @Override
@@ -93,7 +93,7 @@ public class ArchiveController extends ProxyController {
                             super.cleanup();
                             expanded.addAll(archive.getExpanded(Collections.singletonList(s)));
                             // Update Selection
-                            parent.reload(selected, expanded);
+                            parent.reload(parent.workdir(), selected, expanded);
                         }
 
                         @Override

@@ -55,7 +55,6 @@ public class BrowserListViewModel extends BrowserTableDataSource implements NSTa
             log.debug(String.format("Reload table view %s for changes files %s", view, folders));
         }
         view.reloadData();
-        controller.setStatus();
     }
 
     @Override

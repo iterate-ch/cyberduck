@@ -70,7 +70,7 @@ public class MoveController extends ProxyController {
                                 new MoveWorker(parent.getSession(), selected, parent) {
                                     @Override
                                     public void cleanup(final List<Path> moved) {
-                                        parent.reload(moved, new ArrayList<Path>(selected.values()));
+                                        parent.reload(parent.workdir(), moved, new ArrayList<Path>(selected.values()));
                                     }
                                 }
                         )
