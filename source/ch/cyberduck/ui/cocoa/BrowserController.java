@@ -431,7 +431,7 @@ public class BrowserController extends WindowController
      */
     private void reload(final NSTableView browser, final BrowserTableDataSource model, final Path workdir, final List<Path> selected, final Path folder) {
         this.workdir = workdir;
-        this.setNavigation(true);
+        this.setNavigation(workdir != null);
         this.setStatus();
         model.render(browser, Collections.singletonList(folder));
         this.select(selected);
