@@ -6287,7 +6287,6 @@
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_NAME = Cyberduck;
 				SECTORDER_FLAGS = "";
-				STRIP_INSTALLED_PRODUCT = YES;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -6449,7 +6448,6 @@
 				PRODUCT_MODULE_NAME = duck;
 				PRODUCT_NAME = duck;
 				SKIP_INSTALL = YES;
-				STRIP_INSTALLED_PRODUCT = YES;
 				VERSIONING_SYSTEM = "";
 				WRAPPER_EXTENSION = bundle;
 			};
@@ -6499,7 +6497,6 @@
 				PRODUCT_MODULE_NAME = duck;
 				PRODUCT_NAME = duck;
 				SKIP_INSTALL = YES;
-				STRIP_INSTALLED_PRODUCT = YES;
 				VERSIONING_SYSTEM = "";
 				WRAPPER_EXTENSION = bundle;
 			};
@@ -6541,7 +6538,6 @@
 				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
 				INFOPLIST_FILE = setup/app/Info.plist;
 				PRODUCT_NAME = Cyberduck;
-				STRIP_INSTALLED_PRODUCT = YES;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -6561,7 +6557,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				SDKROOT = macosx;
 				SEPARATE_STRIP = YES;
-				STRIP_INSTALLED_PRODUCT = NO;
+				STRIP_INSTALLED_PRODUCT = YES;
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Wno-four-char-constants",
