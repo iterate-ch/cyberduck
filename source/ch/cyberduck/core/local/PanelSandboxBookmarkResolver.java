@@ -34,8 +34,6 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
-import org.rococoa.ObjCObjectByReference;
-import org.rococoa.cocoa.foundation.NSError;
 import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.text.MessageFormat;
@@ -66,15 +64,10 @@ public class PanelSandboxBookmarkResolver implements SandboxBookmarkResolver<NSU
         else {
             bookmark = NSData.dataWithBase64EncodedString(file.getBookmark());
         }
-        final ObjCObjectByReference error = new ObjCObjectByReference();
-        final NSURL resolved = NSURL.URLByResolvingBookmarkData(bookmark, error);
+        final NSURL resolved = NSURL.URLByResolvingBookmarkData(bookmark, null);
         if(null == resolved) {
-            final NSError f = error.getValueAs(NSError.class);
-            log.error(String.format("Error resolving bookmark for %s to URL %s", file, f));
-            if(null == f) {
-                throw new LocalAccessDeniedException(file.getAbsolute());
-            }
-            throw new LocalAccessDeniedException(String.format("%s", f.localizedDescription()));
+            log.error(String.format("Error resolving bookmark for %s to URL", file));
+            throw new LocalAccessDeniedException(file.getAbsolute());
         }
         return resolved;
     }
@@ -114,16 +107,11 @@ public class PanelSandboxBookmarkResolver implements SandboxBookmarkResolver<NSU
     @Override
     public String create(final Local file) throws AccessDeniedException {
         // Create new security scoped bookmark
-        final ObjCObjectByReference error = new ObjCObjectByReference();
         final NSData data = NSURL.fileURLWithPath(file.getAbsolute()).bookmarkDataWithOptions_includingResourceValuesForKeys_relativeToURL_error(
-                NSURL.NSURLBookmarkCreationOptions.NSURLBookmarkCreationWithSecurityScope, null, null, error);
+                NSURL.NSURLBookmarkCreationOptions.NSURLBookmarkCreationWithSecurityScope, null, null, null);
         if(null == data) {
-            final NSError f = error.getValueAs(NSError.class);
-            log.warn(String.format("Failure getting bookmark data for file %s %s", file, f));
-            if(null == f) {
-                throw new LocalAccessDeniedException(file.getAbsolute());
-            }
-            throw new LocalAccessDeniedException(String.format("%s", f.localizedDescription()));
+            log.warn(String.format("Failure getting bookmark data for file %s", file));
+            throw new LocalAccessDeniedException(file.getAbsolute());
         }
         final String encoded = data.base64Encoding();
         if(log.isDebugEnabled()) {
