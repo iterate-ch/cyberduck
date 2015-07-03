@@ -40,7 +40,7 @@
     <property name="bundle.runtime.lib"
               value="@executable_path/../MacOS/Runtime.jre/Contents/Home/lib/server/libjvm.dylib"/>
 
-    <property name="app.runtime.system.min" value="10.7"/>
+    <property name="app.runtime.system.min" value="10.6"/>
 
     <property name="jvm.runtime.home" value="${lib}/1.8.0-u60-b10.jre"/>
     <property name="jvm.runtime.bin" value="${jvm.runtime.home}/${bundle.home}/bin"/>
