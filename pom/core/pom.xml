@@ -11,6 +11,21 @@
     <packaging>pom</packaging>
     <version>4.8.0-SNAPSHOT</version>
 
+    <modules>
+        <module>diagnostics</module>
+        <module>foundationprogressservice</module>
+        <module>iokitsleeppreventer</module>
+        <module>keychain</module>
+        <module>launchservicesapplicationfinder</module>
+        <module>launchservicesfiledescriptor</module>
+        <module>launchservicesquarantineservice</module>
+        <module>launchservicesschemehandler</module>
+        <module>local</module>
+        <module>proxy</module>
+        <module>quicklook</module>
+        <module>rococoa</module>
+    </modules>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -159,6 +174,7 @@
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>1.8</version>
+                <inherited>false</inherited>
                 <executions>
                     <execution>
                         <id>run-ant-clean-target</id>
@@ -169,7 +185,7 @@
                         <configuration>
                             <tasks>
                                 <property name="version" value="${project.version}"/>
-                                <ant antfile="${project.basedir}/../../build.xml" target="clean" dir="../.."/>
+                                <ant antfile="${project.basedir}/../../build.xml" target="clean" dir="${project.basedir}/../.."/>
                             </tasks>
                         </configuration>
                     </execution>
@@ -182,7 +198,7 @@
                         <configuration>
                             <tasks>
                                 <property name="version" value="${project.version}"/>
-                                <ant antfile="${project.basedir}/../../build.xml" target="build" dir="../.."/>
+                                <ant antfile="${project.basedir}/../../build.xml" target="build" dir="${project.basedir}/../.."/>
                             </tasks>
                         </configuration>
                     </execution>
@@ -191,6 +207,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
+                <inherited>false</inherited>
                 <executions>
                     <execution>
                         <id>install-core</id>
@@ -225,6 +242,7 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>build-helper-maven-plugin</artifactId>
+                        <inherited>false</inherited>
                         <executions>
                             <execution>
                                 <id>install-core-dll</id>
