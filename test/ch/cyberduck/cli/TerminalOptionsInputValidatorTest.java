@@ -29,8 +29,8 @@ public class TerminalOptionsInputValidatorTest extends AbstractTestCase {
 
     @Test
     public void testValidate() throws Exception {
-        final String uri = "rackspace://cdn.duck.sh/%%~nc";
-        assertFalse(new TerminalOptionsInputValidator().validate(uri));
+        assertFalse(new TerminalOptionsInputValidator().validate("ftp://cdn.duck.sh/%%~nc"));
+        assertTrue(new TerminalOptionsInputValidator().validate("rackspace://cdn.duck.sh/%%~nc"));
     }
 
     @Test
