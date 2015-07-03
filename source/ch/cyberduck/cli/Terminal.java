@@ -340,7 +340,7 @@ public class Terminal {
     }
 
     protected Exit mount(final Session session) {
-        final SessionBackgroundAction action = new FilesystemBackgroundAction<Void>(
+        final SessionBackgroundAction action = new FilesystemBackgroundAction<Boolean>(
                 controller, session, cache, new FilesystemWorker(session, FilesystemFactory.get(controller, session, cache)));
         this.execute(action);
         if(action.hasFailed()) {

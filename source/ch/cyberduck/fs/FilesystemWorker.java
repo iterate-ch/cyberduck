@@ -30,7 +30,7 @@ import java.util.Objects;
 /**
  * @version $Id$
  */
-public class FilesystemWorker extends Worker<Void> {
+public class FilesystemWorker extends Worker<Boolean> {
     private static final Logger log = Logger.getLogger(FilesystemWorker.class);
 
     private final Session<?> session;
@@ -43,9 +43,14 @@ public class FilesystemWorker extends Worker<Void> {
     }
 
     @Override
-    public Void run() throws BackgroundException {
+    public Boolean run() throws BackgroundException {
         fs.mount(session.getFeature(Home.class).find());
-        return null;
+        return true;
+    }
+
+    @Override
+    public Boolean initialize() {
+        return false;
     }
 
     @Override
