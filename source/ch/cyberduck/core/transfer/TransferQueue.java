@@ -116,7 +116,11 @@ public final class TransferQueue {
             }
         }
         else {
-            threads.remove(t).interrupt();
+            final Thread removed = threads.remove(t);
+            if(removed != null) {
+                log.warn(String.format("Interrupt thread %s for transfer %s", removed, t));
+                removed.interrupt();
+            }
             temporary.remove(t);
         }
         // Transfer has finished.
