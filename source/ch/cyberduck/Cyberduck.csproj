@@ -85,7 +85,7 @@
     </Reference>
     <Reference Include="core, Version=4.6.2.16195, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\build\core.dll</HintPath>
+      <HintPath>..\..\..\build\Cyberduck.Core.dll</HintPath>
     </Reference>
     <Reference Include="CustomOpenFileFolderDialog">
       <HintPath>..\..\..\lib\CustomOpenFileFolderDialog.dll</HintPath>
@@ -618,7 +618,7 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.-->
   <!-- Import of the MSBuildCommunityTask targets -->
   <Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.targets" />

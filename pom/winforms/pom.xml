@@ -24,7 +24,7 @@
         <relativePath>../../pom.xml</relativePath>
         <version>4.8.0-SNAPSHOT</version>
     </parent>
-    <artifactId>cyberduck.windows.core</artifactId>
+    <artifactId>Cyberduck.Core.Native</artifactId>
     <packaging>pom</packaging>
     <version>4.8.0-SNAPSHOT</version>
 
@@ -51,9 +51,8 @@
                                 <configuration>
                                     <artifacts>
                                         <artifact>
-                                            <classifier>native</classifier>
                                             <type>dll</type>
-                                            <file>${project.basedir}/../../build/cyberduck.windows.core.dll</file>
+                                            <file>${project.basedir}/../../build/Cyberduck.Core.Native.dll</file>
                                         </artifact>
                                     </artifacts>
                                 </configuration>
@@ -70,6 +69,52 @@
             <groupId>ch.cyberduck</groupId>
             <artifactId>ui</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.structuremap</groupId>
+            <artifactId>structuremap</artifactId>
+            <classifier>native</classifier>
+            <type>dll</type>
+            <version>2.6.1</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>objectlistview</groupId>
+            <artifactId>objectlistview</artifactId>
+            <classifier>native</classifier>
+            <type>dll</type>
+            <version>2.5.1.35588</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>jnidispatch</groupId>
+            <artifactId>jnidispatch</artifactId>
+            <classifier>native</classifier>
+            <type>dll</type>
+            <version>4.0.0.215</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>sunmscapi</groupId>
+            <artifactId>sunmscapi</artifactId>
+            <version>7.0.250.17</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>sunmscapi</groupId>
+            <artifactId>sunmscapi</artifactId>
+            <classifier>native</classifier>
+            <type>dll</type>
+            <version>7.0.250.17</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>sunec</groupId>
+            <artifactId>sunec</artifactId>
+            <classifier>native</classifier>
+            <type>dll</type>
+            <version>8.0.40.26</version>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
 </project>

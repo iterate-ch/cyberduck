@@ -253,9 +253,8 @@
                                 <configuration>
                                     <artifacts>
                                         <artifact>
-                                            <classifier>native</classifier>
                                             <type>dll</type>
-                                            <file>${project.basedir}/../../build/core.dll</file>
+                                            <file>${project.basedir}/../../build/Cyberduck.Core.dll</file>
                                         </artifact>
                                     </artifacts>
                                 </configuration>

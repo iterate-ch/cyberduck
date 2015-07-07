@@ -52,7 +52,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="core">
-      <HintPath>..\..\..\build\core.dll</HintPath>
+      <HintPath>..\..\..\build\Cyberduck.Core.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.Core">
       <HintPath>..\..\..\lib\ikvmbin-8.1.5561\bin\IKVM.OpenJDK.Core.dll</HintPath>

@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Core</RootNamespace>
-    <AssemblyName>cyberduck.windows.core</AssemblyName>
+    <AssemblyName>Cyberduck.Core.Native</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -33,7 +33,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="core">
-      <HintPath>..\..\..\build\core.dll</HintPath>
+      <HintPath>..\..\..\build\Cyberduck.Core.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.Beans">
       <HintPath>..\..\..\lib\ikvmbin-8.1.5561\bin\IKVM.OpenJDK.Beans.dll</HintPath>

@@ -38,10 +38,10 @@
         <File Source="$(var.CLI.TargetDir)/Acknowledgments.rtf" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="core" Guid="058A9F4C-D8E9-43C3-83C1-E0E7439ACD93">
-        <File Source="$(var.CLI.TargetDir)/core.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CLI.TargetDir)/Cyberduck.Core.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="windows.core" Guid="678E99DD-6943-495D-8742-ECE21846365D">
-        <File Source="$(var.CLI.TargetDir)/cyberduck.windows.core.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CLI.TargetDir)/Cyberduck.Core.Native.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="ikvm.runtime" Guid="CBF03DF9-ADB2-4B77-BA28-E5C5BC0D10BE">
         <File Source="$(var.CLI.TargetDir)/IKVM.Runtime.dll" KeyPath="yes" Checksum="yes" />

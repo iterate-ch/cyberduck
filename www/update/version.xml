@@ -34,8 +34,8 @@
             <File source="${BUILDPATH}\StructureMap.dll"/>
             <File source="${BUILDPATH}\VistaBridgeLibrary.dll"/>
             <File source="${BUILDPATH}\Windows7.DesktopIntegration.dll"/>
-            <File source="${BUILDPATH}\core.dll"/>
-            <File source="${BUILDPATH}\cyberduck.windows.core.dll"/>
+            <File source="${BUILDPATH}\Cyberduck.Core.dll"/>
+            <File source="${BUILDPATH}\Cyberduck.Core.Native.dll"/>
             <File source="${BUILDPATH}\ikvm-native-win32-x86.dll"/>
             <File source="${BUILDPATH}\jnidispatch.dll"/>
             <File source="${BUILDPATH}\sunec.dll"/>

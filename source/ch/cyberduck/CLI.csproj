@@ -38,7 +38,7 @@
   <ItemGroup>
     <Reference Include="core, Version=4.6.2.16195, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\build\core.dll</HintPath>
+      <HintPath>..\..\..\build\Cyberduck.Core.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.Beans">
       <HintPath>..\..\..\lib\ikvmbin-8.1.5561\bin\IKVM.OpenJDK.Beans.dll</HintPath>
