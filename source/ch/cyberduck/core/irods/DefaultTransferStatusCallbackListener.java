@@ -45,7 +45,7 @@ public class DefaultTransferStatusCallbackListener implements TransferStatusCall
     @Override
     public FileStatusCallbackResponse statusCallback(final org.irods.jargon.core.transfer.TransferStatus t) throws JargonException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Progress with transfer status %s", t));
+            log.debug(String.format("Progress with %s", t));
         }
         final long bytes = t.getBytesTransfered() - status.getOffset();
         status.progress(bytes);
