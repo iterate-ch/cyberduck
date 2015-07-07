@@ -17,7 +17,7 @@
         <module>pom/binding</module>
         <module>pom/cocoa</module>
         <module>pom/winforms</module>
-        <module>pom/cyberduck</module>
+        <module>pom/bundle</module>
         <module>pom/cli</module>
     </modules>
 
