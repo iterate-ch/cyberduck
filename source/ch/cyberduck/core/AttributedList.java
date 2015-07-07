@@ -21,6 +21,7 @@ package ch.cyberduck.core;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -36,7 +37,27 @@ public class AttributedList<E extends Referenceable> extends ArrayList<E> {
 
     private static final long serialVersionUID = 8900332123622028341L;
 
-    private static final AttributedList EMPTY = new AttributedList();
+    private static final AttributedList EMPTY = new AttributedList() {
+        @Override
+        public boolean add(final Object o) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void add(final int index, final Object element) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean addAll(final Collection c) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean addAll(final int index, final Collection c) {
+            throw new UnsupportedOperationException();
+        }
+    };
 
     /**
      * Metadata of file listing
