@@ -15,11 +15,34 @@
         <module>pom/ui</module>
         <module>pom/fs</module>
         <module>pom/binding</module>
-        <module>pom/cocoa</module>
-        <module>pom/winforms</module>
-        <module>pom/bundle</module>
         <module>pom/cli</module>
     </modules>
+
+    <profiles>
+        <profile>
+            <id>mac</id>
+            <activation>
+                <os>
+                    <family>Mac</family>
+                </os>
+            </activation>
+            <modules>
+                <module>pom/cocoa</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>windows</id>
+            <activation>
+                <os>
+                    <family>Windows</family>
+                </os>
+            </activation>
+            <modules>
+                <module>pom/winforms</module>
+                <module>pom/bundle</module>
+            </modules>
+        </profile>
+    </profiles>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
