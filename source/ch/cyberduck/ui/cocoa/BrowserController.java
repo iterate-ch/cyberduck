@@ -566,6 +566,8 @@ public class BrowserController extends WindowController
 
     @Override
     public void setWindow(NSWindow window) {
+        // Save frame rectangle
+        window.setFrameAutosaveName("Browser");
         window.setTitle(preferences.getProperty("application.name"));
         window.setMiniwindowImage(IconCacheFactory.<NSImage>get().iconNamed("cyberduck-document.icns"));
         window.setMovableByWindowBackground(true);
