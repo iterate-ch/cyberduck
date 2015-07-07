@@ -36,7 +36,6 @@ import ch.cyberduck.ui.cocoa.Action;
 import ch.cyberduck.ui.cocoa.TableCellAttributes;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Selector;
@@ -50,7 +49,6 @@ import java.util.List;
  * @version $Id:$
  */
 public abstract class URLMenuDelegate extends AbstractMenuDelegate {
-    private static final Logger log = Logger.getLogger(URLMenuDelegate.class);
 
     protected static final NSDictionary URL_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
             NSArray.arrayWithObjects(NSFont.userFontOfSize(NSFont.smallSystemFontSize()), NSColor.darkGrayColor(),
@@ -131,11 +129,8 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
     }
 
     @Action
-    public void menuItemClicked(final NSMenu menu) {
-        if(log.isDebugEnabled()) {
-            log.debug("menuItemClicked:" + menu);
-        }
-        List<DescriptiveUrl> selected = new ArrayList<DescriptiveUrl>();
+    public void menuClicked(final NSMenu menu) {
+        final List<DescriptiveUrl> selected = new ArrayList<DescriptiveUrl>();
         for(Path file : this.getSelected()) {
             selected.add(this.getURLs(file).iterator().next());
         }
@@ -144,9 +139,6 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
 
     @Action
     public void menuItemClicked(final NSMenuItem item) {
-        if(log.isDebugEnabled()) {
-            log.debug("menuItemClicked:" + item);
-        }
         this.handle(this.getURLs(item.menu().indexOfItem(item), this.getSelected()));
     }
 
@@ -175,6 +167,6 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
 
     @Override
     protected Selector getDefaultAction() {
-        return Foundation.selector("menuItemClicked:");
+        return Foundation.selector("menuClicked:");
     }
 }
