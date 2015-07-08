@@ -2173,7 +2173,6 @@ profiles/Enter[!!-~]Cloud[!!-~]Suite.cyberduckprofile -text svneol=unset#applica
 profiles/Eucalyptus[!!-~]Walrus[!!-~]S3.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/FlexCloud.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/GMX[!!-~]Mediacenter.cyberduckprofile -text svneol=unset#application/octet-stream
-profiles/GreenQloud.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/HP[!!-~]Cloud[!!-~]Object[!!-~]Storage.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Internap[!!-~]XIPCloud[!!-~]Storage.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Lunacloud.cyberduckprofile -text svneol=unset#application/octet-stream
