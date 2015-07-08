@@ -54,8 +54,12 @@ public class RendezvousMenuDelegate extends CollectionMenuDelegate<Host> {
     }
 
     public RendezvousMenuDelegate(final MenuCallback callback) {
-        super(RendezvousCollection.defaultCollection());
-        collection = RendezvousCollection.defaultCollection();
+        this(RendezvousCollection.defaultCollection(), callback);
+    }
+
+    public RendezvousMenuDelegate(final RendezvousCollection collection, final MenuCallback callback) {
+        super(collection);
+        this.collection = collection;
         this.callback = callback;
     }
 

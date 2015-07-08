@@ -72,7 +72,11 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
     }
 
     public HistoryMenuDelegate(final MenuCallback callback) {
-        super(HistoryCollection.defaultCollection());
+        this(HistoryCollection.defaultCollection(), callback);
+    }
+
+    public HistoryMenuDelegate(final HistoryCollection collection, final MenuCallback callback) {
+        super(collection);
         this.callback = callback;
     }
 
