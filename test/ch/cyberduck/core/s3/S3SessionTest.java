@@ -25,7 +25,6 @@ import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.net.UnknownHostException;
@@ -259,15 +258,6 @@ public class S3SessionTest extends AbstractTestCase {
     @Test
     public void testBucketVirtualHostStyleAmazon() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
-        assertFalse(new S3Session(host).configure().getBoolProperty("s3service.disable-dns-buckets", true));
-    }
-
-    @Test
-    @Ignore
-    public void testBucketVirtualHostStyleGreenQloud() throws Exception {
-        final Profile profile = ProfileReaderFactory.get().read(
-                new Local("profiles/Eucalyptus Walrus S3.cyberduckprofile"));
-        final Host host = new Host(profile, profile.getDefaultHostname());
         assertFalse(new S3Session(host).configure().getBoolProperty("s3service.disable-dns-buckets", true));
     }
 
