@@ -100,7 +100,6 @@ public final class WorkspaceApplicationLauncher implements ApplicationLauncher {
     @Override
     public boolean open(final Local file, final Application application, final ApplicationQuitCallback callback) {
         synchronized(NSWorkspace.class) {
-            final NSWorkspace workspace = this.workspace;
             final String path = workspace.absolutePathForAppBundleWithIdentifier(application.getIdentifier());
             if(StringUtils.isNotBlank(path)) {
                 if(workspace.openFile(file.getAbsolute(), path)) {
