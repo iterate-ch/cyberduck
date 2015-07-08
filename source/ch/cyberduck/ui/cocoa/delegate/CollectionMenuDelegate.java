@@ -38,7 +38,7 @@ public abstract class CollectionMenuDelegate<T> extends AbstractMenuDelegate imp
     }
 
     @Override
-    public NSInteger numberOfItemsInMenu(NSMenu menu) {
+    public NSInteger numberOfItemsInMenu(final NSMenu menu) {
         if(this.isPopulated()) {
             // If you return a negative value, the number of items is left unchanged
             // and menu:updateItem:atIndex:shouldCancel: is not called.
@@ -49,6 +49,10 @@ public abstract class CollectionMenuDelegate<T> extends AbstractMenuDelegate imp
             return new NSInteger(collection.size());
         }
         return new NSInteger(1);
+    }
+
+    public T itemForIndex(final NSInteger index) {
+        return collection.get(index.intValue());
     }
 
     @Override

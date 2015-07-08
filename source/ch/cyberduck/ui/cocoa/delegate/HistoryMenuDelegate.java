@@ -94,6 +94,11 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
         return new NSInteger(1);
     }
 
+    @Override
+    public Host itemForIndex(final NSInteger index) {
+        return collection.get(index.intValue() / 2);
+    }
+
     /**
      * @return False if no more updates needed.
      */
@@ -111,7 +116,7 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
         }
         else if(index.intValue() < size * 2) {
             boolean label = index.intValue() % 2 == 0;
-            final Host h = collection.get(index.intValue() / 2);
+            final Host h = this.itemForIndex(index);
             if(label) {
                 item.setTitle(BookmarkNameProvider.toString(h));
                 item.setTarget(this.id());

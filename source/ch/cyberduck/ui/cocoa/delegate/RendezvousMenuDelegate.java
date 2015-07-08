@@ -73,7 +73,7 @@ public class RendezvousMenuDelegate extends CollectionMenuDelegate<Host> {
             item.setEnabled(false);
         }
         else {
-            final Host h = collection.get(index.intValue());
+            final Host h = this.itemForIndex(index);
             item.setTitle(BookmarkNameProvider.toString(h));
             item.setTarget(this.id());
             item.setEnabled(true);

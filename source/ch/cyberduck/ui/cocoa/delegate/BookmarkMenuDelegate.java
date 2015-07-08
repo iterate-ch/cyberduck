@@ -120,6 +120,11 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
     }
 
     @Override
+    public Host itemForIndex(final NSInteger row) {
+        return collection.get(row.intValue() - (index + 3));
+    }
+
+    @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger row, boolean cancel) {
         if(row.intValue() == index) {
             item.setEnabled(true);
@@ -140,7 +145,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
             menu.insertItem_atIndex(NSMenuItem.separatorItem(), row);
         }
         if(row.intValue() > index + 2) {
-            Host h = collection.get(row.intValue() - (index + 3));
+            Host h = this.itemForIndex(row);
             item.setTitle(BookmarkNameProvider.toString(h));
             item.setTarget(this.id());
             item.setImage(IconCacheFactory.<NSImage>get().iconNamed(h.getProtocol().icon(), 16));
