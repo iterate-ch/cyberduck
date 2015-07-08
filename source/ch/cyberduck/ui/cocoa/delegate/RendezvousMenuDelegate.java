@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa.delegate;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSMenu;
 import ch.cyberduck.binding.application.NSMenuItem;
+import ch.cyberduck.core.AbstractHostCollection;
 import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
@@ -40,7 +41,7 @@ import org.rococoa.cocoa.foundation.NSInteger;
 public class RendezvousMenuDelegate extends CollectionMenuDelegate<Host> {
     private static final Logger log = Logger.getLogger(RendezvousMenuDelegate.class);
 
-    private RendezvousCollection collection;
+    private AbstractHostCollection collection;
 
     private MenuCallback callback;
 
@@ -57,7 +58,7 @@ public class RendezvousMenuDelegate extends CollectionMenuDelegate<Host> {
         this(RendezvousCollection.defaultCollection(), callback);
     }
 
-    public RendezvousMenuDelegate(final RendezvousCollection collection, final MenuCallback callback) {
+    public RendezvousMenuDelegate(final AbstractHostCollection collection, final MenuCallback callback) {
         super(collection);
         this.collection = collection;
         this.callback = callback;

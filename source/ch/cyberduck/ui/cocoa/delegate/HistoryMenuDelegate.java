@@ -26,6 +26,7 @@ import ch.cyberduck.binding.application.NSMenuItem;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.binding.foundation.NSDictionary;
+import ch.cyberduck.core.AbstractHostCollection;
 import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.HistoryCollection;
 import ch.cyberduck.core.Host;
@@ -57,7 +58,7 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
                     NSAttributedString.ParagraphStyleAttributeName)
     );
 
-    private HistoryCollection collection
+    private AbstractHostCollection collection
             = HistoryCollection.defaultCollection();
 
     private MenuCallback callback;
@@ -75,7 +76,7 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
         this(HistoryCollection.defaultCollection(), callback);
     }
 
-    public HistoryMenuDelegate(final HistoryCollection collection, final MenuCallback callback) {
+    public HistoryMenuDelegate(final AbstractHostCollection collection, final MenuCallback callback) {
         super(collection);
         this.callback = callback;
     }
