@@ -126,19 +126,19 @@
 
     <target name="revision" depends="init">
         <echo message="Calculating revision..."/>
-        <exec dir="${home}" executable="svnversion" outputproperty="svn.revision" failonerror="true">
-            <arg value="."/>
-        </exec>
 
         <taskdef resource="net/sf/antcontrib/antcontrib.properties">
             <classpath path="${lib.ext}/ant-contrib-1.0b3.jar"/>
         </taskdef>
+
+        <property environment="env"/>
+        <echo message="env.SVN_REVISION=${env.SVN_REVISION}"/>
+
         <!-- Remove any non-digits (e.g. a trailing M) from the current revision -->
         <propertyregex property="revision"
-                       input="${svn.revision}"
+                       input="${env.SVN_REVISION}"
                        regexp="([\d]+).*"
                        select="\1"/>
-        <echo message="svn.revision=${svn.revision}"/>
         <property name="revision" value="${revision}"/>
         <echo message="revision=${revision}"/>
         <buildnumber file="build.number"/>
