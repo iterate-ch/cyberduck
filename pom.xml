@@ -15,6 +15,7 @@
         <module>pom/ui</module>
         <module>pom/fs</module>
         <module>pom/binding</module>
+        <module>pom/bundle</module>
         <module>pom/cli</module>
     </modules>
 
