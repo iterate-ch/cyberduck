@@ -41,7 +41,9 @@ public class DownloadDirectoryFinderTest extends AbstractTestCase {
         // Does not exist
         host.setDownloadFolder(new FinderLocal("/t"));
         assertEquals(System.getProperty("user.dir"), finder.find(host).getAbsolute());
-        host.setDownloadFolder(new FinderLocal("~/Documents"));
+        final FinderLocal folder = new FinderLocal("~/Documents");
+        folder.mkdir();
+        host.setDownloadFolder(folder);
         assertEquals("~/Documents", finder.find(host).getAbbreviatedPath());
     }
 }
