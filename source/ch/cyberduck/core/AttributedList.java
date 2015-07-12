@@ -158,9 +158,11 @@ public class AttributedList<E extends Referenceable> extends ArrayList<E> {
             }
             // Add previously hidden files to children
             final List<E> hidden = attributes.getHidden();
-            this.addAll(hidden);
-            // Clear the previously set of hidden files
-            hidden.clear();
+            if(!hidden.isEmpty()) {
+                this.addAll(hidden);
+                // Clear the previously set of hidden files
+                hidden.clear();
+            }
             for(Iterator<E> iter = this.iterator(); iter.hasNext(); ) {
                 final E child = iter.next();
                 if(!filter.accept(child)) {
