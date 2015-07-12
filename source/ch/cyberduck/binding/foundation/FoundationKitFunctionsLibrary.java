@@ -83,7 +83,7 @@ public final class FoundationKitFunctionsLibrary {
         return instance.NSSearchPathForDirectoriesInDomains(directory, domainMask, expandTilde);
     }
 
-    public static void NSLog(String format) {
-        instance.NSLog(format);
+    public static void NSLog(String format, String... args) {
+        instance.NSLog(format, args);
     }
 }

@@ -285,6 +285,6 @@ public interface FoundationKitFunctions extends Library {
      *
      * @param format Statement
      */
-    void NSLog(String format);
+    void NSLog(String format, String... args);
 }
 

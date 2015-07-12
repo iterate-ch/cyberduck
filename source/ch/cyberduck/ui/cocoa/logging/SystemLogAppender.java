@@ -44,7 +44,7 @@ public class SystemLogAppender extends AppenderSkeleton {
                 }
             }
         }
-        FoundationKitFunctionsLibrary.NSLog(buffer.toString());
+        FoundationKitFunctionsLibrary.NSLog("%@", buffer.toString());
     }
 
     @Override
