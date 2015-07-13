@@ -269,8 +269,8 @@ public class BrowserController extends WindowController
         this.toolbar.setDelegate((this.id()));
         this.toolbar.setAllowsUserCustomization(true);
         this.toolbar.setAutosavesConfiguration(true);
-        this.window().setToolbar(toolbar);
-        this.window().makeFirstResponder(quickConnectPopup);
+        this.window.setToolbar(toolbar);
+        this.window.makeFirstResponder(quickConnectPopup);
         this._updateBrowserColumns(browserListView, browserListViewDelegate);
         this._updateBrowserColumns(browserOutlineView, browserOutlineViewDelegate);
         if(preferences.getBoolean("browser.transcript.open")) {
@@ -347,7 +347,7 @@ public class BrowserController extends WindowController
             }
         }
         this.setStatus();
-        this.window().makeFirstResponder(view);
+        window.makeFirstResponder(view);
     }
 
     /**

@@ -72,7 +72,7 @@ public abstract class FileController extends AlertController {
     protected void focus(final NSTextField control) {
         // Focus accessory view.
         control.selectText(null);
-        this.window().makeFirstResponder(control);
+        window.makeFirstResponder(control);
         control.currentEditor().setSelectedRange(NSRange.NSMakeRange(
                 new NSUInteger(0), new NSUInteger(FilenameUtils.getBaseName(control.stringValue()).length())
         ));

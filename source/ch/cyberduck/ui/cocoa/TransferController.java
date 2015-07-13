@@ -284,7 +284,7 @@ public final class TransferController extends WindowController implements NSTool
      */
     @Action
     public void searchButtonClicked(final ID sender) {
-        this.window().makeFirstResponder(this.filterField);
+        window.makeFirstResponder(this.filterField);
     }
 
     private TranscriptController transcript;

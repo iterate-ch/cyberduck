@@ -120,7 +120,7 @@ public final class PromptLoginController implements LoginCallback {
             @Override
             public void awakeFromNib() {
                 this.update();
-                this.window().makeFirstResponder(usernameField);
+                window.makeFirstResponder(usernameField);
                 super.awakeFromNib();
             }
 

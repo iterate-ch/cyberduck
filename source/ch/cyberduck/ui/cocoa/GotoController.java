@@ -104,7 +104,7 @@ public class GotoController extends AlertController {
     protected void focus() {
         // Focus accessory view.
         folderCombobox.selectText(null);
-        this.window().makeFirstResponder(folderCombobox);
+        window.makeFirstResponder(folderCombobox);
     }
 
     @Override

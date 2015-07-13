@@ -90,7 +90,7 @@ public class DownloadController extends AlertController {
     protected void focus() {
         // Focus accessory view.
         urlField.selectText(null);
-        this.window().makeFirstResponder(urlField);
+        window.makeFirstResponder(urlField);
     }
 
     @Override
