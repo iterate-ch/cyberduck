@@ -37,7 +37,6 @@ import ch.cyberduck.ui.cocoa.Action;
 import ch.cyberduck.ui.cocoa.MainController;
 import ch.cyberduck.ui.cocoa.TableCellAttributes;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.Selector;
@@ -104,7 +103,7 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
      * @return False if no more updates needed.
      */
     @Override
-    public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean cancel) {
+    public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger row, boolean cancel) {
         final int size = collection.size();
         if(size == 0) {
             item.setTitle(LocaleFactory.localizedString("No recently connected servers available"));
@@ -115,9 +114,9 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
             // No more menu updates.
             return false;
         }
-        else if(index.intValue() < size * 2) {
-            boolean label = index.intValue() % 2 == 0;
-            final Host h = this.itemForIndex(index);
+        else if(row.intValue() < size * 2) {
+            boolean label = row.intValue() % 2 == 0;
+            final Host h = this.itemForIndex(row);
             if(label) {
                 item.setTitle(BookmarkNameProvider.toString(h));
                 item.setTarget(this.id());
@@ -139,21 +138,17 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
                 }
             }
         }
-        else if(index.intValue() == size * 2) {
-            // How to change an existing item to a separator item?
-            item.setTitle(StringUtils.EMPTY);
-            item.setTarget(null);
-            item.setAction(null);
-            item.setImage(null);
-            item.setEnabled(false);
+        else if(row.intValue() == size * 2) {
+            menu.removeItemAtIndex(row);
+            menu.insertItem_atIndex(NSMenuItem.separatorItem(), row);
         }
-        else if(index.intValue() == size * 2 + 1) {
+        else if(row.intValue() == size * 2 + 1) {
             item.setTitle(LocaleFactory.localizedString("Clear Menu"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("clearMenuItemClicked:"));
             item.setEnabled(true);
         }
-        return super.menuUpdateItemAtIndex(menu, item, index, cancel);
+        return super.menuUpdateItemAtIndex(menu, item, row, cancel);
     }
 
     @Action
