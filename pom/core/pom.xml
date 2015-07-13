@@ -164,11 +164,6 @@
             <version>1.7.1</version>
         </dependency>
         <dependency>
-            <groupId>com.ibm.icu</groupId>
-            <artifactId>icu4j</artifactId>
-            <version>4.6.1</version>
-        </dependency>
-        <dependency>
             <groupId>com.googlecode.plist</groupId>
             <artifactId>dd-plist</artifactId>
             <version>1.16</version>

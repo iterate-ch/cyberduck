@@ -20,7 +20,7 @@ package ch.cyberduck.core.unicode;
 
 import org.apache.log4j.Logger;
 
-import com.ibm.icu.text.Normalizer;
+import java.text.Normalizer;
 
 /**
  * @version $Id$
@@ -29,9 +29,9 @@ public class NFCNormalizer {
     private static final Logger log = Logger.getLogger(NFCNormalizer.class);
 
     public String normalize(final String name) {
-        if(!Normalizer.isNormalized(name, Normalizer.NFC, Normalizer.UNICODE_3_2)) {
+        if(!Normalizer.isNormalized(name, Normalizer.Form.NFC)) {
             // Canonical decomposition followed by canonical composition (default)
-            final String normalized = Normalizer.normalize(name, Normalizer.NFC, Normalizer.UNICODE_3_2);
+            final String normalized = Normalizer.normalize(name, Normalizer.Form.NFC);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Normalized local path %s to %s", name, normalized));
             }
