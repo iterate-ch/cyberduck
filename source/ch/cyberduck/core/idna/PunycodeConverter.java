@@ -22,8 +22,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import com.ibm.icu.text.IDNA;
-import com.ibm.icu.text.StringPrepParseException;
+import java.net.IDN;
 
 /**
  * @version $Id$
@@ -48,7 +47,7 @@ public class PunycodeConverter {
                 // IDNA.DEFAULT Use default options, i.e., do not process unassigned code points
                 // and do not use STD3 ASCII rules If unassigned code points are found
                 // the operation fails with ParseException
-                final String idn = IDNA.convertIDNToASCII(StringUtils.strip(hostname), IDNA.DEFAULT).toString();
+                final String idn = IDN.toASCII(StringUtils.strip(hostname));
                 if(log.isDebugEnabled()) {
                     if(!StringUtils.equals(StringUtils.strip(hostname), idn)) {
                         log.debug(String.format("IDN hostname for %s is %s", hostname, idn));
@@ -58,7 +57,7 @@ public class PunycodeConverter {
                     return idn;
                 }
             }
-            catch(StringPrepParseException e) {
+            catch(IllegalArgumentException e) {
                 log.warn(String.format("Failed to convert hostname %s to IDNA", hostname), e);
             }
         }
