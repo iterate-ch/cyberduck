@@ -3,6 +3,10 @@ http://cyberduck.io/
 
 Changelog. Last modified: $Date$
 
+4.7.2 [https://trac.cyberduck.io/milestone/4.7.2]
+- [Bugfix] Default size of new browser window (Mac) (#8906)
+- [Bugfix] Copying HTTP URL does not work (#8909)
+
 4.7.1 [https://trac.cyberduck.io/milestone/4.7.1]
 - [Feature] Invalidate multiple files using wildcards (CloudFront)
 - [Bugfix] Accessibility for blind users in Transfer window (VoiceOver) (#1343)

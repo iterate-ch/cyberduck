@@ -1,5 +1,8 @@
 A command line interface (CLI) version is now available from https://duck.sh/ for Windows, Linux & Mac.
 
+4.7.2 [https://trac.cyberduck.io/milestone/4.7.2]
+- [Bugfix] Copying HTTP URL does not work (#8909)
+
 4.7.1 [https://trac.cyberduck.io/milestone/4.7.1]
 - [Feature] Invalidate multiple files using wildcards (CloudFront)
 - [Bugfix] Interoperability with Ceph S3 (#8779)
