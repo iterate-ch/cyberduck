@@ -291,11 +291,13 @@ public final class TransferController extends WindowController implements NSTool
 
     private NSDrawer logDrawer;
 
-    public void drawerDidOpen(NSNotification notification) {
+    @Action
+    public void drawerDidOpen(final NSNotification notification) {
         preferences.setProperty("queue.transcript.open", true);
     }
 
-    public void drawerDidClose(NSNotification notification) {
+    @Action
+    public void drawerDidClose(final NSNotification notification) {
         preferences.setProperty("queue.transcript.open", false);
         transcript.clear();
     }
