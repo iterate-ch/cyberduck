@@ -21,7 +21,6 @@ import ch.cyberduck.binding.application.NSGraphics;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSWorkspace;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.local.Application;
@@ -44,9 +43,6 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
     private static final Logger log = Logger.getLogger(NSImageIconCache.class);
 
     private final NSRect NSZeroRect = new NSRect(0, 0);
-
-    private static final Local FOLDER_PATH
-            = LocalFactory.get(PreferencesFactory.get().getProperty("application.support.path"));
 
     /**
      * Cache limited to n entries
@@ -121,7 +117,7 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
     public NSImage folderIcon(final Integer size) {
         NSImage folder = this.iconNamed("NSFolder", size);
         if(null == folder) {
-            return this.fileIcon(FOLDER_PATH, size);
+            return this.iconNamed("NSFolder", size);
         }
         return folder;
     }
@@ -131,7 +127,7 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
         final String name = String.format("NSFolder-%s", badge.name());
         NSImage folder = this.load(name, size);
         if(null == folder) {
-            folder = this.convert(name, this.fileIcon(FOLDER_PATH, null), size);
+            folder = this.convert(name, this.iconNamed("NSFolder", size), size);
             folder = this.badge(badge, folder);
             this.put(name, folder, size);
         }
