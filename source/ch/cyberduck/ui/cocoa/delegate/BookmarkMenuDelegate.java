@@ -147,7 +147,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
         }
         if(row.intValue() == index + 2) {
             menu.removeItemAtIndex(row);
-            menu.insertItem_atIndex(NSMenuItem.separatorItem(), row);
+            menu.insertItem_atIndex(this.seperator(), row);
         }
         if(row.intValue() > index + 2) {
             Host h = this.itemForIndex(row);

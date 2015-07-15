@@ -145,7 +145,7 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
         }
         else if(row.intValue() == size * 2) {
             menu.removeItemAtIndex(row);
-            menu.insertItem_atIndex(NSMenuItem.separatorItem(), row);
+            menu.insertItem_atIndex(this.seperator(), row);
         }
         else if(row.intValue() == size * 2 + 1) {
             item.setTitle(LocaleFactory.localizedString("Clear Menu"));
