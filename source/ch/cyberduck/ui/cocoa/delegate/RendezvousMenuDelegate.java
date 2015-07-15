@@ -26,6 +26,8 @@ import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.bonjour.RendezvousCollection;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.ui.cocoa.Action;
 import ch.cyberduck.ui.cocoa.MainController;
@@ -44,6 +46,9 @@ public class RendezvousMenuDelegate extends CollectionMenuDelegate<Host> {
     private AbstractHostCollection collection;
 
     private MenuCallback callback;
+
+    private final Preferences preferences
+            = PreferencesFactory.get();
 
     public RendezvousMenuDelegate() {
         this(new MenuCallback() {
@@ -78,7 +83,7 @@ public class RendezvousMenuDelegate extends CollectionMenuDelegate<Host> {
             item.setTitle(BookmarkNameProvider.toString(h));
             item.setTarget(this.id());
             item.setEnabled(true);
-            item.setImage(IconCacheFactory.<NSImage>get().iconNamed(h.getProtocol().icon(), 16));
+            item.setImage(IconCacheFactory.<NSImage>get().iconNamed(h.getProtocol().icon(), preferences.getInteger("bookmark.menu.icon.size")));
             item.setTarget(this.id());
             item.setAction(this.getDefaultAction());
             item.setRepresentedObject(h.getUuid());

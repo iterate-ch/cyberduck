@@ -32,6 +32,8 @@ import ch.cyberduck.core.HistoryCollection;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.UserDateFormatterFactory;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.ui.cocoa.Action;
 import ch.cyberduck.ui.cocoa.MainController;
@@ -61,6 +63,9 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
             = HistoryCollection.defaultCollection();
 
     private MenuCallback callback;
+
+    private final Preferences preferences
+            = PreferencesFactory.get();
 
     public HistoryMenuDelegate() {
         this(new MenuCallback() {
@@ -123,7 +128,7 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
                 item.setAction(this.getDefaultAction());
                 item.setRepresentedObject(h.getUuid());
                 item.setEnabled(true);
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed(h.getProtocol().icon(), 16));
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed(h.getProtocol().icon(), preferences.getInteger("bookmark.menu.icon.size")));
             }
             else {
                 // Dummy menu item with timestamp

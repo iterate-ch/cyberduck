@@ -953,6 +953,7 @@ public abstract class Preferences {
          * Default to large icon size
          */
         defaults.put("bookmark.icon.size", String.valueOf(64));
+        defaults.put("bookmark.menu.icon.size", String.valueOf(16));
 
         /**
          * Location of the openssh known_hosts file

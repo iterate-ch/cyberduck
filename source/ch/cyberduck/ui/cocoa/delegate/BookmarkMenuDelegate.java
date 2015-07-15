@@ -28,6 +28,8 @@ import ch.cyberduck.core.HistoryCollection;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.ui.cocoa.Action;
 import ch.cyberduck.ui.cocoa.Delegate;
@@ -45,6 +47,9 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
     private static final Logger log = Logger.getLogger(BookmarkMenuDelegate.class);
 
     private static final int BOOKMARKS_INDEX = 8;
+
+    private final Preferences preferences
+            = PreferencesFactory.get();
 
     private AbstractHostCollection collection;
 
@@ -148,7 +153,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
             Host h = this.itemForIndex(row);
             item.setTitle(BookmarkNameProvider.toString(h));
             item.setTarget(this.id());
-            item.setImage(IconCacheFactory.<NSImage>get().iconNamed(h.getProtocol().icon(), 16));
+            item.setImage(IconCacheFactory.<NSImage>get().iconNamed(h.getProtocol().icon(), preferences.getInteger("bookmark.menu.icon.size")));
             item.setAction(this.getDefaultAction());
             item.setRepresentedObject(h.getUuid());
         }
