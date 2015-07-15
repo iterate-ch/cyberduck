@@ -147,10 +147,21 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
         f.lockFocus();
         icon.drawInRect(new NSRect(new NSPoint(0, 0), icon.size()),
                 NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
-        badge.drawInRect(new NSRect(new NSPoint(0, 0), icon.size()),
+        badge.drawInRect(new NSRect(new NSPoint(0, 0), badge.size()),
                 NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
         f.unlockFocus();
         return f;
+    }
+
+    public NSImage iconNamed(final String image, final Integer size, final NSImage badge) {
+        final String name = String.format("%s-%s", image, badge.name());
+        NSImage icon = this.load(name, size);
+        if(null == icon) {
+            icon = this.convert(name, this.iconNamed(image, size), size);
+            icon = this.badge(badge, icon);
+            this.put(name, icon, size);
+        }
+        return icon;
     }
 
     /**
