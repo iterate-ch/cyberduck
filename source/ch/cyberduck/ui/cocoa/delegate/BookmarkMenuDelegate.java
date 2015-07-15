@@ -174,7 +174,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
     }
 
     @Override
-    protected Selector getDefaultAction() {
+    public Selector getDefaultAction() {
         return Foundation.selector("bookmarkMenuItemClicked:");
     }
 }

@@ -70,7 +70,7 @@ public abstract class AbstractMenuDelegate extends ProxyController implements NS
         return !cancel;
     }
 
-    protected abstract Selector getDefaultAction();
+    public abstract Selector getDefaultAction();
 
     /**
      * Keyboard shortcut target

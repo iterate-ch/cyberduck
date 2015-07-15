@@ -171,7 +171,7 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
     }
 
     @Override
-    protected Selector getDefaultAction() {
+    public Selector getDefaultAction() {
         return Foundation.selector("menuItemClicked:");
     }
 }

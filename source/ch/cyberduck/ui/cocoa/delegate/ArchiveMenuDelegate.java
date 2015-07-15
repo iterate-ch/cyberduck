@@ -18,9 +18,9 @@ package ch.cyberduck.ui.cocoa.delegate;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Archive;
 import ch.cyberduck.binding.application.NSMenu;
 import ch.cyberduck.binding.application.NSMenuItem;
+import ch.cyberduck.core.Archive;
 
 import org.rococoa.Foundation;
 import org.rococoa.Selector;
@@ -51,7 +51,7 @@ public class ArchiveMenuDelegate extends AbstractMenuDelegate {
     }
 
     @Override
-    protected Selector getDefaultAction() {
+    public Selector getDefaultAction() {
         return Foundation.selector("archiveMenuClicked:");
     }
 }

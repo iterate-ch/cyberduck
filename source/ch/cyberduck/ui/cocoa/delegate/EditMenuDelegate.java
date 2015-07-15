@@ -134,7 +134,7 @@ public abstract class EditMenuDelegate extends AbstractMenuDelegate {
     }
 
     @Override
-    protected Selector getDefaultAction() {
+    public Selector getDefaultAction() {
         return Foundation.selector("editButtonClicked:");
     }
 }

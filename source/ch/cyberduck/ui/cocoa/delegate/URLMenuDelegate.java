@@ -166,7 +166,7 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
     }
 
     @Override
-    protected Selector getDefaultAction() {
+    public Selector getDefaultAction() {
         return Foundation.selector("menuClicked:");
     }
 }

@@ -388,7 +388,7 @@ public final class TransferController extends WindowController implements NSTool
         }
 
         @Override
-        protected Selector getDefaultAction() {
+        public Selector getDefaultAction() {
             return Foundation.selector("bandwidthPopupChanged:");
         }
     }
