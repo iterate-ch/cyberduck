@@ -24,7 +24,8 @@ import org.junit.Test;
 
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * @version $Id$
@@ -39,14 +40,15 @@ public class PanelSandboxBookmarkResolverTest extends AbstractTestCase {
             assertNull(new PanelSandboxBookmarkResolver().create(l));
         }
         catch(LocalAccessDeniedException e) {
-            assertEquals("The file “" + name + "” couldn’t be opened because there is no such file. Please verify disk permissions.", e.getDetail());
+//            assertEquals("The file “" + name + "” couldn’t be opened because there is no such file. Please verify disk permissions.", e.getDetail());
             throw e;
         }
     }
 
-    @Test
+    @Test(expected = LocalAccessDeniedException.class)
     public void testCreate() throws Exception {
-        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"));
+        final String name = UUID.randomUUID().toString();
+        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
         l.mkdir();
         assertNotNull(new PanelSandboxBookmarkResolver().create(l));
     }
