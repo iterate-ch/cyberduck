@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2015 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@ using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 
 namespace Ch.Cyberduck.Ui.Core
 {
-    internal class Utils
+    public class Utils
     {
         public static DialogResult CommandBox(IWin32Window owner, string title, string mainInstruction, string content,
             string expandedInfo, string help, string verificationText, string commandButtons, bool showCancelButton,
