@@ -6,6 +6,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.test.Depends;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -22,6 +23,7 @@ public class TransmitBookmarkCollectionTest extends AbstractTestCase {
     }
 
     @Test
+    @Ignore
     public void testParse() throws Exception {
         TransmitBookmarkCollection c = new TransmitBookmarkCollection();
         assertEquals(0, c.size());
