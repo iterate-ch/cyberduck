@@ -96,10 +96,10 @@ public class ConnectionController extends SheetController {
     }
 
     @Override
-    public void beginSheet() {
+    protected void beginSheet(final NSWindow window) {
         // Reset password input
         passField.setStringValue(StringUtils.EMPTY);
-        super.beginSheet();
+        super.beginSheet(window);
     }
 
     @Override

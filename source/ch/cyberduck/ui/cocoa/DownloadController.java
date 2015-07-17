@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSTextField;
+import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.core.DefaultPathKindDetector;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
@@ -49,11 +50,11 @@ public class DownloadController extends AlertController {
     private PathKindDetector detector = new DefaultPathKindDetector();
 
     @Override
-    public void beginSheet() {
+    protected void beginSheet(final NSWindow window) {
         this.setAccessoryView(urlField);
         this.updateField(urlField, url);
         alert.setShowsHelp(true);
-        super.beginSheet();
+        super.beginSheet(window);
     }
 
     private String url;

@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSTextField;
+import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.foundation.NSRange;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
@@ -59,9 +60,9 @@ public abstract class FileController extends AlertController {
     }
 
     @Override
-    public void beginSheet() {
+    protected void beginSheet(final NSWindow window) {
         this.setAccessoryView(inputField);
-        super.beginSheet();
+        super.beginSheet(window);
     }
 
     @Override
