@@ -280,19 +280,18 @@ public final class PromptLoginController implements LoginCallback {
             @Action
             public void pkCheckboxSelectionChanged(final NSButton sender) {
                 if(sender.state() == NSCell.NSOnState) {
-                    try {
-                        final Local selected = select(this, new SheetCallback() {
-                            @Override
-                            public void callback(final int returncode) {
-                                //
+                    select(this, new SheetCallback() {
+                        @Override
+                        public void callback(final int returncode) {
+                            if(returncode == SheetCallback.DEFAULT_OPTION) {
+                                final NSObject selected = select.filenames().lastObject();
+                                if(selected != null) {
+                                    credentials.setIdentity(LocalFactory.get(selected.toString()));
+                                    update();
+                                }
                             }
-                        });
-                        credentials.setIdentity(selected);
-                        update();
-                    }
-                    catch(LoginCanceledException e) {
-                        //
-                    }
+                        }
+                    });
                 }
                 else {
                     credentials.setIdentity(null);
@@ -365,15 +364,19 @@ public final class PromptLoginController implements LoginCallback {
     private NSOpenPanel select;
 
     public Local select(final Local identity) throws LoginCanceledException {
-        return this.select(parent, new SheetCallback() {
+        final Local selected = this.select(parent, new SheetCallback() {
             @Override
             public void callback(final int returncode) {
                 //
             }
         });
+        if(null == selected) {
+            throw new LoginCanceledException();
+        }
+        return selected;
     }
 
-    protected Local select(final WindowController parent, final SheetCallback callback) throws LoginCanceledException {
+    protected Local select(final WindowController parent, final SheetCallback callback) {
         final SheetController sheet = new SheetController(parent) {
             @Override
             public void callback(final int returncode) {
@@ -381,7 +384,7 @@ public final class PromptLoginController implements LoginCallback {
             }
 
             @Override
-            public void beginSheet() {
+            public void beginSheet(final NSWindow window) {
                 select = NSOpenPanel.openPanel();
                 select.setCanChooseDirectories(false);
                 select.setCanChooseFiles(true);
@@ -404,6 +407,6 @@ public final class PromptLoginController implements LoginCallback {
                 return LocalFactory.get(selected.toString());
             }
         }
-        throw new LoginCanceledException();
+        return null;
     }
 }
