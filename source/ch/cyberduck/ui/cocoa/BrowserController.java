@@ -3140,7 +3140,12 @@ public class BrowserController extends WindowController
         this.setPathFilter(null);
         final NSTableView browser = this.getSelectedBrowserView();
         window.endEditingFor(browser);
-        this.reload(directory, Collections.singleton(directory), selected, false);
+        if(null == directory) {
+            this.reload(null, Collections.<Path>emptySet(), selected, false);
+        }
+        else {
+            this.reload(directory, Collections.singleton(directory), selected, false);
+        }
     }
 
     private void setNavigation(boolean enabled) {
