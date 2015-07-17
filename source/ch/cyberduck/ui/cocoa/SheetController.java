@@ -57,7 +57,8 @@ public abstract class SheetController extends WindowController implements SheetC
      */
     private int returncode;
 
-    private CountDownLatch signal;
+    private CountDownLatch signal
+            = new CountDownLatch(1);
 
     /**
      * The sheet window must be provided later with #setWindow (usually called when loading the NIB file)
@@ -116,7 +117,6 @@ public abstract class SheetController extends WindowController implements SheetC
 
     public void beginSheet() {
         synchronized(parent.window()) {
-            signal = new CountDownLatch(1);
             if(NSThread.isMainThread()) {
                 this.loadBundle();
                 // No need to call invoke on main thread
