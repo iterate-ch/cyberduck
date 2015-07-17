@@ -554,6 +554,7 @@ public class BookmarkController extends WindowController {
         this.setState(this.toggleOptionsButton, preferences.getBoolean("bookmark.toggle.options"));
         this.reachable();
         this.updateFavicon();
+        window.makeFirstResponder(hostField);
 
         super.awakeFromNib();
     }
