@@ -6,7 +6,7 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.ConnectionTimeoutException;
+import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AclPermission;
@@ -289,7 +289,8 @@ public class S3SessionTest extends AbstractTestCase {
             s.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         }
         catch(LoginFailureException e) {
-            assertEquals(ConnectionTimeoutException.class, e.getCause().getClass());
+            assertEquals(ConnectionRefusedException.class, e.getCause().getClass());
+//            assertEquals(ConnectionTimeoutException.class, e.getCause().getClass());
             throw e;
         }
     }
