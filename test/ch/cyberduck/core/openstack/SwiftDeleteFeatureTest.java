@@ -142,6 +142,7 @@ public class SwiftDeleteFeatureTest extends AbstractTestCase {
         assertTrue(find.find(placeholder));
         new SwiftDeleteFeature(session).delete(Arrays.asList(placeholder), new DisabledLoginCallback(), new DisabledProgressListener());
         assertTrue(delete.get());
+        Thread.sleep(1000L);
         assertFalse(find.find(placeholder));
         session.close();
     }
