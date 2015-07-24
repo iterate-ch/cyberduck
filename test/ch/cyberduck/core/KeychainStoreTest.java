@@ -21,6 +21,7 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.ssl.CertificateStoreX509KeyManager;
 import ch.cyberduck.core.test.Depends;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.security.auth.x500.X500Principal;
@@ -35,6 +36,7 @@ import static org.junit.Assert.assertNotNull;
 public class KeychainStoreTest extends AbstractTestCase {
 
     @Test
+    @Ignore
     public void testGetAliasesForIssuerDN() throws Exception {
         final CertificateStoreX509KeyManager m = new CertificateStoreX509KeyManager(new DisabledCertificateStore(),
                 KeyStore.getInstance("KeychainStore", "Apple")).init();
