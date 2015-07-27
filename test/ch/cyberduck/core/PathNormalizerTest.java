@@ -39,8 +39,15 @@ public class PathNormalizerTest extends AbstractTestCase {
     @Test
     public void testDoubleDot() throws Exception {
         assertEquals("/", PathNormalizer.normalize("/.."));
+        assertEquals("/p", PathNormalizer.normalize("/p/n/.."));
         assertEquals("/n", PathNormalizer.normalize("/p/../n"));
         assertEquals("/", PathNormalizer.normalize(".."));
         assertEquals("/", PathNormalizer.normalize("."));
+    }
+
+    @Test
+    public void testDot() throws Exception {
+        assertEquals("/p", PathNormalizer.normalize("/p/."));
+        assertEquals("/", PathNormalizer.normalize("/."));
     }
 }
