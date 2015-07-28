@@ -124,10 +124,10 @@ public class WritePermissionWorker extends Worker<Boolean> {
     }
 
     private void write(final Path file, final Permission permission) throws BackgroundException {
-        if(!permission.equals(file.attributes().getPermission())) {
+        final Permission previous = file.attributes().getPermission();
+        if(!permission.equals(previous)) {
             final Permission merged = new Permission(permission.getUser(), permission.getGroup(), permission.getOther(),
-                    file.attributes().getPermission().isSticky(), file.attributes().getPermission().isSetuid(),
-                    file.attributes().getPermission().isSetgid());
+                    previous.isSticky(), previous.isSetuid(), previous.isSetgid());
             listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
                     file.getName(), merged));
             feature.setUnixPermission(file, merged);
