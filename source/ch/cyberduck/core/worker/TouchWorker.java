@@ -76,4 +76,12 @@ public class TouchWorker extends Worker<Path> {
     public int hashCode() {
         return file != null ? file.hashCode() : 0;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("TouchWorker{");
+        sb.append("file=").append(file);
+        sb.append('}');
+        return sb.toString();
+    }
 }

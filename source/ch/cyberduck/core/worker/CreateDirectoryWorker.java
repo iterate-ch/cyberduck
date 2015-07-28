@@ -95,4 +95,13 @@ public class CreateDirectoryWorker extends Worker<Path> {
         result = 31 * result + (region != null ? region.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CreateDirectoryWorker{");
+        sb.append("folder=").append(folder);
+        sb.append(", region='").append(region).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
 }
