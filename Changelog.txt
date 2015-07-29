@@ -4,8 +4,12 @@ http://cyberduck.io/
 Changelog. Last modified: $Date$
 
 4.7.2 [https://trac.cyberduck.io/milestone/4.7.2]
+- [Feature] Delete incomplete multipart uploads when deleting file (S3) (#8920)
 - [Bugfix] Default size of new browser window (Mac) (#8906)
 - [Bugfix] Copying HTTP URL does not work (#8909)
+- [Bugfix] Crash in NSLog (Mac) (#8927)
+- [Bugfix] Unable to select private key (Mac) (#8928, #8933)
+- [Bugfix] Interoperability with Oracle Web Center (#8953)
 
 4.7.1 [https://trac.cyberduck.io/milestone/4.7.1]
 - [Feature] Invalidate multiple files using wildcards (CloudFront)
