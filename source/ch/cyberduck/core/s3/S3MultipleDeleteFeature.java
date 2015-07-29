@@ -30,6 +30,7 @@ import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.jets3t.service.ServiceException;
+import org.jets3t.service.model.MultipartUpload;
 import org.jets3t.service.model.MultipleDeleteResult;
 import org.jets3t.service.model.container.ObjectKeyAndVersion;
 
@@ -50,11 +51,14 @@ public class S3MultipleDeleteFeature implements Delete {
     private PathContainerService containerService
             = new S3PathContainerService();
 
-    private Versioning versioning;
+    private S3MultipartService multipartService;
+
+    private Versioning versioningService;
 
     public S3MultipleDeleteFeature(final S3Session session) {
         this.session = session;
-        this.versioning = session.getFeature(Versioning.class);
+        this.versioningService = session.getFeature(Versioning.class);
+        this.multipartService = new S3MultipartService(session);
     }
 
     public void delete(final List<Path> files, final LoginCallback prompt, final ProgressListener listener) throws BackgroundException {
@@ -100,6 +104,14 @@ public class S3MultipleDeleteFeature implements Delete {
                 }
             }
         }
+        for(Path file : files) {
+            if(file.isFile()) {
+                // Delete interrupted multipart uploads
+                for(MultipartUpload upload : multipartService.find(file)) {
+                    multipartService.delete(upload);
+                }
+            }
+        }
     }
 
     /**
@@ -110,9 +122,9 @@ public class S3MultipleDeleteFeature implements Delete {
     protected void delete(final Path container, final List<ObjectKeyAndVersion> keys, final LoginCallback prompt)
             throws BackgroundException {
         try {
-            if(versioning != null
-                    && versioning.getConfiguration(container).isMultifactor()) {
-                final Credentials factor = versioning.getToken(prompt);
+            if(versioningService != null
+                    && versioningService.getConfiguration(container).isMultifactor()) {
+                final Credentials factor = versioningService.getToken(prompt);
                 final MultipleDeleteResult result = session.getClient().deleteMultipleObjectsWithMFA(container.getName(),
                         keys.toArray(new ObjectKeyAndVersion[keys.size()]),
                         factor.getUsername(),

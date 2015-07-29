@@ -30,6 +30,7 @@ import org.jets3t.service.model.MultipartPart;
 import org.jets3t.service.model.MultipartUpload;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -56,10 +57,11 @@ public class S3MultipartService {
         this.session = session;
     }
 
-    public MultipartUpload find(final Path file) throws BackgroundException {
+    public List<MultipartUpload> find(final Path file) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Finding multipart uploads for %s", file));
         }
+        final List<MultipartUpload> uploads = new ArrayList<MultipartUpload>();
         // This operation lists in-progress multipart uploads. An in-progress multipart upload is a
         // multipart upload that has been initiated, using the Initiate Multipart Upload request, but has
         // not yet been completed or aborted.
@@ -75,14 +77,14 @@ public class S3MultipartService {
             catch(S3ServiceException e) {
                 final BackgroundException failure = new ServiceExceptionMappingService().map("Upload {0} failed", e, file);
                 if(failure instanceof NotfoundException) {
-                    return null;
+                    return Collections.emptyList();
                 }
                 if(failure instanceof InteroperabilityException) {
-                    return null;
+                    return Collections.emptyList();
                 }
                 throw failure;
             }
-            final List<MultipartUpload> uploads = Arrays.asList(chunk.getUploads());
+            uploads.addAll(Arrays.asList(chunk.getUploads()));
             if(log.isInfoEnabled()) {
                 log.info(String.format("Found %d previous multipart uploads for %s", uploads.size(), file));
             }
@@ -93,17 +95,16 @@ public class S3MultipartService {
                     return -o1.getInitiatedDate().compareTo(o2.getInitiatedDate());
                 }
             });
-            for(MultipartUpload upload : uploads) {
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Found multipart upload %s for %s", upload, file));
-                }
-                return upload;
-            }
             nextKeyMarker = chunk.getPriorLastKey();
             nextUploadIdMarker = chunk.getPriorLastIdMarker();
         }
         while(nextUploadIdMarker != null);
-        return null;
+        for(MultipartUpload upload : uploads) {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Found multipart upload %s for %s", upload, file));
+            }
+        }
+        return uploads;
     }
 
     public List<MultipartPart> list(final MultipartUpload multipart) throws BackgroundException {

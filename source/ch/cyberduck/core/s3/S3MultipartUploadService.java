@@ -109,7 +109,10 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
         try {
             MultipartUpload multipart = null;
             if(status.isAppend()) {
-                multipart = multipartService.find(file);
+                final List<MultipartUpload> list = multipartService.find(file);
+                if(!list.isEmpty()) {
+                    multipart = list.iterator().next();
+                }
             }
             final List<MultipartPart> completed = new ArrayList<MultipartPart>();
             // Not found or new upload

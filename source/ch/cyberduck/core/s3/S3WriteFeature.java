@@ -45,6 +45,7 @@ import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.utils.ServiceUtils;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -185,10 +186,10 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
     public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
         if(length >= preferences.getLong("s3.upload.multipart.threshold")) {
             if(preferences.getBoolean("s3.upload.multipart")) {
-                final MultipartUpload upload = multipartService.find(file);
-                if(upload != null) {
+                final List<MultipartUpload> upload = multipartService.find(file);
+                if(!upload.isEmpty()) {
                     Long size = 0L;
-                    for(MultipartPart completed : multipartService.list(upload)) {
+                    for(MultipartPart completed : multipartService.list(upload.iterator().next())) {
                         size += completed.getSize();
                     }
                     return new Append(size);
