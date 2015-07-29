@@ -25,8 +25,7 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collections;
 
 /**
  * @version $Id$
@@ -147,9 +146,18 @@ public final class TerminalOptionsBuilder {
                 .isRequired(false)
                 .create());
         final StringBuilder b = new StringBuilder().append(StringUtils.LF);
-        final Set<TransferAction> actions = new HashSet<TransferAction>(TransferAction.forTransfer(Transfer.Type.download));
-        actions.add(TransferAction.cancel);
-        for(TransferAction a : actions) {
+        b.append("Options for downloads and uploads:").append(StringUtils.LF);
+        for(TransferAction a : TransferAction.forTransfer(Transfer.Type.download)) {
+            b.append("\t").append(a.getTitle()).append("\t").append(a.getDescription()).append(String.format(" (%s)", a.name())).append(StringUtils.LF);
+        }
+        for(TransferAction a : Collections.singletonList(TransferAction.cancel)) {
+            b.append("\t").append(a.getTitle()).append("\t").append(a.getDescription()).append(String.format(" (%s)", a.name())).append(StringUtils.LF);
+        }
+        b.append("Options for synchronize:").append(StringUtils.LF);
+        for(TransferAction a : TransferAction.forTransfer(Transfer.Type.sync)) {
+            b.append("\t").append(a.getTitle()).append("\t").append(a.getDescription()).append(String.format(" (%s)", a.name())).append(StringUtils.LF);
+        }
+        for(TransferAction a : Collections.singletonList(TransferAction.cancel)) {
             b.append("\t").append(a.getTitle()).append("\t").append(a.getDescription()).append(String.format(" (%s)", a.name())).append(StringUtils.LF);
         }
         options.addOption(OptionBuilder
