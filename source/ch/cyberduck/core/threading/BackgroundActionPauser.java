@@ -76,10 +76,7 @@ public class BackgroundActionPauser {
                     // Notify to return to caller from #pause()
                     wait.await();
                 }
-                catch(InterruptedException e) {
-                    log.error(e.getMessage(), e);
-                }
-                catch(BrokenBarrierException e) {
+                catch(InterruptedException | BrokenBarrierException e) {
                     log.error(e.getMessage(), e);
                 }
                 return super.cancel();
@@ -89,10 +86,7 @@ public class BackgroundActionPauser {
             // Wait for notify from wakeup timer
             wait.await();
         }
-        catch(InterruptedException e) {
-            log.error(e.getMessage(), e);
-        }
-        catch(BrokenBarrierException e) {
+        catch(InterruptedException | BrokenBarrierException e) {
             log.error(e.getMessage(), e);
         }
     }
