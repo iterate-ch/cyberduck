@@ -1099,6 +1099,7 @@ public class MainController extends BundleController implements NSApplication.De
                     final BookmarkCollection bookmarks = BookmarkCollection.defaultCollection();
                     t.filter(bookmarks);
                     if(t.isEmpty()) {
+                        preferences.setProperty(t.getConfiguration(), true);
                         continue;
                     }
                     final NSAlert alert = NSAlert.alert(

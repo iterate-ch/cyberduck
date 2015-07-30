@@ -489,6 +489,10 @@ namespace Ch.Cyberduck.Ui.Controller
                                 }
                             });
                     }
+                    else
+                    {
+                        PreferencesFactory.get().setProperty(c.getConfiguration(), true);
+                    }
                 }
                 thirdpartySemaphore.Signal();
             });
