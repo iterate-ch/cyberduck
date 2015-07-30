@@ -61,7 +61,7 @@ public class SessionListWorker extends Worker<AttributedList<Path>> implements L
     @Override
     public AttributedList<Path> run() throws BackgroundException {
         try {
-            if(cache.isValid(directory)) {
+            if(this.isCached()) {
                 return cache.get(directory);
             }
             return session.list(directory, this);
@@ -69,6 +69,10 @@ public class SessionListWorker extends Worker<AttributedList<Path>> implements L
         catch(ListCanceledException e) {
             return e.getChunk();
         }
+    }
+
+    protected boolean isCached() {
+        return cache.isValid(directory);
     }
 
     @Override
