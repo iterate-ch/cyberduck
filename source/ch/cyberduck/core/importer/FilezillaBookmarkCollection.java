@@ -31,6 +31,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.xml.sax.Attributes;
 
 /**
  * @version $Id$
@@ -78,9 +79,11 @@ public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
      */
     private class ServerHandler extends AbstractHandler {
         private Host current = null;
+        private Attributes attrs;
 
         @Override
-        public void startElement(String name) {
+        public void startElement(String name, Attributes attrs) {
+            this.attrs = attrs;
             if(name.equals("Server")) {
                 current = new Host(PreferencesFactory.get().getProperty("connection.hostname.default"));
             }
@@ -134,7 +137,7 @@ public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
                 }
             }
             else if(name.equals("Pass")) {
-                if(Base64.isBase64(elementText)) {
+                if(attrs.getIndex("encoding") == 0 && attrs.getValue(0).equals("base64")) {
                     current.getCredentials().setPassword(new String(Base64.decodeBase64(elementText)));
                 }
                 else {

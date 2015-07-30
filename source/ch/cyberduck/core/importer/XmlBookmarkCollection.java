@@ -57,10 +57,10 @@ public abstract class XmlBookmarkCollection extends ThirdpartyBookmarkCollection
         @Override
         public void startElement(String uri, String name, String qName, Attributes attrs) {
             this.currentText = new StringBuilder();
-            this.startElement(name);
+            this.startElement(name, attrs);
         }
 
-        public abstract void startElement(String name);
+        public abstract void startElement(String name, Attributes attrs);
 
         @Override
         public void endElement(String uri, String name, String qName) {

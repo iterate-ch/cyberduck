@@ -113,7 +113,7 @@ public class CrossFtpBookmarkCollection extends XmlBookmarkCollection {
         }
 
         @Override
-        public void startElement(String name) {
+        public void startElement(String name, Attributes attrs) {
             //
         }
 

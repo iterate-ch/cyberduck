@@ -30,6 +30,7 @@ import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
+import org.xml.sax.Attributes;
 
 /**
  * @version $Id$
@@ -86,7 +87,7 @@ public class SmartFtpBookmarkCollection extends XmlBookmarkCollection {
         private Host current = null;
 
         @Override
-        public void startElement(String name) {
+        public void startElement(String name, Attributes attrs) {
             if(name.equals("FavoriteItem")) {
                 current = new Host(PreferencesFactory.get().getProperty("connection.hostname.default"));
                 current.getCredentials().setUsername(
