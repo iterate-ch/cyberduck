@@ -1406,7 +1406,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     items.Add(new TransferItem(selected, LocalFactory.get(downloadFolder, selected.getName())));
                 }
                 Transfer q = new DownloadTransfer(Session.getHost(), Utils.ConvertToJavaList(items));
-                transfer(q, new List<Path>());
+                transfer(q, downloads);
             }
         }
 
@@ -1703,7 +1703,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     downloads.Add(new TransferItem(file, LocalFactory.get(target, file.getName())));
                 }
-                transfer(new DownloadTransfer(Session.getHost(), Utils.ConvertToJavaList(downloads)), new List<Path>());
+                transfer(new DownloadTransfer(Session.getHost(), Utils.ConvertToJavaList(downloads)), SelectedPaths);
             }
         }
 
@@ -1723,7 +1723,9 @@ namespace Ch.Cyberduck.Ui.Controller
                 new DownloadDirectoryFinder().save(Session.getHost(), target.getParent());
                 IList<TransferItem> downloads = new List<TransferItem>();
                 downloads.Add(new TransferItem(selected, target));
-                transfer(new DownloadTransfer(Session.getHost(), Utils.ConvertToJavaList(downloads)), new List<Path>());
+                List<Path> seletionList = new List<Path>();
+                seletionList.Add(selected);
+                transfer(new DownloadTransfer(Session.getHost(), Utils.ConvertToJavaList(downloads)), seletionList);
             }
         }
 
