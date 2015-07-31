@@ -80,13 +80,15 @@ public class SwiftLocationFeature implements Location {
     public Name getLocation(final Path file) throws BackgroundException {
         final Path container = containerService.getContainer(file);
         if(Location.unknown.equals(new SwiftRegion(container.attributes().getRegion()))) {
-            for(Path c : new SwiftContainerListService(session, new SwiftRegion(session.getHost().getRegion()))
-                    .list(new DisabledListProgressListener())) {
-                if(c.getName().equals(container.getName())) {
-                    return new SwiftRegion(c.attributes().getRegion());
+            final SwiftRegion region = new SwiftRegion(session.getHost().getRegion());
+            if(Location.unknown.equals(region)) {
+                for(Path c : new SwiftContainerListService(session, region).list(new DisabledListProgressListener())) {
+                    if(c.getName().equals(container.getName())) {
+                        return new SwiftRegion(c.attributes().getRegion());
+                    }
                 }
             }
-            return Location.unknown;
+            return region;
         }
         return new SwiftRegion(container.attributes().getRegion());
     }

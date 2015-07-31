@@ -8,9 +8,11 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProfileReaderFactory;
 import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
 
@@ -34,7 +36,6 @@ public class SwiftRegionServiceTest extends AbstractTestCase {
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final TransferStatus status = new TransferStatus();
         final Region lookup = new SwiftRegionService(session).lookup(Location.unknown);
         assertTrue(lookup.isDefault());
         assertEquals("DFW", lookup.getRegionId());
@@ -59,5 +60,23 @@ public class SwiftRegionServiceTest extends AbstractTestCase {
         assertEquals("region-a.geo-1", lookup.getRegionId());
         assertNotNull(lookup.getStorageUrl());
         assertNotNull(lookup.getCDNManagementUrl());
+    }
+
+    @Test
+    public void testFindDefaultLocationInBookmark() throws Exception {
+        final Profile profile = ProfileReaderFactory.get().read(
+                new Local("profiles/Rackspace US (IAD).cyberduckprofile"));
+        final SwiftSession session = new SwiftSession(
+                new Host(profile, "identity.api.rackspacecloud.com",
+                        new Credentials(
+                                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+                        ))) {
+
+        };
+        assertEquals("IAD", session.getHost().getRegion());
+        final Region location = new SwiftRegionService(session).lookup(new Path("/test.cyberduck.ch",
+                EnumSet.of(Path.Type.directory, Path.Type.volume)));
+        assertNotNull(location);
+        assertEquals("IAD", location.getRegionId());
     }
 }
