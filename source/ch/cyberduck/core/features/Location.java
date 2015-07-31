@@ -33,7 +33,7 @@ public interface Location {
 
     Name getLocation(Path file) throws BackgroundException;
 
-    public static abstract class Name {
+    abstract class Name {
         private String identifier;
 
         protected Name(String identifier) {
@@ -67,7 +67,7 @@ public interface Location {
         }
     }
 
-    public static final Name unknown = new Name(null) {
+    Name unknown = new Name(null) {
         @Override
         public String toString() {
             return LocaleFactory.localizedString("Unknown");
