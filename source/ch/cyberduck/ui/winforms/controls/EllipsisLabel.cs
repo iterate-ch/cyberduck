@@ -21,7 +21,7 @@ using System.Windows.Forms;
 
 namespace Ch.Cyberduck.Ui.Winforms.Controls
 {
-    internal class EllipsisLabel : Label
+    public class EllipsisLabel : Label
     {
         public EllipsisLabel()
         {

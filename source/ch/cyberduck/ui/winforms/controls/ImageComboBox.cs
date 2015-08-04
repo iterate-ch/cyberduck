@@ -23,7 +23,7 @@ using System.Windows.Forms;
 
 namespace Ch.Cyberduck.Ui.Winforms.Controls
 {
-    internal class ImageComboBox : ComboBox
+    public class ImageComboBox : ComboBox
     {
         private ImageList _icImagList = new ImageList();
 
