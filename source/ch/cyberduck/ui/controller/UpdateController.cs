@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2015 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,7 @@ using StructureMap;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
-    internal class UpdateController : WindowController<IUpdateView>
+    public class UpdateController : WindowController<IUpdateView>
     {
         private static readonly UpdateController _instance = new UpdateController();
 
