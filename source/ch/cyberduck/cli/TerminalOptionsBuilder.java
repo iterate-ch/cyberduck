@@ -103,7 +103,7 @@ public final class TerminalOptionsBuilder {
                 .withLongOpt(TerminalAction.delete.name())
                 .hasArg(true).withArgName("url")
                 .isRequired(false)
-                .create("d"));
+                .create("D"));
         options.addOption(OptionBuilder
                 .withDescription("Long list format with modification date and permission mask")
                 .withLongOpt(Params.longlist.name())
