@@ -199,7 +199,7 @@
             <param name="target" value="duck-src-${version}.${revision}.tar.gz"/>
         </antcall>
         <checksum file="${build.deploy}/duck-src-${version}.${revision}.tar.gz"
-                  algorithm="sha1" property="source.sha1"/>
+                  algorithm="sha256" property="source.sha1"/>
     </target>
 
     <target name="package.cli" depends="tarball,cli">
@@ -232,7 +232,7 @@
             <replacefilter token="${ARCHIVE.SHA1}" value="${archive.sha1}"/>
             <replacefilter token="${ARCHIVE}"
                            value="https://dist.duck.sh/duck-${version}.${revision}.tar.gz"/>
-            <replacefilter token="${SOURCE.SHA1}" value="${source.sha1}"/>
+            <replacefilter token="${SOURCE.SHA256}" value="${source.sha256}"/>
             <replacefilter token="${SOURCE}"
                            value="https://dist.duck.sh/duck-src-${version}.${revision}.tar.gz"/>
         </replace>
