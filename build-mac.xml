@@ -199,7 +199,7 @@
             <param name="target" value="duck-src-${version}.${revision}.tar.gz"/>
         </antcall>
         <checksum file="${build.deploy}/duck-src-${version}.${revision}.tar.gz"
-                  algorithm="sha256" property="source.sha1"/>
+                  algorithm="sha-256" property="source.sha1"/>
     </target>
 
     <target name="package.cli" depends="tarball,cli">
