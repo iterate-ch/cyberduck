@@ -31,7 +31,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.net.URI;
@@ -69,18 +68,6 @@ public class SwiftUrlProviderTest extends AbstractTestCase {
     }
 
     @Test
-    public void testDisconnected() throws Exception {
-        final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
-                new Credentials(properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret"))
-        ));
-        final UrlProvider provider = new SwiftUrlProvider(session, session.accounts);
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        assertEquals(DescriptiveUrl.EMPTY, provider.toUrl(file).find(DescriptiveUrl.Type.signed));
-    }
-
-    @Test
-    @Ignore
     public void testSigned() throws Exception {
         final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                 new Credentials(properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret"))
@@ -88,7 +75,6 @@ public class SwiftUrlProviderTest extends AbstractTestCase {
         final UrlProvider provider = new SwiftUrlProvider(session, session.accounts);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        assertEquals(DescriptiveUrl.EMPTY, provider.toUrl(file).find(DescriptiveUrl.Type.signed));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         container.attributes().setRegion("DFW");
