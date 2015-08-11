@@ -41,6 +41,7 @@ import ch.iterate.openstack.swift.method.Authentication20AccessKeySecretKeyReque
 import ch.iterate.openstack.swift.method.Authentication20RAXUsernameKeyRequest;
 import ch.iterate.openstack.swift.method.Authentication20UsernamePasswordRequest;
 import ch.iterate.openstack.swift.method.Authentication20UsernamePasswordTenantIdRequest;
+import ch.iterate.openstack.swift.method.Authentication3UsernamePasswordProjectRequest;
 import ch.iterate.openstack.swift.method.AuthenticationRequest;
 
 /**
@@ -130,6 +131,35 @@ public class SwiftAuthenticationService {
             options.add(new Authentication20AccessKeySecretKeyRequest(
                     URI.create(url.toString()),
                     user, credentials.getPassword(), tenant));
+            return options;
+        }
+        else if(context.contains("3")) {
+            // Prompt for project
+            final String user;
+            final String tenant;
+            if(StringUtils.contains(credentials.getUsername(), ':')) {
+                tenant = StringUtils.splitPreserveAllTokens(credentials.getUsername(), ':')[0];
+                user = StringUtils.splitPreserveAllTokens(credentials.getUsername(), ':')[1];
+            }
+            else {
+                user = credentials.getUsername();
+                final Credentials tenantCredentials = new TenantCredentials();
+                final LoginOptions options = new LoginOptions();
+                options.password = false;
+                prompt.prompt(host, tenantCredentials,
+                        LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                        LocaleFactory.localizedString("Project", "Mosso"), options);
+                tenant = tenantCredentials.getUsername();
+                if(tenant != null) {
+                    // Save tenant in username
+                    credentials.setUsername(String.format("%s:%s", tenant, credentials.getUsername()));
+                }
+            }
+            final Set<AuthenticationRequest> options = new LinkedHashSet<AuthenticationRequest>();
+            options.add(new Authentication3UsernamePasswordProjectRequest(
+                            URI.create(url.toString()),
+                            user, credentials.getPassword(), tenant)
+            );
             return options;
         }
         else {
