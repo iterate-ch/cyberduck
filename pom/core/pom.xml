@@ -66,7 +66,7 @@
         <dependency>
             <groupId>com.github.lookfirst</groupId>
             <artifactId>sardine</artifactId>
-            <version>5.4</version>
+            <version>5.5</version>
         </dependency>
         <dependency>
             <groupId>ch.iterate.openstack</groupId>
@@ -149,21 +149,6 @@
             <version>1.51</version>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jul-to-slf4j</artifactId>
-            <version>1.7.1</version>
-        </dependency>
-        <dependency>
             <groupId>com.googlecode.plist</groupId>
             <artifactId>dd-plist</artifactId>
             <version>1.16</version>
@@ -199,10 +184,10 @@
                             <goal>run</goal>
                         </goals>
                         <configuration>
-                            <tasks>
+                            <target>
                                 <property name="version" value="${project.version}"/>
                                 <ant antfile="${project.basedir}/../../build.xml" target="clean" dir="${project.basedir}/../.."/>
-                            </tasks>
+                            </target>
                         </configuration>
                     </execution>
                     <execution>
@@ -212,10 +197,10 @@
                             <goal>run</goal>
                         </goals>
                         <configuration>
-                            <tasks>
+                            <target>
                                 <property name="version" value="${project.version}"/>
                                 <ant antfile="${project.basedir}/../../build.xml" target="build" dir="${project.basedir}/../.."/>
-                            </tasks>
+                            </target>
                         </configuration>
                     </execution>
                 </executions>
