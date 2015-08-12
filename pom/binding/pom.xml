@@ -51,8 +51,7 @@
         </dependency>
         <dependency>
             <groupId>jnidispatch</groupId>
-            <artifactId>jnidispatch</artifactId>
-            <classifier>native</classifier>
+            <artifactId>libjnidispatch</artifactId>
             <type>dylib</type>
             <version>4.0.0.215</version>
             <scope>runtime</scope>
