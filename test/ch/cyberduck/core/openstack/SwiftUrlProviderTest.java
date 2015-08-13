@@ -77,6 +77,10 @@ public class SwiftUrlProviderTest extends AbstractTestCase {
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        while(session.accounts.isEmpty()) {
+            // Account information loaded in thread pool
+            Thread.sleep(1000L);
+        }
         container.attributes().setRegion("DFW");
         new SwiftTouchFeature(session).touch(file);
         final DescriptiveUrlBag list = provider.toUrl(file);
