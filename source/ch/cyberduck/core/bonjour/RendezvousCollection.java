@@ -72,6 +72,11 @@ public final class RendezvousCollection extends AbstractHostCollection implement
     }
 
     @Override
+    public boolean isEmpty() {
+        return size() == 0;
+    }
+
+    @Override
     public Host remove(int row) {
         return null;
     }
