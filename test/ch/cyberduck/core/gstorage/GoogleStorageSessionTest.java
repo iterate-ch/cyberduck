@@ -23,6 +23,7 @@ import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -206,6 +207,7 @@ public class GoogleStorageSessionTest extends AbstractTestCase {
     }
 
     @Test
+    @Ignore
     public void testProjectIdNewFormat() throws Exception {
         final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
                 "stellar-perigee-775", ""
