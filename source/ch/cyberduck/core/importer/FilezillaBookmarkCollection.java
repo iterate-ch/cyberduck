@@ -138,7 +138,9 @@ public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
             }
             else if(name.equals("Pass")) {
                 if(attrs.getIndex("encoding") == 0 && attrs.getValue(0).equals("base64")) {
-                    current.getCredentials().setPassword(new String(Base64.decodeBase64(elementText)));
+                    if(Base64.isBase64(elementText)) {
+                        current.getCredentials().setPassword(new String(Base64.decodeBase64(elementText)));
+                    }
                 }
                 else {
                     current.getCredentials().setPassword(elementText);
