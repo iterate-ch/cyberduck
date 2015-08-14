@@ -19,6 +19,7 @@ package ch.cyberduck.core.importer;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -54,6 +55,9 @@ public abstract class ExpandriveBookmarkCollection extends ThirdpartyBookmarkCol
                             break;
                         case "username":
                             current.getCredentials().setUsername(reader.nextString());
+                            break;
+                        case "private_key_file":
+                            current.getCredentials().setIdentity(LocalFactory.get(reader.nextString()));
                             break;
                         case "remotePath":
                             current.setDefaultPath(reader.nextString());
