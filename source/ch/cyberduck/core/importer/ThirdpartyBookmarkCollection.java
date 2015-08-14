@@ -172,10 +172,12 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
         // Save password if any to Keychain
         final Credentials credentials = bookmark.getCredentials();
         if(StringUtils.isNotBlank(credentials.getPassword())) {
-            keychain.addPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
-                    bookmark.getHostname(), credentials.getUsername(), credentials.getPassword());
-            // Reset password in memory
-            credentials.setPassword(null);
+            if(!credentials.isAnonymousLogin()) {
+                keychain.addPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
+                        bookmark.getHostname(), credentials.getUsername(), credentials.getPassword());
+                // Reset password in memory
+                credentials.setPassword(null);
+            }
         }
         return super.add(bookmark);
     }
