@@ -3,6 +3,9 @@ http://cyberduck.io/
 
 Changelog. Last modified: $Date$
 
+4.8 [https://trac.cyberduck.io/milestone/4.8]
+- [Feature] Importer for ExpanDrive bookmarks (Mac)
+
 4.7.2 [https://trac.cyberduck.io/milestone/4.7.2]
 - [Feature] Delete incomplete multipart uploads when deleting file (S3) (#8920)
 - [Bugfix] Default size of new browser window (Mac) (#8906)
