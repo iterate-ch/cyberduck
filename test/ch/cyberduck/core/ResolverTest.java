@@ -30,7 +30,7 @@ public class ResolverTest extends AbstractTestCase {
 
     @Test
     public void testResolveLinkLocalZoneIndexInterfaceName() throws Exception {
-        assertEquals("fe80:0:0:0:c62c:3ff:fe0b:8670%en0", new Resolver().resolve("fe80::c62c:3ff:fe0b:8670%en0").getHostName());
+        assertEquals("fe80:0:0:0:c62c:3ff:fe0b:8670%en0", new Resolver().resolve("andaman.local").getHostName());
         assertEquals("fe80:0:0:0:c62c:3ff:fe0b:8670%en0", new Resolver().resolve("fe80::c62c:3ff:fe0b:8670%en0").getHostAddress());
     }
 
