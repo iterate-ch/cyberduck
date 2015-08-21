@@ -69,17 +69,14 @@ public final class ProtocolFactory {
     }
 
     public static void register() {
+        register(FTP, FTP_TLS, SFTP, WEBDAV, WEBDAV_SSL, SWIFT, S3_SSL, GOOGLESTORAGE_SSL, AZURE, IRODS);
+    }
+
+    public static void register(Protocol... protocols) {
         // Order determines list in connection dropdown
-        register(FTP);
-        register(FTP_TLS);
-        register(SFTP);
-        register(WEBDAV);
-        register(WEBDAV_SSL);
-        register(SWIFT);
-        register(S3_SSL);
-        register(GOOGLESTORAGE_SSL);
-        register(AZURE);
-        register(IRODS);
+        for(Protocol protocol : protocols) {
+            register(protocol);
+        }
         // Order determines list in connection dropdown
         final Local bundled = LocalFactory.get(PreferencesFactory.get().getProperty("application.profiles.path"));
         if(bundled.exists()) {
