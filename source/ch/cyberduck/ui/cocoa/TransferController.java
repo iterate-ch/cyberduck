@@ -89,7 +89,11 @@ import java.util.StringTokenizer;
 public final class TransferController extends WindowController implements NSToolbar.Delegate, NSMenu.Validation {
     private static final Logger log = Logger.getLogger(TransferController.class);
 
-    private final TransferToolbarFactory toolbarFactory = new TransferToolbarFactory(this);
+    private final TransferToolbarFactory toolbarFactory
+            = new TransferToolbarFactory(this);
+
+    private final NSNotificationCenter notificationCenter
+            = NSNotificationCenter.defaultCenter();
 
     private NSToolbar toolbar;
 
@@ -255,7 +259,7 @@ public final class TransferController extends WindowController implements NSTool
 
     public void setFilterField(NSTextField filterField) {
         this.filterField = filterField;
-        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+        notificationCenter.addObserver(this.id(),
                 Foundation.selector("filterFieldTextDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
                 this.filterField);
@@ -427,6 +431,7 @@ public final class TransferController extends WindowController implements NSTool
         toolbar.setDelegate(null);
         transferTableModel.invalidate();
         bandwidthPopup.menu().setDelegate(null);
+        notificationCenter.removeObserver(this.id());
         super.invalidate();
     }
 

@@ -147,6 +147,8 @@ public class BrowserController extends WindowController
 
     private final BrowserToolbarFactory browserToolbarFactory = new BrowserToolbarFactory(this);
 
+    private final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
+
     /**
      *
      */
@@ -1895,7 +1897,7 @@ public class BrowserController extends WindowController
         this.quickConnectPopup.cell().setSendsActionOnEndEditing(false);
         this.quickConnectPopup.setUsesDataSource(true);
         this.quickConnectPopup.setDataSource(quickConnectPopupModel.id());
-        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+        notificationCenter.addObserver(this.id(),
                 Foundation.selector("quickConnectWillPopUp:"),
                 NSComboBox.ComboBoxWillPopUpNotification,
                 this.quickConnectPopup);
@@ -1948,7 +1950,7 @@ public class BrowserController extends WindowController
 
     public void setSearchField(NSTextField searchField) {
         this.searchField = searchField;
-        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+        notificationCenter.addObserver(this.id(),
                 Foundation.selector("searchFieldTextDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
                 this.searchField);
@@ -3604,6 +3606,8 @@ public class BrowserController extends WindowController
 
         archiveMenu.setDelegate(null);
         editMenu.setDelegate(null);
+
+        notificationCenter.removeObserver(this.id());
 
         super.invalidate();
     }

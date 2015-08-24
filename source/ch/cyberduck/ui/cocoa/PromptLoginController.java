@@ -62,6 +62,9 @@ import org.rococoa.Foundation;
 public final class PromptLoginController implements LoginCallback {
     private static final Logger log = Logger.getLogger(PromptLoginController.class);
 
+    private final NSNotificationCenter notificationCenter
+            = NSNotificationCenter.defaultCenter();
+
     private HostPasswordStore keychain
             = PasswordStoreFactory.get();
 
@@ -169,7 +172,7 @@ public final class PromptLoginController implements LoginCallback {
             public void setUsernameField(NSTextField usernameField) {
                 this.usernameField = usernameField;
                 this.updateField(this.usernameField, credentials.getUsername());
-                NSNotificationCenter.defaultCenter().addObserver(this.id(),
+                notificationCenter.addObserver(this.id(),
                         Foundation.selector("userFieldTextDidChange:"),
                         NSControl.NSControlTextDidChangeNotification,
                         this.usernameField);
@@ -211,7 +214,7 @@ public final class PromptLoginController implements LoginCallback {
             public void setPasswordField(NSSecureTextField passwordField) {
                 this.passwordField = passwordField;
                 this.updateField(this.passwordField, credentials.getPassword());
-                NSNotificationCenter.defaultCenter().addObserver(this.id(),
+                notificationCenter.addObserver(this.id(),
                         Foundation.selector("passFieldTextDidChange:"),
                         NSControl.NSControlTextDidChangeNotification,
                         this.passwordField);
@@ -398,6 +401,12 @@ public final class PromptLoginController implements LoginCallback {
             @Override
             public NSWindow window() {
                 return select;
+            }
+
+            @Override
+            public void invalidate() {
+                notificationCenter.removeObserver(this.id());
+                super.invalidate();
             }
         };
         sheet.beginSheet();

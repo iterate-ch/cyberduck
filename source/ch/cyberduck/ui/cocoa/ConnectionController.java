@@ -63,6 +63,9 @@ public class ConnectionController extends SheetController {
     private final HostPasswordStore keychain
             = PasswordStoreFactory.get();
 
+    private final NSNotificationCenter notificationCenter
+            = NSNotificationCenter.defaultCenter();
+
     private Preferences preferences
             = PreferencesFactory.get();
 
@@ -70,6 +73,7 @@ public class ConnectionController extends SheetController {
     public void invalidate() {
         hostField.setDelegate(null);
         hostField.setDataSource(null);
+        notificationCenter.removeObserver(this.id());
         super.invalidate();
     }
 
@@ -209,7 +213,7 @@ public class ConnectionController extends SheetController {
         this.hostField.setAction(Foundation.selector("hostPopupSelectionDidChange:"));
         this.hostField.setUsesDataSource(true);
         this.hostField.setDataSource(hostFieldModel.id());
-        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+        notificationCenter.addObserver(this.id(),
                 Foundation.selector("hostFieldTextDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
                 this.hostField);
@@ -323,7 +327,7 @@ public class ConnectionController extends SheetController {
 
     public void setPathField(NSTextField pathField) {
         this.pathField = pathField;
-        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+        notificationCenter.addObserver(this.id(),
                 Foundation.selector("pathInputDidEndEditing:"),
                 NSControl.NSControlTextDidEndEditingNotification,
                 this.pathField);
@@ -338,7 +342,7 @@ public class ConnectionController extends SheetController {
 
     public void setPortField(NSTextField portField) {
         this.portField = portField;
-        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+        notificationCenter.addObserver(this.id(),
                 Foundation.selector("portFieldTextDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
                 this.portField);
@@ -359,11 +363,11 @@ public class ConnectionController extends SheetController {
     public void setUsernameField(NSTextField usernameField) {
         this.usernameField = usernameField;
         this.usernameField.setStringValue(preferences.getProperty("connection.login.name"));
-        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+        notificationCenter.addObserver(this.id(),
                 Foundation.selector("usernameFieldTextDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
                 this.usernameField);
-        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+        notificationCenter.addObserver(this.id(),
                 Foundation.selector("usernameFieldTextDidEndEditing:"),
                 NSControl.NSControlTextDidEndEditingNotification,
                 this.usernameField);

@@ -70,6 +70,8 @@ public class BookmarkController extends WindowController {
 
     private final Preferences preferences = PreferencesFactory.get();
 
+    private final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
+
     @Outlet
     private NSPopUpButton protocolPopup;
 
@@ -151,7 +153,7 @@ public class BookmarkController extends WindowController {
 
     public void setNicknameField(NSTextField nicknameField) {
         this.nicknameField = nicknameField;
-        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+        notificationCenter.addObserver(this.id(),
                 Foundation.selector("nicknameInputDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
                 this.nicknameField);
@@ -162,7 +164,7 @@ public class BookmarkController extends WindowController {
 
     public void setHostField(NSTextField hostField) {
         this.hostField = hostField;
-        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+        notificationCenter.addObserver(this.id(),
                 Foundation.selector("hostFieldDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
                 hostField);
@@ -189,7 +191,7 @@ public class BookmarkController extends WindowController {
 
     public void setPortField(NSTextField portField) {
         this.portField = portField;
-        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+        notificationCenter.addObserver(this.id(),
                 Foundation.selector("portInputDidEndEditing:"),
                 NSControl.NSControlTextDidChangeNotification,
                 this.portField);
@@ -200,7 +202,7 @@ public class BookmarkController extends WindowController {
 
     public void setPathField(NSTextField pathField) {
         this.pathField = pathField;
-        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+        notificationCenter.addObserver(this.id(),
                 Foundation.selector("pathInputDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
                 this.pathField);
@@ -220,7 +222,7 @@ public class BookmarkController extends WindowController {
 
     public void setUsernameField(NSTextField usernameField) {
         this.usernameField = usernameField;
-        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+        notificationCenter.addObserver(this.id(),
                 Foundation.selector("usernameInputDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
                 this.usernameField);
@@ -243,7 +245,7 @@ public class BookmarkController extends WindowController {
         this.webURLField = webURLField;
         final NSTextFieldCell cell = this.webURLField.cell();
         cell.setPlaceholderString(host.getDefaultWebURL());
-        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+        notificationCenter.addObserver(this.id(),
                 Foundation.selector("webURLInputDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
                 this.webURLField);
@@ -314,7 +316,7 @@ public class BookmarkController extends WindowController {
     public void setCommentField(NSTextView commentField) {
         this.commentField = commentField;
         this.commentField.setFont(NSFont.userFixedPitchFontOfSize(11f));
-        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+        notificationCenter.addObserver(this.id(),
                 Foundation.selector("commentInputDidChange:"),
                 NSText.TextDidChangeNotification,
                 this.commentField);
@@ -540,6 +542,7 @@ public class BookmarkController extends WindowController {
     public void invalidate() {
         preferences.setProperty("bookmark.toggle.options", this.toggleOptionsButton.state());
         BookmarkCollection.defaultCollection().removeListener(bookmarkCollectionListener);
+        notificationCenter.removeObserver(this.id());
         super.invalidate();
     }
 

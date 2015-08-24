@@ -81,6 +81,9 @@ import java.util.regex.PatternSyntaxException;
 public class PreferencesController extends ToolbarWindowController {
     private static Logger log = Logger.getLogger(PreferencesController.class);
 
+    private final NSNotificationCenter notificationCenter
+            = NSNotificationCenter.defaultCenter();
+
     private Preferences preferences
             = PreferencesFactory.get();
 
@@ -256,6 +259,7 @@ public class PreferencesController extends ToolbarWindowController {
     @Override
     public void invalidate() {
         BookmarkCollection.defaultCollection().removeListener(bookmarkCollectionListener);
+        notificationCenter.removeObserver(this.id());
         super.invalidate();
     }
 
@@ -1282,7 +1286,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.downloadSkipRegexField = t;
         this.downloadSkipRegexField.setFont(NSFont.userFixedPitchFontOfSize(9.0f));
         this.downloadSkipRegexField.setString(preferences.getProperty("queue.download.skip.regex"));
-        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+        notificationCenter.addObserver(this.id(),
                 Foundation.selector("downloadSkipRegexFieldDidChange:"),
                 NSText.TextDidChangeNotification,
                 this.downloadSkipRegexField);
@@ -1347,7 +1351,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.uploadSkipRegexField = b;
         this.uploadSkipRegexField.setFont(NSFont.userFixedPitchFontOfSize(9.0f));
         this.uploadSkipRegexField.setString(preferences.getProperty("queue.upload.skip.regex"));
-        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+        notificationCenter.addObserver(this.id(),
                 Foundation.selector("uploadSkipRegexFieldDidChange:"),
                 NSText.TextDidChangeNotification,
                 this.uploadSkipRegexField);

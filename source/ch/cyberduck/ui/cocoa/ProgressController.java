@@ -59,6 +59,8 @@ import java.util.Date;
  */
 public class ProgressController extends BundleController implements TransferListener, ProgressListener {
 
+    private final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
+
     private Transfer transfer;
 
     /**
@@ -93,6 +95,7 @@ public class ProgressController extends BundleController implements TransferList
     @Override
     public void invalidate() {
         filesPopup.menu().setDelegate(null);
+        notificationCenter.removeObserver(this.id());
         super.invalidate();
     }
 
@@ -249,11 +252,11 @@ public class ProgressController extends BundleController implements TransferList
         }
         this.filesPopupMenuDelegate = new TransferMenuDelegate(transfer);
         this.filesPopup.menu().setDelegate(this.filesPopupMenuDelegate.id());
-        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+        notificationCenter.addObserver(this.id(),
                 Foundation.selector("filesPopupWillShow:"),
                 NSPopUpButton.PopUpButtonWillPopUpNotification,
                 this.filesPopup);
-        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+        notificationCenter.addObserver(this.id(),
                 Foundation.selector("filesPopupWillHide:"),
                 "NSMenuDidEndTrackingNotification",
                 this.filesPopup.menu());

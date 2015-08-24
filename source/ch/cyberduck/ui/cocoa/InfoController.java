@@ -100,6 +100,8 @@ import java.util.TimeZone;
 public class InfoController extends ToolbarWindowController {
     private static Logger log = Logger.getLogger(InfoController.class);
 
+    private final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
+
     /**
      * Selected files
      */
@@ -127,7 +129,7 @@ public class InfoController extends ToolbarWindowController {
 
     public void setFilenameField(NSTextField filenameField) {
         this.filenameField = filenameField;
-        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+        notificationCenter.addObserver(this.id(),
                 Foundation.selector("filenameInputDidEndEditing:"),
                 NSControl.NSControlTextDidEndEditingNotification,
                 filenameField);
@@ -173,7 +175,7 @@ public class InfoController extends ToolbarWindowController {
 
     public void setOctalField(NSTextField octalField) {
         this.octalField = octalField;
-        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+        notificationCenter.addObserver(this.id(),
                 Foundation.selector("octalPermissionsInputDidEndEditing:"),
                 NSControl.NSControlTextDidEndEditingNotification,
                 octalField);
@@ -674,7 +676,7 @@ public class InfoController extends ToolbarWindowController {
 
     public void setDistributionCnameField(NSTextField t) {
         this.distributionCnameField = t;
-        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+        notificationCenter.addObserver(this.id(),
                 Foundation.selector("distributionApplyButtonClicked:"),
                 NSControl.NSControlTextDidEndEditingNotification,
                 distributionCnameField);
@@ -1527,7 +1529,8 @@ public class InfoController extends ToolbarWindowController {
 
     @Override
     public void invalidate() {
-        this.controller.removeListener(browserWindowListener);
+        controller.removeListener(browserWindowListener);
+        notificationCenter.removeObserver(this.id());
         super.invalidate();
     }
 
