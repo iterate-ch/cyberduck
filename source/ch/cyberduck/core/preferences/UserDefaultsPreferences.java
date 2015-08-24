@@ -209,10 +209,14 @@ public class UserDefaultsPreferences extends Preferences {
         defaults.put("application.name", bundle.objectForInfoDictionaryKey("CFBundleName").toString());
         defaults.put("application.identifier",
                 bundle.objectForInfoDictionaryKey("CFBundleIdentifier").toString());
-        defaults.put("application.version",
-                bundle.objectForInfoDictionaryKey("CFBundleShortVersionString").toString());
-        defaults.put("application.revision",
-                bundle.objectForInfoDictionaryKey("CFBundleVersion").toString());
+        final NSObject version = bundle.objectForInfoDictionaryKey("CFBundleShortVersionString");
+        if(version != null) {
+            defaults.put("application.version", version.toString());
+        }
+        final NSObject revision = bundle.objectForInfoDictionaryKey("CFBundleVersion");
+        if(revision != null) {
+            defaults.put("application.revision", revision.toString());
+        }
         defaults.put("application.receipt.path", bundle.bundlePath() + "/Contents/_MASReceipt");
         defaults.put("application.bookmarks.path", bundle.resourcePath() + "/Bookmarks");
         defaults.put("application.profiles.path", bundle.resourcePath() + "/Profiles");
