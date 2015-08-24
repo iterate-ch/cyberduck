@@ -30,7 +30,7 @@ import java.text.MessageFormat;
 /**
  * @version $Id$
  */
-public class CreateDirectoryWorker extends Worker<Path> {
+public class CreateDirectoryWorker extends Worker<Boolean> {
 
     private Session<?> session;
 
@@ -50,7 +50,7 @@ public class CreateDirectoryWorker extends Worker<Path> {
     }
 
     @Override
-    public Path run() throws BackgroundException {
+    public Boolean run() throws BackgroundException {
         final Directory feature = session.getFeature(Directory.class);
         if(StringUtils.isNotBlank(region)) {
             feature.mkdir(folder, region);
@@ -58,12 +58,12 @@ public class CreateDirectoryWorker extends Worker<Path> {
         else {
             feature.mkdir(folder);
         }
-        return folder;
+        return true;
     }
 
     @Override
-    public Path initialize() {
-        return folder;
+    public Boolean initialize() {
+        return false;
     }
 
     @Override

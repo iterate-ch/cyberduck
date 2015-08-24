@@ -105,14 +105,16 @@ public class FolderController extends FileController {
 
     private void run(final Path directory, final String filename) {
         final Path folder = new Path(directory, filename, EnumSet.of(Path.Type.directory));
-        parent.background(new WorkerBackgroundAction<Path>(parent, parent.getSession(), parent.getCache(),
+        parent.background(new WorkerBackgroundAction<Boolean>(parent, parent.getSession(), parent.getCache(),
                 new CreateDirectoryWorker(parent.getSession(), folder, hasLocation() ? regionPopup.selectedItem().representedObject() : null) {
                     @Override
-                    public void cleanup(final Path folder) {
-                        if(filename.charAt(0) == '.') {
-                            parent.setShowHiddenFiles(true);
+                    public void cleanup(final Boolean done) {
+                        if(done) {
+                            if(filename.charAt(0) == '.') {
+                                parent.setShowHiddenFiles(true);
+                            }
+                            parent.reload(parent.workdir(), Collections.singletonList(folder), Collections.singletonList(folder));
                         }
-                        parent.reload(parent.workdir(), Collections.singletonList(folder), Collections.singletonList(folder));
                     }
                 }));
     }
