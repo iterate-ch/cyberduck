@@ -25,6 +25,7 @@ import org.junit.Test;
 import java.security.PublicKey;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import net.schmizz.sshj.DefaultConfig;
 import net.schmizz.sshj.SSHClient;
@@ -68,7 +69,6 @@ public class SFTPSessionTest extends AbstractTestCase {
             configuration.setMACFactories(Arrays.asList(mac));
             final SSHClient client = session.connect(new DisabledHostKeyCallback(), configuration);
             assertTrue(client.isConnected());
-            client.authPassword(properties.getProperty("sftp.user"), properties.getProperty("sftp.password"));
             client.close();
         }
     }
@@ -82,7 +82,6 @@ public class SFTPSessionTest extends AbstractTestCase {
             configuration.setCipherFactories(Arrays.asList(cipher));
             final SSHClient client = session.connect(new DisabledHostKeyCallback(), configuration);
             assertTrue(client.isConnected());
-            client.authPassword(properties.getProperty("sftp.user"), properties.getProperty("sftp.password"));
             client.close();
         }
     }
@@ -96,7 +95,6 @@ public class SFTPSessionTest extends AbstractTestCase {
             configuration.setKeyExchangeFactories(Arrays.asList(exchange));
             final SSHClient client = session.connect(new DisabledHostKeyCallback(), configuration);
             assertTrue(client.isConnected());
-            client.authPassword(properties.getProperty("sftp.user"), properties.getProperty("sftp.password"));
             client.close();
         }
     }
@@ -300,8 +298,15 @@ public class SFTPSessionTest extends AbstractTestCase {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials("u1", "p1"));
         final Session session = new SFTPSession(host);
         final Local f = new Local("test/ch/cyberduck/core/sftp", "known_hosts");
+        final AtomicReference<String> fingerprint = new AtomicReference<String>();
         try {
             assertNotNull(session.open(new OpenSSHHostKeyVerifier(f) {
+                @Override
+                public boolean verify(final String hostname, final int port, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
+                    fingerprint.set(new SSHFingerprintGenerator().fingerprint(key));
+                    return super.verify(hostname, port, key);
+                }
+
                 @Override
                 protected boolean isUnknownKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
                     this.allow(hostname, key, true);
@@ -316,6 +321,12 @@ public class SFTPSessionTest extends AbstractTestCase {
             }, new DisabledTranscriptListener()));
             session.close();
             assertNotNull(session.open(new OpenSSHHostKeyVerifier(f) {
+                @Override
+                public boolean verify(final String hostname, final int port, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
+                    assertEquals(fingerprint.get(), new SSHFingerprintGenerator().fingerprint(key));
+                    return super.verify(hostname, port, key);
+                }
+
                 @Override
                 protected boolean isUnknownKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
                     return false;
