@@ -33,7 +33,7 @@
 
     <property name="architecture" value="x86"/>
     <property name="nsis.home" value="${programFiles}/NSIS"/>
-    <property name="winsdk.home" value="${programFiles}/Windows Kits/8.0/bin/x86"/>
+    <property name="winsdk.home" value="${programFiles}/Windows Kits/8.1/bin/x86"/>
     <property name="wybuild.home" value="${programFiles}/wyBuild"/>
     <property name="ikvm.home" value="${lib}/ikvmbin-8.1.5561"/>
     <property name="app.icon" value="cyberduck-application.ico"/>
