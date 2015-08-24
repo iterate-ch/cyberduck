@@ -5,6 +5,7 @@ Changelog. Last modified: $Date$
 
 4.8 [https://trac.cyberduck.io/milestone/4.8]
 - [Feature] Importer for ExpanDrive bookmarks (Mac)
+- [Bugfix] Certificate chain displayed not complete (#8885)
 
 4.7.2 [https://trac.cyberduck.io/milestone/4.7.2]
 - [Feature] Delete incomplete multipart uploads when deleting file (S3) (#8920)
