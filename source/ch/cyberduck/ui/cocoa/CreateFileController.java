@@ -62,17 +62,19 @@ public class CreateFileController extends FileController {
 
     private void run(final Path directory, final String filename, final boolean edit) {
         final Path file = new Path(directory, filename, EnumSet.of(Path.Type.file));
-        parent.background(new WorkerBackgroundAction<Path>(parent, parent.getSession(), parent.getCache(),
+        parent.background(new WorkerBackgroundAction<Boolean>(parent, parent.getSession(), parent.getCache(),
                 new TouchWorker(parent.getSession(), file) {
                     @Override
-                    public void cleanup(final Path file) {
-                        if(filename.charAt(0) == '.') {
-                            parent.setShowHiddenFiles(true);
-                        }
-                        parent.reload(parent.workdir(), Collections.singletonList(file), Collections.singletonList(file));
-                        if(edit) {
-                            file.attributes().setSize(0L);
-                            parent.edit(file);
+                    public void cleanup(final Boolean done) {
+                        if(done) {
+                            if(filename.charAt(0) == '.') {
+                                parent.setShowHiddenFiles(true);
+                            }
+                            parent.reload(parent.workdir(), Collections.singletonList(file), Collections.singletonList(file));
+                            if(edit) {
+                                file.attributes().setSize(0L);
+                                parent.edit(file);
+                            }
                         }
                     }
                 }));

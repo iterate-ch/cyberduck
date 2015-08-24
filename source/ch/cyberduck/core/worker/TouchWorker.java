@@ -28,7 +28,7 @@ import java.text.MessageFormat;
 /**
  * @version $Id$
  */
-public class TouchWorker extends Worker<Path> {
+public class TouchWorker extends Worker<Boolean> {
 
     private Session<?> session;
 
@@ -40,17 +40,17 @@ public class TouchWorker extends Worker<Path> {
     }
 
     @Override
-    public Path run() throws BackgroundException {
+    public Boolean run() throws BackgroundException {
         final Touch feature = session.getFeature(Touch.class);
         if(feature.isSupported(file.getParent())) {
             feature.touch(file);
         }
-        return file;
+        return true;
     }
 
     @Override
-    public Path initialize() {
-        return file;
+    public Boolean initialize() {
+        return false;
     }
 
     @Override
