@@ -1,6 +1,7 @@
 A command line interface (CLI) version is now available from https://duck.sh/ for Windows, Linux & Mac.
 
 4.8 [https://trac.cyberduck.io/milestone/4.8]
+- [Feature] Support for authentication with Keystone v3 API (OpenStack Swift) (#8813)
 - [Bugfix] Certificate chain displayed not complete (#8885)
 
 4.7.2 [https://trac.cyberduck.io/milestone/4.7.2]

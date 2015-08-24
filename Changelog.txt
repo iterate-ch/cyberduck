@@ -4,6 +4,7 @@ http://cyberduck.io/
 Changelog. Last modified: $Date$
 
 4.8 [https://trac.cyberduck.io/milestone/4.8]
+- [Feature] Support for authentication with Keystone v3 API (OpenStack Swift) (#8813)
 - [Feature] Importer for ExpanDrive bookmarks (Mac)
 - [Bugfix] Certificate chain displayed not complete (#8885)
 
