@@ -20,11 +20,9 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.ConnectionService;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.StreamListener;
@@ -39,9 +37,6 @@ import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.pool2.BasePooledObjectFactory;
-import org.apache.commons.pool2.PooledObject;
-import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.log4j.Logger;
@@ -63,19 +58,11 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
 
     private static final long BORROW_MAX_WAIT_INTERVAL = 1000L;
 
-    private ConnectionService connect;
-
     private GenericObjectPool<Session> pool;
 
     private CompletionService<TransferStatus> completion;
 
     private AtomicInteger size = new AtomicInteger();
-
-    private X509TrustManager trust;
-
-    private X509KeyManager key;
-
-    private PathCache cache = PathCache.empty();
 
     public ConcurrentTransferWorker(final ConnectionService connect,
                                     final Transfer transfer, final TransferOptions options,
@@ -85,7 +72,6 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
                                     final X509TrustManager trust, final X509KeyManager key, final PathCache cache,
                                     final Integer connections) {
         super(transfer, options, prompt, meter, error, transferItemCallback, progressListener, streamListener, connectionCallback);
-        this.connect = connect;
         final GenericObjectPoolConfig configuration = new GenericObjectPoolConfig() {
             @Override
             public String toString() {
@@ -102,7 +88,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         configuration.setBlockWhenExhausted(true);
         configuration.setMaxWaitMillis(BORROW_MAX_WAIT_INTERVAL);
         pool = new GenericObjectPool<Session>(
-                new SessionPool(transfer.getHost()), configuration) {
+                new SessionPool(connect, trust, key, cache, transfer.getHost()), configuration) {
             @Override
             public String toString() {
                 final StringBuilder sb = new StringBuilder("GenericObjectPool{");
@@ -114,9 +100,6 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         completion = new ExecutorCompletionService<TransferStatus>(
                 Executors.newFixedThreadPool(connections, new NamedThreadFactory("transfer")),
                 new LinkedBlockingQueue<Future<TransferStatus>>());
-        this.trust = trust;
-        this.key = key;
-        this.cache = cache;
     }
 
     @Override
@@ -225,62 +208,6 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
             log.warn(String.format("Failure closing connection pool %s", e.getMessage()));
         }
         super.cleanup(result);
-    }
-
-    private final class SessionPool extends BasePooledObjectFactory<Session> {
-
-        private Host host;
-
-        private SessionPool(final Host host) {
-            this.host = host;
-        }
-
-        @Override
-        public Session create() {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Create new session for host %s in pool", host));
-            }
-            return SessionFactory.create(host, trust, key);
-        }
-
-        @Override
-        public PooledObject<Session> wrap(Session session) {
-            return new DefaultPooledObject<Session>(session);
-        }
-
-        @Override
-        public void activateObject(final PooledObject<Session> p) throws BackgroundException {
-            final Session session = p.getObject();
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Activate session %s", session));
-            }
-            connect.check(session, cache);
-        }
-
-        @Override
-        public void passivateObject(final PooledObject<Session> p) throws Exception {
-            final Session session = p.getObject();
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Pause session %s", session));
-            }
-        }
-
-        @Override
-        public void destroyObject(final PooledObject<Session> p) throws BackgroundException {
-            final Session session = p.getObject();
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Destroy session %s", session));
-            }
-            session.close();
-        }
-
-        @Override
-        public String toString() {
-            final StringBuilder sb = new StringBuilder("SessionPool{");
-            sb.append("host=").append(host);
-            sb.append('}');
-            return sb.toString();
-        }
     }
 
     @Override
