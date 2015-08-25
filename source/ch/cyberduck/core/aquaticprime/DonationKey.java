@@ -92,7 +92,7 @@ public class DonationKey extends AbstractLicense implements LicenseVerifier {
         // Append all values
         StringBuilder values = new StringBuilder();
         final ArrayList<String> keys = new ArrayList<>(dictionary.keySet());
-        // Sorty lexicographically by key
+        // Sort lexicographically by key
         Collections.sort(keys, new NaturalOrderComparator());
         for(String key : keys) {
             if("Signature".equals(key)) {
@@ -104,7 +104,7 @@ public class DonationKey extends AbstractLicense implements LicenseVerifier {
         byte[] plainbytes = values.toString().getBytes(Charset.forName("UTF-8"));
         final boolean valid;
         try {
-            final BigInteger modulus = new BigInteger(StringUtils.removeStart(pub, "0x"), 16);
+            final BigInteger modulus = new BigInteger(StringUtils.removeStart(this.getPublicKey(), "0x"), 16);
             final BigInteger exponent = new BigInteger(Base64.decodeBase64("Aw=="));
             final KeySpec spec = new RSAPublicKeySpec(modulus, exponent);
 
@@ -120,16 +120,16 @@ public class DonationKey extends AbstractLicense implements LicenseVerifier {
                 | InvalidKeyException
                 | InvalidKeySpecException
                 | NoSuchAlgorithmException e) {
-            log.warn(String.format("Signature verification failure for donation key %s", file));
+            log.warn(String.format("Signature verification failure for key %s", file));
             return false;
         }
         if(valid) {
             if(log.isInfoEnabled()) {
-                log.info(String.format("Valid donation key in %s", file));
+                log.info(String.format("Valid key in %s", file));
             }
         }
         else {
-            log.warn(String.format("Not a valid donation key in %s", file));
+            log.warn(String.format("Not a valid key in %s", file));
         }
         return valid;
     }
@@ -145,6 +145,10 @@ public class DonationKey extends AbstractLicense implements LicenseVerifier {
             return null;
         }
         return value.toString();
+    }
+
+    protected String getPublicKey() {
+        return pub;
     }
 
     private NSDictionary read() {
