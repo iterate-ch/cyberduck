@@ -17,9 +17,9 @@ package ch.cyberduck.fs;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 
 /**
@@ -31,7 +31,7 @@ public interface Filesystem {
 
     void unmount() throws BackgroundException;
 
-    Session getSession();
+    Host getHost();
 
     Local getMountpoint();
 }
