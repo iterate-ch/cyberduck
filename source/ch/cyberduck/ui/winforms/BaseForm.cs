@@ -439,15 +439,18 @@ namespace Ch.Cyberduck.Ui.Winforms
             //Use reflection to get access to the form components collection which is defined private in
             //each form designer class. The MainMenu items are members of this collection for example.
             FieldInfo fieldInfo = GetType().GetField("components", BindingFlags.Instance | BindingFlags.NonPublic);
-            IContainer comp = (IContainer) fieldInfo.GetValue(this);
-            if (null != comp)
+            if (null != fieldInfo)
             {
-                foreach (var o in RecurseObjects(comp.Components))
+                IContainer comp = (IContainer)fieldInfo.GetValue(this);
+                if (null != comp)
                 {
-                    if (o is MenuItem)
+                    foreach (var o in RecurseObjects(comp.Components))
                     {
-                        MenuItem m = (MenuItem) o;
-                        m.Text = LookupInMultipleBundles(m.Text.Replace("&", String.Empty), BundleNames);
+                        if (o is MenuItem)
+                        {
+                            MenuItem m = (MenuItem)o;
+                            m.Text = LookupInMultipleBundles(m.Text.Replace("&", String.Empty), BundleNames);
+                        }
                     }
                 }
             }
