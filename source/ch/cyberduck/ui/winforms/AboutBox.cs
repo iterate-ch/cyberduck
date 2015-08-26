@@ -39,7 +39,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             logoPictureBox.Image = ApplicationIcon();
             labelProductName.Text = AssemblyProduct;
             labelVersion.Text = String.Format("Version {0}", PreferencesFactory.get().getProperty("application.version"));
-            labelCopyright.Text = LocaleFactory.localizedString("NSHumanReadableCopyright", "InfoPlist");
+            labelCopyright.Text = Copyright();
 
             Font bigBoldFont = new Font(Font.FontFamily, Font.Size + 4, FontStyle.Bold);
             labelProductName.Font = bigBoldFont;
@@ -68,6 +68,10 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public virtual string Credits()
         {
+            return LocaleFactory.localizedString("NSHumanReadableCopyright", "InfoPlist");
+        }
+        public virtual string Copyright()
+        {
             return ResourcesBundle.Credits;
         }
 
@@ -76,7 +80,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             get
             {
                 object[] attributes =
-                    Assembly.GetExecutingAssembly().GetCustomAttributes(typeof (AssemblyTitleAttribute), false);
+                    Assembly.GetEntryAssembly().GetCustomAttributes(typeof (AssemblyTitleAttribute), false);
                 if (attributes.Length > 0)
                 {
                     AssemblyTitleAttribute titleAttribute = (AssemblyTitleAttribute) attributes[0];
@@ -85,7 +89,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                         return titleAttribute.Title;
                     }
                 }
-                return Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().CodeBase);
+                return Path.GetFileNameWithoutExtension(Assembly.GetEntryAssembly().CodeBase);
             }
         }
 
@@ -94,7 +98,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             get
             {
                 object[] attributes =
-                    Assembly.GetExecutingAssembly().GetCustomAttributes(typeof (AssemblyDescriptionAttribute), false);
+                    Assembly.GetEntryAssembly().GetCustomAttributes(typeof (AssemblyDescriptionAttribute), false);
                 if (attributes.Length == 0)
                 {
                     return String.Empty;
@@ -108,7 +112,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             get
             {
                 object[] attributes =
-                    Assembly.GetExecutingAssembly().GetCustomAttributes(typeof (AssemblyProductAttribute), false);
+                    Assembly.GetEntryAssembly().GetCustomAttributes(typeof (AssemblyProductAttribute), false);
                 if (attributes.Length == 0)
                 {
                     return "";
@@ -122,7 +126,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             get
             {
                 object[] attributes =
-                    Assembly.GetExecutingAssembly().GetCustomAttributes(typeof (AssemblyCopyrightAttribute), false);
+                    Assembly.GetEntryAssembly().GetCustomAttributes(typeof (AssemblyCopyrightAttribute), false);
                 if (attributes.Length == 0)
                 {
                     return String.Empty;
@@ -136,7 +140,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             get
             {
                 object[] attributes =
-                    Assembly.GetExecutingAssembly().GetCustomAttributes(typeof (AssemblyCompanyAttribute), false);
+                    Assembly.GetEntryAssembly().GetCustomAttributes(typeof (AssemblyCompanyAttribute), false);
                 if (attributes.Length == 0)
                 {
                     return String.Empty;
