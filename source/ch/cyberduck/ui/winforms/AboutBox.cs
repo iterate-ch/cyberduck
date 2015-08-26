@@ -29,7 +29,7 @@ using Path = System.IO.Path;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
-    internal partial class AboutBox : BaseForm
+    public partial class AboutBox : BaseForm
     {
         public AboutBox()
         {
