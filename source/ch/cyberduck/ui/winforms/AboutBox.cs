@@ -22,7 +22,7 @@ using System.Reflection;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller;
 using ch.cyberduck.core;
-using ch.cyberduck.core.i18n;
+using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
 using Path = System.IO.Path;
@@ -36,7 +36,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             InitializeComponent();
 
             Text = String.Format("About {0}", AssemblyTitle);
-            logoPictureBox.Image = IconCache.Instance.IconForName("cyberduck", 128);
+            logoPictureBox.Image = ApplicationIcon();
             labelProductName.Text = AssemblyProduct;
             labelVersion.Text = String.Format("Version {0}", PreferencesFactory.get().getProperty("application.version"));
             labelCopyright.Text = LocaleFactory.localizedString("NSHumanReadableCopyright", "InfoPlist");
@@ -44,7 +44,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             Font bigBoldFont = new Font(Font.FontFamily, Font.Size + 4, FontStyle.Bold);
             labelProductName.Font = bigBoldFont;
 
-            creditsRichTextBox.Rtf = ResourcesBundle.Credits;
+            labelRegistered.Text = RegisteredText();
+
+            creditsRichTextBox.Rtf = Credits();
             creditsRichTextBox.SelectAll();
             creditsRichTextBox.SelectionFont = new Font(Font.FontFamily, 9);
             creditsRichTextBox.DeselectAll();
@@ -53,6 +55,20 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             ackButton.Click +=
                 delegate { ApplicationLauncherFactory.get().open(LocalFactory.get("Acknowledgments.rtf")); };
+        }
+
+        public virtual string RegisteredText()
+        {
+            return LicenseFactory.find().ToString();
+        }
+        public virtual Image ApplicationIcon()
+        {
+            return IconCache.Instance.IconForName("cyberduck", 128);
+        }
+
+        public virtual string Credits()
+        {
+            return ResourcesBundle.Credits;
         }
 
         public string AssemblyTitle

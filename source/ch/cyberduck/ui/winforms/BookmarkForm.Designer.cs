@@ -375,7 +375,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.optionsPanel.SetColumnSpan(this.comboBoxTimezone, 3);
             this.comboBoxTimezone.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxTimezone.FormattingEnabled = true;
-            this.comboBoxTimezone.Location = new System.Drawing.Point(119, 300);
+            this.comboBoxTimezone.Location = new System.Drawing.Point(119, 302);
             this.comboBoxTimezone.Name = "comboBoxTimezone";
             this.comboBoxTimezone.Size = new System.Drawing.Size(350, 23);
             this.comboBoxTimezone.TabIndex = 17;
@@ -385,7 +385,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.label8.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(51, 304);
+            this.label8.Location = new System.Drawing.Point(51, 305);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(62, 15);
             this.label8.TabIndex = 27;
@@ -409,7 +409,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.richTextBoxNotes.Dock = System.Windows.Forms.DockStyle.Fill;
             this.richTextBoxNotes.Location = new System.Drawing.Point(119, 232);
             this.richTextBoxNotes.Name = "richTextBoxNotes";
-            this.richTextBoxNotes.Size = new System.Drawing.Size(350, 62);
+            this.richTextBoxNotes.Size = new System.Drawing.Size(350, 64);
             this.richTextBoxNotes.TabIndex = 16;
             this.richTextBoxNotes.Text = "";
             this.richTextBoxNotes.TextChanged += new System.EventHandler(this.richTextBoxNotes_TextChanged);
@@ -418,7 +418,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.labelNotes.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelNotes.AutoSize = true;
-            this.labelNotes.Location = new System.Drawing.Point(72, 255);
+            this.labelNotes.Location = new System.Drawing.Point(72, 256);
             this.labelNotes.Name = "labelNotes";
             this.labelNotes.Size = new System.Drawing.Size(41, 15);
             this.labelNotes.TabIndex = 26;
@@ -538,9 +538,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.labelTransferFiles.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelTransferFiles.AutoSize = true;
-            this.labelTransferFiles.Location = new System.Drawing.Point(34, 178);
+            this.labelTransferFiles.Location = new System.Drawing.Point(35, 178);
             this.labelTransferFiles.Name = "labelTransferFiles";
-            this.labelTransferFiles.Size = new System.Drawing.Size(79, 15);
+            this.labelTransferFiles.Size = new System.Drawing.Size(78, 15);
             this.labelTransferFiles.TabIndex = 20;
             this.labelTransferFiles.Text = "Transfer Files:";
             this.labelTransferFiles.TextAlign = System.Drawing.ContentAlignment.TopRight;

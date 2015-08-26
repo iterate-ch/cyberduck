@@ -37,6 +37,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.creditsRichTextBox = new Ch.Cyberduck.Ui.Winforms.Controls.ReadOnlyRichTextBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.ackButton = new System.Windows.Forms.Button();
+            this.labelRegistered = new System.Windows.Forms.Label();
             this.tableLayoutPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.logoPictureBox)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
@@ -49,13 +50,15 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel.Controls.Add(this.logoPictureBox, 0, 0);
             this.tableLayoutPanel.Controls.Add(this.labelProductName, 0, 1);
             this.tableLayoutPanel.Controls.Add(this.labelVersion, 0, 2);
-            this.tableLayoutPanel.Controls.Add(this.labelCopyright, 0, 4);
-            this.tableLayoutPanel.Controls.Add(this.creditsRichTextBox, 0, 3);
-            this.tableLayoutPanel.Controls.Add(this.tableLayoutPanel1, 0, 6);
+            this.tableLayoutPanel.Controls.Add(this.labelCopyright, 0, 5);
+            this.tableLayoutPanel.Controls.Add(this.creditsRichTextBox, 0, 4);
+            this.tableLayoutPanel.Controls.Add(this.tableLayoutPanel1, 0, 7);
+            this.tableLayoutPanel.Controls.Add(this.labelRegistered, 0, 3);
             this.tableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel.Name = "tableLayoutPanel";
-            this.tableLayoutPanel.RowCount = 7;
+            this.tableLayoutPanel.RowCount = 8;
+            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -120,10 +123,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.creditsRichTextBox.BackColor = System.Drawing.Color.White;
             this.creditsRichTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.creditsRichTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.creditsRichTextBox.Location = new System.Drawing.Point(3, 212);
+            this.creditsRichTextBox.Location = new System.Drawing.Point(3, 227);
             this.creditsRichTextBox.Name = "creditsRichTextBox";
             this.creditsRichTextBox.ReadOnly = true;
-            this.creditsRichTextBox.Size = new System.Drawing.Size(342, 167);
+            this.creditsRichTextBox.Size = new System.Drawing.Size(342, 152);
             this.creditsRichTextBox.TabIndex = 22;
             this.creditsRichTextBox.Text = "";
             // 
@@ -154,6 +157,17 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.ackButton.TabIndex = 23;
             this.ackButton.Text = "Acknowledgments";
             this.ackButton.UseVisualStyleBackColor = true;
+            // 
+            // labelRegistered
+            // 
+            this.labelRegistered.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelRegistered.AutoSize = true;
+            this.labelRegistered.Location = new System.Drawing.Point(3, 209);
+            this.labelRegistered.Name = "labelRegistered";
+            this.labelRegistered.Size = new System.Drawing.Size(342, 15);
+            this.labelRegistered.TabIndex = 25;
+            this.labelRegistered.Text = "Registered to";
+            this.labelRegistered.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // AboutBox
             // 
@@ -188,5 +202,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         private ReadOnlyRichTextBox creditsRichTextBox;
         private System.Windows.Forms.Button ackButton;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.Label labelRegistered;
     }
 }
