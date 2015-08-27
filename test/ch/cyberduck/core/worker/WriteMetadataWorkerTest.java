@@ -4,6 +4,8 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.test.NullSession;
 
 import org.junit.Test;
@@ -15,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -31,7 +33,26 @@ public class WriteMetadataWorkerTest extends AbstractTestCase {
                 fail();
             }
         };
-        worker.run(new NullSession(new Host("")));
+        worker.run(new NullSession(new Host("")) {
+            @Override
+            public <T> T getFeature(final Class<T> type) {
+                if(type == Headers.class) {
+                    return (T) new Headers() {
+                        @Override
+                        public Map<String, String> getMetadata(final Path file) throws BackgroundException {
+                            fail();
+                            return null;
+                        }
+
+                        @Override
+                        public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
+                            fail();
+                        }
+                    };
+                }
+                return super.getFeature(type);
+            }
+        });
     }
 
     @Test
@@ -50,7 +71,25 @@ public class WriteMetadataWorkerTest extends AbstractTestCase {
                 fail();
             }
         };
-        worker.run(new NullSession(new Host("")));
+        worker.run(new NullSession(new Host("")) {
+            @Override
+            public <T> T getFeature(final Class<T> type) {
+                if(type == Headers.class) {
+                    return (T) new Headers() {
+                        @Override
+                        public Map<String, String> getMetadata(final Path file) throws BackgroundException {
+                            throw new UnsupportedOperationException();
+                        }
+
+                        @Override
+                        public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
+                            fail();
+                        }
+                    };
+                }
+                return super.getFeature(type);
+            }
+        });
     }
 
     @Test
@@ -71,6 +110,27 @@ public class WriteMetadataWorkerTest extends AbstractTestCase {
                 fail();
             }
         };
-        worker.run(new NullSession(new Host("")));
+        worker.run(new NullSession(new Host("")) {
+            @Override
+            public <T> T getFeature(final Class<T> type) {
+                if(type == Headers.class) {
+                    return (T) new Headers() {
+                        @Override
+                        public Map<String, String> getMetadata(final Path file) throws BackgroundException {
+                            throw new UnsupportedOperationException();
+                        }
+
+                        @Override
+                        public void setMetadata(final Path file, final Map<String, String> meta) throws BackgroundException {
+                            assertTrue(meta.containsKey("nullified"));
+                            assertTrue(meta.containsKey("key"));
+                            assertEquals("v2", meta.get("key"));
+                            assertEquals("hash", meta.get("nullified"));
+                        }
+                    };
+                }
+                return super.getFeature(type);
+            }
+        });
     }
 }
