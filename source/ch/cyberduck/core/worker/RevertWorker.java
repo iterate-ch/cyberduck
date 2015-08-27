@@ -33,17 +33,14 @@ import java.util.List;
  */
 public class RevertWorker extends Worker<List<Path>> {
 
-    private Session<?> session;
-
     private List<Path> files;
 
-    public RevertWorker(final Session<?> session, final List<Path> files) {
-        this.session = session;
+    public RevertWorker(final List<Path> files) {
         this.files = files;
     }
 
     @Override
-    public List<Path> run() throws BackgroundException {
+    public List<Path> run(final Session<?> session) throws BackgroundException {
         final Versioning feature = session.getFeature(Versioning.class);
         for(Path file : files) {
             if(this.isCanceled()) {

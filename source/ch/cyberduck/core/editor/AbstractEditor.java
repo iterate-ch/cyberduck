@@ -152,7 +152,7 @@ public abstract class AbstractEditor implements Editor {
     @Override
     public Worker<Transfer> open(final ApplicationQuitCallback quit, final TransferErrorCallback error,
                                  final FileWatcherListener listener) {
-        final Worker<Transfer> worker = new EditOpenWorker(this, session, error,
+        final Worker<Transfer> worker = new EditOpenWorker(session.getHost(), this, error,
                 new ApplicationQuitCallback() {
                     @Override
                     public void callback() {
@@ -232,7 +232,7 @@ public abstract class AbstractEditor implements Editor {
             }
             // Store current checksum
             checksum = current;
-            final Worker<Transfer> worker = new EditSaveWorker(this, session, error, listener);
+            final Worker<Transfer> worker = new EditSaveWorker(session.getHost(), this, error, listener);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Upload changes for %s", local));
             }

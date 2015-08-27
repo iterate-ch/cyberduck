@@ -36,20 +36,17 @@ import java.util.Map;
  */
 public class MoveWorker extends Worker<List<Path>> {
 
-    private Session<?> session;
-
     private Map<Path, Path> files;
 
     private ProgressListener listener;
 
-    public MoveWorker(final Session<?> session, final Map<Path, Path> files, final ProgressListener listener) {
-        this.session = session;
+    public MoveWorker(final Map<Path, Path> files, final ProgressListener listener) {
         this.files = files;
         this.listener = listener;
     }
 
     @Override
-    public List<Path> run() throws BackgroundException {
+    public List<Path> run(final Session<?> session) throws BackgroundException {
         final Move feature = session.getFeature(Move.class);
         for(Map.Entry<Path, Path> entry : files.entrySet()) {
             if(this.isCanceled()) {

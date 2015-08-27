@@ -22,6 +22,7 @@ package ch.cyberduck.core.worker;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.AclPermission;
@@ -36,17 +37,15 @@ import java.util.List;
  */
 public class ReadAclWorker extends Worker<List<Acl.UserAndRole>> {
 
-    private AclPermission feature;
-
     private List<Path> files;
 
-    public ReadAclWorker(final AclPermission feature, final List<Path> files) {
-        this.feature = feature;
+    public ReadAclWorker(final List<Path> files) {
         this.files = files;
     }
 
     @Override
-    public List<Acl.UserAndRole> run() throws BackgroundException {
+    public List<Acl.UserAndRole> run(final Session<?> session) throws BackgroundException {
+        final AclPermission feature = session.getFeature(AclPermission.class);
         final List<Acl.UserAndRole> updated = new ArrayList<Acl.UserAndRole>();
         for(Path next : files) {
             if(this.isCanceled()) {

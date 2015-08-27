@@ -34,8 +34,6 @@ import java.util.List;
  */
 public abstract class CalculateSizeWorker extends Worker<Long> {
 
-    private Session<?> session;
-
     /**
      * Selected files.
      */
@@ -43,8 +41,7 @@ public abstract class CalculateSizeWorker extends Worker<Long> {
 
     private ProgressListener listener;
 
-    protected CalculateSizeWorker(final Session session, final List<Path> files, final ProgressListener listener) {
-        this.session = session;
+    protected CalculateSizeWorker(final List<Path> files, final ProgressListener listener) {
         this.files = files;
         this.listener = listener;
     }
@@ -52,9 +49,9 @@ public abstract class CalculateSizeWorker extends Worker<Long> {
     private Long total = 0L;
 
     @Override
-    public Long run() throws BackgroundException {
+    public Long run(final Session<?> session) throws BackgroundException {
         for(Path next : files) {
-            next.attributes().setSize(this.calculateSize(next));
+            next.attributes().setSize(this.calculateSize(session, next));
         }
         return total;
     }
@@ -66,7 +63,7 @@ public abstract class CalculateSizeWorker extends Worker<Long> {
      * @param p Directory or file
      * @return The size of the file or the sum of all containing files if a directory
      */
-    private long calculateSize(final Path p) throws BackgroundException {
+    private long calculateSize(final Session<?> session, final Path p) throws BackgroundException {
         long size = 0;
         if(this.isCanceled()) {
             throw new ConnectionCanceledException();
@@ -75,7 +72,7 @@ public abstract class CalculateSizeWorker extends Worker<Long> {
                 p.getName()));
         if(p.isDirectory()) {
             for(Path next : session.list(p, new ActionListProgressListener(this, listener))) {
-                size += this.calculateSize(next);
+                size += this.calculateSize(session, next);
             }
         }
         else if(p.isFile()) {

@@ -32,25 +32,21 @@ import java.text.MessageFormat;
  */
 public class CreateDirectoryWorker extends Worker<Boolean> {
 
-    private Session<?> session;
-
     private Path folder;
 
     private String region;
 
-    public CreateDirectoryWorker(final Session<?> session, final Path folder) {
-        this.session = session;
+    public CreateDirectoryWorker(final Path folder) {
         this.folder = folder;
     }
 
-    public CreateDirectoryWorker(final Session<?> session, final Path folder, final String region) {
-        this.session = session;
+    public CreateDirectoryWorker(final Path folder, final String region) {
         this.folder = folder;
         this.region = region;
     }
 
     @Override
-    public Boolean run() throws BackgroundException {
+    public Boolean run(final Session<?> session) throws BackgroundException {
         final Directory feature = session.getFeature(Directory.class);
         if(StringUtils.isNotBlank(region)) {
             feature.mkdir(folder, region);

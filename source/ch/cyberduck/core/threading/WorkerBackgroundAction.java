@@ -107,7 +107,7 @@ public class WorkerBackgroundAction<T> extends BrowserBackgroundAction<Boolean> 
             log.debug(String.format("Run worker %s", worker));
         }
         try {
-            result = worker.run();
+            result = worker.run(session);
         }
         catch(ConnectionCanceledException e) {
             worker.cancel();

@@ -22,6 +22,7 @@ package ch.cyberduck.core.worker;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Headers;
@@ -37,8 +38,6 @@ import java.util.Map;
  */
 public class WriteMetadataWorker extends Worker<Boolean> {
 
-    private Headers feature;
-
     /**
      * Selected files.
      */
@@ -51,17 +50,16 @@ public class WriteMetadataWorker extends Worker<Boolean> {
 
     private ProgressListener listener;
 
-    protected WriteMetadataWorker(final Headers feature,
-                                  final List<Path> files, final Map<String, String> metadata,
+    protected WriteMetadataWorker(final List<Path> files, final Map<String, String> metadata,
                                   final ProgressListener listener) {
-        this.feature = feature;
         this.files = files;
         this.metadata = metadata;
         this.listener = listener;
     }
 
     @Override
-    public Boolean run() throws BackgroundException {
+    public Boolean run(final Session<?> session) throws BackgroundException {
+        final Headers feature = session.getFeature(Headers.class);
         for(Path file : files) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();

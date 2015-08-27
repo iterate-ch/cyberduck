@@ -71,7 +71,8 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
                 //
             }
         };
-        new SingleTransferWorker(new NullSession(new Host("t")), t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
+        final NullSession session = new NullSession(new Host("t"));
+        new SingleTransferWorker(session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
                 return TransferAction.overwrite;
@@ -93,7 +94,7 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
                 }), action);
                 assertFalse(cache.containsKey(new TransferItem(child, local)));
             }
-        }.run();
+        }.run(session);
         assertFalse(cache.containsKey(new TransferItem(child, local)));
     }
 
@@ -155,7 +156,7 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
                 super.transfer(item, action);
                 assertFalse(cache.containsKey(new TransferItem(child, local)));
             }
-        }.run();
+        }.run(session);
         assertFalse(cache.containsKey(new TransferItem(child, local)));
         assertTrue(cache.isEmpty());
     }
@@ -241,7 +242,7 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
                 }
             }
         };
-        worker.run();
+        worker.run(session);
         assertFalse(cache.containsKey(new TransferItem(child, local)));
         assertTrue(cache.isEmpty());
     }
@@ -277,7 +278,7 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
                     // Expected not found
                     fail();
                 }
-            }.run();
+            }.run(session);
         }
         catch(NotfoundException e) {
             // Expected

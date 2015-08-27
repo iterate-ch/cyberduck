@@ -33,13 +33,12 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @version $Id$
  */
 public class DeleteWorker extends Worker<List<Path>> {
-
-    private Session<?> session;
 
     /**
      * Selected files.
@@ -52,12 +51,11 @@ public class DeleteWorker extends Worker<List<Path>> {
 
     private Filter<Path> filter;
 
-    public DeleteWorker(final Session<?> session, final LoginCallback prompt, final List<Path> files, final ProgressListener listener) {
-        this(session, prompt, files, listener, new NullFilter<Path>());
+    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final ProgressListener listener) {
+        this(prompt, files, listener, new NullFilter<Path>());
     }
 
-    public DeleteWorker(final Session<?> session, final LoginCallback prompt, final List<Path> files, final ProgressListener listener, final Filter<Path> filter) {
-        this.session = session;
+    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final ProgressListener listener, final Filter<Path> filter) {
         this.files = files;
         this.prompt = prompt;
         this.listener = listener;
@@ -65,20 +63,20 @@ public class DeleteWorker extends Worker<List<Path>> {
     }
 
     @Override
-    public List<Path> run() throws BackgroundException {
+    public List<Path> run(final Session<?> session) throws BackgroundException {
         final List<Path> recursive = new ArrayList<Path>();
         for(Path file : files) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
-            recursive.addAll(this.compile(file));
+            recursive.addAll(this.compile(session, file));
         }
         final Delete feature = session.getFeature(Delete.class);
         feature.delete(recursive, prompt, listener);
         return files;
     }
 
-    protected List<Path> compile(final Path file) throws BackgroundException {
+    protected List<Path> compile(final Session<?> session, final Path file) throws BackgroundException {
         // Compile recursive list
         final List<Path> recursive = new ArrayList<Path>();
         if(file.isFile() || file.isSymbolicLink()) {
@@ -89,7 +87,7 @@ public class DeleteWorker extends Worker<List<Path>> {
                 if(this.isCanceled()) {
                     throw new ConnectionCanceledException();
                 }
-                recursive.addAll(this.compile(child));
+                recursive.addAll(this.compile(session, child));
             }
             // Add parent after children
             recursive.add(file);
@@ -113,24 +111,16 @@ public class DeleteWorker extends Worker<List<Path>> {
         if(this == o) {
             return true;
         }
-        if(o == null || getClass() != o.getClass()) {
+        if(!(o instanceof DeleteWorker)) {
             return false;
         }
         final DeleteWorker that = (DeleteWorker) o;
-        if(files != null ? !files.equals(that.files) : that.files != null) {
-            return false;
-        }
-        if(session != null ? !session.equals(that.session) : that.session != null) {
-            return false;
-        }
-        return true;
+        return Objects.equals(files, that.files);
     }
 
     @Override
     public int hashCode() {
-        int result = session != null ? session.hashCode() : 0;
-        result = 31 * result + (files != null ? files.hashCode() : 0);
-        return result;
+        return Objects.hash(files);
     }
 
     @Override

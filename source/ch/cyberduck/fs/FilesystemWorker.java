@@ -17,7 +17,6 @@ package ch.cyberduck.fs;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Home;
@@ -33,17 +32,14 @@ import java.util.Objects;
 public class FilesystemWorker extends Worker<Boolean> {
     private static final Logger log = Logger.getLogger(FilesystemWorker.class);
 
-    private final Session<?> session;
-
     private final Filesystem fs;
 
-    public FilesystemWorker(final Session<?> session, final Filesystem fs) {
-        this.session = session;
+    public FilesystemWorker(final Filesystem fs) {
         this.fs = fs;
     }
 
     @Override
-    public Boolean run() throws BackgroundException {
+    public Boolean run(final Session<?> session) throws BackgroundException {
         fs.mount(session.getFeature(Home.class).find());
         return true;
     }
@@ -68,16 +64,15 @@ public class FilesystemWorker extends Worker<Boolean> {
         if(this == o) {
             return true;
         }
-        if(o == null || getClass() != o.getClass()) {
+        if(!(o instanceof FilesystemWorker)) {
             return false;
         }
         final FilesystemWorker that = (FilesystemWorker) o;
-        return Objects.equals(new HostUrlProvider(true, true).get(session.getHost()),
-                new HostUrlProvider(true, true).get(that.session.getHost()));
+        return Objects.equals(fs, that.fs);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(new HostUrlProvider(true, true).get(session.getHost()));
+        return Objects.hash(fs);
     }
 }

@@ -216,7 +216,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 Transfer transfer, TransferAction action, TransferItemCache cache)
                 : base(
                     controller, session,
-                    new InnerTransferPromptFilterWorker(model, controller, session, transfer, action, cache))
+                    new InnerTransferPromptFilterWorker(model, controller, transfer, action, cache))
             {
             }
 
@@ -226,8 +226,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly TransferPromptModel _model;
 
                 public InnerTransferPromptFilterWorker(TransferPromptModel model, TransferPromptController controller,
-                    Session session, Transfer transfer, TransferAction action, TransferItemCache cache)
-                    : base(session, transfer, action, cache, controller)
+                    Transfer transfer, TransferAction action, TransferItemCache cache)
+                    : base(transfer, action, cache, controller)
                 {
                     _model = model;
                     _controller = controller;
@@ -249,7 +249,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 Session session, TransferItem directory, Transfer transfer, TransferItemCache cache)
                 : base(
                     controller, session,
-                    new InnerTransferPromptListWorker(model, controller, session, transfer, directory, cache))
+                    new InnerTransferPromptListWorker(model, controller, transfer, directory, cache))
             {
             }
 
@@ -260,8 +260,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly TransferPromptModel _model;
 
                 public InnerTransferPromptListWorker(TransferPromptModel model, TransferPromptController controller,
-                    Session session, Transfer transfer, TransferItem directory, TransferItemCache cache)
-                    : base(session, transfer, directory.remote, directory.local, controller)
+                    Transfer transfer, TransferItem directory, TransferItemCache cache)
+                    : base(transfer, directory.remote, directory.local, controller)
                 {
                     _model = model;
                     _directory = directory;

@@ -36,8 +36,8 @@ public class MountWorkerTest extends AbstractTestCase {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Cache<Path> cache = new PathCache(2);
-        final MountWorker worker = new MountWorker(session, cache, new DisabledListProgressListener());
-        assertEquals(new Path("/home/jenkins", EnumSet.of(Path.Type.directory)), worker.run());
+        final MountWorker worker = new MountWorker(host, cache, new DisabledListProgressListener());
+        assertEquals(new Path("/home/jenkins", EnumSet.of(Path.Type.directory)), worker.run(session));
         assertTrue(cache.containsKey(new Path("/home/jenkins", EnumSet.of(Path.Type.directory))));
         assertFalse(cache.containsKey(new Path("/notfound", EnumSet.of(Path.Type.directory))));
         session.close();

@@ -47,17 +47,14 @@ public class TransferPromptFilterWorker extends Worker<Map<TransferItem, Transfe
 
     private Transfer transfer;
 
-    private Session session;
-
     private TransferAction action;
 
     private Cache<TransferItem> cache;
 
     private ProgressListener listener;
 
-    public TransferPromptFilterWorker(final Session session, final Transfer transfer, final TransferAction action,
+    public TransferPromptFilterWorker(final Transfer transfer, final TransferAction action,
                                       final Cache<TransferItem> cache, final ProgressListener listener) {
-        this.session = session;
         this.cache = cache;
         this.action = action;
         this.transfer = transfer;
@@ -65,7 +62,7 @@ public class TransferPromptFilterWorker extends Worker<Map<TransferItem, Transfe
     }
 
     @Override
-    public Map<TransferItem, TransferStatus> run() throws BackgroundException {
+    public Map<TransferItem, TransferStatus> run(final Session<?> session) throws BackgroundException {
         final Map<TransferItem, TransferStatus> status = new HashMap<TransferItem, TransferStatus>();
         for(TransferItem file : transfer.getRoots()) {
             if(this.isCanceled()) {

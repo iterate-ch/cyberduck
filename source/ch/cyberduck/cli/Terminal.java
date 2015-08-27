@@ -341,7 +341,7 @@ public class Terminal {
 
     protected Exit mount(final Session session) {
         final SessionBackgroundAction action = new FilesystemBackgroundAction<Boolean>(
-                controller, session, cache, new FilesystemWorker(session, FilesystemFactory.get(controller, session.getHost(), cache)));
+                controller, session, cache, new FilesystemWorker(FilesystemFactory.get(controller, session.getHost(), cache)));
         this.execute(action);
         if(action.hasFailed()) {
             return Exit.failure;
@@ -350,7 +350,7 @@ public class Terminal {
     }
 
     protected Exit list(final Session session, final Path remote, final boolean verbose) {
-        final SessionListWorker worker = new SessionListWorker(session, cache, remote,
+        final SessionListWorker worker = new SessionListWorker(cache, remote,
                 new TerminalListProgressListener(reader, verbose));
         final SessionBackgroundAction action = new TerminalBackgroundAction<AttributedList<Path>>(
                 new TerminalLoginService(input, new TerminalLoginCallback(reader)), controller,
@@ -369,10 +369,10 @@ public class Terminal {
         }
         final DeleteWorker worker;
         if(StringUtils.containsAny(remote.getName(), '*')) {
-            worker = new DeleteWorker(session, new TerminalLoginCallback(reader), files, progress, new DownloadGlobFilter(remote.getName()));
+            worker = new DeleteWorker(new TerminalLoginCallback(reader), files, progress, new DownloadGlobFilter(remote.getName()));
         }
         else {
-            worker = new DeleteWorker(session, new TerminalLoginCallback(reader), files, progress);
+            worker = new DeleteWorker(new TerminalLoginCallback(reader), files, progress);
         }
         final SessionBackgroundAction action = new TerminalBackgroundAction<List<Path>>(
                 new TerminalLoginService(input, new TerminalLoginCallback(reader)), controller,
@@ -429,8 +429,8 @@ public class Terminal {
 
     protected void disconnect(final Session session) {
         if(session != null) {
-            final DisconnectWorker close = new DisconnectWorker(session);
-            close.run();
+            final DisconnectWorker close = new DisconnectWorker(session.getHost());
+            close.run(session);
         }
     }
 

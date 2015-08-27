@@ -63,7 +63,7 @@ public class CreateFileController extends FileController {
     private void run(final Path directory, final String filename, final boolean edit) {
         final Path file = new Path(directory, filename, EnumSet.of(Path.Type.file));
         parent.background(new WorkerBackgroundAction<Boolean>(parent, parent.getSession(), parent.getCache(),
-                new TouchWorker(parent.getSession(), file) {
+                new TouchWorker(file) {
                     @Override
                     public void cleanup(final Boolean done) {
                         if(done) {

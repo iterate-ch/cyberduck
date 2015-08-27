@@ -19,9 +19,9 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.test.NullSession;
 
 import org.junit.Test;
 
@@ -38,32 +38,12 @@ public class ReadAclWorkerTest extends AbstractTestCase {
 
     @Test
     public void testRun() throws Exception {
-        final ReadAclWorker worker = new ReadAclWorker(new AclPermission() {
-            @Override
-            public Acl getPermission(final Path file) throws BackgroundException {
-                return new Acl(new Acl.DomainUser("a"), new Acl.Role("r"));
-            }
-
-            @Override
-            public void setPermission(final Path file, final Acl acl) throws BackgroundException {
-                //
-            }
-
-            @Override
-            public List<Acl.User> getAvailableAclUsers() {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public List<Acl.Role> getAvailableAclRoles(final List<Path> files) {
-                throw new UnsupportedOperationException();
-            }
-        }, Arrays.<Path>asList(new Path("/a", EnumSet.of(Path.Type.file)), new Path("/b", EnumSet.of(Path.Type.file)))) {
+        final ReadAclWorker worker = new ReadAclWorker(Arrays.<Path>asList(new Path("/a", EnumSet.of(Path.Type.file)), new Path("/b", EnumSet.of(Path.Type.file)))) {
             @Override
             public void cleanup(final List<Acl.UserAndRole> result) {
                 throw new UnsupportedOperationException();
             }
         };
-        assertEquals(1, worker.run().size());
+        assertEquals(1, worker.run(new NullSession(new Host(""))).size());
     }
 }

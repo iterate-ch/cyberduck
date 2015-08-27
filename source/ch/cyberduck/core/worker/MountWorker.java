@@ -19,6 +19,7 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -37,14 +38,14 @@ import java.text.MessageFormat;
 public class MountWorker extends Worker<Path> {
     private static final Logger log = Logger.getLogger(MountWorker.class);
 
-    private Session<?> session;
+    private Host bookmark;
 
     private Cache<Path> cache;
 
     private ListProgressListener listener;
 
-    protected MountWorker(final Session<?> session, final Cache<Path> cache, final ListProgressListener listener) {
-        this.session = session;
+    protected MountWorker(final Host bookmark, final Cache<Path> cache, final ListProgressListener listener) {
+        this.bookmark = bookmark;
         this.cache = cache;
         this.listener = listener;
     }
@@ -54,7 +55,7 @@ public class MountWorker extends Worker<Path> {
      * when not given.
      */
     @Override
-    public Path run() throws BackgroundException {
+    public Path run(final Session<?> session) throws BackgroundException {
         Path home;
         AttributedList<Path> list;
         try {
@@ -62,7 +63,7 @@ public class MountWorker extends Worker<Path> {
             // Remove cached home to force error if repeated attempt to mount fails
             cache.invalidate(home);
             // Retrieve directory listing of default path
-            list = new SessionListWorker(session, cache, home, listener).run();
+            list = new SessionListWorker(cache, home, listener).run(session);
         }
         catch(NotfoundException e) {
             log.warn(String.format("Mount failed with %s", e.getMessage()));
@@ -72,7 +73,7 @@ public class MountWorker extends Worker<Path> {
             // Remove cached home to force error if repeated attempt to mount fails
             cache.invalidate(home);
             // Retrieve directory listing of working directory
-            list = new SessionListWorker(session, cache, home, listener).run();
+            list = new SessionListWorker(cache, home, listener).run(session);
         }
         cache.put(home, list);
         return home;
@@ -81,7 +82,7 @@ public class MountWorker extends Worker<Path> {
     @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Mounting {0}", "Status"),
-                session.getHost().getHostname());
+                bookmark.getHostname());
     }
 
     @Override
@@ -112,7 +113,7 @@ public class MountWorker extends Worker<Path> {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("MountWorker{");
-        sb.append("session=").append(session);
+        sb.append("cache=").append(cache);
         sb.append('}');
         return sb.toString();
     }

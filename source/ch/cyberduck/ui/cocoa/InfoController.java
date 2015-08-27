@@ -372,7 +372,7 @@ public class InfoController extends ToolbarWindowController {
             final Redundancy feature = controller.getSession().getFeature(Redundancy.class);
             final String redundancy = sender.selectedItem().representedObject();
             this.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
-                            new WriteRedundancyWorker(controller.getSession(), feature,
+                            new WriteRedundancyWorker(
                                     files, redundancy, true, controller) {
                                 @Override
                                 public void cleanup(final Boolean v) {
@@ -401,8 +401,7 @@ public class InfoController extends ToolbarWindowController {
             final String algorithm = encryptionButton.state() == NSCell.NSOnState ?
                     feature.getAlgorithms().iterator().next() : null;
             this.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
-                            new WriteEncryptionWorker(controller.getSession(), feature,
-                                    files, algorithm, true, controller) {
+                            new WriteEncryptionWorker(files, algorithm, true, controller) {
                                 @Override
                                 public void cleanup(final Boolean v) {
                                     toggleS3Settings(true);
@@ -952,8 +951,7 @@ public class InfoController extends ToolbarWindowController {
     private void aclInputDidEndEditing() {
         if(this.toggleAclSettings(false)) {
             this.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
-                            new WriteAclWorker(controller.getSession(), controller.getSession().getFeature(AclPermission.class),
-                                    files, new Acl(acl.toArray(new Acl.UserAndRole[acl.size()])), true, controller) {
+                            new WriteAclWorker(files, new Acl(acl.toArray(new Acl.UserAndRole[acl.size()])), true, controller) {
                                 @Override
                                 public void cleanup(final Boolean v) {
                                     toggleAclSettings(true);
@@ -1243,7 +1241,7 @@ public class InfoController extends ToolbarWindowController {
                 update.put(header.getName(), header.getValue());
             }
             this.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
-                            new WriteMetadataWorker(controller.getSession().getFeature(Headers.class),
+                            new WriteMetadataWorker(
                                     files, update, controller) {
                                 @Override
                                 public void cleanup(final Boolean v) {
@@ -2162,7 +2160,7 @@ public class InfoController extends ToolbarWindowController {
         this.setMetadata(Collections.<Header>emptyList());
         if(this.toggleMetadataSettings(false)) {
             this.background(new WorkerBackgroundAction<Map<String, String>>(controller, controller.getSession(), controller.getCache(),
-                    new ReadMetadataWorker(controller.getSession().getFeature(Headers.class), files) {
+                    new ReadMetadataWorker(files) {
                         @Override
                         public void cleanup(final Map<String, String> updated) {
                             final List<Header> m = new ArrayList<Header>();
@@ -2217,7 +2215,7 @@ public class InfoController extends ToolbarWindowController {
                 }
             }
             this.background(new WorkerBackgroundAction<List<Acl.UserAndRole>>(controller, controller.getSession(), controller.getCache(),
-                    new ReadAclWorker(session.getFeature(AclPermission.class), files) {
+                    new ReadAclWorker(files) {
                         @Override
                         public void cleanup(final List<Acl.UserAndRole> updated) {
                             if(updated != null) {
@@ -2367,8 +2365,7 @@ public class InfoController extends ToolbarWindowController {
     private void changePermissions(final Permission permission, final boolean recursive) {
         if(this.togglePermissionSettings(false)) {
             this.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
-                            new WritePermissionWorker(controller.getSession(),
-                                    controller.getSession().getFeature(UnixPermission.class),
+                            new WritePermissionWorker(
                                     files, permission, recursive, controller) {
                                 @Override
                                 public void cleanup(final Boolean v) {
@@ -2740,7 +2737,7 @@ public class InfoController extends ToolbarWindowController {
     public void calculateSizeButtonClicked(final ID sender) {
         if(this.toggleSizeSettings(false)) {
             this.background(new WorkerBackgroundAction<Long>(controller, controller.getSession(), controller.getCache(),
-                    new CalculateSizeWorker(controller.getSession(), files, controller) {
+                    new CalculateSizeWorker(files, controller) {
                         @Override
                         public void cleanup(final Long size) {
                             updateSize(size);

@@ -408,7 +408,7 @@ public class BrowserController extends WindowController
             }
             // Delay render until path is cached in the background
             this.background(new WorkerBackgroundAction<AttributedList<Path>>(this, session, cache,
-                            new SessionListWorker(session, cache, folder, listener) {
+                            new SessionListWorker(cache, folder, listener) {
                                 @Override
                                 public void cleanup(final AttributedList<Path> list) {
                                     super.cleanup(list);
@@ -3218,7 +3218,7 @@ public class BrowserController extends WindowController
                 // Initialize the browser with the new session attaching all listeners
                 final Session session = init(host);
                 background(new WorkerBackgroundAction<Path>(BrowserController.this, session, cache,
-                        new MountWorker(session, cache, listener) {
+                        new MountWorker(host, cache, listener) {
                             @Override
                             public void cleanup(final Path workdir) {
                                 if(null == workdir) {
@@ -3356,7 +3356,7 @@ public class BrowserController extends WindowController
             c.window().close();
         }
         if(session != null) {
-            this.background(new WorkerBackgroundAction<Void>(this, session, cache, new DisconnectWorker(session)) {
+            this.background(new WorkerBackgroundAction<Void>(this, session, cache, new DisconnectWorker(session.getHost())) {
                 @Override
                 public void prepare() throws ConnectionCanceledException {
                     if(!session.isConnected()) {

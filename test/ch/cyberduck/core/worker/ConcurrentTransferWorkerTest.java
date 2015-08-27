@@ -285,7 +285,7 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
                 new CertificateStoreX509KeyManager(new DisabledCertificateStore()), PathCache.empty(),
                 connections);
 
-        assertTrue(worker.run());
+        assertTrue(worker.run(null));
         lock.await();
         for(int i = 1; i <= files; i++) {
             assertTrue(transferred.contains(new Path("/t" + i, EnumSet.of(Path.Type.file))));

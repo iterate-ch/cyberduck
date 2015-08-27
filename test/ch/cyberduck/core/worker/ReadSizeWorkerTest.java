@@ -1,7 +1,9 @@
 package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.test.NullSession;
 
 import org.junit.Test;
 
@@ -25,6 +27,6 @@ public class ReadSizeWorkerTest extends AbstractTestCase {
                 //
             }
         };
-        assertEquals(0L, worker.run(), 0L);
+        assertEquals(0L, worker.run(new NullSession(new Host(""))), 0L);
     }
 }

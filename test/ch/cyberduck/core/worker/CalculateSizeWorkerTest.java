@@ -4,7 +4,7 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.ftp.FTPSession;
+import ch.cyberduck.core.test.NullSession;
 
 import org.junit.Test;
 
@@ -28,7 +28,7 @@ public class CalculateSizeWorkerTest extends AbstractTestCase {
         final Path b = new Path("a", EnumSet.of(Path.Type.file));
         b.attributes().setSize(3L);
         files.add(b);
-        assertEquals(4L, new CalculateSizeWorker(new FTPSession(new Host("h")), files,
+        assertEquals(4L, new CalculateSizeWorker(files,
                 new DisabledProgressListener()) {
             int i = 0;
 
@@ -47,6 +47,6 @@ public class CalculateSizeWorkerTest extends AbstractTestCase {
                 }
                 i++;
             }
-        }.run(), 0L);
+        }.run(new NullSession(new Host(""))), 0L);
     }
 }

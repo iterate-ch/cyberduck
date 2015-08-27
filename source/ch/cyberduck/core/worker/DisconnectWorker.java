@@ -17,6 +17,7 @@ package ch.cyberduck.core.worker;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -32,14 +33,14 @@ import java.text.MessageFormat;
 public class DisconnectWorker extends Worker<Void> {
     private static final Logger log = Logger.getLogger(DisconnectWorker.class);
 
-    private Session<?> session;
+    private Host bookmark;
 
-    public DisconnectWorker(final Session<?> session) {
-        this.session = session;
+    public DisconnectWorker(final Host bookmark) {
+        this.bookmark = bookmark;
     }
 
     @Override
-    public Void run() {
+    public Void run(final Session<?> session) {
         try {
             if(session.isConnected()) {
                 session.close();
@@ -48,25 +49,15 @@ public class DisconnectWorker extends Worker<Void> {
         catch(BackgroundException e) {
             log.warn(String.format("Failure closing connection %s. %s", session, e.getMessage()));
         }
+        finally {
+            PathPasteboardFactory.delete(session);
+        }
         return null;
-    }
-
-    @Override
-    public void cleanup(Void result) {
-        PathPasteboardFactory.delete(session);
     }
 
     @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Disconnecting {0}", "Status"),
-                session.getHost().getHostname());
-    }
-
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("DisconnectWorker{");
-        sb.append("session=").append(session);
-        sb.append('}');
-        return sb.toString();
+                bookmark.getHostname());
     }
 }

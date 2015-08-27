@@ -160,7 +160,7 @@ public class UploadTransferTest extends AbstractTestCase {
                 return null;
             }
         }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
-                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback()).run();
+                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback()).run(session);
         assertEquals(1, c.get());
     }
 
@@ -220,7 +220,7 @@ public class UploadTransferTest extends AbstractTestCase {
                 return TransferAction.rename;
             }
         }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
-                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback()).run();
+                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback()).run(session);
         assertEquals(1, c.get());
     }
 

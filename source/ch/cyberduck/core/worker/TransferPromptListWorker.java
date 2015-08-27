@@ -43,16 +43,13 @@ public class TransferPromptListWorker extends Worker<List<TransferItem>> {
 
     private Local local;
 
-    private Session session;
-
     private Transfer transfer;
 
     private ProgressListener listener;
 
-    public TransferPromptListWorker(final Session session, final Transfer transfer,
+    public TransferPromptListWorker(final Transfer transfer,
                                     final Path directory, final Local local,
                                     final ProgressListener listener) {
-        this.session = session;
         this.directory = directory;
         this.local = local;
         this.transfer = transfer;
@@ -60,7 +57,7 @@ public class TransferPromptListWorker extends Worker<List<TransferItem>> {
     }
 
     @Override
-    public List<TransferItem> run() throws BackgroundException {
+    public List<TransferItem> run(final Session<?> session) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("List directory %s", directory));
         }

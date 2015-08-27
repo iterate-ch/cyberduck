@@ -29,10 +29,10 @@ public class SessionListWorkerTest extends AbstractTestCase {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final PathCache cache = new PathCache(1);
-        final SessionListWorker worker = new SessionListWorker(session, cache,
+        final SessionListWorker worker = new SessionListWorker(cache,
                 new Path("/home/jenkins", EnumSet.of(Path.Type.directory)),
                 new DisabledListProgressListener());
-        final AttributedList<Path> list = worker.run();
+        final AttributedList<Path> list = worker.run(session);
         assertFalse(list.isEmpty());
         assertFalse(cache.containsKey(new Path("/home/jenkins", EnumSet.of(Path.Type.directory))));
         worker.cleanup(list);
@@ -48,7 +48,7 @@ public class SessionListWorkerTest extends AbstractTestCase {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final PathCache cache = new PathCache(1);
-        final SessionListWorker worker = new SessionListWorker(session, cache,
+        final SessionListWorker worker = new SessionListWorker(cache,
                 new Path("/home/notfound", EnumSet.of(Path.Type.directory)),
                 new DisabledListProgressListener());
         final Controller c = new AbstractController() {
@@ -76,7 +76,7 @@ public class SessionListWorkerTest extends AbstractTestCase {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final PathCache cache = new PathCache(1);
-        final SessionListWorker worker = new SessionListWorker(session, cache,
+        final SessionListWorker worker = new SessionListWorker(cache,
                 new Path("/home/notfound", EnumSet.of(Path.Type.directory)),
                 new DisabledListProgressListener());
         final Controller c = new AbstractController() {
@@ -92,7 +92,7 @@ public class SessionListWorkerTest extends AbstractTestCase {
 
     @Test
     public void testInitialValueOnFailure() throws Exception {
-        final SessionListWorker worker = new SessionListWorker(null, PathCache.empty(),
+        final SessionListWorker worker = new SessionListWorker(PathCache.empty(),
                 new Path("/home/notfound", EnumSet.of(Path.Type.directory)),
                 new DisabledListProgressListener());
         assertSame(AttributedList.emptyList(), worker.initialize());

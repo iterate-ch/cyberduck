@@ -21,6 +21,7 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import java.util.List;
@@ -45,7 +46,7 @@ public abstract class Worker<T> {
         return String.format("%s…", name);
     }
 
-    public T run() throws BackgroundException {
+    public T run(final Session<?> session) throws BackgroundException {
         return null;
     }
 
@@ -75,7 +76,7 @@ public abstract class Worker<T> {
     public static <T> Worker<T> empty() {
         return new Worker<T>() {
             @Override
-            public T run() throws BackgroundException {
+            public T run(final Session<?> session) throws BackgroundException {
                 return null;
             }
         };

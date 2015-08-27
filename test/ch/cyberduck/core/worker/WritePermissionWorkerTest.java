@@ -19,23 +19,16 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.UnixPermission;
-import ch.cyberduck.core.ftp.FTPSession;
+import ch.cyberduck.core.test.NullSession;
 
 import org.junit.Test;
 
 import java.util.Collections;
 import java.util.EnumSet;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 /**
  * @version $Id$
@@ -46,87 +39,18 @@ public class WritePermissionWorkerTest extends AbstractTestCase {
     public void testRun() throws Exception {
         final Permission permission = new Permission(744);
         final Path path = new Path("a", EnumSet.of(Path.Type.directory));
-        final WritePermissionWorker worker = new WritePermissionWorker(new FTPSession(new Host("h")) {
-            @Override
-            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-                final AttributedList<Path> children = new AttributedList<Path>();
-                children.add(new Path("b", EnumSet.of(Path.Type.file)));
-                return children;
-            }
-        }, new UnixPermission() {
-            @Override
-            public void setUnixOwner(final Path file, final String owner) throws BackgroundException {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void setUnixGroup(final Path file, final String group) throws BackgroundException {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void setUnixPermission(final Path file, final Permission permission) throws BackgroundException {
-                if(file.getName().equals("a")) {
-                    assertEquals(new Permission(744), permission);
-                }
-                else if(file.getName().equals("b")) {
-                    assertEquals(new Permission(644), permission);
-                }
-                else {
-                    fail();
-                }
-            }
-        }, Collections.singletonList(path), permission, true, new DisabledProgressListener()
+        final WritePermissionWorker worker = new WritePermissionWorker(Collections.singletonList(path), permission, true, new DisabledProgressListener()
         );
-        worker.run();
+        worker.run(new NullSession(new Host("")));
     }
 
     @Test
     public void testRunRecursiveRetainDirectoryExecute() throws Exception {
         final Permission permission = new Permission(644);
         final Path a = new Path("a", EnumSet.of(Path.Type.directory));
-        final WritePermissionWorker worker = new WritePermissionWorker(new FTPSession(new Host("h")) {
-            @Override
-            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-                if(file.equals(a)) {
-                    final AttributedList<Path> children = new AttributedList<Path>();
-                    final Path d = new Path("d", EnumSet.of(Path.Type.directory));
-                    d.attributes().setPermission(new Permission(744));
-                    children.add(d);
-                    children.add(new Path("f", EnumSet.of(Path.Type.file)));
-                    return children;
-                }
-                return AttributedList.emptyList();
-            }
-        }, new UnixPermission() {
-            @Override
-            public void setUnixOwner(final Path file, final String owner) throws BackgroundException {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void setUnixGroup(final Path file, final String group) throws BackgroundException {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void setUnixPermission(final Path file, final Permission permission) throws BackgroundException {
-                if(file.getName().equals("a")) {
-                    assertEquals(new Permission(644), permission);
-                }
-                else if(file.getName().equals("d")) {
-                    assertEquals(new Permission(544), permission);
-                }
-                else if(file.getName().equals("f")) {
-                    assertEquals(new Permission(644), permission);
-                }
-                else {
-                    fail();
-                }
-            }
-        }, Collections.singletonList(a), permission, true, new DisabledProgressListener()
+        final WritePermissionWorker worker = new WritePermissionWorker(Collections.singletonList(a), permission, true, new DisabledProgressListener()
         );
-        worker.run();
+        worker.run(new NullSession(new Host("")));
     }
 
     @Test
@@ -135,45 +59,9 @@ public class WritePermissionWorkerTest extends AbstractTestCase {
         a.attributes().setPermission(new Permission(774));
         final Path f = new Path("f", EnumSet.of(Path.Type.file));
         final Path d = new Path("d", EnumSet.of(Path.Type.directory));
-        final WritePermissionWorker worker = new WritePermissionWorker(new FTPSession(new Host("h")) {
-            @Override
-            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-                if(file.equals(a)) {
-                    final AttributedList<Path> children = new AttributedList<Path>();
-                    d.attributes().setPermission(new Permission(774));
-                    children.add(d);
-                    d.attributes().setPermission(new Permission(666));
-                    children.add(f);
-                    return children;
-                }
-                return AttributedList.emptyList();
-            }
-        }, new UnixPermission() {
-            @Override
-            public void setUnixOwner(final Path file, final String owner) throws BackgroundException {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void setUnixGroup(final Path file, final String group) throws BackgroundException {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void setUnixPermission(final Path file, final Permission permission) throws BackgroundException {
-                if(file.equals(a)) {
-                    assertEquals(file.toString(), new Permission(775), permission);
-                }
-                if(file.equals(d)) {
-                    assertEquals(file.toString(), new Permission(775), permission);
-                }
-                if(file.equals(f)) {
-                    assertEquals(file.toString(), new Permission(664), permission);
-                }
-            }
-        }, Collections.singletonList(a), new Permission(775), true, new DisabledProgressListener()
+        final WritePermissionWorker worker = new WritePermissionWorker(Collections.singletonList(a), new Permission(775), true, new DisabledProgressListener()
         );
-        worker.run();
+        worker.run(new NullSession(new Host("")));
     }
 
     @Test
@@ -182,39 +70,8 @@ public class WritePermissionWorkerTest extends AbstractTestCase {
         final Path path = new Path("a", EnumSet.of(Path.Type.directory));
         path.attributes().setPermission(new Permission(Permission.Action.none, Permission.Action.none, Permission.Action.none,
                 true, false, false));
-        final WritePermissionWorker worker = new WritePermissionWorker(new FTPSession(new Host("h")) {
-            @Override
-            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-                final AttributedList<Path> children = new AttributedList<Path>();
-                children.add(new Path("b", EnumSet.of(Path.Type.file)));
-                return children;
-            }
-        }, new UnixPermission() {
-            @Override
-            public void setUnixOwner(final Path file, final String owner) throws BackgroundException {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void setUnixGroup(final Path file, final String group) throws BackgroundException {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void setUnixPermission(final Path file, final Permission permission) throws BackgroundException {
-                if(file.getName().equals("a")) {
-                    assertEquals(new Permission(1744), permission);
-                    assertEquals(permission, permission);
-                }
-                else if(file.getName().equals("b")) {
-                    assertEquals(new Permission(644), permission);
-                }
-                else {
-                    fail();
-                }
-            }
-        }, Collections.singletonList(path), permission, true, new DisabledProgressListener()
+        final WritePermissionWorker worker = new WritePermissionWorker(Collections.singletonList(path), permission, true, new DisabledProgressListener()
         );
-        worker.run();
+        worker.run(new NullSession(new Host("")));
     }
 }

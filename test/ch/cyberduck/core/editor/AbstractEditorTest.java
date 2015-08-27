@@ -115,7 +115,7 @@ public class AbstractEditorTest extends AbstractTestCase {
                 //
             }
         };
-        editor.open(new DisabledApplicationQuitCallback(), new DisabledTransferErrorCallback(), new DisabledFileWatcherListener()).run();
+        editor.open(new DisabledApplicationQuitCallback(), new DisabledTransferErrorCallback(), new DisabledFileWatcherListener()).run(session);
         assertTrue(t.get());
         assertNotNull(editor.getLocal());
         assertTrue(e.get());

@@ -34,10 +34,6 @@ import java.util.List;
  */
 public class WriteEncryptionWorker extends Worker<Boolean> {
 
-    private Session<?> session;
-
-    private Encryption feature;
-
     /**
      * Selected files.
      */
@@ -55,10 +51,8 @@ public class WriteEncryptionWorker extends Worker<Boolean> {
 
     private ProgressListener listener;
 
-    public WriteEncryptionWorker(final Session<?> session, final Encryption feature, final List<Path> files,
+    public WriteEncryptionWorker(final List<Path> files,
                                  final String algorithm, final boolean recursive, final ProgressListener listener) {
-        this.session = session;
-        this.feature = feature;
         this.files = files;
         this.algorithm = algorithm;
         this.recursive = recursive;
@@ -66,14 +60,15 @@ public class WriteEncryptionWorker extends Worker<Boolean> {
     }
 
     @Override
-    public Boolean run() throws BackgroundException {
+    public Boolean run(final Session<?> session) throws BackgroundException {
+        final Encryption feature = session.getFeature(Encryption.class);
         for(Path file : files) {
-            this.write(file);
+            this.write(session, feature, file);
         }
         return true;
     }
 
-    protected void write(final Path file) throws BackgroundException {
+    protected void write(final Session<?> session, final Encryption feature, final Path file) throws BackgroundException {
         if(this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
@@ -89,7 +84,7 @@ public class WriteEncryptionWorker extends Worker<Boolean> {
             }
             else if(file.isDirectory()) {
                 for(Path child : session.list(file, new ActionListProgressListener(this, listener))) {
-                    this.write(child);
+                    this.write(session, feature, child);
                 }
             }
         }

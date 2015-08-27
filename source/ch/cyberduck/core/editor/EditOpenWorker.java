@@ -19,6 +19,7 @@ package ch.cyberduck.core.editor;
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -54,8 +55,6 @@ public class EditOpenWorker extends Worker<Transfer> {
 
     private AbstractEditor editor;
 
-    private Session session;
-
     private Transfer download;
 
     private TransferErrorCallback callback;
@@ -66,16 +65,15 @@ public class EditOpenWorker extends Worker<Transfer> {
 
     private FileWatcherListener watcher;
 
-    public EditOpenWorker(final AbstractEditor editor, final Session session,
+    public EditOpenWorker(final Host bookmark, final AbstractEditor editor,
                           final TransferErrorCallback callback,
                           final ApplicationQuitCallback quit,
                           final ProgressListener listener,
                           final FileWatcherListener watcher) {
         this.editor = editor;
-        this.session = session;
         this.callback = callback;
         this.quit = quit;
-        this.download = new DownloadTransfer(session.getHost(), editor.getRemote(), editor.getLocal(),
+        this.download = new DownloadTransfer(bookmark, editor.getRemote(), editor.getLocal(),
                 new DownloadDuplicateFilter()) {
             @Override
             public TransferAction action(final Session<?> session, final boolean resumeRequested, final boolean reloadRequested,
@@ -88,7 +86,7 @@ public class EditOpenWorker extends Worker<Transfer> {
     }
 
     @Override
-    public Transfer run() throws BackgroundException {
+    public Transfer run(final Session<?> session) throws BackgroundException {
         final Path file = editor.getRemote();
         if(log.isDebugEnabled()) {
             log.debug(String.format("Run edit action for editor %s", file));
@@ -101,7 +99,7 @@ public class EditOpenWorker extends Worker<Transfer> {
                 = new SingleTransferWorker(session, download, options, new TransferSpeedometer(download),
                 new DisabledTransferPrompt(), callback, new DisabledTransferItemCallback(),
                 listener, new DisabledStreamListener(), new DisabledLoginCallback());
-        worker.run();
+        worker.run(session);
         if(!download.isComplete()) {
             log.warn(String.format("File size changed for %s", file));
         }

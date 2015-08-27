@@ -2,9 +2,9 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.test.NullSession;
 
 import org.junit.Test;
 
@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 /**
  * @version $Id$
@@ -25,24 +25,13 @@ public class WriteMetadataWorkerTest extends AbstractTestCase {
     @Test
     public void testEmpty() throws Exception {
         final List<Path> files = new ArrayList<Path>();
-        WriteMetadataWorker worker = new WriteMetadataWorker(new Headers() {
-            @Override
-            public Map<String, String> getMetadata(final Path file) throws BackgroundException {
-                fail();
-                return null;
-            }
-
-            @Override
-            public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
-                fail();
-            }
-        }, files, Collections.<String, String>emptyMap(), new DisabledProgressListener()) {
+        WriteMetadataWorker worker = new WriteMetadataWorker(files, Collections.<String, String>emptyMap(), new DisabledProgressListener()) {
             @Override
             public void cleanup(final Boolean result) {
                 fail();
             }
         };
-        worker.run();
+        worker.run(new NullSession(new Host("")));
     }
 
     @Test
@@ -55,23 +44,13 @@ public class WriteMetadataWorkerTest extends AbstractTestCase {
         files.add(p);
         final Map<String, String> updated = new HashMap<String, String>();
         updated.put("key", "v1");
-        WriteMetadataWorker worker = new WriteMetadataWorker(new Headers() {
-            @Override
-            public Map<String, String> getMetadata(final Path file) throws BackgroundException {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
-                fail();
-            }
-        }, files, updated, new DisabledProgressListener()) {
+        WriteMetadataWorker worker = new WriteMetadataWorker(files, updated, new DisabledProgressListener()) {
             @Override
             public void cleanup(final Boolean map) {
                 fail();
             }
         };
-        worker.run();
+        worker.run(new NullSession(new Host("")));
     }
 
     @Test
@@ -86,25 +65,12 @@ public class WriteMetadataWorkerTest extends AbstractTestCase {
         final Map<String, String> updated = new HashMap<String, String>();
         updated.put("nullified", null);
         updated.put("key", "v2");
-        WriteMetadataWorker worker = new WriteMetadataWorker(new Headers() {
-            @Override
-            public Map<String, String> getMetadata(final Path file) throws BackgroundException {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void setMetadata(final Path file, final Map<String, String> meta) throws BackgroundException {
-                assertTrue(meta.containsKey("nullified"));
-                assertTrue(meta.containsKey("key"));
-                assertEquals("v2", meta.get("key"));
-                assertEquals("hash", meta.get("nullified"));
-            }
-        }, files, updated, new DisabledProgressListener()) {
+        WriteMetadataWorker worker = new WriteMetadataWorker(files, updated, new DisabledProgressListener()) {
             @Override
             public void cleanup(final Boolean map) {
                 fail();
             }
         };
-        worker.run();
+        worker.run(new NullSession(new Host("")));
     }
 }

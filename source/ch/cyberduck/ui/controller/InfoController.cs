@@ -813,8 +813,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (ToggleS3Settings(false))
             {
-                Redundancy feature = (Redundancy)_controller.Session.getFeature(typeof(Redundancy));
-                _controller.Background(new SetStorageClassBackgroundAction(_controller, this, _files, feature, View.StorageClass));
+                _controller.Background(new SetStorageClassBackgroundAction(_controller, this, _files, View.StorageClass));
             }
         }
 
@@ -824,7 +823,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 Encryption feature = (Encryption)_controller.Session.getFeature(typeof(Encryption));
                 String encryption = View.Encryption ? (string) feature.getAlgorithms().iterator().next() : null;
-                _controller.Background(new SetEncryptionBackgroundAction(_controller, this, _files, feature, encryption));
+                _controller.Background(new SetEncryptionBackgroundAction(_controller, this, _files, encryption));
             }
         }
 
@@ -1949,7 +1948,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly InfoController _infoController;
 
                 public InnerReadAclWorker(BrowserController browserController, InfoController infoController, List files)
-                    : base((AclPermission) browserController.Session.getFeature(typeof (AclPermission)), files)
+                    : base(files)
                 {
                     _infoController = infoController;
                 }
@@ -2181,7 +2180,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly InfoController _infoController;
 
                 public InnerReadMetadataWorker(BrowserController browserController, InfoController infoController,
-                    List files) : base((Headers) browserController.Session.getFeature(typeof (Headers)), files)
+                    List files) : base(files)
                 {
                     _infoController = infoController;
                 }
@@ -2247,7 +2246,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly InfoController _infoController;
 
                 public InnerCalculateSizeWorker(InfoController infoController, List files)
-                    : base(infoController._controller.Session, files, infoController._controller)
+                    : base(files, infoController._controller)
                 {
                     _infoController = infoController;
                 }
@@ -2411,8 +2410,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private class SetEncryptionBackgroundAction : WorkerBackgroundAction
         {
-            public SetEncryptionBackgroundAction(BrowserController controller, InfoController infoController, IList<Path> files, Encryption feature, String algorithm)
-                : base(controller, controller.Session, controller.Cache, new InnerWriteEncryptionWorker(controller, infoController, Utils.ConvertToJavaList(files), feature, algorithm))
+            public SetEncryptionBackgroundAction(BrowserController controller, InfoController infoController, IList<Path> files, String algorithm)
+                : base(controller, controller.Session, controller.Cache, new InnerWriteEncryptionWorker(controller, infoController, Utils.ConvertToJavaList(files), algorithm))
             {
             }
 
@@ -2420,10 +2419,8 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 private readonly InfoController _infoController;
 
-                public InnerWriteEncryptionWorker(BrowserController controller, InfoController infoController, List files,
-                    Encryption feature, String algorithm)
-                    : base(
-                        controller.Session, feature, files, algorithm, true, controller)
+                public InnerWriteEncryptionWorker(BrowserController controller, InfoController infoController, List files, String algorithm)
+                    : base(files, algorithm, true, controller)
                 {
                     _infoController = infoController;
                 }
@@ -2438,8 +2435,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private class SetStorageClassBackgroundAction : WorkerBackgroundAction
         {
-            public SetStorageClassBackgroundAction(BrowserController controller, InfoController infoController,  IList<Path> files, Redundancy feature, String redundancy)
-                : base(controller, controller.Session, controller.Cache, new InnerWriteRedundancyWorker(controller, infoController, Utils.ConvertToJavaList(files), feature, redundancy))
+            public SetStorageClassBackgroundAction(BrowserController controller, InfoController infoController,  IList<Path> files, String redundancy)
+                : base(controller, controller.Session, controller.Cache, new InnerWriteRedundancyWorker(controller, infoController, Utils.ConvertToJavaList(files), redundancy))
             {
             }
 
@@ -2447,10 +2444,8 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 private readonly InfoController _infoController;
 
-                public InnerWriteRedundancyWorker(BrowserController controller, InfoController infoController, List files,
-                    Redundancy feature, String redundancy)
-                    : base(
-                        controller.Session, feature, files, redundancy, true, controller)
+                public InnerWriteRedundancyWorker(BrowserController controller, InfoController infoController, List files, String redundancy)
+                    : base(files, redundancy, true, controller)
                 {
                     _infoController = infoController;
                 }
@@ -2527,10 +2522,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly InfoController _infoController;
 
                 public InnerWriteAclWorker(BrowserController controller, InfoController infoController, List files,
-                    Acl acl)
-                    : base(
-                        controller.Session, (AclPermission) controller.Session.getFeature(typeof (AclPermission)), files,
-                        acl, true, controller)
+                    Acl acl) : base(files, acl, true, controller)
                 {
                     _infoController = infoController;
                 }
@@ -2614,9 +2606,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly InfoController _infoController;
 
                 public InnerWriteMetadataWorker(InfoController infoController, List files, Map metadata)
-                    : base(
-                        (Headers) infoController._controller.Session.getFeature(typeof (Headers)), files, metadata,
-                        infoController._controller)
+                    : base(files, metadata, infoController._controller)
                 {
                     _infoController = infoController;
                 }
@@ -2645,10 +2635,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public InnerWritePermissionWorker(InfoController infoController, List files, Permission permission,
                     bool recursive)
-                    : base(
-                        infoController._controller.Session,
-                        (UnixPermission) infoController._controller.Session.getFeature(typeof (UnixPermission)), files,
-                        permission, recursive, infoController._controller)
+                    : base(files, permission, recursive, infoController._controller)
                 {
                     _infoController = infoController;
                 }

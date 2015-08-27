@@ -30,17 +30,14 @@ import java.text.MessageFormat;
  */
 public class TouchWorker extends Worker<Boolean> {
 
-    private Session<?> session;
-
     private Path file;
 
-    public TouchWorker(final Session<?> session, final Path file) {
-        this.session = session;
+    public TouchWorker(final Path file) {
         this.file = file;
     }
 
     @Override
-    public Boolean run() throws BackgroundException {
+    public Boolean run(final Session<?> session) throws BackgroundException {
         final Touch feature = session.getFeature(Touch.class);
         if(feature.isSupported(file.getParent())) {
             feature.touch(file);

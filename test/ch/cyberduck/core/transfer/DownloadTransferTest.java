@@ -45,7 +45,8 @@ public class DownloadTransferTest extends AbstractTestCase {
     @Test
     public void testSerializeComplete() throws Exception {
         // Test transfer to complete with existing directory
-        final Transfer t = new DownloadTransfer(new Host("t"), new Path("/t", EnumSet.of(Path.Type.directory)), new NullLocal("t") {
+        final Host host = new Host("t");
+        final Transfer t = new DownloadTransfer(host, new Path("/t", EnumSet.of(Path.Type.directory)), new NullLocal("t") {
             @Override
             public boolean exists() {
                 return true;
@@ -66,14 +67,15 @@ public class DownloadTransferTest extends AbstractTestCase {
                 return true;
             }
         });
-        new SingleTransferWorker(new NullSession(new Host("t")), t, new TransferOptions(),
+        final NullSession session = new NullSession(host);
+        new SingleTransferWorker(session, t, new TransferOptions(),
                 new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
-                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback()).run();
+                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback()).run(session);
         assertTrue(t.isComplete());
         final Transfer serialized = new TransferDictionary().deserialize(t.serialize(SerializerFactory.get()));
         assertNotSame(t, serialized);

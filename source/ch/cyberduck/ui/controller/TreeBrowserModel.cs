@@ -195,7 +195,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly Path _directory;
 
                 public InnerListWorker(BrowserController controller, Path directory, PathCache cache,
-                    ListProgressListener listener) : base(controller.Session, cache, directory, listener)
+                    ListProgressListener listener) : base(cache, directory, listener)
                 {
                     _controller = controller;
                     _directory = directory;

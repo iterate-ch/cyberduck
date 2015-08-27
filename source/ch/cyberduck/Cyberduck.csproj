@@ -65,7 +65,8 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(OutputType)' == 'Library'">
-    <StartupObject></StartupObject>
+    <StartupObject>
+    </StartupObject>
     <OutputPath>..\..\..\build\dll</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -227,9 +228,7 @@
     <Compile Include="ui\winforms\controls\TransferControl.Designer.cs">
       <DependentUpon>TransferControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="ui\winforms\controls\VistaMenu.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="ui\winforms\controls\VistaMenu.cs" />
     <Compile Include="ui\winforms\controls\VistaMenuOwnerDrawn.cs">
       <SubType>Component</SubType>
     </Compile>

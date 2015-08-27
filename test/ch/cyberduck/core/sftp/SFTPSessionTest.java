@@ -29,6 +29,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import net.schmizz.sshj.DefaultConfig;
 import net.schmizz.sshj.SSHClient;
+import net.schmizz.sshj.transport.TransportException;
 import net.schmizz.sshj.transport.cipher.Cipher;
 import net.schmizz.sshj.transport.kex.KeyExchange;
 import net.schmizz.sshj.transport.mac.MAC;
@@ -97,6 +98,26 @@ public class SFTPSessionTest extends AbstractTestCase {
             assertTrue(client.isConnected());
             client.close();
         }
+    }
+
+    @Test(expected = TransportException.class)
+    public void testNoKeyExchangeAreement() throws Exception {
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch");
+        final SFTPSession session = new SFTPSession(host);
+        final DefaultConfig configuration = new DefaultConfig();
+//        configuration.setKeyExchangeFactories(Arrays.asList(new net.schmizz.sshj.transport.kex.Curve25519.Factory()));
+        session.connect(new DisabledHostKeyCallback(), configuration);
+    }
+
+    @Test
+    public void testKeyExchangeCurve25519() throws Exception {
+        final Host host = new Host(new SFTPProtocol(), "172.16.123.135");
+        final SFTPSession session = new SFTPSession(host);
+        final DefaultConfig configuration = new DefaultConfig();
+//        configuration.setKeyExchangeFactories(Arrays.asList(new net.schmizz.sshj.transport.kex.Curve25519.Factory()));
+        final SSHClient client = session.connect(new DisabledHostKeyCallback(), configuration);
+        assertTrue(client.isConnected());
+        client.close();
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -295,7 +316,7 @@ public class SFTPSessionTest extends AbstractTestCase {
 
     @Test
     public void testHostKeySave() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials("u1", "p1"));
+        final Host host = new Host(new SFTPProtocol(), "173.230.133.218", new Credentials("u1", "p1"));
         final Session session = new SFTPSession(host);
         final Local f = new Local("test/ch/cyberduck/core/sftp", "known_hosts");
         final AtomicReference<String> fingerprint = new AtomicReference<String>();

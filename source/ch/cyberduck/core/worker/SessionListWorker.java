@@ -37,17 +37,14 @@ import java.text.MessageFormat;
 public class SessionListWorker extends Worker<AttributedList<Path>> implements ListProgressListener {
     private static final Logger log = Logger.getLogger(SessionListWorker.class);
 
-    private Session<?> session;
-
     private Cache<Path> cache;
 
     private Path directory;
 
     private ListProgressListener listener;
 
-    public SessionListWorker(final Session<?> session, final Cache<Path> cache, final Path directory,
+    public SessionListWorker(final Cache<Path> cache, final Path directory,
                              final ListProgressListener listener) {
-        this.session = session;
         this.cache = cache;
         this.directory = directory;
         this.listener = listener;
@@ -59,7 +56,7 @@ public class SessionListWorker extends Worker<AttributedList<Path>> implements L
     }
 
     @Override
-    public AttributedList<Path> run() throws BackgroundException {
+    public AttributedList<Path> run(final Session<?> session) throws BackgroundException {
         try {
             if(this.isCached()) {
                 return cache.get(directory);

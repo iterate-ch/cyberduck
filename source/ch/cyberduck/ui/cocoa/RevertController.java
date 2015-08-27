@@ -38,7 +38,7 @@ public class RevertController extends ProxyController {
 
     public void revert(final List<Path> files) {
         this.background(new WorkerBackgroundAction<List<Path>>(parent, parent.getSession(), parent.getCache(),
-                new RevertWorker(parent.getSession(), files) {
+                new RevertWorker(files) {
                     @Override
                     public void cleanup(final List<Path> result) {
                         parent.reload(parent.workdir(), files, files);

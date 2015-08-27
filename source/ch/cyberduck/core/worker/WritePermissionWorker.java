@@ -35,10 +35,6 @@ import java.util.List;
  */
 public class WritePermissionWorker extends Worker<Boolean> {
 
-    private Session<?> session;
-
-    private UnixPermission feature;
-
     /**
      * Selected files.
      */
@@ -56,11 +52,9 @@ public class WritePermissionWorker extends Worker<Boolean> {
 
     private ProgressListener listener;
 
-    public WritePermissionWorker(final Session session, final UnixPermission feature, final List<Path> files,
+    public WritePermissionWorker(final List<Path> files,
                                  final Permission permission, final boolean recursive,
                                  final ProgressListener listener) {
-        this.session = session;
-        this.feature = feature;
         this.files = files;
         this.permission = permission;
         this.recursive = recursive;
@@ -68,14 +62,15 @@ public class WritePermissionWorker extends Worker<Boolean> {
     }
 
     @Override
-    public Boolean run() throws BackgroundException {
+    public Boolean run(final Session<?> session) throws BackgroundException {
+        final UnixPermission feature = session.getFeature(UnixPermission.class);
         for(Path next : files) {
-            this.write(next);
+            this.write(session, feature, next);
         }
         return true;
     }
 
-    protected void write(final Path file) throws BackgroundException {
+    protected void write(final Session<?> session, final UnixPermission feature, final Path file) throws BackgroundException {
         if(this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
@@ -92,7 +87,7 @@ public class WritePermissionWorker extends Worker<Boolean> {
                 modified.setOther((modified.getOther().and(Permission.Action.execute.not())));
             }
             if(!modified.equals(file.attributes().getPermission())) {
-                this.write(file, modified);
+                this.write(feature, file, modified);
             }
         }
         else if(recursive && file.isDirectory()) {
@@ -108,22 +103,22 @@ public class WritePermissionWorker extends Worker<Boolean> {
                 modified.setOther(modified.getOther().or(Permission.Action.execute));
             }
             if(!modified.equals(file.attributes().getPermission())) {
-                this.write(file, modified);
+                this.write(feature, file, modified);
             }
         }
         else {
-            this.write(file, permission);
+            this.write(feature, file, permission);
         }
         if(recursive) {
             if(file.isDirectory()) {
                 for(Path child : session.list(file, new ActionListProgressListener(this, listener))) {
-                    this.write(child);
+                    this.write(session, feature, child);
                 }
             }
         }
     }
 
-    private void write(final Path file, final Permission permission) throws BackgroundException {
+    private void write(final UnixPermission feature, final Path file, final Permission permission) throws BackgroundException {
         final Permission previous = file.attributes().getPermission();
         if(!permission.equals(previous)) {
             final Permission merged = new Permission(permission.getUser(), permission.getGroup(), permission.getOther(),

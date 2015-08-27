@@ -18,8 +18,10 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.test.NullSession;
 
 import org.junit.Test;
 
@@ -44,7 +46,7 @@ public class ReadPermissionWorkerTest extends AbstractTestCase {
                 //
             }
         };
-        assertEquals(2, worker.run().size());
+        assertEquals(2, worker.run(new NullSession(new Host(""))).size());
         assertEquals("Getting permission of a… (Multiple files) (2)", worker.getActivity());
     }
 }

@@ -23,6 +23,7 @@ package ch.cyberduck.core.worker;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
@@ -46,7 +47,7 @@ public class ReadPermissionWorker extends Worker<List<Permission>> {
     }
 
     @Override
-    public List<Permission> run() throws BackgroundException {
+    public List<Permission> run(final Session<?> session) throws BackgroundException {
         final List<Permission> permissions = new ArrayList<Permission>();
         for(Path next : files) {
             if(this.isCanceled()) {

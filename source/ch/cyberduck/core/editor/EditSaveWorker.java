@@ -18,6 +18,7 @@ package ch.cyberduck.core.editor;
  */
 
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
@@ -53,20 +54,17 @@ public class EditSaveWorker extends Worker<Transfer> {
 
     private AbstractEditor editor;
 
-    private Session session;
-
     private Transfer upload;
 
     private TransferErrorCallback callback;
 
     private ProgressListener listener;
 
-    public EditSaveWorker(final AbstractEditor editor, final Session session,
+    public EditSaveWorker(final Host bookmark, final AbstractEditor editor,
                           final TransferErrorCallback callback, final ProgressListener listener) {
         this.editor = editor;
-        this.session = session;
         this.callback = callback;
-        this.upload = new UploadTransfer(session.getHost(), editor.getRemote(), editor.getLocal(), new NullFilter<Local>()) {
+        this.upload = new UploadTransfer(bookmark, editor.getRemote(), editor.getLocal(), new NullFilter<Local>()) {
             @Override
             public TransferAction action(final Session<?> session,
                                          final boolean resumeRequested, final boolean reloadRequested,
@@ -85,7 +83,7 @@ public class EditSaveWorker extends Worker<Transfer> {
     }
 
     @Override
-    public Transfer run() throws BackgroundException {
+    public Transfer run(final Session<?> session) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Run upload action for editor %s", editor));
         }
@@ -93,7 +91,7 @@ public class EditSaveWorker extends Worker<Transfer> {
                 = new SingleTransferWorker(session, upload, new TransferOptions(),
                 new TransferSpeedometer(upload), new DisabledTransferPrompt(), callback, new DisabledTransferItemCallback(),
                 listener, new DisabledStreamListener(), new DisabledLoginCallback());
-        worker.run();
+        worker.run(session);
         if(!upload.isComplete()) {
             log.warn(String.format("File size changed for %s", editor.getRemote()));
         }

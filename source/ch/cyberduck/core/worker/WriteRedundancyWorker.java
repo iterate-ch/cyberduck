@@ -34,10 +34,6 @@ import java.util.List;
  */
 public class WriteRedundancyWorker extends Worker<Boolean> {
 
-    private Session<?> session;
-
-    private Redundancy feature;
-
     /**
      * Selected files.
      */
@@ -55,10 +51,8 @@ public class WriteRedundancyWorker extends Worker<Boolean> {
 
     private ProgressListener listener;
 
-    public WriteRedundancyWorker(final Session<?> session, final Redundancy feature, final List<Path> files,
+    public WriteRedundancyWorker(final List<Path> files,
                                  final String level, final boolean recursive, final ProgressListener listener) {
-        this.session = session;
-        this.feature = feature;
         this.files = files;
         this.level = level;
         this.recursive = recursive;
@@ -66,14 +60,15 @@ public class WriteRedundancyWorker extends Worker<Boolean> {
     }
 
     @Override
-    public Boolean run() throws BackgroundException {
+    public Boolean run(final Session<?> session) throws BackgroundException {
+        final Redundancy feature = session.getFeature(Redundancy.class);
         for(Path file : files) {
-            this.write(file);
+            this.write(session, feature, file);
         }
         return true;
     }
 
-    protected void write(final Path file) throws BackgroundException {
+    protected void write(final Session<?> session, final Redundancy feature, final Path file) throws BackgroundException {
         if(this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
@@ -89,7 +84,7 @@ public class WriteRedundancyWorker extends Worker<Boolean> {
             }
             else if(file.isDirectory()) {
                 for(Path child : session.list(file, new ActionListProgressListener(this, listener))) {
-                    this.write(child);
+                    this.write(session, feature, child);
                 }
             }
         }

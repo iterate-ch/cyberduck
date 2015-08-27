@@ -21,6 +21,7 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
@@ -44,7 +45,7 @@ public class ReadSizeWorker extends Worker<Long> {
     }
 
     @Override
-    public Long run() throws BackgroundException {
+    public Long run(final Session<?> session) throws BackgroundException {
         for(Path next : files) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();

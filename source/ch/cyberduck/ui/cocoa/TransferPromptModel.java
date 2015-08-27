@@ -146,7 +146,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         }
         else if(!cache.isCached(directory)) {
             controller.background(new WorkerBackgroundAction<List<TransferItem>>(controller, session, PathCache.empty(),
-                    new TransferPromptListWorker(session, transfer, directory.remote, directory.local, controller) {
+                    new TransferPromptListWorker(transfer, directory.remote, directory.local, controller) {
                         @Override
                         public void cleanup(final List<TransferItem> list) {
                             cache.put(directory, new AttributedList<TransferItem>(list));
@@ -160,7 +160,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
 
     private void filter() {
         controller.background(new WorkerBackgroundAction<Map<TransferItem, TransferStatus>>(controller, session, PathCache.empty(),
-                        new TransferPromptFilterWorker(session, transfer, action, cache, controller) {
+                        new TransferPromptFilterWorker(transfer, action, cache, controller) {
                             @Override
                             public void cleanup(final Map<TransferItem, TransferStatus> accepted) {
                                 status = accepted;

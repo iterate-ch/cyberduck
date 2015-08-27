@@ -3028,7 +3028,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly List _files;
 
                 public InnerDeleteWorker(BrowserController controller, LoginCallback prompt, List files)
-                    : base(controller.Session, prompt, files, controller)
+                    : base(prompt, files, controller)
                 {
                     _controller = controller;
                     _files = files;
@@ -3070,7 +3070,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly CallbackDelegate _callback;
 
                 public InnerDisconnectWorker(BrowserController controller, CallbackDelegate callback)
-                    : base(controller.Session)
+                    : base(controller.Session.getHost())
                 {
                     _callback = callback;
                 }
@@ -3108,7 +3108,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly Session _session;
 
                 public InnerMountWorker(BrowserController controller, Session session, ListProgressListener listener)
-                    : base(session, controller._cache, listener)
+                    : base(session.getHost(), controller._cache, listener)
                 {
                     _controller = controller;
                     _session = session;
@@ -3149,7 +3149,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly Map _files;
 
                 public InnerMoveWorker(BrowserController controller, Map files, IList<Path> changed)
-                    : base(controller.Session, files, controller)
+                    : base(files, controller)
                 {
                     _controller = controller;
                     _files = files;
@@ -3229,7 +3229,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly IList<Path> _files;
 
                 public InnerRevertWorker(BrowserController controller, IList<Path> files)
-                    : base(controller.Session, Utils.ConvertToJavaList(files))
+                    : base(Utils.ConvertToJavaList(files))
                 {
                     _controller = controller;
                     _files = files;

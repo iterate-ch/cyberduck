@@ -21,6 +21,7 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Headers;
@@ -39,15 +40,12 @@ import java.util.Map;
 public class ReadMetadataWorker extends Worker<Map<String, String>> {
     private static final Logger log = Logger.getLogger(ReadMetadataWorker.class);
 
-    private Headers feature;
-
     /**
      * Selected files.
      */
     private List<Path> files;
 
-    public ReadMetadataWorker(final Headers feature, final List<Path> files) {
-        this.feature = feature;
+    public ReadMetadataWorker(final List<Path> files) {
         this.files = files;
     }
 
@@ -55,7 +53,8 @@ public class ReadMetadataWorker extends Worker<Map<String, String>> {
      * @return Metadata
      */
     @Override
-    public Map<String, String> run() throws BackgroundException {
+    public Map<String, String> run(final Session<?> session) throws BackgroundException {
+        final Headers feature = session.getFeature(Headers.class);
         final Map<String, Integer> count = new HashMap<String, Integer>();
         final Map<String, String> updated = new HashMap<String, String>() {
             @Override

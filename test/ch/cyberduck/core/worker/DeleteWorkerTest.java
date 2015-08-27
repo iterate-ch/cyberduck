@@ -62,10 +62,10 @@ public class DeleteWorkerTest extends AbstractTestCase {
                 return null;
             }
         };
-        final DeleteWorker worker = new DeleteWorker(session, new DisabledLoginCallback(),
+        final DeleteWorker worker = new DeleteWorker(new DisabledLoginCallback(),
                 Collections.singletonList(new Path("/t", EnumSet.of(Path.Type.directory))),
                 new DisabledProgressListener());
-        assertEquals(Collections.singletonList(new Path("/t", EnumSet.of(Path.Type.directory))), worker.run());
+        assertEquals(Collections.singletonList(new Path("/t", EnumSet.of(Path.Type.directory))), worker.run(session));
     }
 
     @Test
@@ -87,9 +87,9 @@ public class DeleteWorkerTest extends AbstractTestCase {
                 return null;
             }
         };
-        final DeleteWorker worker = new DeleteWorker(session, new DisabledLoginCallback(),
+        final DeleteWorker worker = new DeleteWorker(new DisabledLoginCallback(),
                 Collections.singletonList(new Path("/s", EnumSet.of(Path.Type.directory, AbstractPath.Type.symboliclink))),
                 new DisabledProgressListener());
-        worker.run();
+        worker.run(session);
     }
 }

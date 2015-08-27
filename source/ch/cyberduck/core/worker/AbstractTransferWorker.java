@@ -192,7 +192,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
     }
 
     @Override
-    public Boolean run() throws BackgroundException {
+    public Boolean run(final Session<?> ignored) throws BackgroundException {
         final String lock = sleep.lock();
         try {
             if(log.isDebugEnabled()) {
