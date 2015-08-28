@@ -18,7 +18,6 @@ package ch.cyberduck.core;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
@@ -30,6 +29,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -197,7 +197,7 @@ public class ProxySocketFactoryTest extends AbstractTestCase {
                 ((Inet6Address) InetAddress.getByName("::1%en0")).getScopeId());
     }
 
-    @Test(expected = ConnectionRefusedException.class)
+    @Test(expected = ConnectException.class)
     public void testFixDefaultNetworkInterface() throws Exception {
         final ProxySocketFactory factory = new ProxySocketFactory(ProtocolFactory.WEBDAV, new TrustManagerHostnameCallback() {
             @Override
