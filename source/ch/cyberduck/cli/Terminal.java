@@ -35,6 +35,7 @@ import ch.cyberduck.core.ssl.CertificateStoreX509TrustManager;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.PreferencesX509KeyManager;
 import ch.cyberduck.core.threading.SessionBackgroundAction;
+import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
@@ -48,7 +49,6 @@ import ch.cyberduck.core.worker.DeleteWorker;
 import ch.cyberduck.core.worker.DisconnectWorker;
 import ch.cyberduck.core.worker.SessionListWorker;
 import ch.cyberduck.core.worker.Worker;
-import ch.cyberduck.fs.FilesystemBackgroundAction;
 import ch.cyberduck.fs.FilesystemFactory;
 import ch.cyberduck.fs.FilesystemWorker;
 
@@ -340,7 +340,7 @@ public class Terminal {
     }
 
     protected Exit mount(final Session session) {
-        final SessionBackgroundAction action = new FilesystemBackgroundAction<Boolean>(
+        final SessionBackgroundAction action = new WorkerBackgroundAction<Boolean>(
                 controller, session, cache, new FilesystemWorker(FilesystemFactory.get(controller, session.getHost(), cache)));
         this.execute(action);
         if(action.hasFailed()) {
