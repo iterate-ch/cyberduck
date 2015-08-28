@@ -30,6 +30,7 @@ import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import org.jets3t.service.CloudFrontService;
 import org.jets3t.service.CloudFrontServiceException;
 import org.jets3t.service.model.cloudfront.LoggingStatus;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -44,6 +45,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
+@Ignore
 public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
 
     @Test
