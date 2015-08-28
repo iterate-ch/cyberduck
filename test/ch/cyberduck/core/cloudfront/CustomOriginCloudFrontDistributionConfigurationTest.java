@@ -12,6 +12,7 @@ import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -23,6 +24,7 @@ import static org.junit.Assert.assertNull;
 /**
  * @version $Id$
  */
+@Ignore
 public class CustomOriginCloudFrontDistributionConfigurationTest extends AbstractTestCase {
 
     @Test
