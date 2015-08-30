@@ -47,7 +47,7 @@ public class HostKeyCallbackFactory extends Factory<HostKeyCallback> {
                 final Class<HostKeyCallback> name = (Class<HostKeyCallback>) Class.forName(clazz);
                 final Constructor<HostKeyCallback> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name, c.getClass());
                 if(null == constructor) {
-                    log.warn(String.format("No matching constructor for %s", c.getClass()));
+                    log.warn(String.format("No matching constructor for parameter %s", c.getClass()));
                     // Call default constructor for disabled implementations
                     return name.newInstance();
                 }

@@ -49,7 +49,7 @@ public class TransferPromptControllerFactory extends Factory<TransferPrompt> {
             final Constructor<TransferPrompt> constructor = ConstructorUtils
                     .getMatchingAccessibleConstructor(name, c.getClass(), transfer.getClass(), session.getClass());
             if(null == constructor) {
-                log.warn(String.format("No matching constructor for %s", c.getClass()));
+                log.warn(String.format("No matching constructor for parameter %s", c.getClass()));
                 // Call default constructor for disabled implementations
                 return name.newInstance();
             }

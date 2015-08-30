@@ -46,7 +46,7 @@ public class LoginCallbackFactory extends Factory<LoginCallback> {
             final Class<LoginCallback> name = (Class<LoginCallback>) Class.forName(clazz);
             final Constructor<LoginCallback> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name, c.getClass());
             if(null == constructor) {
-                log.warn(String.format("No matching constructor for %s", c.getClass()));
+                log.warn(String.format("No matching constructor for parameter %s", c.getClass()));
                 // Call default constructor for disabled implementations
                 return name.newInstance();
             }
