@@ -42,7 +42,7 @@ public class TouchWorker extends Worker<Boolean> {
         if(feature.isSupported(file.getParent())) {
             feature.touch(file);
         }
-        return true;
+        return false;
     }
 
     @Override
