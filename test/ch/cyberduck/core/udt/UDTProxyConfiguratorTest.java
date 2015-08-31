@@ -38,6 +38,8 @@ import ch.cyberduck.core.s3.S3SingleUploadService;
 import ch.cyberduck.core.s3.S3TouchFeature;
 import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.ssl.AbstractX509TrustManager;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.udt.qloudsonic.MissingReceiptException;
@@ -78,7 +80,7 @@ public class UDTProxyConfiguratorTest extends AbstractTestCase {
                         // No server here
                         return new Host(new UDTProtocol(), "test.cyberduck.ch", Scheme.udt.getPort());
                     }
-                });
+                }, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final S3Session tunneled = new S3Session(host);
         proxy.configure(tunneled);
         try {
@@ -101,7 +103,7 @@ public class UDTProxyConfiguratorTest extends AbstractTestCase {
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
         ));
         final UDTProxyConfigurator proxy = new UDTProxyConfigurator(new S3LocationFeature.S3Region("ap-northeast-1"),
-                new QloudsonicProxyProvider());
+                new QloudsonicProxyProvider(), new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final S3Session tunneled = new S3Session(host);
         proxy.configure(tunneled);
         tunneled.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -133,7 +135,7 @@ public class UDTProxyConfiguratorTest extends AbstractTestCase {
             public void checkServerTrusted(final X509Certificate[] x509Certificates, final String s) throws CertificateException {
                 throw new CertificateException();
             }
-        });
+        }, new DefaultX509KeyManager());
         final S3Session tunneled = new S3Session(host);
         proxy.configure(tunneled);
         assertNotNull(tunneled.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
@@ -154,7 +156,7 @@ public class UDTProxyConfiguratorTest extends AbstractTestCase {
                         headers.add(new Header("X-Qloudsonic-Voucher", "-u9zTIKCXHTWPO9WA4fBsIaQ5SjEH5von"));
                         return headers;
                     }
-                });
+                }, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final S3Session tunneled = new S3Session(host);
         proxy.configure(tunneled);
         assertNotNull(tunneled.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
@@ -188,7 +190,7 @@ public class UDTProxyConfiguratorTest extends AbstractTestCase {
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
         ));
         final UDTProxyConfigurator proxy = new UDTProxyConfigurator(new S3LocationFeature.S3Region("ap-northeast-1"),
-                new LocalhostProxyProvider());
+                new LocalhostProxyProvider(), new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final S3Session tunneled = new S3Session(host);
         proxy.configure(tunneled);
         assertNotNull(tunneled.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
@@ -205,7 +207,7 @@ public class UDTProxyConfiguratorTest extends AbstractTestCase {
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
         ));
         final UDTProxyConfigurator proxy = new UDTProxyConfigurator(new S3LocationFeature.S3Region("ap-northeast-1"),
-                new LocalhostProxyProvider());
+                new LocalhostProxyProvider(), new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final S3Session tunneled = new S3Session(host);
         proxy.configure(tunneled);
         assertNotNull(tunneled.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
@@ -256,7 +258,7 @@ public class UDTProxyConfiguratorTest extends AbstractTestCase {
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
         ));
         final UDTProxyConfigurator proxy = new UDTProxyConfigurator(new S3LocationFeature.S3Region("ap-northeast-1"),
-                new LocalhostProxyProvider());
+                new LocalhostProxyProvider(), new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final S3Session tunneled = new S3Session(host);
         proxy.configure(tunneled);
         assertNotNull(tunneled.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));

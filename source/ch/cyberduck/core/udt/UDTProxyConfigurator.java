@@ -32,8 +32,6 @@ import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.socket.DefaultSocketConfigurator;
 import ch.cyberduck.core.socket.SocketConfigurator;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
-import ch.cyberduck.core.ssl.KeychainX509KeyManager;
-import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -81,23 +79,6 @@ public class UDTProxyConfigurator implements TrustManagerHostnameCallback {
     private X509KeyManager key;
 
     private UDTSocketCallback callback;
-
-    public UDTProxyConfigurator(final Location.Name location, final UDTProxyProvider provider) {
-        this.location = location;
-        this.provider = provider;
-        this.trust = new KeychainX509TrustManager(this);
-        this.key = new KeychainX509KeyManager();
-        this.callback = new DisabledUDTSocketCallback();
-    }
-
-    public UDTProxyConfigurator(final Location.Name location, final UDTProxyProvider provider,
-                                final X509TrustManager trust) {
-        this.location = location;
-        this.provider = provider;
-        this.trust = trust;
-        this.key = new KeychainX509KeyManager();
-        this.callback = new DisabledUDTSocketCallback();
-    }
 
     public UDTProxyConfigurator(final Location.Name location, final UDTProxyProvider provider,
                                 final X509TrustManager trust, final X509KeyManager key) {
