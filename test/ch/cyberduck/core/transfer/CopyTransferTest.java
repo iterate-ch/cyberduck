@@ -29,6 +29,8 @@ import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.TransferDictionary;
 import ch.cyberduck.core.sftp.SFTPProtocol;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.test.NullSession;
 
 import org.junit.Test;
@@ -48,7 +50,8 @@ public class CopyTransferTest extends AbstractTestCase {
     public void testSerialize() throws Exception {
         final Path test = new Path("t", EnumSet.of(Path.Type.file));
         CopyTransfer t = new CopyTransfer(new Host(new SFTPProtocol(), "t"),
-                new Host(new FTPProtocol(), "t"), Collections.singletonMap(test, new Path("d", EnumSet.of(Path.Type.file))));
+                new Host(new FTPProtocol(), "t"), Collections.singletonMap(test, new Path("d", EnumSet.of(Path.Type.file))),
+                new DefaultX509TrustManager(), new DefaultX509KeyManager());
         t.addSize(4L);
         t.addTransferred(3L);
         final Transfer serialized = new TransferDictionary().deserialize(t.serialize(SerializerFactory.get()));
@@ -89,7 +92,7 @@ public class CopyTransferTest extends AbstractTestCase {
     public void testList() throws Exception {
         Transfer t = new CopyTransfer(new Host("s"), new Host("t"), Collections.singletonMap(
                 new Path("/s", EnumSet.of(Path.Type.directory)),
-                new Path("/t", EnumSet.of(Path.Type.directory))));
+                new Path("/t", EnumSet.of(Path.Type.directory))), new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final NullSession session = new NullSession(new Host("t")) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {

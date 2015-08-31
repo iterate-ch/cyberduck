@@ -36,6 +36,8 @@ import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.sftp.SFTPDeleteFeature;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPSession;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.test.NullLocal;
 import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.DownloadTransfer;
@@ -127,7 +129,8 @@ public class TransferBackgroundActionTest extends AbstractTestCase {
         test.attributes().setSize(5L);
 
         final Path copy = new Path(directory, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final CopyTransfer t = new CopyTransfer(host, host, Collections.singletonMap(test, copy));
+        final CopyTransfer t = new CopyTransfer(host, host, Collections.singletonMap(test, copy),
+                new DefaultX509TrustManager(), new DefaultX509KeyManager());
 
         final AbstractController controller = new AbstractController() {
             @Override
@@ -185,7 +188,7 @@ public class TransferBackgroundActionTest extends AbstractTestCase {
 
         final Path copy = new Path(new Path("/transfer", EnumSet.of(Path.Type.directory)), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Transfer t = new CopyTransfer(session.getHost(), destination.getHost(),
-                Collections.singletonMap(test, copy));
+                Collections.singletonMap(test, copy), new DefaultX509TrustManager(), new DefaultX509KeyManager());
 
         final AbstractController controller = new AbstractController() {
             @Override
