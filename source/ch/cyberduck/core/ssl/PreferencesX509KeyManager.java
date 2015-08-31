@@ -32,15 +32,11 @@ public class PreferencesX509KeyManager extends KeychainX509KeyManager {
     private Preferences preferences
             = PreferencesFactory.get();
 
-    public PreferencesX509KeyManager() {
-        super();
-    }
-
-    public PreferencesX509KeyManager(CertificateStore callback) {
+    public PreferencesX509KeyManager(final CertificateStore callback) {
         super(callback);
     }
 
-    public PreferencesX509KeyManager(CertificateStore callback, KeyStore store) {
+    public PreferencesX509KeyManager(final CertificateStore callback, final KeyStore store) {
         super(callback, store);
     }
 
