@@ -21,6 +21,7 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.diagnostics;
 using ch.cyberduck.core.exception;
 using ch.cyberduck.core.threading;
+using ch.cyberduck.core.notification;
 using java.lang;
 using String = System.String;
 using PreferencesFactory = ch.cyberduck.core.preferences.PreferencesFactory;
@@ -31,6 +32,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
     {
         private readonly WindowController _controller;
         private readonly FailureDiagnostics _diagnostics = new DefaultFailureDiagnostics();
+        private readonly NotificationAlertCallback _notification = new NotificationAlertCallback();
 
         public DialogAlertCallback(WindowController controller)
         {
@@ -39,6 +41,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
 
         public bool alert(Host host, BackgroundException failure, StringBuilder log)
         {
+            _notification.alert(host, failure, log);
             bool r = false;
             _controller.Invoke(delegate
                 {

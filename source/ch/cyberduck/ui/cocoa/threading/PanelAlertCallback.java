@@ -25,6 +25,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.diagnostics.ReachabilityFactory;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.notification.NotificationAlertCallback;
 import ch.cyberduck.core.threading.AlertCallback;
 import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
 import ch.cyberduck.core.threading.FailureDiagnostics;
@@ -45,12 +46,16 @@ public class PanelAlertCallback implements AlertCallback {
     private final FailureDiagnostics<Exception> diagnostics
             = new DefaultFailureDiagnostics();
 
+    private final NotificationAlertCallback notification
+            = new NotificationAlertCallback();
+
     public PanelAlertCallback(final WindowController controller) {
         this.controller = controller;
     }
 
     @Override
     public boolean alert(final Host host, final BackgroundException failure, final StringBuilder log) {
+        notification.alert(host, failure, log);
         if(controller.isVisible()) {
             final NSAlert alert = NSAlert.alert(
                     null == failure.getMessage() ? LocaleFactory.localizedString("Unknown") : failure.getMessage(),
