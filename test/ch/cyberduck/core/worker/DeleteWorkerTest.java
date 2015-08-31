@@ -21,8 +21,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -65,7 +64,7 @@ public class DeleteWorkerTest extends AbstractTestCase {
         final DeleteWorker worker = new DeleteWorker(new DisabledLoginCallback(),
                 Collections.singletonList(new Path("/t", EnumSet.of(Path.Type.directory))),
                 new DisabledProgressListener());
-        assertEquals(Collections.singletonList(new Path("/t", EnumSet.of(Path.Type.directory))), worker.run(session));
+        assertTrue(worker.run(session));
     }
 
     @Test
