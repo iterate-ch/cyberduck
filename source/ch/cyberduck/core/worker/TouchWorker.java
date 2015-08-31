@@ -41,6 +41,7 @@ public class TouchWorker extends Worker<Boolean> {
         final Touch feature = session.getFeature(Touch.class);
         if(feature.isSupported(file.getParent())) {
             feature.touch(file);
+            return true;
         }
         return false;
     }
