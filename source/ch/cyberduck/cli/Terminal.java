@@ -374,7 +374,7 @@ public class Terminal {
         else {
             worker = new DeleteWorker(new TerminalLoginCallback(reader), files, progress);
         }
-        final SessionBackgroundAction action = new TerminalBackgroundAction<List<Path>>(
+        final SessionBackgroundAction action = new TerminalBackgroundAction<Boolean>(
                 new TerminalLoginService(input, new TerminalLoginCallback(reader)), controller,
                 session, cache, worker);
         this.execute(action);

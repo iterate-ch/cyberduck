@@ -31,14 +31,13 @@ import ch.cyberduck.core.features.Delete;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 /**
  * @version $Id$
  */
-public class DeleteWorker extends Worker<List<Path>> {
+public class DeleteWorker extends Worker<Boolean> {
 
     /**
      * Selected files.
@@ -63,7 +62,7 @@ public class DeleteWorker extends Worker<List<Path>> {
     }
 
     @Override
-    public List<Path> run(final Session<?> session) throws BackgroundException {
+    public Boolean run(final Session<?> session) throws BackgroundException {
         final List<Path> recursive = new ArrayList<Path>();
         for(Path file : files) {
             if(this.isCanceled()) {
@@ -73,7 +72,7 @@ public class DeleteWorker extends Worker<List<Path>> {
         }
         final Delete feature = session.getFeature(Delete.class);
         feature.delete(recursive, prompt, listener);
-        return files;
+        return true;
     }
 
     protected List<Path> compile(final Session<?> session, final Path file) throws BackgroundException {
@@ -102,8 +101,8 @@ public class DeleteWorker extends Worker<List<Path>> {
     }
 
     @Override
-    public List<Path> initialize() {
-        return Collections.emptyList();
+    public Boolean initialize() {
+        return false;
     }
 
     @Override
