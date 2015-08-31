@@ -28,7 +28,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
@@ -67,22 +66,4 @@ public class FTPAttributesFeatureTest extends AbstractTestCase {
         assertEquals("1106", attributes.getOwner());
         assertEquals(new Permission("-rw-rw-rw-"), attributes.getPermission());
     }
-
-    @Test
-    public void testAttributesDirectoryListingAccessDenied() throws Exception {
-        final Host host = HostParser.parse("ftp://ftp.idmserv.com/");
-        final FTPSession session = new FTPSession(host) {
-            @Override
-            public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
-                throw new AccessDeniedException("f");
-            }
-        };
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final FTPAttributesFeature f = new FTPAttributesFeature(session);
-        final Path file = new Path("/incoming13/alextest", EnumSet.of(Path.Type.file));
-        final Attributes attributes = f.find(file);
-        assertEquals(8L, attributes.getSize());
-    }
-
 }
