@@ -341,7 +341,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         if(type == DistributionConfiguration.class) {
             if(null == cdn) {
-                cdn = new WebsiteCloudFrontDistributionConfiguration(S3Session.this, trust, key);
+                cdn = new WebsiteCloudFrontDistributionConfiguration(this, trust, key);
             }
             return (T) cdn;
         }
