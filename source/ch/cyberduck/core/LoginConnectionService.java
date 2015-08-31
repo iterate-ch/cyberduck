@@ -22,6 +22,8 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.ResolveFailedException;
+import ch.cyberduck.core.notification.NotificationService;
+import ch.cyberduck.core.notification.NotificationServiceFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
@@ -57,6 +59,8 @@ public class LoginConnectionService implements ConnectionService {
 
     private final FailureDiagnostics<Exception> diagnostics
             = new DefaultFailureDiagnostics();
+
+    private NotificationService growl = NotificationServiceFactory.get();
 
     private AtomicBoolean canceled
             = new AtomicBoolean();
@@ -183,6 +187,9 @@ public class LoginConnectionService implements ConnectionService {
 
         listener.message(MessageFormat.format(LocaleFactory.localizedString("{0} connection opened", "Status"),
                 bookmark.getProtocol().getName()));
+
+        // New connection opened
+        growl.notify("Connection opened", session.getHost().getHostname());
 
         // Update last accessed timestamp
         bookmark.setTimestamp(new Date());

@@ -218,8 +218,6 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     protected boolean connect(final Session session) throws BackgroundException {
         if(connection.check(session, cache, exception)) {
-            // New connection opened
-            growl.notify("Connection opened", session.getHost().getHostname());
             return true;
         }
         // Use existing connection
