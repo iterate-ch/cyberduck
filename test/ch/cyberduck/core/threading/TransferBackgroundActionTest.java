@@ -54,6 +54,8 @@ import ch.cyberduck.core.worker.SingleTransferWorker;
 import org.junit.Test;
 
 import java.net.SocketException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
@@ -188,7 +190,12 @@ public class TransferBackgroundActionTest extends AbstractTestCase {
 
         final Path copy = new Path(new Path("/transfer", EnumSet.of(Path.Type.directory)), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Transfer t = new CopyTransfer(session.getHost(), destination.getHost(),
-                Collections.singletonMap(test, copy), new DefaultX509TrustManager(), new DefaultX509KeyManager());
+                Collections.singletonMap(test, copy), new DefaultX509TrustManager() {
+            @Override
+            public void checkServerTrusted(final X509Certificate[] certs, final String cipher) throws CertificateException {
+                //
+            }
+        }, new DefaultX509KeyManager());
 
         final AbstractController controller = new AbstractController() {
             @Override
