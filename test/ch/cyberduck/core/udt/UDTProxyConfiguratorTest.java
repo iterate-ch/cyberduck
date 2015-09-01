@@ -156,7 +156,12 @@ public class UDTProxyConfiguratorTest extends AbstractTestCase {
                         headers.add(new Header("X-Qloudsonic-Voucher", "-u9zTIKCXHTWPO9WA4fBsIaQ5SjEH5von"));
                         return headers;
                     }
-                }, new DefaultX509TrustManager(), new DefaultX509KeyManager());
+                }, new DefaultX509TrustManager() {
+            @Override
+            public void checkServerTrusted(final X509Certificate[] certs, final String cipher) throws CertificateException {
+
+            }
+        }, new DefaultX509KeyManager());
         final S3Session tunneled = new S3Session(host);
         proxy.configure(tunneled);
         assertNotNull(tunneled.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
@@ -177,7 +182,7 @@ public class UDTProxyConfiguratorTest extends AbstractTestCase {
                     new DisabledStreamListener(), status, new DisabledConnectionCallback());
         }
         catch(QuotaException e) {
-            assertEquals("Voucher -u9zTIKCXHTWPO9WA4fBsIaQ5SjEH5von not found. Please contact your web hosting service provider for assistance.", e.getDetail());
+            assertEquals("Voucher -u9zTIKCXHTWPO9WA4fBsIaQ5SjEH5von not found. Request Error. Please contact your web hosting service provider for assistance.", e.getDetail());
             throw e;
         }
     }
@@ -258,7 +263,12 @@ public class UDTProxyConfiguratorTest extends AbstractTestCase {
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
         ));
         final UDTProxyConfigurator proxy = new UDTProxyConfigurator(new S3LocationFeature.S3Region("ap-northeast-1"),
-                new LocalhostProxyProvider(), new DefaultX509TrustManager(), new DefaultX509KeyManager());
+                new LocalhostProxyProvider(), new DefaultX509TrustManager() {
+            @Override
+            public void checkServerTrusted(final X509Certificate[] certs, final String cipher) throws CertificateException {
+                //
+            }
+        }, new DefaultX509KeyManager());
         final S3Session tunneled = new S3Session(host);
         proxy.configure(tunneled);
         assertNotNull(tunneled.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
