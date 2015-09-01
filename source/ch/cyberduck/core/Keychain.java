@@ -49,6 +49,16 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
         Native.load("keychain");
     }
 
+    private final Controller controller;
+
+    public Keychain() {
+        this(new ProxyController());
+    }
+
+    public Keychain(final Controller controller) {
+        this.controller = controller;
+    }
+
     /**
      * @param protocol    Protocol identifier
      * @param port        Port number
@@ -112,9 +122,7 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
         }
         final Object[] encoded = new DEREncoder().encode(certificates);
         final AtomicBoolean trusted = new AtomicBoolean(false);
-        new ProxyController() {
-            //
-        }.invoke(new DefaultMainAction() {
+        controller.invoke(new DefaultMainAction() {
             @Override
             public void run() {
                 trusted.set(isTrustedNative(hostname, encoded));
@@ -141,9 +149,7 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
         }
         final Object[] encoded = new DEREncoder().encode(certificates);
         final AtomicBoolean accepted = new AtomicBoolean(false);
-        new ProxyController() {
-            //
-        }.invoke(new DefaultMainAction() {
+        controller.invoke(new DefaultMainAction() {
             @Override
             public void run() {
                 accepted.set(displayCertificatesNative(encoded));
@@ -163,7 +169,7 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
                                   final String hostname, final String prompt)
             throws ConnectionCanceledException {
         final List<X509Certificate> certificates = new ArrayList<X509Certificate>();
-        final CertificateStoreX509KeyManager manager = new KeychainX509KeyManager().init();
+        final CertificateStoreX509KeyManager manager = new KeychainX509KeyManager(controller).init();
         final String[] aliases = manager.getClientAliases(keyTypes, issuers);
         if(null == aliases) {
             throw new ConnectionCanceledException(String.format("No certificate matching issuer %s found", Arrays.toString(issuers)));
@@ -174,9 +180,7 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
         try {
             final Object[] encoded = new DEREncoder().encode(certificates);
             final AtomicReference<byte[]> select = new AtomicReference<byte[]>();
-            new ProxyController() {
-                //
-            }.invoke(new DefaultMainAction() {
+            controller.invoke(new DefaultMainAction() {
                 @Override
                 public void run() {
                     select.set(chooseCertificateNative(encoded, hostname, prompt));
