@@ -11,10 +11,14 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.sftp.SFTPProtocol;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.EnumSet;
 
@@ -30,7 +34,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends Abstrac
     @Test
     public void testGetMethods() throws Exception {
         assertEquals(Arrays.asList(Distribution.CUSTOM),
-                new CustomOriginCloudFrontDistributionConfiguration(new Host("o"), new DisabledTranscriptListener()).getMethods(
+                new CustomOriginCloudFrontDistributionConfiguration(new Host("o"), new DefaultX509TrustManager(), new DefaultX509KeyManager(), new DisabledTranscriptListener()).getMethods(
                         new Path("/bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))));
     }
 
@@ -41,7 +45,8 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends Abstrac
         h.setWebURL("http://w.example.net");
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
         final CustomOriginCloudFrontDistributionConfiguration configuration
-                = new CustomOriginCloudFrontDistributionConfiguration(h, new DisabledTranscriptListener());
+                = new CustomOriginCloudFrontDistributionConfiguration(h, new DefaultX509TrustManager(), new DefaultX509KeyManager(),
+                new DisabledTranscriptListener());
         assertEquals("w.example.net", configuration.getOrigin(container, Distribution.CUSTOM).getHost());
         h.setWebURL(null);
         assertEquals("m", configuration.getOrigin(container, Distribution.CUSTOM).getHost());
@@ -56,7 +61,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends Abstrac
         h.setWebURL("http://w.example.net:8080");
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
         final CustomOriginCloudFrontDistributionConfiguration configuration
-                = new CustomOriginCloudFrontDistributionConfiguration(h, new DisabledTranscriptListener());
+                = new CustomOriginCloudFrontDistributionConfiguration(h, new DefaultX509TrustManager(), new DefaultX509KeyManager(), new DisabledTranscriptListener());
         assertEquals("w.example.net", configuration.getOrigin(container, Distribution.CUSTOM).getHost());
         assertEquals(8080, configuration.getOrigin(container, Distribution.CUSTOM).getPort());
         h.setWebURL(null);
@@ -71,7 +76,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends Abstrac
         h.setWebURL("https://w.example.net:4444");
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
         final CustomOriginCloudFrontDistributionConfiguration configuration
-                = new CustomOriginCloudFrontDistributionConfiguration(h, new DisabledTranscriptListener());
+                = new CustomOriginCloudFrontDistributionConfiguration(h, new DefaultX509TrustManager(), new DefaultX509KeyManager(), new DisabledTranscriptListener());
         assertEquals("w.example.net", configuration.getOrigin(container, Distribution.CUSTOM).getHost());
         assertEquals("https", configuration.getOrigin(container, Distribution.CUSTOM).getScheme());
         assertEquals(4444, configuration.getOrigin(container, Distribution.CUSTOM).getPort());
@@ -86,7 +91,12 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends Abstrac
         origin.getCdnCredentials().setUsername(properties.getProperty("s3.key"));
         origin.getCdnCredentials().setPassword(properties.getProperty("s3.secret"));
         final CustomOriginCloudFrontDistributionConfiguration configuration
-                = new CustomOriginCloudFrontDistributionConfiguration(origin, new DisabledTranscriptListener());
+                = new CustomOriginCloudFrontDistributionConfiguration(origin, new DefaultX509TrustManager() {
+            @Override
+            public void checkServerTrusted(final X509Certificate[] certs, final String cipher) throws CertificateException {
+                //
+            }
+        }, new DefaultX509KeyManager(), new DisabledTranscriptListener());
         final Path container = new Path("unknown.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Distribution distribution = configuration.read(container, Distribution.CUSTOM, new DisabledLoginCallback());
         assertNull(distribution.getId());
@@ -103,7 +113,12 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends Abstrac
         origin.getCdnCredentials().setUsername(properties.getProperty("s3.key"));
         origin.getCdnCredentials().setPassword(properties.getProperty("s3.secret"));
         final CustomOriginCloudFrontDistributionConfiguration configuration
-                = new CustomOriginCloudFrontDistributionConfiguration(origin, new DisabledTranscriptListener());
+                = new CustomOriginCloudFrontDistributionConfiguration(origin, new DefaultX509TrustManager() {
+            @Override
+            public void checkServerTrusted(final X509Certificate[] certs, final String cipher) throws CertificateException {
+                //
+            }
+        }, new DefaultX509KeyManager(), new DisabledTranscriptListener());
         final Distribution distribution = configuration.read(new Path("/public_html", EnumSet.of(Path.Type.directory)), Distribution.CUSTOM, new DisabledLoginCallback());
         assertEquals("E230LC0UG2YLKV", distribution.getId());
         assertEquals("http://test.cyberduck.ch/public_html", distribution.getOrigin().toString());
@@ -119,7 +134,8 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends Abstrac
     public void testReadMissingCredentials() throws Exception {
         final Host bookmark = new Host(new SFTPProtocol(), "myhost.localdomain");
         final CustomOriginCloudFrontDistributionConfiguration configuration
-                = new CustomOriginCloudFrontDistributionConfiguration(bookmark, new DisabledTranscriptListener());
+                = new CustomOriginCloudFrontDistributionConfiguration(bookmark, new DefaultX509TrustManager(), new DefaultX509KeyManager(),
+                new DisabledTranscriptListener());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         configuration.read(container, Distribution.CUSTOM, new DisabledLoginCallback());
     }
