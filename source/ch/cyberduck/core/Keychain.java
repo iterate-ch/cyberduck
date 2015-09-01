@@ -169,7 +169,7 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
                                   final String hostname, final String prompt)
             throws ConnectionCanceledException {
         final List<X509Certificate> certificates = new ArrayList<X509Certificate>();
-        final CertificateStoreX509KeyManager manager = new KeychainX509KeyManager(controller).init();
+        final CertificateStoreX509KeyManager manager = new KeychainX509KeyManager().init();
         final String[] aliases = manager.getClientAliases(keyTypes, issuers);
         if(null == aliases) {
             throw new ConnectionCanceledException(String.format("No certificate matching issuer %s found", Arrays.toString(issuers)));
