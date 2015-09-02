@@ -64,7 +64,7 @@ public class AzureCopyFeature implements Copy {
             final BlobRequestOptions options = new BlobRequestOptions();
             options.setRetryPolicyFactory(new RetryNoRetry());
             options.setStoreBlobContentMD5(PreferencesFactory.get().getBoolean("azure.upload.md5"));
-            final String id = target.startCopyFromBlob(blob,
+            final String id = target.startCopy(blob,
                     AccessCondition.generateEmptyCondition(), AccessCondition.generateEmptyCondition(), options, context);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Started copy for %s with copy operation ID %s", copy, id));
