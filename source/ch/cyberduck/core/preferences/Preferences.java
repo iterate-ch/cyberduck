@@ -974,7 +974,6 @@ public abstract class Preferences {
          * Enable ZLIB compression
          */
         defaults.put("ssh.compression", "zlib");
-        defaults.put("ssh.subsystem.name", "sftp");
 
         defaults.put("ssh.algorithm.cipher.blacklist", StringUtils.EMPTY);
         defaults.put("ssh.algorithm.mac.blacklist", StringUtils.EMPTY);

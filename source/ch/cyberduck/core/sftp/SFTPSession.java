@@ -322,7 +322,7 @@ public class SFTPSession extends Session<SSHClient> {
             }
         }
         try {
-            sftp = new SFTPEngine(client, String.valueOf(Path.DELIMITER), preferences.getProperty("ssh.subsystem.name")) {
+            sftp = new SFTPEngine(client, String.valueOf(Path.DELIMITER)) {
                 @Override
                 public Promise<Response, SFTPException> request(final Request req) throws IOException {
                     log(true, String.format("%d %s", req.getRequestID(), req.getType()));
