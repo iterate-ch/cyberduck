@@ -69,6 +69,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.net.URL;
 import java.security.Security;
@@ -1019,6 +1020,9 @@ public abstract class Preferences {
         for(Handler handler : rootLogger.getHandlers()) {
             rootLogger.removeHandler(handler);
         }
+        // Call only once during initialization time of your application
+        SLF4JBridgeHandler.install();
+
         final URL configuration;
         final String file = defaults.get("logging.config");
         if(null == file) {

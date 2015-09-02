@@ -1964,6 +1964,7 @@ lib/jsch.agentproxy.pageant-0.0.9.jar -text
 lib/jsch.agentproxy.sshagent-0.0.9.jar -text
 lib/jsch.agentproxy.sshj-0.0.9.jar -text
 lib/jsch.agentproxy.usocket-jna-0.0.9.jar -text
+lib/jul-to-slf4j-1.7.1.jar -text
 lib/jzlib-1.1.3.jar -text svneol=unset#application/zip
 lib/libjdns_sd.dylib -text
 lib/libjnidispatch.32.so -text svneol=unset#application/x-sharedlib
@@ -1980,6 +1981,8 @@ lib/rococoa-core-0.7-SNAPSHOT.jar -text
 lib/sardine-5.6.jar -text
 lib/signpost-commonshttp4-1.2.1.2.jar -text
 lib/signpost-core-1.2.1.2.jar -text
+lib/slf4j-api-1.7.12.jar -text
+lib/slf4j-log4j12-1.7.12.jar -text
 lib/sshj-0.13.0.jar -text
 lib/sunec.dll -text
 lib/sunmscapi.dll -text
