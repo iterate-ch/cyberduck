@@ -97,6 +97,12 @@
             <groupId>com.jcraft</groupId>
             <artifactId>jsch.agentproxy.sshj</artifactId>
             <version>0.0.9</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>net.schmizz</groupId>
+                    <artifactId>sshj</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.jcraft</groupId>
