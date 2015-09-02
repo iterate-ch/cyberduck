@@ -1978,7 +1978,7 @@ lib/log4j-windows.xml -text
 lib/mail-1.4.7.jar -text svneol=unset#application/zip
 lib/mime.types -text
 lib/rococoa-core-0.6.jar -text svneol=unset#application/zip
-lib/sardine-5.5.jar -text
+lib/sardine-5.6.jar -text
 lib/signpost-commonshttp4-1.2.1.2.jar -text
 lib/signpost-core-1.2.1.2.jar -text
 lib/slf4j-api-1.7.12.jar -text
