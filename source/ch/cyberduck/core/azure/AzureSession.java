@@ -53,8 +53,8 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
+import org.bouncycastle.util.encoders.Base64;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.net.URI;
@@ -62,7 +62,6 @@ import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.HashMap;
 
-import com.microsoft.azure.storage.Credentials;
 import com.microsoft.azure.storage.OperationContext;
 import com.microsoft.azure.storage.RetryNoRetry;
 import com.microsoft.azure.storage.SendingRequestEvent;
@@ -75,8 +74,6 @@ import com.microsoft.azure.storage.blob.CloudBlobClient;
  * @version $Id$
  */
 public class AzureSession extends SSLSession<CloudBlobClient> {
-
-    private StorageCredentialsAccountAndKey credentials;
 
     private OperationContext context
             = new OperationContext();
@@ -98,7 +95,9 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
     @Override
     public CloudBlobClient connect(final HostKeyCallback callback) throws BackgroundException {
         try {
-            credentials = new StorageCredentialsAccountAndKey(host.getCredentials().getUsername(), StringUtils.EMPTY);
+            final StorageCredentialsAccountAndKey credentials
+                    = new StorageCredentialsAccountAndKey(host.getCredentials().getUsername(),
+                    Base64.toBase64String("null".getBytes()));
             // Client configured with no credentials
             final URI uri = new URI(String.format("%s://%s", Scheme.https, host.getHostname()));
             final CloudBlobClient client = new CloudBlobClient(uri, credentials);
@@ -130,8 +129,8 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
     public void login(final PasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
                       final Cache<Path> cache) throws BackgroundException {
         // Update credentials
-        credentials.setCredentials(new Credentials(
-                host.getCredentials().getUsername(), host.getCredentials().getPassword()));
+        ((StorageCredentialsAccountAndKey) client.getCredentials()).updateKey(
+                com.microsoft.azure.storage.core.Base64.decode(host.getCredentials().getPassword()));
         final Path home = new AzureHomeFinderService(this).find();
         cache.put(home, this.list(home, new DisabledListProgressListener()));
     }
