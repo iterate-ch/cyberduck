@@ -18,17 +18,34 @@ package ch.cyberduck.core;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.threading.MainAction;
+
 import org.junit.Test;
 
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class CertificateStoreFactoryTest extends AbstractTestCase {
 
-    @Test
     public void testGet() throws Exception {
         assertSame(CertificateStoreFactory.get(), CertificateStoreFactory.get());
+    }
+
+    @Test
+    public void testGetWithCustomController() throws Exception {
+        assertNotSame(CertificateStoreFactory.get(new AbstractController() {
+            @Override
+            public void invoke(final MainAction runnable, final boolean wait) {
+                //
+            }
+        }), CertificateStoreFactory.get(new AbstractController() {
+            @Override
+            public void invoke(final MainAction runnable, final boolean wait) {
+                //
+            }
+        }));
     }
 }

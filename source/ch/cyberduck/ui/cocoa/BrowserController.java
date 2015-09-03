@@ -2397,7 +2397,7 @@ public class BrowserController extends WindowController
             final SSLSession<?> secured = (SSLSession) session;
             final List<X509Certificate> certificates = secured.getAcceptedIssuers();
             try {
-                CertificateStoreFactory.get().display(certificates);
+                CertificateStoreFactory.get(this).display(certificates);
             }
             catch(CertificateException e) {
                 log.warn(String.format("Failure decoding certificate %s", e.getMessage()));
@@ -3192,8 +3192,8 @@ public class BrowserController extends WindowController
      */
     private Session init(final Host host) {
         session = SessionFactory.create(host,
-                new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(host)),
-                new KeychainX509KeyManager());
+                new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(host), this),
+                new KeychainX509KeyManager(this));
         transcript.clear();
         navigation.clear();
         pasteboard = PathPasteboardFactory.getPasteboard(session);

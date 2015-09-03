@@ -702,8 +702,8 @@ public final class TransferController extends WindowController implements NSTool
     public void start(final Transfer transfer, final TransferOptions options, final TransferCallback callback) {
         final ProgressController progress = transferTableModel.getController(transfer);
         final Session session = SessionFactory.create(transfer.getHost(),
-                new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(transfer.getHost())),
-                new KeychainX509KeyManager());
+                new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(transfer.getHost()), this),
+                new KeychainX509KeyManager(this));
         final BackgroundAction action = new TransferCollectionBackgroundAction(this,
                 session,
                 new TransferListener() {

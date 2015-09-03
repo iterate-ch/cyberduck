@@ -20,6 +20,7 @@ package ch.cyberduck.core.ssl;
 
 import ch.cyberduck.core.CertificateStore;
 import ch.cyberduck.core.CertificateStoreFactory;
+import ch.cyberduck.core.Controller;
 
 import java.net.Socket;
 import java.security.KeyStore;
@@ -38,6 +39,10 @@ public class KeychainX509KeyManager extends CertificateStoreX509KeyManager imple
 
     public KeychainX509KeyManager() {
         super(CertificateStoreFactory.get());
+    }
+
+    public KeychainX509KeyManager(final Controller controller) {
+        super(CertificateStoreFactory.get(controller));
     }
 
     public KeychainX509KeyManager(final CertificateStore callback) {

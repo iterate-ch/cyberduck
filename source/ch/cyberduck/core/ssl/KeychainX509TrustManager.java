@@ -20,6 +20,7 @@ package ch.cyberduck.core.ssl;
 
 import ch.cyberduck.core.CertificateStore;
 import ch.cyberduck.core.CertificateStoreFactory;
+import ch.cyberduck.core.Controller;
 
 /**
  * @version $Id$
@@ -28,6 +29,10 @@ public class KeychainX509TrustManager extends CertificateStoreX509TrustManager i
 
     public KeychainX509TrustManager(final TrustManagerHostnameCallback callback) {
         super(callback, CertificateStoreFactory.get());
+    }
+
+    public KeychainX509TrustManager(final TrustManagerHostnameCallback callback, final Controller controller) {
+        super(callback, CertificateStoreFactory.get(controller));
     }
 
     public KeychainX509TrustManager(final TrustManagerHostnameCallback callback, final CertificateStore store) {
