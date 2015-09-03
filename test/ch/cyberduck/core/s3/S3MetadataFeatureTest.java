@@ -30,7 +30,6 @@ import ch.cyberduck.core.Path;
 
 import org.jets3t.service.Constants;
 import org.jets3t.service.model.S3Object;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -119,7 +118,6 @@ public class S3MetadataFeatureTest extends AbstractTestCase {
     }
 
     @Test
-    @Ignore
     public void testSetDuplicateHeaderDifferentCapitalization() throws Exception {
         final S3Session session = new S3Session(
                 new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
@@ -135,7 +133,8 @@ public class S3MetadataFeatureTest extends AbstractTestCase {
         assertTrue(feature.getMetadata(test).containsKey("Content-Type"));
         feature.setMetadata(test, Collections.singletonMap("Content-type", "text/plain"));
         final Map<String, String> metadata = feature.getMetadata(test);
-        assertTrue(metadata.isEmpty());
+        assertTrue(metadata.containsKey("Content-Type"));
+        assertEquals("text/plain", metadata.get("Content-Type"));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }
