@@ -47,5 +47,8 @@ public class DefaultSocketConfigurator implements SocketConfigurator {
             log.info(String.format("Set timeout to %dms for socket %s", timeout, socket));
         }
         socket.setSoTimeout(timeout);
+        if(preferences.getBoolean("connection.socket.keepalive")) {
+            socket.setKeepAlive(true);
+        }
     }
 }

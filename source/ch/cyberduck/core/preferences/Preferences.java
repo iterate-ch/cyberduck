@@ -877,6 +877,10 @@ public abstract class Preferences {
         defaults.put(String.format("connection.protocol.%s.enable", ProtocolFactory.IRODS.getIdentifier()), String.valueOf(false));
 
         /**
+         * SO_KEEPALIVE
+         */
+        defaults.put("connection.socket.keepalive", String.valueOf(true));
+        /**
          * Socket timeout
          */
         defaults.put("connection.timeout.seconds", String.valueOf(30));
