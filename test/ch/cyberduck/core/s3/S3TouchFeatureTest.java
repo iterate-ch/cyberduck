@@ -14,8 +14,10 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -80,5 +82,27 @@ public class S3TouchFeatureTest extends AbstractTestCase {
         final S3TouchFeature touch = new S3TouchFeature(session)
                 .withEncryption("AES256");
         touch.touch(test);
+    }
+
+    @Test
+    public void testConnectionReuse() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                        new Credentials(
+                                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                        )));
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final S3TouchFeature service = new S3TouchFeature(session);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final List<Path> list = new ArrayList<Path>();
+        for(int i = 0; i < 200; i++) {
+            final String name = String.format("%s-%d", UUID.randomUUID().toString(), i);
+            final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
+            service.touch(test);
+            list.add(test);
+        }
+        new S3MultipleDeleteFeature(session).delete(list, new DisabledLoginCallback(), new DisabledProgressListener());
+        session.close();
     }
 }
