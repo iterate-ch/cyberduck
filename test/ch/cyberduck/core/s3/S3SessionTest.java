@@ -19,10 +19,9 @@ import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.identity.IdentityConfiguration;
-import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
-import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.junit.Test;
@@ -300,7 +299,7 @@ public class S3SessionTest extends AbstractTestCase {
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
         ));
         final AtomicBoolean verified = new AtomicBoolean();
-        final S3Session session = new S3Session(host, new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(host)) {
+        final S3Session session = new S3Session(host, new DefaultX509TrustManager() {
             @Override
             public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
                 assertEquals(3, certs.length);

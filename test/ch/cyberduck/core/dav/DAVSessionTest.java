@@ -25,10 +25,9 @@ import ch.cyberduck.core.ssl.CertificateStoreX509TrustManager;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
-import ch.cyberduck.core.ssl.KeychainX509TrustManager;
-import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -466,7 +465,7 @@ public class DAVSessionTest extends AbstractTestCase {
         final Host host = new Host(new DAVSSLProtocol(), "dav.pixi.me", new Credentials(
                 "webdav", "webdav"
         ));
-        final DAVSession session = new DAVSession(host, new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(host)) {
+        final DAVSession session = new DAVSession(host, new DefaultX509TrustManager() {
             @Override
             public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
                 assertEquals("ECDHE_RSA", cipher);
@@ -488,7 +487,7 @@ public class DAVSessionTest extends AbstractTestCase {
         final Host host = new Host(new DAVSSLProtocol(), "tlsv11.pixi.me", new Credentials(
                 "webdav", "webdav"
         ));
-        final DAVSession session = new DAVSession(host, new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(host)) {
+        final DAVSession session = new DAVSession(host, new DefaultX509TrustManager() {
             @Override
             public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
                 assertEquals("ECDHE_RSA", cipher);
@@ -510,7 +509,7 @@ public class DAVSessionTest extends AbstractTestCase {
         final Host host = new Host(new DAVSSLProtocol(), "tlsv12.pixi.me", new Credentials(
                 "webdav", "webdav"
         ));
-        final DAVSession session = new DAVSession(host, new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(host)) {
+        final DAVSession session = new DAVSession(host, new DefaultX509TrustManager() {
             @Override
             public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
                 assertEquals("ECDHE_RSA", cipher);
@@ -565,13 +564,7 @@ public class DAVSessionTest extends AbstractTestCase {
     @Test(expected = InteroperabilityException.class)
     public void testMutualTlsUnknownCA() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "auth.startssl.com");
-        final TrustManagerHostnameCallback callback = new TrustManagerHostnameCallback() {
-            @Override
-            public String getTarget() {
-                return "auth.startssl.com";
-            }
-        };
-        final DAVSession session = new DAVSession(host, new KeychainX509TrustManager(callback),
+        final DAVSession session = new DAVSession(host, new DefaultX509TrustManager(),
                 new KeychainX509KeyManager(new DisabledCertificateStore() {
                     @Override
                     public X509Certificate choose(String[] keyTypes, Principal[] issuers, String hostname, String prompt)
@@ -611,7 +604,7 @@ public class DAVSessionTest extends AbstractTestCase {
                 PreferencesFactory.get().getProperty("connection.login.anon.pass"))
         );
         host.setDefaultPath("/dav");
-        final DAVSession session = new DAVSession(host, new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(host)),
+        final DAVSession session = new DAVSession(host, new DefaultX509TrustManager(),
                 new KeychainX509KeyManager(new DisabledCertificateStore() {
                     @Override
                     public X509Certificate choose(String[] keyTypes, Principal[] issuers, String hostname, String prompt)
@@ -644,7 +637,7 @@ public class DAVSessionTest extends AbstractTestCase {
                 PreferencesFactory.get().getProperty("connection.login.anon.pass"))
         );
         host.setDefaultPath("/dav");
-        final DAVSession session = new DAVSession(host, new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(host)) {
+        final DAVSession session = new DAVSession(host, new DefaultX509TrustManager() {
             @Override
             public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
                 assertEquals(2, certs.length);
@@ -683,7 +676,7 @@ public class DAVSessionTest extends AbstractTestCase {
                 PreferencesFactory.get().getProperty("connection.login.anon.pass"))
         );
         final AtomicBoolean verified = new AtomicBoolean();
-        final DAVSession session = new DAVSession(host, new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(host)) {
+        final DAVSession session = new DAVSession(host, new DefaultX509TrustManager() {
             @Override
             public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
                 assertEquals(2, certs.length);
@@ -714,7 +707,7 @@ public class DAVSessionTest extends AbstractTestCase {
                 PreferencesFactory.get().getProperty("connection.login.anon.pass"))
         );
         final AtomicBoolean verified = new AtomicBoolean();
-        final DAVSession session = new DAVSession(host, new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(host)) {
+        final DAVSession session = new DAVSession(host, new DefaultX509TrustManager() {
             @Override
             public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
                 assertEquals(2, certs.length);

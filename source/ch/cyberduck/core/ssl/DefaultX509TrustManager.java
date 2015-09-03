@@ -28,11 +28,12 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 
 /**
  * @version $Id$
  */
-public class DefaultX509TrustManager implements X509TrustManager {
+public class DefaultX509TrustManager extends AbstractX509TrustManager {
     private static final Logger log = Logger.getLogger(DefaultX509TrustManager.class);
 
     private javax.net.ssl.X509TrustManager system;
@@ -55,12 +56,14 @@ public class DefaultX509TrustManager implements X509TrustManager {
 
     @Override
     public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
-        this.checkServerTrusted(certs, cipher);
+        certs[0].checkValidity();
+        this.accept(Arrays.asList(certs));
     }
 
     @Override
     public void checkClientTrusted(final X509Certificate[] certs, final String cipher) throws CertificateException {
         system.checkClientTrusted(certs, cipher);
+        this.accept(Arrays.asList(certs));
     }
 
     @Override
@@ -74,15 +77,10 @@ public class DefaultX509TrustManager implements X509TrustManager {
             }
         }
         if((certs != null) && (certs.length == 1)) {
-            certs[0].checkValidity();
+            this.verify(null, certs, cipher);
         }
         else {
             system.checkServerTrusted(certs, cipher);
         }
-    }
-
-    @Override
-    public X509Certificate[] getAcceptedIssuers() {
-        return system.getAcceptedIssuers();
     }
 }
