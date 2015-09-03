@@ -24,11 +24,13 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.collections.Partition;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.MultipartUpload;
 import org.jets3t.service.model.MultipleDeleteResult;
@@ -45,6 +47,7 @@ import java.util.Map;
  * @version $Id$
  */
 public class S3MultipleDeleteFeature implements Delete {
+    private static final Logger log = Logger.getLogger(S3MultipleDeleteFeature.class);
 
     private S3Session session;
 
@@ -106,9 +109,15 @@ public class S3MultipleDeleteFeature implements Delete {
         }
         for(Path file : files) {
             if(file.isFile()) {
-                // Delete interrupted multipart uploads
-                for(MultipartUpload upload : multipartService.find(file)) {
-                    multipartService.delete(upload);
+                try {
+                    // Delete interrupted multipart uploads
+                    for(MultipartUpload upload : multipartService.find(file)) {
+                        multipartService.delete(upload);
+                    }
+                }
+                catch(AccessDeniedException e) {
+                    // Workaround for #9000
+                    log.warn(String.format("Failure looking for multipart uploads. %s", e.getMessage()));
                 }
             }
         }
