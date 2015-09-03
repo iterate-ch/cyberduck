@@ -17,7 +17,7 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
-import ch.cyberduck.core.ssl.KeychainX509KeyManager;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -49,7 +49,7 @@ public class S3ThresholdUploadServiceTest extends AbstractTestCase {
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
 
         final S3ThresholdUploadService m = new S3ThresholdUploadService(session,
-                new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(host)), new KeychainX509KeyManager(), 1L);
+                new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(host)), new DefaultX509KeyManager(), 1L);
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString() + ".txt";
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));

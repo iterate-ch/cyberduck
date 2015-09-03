@@ -1,7 +1,7 @@
 package ch.cyberduck.core;
 
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
-import ch.cyberduck.core.ssl.KeychainX509KeyManager;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 
 import org.junit.Test;
@@ -18,7 +18,7 @@ public class SessionFactoryTest extends AbstractTestCase {
         for(Protocol protocol : ProtocolFactory.getEnabledProtocols()) {
             final Host host = new Host(protocol, "h");
             assertNotNull(SessionFactory.create(host,
-                    new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(host)), new KeychainX509KeyManager()));
+                    new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(host)), new DefaultX509KeyManager()));
         }
     }
 }
