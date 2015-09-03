@@ -30,6 +30,7 @@ import ch.cyberduck.core.Path;
 
 import org.jets3t.service.Constants;
 import org.jets3t.service.model.S3Object;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -113,6 +114,28 @@ public class S3MetadataFeatureTest extends AbstractTestCase {
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, storage.getClass(test));
         assertEquals("AES256", encryption.getEncryption(test));
 
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        session.close();
+    }
+
+    @Test
+    @Ignore
+    public void testSetDuplicateHeaderDifferentCapitalization() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                        new Credentials(
+                                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                        )));
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
+        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        new S3TouchFeature(session).touch(test);
+        final S3MetadataFeature feature = new S3MetadataFeature(session);
+        assertTrue(feature.getMetadata(test).containsKey("Content-Type"));
+        feature.setMetadata(test, Collections.singletonMap("Content-type", "text/plain"));
+        final Map<String, String> metadata = feature.getMetadata(test);
+        assertTrue(metadata.isEmpty());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }
