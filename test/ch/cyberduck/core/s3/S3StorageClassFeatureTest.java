@@ -30,6 +30,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 
+import org.jets3t.service.model.S3Object;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -47,7 +48,7 @@ public class S3StorageClassFeatureTest extends AbstractTestCase {
 
     @Test
     public void testGetClasses() throws Exception {
-        assertEquals(Arrays.asList("STANDARD", "REDUCED_REDUNDANCY", "GLACIER"),
+        assertEquals(Arrays.asList(S3Object.STORAGE_CLASS_STANDARD, S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, S3Object.STORAGE_CLASS_GLACIER),
                 new S3StorageClassFeature(null).getClasses());
     }
 
@@ -79,10 +80,10 @@ public class S3StorageClassFeatureTest extends AbstractTestCase {
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test);
         final S3StorageClassFeature feature = new S3StorageClassFeature(session);
-        assertEquals("STANDARD", feature.getClass(test));
-        feature.setClass(test, "REDUCED_REDUNDANCY");
-        assertEquals("REDUCED_REDUNDANCY", feature.getClass(test));
-        assertEquals("REDUCED_REDUNDANCY", session.list(container,
+        assertEquals(S3Object.STORAGE_CLASS_STANDARD, feature.getClass(test));
+        feature.setClass(test, S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
+        assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, feature.getClass(test));
+        assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, session.list(container,
                 new DisabledListProgressListener()).get(test).attributes().getStorageClass());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
