@@ -280,7 +280,7 @@ public class UserDefaultsPreferences extends Preferences {
     protected void setFactories() {
         super.setFactories();
 
-        defaults.put("factory.supportdirectoryfinder.class", ApplicationSupportDirectoryFinder.class.getName());
+        defaults.put("factory.supportdirectoryfinder.class", SecurityApplicationGroupSupportDirectoryFinder.class.getName());
         defaults.put("factory.applicationresourcesfinder.class", BundleApplicationResourcesFinder.class.getName());
         defaults.put("factory.autorelease.class", AutoreleaseActionOperationBatcher.class.getName());
         defaults.put("factory.local.class", FinderLocal.class.getName());

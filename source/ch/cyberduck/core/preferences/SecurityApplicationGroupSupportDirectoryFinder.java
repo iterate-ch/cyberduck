@@ -23,9 +23,14 @@ import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.local.LocalTrashFactory;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * @version $Id$
@@ -59,11 +64,31 @@ public class SecurityApplicationGroupSupportDirectoryFinder implements SupportDi
                 try {
                     // In previous versions of OS X, although the group container directory is part of your sandbox,
                     // the directory itself is not created automatically.
-                    folder.mkdir();
+                    if(!folder.exists()) {
+                        log.info(String.format("Create shared security application group folder %s", folder));
+                        folder.mkdir();
+                    }
+                    log.info(String.format("Shared security application group folder %s is empty. Attempt to migrate support directory.", folder));
+                    final Local previous = new ApplicationSupportDirectoryFinder().find();
+                    if(previous.exists()) {
+                        log.warn(String.format("Migrate application support folder from %s to %s", previous, folder));
+                        // Rename folder recursively
+                        try {
+                            FileUtils.copyDirectory(new File(previous.getAbsolute()), new File(folder.getAbsolute()));
+                            log.warn(String.format("Move application support folder %s to Trash", previous));
+                            LocalTrashFactory.get().trash(previous);
+                        }
+                        catch(IOException e) {
+                            log.warn(String.format("Failure migrating %s to security application group directory %s. %s", previous, folder, e.getMessage()));
+                        }
+                    }
+                    else {
+                        log.debug(String.format("No previous application support folder found in %s", previous));
+                    }
                     return folder;
                 }
                 catch(AccessDeniedException e) {
-                    log.warn(String.format("Failure creating security application group directiry. %s", e.getMessage()));
+                    log.warn(String.format("Failure creating security application group directory. %s", e.getMessage()));
                 }
             }
         }
