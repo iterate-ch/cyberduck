@@ -43,6 +43,7 @@ using org.apache.log4j;
 using Application = System.Windows.Forms.Application;
 using Path = System.IO.Path;
 using Rendezvous = Ch.Cyberduck.Core.Bonjour.Rendezvous;
+using sun.security.mscapi;
 
 namespace Ch.Cyberduck.Ui.Core.Preferences
 {
@@ -337,6 +338,8 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             defaults.put("local.normalize.tilde", false.ToString());
 
             // SSL Keystore
+            // Add mscapi security provider
+            Security.addProvider(new SunMSCAPI());
             defaults.put("connection.ssl.keystore.type", "Windows-MY");
             defaults.put("connection.ssl.keystore.provider", "SunMSCAPI");
         }

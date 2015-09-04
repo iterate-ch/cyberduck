@@ -42,7 +42,6 @@ using java.util;
 using Microsoft.VisualBasic.ApplicationServices;
 using org.apache.log4j;
 using org.apache.log4j.xml;
-using sun.security.mscapi;
 using ArrayList = System.Collections.ArrayList;
 using Object = java.lang.Object;
 using Path = System.IO.Path;
@@ -93,9 +92,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 // Add the event handler for handling non-UI thread exceptions to the event. 
                 AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionHandler;
             }
-
-            // Add mscapi security provider
-            Security.addProvider(new SunMSCAPI());
 
             ConfigureLogging();
 
