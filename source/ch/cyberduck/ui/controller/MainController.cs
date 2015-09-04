@@ -37,7 +37,6 @@ using Ch.Cyberduck.Ui.Core;
 using Ch.Cyberduck.Ui.Core.Preferences;
 using Ch.Cyberduck.Ui.Core.Urlhandler;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
-using java.security;
 using java.util;
 using Microsoft.VisualBasic.ApplicationServices;
 using org.apache.log4j;

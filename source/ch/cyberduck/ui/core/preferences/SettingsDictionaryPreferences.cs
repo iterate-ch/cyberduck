@@ -39,6 +39,7 @@ using Ch.Cyberduck.Ui.Growl;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Threading;
 using java.util;
+using java.security;
 using org.apache.log4j;
 using Application = System.Windows.Forms.Application;
 using Path = System.IO.Path;
