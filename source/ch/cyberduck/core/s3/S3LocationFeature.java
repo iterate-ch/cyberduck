@@ -24,12 +24,14 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Location;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.impl.rest.httpclient.RegionEndpointCache;
 
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -57,7 +59,11 @@ public class S3LocationFeature implements Location {
 
     @Override
     public Set<Name> getLocations() {
-        return session.getHost().getProtocol().getRegions();
+        // Only for AWS
+        if(session.getHost().getHostname().endsWith(PreferencesFactory.get().getProperty("s3.hostname.default"))) {
+            return session.getHost().getProtocol().getRegions();
+        }
+        return Collections.emptySet();
     }
 
     @Override

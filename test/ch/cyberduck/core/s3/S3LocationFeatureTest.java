@@ -34,8 +34,7 @@ import org.junit.Test;
 
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -119,5 +118,14 @@ public class S3LocationFeatureTest extends AbstractTestCase {
     @Test
     public void testEquals() throws Exception {
         assertEquals(Location.unknown, new S3LocationFeature.S3Region(null));
+    }
+
+    @Test
+    public void testEmptyThirdPartyProvider() throws Exception {
+        final Host host = new Host(new S3Protocol(), "mys3", new Credentials(
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
+        ));
+        final S3Session session = new S3Session(host);
+        assertTrue(new S3LocationFeature(session).getLocations().isEmpty());
     }
 }
