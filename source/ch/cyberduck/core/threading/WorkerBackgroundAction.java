@@ -35,7 +35,7 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public class WorkerBackgroundAction<T> extends BrowserBackgroundAction<Boolean> {
+public class WorkerBackgroundAction<T> extends BrowserBackgroundAction<T> {
     private static final Logger log = Logger.getLogger(WorkerBackgroundAction.class);
 
     protected Worker<T> worker;
@@ -102,7 +102,7 @@ public class WorkerBackgroundAction<T> extends BrowserBackgroundAction<Boolean> 
     }
 
     @Override
-    public Boolean run() throws BackgroundException {
+    public T run() throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Run worker %s", worker));
         }
@@ -113,7 +113,7 @@ public class WorkerBackgroundAction<T> extends BrowserBackgroundAction<Boolean> 
             worker.cancel();
             throw e;
         }
-        return true;
+        return result;
     }
 
     @Override
