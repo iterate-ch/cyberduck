@@ -58,7 +58,7 @@ public class SessionListWorkerTest extends AbstractTestCase {
             }
         };
         final Future<AttributedList<Path>> task = c.background(new WorkerBackgroundAction<AttributedList<Path>>(c, session, worker));
-        assertNull(task.get());
+        assertTrue(task.get().isEmpty());
         assertTrue(cache.containsKey(new Path("/home/notfound", EnumSet.of(Path.Type.directory))));
     }
 
