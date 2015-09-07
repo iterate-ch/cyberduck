@@ -74,8 +74,13 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_LaunchServicesApplicatio
 {
     NSURL *url = [NSURL fileURLWithPath:JNFJavaToNSString(env, bundle)];
     OSStatus status = LSRegisterURL((CFURLRef)url, YES);
-    if(status != noErr) {
-        return FALSE;
+    switch(status) {
+        case noErr:
+        case kLSNotRegisteredErr:
+            // Success
+            break;
+        default:
+            return FALSE;
     }
     return TRUE;
 }
