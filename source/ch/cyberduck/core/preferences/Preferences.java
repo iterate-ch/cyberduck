@@ -521,7 +521,7 @@ public abstract class Preferences {
         /**
          * Bandwidth throttle options
          */
-        StringBuilder options = new StringBuilder();
+        final StringBuilder options = new StringBuilder();
         options.append(5 * DecimalSizeFormatter.KILO.multiple()).append(",");
         options.append(10 * DecimalSizeFormatter.KILO.multiple()).append(",");
         options.append(20 * DecimalSizeFormatter.KILO.multiple()).append(",");
