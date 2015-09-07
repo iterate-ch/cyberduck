@@ -82,7 +82,7 @@ public class SwiftLocationFeature implements Location {
         if(Location.unknown.equals(new SwiftRegion(container.attributes().getRegion()))) {
             final SwiftRegion region = new SwiftRegion(session.getHost().getRegion());
             if(Location.unknown.equals(region)) {
-                for(Path c : new SwiftContainerListService(session, region).list(new DisabledListProgressListener())) {
+                for(Path c : new SwiftContainerListService(session, region, false, false).list(new DisabledListProgressListener())) {
                     if(c.getName().equals(container.getName())) {
                         return new SwiftRegion(c.attributes().getRegion());
                     }
