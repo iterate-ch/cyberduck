@@ -7,7 +7,6 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
@@ -15,6 +14,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -69,7 +69,12 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertEquals("text/plain", metadata.get("Content-Type"));
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+                //
+            }
+        });
         session.close();
     }
 
@@ -115,7 +120,12 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(random.length, session.list(container,
                 new DisabledListProgressListener()).get(test).attributes().getSize());
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+                //
+            }
+        });
         session.close();
     }
 
@@ -145,7 +155,12 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(random.length, session.list(container,
                 new DisabledListProgressListener()).get(test).attributes().getSize());
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+                //
+            }
+        });
         session.close();
     }
 
@@ -203,7 +218,12 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         IOUtils.readFully(in, buffer);
         IOUtils.closeQuietly(in);
         assertArrayEquals(random, buffer);
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+                //
+            }
+        });
         session.close();
     }
 
@@ -261,7 +281,11 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         IOUtils.readFully(in, buffer);
         IOUtils.closeQuietly(in);
         assertArrayEquals(random, buffer);
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         session.close();
     }
 }

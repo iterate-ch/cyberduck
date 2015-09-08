@@ -7,7 +7,6 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -18,6 +17,7 @@ import ch.cyberduck.core.cdn.features.Cname;
 import ch.cyberduck.core.cdn.features.DistributionLogging;
 import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.cdn.features.Purge;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 
 import org.junit.Test;
@@ -98,7 +98,11 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         new SwiftDirectoryFeature(session).mkdir(container, "ORD");
         configuration.write(container, new Distribution(Distribution.DOWNLOAD, true), new DisabledLoginCallback());
         assertTrue(configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginCallback()).isEnabled());
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new DisabledProgressListener());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         session.close();
     }
 

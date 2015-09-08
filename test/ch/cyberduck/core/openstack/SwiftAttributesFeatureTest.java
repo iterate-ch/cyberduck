@@ -13,6 +13,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Delete;
 
 import org.junit.Test;
 
@@ -63,7 +64,11 @@ public class SwiftAttributesFeatureTest extends AbstractTestCase {
         assertEquals(EnumSet.of(Path.Type.file), test.getType());
         assertEquals("d41d8cd98f00b204e9800998ecf8427e", attributes.getChecksum().hash);
         assertNotNull(attributes.getModificationDate());
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         session.close();
     }
 

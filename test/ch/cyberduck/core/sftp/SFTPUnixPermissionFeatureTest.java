@@ -24,11 +24,11 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import org.junit.Ignore;
@@ -99,14 +99,22 @@ public class SFTPUnixPermissionFeatureTest extends AbstractTestCase {
             new SFTPTouchFeature(session).touch(file);
             new SFTPUnixPermissionFeature(session).setUnixPermission(file, new Permission(666));
             assertEquals("666", session.list(home, new DisabledListProgressListener()).get(file).attributes().getPermission().getMode());
-            new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(file), new DisabledLoginCallback(), new DisabledProgressListener());
+            new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(file), new DisabledLoginCallback(), new Delete.Callback() {
+                @Override
+                public void delete(final Path file) {
+                }
+            });
         }
         {
             final Path directory = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
             new SFTPDirectoryFeature(session).mkdir(directory);
             new SFTPUnixPermissionFeature(session).setUnixPermission(directory, new Permission(666));
             assertEquals("666", session.list(home, new DisabledListProgressListener()).get(directory).attributes().getPermission().getMode());
-            new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(directory), new DisabledLoginCallback(), new DisabledProgressListener());
+            new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(directory), new DisabledLoginCallback(), new Delete.Callback() {
+                @Override
+                public void delete(final Path file) {
+                }
+            });
         }
         session.close();
     }
@@ -140,7 +148,11 @@ public class SFTPUnixPermissionFeatureTest extends AbstractTestCase {
         assertEquals(new Permission(Permission.Action.all, Permission.Action.read, Permission.Action.read,
                 false, false, true), new SFTPListService(session).list(test.getParent(), new DisabledListProgressListener()).get(
                 test).attributes().getPermission());
-        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         session.close();
     }
 }

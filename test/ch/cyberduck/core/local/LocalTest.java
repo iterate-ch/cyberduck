@@ -3,6 +3,7 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.junit.Test;
@@ -98,5 +99,22 @@ public class LocalTest extends AbstractTestCase {
         public char getDelimiter() {
             return '\\';
         }
+    }
+
+    @Test(expected = LocalAccessDeniedException.class)
+    public void testRenameExistingDirectory() throws Exception {
+        final TestLocal l = new TestLocal(System.getProperty("java.io.tmpdir") + UUID.randomUUID().toString());
+        l.mkdir();
+        final TestLocal n = new TestLocal(System.getProperty("java.io.tmpdir") + UUID.randomUUID().toString());
+        n.rename(l);
+    }
+
+    @Test
+    public void testRenameDirectory() throws Exception {
+        final TestLocal l = new TestLocal(System.getProperty("java.io.tmpdir") + UUID.randomUUID().toString());
+        final TestLocal n = new TestLocal(System.getProperty("java.io.tmpdir") + UUID.randomUUID().toString());
+        n.rename(l);
+        assertTrue(l.exists());
+        l.delete();
     }
 }

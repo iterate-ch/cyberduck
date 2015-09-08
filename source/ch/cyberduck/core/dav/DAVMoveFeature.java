@@ -21,8 +21,8 @@ package ch.cyberduck.core.dav;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 
@@ -42,7 +42,7 @@ public class DAVMoveFeature implements Move {
     }
 
     @Override
-    public void move(final Path file, final Path renamed, boolean exists, final ProgressListener listener) throws BackgroundException {
+    public void move(final Path file, final Path renamed, boolean exists, final Delete.Callback callback) throws BackgroundException {
         try {
             session.getClient().move(new DAVPathEncoder().encode(file),
                     new DefaultUrlProvider(session.getHost()).toUrl(renamed).find(DescriptiveUrl.Type.provider).getUrl());

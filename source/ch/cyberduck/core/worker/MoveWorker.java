@@ -23,6 +23,7 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 
 import java.text.MessageFormat;
@@ -55,7 +56,13 @@ public class MoveWorker extends Worker<List<Path>> {
             if(!feature.isSupported(entry.getKey())) {
                 continue;
             }
-            feature.move(entry.getKey(), entry.getValue(), false, listener);
+            feature.move(entry.getKey(), entry.getValue(), false, new Delete.Callback() {
+                @Override
+                public void delete(final Path file) {
+                    listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
+                            file.getName()));
+                }
+            });
         }
         final List<Path> changed = new ArrayList<Path>();
         changed.addAll(files.keySet());

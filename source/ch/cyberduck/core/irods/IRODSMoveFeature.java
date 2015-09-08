@@ -18,9 +18,9 @@ package ch.cyberduck.core.irods;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 
 import org.irods.jargon.core.exception.JargonException;
@@ -39,7 +39,7 @@ public class IRODSMoveFeature implements Move {
     }
 
     @Override
-    public void move(final Path file, final Path renamed, final boolean exists, final ProgressListener listener) throws BackgroundException {
+    public void move(final Path file, final Path renamed, final boolean exists, final Delete.Callback callback) throws BackgroundException {
         try {
             final IRODSFileSystemAO fs = session.filesystem();
             final IRODSFile s = fs.getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());

@@ -18,17 +18,14 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 
 import java.net.URISyntaxException;
-import java.text.MessageFormat;
 import java.util.List;
 
 import com.microsoft.azure.storage.AccessCondition;
@@ -56,10 +53,9 @@ public class AzureDeleteFeature implements Delete {
     }
 
     @Override
-    public void delete(final List<Path> files, final LoginCallback prompt, final ProgressListener listener) throws BackgroundException {
+    public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
         for(Path file : files) {
-            listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
-                    file.getName()));
+            callback.delete(file);
             try {
                 final BlobRequestOptions options = new BlobRequestOptions();
                 options.setRetryPolicyFactory(new RetryNoRetry());

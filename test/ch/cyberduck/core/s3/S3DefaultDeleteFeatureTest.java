@@ -6,12 +6,12 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.gstorage.GoogleStorageProtocol;
 import ch.cyberduck.core.gstorage.GoogleStorageSession;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -44,7 +44,11 @@ public class S3DefaultDeleteFeatureTest extends AbstractTestCase {
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test);
         assertTrue(new S3FindFeature(session).find(test));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         assertFalse(new S3FindFeature(session).find(test));
         session.close();
     }
@@ -64,7 +68,11 @@ public class S3DefaultDeleteFeatureTest extends AbstractTestCase {
         test.setType(EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         assertTrue(new S3FindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         assertFalse(new S3FindFeature(session).find(test));
         session.close();
     }
@@ -82,7 +90,11 @@ public class S3DefaultDeleteFeatureTest extends AbstractTestCase {
         container.attributes().setRegion("US");
         new S3DirectoryFeature(session).mkdir(container, null);
         assertTrue(new S3FindFeature(session).find(container));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new DisabledProgressListener());
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         assertFalse(new S3FindFeature(session).find(container));
         session.close();
     }
@@ -109,7 +121,11 @@ public class S3DefaultDeleteFeatureTest extends AbstractTestCase {
         container.attributes().setRegion("US");
         new S3DirectoryFeature(session).mkdir(container, null);
         assertTrue(new S3FindFeature(session).find(container));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new DisabledProgressListener());
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         assertFalse(new S3FindFeature(session).find(container));
         session.close();
     }
@@ -126,7 +142,11 @@ public class S3DefaultDeleteFeatureTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
     }
 
     @Test(expected = NotfoundException.class)
@@ -139,6 +159,10 @@ public class S3DefaultDeleteFeatureTest extends AbstractTestCase {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new DisabledProgressListener());
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
     }
 }

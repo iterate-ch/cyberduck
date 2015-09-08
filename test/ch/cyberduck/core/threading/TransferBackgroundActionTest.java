@@ -22,13 +22,13 @@ import ch.cyberduck.core.AbstractController;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.openstack.SwiftSession;
@@ -171,7 +171,11 @@ public class TransferBackgroundActionTest extends AbstractTestCase {
         assertTrue(t.isComplete());
         assertNotNull(t.getTimestamp());
 
-        new SFTPDeleteFeature(session).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new DisabledProgressListener());
+        new SFTPDeleteFeature(session).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
     }
 
     @Test

@@ -18,9 +18,9 @@ package ch.cyberduck.core.shared;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 
 /**
@@ -29,7 +29,7 @@ import ch.cyberduck.core.features.Move;
 public class DisabledMoveFeature implements Move {
 
     @Override
-    public void move(final Path file, final Path renamed, final boolean exists, final ProgressListener listener) throws BackgroundException {
+    public void move(final Path file, final Path renamed, final boolean exists, final Delete.Callback callback) throws BackgroundException {
         throw new InteroperabilityException("Not supported");
     }
 

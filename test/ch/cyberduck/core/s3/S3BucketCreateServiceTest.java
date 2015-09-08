@@ -21,11 +21,11 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Location;
 
 import org.junit.Ignore;
@@ -59,7 +59,11 @@ public class S3BucketCreateServiceTest extends AbstractTestCase {
             create.create(bucket, region.getIdentifier());
             bucket.attributes().setRegion(region.getIdentifier());
             assertTrue(find.find(bucket));
-            delete.delete(Collections.<Path>singletonList(bucket), new DisabledLoginCallback(), new DisabledProgressListener());
+            delete.delete(Collections.<Path>singletonList(bucket), new DisabledLoginCallback(), new Delete.Callback() {
+                @Override
+                public void delete(final Path file) {
+                }
+            });
             assertFalse(find.find(bucket));
         }
         session.close();

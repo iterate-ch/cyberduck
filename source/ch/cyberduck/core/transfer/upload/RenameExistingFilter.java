@@ -23,6 +23,7 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -72,7 +73,12 @@ public class RenameExistingFilter extends AbstractUploadFilter {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Rename existing file %s to %s", file, rename));
             }
-            move.move(file, rename, false, listener);
+            move.move(file, rename, false, new Delete.Callback() {
+                                    @Override
+                                    public void delete(final Path file) {
+                                        //
+                                    }
+                                });
         }
         super.apply(file, local, status, listener);
     }

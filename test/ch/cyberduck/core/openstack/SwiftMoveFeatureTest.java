@@ -23,11 +23,11 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Delete;
 
 import org.junit.Test;
 
@@ -60,10 +60,18 @@ public class SwiftMoveFeatureTest extends AbstractTestCase {
         assertTrue(new SwiftFindFeature(session).find(test));
         final Path target = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         target.attributes().setRegion("DFW");
-        new SwiftMoveFeature(session).move(test, target, false, new DisabledProgressListener());
+        new SwiftMoveFeature(session).move(test, target, false, new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         assertFalse(new SwiftFindFeature(session).find(test));
         assertTrue(new SwiftFindFeature(session).find(target));
-        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new DisabledProgressListener());
+        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         session.close();
     }
 
@@ -84,10 +92,18 @@ public class SwiftMoveFeatureTest extends AbstractTestCase {
         final Path target = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         target.attributes().setRegion("DFW");
         new SwiftTouchFeature(session).touch(target);
-        new SwiftMoveFeature(session).move(test, target, false, new DisabledProgressListener());
+        new SwiftMoveFeature(session).move(test, target, false, new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         assertFalse(new SwiftFindFeature(session).find(test));
         assertTrue(new SwiftFindFeature(session).find(target));
-        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new DisabledProgressListener());
+        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         session.close();
     }
 
@@ -104,7 +120,11 @@ public class SwiftMoveFeatureTest extends AbstractTestCase {
         container.attributes().setRegion("DFW");
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         test.attributes().setRegion("DFW");
-        new SwiftMoveFeature(session).move(test, new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), false, new DisabledProgressListener());
+        new SwiftMoveFeature(session).move(test, new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), false, new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
     }
 
     @Test

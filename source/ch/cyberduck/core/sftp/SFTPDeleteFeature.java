@@ -18,15 +18,12 @@ package ch.cyberduck.core.sftp;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.List;
 
 /**
@@ -41,10 +38,9 @@ public class SFTPDeleteFeature implements Delete {
     }
 
     @Override
-    public void delete(final List<Path> files, final LoginCallback prompt, final ProgressListener listener) throws BackgroundException {
+    public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
         for(Path file : files) {
-            listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
-                    file.getName()));
+            callback.delete(file);
             try {
                 if(file.isFile() || file.isSymbolicLink()) {
                     session.sftp().remove(file.getAbsolute());

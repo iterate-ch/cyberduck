@@ -9,7 +9,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.ftp.FTPSession;
@@ -35,7 +34,7 @@ public class DeleteWorkerTest extends AbstractTestCase {
             public <T> T getFeature(final Class<T> type) {
                 return (T) new Delete() {
                     @Override
-                    public void delete(final List<Path> files, final LoginCallback prompt, final ProgressListener listener) throws BackgroundException {
+                    public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
                         assertEquals(new Path("/t/a", EnumSet.of(Path.Type.file)), files.get(0));
                         assertEquals(new Path("/t/d/b", EnumSet.of(Path.Type.file)), files.get(1));
                         assertEquals(new Path("/t/d", EnumSet.of(Path.Type.directory)), files.get(2));
@@ -74,7 +73,7 @@ public class DeleteWorkerTest extends AbstractTestCase {
             public <T> T getFeature(final Class<T> type) {
                 return (T) new Delete() {
                     @Override
-                    public void delete(final List<Path> files, final LoginCallback prompt, final ProgressListener listener) throws BackgroundException {
+                    public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
                         assertEquals(new Path("/s", EnumSet.of(Path.Type.directory, AbstractPath.Type.symboliclink)), files.get(0));
                     }
                 };

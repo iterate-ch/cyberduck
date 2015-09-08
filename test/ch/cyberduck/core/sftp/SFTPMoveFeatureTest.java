@@ -23,11 +23,11 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import org.junit.Test;
@@ -55,10 +55,18 @@ public class SFTPMoveFeatureTest extends AbstractTestCase {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SFTPTouchFeature(session).touch(test);
         final Path target = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new SFTPMoveFeature(session).move(test, target, false, new DisabledProgressListener());
+        new SFTPMoveFeature(session).move(test, target, false, new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         assertFalse(new SFTPFindFeature(session).find(test));
         assertTrue(new SFTPFindFeature(session).find(target));
-        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new DisabledProgressListener());
+        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
     }
 
     @Test
@@ -73,10 +81,18 @@ public class SFTPMoveFeatureTest extends AbstractTestCase {
         new SFTPTouchFeature(session).touch(test);
         final Path target = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SFTPTouchFeature(session).touch(target);
-        new SFTPMoveFeature(session).move(test, target, false, new DisabledProgressListener());
+        new SFTPMoveFeature(session).move(test, target, false, new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         assertFalse(new SFTPFindFeature(session).find(test));
         assertTrue(new SFTPFindFeature(session).find(target));
-        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new DisabledProgressListener());
+        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
     }
 
     @Test(expected = NotfoundException.class)
@@ -88,6 +104,10 @@ public class SFTPMoveFeatureTest extends AbstractTestCase {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new SFTPMoveFeature(session).move(test, new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), false, new DisabledProgressListener());
+        new SFTPMoveFeature(session).move(test, new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), false, new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
     }
 }

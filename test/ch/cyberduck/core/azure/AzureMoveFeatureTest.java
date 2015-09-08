@@ -11,6 +11,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.features.Delete;
 
 import org.junit.Test;
 
@@ -39,10 +40,18 @@ public class AzureMoveFeatureTest extends AbstractTestCase {
         new AzureTouchFeature(session, null).touch(test);
         assertTrue(new AzureFindFeature(session, null).find(test));
         final Path target = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new AzureMoveFeature(session, null).move(test, target, false, new DisabledProgressListener());
+        new AzureMoveFeature(session, null).move(test, target, false, new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         assertFalse(new AzureFindFeature(session, null).find(test));
         assertTrue(new AzureFindFeature(session, null).find(target));
-        new AzureDeleteFeature(session, null).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new DisabledProgressListener());
+        new AzureDeleteFeature(session, null).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
     }
 
     @Test

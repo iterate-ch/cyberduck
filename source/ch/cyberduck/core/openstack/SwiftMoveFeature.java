@@ -22,8 +22,8 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 
 import org.apache.log4j.Logger;
@@ -49,7 +49,7 @@ public class SwiftMoveFeature implements Move {
     }
 
     @Override
-    public void move(final Path file, final Path renamed, boolean exists, final ProgressListener listener) throws BackgroundException {
+    public void move(final Path file, final Path renamed, boolean exists, final Delete.Callback callback) throws BackgroundException {
         try {
             if(file.isFile() || file.isPlaceholder()) {
                 new SwiftCopyFeature(session).copy(file, renamed);
@@ -57,13 +57,8 @@ public class SwiftMoveFeature implements Move {
                         containerService.getContainer(file).getName(), containerService.getKey(file));
             }
             else if(file.isDirectory()) {
-                for(Path i : session.list(file, new DisabledListProgressListener() {
-                    @Override
-                    public void message(final String message) {
-                        listener.message(message);
-                    }
-                })) {
-                    this.move(i, new Path(renamed, i.getName(), i.getType()), false, listener);
+                for(Path i : session.list(file, new DisabledListProgressListener())) {
+                    this.move(i, new Path(renamed, i.getName(), i.getType()), false, callback);
                 }
                 try {
                     session.getClient().deleteObject(new SwiftRegionService(session).lookup(file),

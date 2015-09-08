@@ -23,10 +23,10 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.features.Delete;
 
 import org.jets3t.service.Constants;
 import org.jets3t.service.model.S3Object;
@@ -72,7 +72,11 @@ public class S3MetadataFeatureTest extends AbstractTestCase {
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test);
         final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("Content-Type"));
         assertEquals("text/plain", metadata.get("Content-Type"));
@@ -113,7 +117,11 @@ public class S3MetadataFeatureTest extends AbstractTestCase {
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, storage.getClass(test));
         assertEquals("AES256", encryption.getEncryption(test));
 
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         session.close();
     }
 
@@ -135,7 +143,11 @@ public class S3MetadataFeatureTest extends AbstractTestCase {
         final Map<String, String> metadata = feature.getMetadata(test);
         assertTrue(metadata.containsKey("Content-Type"));
         assertEquals("text/plain", metadata.get("Content-Type"));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         session.close();
     }
 }

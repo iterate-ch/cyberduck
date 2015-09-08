@@ -11,6 +11,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.features.Delete;
 
 import org.junit.Test;
 
@@ -37,7 +38,11 @@ public class AzureDirectoryFeatureTest extends AbstractTestCase {
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new AzureDirectoryFeature(session, null).mkdir(container, null);
         assertTrue(new AzureFindFeature(session, null).find(container));
-        new AzureDeleteFeature(session, null).delete(Collections.<Path>singletonList(container), new DisabledLoginCallback(), new DisabledProgressListener());
+        new AzureDeleteFeature(session, null).delete(Collections.<Path>singletonList(container), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         assertFalse(new AzureFindFeature(session, null).find(container));
     }
 
@@ -56,7 +61,11 @@ public class AzureDirectoryFeatureTest extends AbstractTestCase {
         new AzureDirectoryFeature(session, null).mkdir(placeholder, null);
         placeholder.setType(EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         assertTrue(new AzureFindFeature(session, null).find(placeholder));
-        new AzureDeleteFeature(session, null).delete(Collections.<Path>singletonList(placeholder), new DisabledLoginCallback(), new DisabledProgressListener());
+        new AzureDeleteFeature(session, null).delete(Collections.<Path>singletonList(placeholder), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         assertFalse(new AzureFindFeature(session, null).find(placeholder));
     }
 }

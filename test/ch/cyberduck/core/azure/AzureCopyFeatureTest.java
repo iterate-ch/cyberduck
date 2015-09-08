@@ -11,6 +11,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.features.Delete;
 
 import org.junit.Test;
 
@@ -40,7 +41,11 @@ public class AzureCopyFeatureTest extends AbstractTestCase {
         new AzureCopyFeature(session, null).copy(test, copy);
         assertTrue(new AzureFindFeature(session, null).find(test));
         assertTrue(new AzureFindFeature(session, null).find(copy));
-        new AzureDeleteFeature(session, null).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new DisabledProgressListener());
+        new AzureDeleteFeature(session, null).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         session.close();
     }
 }

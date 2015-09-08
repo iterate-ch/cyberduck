@@ -13,6 +13,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Delete;
 
 import org.junit.Test;
 
@@ -56,7 +57,11 @@ public class AzureAttributesFeatureTest extends AbstractTestCase {
         assertEquals(0L, attributes.getSize());
         assertNull(attributes.getChecksum());
         assertNotNull(attributes.getETag());
-        new AzureDeleteFeature(session, null).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        new AzureDeleteFeature(session, null).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         session.close();
     }
 }

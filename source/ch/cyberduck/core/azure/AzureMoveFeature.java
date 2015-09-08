@@ -22,8 +22,8 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 
 import java.util.Collections;
@@ -53,20 +53,15 @@ public class AzureMoveFeature implements Move {
     }
 
     @Override
-    public void move(final Path file, final Path renamed, final boolean exists, final ProgressListener listener) throws BackgroundException {
+    public void move(final Path file, final Path renamed, final boolean exists, final Delete.Callback callback) throws BackgroundException {
         if(file.isFile() || file.isPlaceholder()) {
             new AzureCopyFeature(session, context).copy(file, renamed);
             new AzureDeleteFeature(session, context).delete(Collections.singletonList(file),
-                    new DisabledLoginCallback(), listener);
+                    new DisabledLoginCallback(), callback);
         }
         else if(file.isDirectory()) {
-            for(Path i : session.list(file, new DisabledListProgressListener() {
-                @Override
-                public void message(final String message) {
-                    listener.message(message);
-                }
-            })) {
-                this.move(i, new Path(renamed, i.getName(), i.getType()), false, listener);
+            for(Path i : session.list(file, new DisabledListProgressListener())) {
+                this.move(i, new Path(renamed, i.getName(), i.getType()), false, callback);
             }
         }
     }

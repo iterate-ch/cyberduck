@@ -12,6 +12,7 @@ import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -74,7 +75,11 @@ public class AzureWriteFeatureTest extends AbstractTestCase {
                 .transfer(new ByteArrayInputStream("overwrite".getBytes("UTF-8")), overwrite);
         IOUtils.closeQuietly(overwrite);
         assertEquals("overwrite".getBytes("UTF-8").length, new AzureAttributesFeature(session, context).find(test).getSize());
-        new AzureDeleteFeature(session, context).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        new AzureDeleteFeature(session, context).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         session.close();
     }
 }

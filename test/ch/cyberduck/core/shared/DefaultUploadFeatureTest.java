@@ -24,7 +24,6 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
@@ -106,7 +105,11 @@ public class DefaultUploadFeatureTest extends AbstractTestCase {
         IOUtils.closeQuietly(in);
         assertArrayEquals(content, buffer);
         final Delete delete = session.getFeature(Delete.class);
-        delete.delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        delete.delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         session.close();
     }
 }

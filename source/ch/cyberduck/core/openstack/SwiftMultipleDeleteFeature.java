@@ -19,11 +19,9 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.collections.Partition;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -31,7 +29,6 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -66,9 +63,9 @@ public class SwiftMultipleDeleteFeature implements Delete {
     }
 
     @Override
-    public void delete(final List<Path> files, final LoginCallback prompt, final ProgressListener listener) throws BackgroundException {
+    public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
         if(files.size() == 1) {
-            new SwiftDeleteFeature(session).delete(files, prompt, listener);
+            new SwiftDeleteFeature(session).delete(files, prompt, callback);
         }
         else {
             final Map<Path, List<String>> containers = new HashMap<Path, List<String>>();
@@ -76,8 +73,7 @@ public class SwiftMultipleDeleteFeature implements Delete {
                 if(containerService.isContainer(file)) {
                     continue;
                 }
-                listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
-                        file.getName()));
+                callback.delete(file);
                 final Path container = containerService.getContainer(file);
                 if(containers.containsKey(container)) {
                     containers.get(container).add(containerService.getKey(file));
@@ -103,7 +99,7 @@ public class SwiftMultipleDeleteFeature implements Delete {
             }
             catch(GenericException e) {
                 if(new SwiftExceptionMappingService().map(e) instanceof InteroperabilityException) {
-                    new SwiftDeleteFeature(session).delete(files, prompt, listener);
+                    new SwiftDeleteFeature(session).delete(files, prompt, callback);
                     return;
                 }
                 else {
@@ -115,8 +111,7 @@ public class SwiftMultipleDeleteFeature implements Delete {
             }
             for(Path file : files) {
                 if(containerService.isContainer(file)) {
-                    listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
-                            file.getName()));
+                    callback.delete(file);
                     // Finally delete bucket itself
                     try {
                         session.getClient().deleteContainer(new SwiftRegionService(session).lookup(file),

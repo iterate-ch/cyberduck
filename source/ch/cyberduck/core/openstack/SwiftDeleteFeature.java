@@ -20,11 +20,9 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -32,7 +30,6 @@ import ch.cyberduck.core.features.Delete;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.List;
 
 import ch.iterate.openstack.swift.exception.GenericException;
@@ -64,10 +61,9 @@ public class SwiftDeleteFeature implements Delete {
     }
 
     @Override
-    public void delete(final List<Path> files, final LoginCallback prompt, final ProgressListener listener) throws BackgroundException {
+    public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
         for(Path file : files) {
-            listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
-                    file.getName()));
+            callback.delete(file);
             try {
                 if(file.isFile()) {
                     // Collect a list of existing segments. Must do this before deleting the manifest file.
@@ -76,7 +72,7 @@ public class SwiftDeleteFeature implements Delete {
                             containerService.getContainer(file).getName(), containerService.getKey(file));
                     if(!segments.isEmpty()) {
                         // Clean up any old segments
-                        new SwiftMultipleDeleteFeature(session).delete(segments, new DisabledLoginCallback(), listener);
+                        new SwiftMultipleDeleteFeature(session).delete(segments, new DisabledLoginCallback(), callback);
                     }
                 }
                 else if(file.isDirectory()) {

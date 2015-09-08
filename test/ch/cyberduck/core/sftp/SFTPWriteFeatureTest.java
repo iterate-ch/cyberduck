@@ -9,12 +9,12 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.ThrottledOutputStream;
@@ -76,7 +76,11 @@ public class SFTPWriteFeatureTest extends AbstractTestCase {
             System.arraycopy(content, 1, reference, 0, content.length - 1);
             assertArrayEquals(reference, buffer.toByteArray());
         }
-        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         session.close();
     }
 
@@ -119,7 +123,11 @@ public class SFTPWriteFeatureTest extends AbstractTestCase {
         final AttributedList<Path> list = new SFTPListService(session).list(session.workdir(), new DisabledListProgressListener());
         assertTrue(list.contains(new Path(session.workdir(), name, EnumSet.of(Path.Type.file))));
         assertFalse(list.contains(symlink));
-        new SFTPDeleteFeature(session).delete(Arrays.asList(target, symlink), new DisabledLoginCallback(), new DisabledProgressListener());
+        new SFTPDeleteFeature(session).delete(Arrays.asList(target, symlink), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
     }
 
     @Test(expected = NotfoundException.class)

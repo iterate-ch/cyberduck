@@ -17,10 +17,8 @@ package ch.cyberduck.core.irods;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -28,7 +26,6 @@ import ch.cyberduck.core.features.Delete;
 import org.irods.jargon.core.exception.JargonException;
 import org.irods.jargon.core.pub.io.IRODSFile;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +41,7 @@ public class IRODSDeleteFeature implements Delete {
     }
 
     @Override
-    public void delete(final List<Path> files, final LoginCallback prompt, final ProgressListener listener) throws BackgroundException {
+    public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
         final List<Path> deleted = new ArrayList<Path>();
         for(Path file : files) {
             boolean skip = false;
@@ -57,7 +54,7 @@ public class IRODSDeleteFeature implements Delete {
             if(skip) {
                 continue;
             }
-            listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"), file.getName()));
+            callback.delete(file);
             try {
                 final IRODSFile f = session.filesystem().getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
                 if(!f.exists()) {

@@ -109,7 +109,11 @@ public class IRODSWriteFeatureTest extends AbstractTestCase {
             assertArrayEquals(newcontent, buffer);
         }
 
-        session.getFeature(Delete.class).delete(Arrays.asList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        session.getFeature(Delete.class).delete(Arrays.asList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         assertFalse(session.getFeature(Find.class).find(test));
         session.close();
     }
@@ -185,7 +189,11 @@ public class IRODSWriteFeatureTest extends AbstractTestCase {
         System.arraycopy(content_append, 0, complete, content.length, content_append.length);
         assertArrayEquals(complete, buffer_complete);
 
-        session.getFeature(Delete.class).delete(Arrays.asList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        session.getFeature(Delete.class).delete(Arrays.asList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         assertFalse(session.getFeature(Find.class).find(test));
         session.close();
     }

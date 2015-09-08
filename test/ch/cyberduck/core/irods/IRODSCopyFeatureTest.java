@@ -23,13 +23,13 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProfileReaderFactory;
+import ch.cyberduck.core.features.Delete;
 
 import org.junit.Test;
 
@@ -58,7 +58,11 @@ public class IRODSCopyFeatureTest extends AbstractTestCase {
         new IRODSCopyFeature(session).copy(test, copy);
         assertTrue(new IRODSFindFeature(session).find(test));
         assertTrue(new IRODSFindFeature(session).find(copy));
-        new IRODSDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new DisabledProgressListener());
+        new IRODSDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         session.close();
     }
 }

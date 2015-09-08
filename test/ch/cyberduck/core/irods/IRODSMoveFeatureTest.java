@@ -23,7 +23,6 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
@@ -67,12 +66,20 @@ public class IRODSMoveFeatureTest extends AbstractTestCase {
         assertTrue(session.getFeature(Find.class).find(source));
         assertFalse(session.getFeature(Find.class).find(destination));
 
-        new IRODSMoveFeature(session).move(source, destination, false, new DisabledProgressListener());
+        new IRODSMoveFeature(session).move(source, destination, false, new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         assertFalse(session.getFeature(Find.class).find(source));
         assertTrue(session.getFeature(Find.class).find(destination));
 
 
-        session.getFeature(Delete.class).delete(Arrays.asList(destination), new DisabledLoginCallback(), new DisabledProgressListener());
+        session.getFeature(Delete.class).delete(Arrays.asList(destination), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         assertFalse(session.getFeature(Find.class).find(destination));
         session.close();
     }
@@ -94,6 +101,10 @@ public class IRODSMoveFeatureTest extends AbstractTestCase {
         assertFalse(session.getFeature(Find.class).find(source));
         assertFalse(session.getFeature(Find.class).find(destination));
 
-        new IRODSMoveFeature(session).move(source, destination, false, new DisabledProgressListener());
+        new IRODSMoveFeature(session).move(source, destination, false, new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
     }
 }

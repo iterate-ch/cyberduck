@@ -25,11 +25,11 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.features.Delete;
 
 import org.junit.Test;
 
@@ -96,7 +96,11 @@ public class SwiftUrlProviderTest extends AbstractTestCase {
             assertNotNull(s);
             assertNotEquals(DescriptiveUrl.EMPTY, s);
         }
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new DisabledProgressListener());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         session.close();
     }
 

@@ -23,12 +23,12 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -92,7 +92,11 @@ public class S3VersioningFeatureTest extends AbstractTestCase {
         final Versioning feature = new S3VersioningFeature(session);
         feature.setConfiguration(container, new DisabledLoginCallback(), new VersioningConfiguration(true, false));
         assertTrue(feature.getConfiguration(container).isEnabled());
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(container), new DisabledLoginCallback(), new DisabledProgressListener());
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(container), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         session.close();
     }
 

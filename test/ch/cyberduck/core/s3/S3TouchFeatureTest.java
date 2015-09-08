@@ -6,11 +6,11 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.features.Delete;
 
 import org.junit.Test;
 
@@ -50,7 +50,11 @@ public class S3TouchFeatureTest extends AbstractTestCase {
         final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertEquals("text/plain", metadata.get("Content-Type"));
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         assertFalse(new S3FindFeature(session).find(test));
         session.close();
     }
@@ -102,7 +106,11 @@ public class S3TouchFeatureTest extends AbstractTestCase {
             service.touch(test);
             list.add(test);
         }
-        new S3MultipleDeleteFeature(session).delete(list, new DisabledLoginCallback(), new DisabledProgressListener());
+        new S3MultipleDeleteFeature(session).delete(list, new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         session.close();
     }
 }

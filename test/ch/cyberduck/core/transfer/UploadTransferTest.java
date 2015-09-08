@@ -3,6 +3,7 @@ package ch.cyberduck.core.transfer;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Write;
@@ -327,7 +328,7 @@ public class UploadTransferTest extends AbstractTestCase {
                 if(type.equals(Move.class)) {
                     return (T) new Move() {
                         @Override
-                        public void move(final Path file, final Path renamed, boolean exists, final ProgressListener listener) throws BackgroundException {
+                        public void move(final Path file, final Path renamed, boolean exists, final Delete.Callback callback) throws BackgroundException {
                             assertEquals(test, renamed);
                             moved.set(true);
                         }

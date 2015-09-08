@@ -34,6 +34,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Move;
@@ -258,7 +259,12 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             if(file.isFile()) {
                 if(this.options.temporary) {
                     final Move move = session.getFeature(Move.class);
-                    move.move(status.getRename().remote, file, status.isExists(), listener);
+                    move.move(status.getRename().remote, file, status.isExists(), new Delete.Callback() {
+                        @Override
+                        public void delete(final Path file) {
+                            //
+                        }
+                    });
                 }
             }
             if(!Permission.EMPTY.equals(status.getPermission())) {

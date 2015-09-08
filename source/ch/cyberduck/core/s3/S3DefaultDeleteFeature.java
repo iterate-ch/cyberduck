@@ -17,18 +17,15 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 
-import java.text.MessageFormat;
 import java.util.List;
 
 /**
@@ -46,13 +43,12 @@ public class S3DefaultDeleteFeature implements Delete {
         this.session = session;
     }
 
-    public void delete(final List<Path> files, final LoginCallback prompt, final ProgressListener listener) throws BackgroundException {
+    public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
         for(Path file : files) {
             if(containerService.isContainer(file)) {
                 continue;
             }
-            listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
-                    file.getName()));
+            callback.delete(file);
             try {
                 // Always returning 204 even if the key does not exist. Does not return 404 for non-existing keys
                 session.getClient().deleteObject(containerService.getContainer(file).getName(), containerService.getKey(file));
@@ -63,8 +59,7 @@ public class S3DefaultDeleteFeature implements Delete {
         }
         for(Path file : files) {
             if(containerService.isContainer(file)) {
-                listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
-                        file.getName()));
+                callback.delete(file);
                 // Finally delete bucket itself
                 try {
                     session.getClient().deleteBucket(containerService.getContainer(file).getName());

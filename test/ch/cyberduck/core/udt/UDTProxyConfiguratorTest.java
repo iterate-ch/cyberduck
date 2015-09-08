@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.QuotaException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Upload;
@@ -252,7 +253,11 @@ public class UDTProxyConfiguratorTest extends AbstractTestCase {
             System.arraycopy(random.getBytes(), 1, reference, 0, random.getBytes().length - 1);
             assertArrayEquals(reference, buffer);
         }
-        new S3DefaultDeleteFeature(tunneled).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        new S3DefaultDeleteFeature(tunneled).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         tunneled.close();
         assertFalse(tunneled.isConnected());
     }
@@ -296,7 +301,11 @@ public class UDTProxyConfiguratorTest extends AbstractTestCase {
         System.arraycopy(content, 100, reference, 0, content.length - 100);
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
-        new S3DefaultDeleteFeature(tunneled).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        new S3DefaultDeleteFeature(tunneled).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         tunneled.close();
     }
 }

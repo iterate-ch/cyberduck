@@ -19,11 +19,11 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -102,7 +102,12 @@ public class SwiftThresholdUploadService implements Upload {
         final Object checksum = feature.upload(file, local, throttle, listener, status, callback);
         if(!segments.isEmpty()) {
             // Clean up any old segments
-            new SwiftMultipleDeleteFeature(session).delete(segments, new DisabledLoginCallback(), new DisabledProgressListener());
+            new SwiftMultipleDeleteFeature(session).delete(segments, new DisabledLoginCallback(), new Delete.Callback() {
+                @Override
+                public void delete(final Path file) {
+                    //
+                }
+            });
         }
         return checksum;
     }

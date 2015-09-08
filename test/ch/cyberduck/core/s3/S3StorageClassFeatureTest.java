@@ -24,11 +24,11 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Delete;
 
 import org.jets3t.service.model.S3Object;
 import org.junit.Test;
@@ -85,7 +85,11 @@ public class S3StorageClassFeatureTest extends AbstractTestCase {
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, feature.getClass(test));
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, session.list(container,
                 new DisabledListProgressListener()).get(test).attributes().getStorageClass());
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         session.close();
     }
 }

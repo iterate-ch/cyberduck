@@ -23,11 +23,11 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 
 import org.junit.Ignore;
@@ -62,7 +62,11 @@ public class SwiftDirectoryFeatureTest extends AbstractTestCase {
         for(Region region : session.getClient().getRegions()) {
             feature.mkdir(container, region.getRegionId());
             assertTrue(new SwiftFindFeature(session).find(container));
-            new SwiftDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new DisabledProgressListener());
+            new SwiftDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.Callback() {
+                @Override
+                public void delete(final Path file) {
+                }
+            });
             assertFalse(new SwiftFindFeature(session).find(container));
         }
         session.close();
@@ -95,7 +99,11 @@ public class SwiftDirectoryFeatureTest extends AbstractTestCase {
         assertTrue(put.get());
         assertTrue(new SwiftFindFeature(session).find(placeholder));
         assertTrue(new DefaultFindFeature(session).find(placeholder));
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new DisabledProgressListener());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         assertFalse(new SwiftFindFeature(session).find(placeholder));
         session.close();
     }

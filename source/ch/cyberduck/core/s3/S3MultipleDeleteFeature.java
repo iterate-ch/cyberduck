@@ -18,11 +18,9 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.collections.Partition;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -36,7 +34,6 @@ import org.jets3t.service.model.MultipartUpload;
 import org.jets3t.service.model.MultipleDeleteResult;
 import org.jets3t.service.model.container.ObjectKeyAndVersion;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -64,9 +61,9 @@ public class S3MultipleDeleteFeature implements Delete {
         this.multipartService = new S3MultipartService(session);
     }
 
-    public void delete(final List<Path> files, final LoginCallback prompt, final ProgressListener listener) throws BackgroundException {
+    public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
         if(files.size() == 1) {
-            new S3DefaultDeleteFeature(session).delete(files, prompt, listener);
+            new S3DefaultDeleteFeature(session).delete(files, prompt, callback);
         }
         else {
             final Map<Path, List<ObjectKeyAndVersion>> map = new HashMap<Path, List<ObjectKeyAndVersion>>();
@@ -74,8 +71,7 @@ public class S3MultipleDeleteFeature implements Delete {
                 if(containerService.isContainer(file)) {
                     continue;
                 }
-                listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
-                        file.getName()));
+                callback.delete(file);
                 final Path container = containerService.getContainer(file);
                 final List<ObjectKeyAndVersion> keys = new ArrayList<ObjectKeyAndVersion>();
                 // Always returning 204 even if the key does not exist. Does not return 404 for non-existing keys
@@ -95,8 +91,7 @@ public class S3MultipleDeleteFeature implements Delete {
             }
             for(Path file : files) {
                 if(containerService.isContainer(file)) {
-                    listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
-                            file.getName()));
+                    callback.delete(file);
                     // Finally delete bucket itself
                     try {
                         session.getClient().deleteBucket(containerService.getContainer(file).getName());

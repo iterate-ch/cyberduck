@@ -2,7 +2,6 @@ package ch.cyberduck.core.notification;
 
 import ch.cyberduck.core.AbstractTestCase;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -11,7 +10,6 @@ import org.junit.Test;
 public class NotificationCenterTest extends AbstractTestCase {
 
     @Test
-    @Ignore
     public void testNotify() throws Exception {
         final NotificationService n = new NotificationCenter();
         n.notify("title", "test");

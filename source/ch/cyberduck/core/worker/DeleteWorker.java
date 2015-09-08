@@ -71,7 +71,13 @@ public class DeleteWorker extends Worker<Boolean> {
             recursive.addAll(this.compile(session, file));
         }
         final Delete feature = session.getFeature(Delete.class);
-        feature.delete(recursive, prompt, listener);
+        feature.delete(recursive, prompt, new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+                listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
+                        file.getName()));
+            }
+        });
         return true;
     }
 

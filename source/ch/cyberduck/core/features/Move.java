@@ -19,7 +19,6 @@ package ch.cyberduck.core.features;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 
 /**
@@ -28,12 +27,12 @@ import ch.cyberduck.core.exception.BackgroundException;
 public interface Move {
 
     /**
+     * @param callback Progress
      * @param file     Origin
      * @param renamed  Target
      * @param exists   True if the target file exists
-     * @param listener Progress
      */
-    void move(Path file, Path renamed, boolean exists, ProgressListener listener) throws BackgroundException;
+    void move(Path file, Path renamed, boolean exists, Delete.Callback callback) throws BackgroundException;
 
     boolean isSupported(Path file);
 }

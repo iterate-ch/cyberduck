@@ -23,7 +23,6 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
@@ -31,6 +30,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProfileReaderFactory;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 
@@ -64,7 +64,11 @@ public class IRODSDeleteFeatureTest extends AbstractTestCase {
         session.getFeature(Directory.class).mkdir(test);
         assertTrue(session.getFeature(Find.class).find(test));
 
-        new IRODSDeleteFeature(session).delete(Arrays.asList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        new IRODSDeleteFeature(session).delete(Arrays.asList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         assertFalse(session.getFeature(Find.class).find(test));
         session.close();
     }
@@ -85,6 +89,10 @@ public class IRODSDeleteFeatureTest extends AbstractTestCase {
 
         assertFalse(session.getFeature(Find.class).find(test));
 
-        new IRODSDeleteFeature(session).delete(Arrays.asList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        new IRODSDeleteFeature(session).delete(Arrays.asList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
     }
 }

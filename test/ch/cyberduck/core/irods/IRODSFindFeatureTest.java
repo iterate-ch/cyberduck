@@ -23,7 +23,6 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
@@ -63,7 +62,12 @@ public class IRODSFindFeatureTest extends AbstractTestCase {
         session.getFeature(Directory.class).mkdir(test);
         assertTrue(new IRODSFindFeature(session).find(test));
 
-        session.getFeature(Delete.class).delete(Arrays.asList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        session.getFeature(Delete.class).delete(Arrays.asList(test), new DisabledLoginCallback(), new Delete.Callback() {
+                    @Override
+                    public void delete(final Path file) {
+                    }
+                }
+        );
         assertFalse(new IRODSFindFeature(session).find(test));
         session.close();
     }
