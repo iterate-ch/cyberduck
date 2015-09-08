@@ -19,6 +19,8 @@ package ch.cyberduck.binding.foundation;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.application.NSImage;
+
 import org.rococoa.ObjCClass;
 
 /**
@@ -48,4 +50,27 @@ public abstract class NSUserNotification extends NSObject {
     public abstract String getInformativeText();
 
     public abstract void setInformativeText(String informativeText);
+
+    /**
+     * Available in OS X v10.9 and later.
+     */
+    public abstract NSImage getContentImage();
+
+    /**
+     * Available in OS X v10.9 and later.
+     */
+    public abstract void setContentImage(NSImage contentImage);
+
+    /**
+     * Available in OS X v10.9 and later.
+     */
+    public abstract String getIdentifier();
+
+    /**
+     * This identifier is unique to a notification. A notification delivered with the same identifier
+     * as an existing notification will replace that notification, rather then display a new one.
+     * <p/>
+     * Available in OS X v10.9 and later.
+     */
+    public abstract void setIdentifier(String identifier);
 }

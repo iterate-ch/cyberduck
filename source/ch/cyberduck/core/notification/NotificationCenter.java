@@ -18,9 +18,12 @@ package ch.cyberduck.core.notification;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.foundation.NSUserNotification;
 import ch.cyberduck.binding.foundation.NSUserNotificationCenter;
 import ch.cyberduck.core.LocaleFactory;
+
+import org.rococoa.Foundation;
 
 /**
  * @version $Id$
@@ -45,12 +48,21 @@ public class NotificationCenter implements NotificationService {
         final NSUserNotification notification = NSUserNotification.notification();
         notification.setTitle(LocaleFactory.localizedString(title, "Status"));
         notification.setInformativeText(description);
+        if(notification.respondsToSelector(Foundation.selector("setIdentifier:"))) {
+            notification.setIdentifier(description);
+        }
         center.scheduleNotification(notification);
     }
 
     @Override
     public void notifyWithImage(final String title, final String description, final String image) {
-        // No support for custom image. Always use application icon
-        this.notify(title, description);
+        final NSUserNotification notification = NSUserNotification.notification();
+        notification.setTitle(LocaleFactory.localizedString(title, "Status"));
+        notification.setInformativeText(description);
+        if(notification.respondsToSelector(Foundation.selector("setIdentifier:"))) {
+            notification.setIdentifier(description);
+        }
+        notification.setContentImage(NSImage.imageNamed(image));
+        center.scheduleNotification(notification);
     }
 }
