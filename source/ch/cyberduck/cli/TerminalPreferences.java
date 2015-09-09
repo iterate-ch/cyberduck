@@ -40,8 +40,8 @@ import ch.cyberduck.core.local.WorkspaceIconService;
 import ch.cyberduck.core.local.WorkspaceSymlinkFeature;
 import ch.cyberduck.core.local.features.DefaultSymlinkFeature;
 import ch.cyberduck.core.preferences.ApplicationResourcesFinderFactory;
-import ch.cyberduck.core.preferences.ApplicationSupportDirectoryFinder;
 import ch.cyberduck.core.preferences.BundleApplicationResourcesFinder;
+import ch.cyberduck.core.preferences.SecurityApplicationGroupSupportDirectoryFinder;
 import ch.cyberduck.core.preferences.StaticApplicationResourcesFinder;
 import ch.cyberduck.core.preferences.UserHomeSupportDirectoryFinder;
 import ch.cyberduck.core.proxy.EnvironmentVariableProxyFinder;
@@ -77,7 +77,7 @@ public class TerminalPreferences extends MemoryPreferences {
         }
         switch(Factory.Platform.getDefault()) {
             case mac:
-                defaults.put("factory.supportdirectoryfinder.class", ApplicationSupportDirectoryFinder.class.getName());
+                defaults.put("factory.supportdirectoryfinder.class", SecurityApplicationGroupSupportDirectoryFinder.class.getName());
                 defaults.put("factory.applicationresourcesfinder.class", BundleApplicationResourcesFinder.class.getName());
                 defaults.put("factory.locale.class", BundleLocale.class.getName());
                 defaults.put("factory.editorfactory.class", FSEventWatchEditorFactory.class.getName());
