@@ -45,9 +45,9 @@ import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.aquaticprime.License;
 import ch.cyberduck.core.aquaticprime.LicenseFactory;
+import ch.cyberduck.core.bonjour.NotificationRendezvousListener;
 import ch.cyberduck.core.bonjour.Rendezvous;
 import ch.cyberduck.core.bonjour.RendezvousFactory;
-import ch.cyberduck.core.bonjour.RendezvousListener;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.importer.CrossFtpBookmarkCollection;
@@ -68,7 +68,6 @@ import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.serializer.HostDictionary;
 import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
-import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.UploadTransfer;
@@ -986,23 +985,7 @@ public class MainController extends BundleController implements NSApplication.De
             }
         });
         final Rendezvous bonjour = RendezvousFactory.instance();
-        bonjour.addListener(new RendezvousListener() {
-            @Override
-            public void serviceResolved(final String identifier, final Host host) {
-                invoke(new DefaultMainAction() {
-                    @Override
-                    public void run() {
-                        NotificationServiceFactory.get().notifyWithImage("Bonjour",
-                                bonjour.getDisplayedName(identifier), "rendezvous");
-                    }
-                });
-            }
-
-            @Override
-            public void serviceLost(final Host servicename) {
-                //
-            }
-        });
+        bonjour.addListener(new NotificationRendezvousListener(bonjour));
         if(preferences.getBoolean("defaulthandler.reminder")
                 && preferences.getInteger("uses") > 0) {
             if(!SchemeHandlerFactory.get().isDefaultHandler(
@@ -1473,4 +1456,5 @@ public class MainController extends BundleController implements NSApplication.De
     protected String getBundleName() {
         return "Main";
     }
+
 }
