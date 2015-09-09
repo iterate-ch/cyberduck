@@ -6,6 +6,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.UUID;
@@ -110,6 +111,7 @@ public class LocalTest extends AbstractTestCase {
     }
 
     @Test
+    @Ignore
     public void testRenameDirectory() throws Exception {
         final TestLocal l = new TestLocal(System.getProperty("java.io.tmpdir") + UUID.randomUUID().toString());
         final TestLocal n = new TestLocal(System.getProperty("java.io.tmpdir") + UUID.randomUUID().toString());
