@@ -24,6 +24,7 @@ import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.net.UnknownHostException;
@@ -277,6 +278,7 @@ public class S3SessionTest extends AbstractTestCase {
     }
 
     @Test(expected = LoginFailureException.class)
+    @Ignore
     public void testTemporaryAccessToken() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
                 new Local("profiles/S3 (Temporary Credentials).cyberduckprofile"));

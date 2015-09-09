@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import org.apache.commons.io.IOUtils;
 import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.security.AWSSessionCredentials;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -49,6 +50,7 @@ public class S3SessionCredentialsRetrieverTest extends AbstractTestCase {
     }
 
     @Test(expected = ConnectionTimeoutException.class)
+    @Ignore
     public void testGet() throws Exception {
         new S3SessionCredentialsRetriever(new DisabledTranscriptListener(),
                 "http://169.254.169.254/latest/meta-data/iam/security-credentials/s3access")
