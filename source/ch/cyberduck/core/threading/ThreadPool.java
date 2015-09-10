@@ -25,7 +25,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -34,21 +33,17 @@ import java.util.concurrent.TimeUnit;
 public class ThreadPool {
     private static final Logger log = Logger.getLogger(ThreadPool.class);
 
-    private final ThreadFactory threadFactory;
-
     private final ExecutorService pool;
 
     /**
      * With FIFO (first-in-first-out) ordered wait queue.
      */
     public ThreadPool() {
-        threadFactory = new NamedThreadFactory("background");
-        pool = Executors.newSingleThreadExecutor(threadFactory);
+        pool = Executors.newSingleThreadExecutor(new NamedThreadFactory("background"));
     }
 
     public ThreadPool(final Thread.UncaughtExceptionHandler handler) {
-        threadFactory = new NamedThreadFactory("background", handler);
-        pool = Executors.newSingleThreadExecutor(threadFactory);
+        pool = Executors.newCachedThreadPool(new NamedThreadFactory("background", handler));
     }
 
     /**
@@ -56,18 +51,20 @@ public class ThreadPool {
      *
      * @param size Number of concurrent threads
      */
-    public ThreadPool(int size) {
+    public ThreadPool(final int size) {
         this(size, "background");
     }
 
-    public ThreadPool(int size, final String prefix) {
-        threadFactory = new NamedThreadFactory(prefix);
-        pool = Executors.newFixedThreadPool(size, threadFactory);
+    public ThreadPool(final String prefix) {
+        pool = Executors.newCachedThreadPool(new NamedThreadFactory(prefix));
+    }
+
+    public ThreadPool(final int size, final String prefix) {
+        pool = Executors.newFixedThreadPool(size, new NamedThreadFactory(prefix));
     }
 
     public ThreadPool(final int size, final Thread.UncaughtExceptionHandler handler) {
-        threadFactory = new NamedThreadFactory("background", handler);
-        pool = Executors.newFixedThreadPool(size, threadFactory);
+        pool = Executors.newFixedThreadPool(size, new NamedThreadFactory("background", handler));
     }
 
     public void shutdown(boolean gracefully) {

@@ -48,8 +48,8 @@ public abstract class AbstractController implements Controller {
     }
 
     protected AbstractController(final Thread.UncaughtExceptionHandler handler) {
-        singleExecutor = new ThreadPool(handler);
-        concurrentExecutor = new ThreadPool(Integer.MAX_VALUE, handler);
+        singleExecutor = new ThreadPool(1, handler);
+        concurrentExecutor = new ThreadPool(handler);
     }
 
     /**

@@ -147,7 +147,7 @@ public class SwiftSession extends HttpSession<Client> {
                 }
                 cancel.verify();
             }
-            final ThreadPool pool = new ThreadPool(5, "accounts");
+            final ThreadPool pool = new ThreadPool("accounts");
             try {
                 pool.execute(new Runnable() {
                     @Override
