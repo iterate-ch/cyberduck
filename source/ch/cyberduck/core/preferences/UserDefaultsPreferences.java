@@ -220,6 +220,7 @@ public class UserDefaultsPreferences extends Preferences {
         defaults.put("application.receipt.path", bundle.bundlePath() + "/Contents/_MASReceipt");
         defaults.put("application.bookmarks.path", bundle.resourcePath() + "/Bookmarks");
         defaults.put("application.profiles.path", bundle.resourcePath() + "/Profiles");
+        defaults.put("application.resources.path", bundle.resourcePath());
 
         defaults.put("update.feed.release", "https://version.cyberduck.io/changelog.rss");
         defaults.put("update.feed.beta", "https://version.cyberduck.io/beta/changelog.rss");

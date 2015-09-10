@@ -230,6 +230,7 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             defaults.put("application.language.custom", false.ToString());
             defaults.put("application.profiles.path", "profiles"); // relative to .exe
             defaults.put("application.bookmarks.path", "bookmarks"); // relative to .exe
+            defaults.put("application.resources.path", ""); // relative to .exe
 
             defaults.put("update.feed.release", "https://version.cyberduck.io/changelog.wys");
             defaults.put("update.feed.beta", "https://version.cyberduck.io/beta/changelog.wys");
