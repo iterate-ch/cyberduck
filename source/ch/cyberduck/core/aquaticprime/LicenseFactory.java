@@ -167,7 +167,7 @@ public abstract class LicenseFactory extends Factory<License> {
 
         @Override
         public String getName() {
-            return LocaleFactory.localizedString("Not a valid donation key", "License");
+            return LocaleFactory.localizedString("Not a valid registration key", "License");
         }
 
         @Override
@@ -190,7 +190,7 @@ public abstract class LicenseFactory extends Factory<License> {
 
         @Override
         public String toString() {
-            return LocaleFactory.localizedString("Not a valid donation key", "License");
+            return LocaleFactory.localizedString("Not a valid registration key", "License");
         }
     };
 }
