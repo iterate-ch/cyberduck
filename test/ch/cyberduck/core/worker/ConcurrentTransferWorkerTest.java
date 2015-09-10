@@ -41,6 +41,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.transfer.download.AbstractDownloadFilter;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -335,6 +336,7 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
     }
 
     @Test
+    @Ignore
     public void testAwait() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "localhost", new Credentials("u", "p"));
         final Transfer t = new UploadTransfer(host,
