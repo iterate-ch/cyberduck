@@ -35,7 +35,7 @@
     <property name="nsis.home" value="${programFiles}/NSIS"/>
     <property name="winsdk.home" value="${programFiles}/Windows Kits/8.1/bin/x86"/>
     <property name="wybuild.home" value="${programFiles}/wyBuild"/>
-    <property name="ikvm.home" value="${lib}/ikvmbin-8.1.5561"/>
+    <property name="ikvm.home" value="${lib}/ikvm-8.1.5717.0"/>
     <property name="app.icon" value="cyberduck-application.ico"/>
 
     <property name="jvm.runtime.bin" value="${java.home}/bin"/>

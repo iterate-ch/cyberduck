@@ -55,10 +55,10 @@
       <HintPath>..\..\..\build\Cyberduck.Core.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.Core">
-      <HintPath>..\..\..\lib\ikvmbin-8.1.5561\bin\IKVM.OpenJDK.Core.dll</HintPath>
+      <HintPath>..\..\..\lib\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Core.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.Runtime">
-      <HintPath>..\..\..\lib\ikvmbin-8.1.5561\bin\IKVM.Runtime.dll</HintPath>
+      <HintPath>..\..\..\lib\ikvm-8.1.5717.0\bin\IKVM.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework, Version=2.5.3.9345, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -74,6 +74,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="core\local\SystemLocalTest.cs" />
     <Compile Include="core\ssl\HostnameVerifierTest.cs" />
     <Compile Include="ui\controller\KeychainTest.cs" />
     <Compile Include="ui\controller\PersistentFormHandlerTest.cs" />
