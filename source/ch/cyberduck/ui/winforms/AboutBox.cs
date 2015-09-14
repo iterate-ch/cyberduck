@@ -68,11 +68,11 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public virtual string Credits()
         {
-            return LocaleFactory.localizedString("NSHumanReadableCopyright", "InfoPlist");
+            return ResourcesBundle.Credits;
         }
         public virtual string Copyright()
         {
-            return ResourcesBundle.Credits;
+            return LocaleFactory.localizedString("NSHumanReadableCopyright", "InfoPlist");
         }
 
         public string AssemblyTitle
