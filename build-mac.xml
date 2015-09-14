@@ -52,7 +52,7 @@
     <!-- Designated requirement -->
     <property name="codesign.requirement.source" value="${setup}/app/codesign-requirement.txt"/>
     <property name="codesign.requirement" value="${setup}/app/codesign-requirement.bin"/>
-    <property name="codesign.options" value="--timestamp=none --force"/>
+    <property name="codesign.options" value="--force"/>
     <property name="codesign.arg"
               value="--entitlements ${app.codesign.entitlements} --requirements ${codesign.requirement}"/>
 
