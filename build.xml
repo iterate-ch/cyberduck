@@ -158,6 +158,7 @@
                extdirs=""
                destdir="${build.classes}">
             <classpath refid="build.classpath"/>
+            <compilerarg line="-profile compact3"/>
         </javac>
     </target>
 
