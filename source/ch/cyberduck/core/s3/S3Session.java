@@ -295,12 +295,14 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return null;
         }
         if(type == Versioning.class) {
-            // Only for AWS
-            if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
-                if(null == versioning) {
-                    versioning = new S3VersioningFeature(this);
+            if(preferences.getBoolean("s3.revisions.enable")) {
+                // Only for AWS
+                if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
+                    if(null == versioning) {
+                        versioning = new S3VersioningFeature(this);
+                    }
+                    return (T) versioning;
                 }
-                return (T) versioning;
             }
             return null;
         }
