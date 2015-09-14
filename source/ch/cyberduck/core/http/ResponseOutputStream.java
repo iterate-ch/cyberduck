@@ -21,13 +21,14 @@ package ch.cyberduck.core.http;
 
 import ch.cyberduck.core.exception.BackgroundException;
 
-import java.io.FilterOutputStream;
+import org.apache.commons.io.output.ProxyOutputStream;
+
 import java.io.OutputStream;
 
 /**
  * @version $Id$
  */
-public abstract class ResponseOutputStream<T> extends FilterOutputStream {
+public abstract class ResponseOutputStream<T> extends ProxyOutputStream {
 
     public ResponseOutputStream(OutputStream d) {
         super(d);
