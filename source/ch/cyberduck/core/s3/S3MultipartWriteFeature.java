@@ -102,7 +102,11 @@ public class S3MultipartWriteFeature implements Write {
 
     @Override
     public ResponseOutputStream<List<MultipartPart>> write(final Path file, final TransferStatus status) throws BackgroundException {
-        final S3Object object = new S3WriteFeature(session).getDetails(containerService.getKey(file), status);
+        final S3Object object = new S3WriteFeature(session)
+                .withStorage(storage)
+                .withEncryption(encryption)
+                .withMetadata(metadata)
+                .getDetails(containerService.getKey(file), status);
         // ID for the initiated multipart upload.
         final MultipartUpload multipart;
         try {
