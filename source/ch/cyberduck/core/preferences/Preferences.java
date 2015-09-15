@@ -677,6 +677,8 @@ public abstract class Preferences {
 
         defaults.put("s3.upload.expect-continue", String.valueOf(true));
 
+        defaults.put("s3.write.multipart", String.valueOf(false));
+
         /**
          * Transfer thresholds for qloudsonic.io
          */
