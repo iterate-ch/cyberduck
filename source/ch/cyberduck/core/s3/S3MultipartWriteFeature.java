@@ -53,8 +53,6 @@ public class S3MultipartWriteFeature implements Write {
 
     private Attributes attributes;
 
-    private S3MultipartService multipartService;
-
     private Preferences preferences
             = PreferencesFactory.get();
 
@@ -77,13 +75,12 @@ public class S3MultipartWriteFeature implements Write {
             = preferences.getMap("s3.metadata.default");
 
     public S3MultipartWriteFeature(final S3Session session) {
-        this(session, new S3MultipartService(session), new DefaultFindFeature(session), new DefaultAttributesFeature(session));
+        this(session, new DefaultFindFeature(session), new DefaultAttributesFeature(session));
     }
 
-    public S3MultipartWriteFeature(final S3Session session, final S3MultipartService multipartService,
+    public S3MultipartWriteFeature(final S3Session session,
                                    final Find finder, final Attributes attributes) {
         this.session = session;
-        this.multipartService = multipartService;
         this.finder = finder;
         this.attributes = attributes;
     }
