@@ -289,10 +289,15 @@ namespace Ch.Cyberduck.Ui.Winforms
             Commands.Validate();
         }
 
+        protected virtual Rectangle GetDefaultBounds()
+        {
+            return Bounds;
+        }
+
         private void persistentFormLoad(object sender, EventArgs e)
         {
             // Create PersistenceHandler and load values from it
-            PersistenceHandler = new PersistentFormHandler(GetType(), (int) FormWindowState.Normal, Bounds);
+            PersistenceHandler = new PersistentFormHandler(GetType(), (int) FormWindowState.Normal, GetDefaultBounds());
             //handlerReady = true;
 
             // Set size and location
