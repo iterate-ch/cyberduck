@@ -28,6 +28,7 @@ import org.jets3t.service.model.MultipartPart;
 import org.jets3t.service.model.MultipartUpload;
 import org.jets3t.service.model.S3Object;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -121,7 +122,8 @@ public class S3MultipartWriteFeature implements Write {
             throw new ServiceExceptionMappingService().map("Upload {0} failed", e, file);
         }
         final MultipartOutputStream stream = new MultipartOutputStream(multipart, file);
-        return new ResponseOutputStream<List<MultipartPart>>(stream) {
+        return new ResponseOutputStream<List<MultipartPart>>(new BufferedOutputStream(stream,
+                preferences.getInteger("s3.upload.multipart.partsize.minimum"))) {
             @Override
             public List<MultipartPart> getResponse() throws BackgroundException {
                 return stream.getCompleted();

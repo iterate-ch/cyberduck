@@ -666,6 +666,7 @@ public abstract class Preferences {
 
         defaults.put("s3.upload.multipart", String.valueOf(true));
         defaults.put("s3.upload.multipart.concurrency", String.valueOf(10));
+        defaults.put("s3.upload.multipart.partsize.minimum", String.valueOf(5L * 1024L * 1024L));
         /**
          * Threshold in bytes. Only use multipart uploads for files more than 100MB
          */
