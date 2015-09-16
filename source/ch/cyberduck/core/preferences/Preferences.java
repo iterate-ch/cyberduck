@@ -666,6 +666,7 @@ public abstract class Preferences {
 
         defaults.put("s3.upload.multipart", String.valueOf(true));
         defaults.put("s3.upload.multipart.concurrency", String.valueOf(10));
+        defaults.put("s3.upload.multipart.partsize.minimum", String.valueOf(5L * 1024L * 1024L));
         /**
          * Threshold in bytes. Only use multipart uploads for files more than 100MB
          */
@@ -675,6 +676,8 @@ public abstract class Preferences {
         defaults.put("s3.upload.multipart.size", String.valueOf(10L * 1024L * 1024L)); // 10MB
 
         defaults.put("s3.upload.expect-continue", String.valueOf(true));
+
+        defaults.put("s3.write.multipart", String.valueOf(false));
 
         /**
          * Transfer thresholds for qloudsonic.io

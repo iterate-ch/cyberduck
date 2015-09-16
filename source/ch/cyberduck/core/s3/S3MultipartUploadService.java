@@ -33,6 +33,7 @@ import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -85,6 +86,27 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
      */
     private Long partsize;
 
+    private Preferences preferences
+            = PreferencesFactory.get();
+
+    /**
+     * Storage class
+     */
+    private String storage
+            = preferences.getProperty("s3.storage.class");
+
+    /**
+     * Encryption algorithm
+     */
+    private String encryption
+            = preferences.getProperty("s3.encryption.algorithm");
+
+    /**
+     * Default metadata for new files
+     */
+    private Map<String, String> metadata
+            = preferences.getMap("s3.metadata.default");
+
     public S3MultipartUploadService(final S3Session session) {
         this(session, PreferencesFactory.get().getLong("s3.upload.multipart.size"),
                 PreferencesFactory.get().getInteger("s3.upload.multipart.concurrency"));
@@ -96,6 +118,21 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
         this.pool = new ThreadPool(concurrency, "multipart");
         this.multipartService = new S3MultipartService(session);
         this.partsize = partsize;
+    }
+
+    public S3MultipartUploadService withStorage(final String storage) {
+        this.storage = storage;
+        return this;
+    }
+
+    public S3MultipartUploadService withEncryption(final String encryption) {
+        this.encryption = encryption;
+        return this;
+    }
+
+    public S3MultipartUploadService withMetadata(final Map<String, String> metadata) {
+        this.metadata = metadata;
+        return this;
     }
 
     @Override
@@ -120,7 +157,11 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 if(log.isInfoEnabled()) {
                     log.info("No pending multipart upload found");
                 }
-                final S3Object object = new S3WriteFeature(session).getDetails(containerService.getKey(file), status);
+                final S3Object object = new S3WriteFeature(session)
+                        .withEncryption(encryption)
+                        .withMetadata(metadata)
+                        .withStorage(storage)
+                        .getDetails(containerService.getKey(file), status);
                 // ID for the initiated multipart upload.
                 multipart = session.getClient().multipartStartUpload(
                         containerService.getContainer(file).getName(), object);

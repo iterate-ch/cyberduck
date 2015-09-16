@@ -17,11 +17,11 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.jets3t.service.model.S3Object;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -49,6 +49,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final S3MultipartUploadService m = new S3MultipartUploadService(session, 5 * 1024L, 2);
+        m.withStorage(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString() + ".txt";
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
@@ -58,7 +59,6 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         final TransferStatus status = new TransferStatus();
         status.setLength((long) random.getBytes().length);
         status.setMime("text/plain");
-        PreferencesFactory.get().setProperty("s3.storage.class", "REDUCED_REDUNDANCY");
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertEquals((long) random.getBytes().length, status.getOffset(), 0L);
@@ -66,6 +66,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         assertTrue(new S3FindFeature(session).find(test));
         final PathAttributes attributes = new S3AttributesFeature(session).find(test);
         assertEquals(random.getBytes().length, attributes.getSize());
+        assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, new S3StorageClassFeature(session).getClass(test));
         final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertEquals("text/plain", metadata.get("Content-Type"));
