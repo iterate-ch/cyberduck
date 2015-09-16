@@ -29,5 +29,8 @@ import org.apache.http.entity.AbstractHttpEntity;
 public interface DelayedHttpEntityCallable<T> {
     T call(AbstractHttpEntity entity) throws BackgroundException;
 
+    /**
+     * @return -1 for chunked transfer
+     */
     long getContentLength();
 }
