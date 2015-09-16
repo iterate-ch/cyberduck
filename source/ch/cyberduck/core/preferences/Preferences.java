@@ -1023,11 +1023,8 @@ public abstract class Preferences {
     }
 
     protected void setLogging() {
-        java.util.logging.Logger rootLogger = LogManager.getLogManager().getLogger("");
-        for(Handler handler : rootLogger.getHandlers()) {
-            rootLogger.removeHandler(handler);
-        }
         // Call only once during initialization time of your application
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
 
         final URL configuration;
