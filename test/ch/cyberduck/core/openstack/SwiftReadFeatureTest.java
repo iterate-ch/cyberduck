@@ -24,12 +24,12 @@ import org.junit.Test;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
 import ch.iterate.openstack.swift.io.ContentLengthInputStream;
+import ch.iterate.openstack.swift.model.StorageObject;
 
 import static org.junit.Assert.*;
 
@@ -67,11 +67,11 @@ public class SwiftReadFeatureTest extends AbstractTestCase {
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature(session).touch(test);
         final byte[] content = RandomStringUtils.random(1000).getBytes();
-        final OutputStream out = new SwiftWriteFeature(session).write(test, new TransferStatus().length(content.length));
+        final ResponseOutputStream<StorageObject> out = new SwiftWriteFeature(session).write(test, new TransferStatus().length(content.length));
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         IOUtils.closeQuietly(out);
-        assertNotNull(((ResponseOutputStream<String>) out).getResponse());
+        assertNotNull(out.getResponse());
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);
@@ -80,7 +80,49 @@ public class SwiftReadFeatureTest extends AbstractTestCase {
         assertNotNull(in);
         assertTrue(in instanceof ContentLengthInputStream);
         assertEquals(content.length - 100, ((ContentLengthInputStream) in).getLength(), 0L);
-//        assertEquals(content.length, status.getLength(), 0L);
+        assertEquals(content.length, status.getLength(), 0L);
+        final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
+        new StreamCopier(status, status).transfer(in, buffer);
+        final byte[] reference = new byte[content.length - 100];
+        System.arraycopy(content, 100, reference, 0, content.length - 100);
+        assertArrayEquals(reference, buffer.toByteArray());
+        in.close();
+        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
+        session.close();
+    }
+
+    @Test
+    public void testReadRangeUnknownLength() throws Exception {
+        final SwiftSession session = new SwiftSession(
+                new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
+                        new Credentials(
+                                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+                        )));
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("DFW");
+        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        new DefaultTouchFeature(session).touch(test);
+        final byte[] content = RandomStringUtils.random(1000).getBytes();
+        final ResponseOutputStream<StorageObject> out = new SwiftWriteFeature(session).write(test, new TransferStatus().length(content.length));
+        assertNotNull(out);
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
+        IOUtils.closeQuietly(out);
+        assertNotNull(out.getResponse());
+        final TransferStatus status = new TransferStatus();
+        // Set to unknown length
+        status.setLength(-1L);
+        status.setAppend(true);
+        status.setOffset(100L);
+        final InputStream in = new SwiftReadFeature(session).read(test, status);
+        assertNotNull(in);
+        assertTrue(in instanceof ContentLengthInputStream);
+        assertEquals(content.length - 100, ((ContentLengthInputStream) in).getLength(), 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
         final byte[] reference = new byte[content.length - 100];

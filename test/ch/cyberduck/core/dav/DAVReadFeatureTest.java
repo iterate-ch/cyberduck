@@ -122,4 +122,46 @@ public class DAVReadFeatureTest extends AbstractTestCase {
         });
         session.close();
     }
+
+    @Test
+    public void testReadRangeUnknownLength() throws Exception {
+        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
+                properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
+        ));
+        host.setDefaultPath("/dav/basic");
+        final DAVSession session = new DAVSession(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        new DefaultTouchFeature(session).touch(test);
+
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final byte[] content = RandomStringUtils.random(1000).getBytes();
+        final OutputStream out = local.getOutputStream(false);
+        assertNotNull(out);
+        IOUtils.write(content, out);
+        IOUtils.closeQuietly(out);
+        new DAVUploadFeature(new DAVWriteFeature(session)).upload(
+                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                new TransferStatus().length(content.length),
+                new DisabledConnectionCallback());
+        final TransferStatus status = new TransferStatus();
+        status.setLength(-1L);
+        status.setAppend(true);
+        status.setOffset(100L);
+        final InputStream in = new DAVReadFeature(session).read(test, status);
+        assertNotNull(in);
+        final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
+        new StreamCopier(status, status).transfer(in, buffer);
+        final byte[] reference = new byte[content.length - 100];
+        System.arraycopy(content, 100, reference, 0, content.length - 100);
+        assertArrayEquals(reference, buffer.toByteArray());
+        in.close();
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
+        session.close();
+    }
 }

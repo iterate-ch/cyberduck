@@ -51,18 +51,22 @@ public class DAVReadFeature implements Read {
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
         final List<Header> headers = new ArrayList<Header>();
         if(status.isAppend()) {
-            final String range = String.format("bytes=%d-%d",
-                    status.getOffset(), status.getOffset() + status.getLength());
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Add range header %s for file %s", range, file));
+            final String header;
+            if(status.getLength() > 0) {
+                header = String.format("bytes=%d-%d", status.getOffset(), status.getOffset() + status.getLength());
             }
-            headers.add(new BasicHeader(HttpHeaders.RANGE, range));
+            else {
+                header = String.format("bytes=%d-", status.getOffset());
+            }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Add range header %s for file %s", header, file));
+            }
+            headers.add(new BasicHeader(HttpHeaders.RANGE, header));
             // Disable compression
             headers.add(new BasicHeader(HttpHeaders.ACCEPT_ENCODING, "identity"));
         }
         try {
-            return session.getClient().get(
-                    new DAVPathEncoder().encode(file), headers);
+            return session.getClient().get(new DAVPathEncoder().encode(file), headers);
         }
         catch(SardineException e) {
             throw new DAVExceptionMappingService().map("Download {0} failed", e, file);
