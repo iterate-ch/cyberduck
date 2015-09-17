@@ -1023,11 +1023,8 @@ public abstract class Preferences {
     }
 
     protected void setLogging() {
-        java.util.logging.Logger rootLogger = LogManager.getLogManager().getLogger("");
-        for(Handler handler : rootLogger.getHandlers()) {
-            rootLogger.removeHandler(handler);
-        }
         // Call only once during initialization time of your application
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
 
         final URL configuration;
@@ -1041,8 +1038,11 @@ public abstract class Preferences {
         if(null != configuration) {
             DOMConfigurator.configure(configuration);
         }
-        final Logger root = Logger.getRootLogger();
-        root.setLevel(Level.toLevel(this.getProperty("logging")));
+        if(StringUtils.isNotBlank(this.getProperty("logging"))) {
+            // Allow to override default logging level
+            final Logger root = Logger.getRootLogger();
+            root.setLevel(Level.toLevel(this.getProperty("logging")));
+        }
     }
 
     /**
