@@ -44,7 +44,7 @@ init() {
 		cp -R $base_language/$n $language/$n
 	}
 	done
-	for stringsfile in `ls $base_language | grep .strings | grep -v ~.strings`; do
+	for stringsfile in `ls $base_language | grep .strings`; do
 	{
 		echo "Copying $stringsfile"
 		cp -R $base_language/$stringsfile $language/$stringsfile
@@ -152,7 +152,7 @@ tx_push() {
     echo "*** Updating all localizations...";
     if [ "$stringsfile" = "all" ] ; then
         echo "*** Updating all .strings...";
-        for stringsfile in `ls en.lproj | grep .strings | grep -v ~.strings`; do
+        for stringsfile in `ls en.lproj | grep .strings`; do
             strings=`basename $stringsfile .strings`
             echo "*** Updating $strings.strings...";
             $tx --traceback set --auto-local -r cyberduck.$strings '<lang>'.lproj/$strings.strings --source-language en --type=STRINGS --execute
@@ -171,7 +171,7 @@ tx_pull() {
     echo "*** Updating all localizations...";
     if [ "$stringsfile" = "all" ] ; then
         echo "*** Updating all .strings...";
-        for stringsfile in `ls en.lproj | grep .strings | grep -v ~.strings`; do
+        for stringsfile in `ls en.lproj | grep .strings`; do
             strings=`basename $stringsfile .strings`
             echo "*** Updating $strings.strings...";
             $tx --traceback pull --source --resource=cyberduck.$strings --force
