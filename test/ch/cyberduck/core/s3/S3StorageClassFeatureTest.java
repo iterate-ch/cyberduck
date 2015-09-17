@@ -48,7 +48,7 @@ public class S3StorageClassFeatureTest extends AbstractTestCase {
 
     @Test
     public void testGetClasses() throws Exception {
-        assertEquals(Arrays.asList(S3Object.STORAGE_CLASS_STANDARD, S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, S3Object.STORAGE_CLASS_GLACIER),
+        assertEquals(Arrays.asList(S3Object.STORAGE_CLASS_STANDARD, "STANDARD_IA", S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, S3Object.STORAGE_CLASS_GLACIER),
                 new S3StorageClassFeature(null).getClasses());
     }
 
@@ -81,6 +81,8 @@ public class S3StorageClassFeatureTest extends AbstractTestCase {
         new S3TouchFeature(session).touch(test);
         final S3StorageClassFeature feature = new S3StorageClassFeature(session);
         assertEquals(S3Object.STORAGE_CLASS_STANDARD, feature.getClass(test));
+        feature.setClass(test, "STANDARD_IA");
+        assertEquals("STANDARD_IA", feature.getClass(test));
         feature.setClass(test, S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, feature.getClass(test));
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, session.list(container,
