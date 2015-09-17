@@ -79,8 +79,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.logging.Handler;
-import java.util.logging.LogManager;
 
 /**
  * Holding all application preferences. Default values get overwritten when loading
@@ -1023,6 +1021,8 @@ public abstract class Preferences {
     }
 
     protected void setLogging() {
+        // Enable all logging levels to pass through bridge
+        java.util.logging.Logger.getLogger("").setLevel(java.util.logging.Level.ALL);
         // Call only once during initialization time of your application
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
