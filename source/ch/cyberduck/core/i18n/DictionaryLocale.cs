@@ -67,16 +67,15 @@ namespace Ch.Cyberduck.Core.I18n
             Log.debug("Caching bundle " + bundle);
             string language = PreferencesFactory.get().getProperty("application.language");
             Assembly asm = Utils.Me();
-            // the dots apparently come from the relative path in the msbuild file
-            Stream stream =
-                asm.GetManifestResourceStream(string.Format("Core..........{0}.lproj.{1}.strings", language, bundle));
-            if (null == stream)
+            string[] resourceNames =
+                Assembly.GetExecutingAssembly().GetManifestResourceNames();
+            Stream stream = null;
+            for(string resourceName in resourceNames)
             {
-                stream =
-                    asm.GetManifestResourceStream(
-                        string.Format(
-                            "Core..........lib.Sparkle.framework.Versions.A.Resources.{0}.lproj.Sparkle.strings",
-                            language));
+                if(resourceName.Contains(string.Format("{0}.lproj.{1}.strings", language, bundle))) {
+                    stream = asm.GetManifestResourceStream(resourceName);
+                    break;
+                }
             }
             if (null != stream)
             {
@@ -99,7 +98,7 @@ namespace Ch.Cyberduck.Core.I18n
             }
             else
             {
-                Log.error(String.Format("Bundle {0} not found", bundle));
+                Log.error(String.Format("Bundle {0} for language {1} not found", bundle, language));
             }
         }
     }
