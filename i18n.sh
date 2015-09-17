@@ -17,6 +17,7 @@
 #!/bin/bash
 
 nibtool="ibtool"
+convertstrings="ruby convertstrings.rb"
 base_language="en.lproj"
 arch="x86_64"
 tx="/usr/local/bin/tx"
@@ -100,6 +101,18 @@ export_strings() {
 	$nibtool --export-strings-file $language/$nib.strings $language/$nibfile
 }
 
+export_strings_legacy() {
+	for lproj in `ls . | grep lproj`; do
+		language=$lproj;
+		echo "*** Updating $language Localization...";
+		for nibfile in `ls $language | grep $extension`; do
+			nib=`basename $nibfile $extension`
+			echo "Update $language/$nib.strings.1 from $base_language/$nib.strings"
+			$convertstrings $base_language/$nib.strings $language/$nib.strings > $language/$nib.strings.1
+		done;
+	done;
+}
+
 update() {
 	if [ "$language" = "all" ] ; then
 	{
@@ -111,7 +124,7 @@ update() {
 				echo "*** Updating $language Localization...";
 				if [ "$nibfile" = "all" ] ; then
 					echo "*** Updating all NIBs...";
-					for nibfile in `ls $language | grep $extension | grep -v ~$extension`; do
+					for nibfile in `ls $language | grep $extension`; do
 						nib=`basename $nibfile $extension`
 						$nibtool --export-strings-file $base_language/$nib.strings $base_language/$nibfile
 						nib;
@@ -131,7 +144,7 @@ update() {
 		echo "*** Updating $language Localization...";
 		if [ "$nibfile" = "all" ] ; then
 			echo "*** Updating all NIBs...";
-			for nibfile in `ls $language | grep $extension | grep -v ~$extension`; do
+			for nibfile in `ls $language | grep $extension`; do
 				nib=`basename $nibfile $extension`;
                 $nibtool --export-strings-file $base_language/$nib.strings $base_language/$nibfile
 				nib;
@@ -208,6 +221,11 @@ while [ "$1" != "" ] # When there are arguments...
 				stringsfile=$1;
 				echo "Using strings:$stringsfile";
 				shift;
+			;;
+			--convertstrings)
+				export_strings_legacy;
+				exit 0;
+				echo "*** DONE. ***";
 			;;
 			-f | --force)
 				force=true;

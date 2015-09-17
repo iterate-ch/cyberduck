@@ -72,6 +72,10 @@ namespace Ch.Cyberduck.Core.I18n
             Stream stream = null;
             for(string resourceName in resourceNames)
             {
+                if(resourceName.Contains(string.Format("{0}.lproj.{1}.strings.1", language, bundle))) {
+                    stream = asm.GetManifestResourceStream(resourceName);
+                    break;
+                }
                 if(resourceName.Contains(string.Format("{0}.lproj.{1}.strings", language, bundle))) {
                     stream = asm.GetManifestResourceStream(resourceName);
                     break;
