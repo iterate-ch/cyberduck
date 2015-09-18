@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2015 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -11,40 +11,38 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-// 
+//  
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using ch.cyberduck.core;
-using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.local;
 using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Core.Bonjour;
+using Ch.Cyberduck.Core.Diagnostics;
 using Ch.Cyberduck.Core.Editor;
 using Ch.Cyberduck.Core.I18n;
 using Ch.Cyberduck.Core.Local;
-using Ch.Cyberduck.Core.Proxy;
-using Ch.Cyberduck.Core.Diagnostics;
 using Ch.Cyberduck.Core.Preferences;
+using Ch.Cyberduck.Core.Proxy;
 using Ch.Cyberduck.Properties;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Core.Local;
 using Ch.Cyberduck.Ui.Growl;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Threading;
-using java.util;
 using java.security;
+using java.util;
 using org.apache.log4j;
-using Application = System.Windows.Forms.Application;
-using Path = System.IO.Path;
-using Rendezvous = Ch.Cyberduck.Core.Bonjour.Rendezvous;
 using sun.security.mscapi;
+using Application = System.Windows.Forms.Application;
 
 namespace Ch.Cyberduck.Ui.Core.Preferences
 {
@@ -217,7 +215,6 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
         protected override void setLogging()
         {
             defaults.put("logging.config", "log4j-windows.xml");
-
             base.setLogging();
         }
 
@@ -278,8 +275,6 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             defaults.put("bookmark.import.cloudberry.azure.location",
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                     "CloudBerry Explorer for Azure Blob Storage", "settings.list"));
-
-            defaults.put("logging.config", "log4j-windows.xml");
 
             base.setDefaults();
 
@@ -344,6 +339,27 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             Security.addProvider(new SunMSCAPI());
             defaults.put("connection.ssl.keystore.type", "Windows-MY");
             defaults.put("connection.ssl.keystore.provider", "SunMSCAPI");
+
+            // logging stuff
+            Logger root = Logger.getRootLogger();
+            var fileName = Path.Combine(this.getProperty("application.support.path"),
+                this.getProperty("application.name").ToLower().Replace(" ", "") + ".log");
+            RollingFileAppender appender = new RollingFileAppender(new PatternLayout(@"%d [%t] %-5p %c - %m%n"),
+                fileName, true);
+            appender.setMaxFileSize("1MB");
+            appender.setMaxBackupIndex(0);
+            root.addAppender(appender);
+            if (Debugger.IsAttached)
+            {
+                root.setLevel(Level.DEBUG);
+            }
+            else
+            {
+                if (Cyberduck.Core.Utils.IsNotBlank(this.getProperty("logging")))
+                {
+                    root.setLevel(Level.toLevel(this.getProperty("logging"), Level.INFO));
+                }
+            }
         }
 
         protected override void setFactories()
