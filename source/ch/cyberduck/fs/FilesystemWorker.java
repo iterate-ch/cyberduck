@@ -17,10 +17,13 @@ package ch.cyberduck.fs;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Home;
-import ch.cyberduck.core.worker.Worker;
+import ch.cyberduck.core.worker.MountWorker;
 
 import org.apache.log4j.Logger;
 
@@ -29,24 +32,25 @@ import java.util.Objects;
 /**
  * @version $Id$
  */
-public class FilesystemWorker extends Worker<Boolean> {
+public class FilesystemWorker extends MountWorker {
     private static final Logger log = Logger.getLogger(FilesystemWorker.class);
 
     private final Filesystem fs;
 
     public FilesystemWorker(final Filesystem fs) {
+        this(fs, PathCache.empty());
+    }
+
+    public FilesystemWorker(final Filesystem fs, final Cache<Path> cache) {
+        super(fs.getHost(), cache, new DisabledListProgressListener());
         this.fs = fs;
     }
 
     @Override
-    public Boolean run(final Session<?> session) throws BackgroundException {
-        fs.mount(session.getFeature(Home.class).find());
-        return true;
-    }
-
-    @Override
-    public Boolean initialize() {
-        return false;
+    public Path run(final Session<?> session) throws BackgroundException {
+        final Path workdir = super.run(session);
+        fs.mount(workdir);
+        return workdir;
     }
 
     @Override
@@ -56,6 +60,9 @@ public class FilesystemWorker extends Worker<Boolean> {
         }
         catch(BackgroundException e) {
             log.warn(e.getMessage());
+        }
+        finally {
+            super.cancel();
         }
     }
 
