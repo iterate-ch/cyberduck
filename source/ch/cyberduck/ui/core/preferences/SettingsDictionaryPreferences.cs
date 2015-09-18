@@ -339,8 +339,11 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             Security.addProvider(new SunMSCAPI());
             defaults.put("connection.ssl.keystore.type", "Windows-MY");
             defaults.put("connection.ssl.keystore.provider", "SunMSCAPI");
+        }
 
-            // logging stuff
+        protected override void post()
+        {
+            base.post();
             Logger root = Logger.getRootLogger();
             var fileName = Path.Combine(this.getProperty("application.support.path"),
                 this.getProperty("application.name").ToLower().Replace(" ", "") + ".log");
