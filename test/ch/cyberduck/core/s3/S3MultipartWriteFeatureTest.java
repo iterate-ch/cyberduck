@@ -44,6 +44,7 @@ public class S3MultipartWriteFeatureTest extends AbstractTestCase {
         final S3MultipartWriteFeature feature = new S3MultipartWriteFeature(session);
         final Path container = new Path("test.eu-central-1.cyberduck.ch", EnumSet.of(Path.Type.volume));
         final TransferStatus status = new TransferStatus();
+        status.setLength(-1L);
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final ResponseOutputStream<List<MultipartPart>> out = feature.write(file, status);
         final byte[] content = RandomStringUtils.random(6 * 1024 * 1024).getBytes("UTF-8");
@@ -81,6 +82,7 @@ public class S3MultipartWriteFeatureTest extends AbstractTestCase {
         final S3MultipartWriteFeature feature = new S3MultipartWriteFeature(session);
         final Path container = new Path("test.eu-central-1.cyberduck.ch", EnumSet.of(Path.Type.volume));
         final TransferStatus status = new TransferStatus();
+        status.setLength(-1L);
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final ResponseOutputStream<List<MultipartPart>> out = feature.write(file, status);
         final byte[] content = RandomStringUtils.random(5 * 1024 * 1024).getBytes("UTF-8");
