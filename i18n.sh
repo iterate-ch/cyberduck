@@ -17,6 +17,7 @@
 #!/bin/bash
 
 nibtool="ibtool"
+convertstrings="ruby convertstrings.rb"
 base_language="en.lproj"
 arch="x86_64"
 tx="/usr/local/bin/tx"
@@ -44,7 +45,7 @@ init() {
 		cp -R $base_language/$n $language/$n
 	}
 	done
-	for stringsfile in `ls $base_language | grep .strings | grep -v ~.strings`; do
+	for stringsfile in `ls $base_language | grep .strings`; do
 	{
 		echo "Copying $stringsfile"
 		cp -R $base_language/$stringsfile $language/$stringsfile
@@ -100,6 +101,18 @@ export_strings() {
 	$nibtool --export-strings-file $language/$nib.strings $language/$nibfile
 }
 
+export_strings_legacy() {
+	for lproj in `ls . | grep lproj`; do
+		language=$lproj;
+		echo "*** Updating $language Localization...";
+		for nibfile in `ls $language | grep $extension`; do
+			nib=`basename $nibfile $extension`
+			echo "Update $language/$nib.strings.1 from $base_language/$nib.strings"
+			$convertstrings $base_language/$nib.strings $language/$nib.strings > $language/$nib.strings.1
+		done;
+	done;
+}
+
 update() {
 	if [ "$language" = "all" ] ; then
 	{
@@ -111,7 +124,7 @@ update() {
 				echo "*** Updating $language Localization...";
 				if [ "$nibfile" = "all" ] ; then
 					echo "*** Updating all NIBs...";
-					for nibfile in `ls $language | grep $extension | grep -v ~$extension`; do
+					for nibfile in `ls $language | grep $extension`; do
 						nib=`basename $nibfile $extension`
 						$nibtool --export-strings-file $base_language/$nib.strings $base_language/$nibfile
 						nib;
@@ -131,7 +144,7 @@ update() {
 		echo "*** Updating $language Localization...";
 		if [ "$nibfile" = "all" ] ; then
 			echo "*** Updating all NIBs...";
-			for nibfile in `ls $language | grep $extension | grep -v ~$extension`; do
+			for nibfile in `ls $language | grep $extension`; do
 				nib=`basename $nibfile $extension`;
                 $nibtool --export-strings-file $base_language/$nib.strings $base_language/$nibfile
 				nib;
@@ -152,7 +165,7 @@ tx_push() {
     echo "*** Updating all localizations...";
     if [ "$stringsfile" = "all" ] ; then
         echo "*** Updating all .strings...";
-        for stringsfile in `ls en.lproj | grep .strings | grep -v ~.strings`; do
+        for stringsfile in `ls en.lproj | grep .strings`; do
             strings=`basename $stringsfile .strings`
             echo "*** Updating $strings.strings...";
             $tx --traceback set --auto-local -r cyberduck.$strings '<lang>'.lproj/$strings.strings --source-language en --type=STRINGS --execute
@@ -171,7 +184,7 @@ tx_pull() {
     echo "*** Updating all localizations...";
     if [ "$stringsfile" = "all" ] ; then
         echo "*** Updating all .strings...";
-        for stringsfile in `ls en.lproj | grep .strings | grep -v ~.strings`; do
+        for stringsfile in `ls en.lproj | grep .strings`; do
             strings=`basename $stringsfile .strings`
             echo "*** Updating $strings.strings...";
             $tx --traceback pull --source --resource=cyberduck.$strings --force
@@ -208,6 +221,11 @@ while [ "$1" != "" ] # When there are arguments...
 				stringsfile=$1;
 				echo "Using strings:$stringsfile";
 				shift;
+			;;
+			--convertstrings)
+				export_strings_legacy;
+				exit 0;
+				echo "*** DONE. ***";
 			;;
 			-f | --force)
 				force=true;
