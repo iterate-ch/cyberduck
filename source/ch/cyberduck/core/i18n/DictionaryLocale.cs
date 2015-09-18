@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2015 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -11,9 +11,9 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-// 
+//  
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System;
@@ -67,17 +67,17 @@ namespace Ch.Cyberduck.Core.I18n
             Log.debug("Caching bundle " + bundle);
             string language = PreferencesFactory.get().getProperty("application.language");
             Assembly asm = Utils.Me();
-            string[] resourceNames =
-                Assembly.GetExecutingAssembly().GetManifestResourceNames();
+            string[] resourceNames = Assembly.GetExecutingAssembly().GetManifestResourceNames();
             Stream stream = null;
-            for(string resourceName in resourceNames)
+            foreach (string resourceName in resourceNames)
             {
-                if(resourceName.Contains(string.Format("{0}.lproj.{1}.strings.1", language, bundle))) {
-                    stream = asm.GetManifestResourceStream(resourceName);
-                    break;
-                }
-                if(resourceName.Contains(string.Format("{0}.lproj.{1}.strings", language, bundle))) {
-                    stream = asm.GetManifestResourceStream(resourceName);
+                if (resourceName.Contains(string.Format("{0}.lproj.{1}.strings", language, bundle)))
+                {
+                    stream = asm.GetManifestResourceStream(resourceName + ".1");
+                    if (stream == null)
+                    {
+                        stream = asm.GetManifestResourceStream(resourceName);
+                    }
                     break;
                 }
             }
