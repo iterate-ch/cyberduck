@@ -1041,7 +1041,7 @@ public abstract class Preferences {
         if(StringUtils.isNotBlank(this.getProperty("logging"))) {
             // Allow to override default logging level
             final Logger root = Logger.getRootLogger();
-            root.setLevel(Level.toLevel(this.getProperty("logging")));
+            root.setLevel(Level.toLevel(this.getProperty("logging"), Level.INFO));
         }
     }
 

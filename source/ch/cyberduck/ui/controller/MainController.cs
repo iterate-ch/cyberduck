@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2015 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -11,9 +11,9 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-// 
+//  
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System;
@@ -27,8 +27,8 @@ using System.Threading;
 using System.Windows.Forms;
 using Windows7.DesktopIntegration;
 using ch.cyberduck.core;
-using ch.cyberduck.core.bonjour;
 using ch.cyberduck.core.aquaticprime;
+using ch.cyberduck.core.bonjour;
 using ch.cyberduck.core.importer;
 using ch.cyberduck.core.notification;
 using ch.cyberduck.core.preferences;
@@ -40,9 +40,7 @@ using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using java.util;
 using Microsoft.VisualBasic.ApplicationServices;
 using org.apache.log4j;
-using org.apache.log4j.xml;
 using ArrayList = System.Collections.ArrayList;
-using Object = java.lang.Object;
 using Path = System.IO.Path;
 using UnhandledExceptionEventArgs = System.UnhandledExceptionEventArgs;
 
@@ -65,7 +63,8 @@ namespace Ch.Cyberduck.Ui.Controller
         /// </summary>
         private readonly AbstractHostCollection _sessions =
             new FolderBookmarkCollection(
-                LocalFactory.get(PreferencesFactory.get().getProperty("application.support.path"), "Sessions"), "session");
+                LocalFactory.get(PreferencesFactory.get().getProperty("application.support.path"), "Sessions"),
+                "session");
 
         /// <summary>
         /// Helper controller to ensure STA when running threads while launching
@@ -91,9 +90,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 // Add the event handler for handling non-UI thread exceptions to the event. 
                 AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionHandler;
             }
-
-            ConfigureLogging();
-
             //make sure that a language change takes effect after a restart only
             StartupLanguage = PreferencesFactory.get().getProperty("application.language");
         }
@@ -187,29 +183,6 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             CrashReporter.Instance.Write(e.Exception);
             Environment.Exit(1);
-        }
-
-        private static void ConfigureLogging()
-        {
-            // we do not save the log file in the roaming profile
-            var fileName = Path.Combine(PreferencesFactory.get().getProperty("application.support.path"),
-                "cyberduck.log");
-
-            DOMConfigurator.configure(
-                Object.instancehelper_getClass(new DOMConfigurator())
-                    .getClassLoader()
-                    .getResource(PreferencesFactory.get().getProperty("logging.config")));
-            Logger root = Logger.getRootLogger();
-            root.removeAllAppenders();
-
-            RollingFileAppender appender = new RollingFileAppender(new PatternLayout(@"%d [%t] %-5p %c - %m%n"),
-                fileName, true);
-            appender.setMaxFileSize("1MB");
-            appender.setMaxBackupIndex(0);
-            root.addAppender(appender);
-            root.setLevel(Debugger.IsAttached
-                ? Level.DEBUG
-                : Level.toLevel(PreferencesFactory.get().getProperty("logging")));
         }
 
         /// <summary>
