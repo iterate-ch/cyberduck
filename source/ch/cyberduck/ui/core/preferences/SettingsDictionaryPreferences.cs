@@ -353,13 +353,6 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             {
                 root.setLevel(Level.DEBUG);
             }
-            else
-            {
-                if (Cyberduck.Core.Utils.IsNotBlank(this.getProperty("logging")))
-                {
-                    root.setLevel(Level.toLevel(this.getProperty("logging"), Level.INFO));
-                }
-            }
         }
 
         protected override void setFactories()
