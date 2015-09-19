@@ -1,45 +1,6 @@
-A command line interface (CLI) version is now available from https://duck.sh/ for Windows, Linux & Mac.
+Cyberduck for mounting volumes in the file explorer is now available from https://mountainduck.io/ for Mac & Windows. A command line interface (CLI) version is now available from https://duck.sh/ for Windows, Linux & Mac.
+
 
 4.8 [https://trac.cyberduck.io/milestone/4.8]
 - [Feature] Support for authentication with Keystone v3 API (OpenStack Swift) (#8813)
 - [Bugfix] Certificate chain displayed not complete (#8885)
-
-4.7.2 [https://trac.cyberduck.io/milestone/4.7.2]
-- [Feature] Delete incomplete multipart uploads when deleting file (S3) (#8920)
-- [Bugfix] Copying HTTP URL does not work (#8909)
-- [Bugfix] Interoperability with Oracle Web Center (#8953)
-
-4.7.1 [https://trac.cyberduck.io/milestone/4.7.1]
-- [Feature] Invalidate multiple files using wildcards (CloudFront)
-- [Bugfix] Interoperability with Ceph S3 (#8779)
-- [Bugfix] Interoperability with Oracle Service Cloud (#8902)
-- [Bugfix] Second level cache not invalidated when reloading browser (#8774)
-- [Bugfix] Subfolder appearing inside folder of same name (S3) (#8769)
-- [Bugfix] Directory removal fails silently (S3) (#8803)
-- [Bugfix] Resuming upload with nested folders (S3)
-- [Bugfix] Routing failure when connecting to IPv6 address because of wrong default network interface (#8802)
-- [Bugfix] MD5 checksum failure for downloads (WebDAV) (#8798)
-- [Bugfix] MD5 checksum failure for large object downloads (OpenStack Swift) (#8861)
-- [Bugfix] Segmented upload marked as incomplete (OpenStack Swift) (#8859)
-- [Bugfix] Failure cancelling queued transfer (#8844)
-- [Bugfix] Support retrieving files from buckets from Requester Pays Buckets (S3) (#8893)
-- [Bugfix] Missing C++ Redistributable Package library installation (#8162)
-
-4.7 [https://trac.cyberduck.io/milestone/4.7]
-- [Feature] Support to access iRODS (Integrated Rule-Oriented Data System)
-- [Feature] Support multiple connections per transfer (#1135)
-- [Feature] Connecting with temporary access credentials from EC2 (S3) (#8610)
-- [Feature] Verify checksum for downloads if available (WebDAV, S3, OpenStack Swift)
-- [Feature] Using multipart when copying large files (S3) (#8616)
-- [Feature] HTTP proxy tunneling using CONNECT method (#76)
-- [Bugfix] Login with combination of public key authentication one-time passcode (SFTP) (#8597)
-- [Bugfix] Enable multipart uploads for all providers (S3) (#8677)
-- [Bugfix] Incomplete download of files with Content-Encoding header (OpenStack Swift) (#8656)
-- [Bugfix] Regular connection failures (OpenStack Swift) (#8634)
-- [Bugfix] Handshake failure because of missing strong ciphers to negotiate for TLS (#8703)
-- [Bugfix] Skip DNS resolution when connecting through proxy (#8733)
-- [Bugfix] Browser reload does not work (#8651)
-- [Bugfix] Disable sending of keep-alive packets for interoperability (SFTP) (#8618)
-- [Bugfix] Repeating connection failures because of server closing control connection (FTP) (#8532)
-- [Bugfix] Filezilla bookmark importer fails to read passwords (#8694)
-- [Bugfix] Unable to enter IPv6 address as hostname (#8696)
