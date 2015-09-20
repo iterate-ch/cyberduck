@@ -43,14 +43,21 @@ public class SwiftTouchFeature implements Touch {
     private MimeTypeService mapping
             = new MappingMimeTypeService();
 
+    private SwiftRegionService regionService;
+
     public SwiftTouchFeature(final SwiftSession session) {
+        this(session, new SwiftRegionService(session));
+    }
+
+    public SwiftTouchFeature(final SwiftSession session, final SwiftRegionService regionService) {
         this.session = session;
+        this.regionService = regionService;
     }
 
     @Override
     public void touch(final Path file) throws BackgroundException {
         try {
-            session.getClient().storeObject(new SwiftRegionService(session).lookup(file),
+            session.getClient().storeObject(regionService.lookup(file),
                     containerService.getContainer(file).getName(),
                     new ByteArrayInputStream(new byte[]{}), mapping.getMime(file.getName()), containerService.getKey(file),
                     Collections.<String, String>emptyMap());

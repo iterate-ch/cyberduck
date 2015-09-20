@@ -65,7 +65,7 @@ public class SwiftMultipleDeleteFeature implements Delete {
     @Override
     public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
         if(files.size() == 1) {
-            new SwiftDeleteFeature(session).delete(files, prompt, callback);
+            new SwiftDeleteFeature(session, regionService).delete(files, prompt, callback);
         }
         else {
             final Map<Path, List<String>> containers = new HashMap<Path, List<String>>();
@@ -99,7 +99,7 @@ public class SwiftMultipleDeleteFeature implements Delete {
             }
             catch(GenericException e) {
                 if(new SwiftExceptionMappingService().map(e) instanceof InteroperabilityException) {
-                    new SwiftDeleteFeature(session).delete(files, prompt, callback);
+                    new SwiftDeleteFeature(session, regionService).delete(files, prompt, callback);
                     return;
                 }
                 else {
@@ -114,7 +114,7 @@ public class SwiftMultipleDeleteFeature implements Delete {
                     callback.delete(file);
                     // Finally delete bucket itself
                     try {
-                        session.getClient().deleteContainer(new SwiftRegionService(session).lookup(file),
+                        session.getClient().deleteContainer(regionService.lookup(file),
                                 containerService.getContainer(file).getName());
                     }
                     catch(GenericException e) {

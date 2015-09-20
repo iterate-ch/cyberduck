@@ -43,22 +43,31 @@ import java.util.List;
 public class SwiftThresholdUploadService implements Upload {
     private static final Logger log = Logger.getLogger(SwiftThresholdUploadService.class);
 
-    private SwiftSession session;
+    private final SwiftSession session;
 
-    private Long threshold;
+    private final SwiftRegionService regionService;
+
+    private final Long threshold;
 
     /**
      * Segment size
      */
-    private Long segment;
+    private final Long segment;
 
     public SwiftThresholdUploadService(final SwiftSession session) {
-        this(session, PreferencesFactory.get().getLong("openstack.upload.largeobject.threshold"),
+        this(session, new SwiftRegionService(session));
+    }
+
+    public SwiftThresholdUploadService(final SwiftSession session, final SwiftRegionService regionService) {
+        this(session, regionService, PreferencesFactory.get().getLong("openstack.upload.largeobject.threshold"),
                 PreferencesFactory.get().getLong("openstack.upload.largeobject.size"));
     }
 
-    public SwiftThresholdUploadService(final SwiftSession session, final Long threshold, final Long segment) {
+
+    public SwiftThresholdUploadService(final SwiftSession session, final SwiftRegionService regionService,
+                                       final Long threshold, final Long segment) {
         this.session = session;
+        this.regionService = regionService;
         this.threshold = threshold;
         this.segment = segment;
     }
@@ -82,14 +91,14 @@ public class SwiftThresholdUploadService implements Upload {
                 // Disabled by user
                 if(status.getLength() < PreferencesFactory.get().getLong("openstack.upload.largeobject.required.threshold")) {
                     log.warn("Large upload is disabled with property openstack.upload.largeobject");
-                    final SwiftSmallObjectUploadFeature single = new SwiftSmallObjectUploadFeature(session);
+                    final SwiftSmallObjectUploadFeature single = new SwiftSmallObjectUploadFeature(session, regionService);
                     return single.upload(file, local, throttle, listener, status, callback);
                 }
             }
-            feature = new SwiftLargeObjectUploadFeature(session, segment);
+            feature = new SwiftLargeObjectUploadFeature(session, regionService, segment);
         }
         else {
-            feature = new SwiftSmallObjectUploadFeature(session);
+            feature = new SwiftSmallObjectUploadFeature(session, regionService);
         }
         // Previous segments to delete
         final List<Path> segments = new ArrayList<Path>();

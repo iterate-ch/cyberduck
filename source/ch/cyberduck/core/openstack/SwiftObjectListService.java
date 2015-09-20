@@ -56,8 +56,11 @@ public class SwiftObjectListService implements ListService {
     private ISO8601DateParser dateParser
             = new ISO8601DateParser();
 
+    private SwiftRegionService regionService;
+
     public SwiftObjectListService(final SwiftSession session) {
         this.session = session;
+        this.regionService = new SwiftRegionService(session);
     }
 
     @Override
@@ -69,7 +72,7 @@ public class SwiftObjectListService implements ListService {
             List<StorageObject> list;
             do {
                 final Path container = containerService.getContainer(directory);
-                list = session.getClient().listObjectsStartingWith(new SwiftRegionService(session).lookup(container), container.getName(),
+                list = session.getClient().listObjectsStartingWith(regionService.lookup(container), container.getName(),
                         containerService.isContainer(directory) ? StringUtils.EMPTY : containerService.getKey(directory) + Path.DELIMITER,
                         null, limit, marker, Path.DELIMITER);
                 for(StorageObject object : list) {

@@ -45,8 +45,15 @@ public class SwiftMetadataFeature implements Headers {
     private PathContainerService containerService
             = new SwiftPathContainerService();
 
+    private SwiftRegionService regionService;
+
     public SwiftMetadataFeature(final SwiftSession session) {
+        this(session, new SwiftRegionService(session));
+    }
+
+    public SwiftMetadataFeature(final SwiftSession session, final SwiftRegionService regionService) {
         this.session = session;
+        this.regionService = regionService;
     }
 
     @Override
@@ -54,13 +61,13 @@ public class SwiftMetadataFeature implements Headers {
         try {
             if(containerService.isContainer(file)) {
                 final ContainerMetadata meta
-                        = session.getClient().getContainerMetaData(new SwiftRegionService(session).lookup(file),
+                        = session.getClient().getContainerMetaData(regionService.lookup(file),
                         containerService.getContainer(file).getName());
                 return meta.getMetaData();
             }
             else {
                 final ObjectMetadata meta
-                        = session.getClient().getObjectMetaData(new SwiftRegionService(session).lookup(file),
+                        = session.getClient().getObjectMetaData(regionService.lookup(file),
                         containerService.getContainer(file).getName(), containerService.getKey(file));
                 return meta.getMetaData();
             }
@@ -88,14 +95,14 @@ public class SwiftMetadataFeature implements Headers {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Write metadata %s for file %s", metadata, file));
                 }
-                session.getClient().updateContainerMetadata(new SwiftRegionService(session).lookup(file),
+                session.getClient().updateContainerMetadata(regionService.lookup(file),
                         containerService.getContainer(file).getName(), metadata);
             }
             else {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Write metadata %s for file %s", metadata, file));
                 }
-                session.getClient().updateObjectMetadata(new SwiftRegionService(session).lookup(file),
+                session.getClient().updateObjectMetadata(regionService.lookup(file),
                         containerService.getContainer(file).getName(), containerService.getKey(file), metadata);
             }
         }

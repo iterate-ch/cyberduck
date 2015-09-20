@@ -44,8 +44,15 @@ public class SwiftReadFeature implements Read {
 
     private SwiftSession session;
 
+    private SwiftRegionService regionService;
+
     public SwiftReadFeature(final SwiftSession session) {
+        this(session, new SwiftRegionService(session));
+    }
+
+    public SwiftReadFeature(final SwiftSession session, final SwiftRegionService regionService) {
         this.session = session;
+        this.regionService = regionService;
     }
 
     @Override
@@ -54,18 +61,18 @@ public class SwiftReadFeature implements Read {
             final ContentLengthInputStream stream;
             if(status.isAppend()) {
                 if(status.getLength() > 0) {
-                    stream = session.getClient().getObject(new SwiftRegionService(session).lookup(file),
+                    stream = session.getClient().getObject(regionService.lookup(file),
                             containerService.getContainer(file).getName(), containerService.getKey(file),
                             status.getOffset(), status.getLength());
                 }
                 else {
-                    stream = session.getClient().getObject(new SwiftRegionService(session).lookup(file),
+                    stream = session.getClient().getObject(regionService.lookup(file),
                             containerService.getContainer(file).getName(), containerService.getKey(file),
                             status.getOffset());
                 }
             }
             else {
-                stream = session.getClient().getObject(new SwiftRegionService(session).lookup(file),
+                stream = session.getClient().getObject(regionService.lookup(file),
                         containerService.getContainer(file).getName(), containerService.getKey(file));
             }
             if(log.isDebugEnabled()) {

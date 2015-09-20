@@ -54,13 +54,20 @@ public class SwiftAttributesFeature implements Attributes {
     private RFC1123DateFormatter dateParser
             = new RFC1123DateFormatter();
 
+    private SwiftRegionService regionService;
+
     public SwiftAttributesFeature(SwiftSession session) {
+        this(session, new SwiftRegionService(session));
+    }
+
+    public SwiftAttributesFeature(final SwiftSession session, final SwiftRegionService regionService) {
         this.session = session;
+        this.regionService = regionService;
     }
 
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
-        final Region region = new SwiftRegionService(session).lookup(file);
+        final Region region = regionService.lookup(file);
         try {
             if(containerService.isContainer(file)) {
                 final ContainerInfo info = session.getClient().getContainerInfo(region,

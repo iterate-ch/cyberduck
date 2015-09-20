@@ -41,6 +41,24 @@ public class SwiftLocationFeatureTest extends AbstractTestCase {
     }
 
     @Test
+    public void testCache() throws Exception {
+        final SwiftSession session = new SwiftSession(
+                new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
+                        new Credentials(
+                                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+                        )));
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final SwiftLocationFeature feature = new SwiftLocationFeature(session);
+        assertEquals(new SwiftLocationFeature.SwiftRegion("IAD"), feature.getLocation(
+                new Path("cdn.duck.sh", EnumSet.of(Path.Type.volume, Path.Type.directory))));
+        session.close();
+        // Cache
+        assertEquals(new SwiftLocationFeature.SwiftRegion("IAD"), feature.getLocation(
+                new Path("cdn.duck.sh", EnumSet.of(Path.Type.volume, Path.Type.directory))));
+    }
+
+    @Test
     public void testLocationNull() throws Exception {
         final SwiftLocationFeature.SwiftRegion region = new SwiftLocationFeature.SwiftRegion(null);
         assertNull(region.getIdentifier());
@@ -58,6 +76,7 @@ public class SwiftLocationFeatureTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertEquals(new SwiftLocationFeature.SwiftRegion("IAD"), new SwiftLocationFeature(session).getLocation(
                 new Path("cdn.duck.sh", EnumSet.of(Path.Type.volume, Path.Type.directory))));
+        session.close();
     }
 
     @Test

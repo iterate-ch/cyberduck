@@ -73,18 +73,27 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
 
     private SwiftObjectListService listService;
 
+    private SwiftRegionService regionService;
+
     public SwiftLargeObjectUploadFeature(final SwiftSession session, final Long segmentSize) {
-        this(session, new SwiftObjectListService(session), new SwiftSegmentService(session), new SwiftWriteFeature(session),
+        this(session, new SwiftRegionService(session), segmentSize);
+    }
+
+    public SwiftLargeObjectUploadFeature(final SwiftSession session, final SwiftRegionService regionService,
+                                         final Long segmentSize) {
+        this(session, regionService, new SwiftObjectListService(session), new SwiftSegmentService(session), new SwiftWriteFeature(session, regionService),
                 segmentSize, PreferencesFactory.get().getInteger("openstack.upload.largeobject.concurrency"));
     }
 
     public SwiftLargeObjectUploadFeature(final SwiftSession session,
+                                         final SwiftRegionService regionService,
                                          final SwiftObjectListService listService,
                                          final SwiftSegmentService segmentService,
                                          final AbstractHttpWriteFeature<StorageObject> writer,
                                          final Long segmentSize, final Integer concurrency) {
         super(writer);
         this.session = session;
+        this.regionService = regionService;
         this.pool = new ThreadPool(concurrency, "multipart");
         this.segmentSize = segmentSize;
         this.segmentService = segmentService;
@@ -171,7 +180,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                 log.debug(String.format("Creating SLO manifest %s for %s", manifest, file));
             }
             final StorageObject stored = new StorageObject(manifest);
-            session.getClient().createSLOManifestObject(new SwiftRegionService(session).lookup(
+            session.getClient().createSLOManifestObject(regionService.lookup(
                             containerService.getContainer(file)),
                     containerService.getContainer(file).getName(),
                     status.getMime(),
