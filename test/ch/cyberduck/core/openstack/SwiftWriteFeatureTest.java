@@ -94,7 +94,7 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         final AtomicBoolean list = new AtomicBoolean();
-        final Write.Append append = new SwiftWriteFeature(session, new SwiftObjectListService(session) {
+        final Write.Append append = new SwiftWriteFeature(session, new SwiftRegionService(session), new SwiftObjectListService(session) {
             @Override
             public AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException {
                 list.set(true);
@@ -118,7 +118,7 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final SwiftSegmentService segments = new SwiftSegmentService(session, ".test");
         final AtomicBoolean list = new AtomicBoolean();
-        final Write.Append append = new SwiftWriteFeature(session, new SwiftObjectListService(session) {
+        final Write.Append append = new SwiftWriteFeature(session, new SwiftRegionService(session), new SwiftObjectListService(session) {
             @Override
             public AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException {
                 list.set(true);
@@ -145,7 +145,7 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final AtomicBoolean list = new AtomicBoolean();
         final AtomicBoolean find = new AtomicBoolean();
-        final Write.Append append = new SwiftWriteFeature(session, new SwiftObjectListService(session) {
+        final Write.Append append = new SwiftWriteFeature(session, new SwiftRegionService(session), new SwiftObjectListService(session) {
             @Override
             public AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException {
                 list.set(true);
@@ -191,7 +191,7 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final AtomicBoolean list = new AtomicBoolean();
         final AtomicBoolean find = new AtomicBoolean();
-        final Write.Append append = new SwiftWriteFeature(session, new SwiftObjectListService(session) {
+        final Write.Append append = new SwiftWriteFeature(session, new SwiftRegionService(session), new SwiftObjectListService(session) {
             @Override
             public AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException {
                 list.set(true);

@@ -103,6 +103,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractTestCase {
         status.setLength(content.length);
 
         final SwiftLargeObjectUploadFeature upload = new SwiftLargeObjectUploadFeature(session,
+                new SwiftRegionService(session),
                 new SwiftObjectListService(session),
                 new SwiftSegmentService(session, ".segments-test/"), new SwiftWriteFeature(session), (long) (content.length / 2), 4);
 

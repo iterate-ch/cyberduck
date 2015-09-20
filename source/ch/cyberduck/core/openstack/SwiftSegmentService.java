@@ -63,20 +63,31 @@ public class SwiftSegmentService {
      */
     private String prefix;
 
+    private SwiftRegionService regionService;
+
     public SwiftSegmentService(final SwiftSession session) {
-        this(session, PreferencesFactory.get().getProperty("openstack.upload.largeobject.segments.prefix"));
+        this(session, new SwiftRegionService(session));
     }
 
     public SwiftSegmentService(final SwiftSession session, final String prefix) {
+        this(session, new SwiftRegionService(session), prefix);
+    }
+
+    public SwiftSegmentService(final SwiftSession session, final SwiftRegionService regionService) {
+        this(session, regionService, PreferencesFactory.get().getProperty("openstack.upload.largeobject.segments.prefix"));
+    }
+
+    public SwiftSegmentService(final SwiftSession session, final SwiftRegionService regionService, final String prefix) {
         this.session = session;
         this.prefix = prefix;
+        this.regionService = regionService;
     }
 
     public List<Path> list(final Path file) throws BackgroundException {
         try {
             final Path container = containerService.getContainer(file);
             final Map<String, List<StorageObject>> segments
-                    = session.getClient().listObjectSegments(new SwiftRegionService(session).lookup(container),
+                    = session.getClient().listObjectSegments(regionService.lookup(container),
                     container.getName(), containerService.getKey(file));
             if(null == segments) {
                 // Not a large object

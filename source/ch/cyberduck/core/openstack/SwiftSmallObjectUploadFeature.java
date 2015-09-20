@@ -19,7 +19,6 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -42,11 +41,11 @@ public class SwiftSmallObjectUploadFeature extends HttpUploadFeature<StorageObje
     private static final Logger log = Logger.getLogger(SwiftSmallObjectUploadFeature.class);
 
     public SwiftSmallObjectUploadFeature(final SwiftSession session) {
-        super(new SwiftWriteFeature(session));
+        this(session, new SwiftRegionService(session));
     }
 
-    public SwiftSmallObjectUploadFeature(final AbstractHttpWriteFeature<StorageObject> writer) {
-        super(writer);
+    public SwiftSmallObjectUploadFeature(final SwiftSession session, final SwiftRegionService regionService) {
+        super(new SwiftWriteFeature(session, regionService));
     }
 
     @Override

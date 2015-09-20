@@ -73,28 +73,37 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
 
     private Map<String, String> metadata
             = preferences.getMap("openstack.metadata.default");
+    private SwiftRegionService regionService;
 
     public SwiftWriteFeature(final SwiftSession session) {
-        this(session, new SwiftObjectListService(session), new SwiftSegmentService(session), new DefaultFindFeature(session));
+        this(session, new SwiftRegionService(session), new SwiftObjectListService(session), new SwiftSegmentService(session), new DefaultFindFeature(session));
     }
 
-    public SwiftWriteFeature(final SwiftSession session, final SwiftObjectListService listService,
+    public SwiftWriteFeature(final SwiftSession session, final SwiftRegionService regionService) {
+        this(session, regionService, new SwiftObjectListService(session), new SwiftSegmentService(session), new DefaultFindFeature(session));
+    }
+
+    public SwiftWriteFeature(final SwiftSession session, final SwiftRegionService regionService,
+                             final SwiftObjectListService listService,
                              final SwiftSegmentService segmentService) {
-        this(session, listService, segmentService, new DefaultFindFeature(session));
+        this(session, regionService, listService, segmentService, new DefaultFindFeature(session));
     }
 
-    public SwiftWriteFeature(final SwiftSession session, final SwiftObjectListService listService,
+    public SwiftWriteFeature(final SwiftSession session, final SwiftRegionService regionService,
+                             final SwiftObjectListService listService,
                              final SwiftSegmentService segmentService, final Find finder) {
-        this(session, listService, segmentService, finder, new DefaultAttributesFeature(session));
+        this(session, regionService, listService, segmentService, finder, new DefaultAttributesFeature(session));
     }
 
-    public SwiftWriteFeature(final SwiftSession session, final SwiftObjectListService listService,
+    public SwiftWriteFeature(final SwiftSession session, final SwiftRegionService regionService,
+                             final SwiftObjectListService listService,
                              final SwiftSegmentService segmentService,
                              final Find finder, final Attributes attributes) {
         super(finder, attributes);
         this.session = session;
         this.listService = listService;
         this.segmentService = segmentService;
+        this.regionService = regionService;
         this.finder = finder;
         this.attributes = attributes;
     }
@@ -118,7 +127,7 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
                     headers.putAll(metadata); // Default
                     headers.putAll(status.getMetadata()); // Previous
                     final String checksum = session.getClient().storeObject(
-                            new SwiftRegionService(session).lookup(file),
+                            regionService.lookup(file),
                             containerService.getContainer(file).getName(), containerService.getKey(file),
                             entity, headers, null);
                     if(log.isDebugEnabled()) {

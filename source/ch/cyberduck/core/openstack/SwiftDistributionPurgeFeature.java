@@ -41,8 +41,15 @@ public class SwiftDistributionPurgeFeature implements Purge {
     private PathContainerService containerService
             = new SwiftPathContainerService();
 
+    private SwiftRegionService regionService;
+
     public SwiftDistributionPurgeFeature(final SwiftSession session) {
+        this(session, new SwiftRegionService(session));
+    }
+
+    public SwiftDistributionPurgeFeature(final SwiftSession session, final SwiftRegionService regionService) {
         this.session = session;
+        this.regionService = regionService;
     }
 
     @Override
@@ -50,11 +57,11 @@ public class SwiftDistributionPurgeFeature implements Purge {
         try {
             for(Path file : files) {
                 if(containerService.isContainer(file)) {
-                    session.getClient().purgeCDNContainer(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
+                    session.getClient().purgeCDNContainer(regionService.lookup(containerService.getContainer(file)),
                             container.getName(), null);
                 }
                 else {
-                    session.getClient().purgeCDNObject(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
+                    session.getClient().purgeCDNObject(regionService.lookup(containerService.getContainer(file)),
                             container.getName(), containerService.getKey(file), null);
                 }
             }

@@ -44,16 +44,23 @@ public class SwiftMoveFeature implements Move {
 
     private SwiftSession session;
 
+    private SwiftRegionService regionService;
+
     public SwiftMoveFeature(final SwiftSession session) {
+        this(session, new SwiftRegionService(session));
+    }
+
+    public SwiftMoveFeature(final SwiftSession session, final SwiftRegionService regionService) {
         this.session = session;
+        this.regionService = regionService;
     }
 
     @Override
     public void move(final Path file, final Path renamed, boolean exists, final Delete.Callback callback) throws BackgroundException {
         try {
             if(file.isFile() || file.isPlaceholder()) {
-                new SwiftCopyFeature(session).copy(file, renamed);
-                session.getClient().deleteObject(new SwiftRegionService(session).lookup(file),
+                new SwiftCopyFeature(session, regionService).copy(file, renamed);
+                session.getClient().deleteObject(regionService.lookup(file),
                         containerService.getContainer(file).getName(), containerService.getKey(file));
             }
             else if(file.isDirectory()) {
@@ -61,7 +68,7 @@ public class SwiftMoveFeature implements Move {
                     this.move(i, new Path(renamed, i.getName(), i.getType()), false, callback);
                 }
                 try {
-                    session.getClient().deleteObject(new SwiftRegionService(session).lookup(file),
+                    session.getClient().deleteObject(regionService.lookup(file),
                             containerService.getContainer(file).getName(), containerService.getKey(file));
                 }
                 catch(NotFoundException e) {

@@ -42,8 +42,12 @@ public class SwiftRegionService {
     private SwiftLocationFeature location;
 
     public SwiftRegionService(final SwiftSession session) {
+        this(session, new SwiftLocationFeature(session));
+    }
+
+    public SwiftRegionService(final SwiftSession session, final SwiftLocationFeature location) {
         this.session = session;
-        this.location = new SwiftLocationFeature(session);
+        this.location = location;
     }
 
     public Region lookup(final Path file) throws BackgroundException {

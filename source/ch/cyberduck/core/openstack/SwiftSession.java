@@ -78,8 +78,11 @@ import ch.iterate.openstack.swift.model.Region;
 public class SwiftSession extends HttpSession<Client> {
     private static final Logger log = Logger.getLogger(SwiftSession.class);
 
+    private final SwiftRegionService regionService
+            = new SwiftRegionService(this);
+
     private SwiftDistributionConfiguration cdn
-            = new SwiftDistributionConfiguration(this);
+            = new SwiftDistributionConfiguration(this, regionService);
 
     protected Map<Region, AccountInfo> accounts
             = new HashMap<Region, AccountInfo>();
@@ -193,7 +196,7 @@ public class SwiftSession extends HttpSession<Client> {
             }
             if(Location.unknown.equals(region)) {
                 directory.attributes().setRegion(
-                        new SwiftRegionService(this).lookup(this.getFeature(Location.class).getLocation(directory)).getRegionId());
+                        regionService.lookup(this.getFeature(Location.class).getLocation(directory)).getRegionId());
             }
             return new SwiftObjectListService(this).list(directory, listener);
         }
@@ -202,31 +205,31 @@ public class SwiftSession extends HttpSession<Client> {
     @Override
     public <T> T getFeature(final Class<T> type) {
         if(type == Read.class) {
-            return (T) new SwiftReadFeature(this);
+            return (T) new SwiftReadFeature(this, regionService);
         }
         if(type == Write.class) {
-            return (T) new SwiftWriteFeature(this);
+            return (T) new SwiftWriteFeature(this, regionService);
         }
         if(type == Upload.class) {
-            return (T) new SwiftThresholdUploadService(this);
+            return (T) new SwiftThresholdUploadService(this, regionService);
         }
         if(type == Directory.class) {
-            return (T) new SwiftDirectoryFeature(this);
+            return (T) new SwiftDirectoryFeature(this, regionService);
         }
         if(type == Delete.class) {
-            return (T) new SwiftMultipleDeleteFeature(this);
+            return (T) new SwiftMultipleDeleteFeature(this, new SwiftSegmentService(this, regionService), regionService);
         }
         if(type == Headers.class) {
-            return (T) new SwiftMetadataFeature(this);
+            return (T) new SwiftMetadataFeature(this, regionService);
         }
         if(type == Copy.class) {
-            return (T) new SwiftCopyFeature(this);
+            return (T) new SwiftCopyFeature(this, regionService);
         }
         if(type == Move.class) {
-            return (T) new SwiftMoveFeature(this);
+            return (T) new SwiftMoveFeature(this, regionService);
         }
         if(type == Touch.class) {
-            return (T) new SwiftTouchFeature(this);
+            return (T) new SwiftTouchFeature(this, regionService);
         }
         if(type == Location.class) {
             return (T) new SwiftLocationFeature(this);
@@ -250,7 +253,7 @@ public class SwiftSession extends HttpSession<Client> {
             return (T) new SwiftUrlProvider(this, accounts);
         }
         if(type == Attributes.class) {
-            return (T) new SwiftAttributesFeature(this);
+            return (T) new SwiftAttributesFeature(this, regionService);
         }
         if(type == Home.class) {
             return (T) new SwiftHomeFinderService(this);

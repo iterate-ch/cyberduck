@@ -30,8 +30,10 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import ch.iterate.openstack.swift.model.Region;
@@ -45,6 +47,8 @@ public class SwiftLocationFeature implements Location {
 
     private PathContainerService containerService
             = new SwiftPathContainerService();
+
+    private Map<Path, Name> cache = new HashMap<Path, Name>();
 
     public SwiftLocationFeature(final SwiftSession session) {
         this.session = session;
@@ -79,18 +83,25 @@ public class SwiftLocationFeature implements Location {
     @Override
     public Name getLocation(final Path file) throws BackgroundException {
         final Path container = containerService.getContainer(file);
+        if(cache.containsKey(container)) {
+            return cache.get(container);
+        }
         if(Location.unknown.equals(new SwiftRegion(container.attributes().getRegion()))) {
             final SwiftRegion region = new SwiftRegion(session.getHost().getRegion());
             if(Location.unknown.equals(region)) {
                 for(Path c : new SwiftContainerListService(session, region, false, false).list(new DisabledListProgressListener())) {
                     if(c.getName().equals(container.getName())) {
-                        return new SwiftRegion(c.attributes().getRegion());
+                        final SwiftRegion r = new SwiftRegion(c.attributes().getRegion());
+                        cache.put(container, r);
+                        return r;
                     }
                 }
             }
             return region;
         }
-        return new SwiftRegion(container.attributes().getRegion());
+        final SwiftRegion r = new SwiftRegion(container.attributes().getRegion());
+        cache.put(container, r);
+        return r;
     }
 
     public static final class SwiftRegion extends Name {
