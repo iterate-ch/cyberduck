@@ -2121,9 +2121,9 @@ public class PreferencesController extends ToolbarWindowController {
     }
 
     @Outlet
-    private NSPopUpButton useProxiesButton;
+    private NSButton useProxiesButton;
 
-    public void setUseProxiesButton(NSPopUpButton b) {
+    public void setUseProxiesButton(NSButton b) {
         this.useProxiesButton = b;
         this.useProxiesButton.setTarget(this.id());
         this.useProxiesButton.setAction(Foundation.selector("useProxiesButtonClicked:"));
@@ -2132,7 +2132,9 @@ public class PreferencesController extends ToolbarWindowController {
 
     @Action
     public void useProxiesButtonClicked(NSButton sender) {
-        preferences.setProperty("connection.proxy.enable", sender.state() == NSCell.NSOnState);
+        final boolean enabled = sender.state() == NSCell.NSOnState;
+        preferences.setProperty("connection.proxy.enable", enabled);
+        this.configureProxiesButton.setEnabled(enabled);
     }
 
     @Outlet
@@ -2142,6 +2144,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.configureProxiesButton = b;
         this.configureProxiesButton.setTarget(this.id());
         this.configureProxiesButton.setAction(Foundation.selector("configureProxiesButtonClicked:"));
+        this.configureProxiesButton.setEnabled(preferences.getBoolean("connection.proxy.enable"));
     }
 
     @Action
