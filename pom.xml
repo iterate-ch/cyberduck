@@ -18,6 +18,10 @@
         <module>pom/cli</module>
     </modules>
 
+    <scm>
+        <connection>scm:git:https://g.iterate.ch/scm/iterate/cyberduck.git</connection>
+    </scm>
+
     <profiles>
         <profile>
             <id>mac</id>
