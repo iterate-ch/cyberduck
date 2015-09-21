@@ -197,9 +197,9 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void CommandsAfterLaunch(ReadOnlyCollection<string> args)
         {
-            if (args.Count > 0)
+            if (args.Count > 1)
             {
-                string filename = args[0];
+                string filename = args[1];
                 Logger.debug("applicationOpenFile:" + filename);
                 Local f = LocalFactory.get(filename);
                 if (f.exists())
