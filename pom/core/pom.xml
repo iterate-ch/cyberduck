@@ -39,9 +39,32 @@
                     <family>Windows</family>
                 </os>
             </activation>
-            <modules>
-                <module>native</module>
-            </modules>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <inherited>false</inherited>
+                        <executions>
+                            <execution>
+                                <id>install-core-dll</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>attach-artifact</goal>
+                                </goals>
+                                <configuration>
+                                    <artifacts>
+                                        <artifact>
+                                            <type>dll</type>
+                                            <file>${project.basedir}/../../build/Cyberduck.Core.dll</file>
+                                        </artifact>
+                                    </artifacts>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 
