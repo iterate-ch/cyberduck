@@ -22,13 +22,16 @@ package ch.cyberduck.core.http;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.commons.io.output.ProxyOutputStream;
+import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.io.OutputStream;
 
 /**
  * @version $Id$
  */
 public abstract class ResponseOutputStream<T> extends ProxyOutputStream {
+    private static final Logger log = Logger.getLogger(AbstractHttpWriteFeature.class);
 
     public ResponseOutputStream(OutputStream d) {
         super(d);
@@ -40,4 +43,18 @@ public abstract class ResponseOutputStream<T> extends ProxyOutputStream {
      * @return A specific response header
      */
     public abstract T getResponse() throws BackgroundException;
+
+    @Override
+    public void close() throws IOException {
+        super.close();
+        try {
+            final T response = this.getResponse();
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Closed stream %s with response value %s", this, response));
+            }
+        }
+        catch(BackgroundException e) {
+            throw new IOException(e);
+        }
+    }
 }
