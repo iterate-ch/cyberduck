@@ -9,7 +9,10 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.gstorage.GoogleStorageProtocol;
+import ch.cyberduck.core.gstorage.GoogleStorageSession;
 
 import org.junit.Test;
 
@@ -45,7 +48,45 @@ public class S3MoveFeatureTest extends AbstractTestCase {
         });
         assertFalse(new S3FindFeature(session).find(test));
         assertTrue(new S3FindFeature(session).find(renamed));
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(renamed), new DisabledLoginCallback(), new Delete.Callback() {
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
+        session.close();
+    }
+
+    @Test
+    public void testMoveGoogleStorage() throws Exception {
+        final GoogleStorageSession session = new GoogleStorageSession(new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
+                properties.getProperty("google.projectid"), null
+        )));
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore() {
+            @Override
+            public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
+                if(user.equals("Google OAuth2 Access Token")) {
+                    return properties.getProperty("google.accesstoken");
+                }
+                if(user.equals("Google OAuth2 Refresh Token")) {
+                    return properties.getProperty("google.refreshtoken");
+                }
+                return null;
+            }
+        }, new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory));
+        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        new S3TouchFeature(session).touch(test);
+        assertTrue(new S3FindFeature(session).find(test));
+        final Path renamed = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        new S3MoveFeature(session).move(test, renamed, false, new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
+        assertFalse(new S3FindFeature(session).find(test));
+        assertTrue(new S3FindFeature(session).find(renamed));
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {
             }
@@ -74,7 +115,7 @@ public class S3MoveFeatureTest extends AbstractTestCase {
         });
         assertFalse(new S3FindFeature(session).find(test));
         assertTrue(new S3FindFeature(session).find(renamed));
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(renamed), new DisabledLoginCallback(), new Delete.Callback() {
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {
             }
@@ -108,7 +149,7 @@ public class S3MoveFeatureTest extends AbstractTestCase {
         });
         assertFalse(new S3FindFeature(session).find(test));
         assertTrue(new S3FindFeature(session).find(renamed));
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(renamed), new DisabledLoginCallback(), new Delete.Callback() {
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {
             }

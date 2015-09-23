@@ -22,6 +22,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 
@@ -56,7 +57,7 @@ public class S3MoveFeature implements Move {
                 // Keep encryption setting
                 destination.setServerSideEncryptionAlgorithm(new S3EncryptionFeature(session).getEncryption(source));
                 // Apply non standard ACL
-                final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+                final S3AccessControlListFeature acl = (S3AccessControlListFeature) session.getFeature(AclPermission.class);
                 destination.setAcl(acl.convert(acl.getPermission(source)));
                 // Moving the object retaining the metadata of the original.
                 final Map<String, Object> headers = session.getClient().copyObject(
