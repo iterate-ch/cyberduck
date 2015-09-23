@@ -21,7 +21,7 @@
         <groupId>ch.cyberduck</groupId>
         <artifactId>core</artifactId>
         <relativePath>../pom.xml</relativePath>
-        <version>4.8-SNAPSHOT</version>
+        <version>4.8.0-SNAPSHOT</version>
     </parent>
     <artifactId>libquicklook</artifactId>
     <packaging>pom</packaging>
