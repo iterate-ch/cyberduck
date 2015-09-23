@@ -30,6 +30,7 @@ import java.security.cert.CertificateException;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 /**
  * @version $Id$
@@ -79,5 +80,12 @@ public class DefaultIOExceptionMappingServiceTest extends AbstractTestCase {
                 new Path("/n", EnumSet.of(Path.Type.directory, Path.Type.volume))).getMessage());
         assertEquals("Download failed (/n).", s.map("Download failed", new SocketException("s"),
                 new Path("/n", EnumSet.of(Path.Type.directory, Path.Type.volume))).getMessage());
+    }
+
+    @Test
+    public void testMapWrappedCause() throws Exception {
+        final DefaultIOExceptionMappingService s = new DefaultIOExceptionMappingService();
+        final BackgroundException cause = new BackgroundException();
+        assertSame(cause, s.map(new IOException(cause)));
     }
 }
