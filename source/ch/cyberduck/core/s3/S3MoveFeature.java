@@ -24,7 +24,9 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Redundancy;
 
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
@@ -53,12 +55,20 @@ public class S3MoveFeature implements Move {
             if(source.isFile() || source.isPlaceholder()) {
                 final StorageObject destination = new StorageObject(containerService.getKey(renamed));
                 // Keep same storage class
-                destination.setStorageClass(new S3StorageClassFeature(session).getClass(source));
+                final Redundancy storageClassFeature = session.getFeature(Redundancy.class);
+                if(storageClassFeature != null) {
+                    destination.setStorageClass(storageClassFeature.getClass(source));
+                }
                 // Keep encryption setting
-                destination.setServerSideEncryptionAlgorithm(new S3EncryptionFeature(session).getEncryption(source));
+                final Encryption encryptionFeature = session.getFeature(Encryption.class);
+                if(encryptionFeature != null) {
+                    destination.setServerSideEncryptionAlgorithm(encryptionFeature.getEncryption(source));
+                }
                 // Apply non standard ACL
-                final S3AccessControlListFeature acl = (S3AccessControlListFeature) session.getFeature(AclPermission.class);
-                destination.setAcl(acl.convert(acl.getPermission(source)));
+                final S3AccessControlListFeature accessControlListFeature = (S3AccessControlListFeature) session.getFeature(AclPermission.class);
+                if(accessControlListFeature != null) {
+                    destination.setAcl(accessControlListFeature.convert(accessControlListFeature.getPermission(source)));
+                }
                 // Moving the object retaining the metadata of the original.
                 final Map<String, Object> headers = session.getClient().copyObject(
                         containerService.getContainer(source).getName(),
