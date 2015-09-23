@@ -76,11 +76,11 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>jnidispatch</groupId>
+            <groupId>net.java.dev.jna</groupId>
             <artifactId>jnidispatch</artifactId>
             <classifier>native</classifier>
             <type>dll</type>
-            <version>4.0.0.215</version>
+            <version>4.2</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
