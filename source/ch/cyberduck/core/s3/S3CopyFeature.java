@@ -21,6 +21,7 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Copy;
 
 import org.jets3t.service.ServiceException;
@@ -48,7 +49,7 @@ public class S3CopyFeature implements Copy {
             // Keep encryption setting
             final String encryptionAlgorithm = source.attributes().getEncryption();
             // Apply non standard ACL
-            final S3AccessControlListFeature accessControlListFeature = new S3AccessControlListFeature(session);
+            final S3AccessControlListFeature accessControlListFeature = (S3AccessControlListFeature) session.getFeature(AclPermission.class);
             final Acl acl = accessControlListFeature.getPermission(source);
             this.copy(source, copy, storageClass, encryptionAlgorithm, acl);
         }
@@ -60,7 +61,8 @@ public class S3CopyFeature implements Copy {
             final StorageObject destination = new StorageObject(containerService.getKey(copy));
             destination.setStorageClass(storageClass);
             destination.setServerSideEncryptionAlgorithm(encryptionAlgorithm);
-            destination.setAcl(new S3AccessControlListFeature(session).convert(acl));
+            final S3AccessControlListFeature accessControlListFeature = (S3AccessControlListFeature) session.getFeature(AclPermission.class);
+            destination.setAcl(accessControlListFeature.convert(acl));
             try {
                 // Copying object applying the metadata of the original
                 session.getClient().copyObject(containerService.getContainer(source).getName(),

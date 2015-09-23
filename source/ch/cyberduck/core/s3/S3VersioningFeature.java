@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -166,7 +167,7 @@ public class S3VersioningFeature implements Versioning {
                 // Keep encryption setting
                 destination.setServerSideEncryptionAlgorithm(file.attributes().getEncryption());
                 // Apply non standard ACL
-                final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+                final S3AccessControlListFeature acl = (S3AccessControlListFeature) session.getFeature(AclPermission.class);
                 destination.setAcl(acl.convert(acl.getPermission(file)));
                 session.getClient().copyVersionedObject(file.attributes().getVersionId(),
                         containerService.getContainer(file).getName(), containerService.getKey(file), containerService.getContainer(file).getName(), destination, false);
