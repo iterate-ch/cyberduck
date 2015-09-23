@@ -36,6 +36,9 @@ public class DefaultIOExceptionMappingService extends AbstractExceptionMappingSe
 
     @Override
     public BackgroundException map(final IOException failure) {
+        if(ExceptionUtils.getRootCause(failure) instanceof BackgroundException) {
+            return (BackgroundException) ExceptionUtils.getRootCause(failure);
+        }
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, failure.getMessage());
         for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
