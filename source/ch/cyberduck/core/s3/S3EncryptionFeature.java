@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Encryption;
 
 import java.util.Collections;
@@ -53,8 +54,9 @@ public class S3EncryptionFeature implements Encryption {
         if(file.isFile()) {
             final S3ThresholdCopyFeature copy = new S3ThresholdCopyFeature(session);
             // Copy item in place to write new attributes
+            final AclPermission feature = session.getFeature(AclPermission.class);
             copy.copy(file, file, new S3StorageClassFeature(session).getClass(file), algorithm,
-                    new S3AccessControlListFeature(session).getPermission(file));
+                    feature.getPermission(file));
         }
     }
 }

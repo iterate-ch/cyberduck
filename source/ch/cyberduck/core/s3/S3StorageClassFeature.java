@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Redundancy;
 
 import org.jets3t.service.model.S3Object;
@@ -67,7 +68,7 @@ public class S3StorageClassFeature implements Redundancy {
         if(file.isFile()) {
             final S3ThresholdCopyFeature copy = new S3ThresholdCopyFeature(session);
             copy.copy(file, file, redundancy, new S3EncryptionFeature(session).getEncryption(file),
-                    new S3AccessControlListFeature(session).getPermission(file));
+                    session.getFeature(AclPermission.class).getPermission(file));
         }
     }
 }

@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.ThreadPool;
@@ -62,8 +63,11 @@ public class S3MultipartCopyFeature implements Copy {
     private Long partsize
             = PreferencesFactory.get().getLong("s3.upload.multipart.size");
 
+    private S3AccessControlListFeature accessControlListFeature;
+
     public S3MultipartCopyFeature(final S3Session session) {
         this.session = session;
+        this.accessControlListFeature = (S3AccessControlListFeature) session.getFeature(AclPermission.class);
     }
 
     @Override
@@ -74,7 +78,6 @@ public class S3MultipartCopyFeature implements Copy {
             // Keep encryption setting
             final String encryptionAlgorithm = source.attributes().getEncryption();
             // Apply non standard ACL
-            final S3AccessControlListFeature accessControlListFeature = new S3AccessControlListFeature(session);
             final Acl acl = accessControlListFeature.getPermission(source);
             this.copy(source, copy, storageClass, encryptionAlgorithm, acl);
         }
@@ -88,7 +91,7 @@ public class S3MultipartCopyFeature implements Copy {
             // Copying object applying the metadata of the original
             destination.setStorageClass(storageClass);
             destination.setServerSideEncryptionAlgorithm(encryptionAlgorithm);
-            destination.setAcl(new S3AccessControlListFeature(session).convert(acl));
+            destination.setAcl(accessControlListFeature.convert(acl));
             try {
                 final List<MultipartPart> completed = new ArrayList<MultipartPart>();
                 // ID for the initiated multipart upload.
