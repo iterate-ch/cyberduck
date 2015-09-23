@@ -21,7 +21,10 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.features.Redundancy;
 
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
@@ -66,10 +69,18 @@ public class S3MetadataFeature implements Headers {
                 final StorageObject target = new S3AttributesFeature(session).details(file);
                 target.replaceAllMetadata(new HashMap<String, Object>(metadata));
                 // Apply non standard ACL
-                final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-                target.setAcl(acl.convert(acl.getPermission(file)));
-                target.setStorageClass(new S3StorageClassFeature(session).getClass(file));
-                target.setServerSideEncryptionAlgorithm(new S3EncryptionFeature(session).getEncryption(file));
+                final S3AccessControlListFeature accessControlListFeature = (S3AccessControlListFeature) session.getFeature(AclPermission.class);
+                if(accessControlListFeature != null) {
+                    target.setAcl(accessControlListFeature.convert(accessControlListFeature.getPermission(file)));
+                }
+                final Redundancy storageClassFeature = session.getFeature(Redundancy.class);
+                if(storageClassFeature != null) {
+                    target.setStorageClass(storageClassFeature.getClass(file));
+                }
+                final Encryption encryptionFeature = session.getFeature(Encryption.class);
+                if(encryptionFeature != null) {
+                    target.setServerSideEncryptionAlgorithm(encryptionFeature.getEncryption(file));
+                }
                 session.getClient().updateObjectMetadata(containerService.getContainer(file).getName(), target);
             }
             catch(ServiceException e) {
