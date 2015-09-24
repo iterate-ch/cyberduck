@@ -68,7 +68,6 @@
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>1.8</version>
-                <inherited>true</inherited>
                 <executions>
                     <execution>
                         <id>run-ant-clean-target</id>
@@ -94,6 +93,28 @@
                                 <property name="version" value="${project.version}" />
                                 <ant antfile="${project.basedir}/../../../build.xml" target="build" dir="${project.basedir}/../../../" />
                             </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <id>install-core</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <type>jar</type>
+                                    <file>${project.basedir}/../../../build/core-${project.version}.jar</file>
+                                </artifact>
+                            </artifacts>
                         </configuration>
                     </execution>
                 </executions>
