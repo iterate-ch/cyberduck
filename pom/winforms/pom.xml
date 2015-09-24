@@ -77,6 +77,11 @@
         </dependency>
         <dependency>
             <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna</artifactId>
+            <version>4.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
             <artifactId>jnidispatch</artifactId>
             <classifier>native</classifier>
             <type>dll</type>
