@@ -10,10 +10,6 @@
     <artifactId>core</artifactId>
     <packaging>pom</packaging>
 
-    <modules>
-        <module>native</module>
-    </modules>
-
     <profiles>
         <profile>
             <id>mac</id>
@@ -35,6 +31,17 @@
                 <module>proxy</module>
                 <module>quicklook</module>
                 <module>rococoa</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>windows</id>
+            <activation>
+                <os>
+                    <family>Windows</family>
+                </os>
+            </activation>
+            <modules>
+                <module>native</module>
             </modules>
         </profile>
     </profiles>
@@ -187,5 +194,64 @@
             <version>4.0.2.3</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <id>run-ant-clean-target</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <property name="version" value="${project.version}" />
+                                <ant antfile="${project.basedir}/../../build.xml" target="clean" dir="${project.basedir}/../../" />
+                            </tasks>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>run-ant-build-target</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <property name="version" value="${project.version}" />
+                                <ant antfile="${project.basedir}/../../build.xml" target="build" dir="${project.basedir}/../../" />
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <id>install-core</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <type>jar</type>
+                                    <file>${project.basedir}/../../build/core-${project.version}.jar</file>
+                                </artifact>
+                            </artifacts>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
 
