@@ -200,6 +200,7 @@
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>1.8</version>
+                <inherited>false</inherited>
                 <executions>
                     <execution>
                         <id>run-ant-clean-target</id>
