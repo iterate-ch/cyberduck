@@ -4,7 +4,7 @@
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
         <relativePath>../../pom.xml</relativePath>
-        <version>4.7.3-SNAPSHOT</version>
+        <version>4.7.3</version>
     </parent>
     <artifactId>core</artifactId>
     <packaging>pom</packaging>
@@ -189,8 +189,8 @@
                         </goals>
                         <configuration>
                             <tasks>
-                                <property name="version" value="${project.version}"/>
-                                <ant antfile="${project.basedir}/../../build.xml" target="clean" dir="${project.basedir}/../../"/>
+                                <property name="version" value="${project.version}" />
+                                <ant antfile="${project.basedir}/../../build.xml" target="clean" dir="${project.basedir}/../../" />
                             </tasks>
                         </configuration>
                     </execution>
@@ -202,8 +202,8 @@
                         </goals>
                         <configuration>
                             <tasks>
-                                <property name="version" value="${project.version}"/>
-                                <ant antfile="${project.basedir}/../../build.xml" target="build" dir="${project.basedir}/../../"/>
+                                <property name="version" value="${project.version}" />
+                                <ant antfile="${project.basedir}/../../build.xml" target="build" dir="${project.basedir}/../../" />
                             </tasks>
                         </configuration>
                     </execution>
