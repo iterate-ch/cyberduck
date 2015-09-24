@@ -10,41 +10,21 @@
     <artifactId>core</artifactId>
     <packaging>pom</packaging>
 
-    <profiles>
-        <profile>
-            <id>mac</id>
-            <activation>
-                <os>
-                    <family>Mac</family>
-                </os>
-            </activation>
-            <modules>
-                <module>diagnostics</module>
-                <module>foundationprogressservice</module>
-                <module>iokitsleeppreventer</module>
-                <module>keychain</module>
-                <module>launchservicesapplicationfinder</module>
-                <module>launchservicesfiledescriptor</module>
-                <module>launchservicesquarantineservice</module>
-                <module>launchservicesschemehandler</module>
-                <module>local</module>
-                <module>proxy</module>
-                <module>quicklook</module>
-                <module>rococoa</module>
-            </modules>
-        </profile>
-        <profile>
-            <id>windows</id>
-            <activation>
-                <os>
-                    <family>Windows</family>
-                </os>
-            </activation>
-            <modules>
-                <module>native</module>
-            </modules>
-        </profile>
-    </profiles>
+    <modules>
+        <module>diagnostics</module>
+        <module>foundationprogressservice</module>
+        <module>iokitsleeppreventer</module>
+        <module>keychain</module>
+        <module>launchservicesapplicationfinder</module>
+        <module>launchservicesfiledescriptor</module>
+        <module>launchservicesquarantineservice</module>
+        <module>launchservicesschemehandler</module>
+        <module>local</module>
+        <module>proxy</module>
+        <module>quicklook</module>
+        <module>rococoa</module>
+        <module>native</module>
+    </modules>
 
     <dependencies>
         <dependency>
@@ -210,8 +190,8 @@
                         </goals>
                         <configuration>
                             <tasks>
-                                <property name="version" value="${project.version}" />
-                                <ant antfile="${project.basedir}/../../build.xml" target="clean" dir="${project.basedir}/../../" />
+                                <property name="version" value="${project.version}"/>
+                                <ant antfile="${project.basedir}/../../build.xml" target="clean" dir="${project.basedir}/../../"/>
                             </tasks>
                         </configuration>
                     </execution>
@@ -223,8 +203,8 @@
                         </goals>
                         <configuration>
                             <tasks>
-                                <property name="version" value="${project.version}" />
-                                <ant antfile="${project.basedir}/../../build.xml" target="build" dir="${project.basedir}/../../" />
+                                <property name="version" value="${project.version}"/>
+                                <ant antfile="${project.basedir}/../../build.xml" target="build" dir="${project.basedir}/../../"/>
                             </tasks>
                         </configuration>
                     </execution>
