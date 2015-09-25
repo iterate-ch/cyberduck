@@ -91,7 +91,7 @@
         </dependency>
         <dependency>
             <groupId>net.java.dev.jna</groupId>
-            <artifactId>libjnidispatch</artifactId>
+            <artifactId>jnidispatch</artifactId>
             <classifier>native</classifier>
             <type>dll</type>
             <version>4.2</version>
