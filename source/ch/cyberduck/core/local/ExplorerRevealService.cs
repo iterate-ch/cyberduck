@@ -34,7 +34,7 @@ namespace Ch.Cyberduck.Core.Local
                     parameter = "/select,";
                 }
                 return ApplicationLauncherFactory.get()
-                    .open(new Application("explorer.exe", null), parameter + l.getAbsolute());
+                    .open(new Application("explorer.exe", null), parameter + path);
             }
             return false;
         }
