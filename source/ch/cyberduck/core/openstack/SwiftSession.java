@@ -48,6 +48,7 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -150,29 +151,31 @@ public class SwiftSession extends HttpSession<Client> {
                 }
                 cancel.verify();
             }
-            final ThreadPool pool = new ThreadPool("accounts");
-            try {
-                pool.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        for(Region region : client.getRegions()) {
-                            try {
-                                final AccountInfo info = client.getAccountInfo(region);
-                                if(log.isInfoEnabled()) {
-                                    log.info(String.format("Signing key is %s", info.getTempUrlKey()));
+            if(PreferencesFactory.get().getBoolean("openstack.account.preload")) {
+                final ThreadPool pool = new ThreadPool("accounts");
+                try {
+                    pool.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            for(Region region : client.getRegions()) {
+                                try {
+                                    final AccountInfo info = client.getAccountInfo(region);
+                                    if(log.isInfoEnabled()) {
+                                        log.info(String.format("Signing key is %s", info.getTempUrlKey()));
+                                    }
+                                    accounts.put(region, info);
                                 }
-                                accounts.put(region, info);
-                            }
-                            catch(IOException e) {
-                                log.warn(String.format("Failure loading account info for region %s", region));
+                                catch(IOException e) {
+                                    log.warn(String.format("Failure loading account info for region %s", region));
+                                }
                             }
                         }
-                    }
-                });
-            }
-            finally {
-                // Shutdown gracefully
-                pool.shutdown();
+                    });
+                }
+                finally {
+                    // Shutdown gracefully
+                    pool.shutdown();
+                }
             }
         }
         catch(GenericException e) {
