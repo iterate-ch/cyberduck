@@ -201,7 +201,7 @@ public class SwiftSession extends HttpSession<Client> {
                 directory.attributes().setRegion(
                         regionService.lookup(this.getFeature(Location.class).getLocation(directory)).getRegionId());
             }
-            return new SwiftObjectListService(this).list(directory, listener);
+            return new SwiftObjectListService(this, regionService).list(directory, listener);
         }
     }
 

@@ -59,8 +59,12 @@ public class SwiftObjectListService implements ListService {
     private SwiftRegionService regionService;
 
     public SwiftObjectListService(final SwiftSession session) {
+        this(session, new SwiftRegionService(session));
+    }
+
+    public SwiftObjectListService(final SwiftSession session, final SwiftRegionService regionService) {
         this.session = session;
-        this.regionService = new SwiftRegionService(session);
+        this.regionService = regionService;
     }
 
     @Override
