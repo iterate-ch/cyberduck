@@ -50,7 +50,8 @@ public class SwiftReadFeatureTest extends AbstractTestCase {
         final TransferStatus status = new TransferStatus();
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
-        new SwiftReadFeature(session).read(new Path(container, "nosuchname", EnumSet.of(Path.Type.file)), status);
+        final SwiftRegionService regionService = new SwiftRegionService(session);
+        new SwiftReadFeature(session, regionService).read(new Path(container, "nosuchname", EnumSet.of(Path.Type.file)), status);
     }
 
     @Test
@@ -67,7 +68,8 @@ public class SwiftReadFeatureTest extends AbstractTestCase {
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature(session).touch(test);
         final byte[] content = RandomStringUtils.random(1000).getBytes();
-        final ResponseOutputStream<StorageObject> out = new SwiftWriteFeature(session).write(test, new TransferStatus().length(content.length));
+        final SwiftRegionService regionService = new SwiftRegionService(session);
+        final ResponseOutputStream<StorageObject> out = new SwiftWriteFeature(session, regionService).write(test, new TransferStatus().length(content.length));
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         IOUtils.closeQuietly(out);
@@ -76,7 +78,7 @@ public class SwiftReadFeatureTest extends AbstractTestCase {
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new SwiftReadFeature(session).read(test, status);
+        final InputStream in = new SwiftReadFeature(session, regionService).read(test, status);
         assertNotNull(in);
         assertTrue(in instanceof ContentLengthInputStream);
         assertEquals(content.length - 100, ((ContentLengthInputStream) in).getLength(), 0L);
@@ -109,7 +111,8 @@ public class SwiftReadFeatureTest extends AbstractTestCase {
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature(session).touch(test);
         final byte[] content = RandomStringUtils.random(1000).getBytes();
-        final ResponseOutputStream<StorageObject> out = new SwiftWriteFeature(session).write(test, new TransferStatus().length(content.length));
+        final SwiftRegionService regionService = new SwiftRegionService(session);
+        final ResponseOutputStream<StorageObject> out = new SwiftWriteFeature(session, regionService).write(test, new TransferStatus().length(content.length));
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         IOUtils.closeQuietly(out);
@@ -119,7 +122,7 @@ public class SwiftReadFeatureTest extends AbstractTestCase {
         status.setLength(-1L);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new SwiftReadFeature(session).read(test, status);
+        final InputStream in = new SwiftReadFeature(session, regionService).read(test, status);
         assertNotNull(in);
         assertTrue(in instanceof ContentLengthInputStream);
         assertEquals(content.length - 100, ((ContentLengthInputStream) in).getLength(), 0L);
@@ -150,7 +153,8 @@ public class SwiftReadFeatureTest extends AbstractTestCase {
         status.setLength(182L);
         final Path container = new Path(".ACCESS_LOGS", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
-        final InputStream in = new SwiftReadFeature(session).read(new Path(container,
+        final SwiftRegionService regionService = new SwiftRegionService(session);
+        final InputStream in = new SwiftReadFeature(session, regionService).read(new Path(container,
                 "/cdn.cyberduck.ch/2015/03/01/10/3b1d6998c430d58dace0c16e58aaf925.log.gz",
                 EnumSet.of(Path.Type.file)), status);
         assertNotNull(in);

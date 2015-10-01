@@ -102,10 +102,11 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractTestCase {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
 
+        final SwiftRegionService regionService = new SwiftRegionService(session);
         final SwiftLargeObjectUploadFeature upload = new SwiftLargeObjectUploadFeature(session,
-                new SwiftRegionService(session),
+                regionService,
                 new SwiftObjectListService(session),
-                new SwiftSegmentService(session, ".segments-test/"), new SwiftWriteFeature(session), (long) (content.length / 2), 4);
+                new SwiftSegmentService(session, ".segments-test/"), new SwiftWriteFeature(session, regionService), (long) (content.length / 2), 4);
 
         final StorageObject object = upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status, new DisabledConnectionCallback());
@@ -118,7 +119,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractTestCase {
         assertFalse(status.isCanceled());
 
         assertTrue(new SwiftFindFeature(session).find(test));
-        final InputStream in = new SwiftReadFeature(session).read(test, new TransferStatus());
+        final InputStream in = new SwiftReadFeature(session, regionService).read(test, new TransferStatus());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         new StreamCopier(status, status).transfer(in, buffer);
         IOUtils.closeQuietly(in);

@@ -46,10 +46,6 @@ public class SwiftReadFeature implements Read {
 
     private SwiftRegionService regionService;
 
-    public SwiftReadFeature(final SwiftSession session) {
-        this(session, new SwiftRegionService(session));
-    }
-
     public SwiftReadFeature(final SwiftSession session, final SwiftRegionService regionService) {
         this.session = session;
         this.regionService = regionService;

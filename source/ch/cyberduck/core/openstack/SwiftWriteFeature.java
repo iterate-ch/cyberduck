@@ -75,12 +75,8 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
             = preferences.getMap("openstack.metadata.default");
     private SwiftRegionService regionService;
 
-    public SwiftWriteFeature(final SwiftSession session) {
-        this(session, new SwiftRegionService(session), new SwiftObjectListService(session), new SwiftSegmentService(session), new DefaultFindFeature(session));
-    }
-
     public SwiftWriteFeature(final SwiftSession session, final SwiftRegionService regionService) {
-        this(session, regionService, new SwiftObjectListService(session), new SwiftSegmentService(session), new DefaultFindFeature(session));
+        this(session, regionService, new SwiftObjectListService(session, regionService), new SwiftSegmentService(session), new DefaultFindFeature(session));
     }
 
     public SwiftWriteFeature(final SwiftSession session, final SwiftRegionService regionService,

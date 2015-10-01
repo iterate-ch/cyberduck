@@ -57,7 +57,8 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
-        final OutputStream out = new SwiftWriteFeature(session).withMetadata(Collections.singletonMap("C", "duck")).write(test, status);
+        final SwiftRegionService regionService = new SwiftRegionService(session);
+        final OutputStream out = new SwiftWriteFeature(session, regionService).withMetadata(Collections.singletonMap("C", "duck")).write(test, status);
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         IOUtils.closeQuietly(out);
@@ -65,11 +66,11 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
         assertTrue(new SwiftFindFeature(session).find(test));
         final PathAttributes attributes = session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
         assertEquals(content.length, attributes.getSize());
-        final Write.Append append = new SwiftWriteFeature(session).append(test, status.getLength(), PathCache.empty());
+        final Write.Append append = new SwiftWriteFeature(session, regionService).append(test, status.getLength(), PathCache.empty());
         assertTrue(append.override);
         assertEquals(content.length, append.size, 0L);
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new SwiftReadFeature(session).read(test, new TransferStatus());
+        final InputStream in = new SwiftReadFeature(session, regionService).read(test, new TransferStatus());
         IOUtils.readFully(in, buffer);
         IOUtils.closeQuietly(in);
         assertArrayEquals(content, buffer);
