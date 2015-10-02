@@ -41,7 +41,7 @@ namespace Ch.Cyberduck.Core.Proxy
             {
                 target = new Uri(new ProxyHostUrlProvider().get(host));
             }
-            catch (UriFormatException e)
+            catch (UriFormatException)
             {
                 return ch.cyberduck.core.proxy.Proxy.DIRECT;
             }

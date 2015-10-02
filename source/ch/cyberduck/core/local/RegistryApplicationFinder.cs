@@ -237,7 +237,7 @@ namespace Ch.Cyberduck.Core.Local
                 }
                 return cmd.Substring(0, cmd.IndexOf(" "));
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return null;
             }
