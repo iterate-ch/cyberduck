@@ -64,11 +64,11 @@
   </Target>
 
   <Target Name="SignBundleEngine" DependsOnTargets="UsesSignTool">
-    <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck CLI&quot; /t http://timestamp.digicert.com /a &quot;@(SignBundleEngine)&quot;" />
+    <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck CLI&quot; /t http://www.startssl.com/timestamp /a &quot;@(SignBundleEngine)&quot;" />
   </Target>
 
   <Target Name="SignBundle" DependsOnTargets="UsesSignTool">
-    <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck CLI&quot; /t http://timestamp.digicert.com /a &quot;@(SignBundle)&quot;" />
+    <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck CLI&quot; /t http://www.startssl.com/timestamp /a &quot;@(SignBundle)&quot;" />
   </Target>
 
     <!--
