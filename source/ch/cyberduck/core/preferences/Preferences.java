@@ -273,9 +273,10 @@ public abstract class Preferences {
         defaults.put("application.support.path", support);
         defaults.put("application.receipt.path", support);
 
+        // Default bundled profiles location
         final Local resources = ApplicationResourcesFinderFactory.get().find();
-        defaults.put("application.bookmarks.path", String.format("%s/Bookmarks", resources.getAbsolute()));
-        defaults.put("application.profiles.path", String.format("%s/Profiles", resources.getAbsolute()));
+        defaults.put("application.bookmarks.path", String.format("%s/bookmarks", resources.getAbsolute()));
+        defaults.put("application.profiles.path", String.format("%s/profiles", resources.getAbsolute()));
 
         /**
          * Lowercase folder name to use when looking for bookmarks in user support directory
