@@ -25,5 +25,12 @@
         <array>
             <string>G69SCX94XU.duck</string>
         </array>
+        <key>com.apple.security.scripting-targets</key>
+        <dict>
+            <key>com.apple.systempreferences</key>
+            <array>
+                <string>preferencepane.reveal</string>
+            </array>
+        </dict>
     </dict>
 </plist>
