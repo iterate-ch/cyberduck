@@ -74,9 +74,19 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
     public ResponseOutputStream<String> write(final Path file, final TransferStatus status) throws BackgroundException {
         final List<Header> headers = new ArrayList<Header>();
         if(status.isAppend()) {
-            headers.add(new BasicHeader(HttpHeaders.CONTENT_RANGE, String.format("bytes %d-%d/%d",
-                            status.getOffset(), status.getOffset() + status.getLength() - 1, status.getOffset() + status.getLength()))
-            );
+            if(-1 == status.getLength()) {
+                // Complete length unknown. An asterisk
+                // character ("*") in place of the complete-length indicates that the
+                // representation length was unknown when the header field was generated.
+                headers.add(new BasicHeader(HttpHeaders.CONTENT_RANGE, String.format("bytes %d-*/*",
+                                status.getOffset()))
+                );
+            }
+            else {
+                headers.add(new BasicHeader(HttpHeaders.CONTENT_RANGE, String.format("bytes %d-%d/%d",
+                                status.getOffset(), status.getOffset() + status.getLength() - 1, status.getOffset() + status.getLength()))
+                );
+            }
         }
         if(expect) {
             headers.add(new BasicHeader(HTTP.EXPECT_DIRECTIVE, HTTP.EXPECT_CONTINUE));
