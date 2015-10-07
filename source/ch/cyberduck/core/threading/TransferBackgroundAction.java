@@ -23,8 +23,6 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.notification.NotificationService;
-import ch.cyberduck.core.notification.NotificationServiceFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
@@ -75,8 +73,6 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> im
     private TransferListener listener;
 
     private TransferPrompt prompt;
-
-    private NotificationService growl = NotificationServiceFactory.get();
 
     public TransferBackgroundAction(final Controller controller,
                                     final Session<?> session,
@@ -205,10 +201,7 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> im
         switch(transfer.getType()) {
             case copy:
                 final Session target = ((CopyTransfer) transfer).getDestination();
-                if(connection.check(target, PathCache.empty())) {
-                    // New connection opened
-                    growl.notify("Connection opened", session.getHost().getHostname());
-                }
+                connection.check(target, PathCache.empty());
         }
         switch(new TransferTypeFinder().type(session, transfer)) {
             case concurrent:
