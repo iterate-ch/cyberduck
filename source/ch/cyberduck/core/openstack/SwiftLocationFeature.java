@@ -18,7 +18,7 @@ package ch.cyberduck.core.openstack;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -26,7 +26,9 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Location;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -36,12 +38,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import ch.iterate.openstack.swift.Client;
+import ch.iterate.openstack.swift.exception.AuthorizationException;
+import ch.iterate.openstack.swift.exception.ContainerNotFoundException;
 import ch.iterate.openstack.swift.model.Region;
 
 /**
  * @version $Id$
  */
 public class SwiftLocationFeature implements Location {
+    private static final Logger log = Logger.getLogger(SwiftLocationFeature.class);
 
     private SwiftSession session;
 
@@ -89,10 +95,18 @@ public class SwiftLocationFeature implements Location {
         if(Location.unknown.equals(new SwiftRegion(container.attributes().getRegion()))) {
             final SwiftRegion region = new SwiftRegion(session.getHost().getRegion());
             if(Location.unknown.equals(region)) {
-                for(Path c : new SwiftContainerListService(session, region, false, false).list(new DisabledListProgressListener())) {
-                    if(c.getName().equals(container.getName())) {
-                        final SwiftRegion r = new SwiftRegion(c.attributes().getRegion());
-                        cache.put(container, r);
+                final Client client = session.getClient();
+                for(Region r : client.getRegions()) {
+                    try {
+                        cache.put(container, new SwiftRegion(
+                                        client.getContainerInfo(r, container.getName()).getRegion().getRegionId())
+                        );
+                    }
+                    catch(ContainerNotFoundException | AuthorizationException e) {
+                        log.warn(String.format("Failure finding container %s in region %s", container, r));
+                    }
+                    catch(IOException e) {
+                        throw new DefaultIOExceptionMappingService().map(e);
                     }
                 }
             }
