@@ -51,7 +51,7 @@ public class FTPDefaultListServiceTest extends AbstractTestCase {
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final ListService list = new FTPDefaultListService(session,
+        final ListService list = new FTPDefaultListService(session, new DisabledPasswordStore(), new DisabledLoginCallback(),
                 new CompositeFileEntryParser(Arrays.asList(new UnixFTPEntryParser())),
                 FTPListService.Command.list);
         final Path directory = session.workdir();
@@ -67,7 +67,7 @@ public class FTPDefaultListServiceTest extends AbstractTestCase {
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final ListService list = new FTPDefaultListService(session,
+        final ListService list = new FTPDefaultListService(session, new DisabledPasswordStore(), new DisabledLoginCallback(),
                 new CompositeFileEntryParser(Arrays.asList(new UnixFTPEntryParser())),
                 FTPListService.Command.lista);
         final Path directory = session.workdir();

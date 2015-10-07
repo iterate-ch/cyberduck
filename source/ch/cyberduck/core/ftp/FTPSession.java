@@ -22,10 +22,10 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -238,7 +238,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     @Override
-    public void login(final PasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
+    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
                       final Cache<Path> cache) throws BackgroundException {
         try {
             if(super.alert(prompt) && this.isTLSSupported()) {
@@ -289,7 +289,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                 catch(IOException e) {
                     log.warn(String.format("SYST command failed %s", e.getMessage()));
                 }
-                listService = new FTPListService(this, system, zone);
+                listService = new FTPListService(this, keychain, prompt, system, zone);
                 if(client.hasFeature(FTPCmd.MFMT.getCommand())) {
                     timestamp = new FTPMFMTTimestampFeature(this);
                 }

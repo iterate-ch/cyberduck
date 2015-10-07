@@ -38,12 +38,12 @@ public class KeychainLoginService implements LoginService {
     private final Preferences preferences
             = PreferencesFactory.get();
 
-    private LoginCallback controller;
+    private LoginCallback callback;
 
     private HostPasswordStore keychain;
 
     public KeychainLoginService(final LoginCallback prompt, final HostPasswordStore keychain) {
-        this.controller = prompt;
+        this.callback = prompt;
         this.keychain = keychain;
     }
 
@@ -51,9 +51,9 @@ public class KeychainLoginService implements LoginService {
     public void authenticate(final Session session, final Cache<Path> cache, final ProgressListener listener,
                              final CancelCallback cancel) throws BackgroundException {
         final Host bookmark = session.getHost();
-        if(session.alert(controller)) {
+        if(session.alert(callback)) {
             // Warning if credentials are sent plaintext.
-            controller.warn(bookmark.getProtocol(), MessageFormat.format(LocaleFactory.localizedString("Unsecured {0} connection", "Credentials"),
+            callback.warn(bookmark.getProtocol(), MessageFormat.format(LocaleFactory.localizedString("Unsecured {0} connection", "Credentials"),
                             bookmark.getProtocol().getName()),
                     MessageFormat.format("{0} {1}.", MessageFormat.format(LocaleFactory.localizedString("{0} will be sent in plaintext.", "Credentials"),
                                     bookmark.getCredentials().getPasswordPlaceholder()),
@@ -68,7 +68,7 @@ public class KeychainLoginService implements LoginService {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Attempt authentication for %s", bookmark));
             }
-            session.login(keychain, controller, cancel, cache);
+            session.login(keychain, callback, cancel, cache);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Login successful for session %s", session));
             }
@@ -78,7 +78,7 @@ public class KeychainLoginService implements LoginService {
         }
         catch(LoginFailureException e) {
             listener.message(LocaleFactory.localizedString("Login failed", "Credentials"));
-            controller.prompt(bookmark, bookmark.getCredentials(),
+            callback.prompt(bookmark, bookmark.getCredentials(),
                     LocaleFactory.localizedString("Login failed", "Credentials"), e.getDetail(),
                     new LoginOptions(bookmark.getProtocol()));
             throw e;
@@ -94,7 +94,7 @@ public class KeychainLoginService implements LoginService {
         if(credentials.isPublicKeyAuthentication()) {
             if(!credentials.getIdentity().attributes().getPermission().isReadable()) {
                 log.warn(String.format("Prompt to select identity file not readable %s", credentials.getIdentity()));
-                credentials.setIdentity(controller.select(credentials.getIdentity()));
+                credentials.setIdentity(callback.select(credentials.getIdentity()));
             }
         }
         if(!credentials.validate(bookmark.getProtocol(), options)
@@ -108,7 +108,7 @@ public class KeychainLoginService implements LoginService {
                             final StringAppender appender = new StringAppender();
                             appender.append(message);
                             appender.append(LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"));
-                            controller.prompt(bookmark, credentials,
+                            callback.prompt(bookmark, credentials,
                                     LocaleFactory.localizedString("Login", "Login"),
                                     appender.toString(),
                                     options);
@@ -126,7 +126,7 @@ public class KeychainLoginService implements LoginService {
                         final StringAppender appender = new StringAppender();
                         appender.append(message);
                         appender.append(LocaleFactory.localizedString("The use of the Keychain is disabled in the Preferences", "Credentials"));
-                        controller.prompt(bookmark, credentials,
+                        callback.prompt(bookmark, credentials,
                                 LocaleFactory.localizedString("Login", "Login"),
                                 appender.toString(), options);
                     }
@@ -139,7 +139,7 @@ public class KeychainLoginService implements LoginService {
                 final StringAppender appender = new StringAppender();
                 appender.append(message);
                 appender.append(LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"));
-                controller.prompt(bookmark, credentials,
+                callback.prompt(bookmark, credentials,
                         LocaleFactory.localizedString("Login", "Login"),
                         appender.toString(), options);
             }

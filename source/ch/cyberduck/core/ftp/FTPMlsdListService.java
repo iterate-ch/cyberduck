@@ -18,8 +18,10 @@ package ch.cyberduck.core.ftp;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
@@ -34,12 +36,18 @@ import java.util.List;
  */
 public class FTPMlsdListService implements ListService {
 
-    private FTPSession session;
+    private final FTPSession session;
 
-    private FTPDataResponseReader reader;
+    private final HostPasswordStore keychain;
 
-    public FTPMlsdListService(final FTPSession session) {
+    private final LoginCallback prompt;
+
+    private final FTPDataResponseReader reader;
+
+    public FTPMlsdListService(final FTPSession session, final HostPasswordStore keychain, final LoginCallback prompt) {
         this.session = session;
+        this.keychain = keychain;
+        this.prompt = prompt;
         this.reader = new FTPMlsdListResponseReader();
     }
 
@@ -54,7 +62,7 @@ public class FTPMlsdListService implements ListService {
                 // data connection in type ASCII or type EBCDIC.
                 throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
             }
-            final List<String> list = new FTPDataFallback(session).data(new DataConnectionAction<List<String>>() {
+            final List<String> list = new FTPDataFallback(session, keychain, prompt).data(new DataConnectionAction<List<String>>() {
                 @Override
                 public List<String> execute() throws BackgroundException {
                     try {

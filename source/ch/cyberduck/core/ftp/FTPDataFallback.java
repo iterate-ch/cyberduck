@@ -20,6 +20,8 @@ package ch.cyberduck.core.ftp;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.HostPasswordStore;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
@@ -40,10 +42,20 @@ import java.io.IOException;
 public class FTPDataFallback {
     private static final Logger log = Logger.getLogger(FTPDataFallback.class);
 
-    private FTPSession session;
+    private final FTPSession session;
+
+    private final HostPasswordStore keychain;
+
+    private final LoginCallback prompt;
 
     public FTPDataFallback(final FTPSession session) {
+        this(session, new DisabledPasswordStore(), new DisabledLoginCallback());
+    }
+
+    public FTPDataFallback(final FTPSession session, final HostPasswordStore keychain, final LoginCallback prompt) {
         this.session = session;
+        this.keychain = keychain;
+        this.prompt = prompt;
     }
 
     /**
@@ -78,9 +90,9 @@ public class FTPDataFallback {
                         log.warn(String.format("Ignore failure completing pending command %s", e.getMessage()));
                         // Reconnect
                         new LoginConnectionService(
-                                new DisabledLoginCallback(),
+                                prompt,
                                 new DisabledHostKeyCallback(),
-                                new DisabledPasswordStore(),
+                                keychain,
                                 listener,
                                 session
                         ).connect(session, PathCache.empty());

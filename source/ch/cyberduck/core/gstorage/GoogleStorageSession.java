@@ -23,10 +23,10 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
@@ -133,7 +133,7 @@ public class GoogleStorageSession extends S3Session {
     }
 
     @Override
-    public void login(final PasswordStore keychain, final LoginCallback controller,
+    public void login(final HostPasswordStore keychain, final LoginCallback controller,
                       final CancelCallback cancel, final Cache<Path> cache) throws BackgroundException {
         // Project ID needs OAuth2 authentication
         final OAuth2Credentials oauth = new OAuth2Credentials(
