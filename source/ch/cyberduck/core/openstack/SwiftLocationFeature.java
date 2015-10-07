@@ -93,15 +93,18 @@ public class SwiftLocationFeature implements Location {
                     if(c.getName().equals(container.getName())) {
                         final SwiftRegion r = new SwiftRegion(c.attributes().getRegion());
                         cache.put(container, r);
-                        return r;
                     }
                 }
             }
-            return region;
+            else {
+                cache.put(container, region);
+            }
         }
-        final SwiftRegion r = new SwiftRegion(container.attributes().getRegion());
-        cache.put(container, r);
-        return r;
+        else {
+            final SwiftRegion r = new SwiftRegion(container.attributes().getRegion());
+            cache.put(container, r);
+        }
+        return cache.get(container);
     }
 
     public static final class SwiftRegion extends Name {
