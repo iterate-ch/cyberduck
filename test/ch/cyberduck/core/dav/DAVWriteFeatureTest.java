@@ -14,6 +14,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.http.HttpUploadFeature;
@@ -28,7 +29,7 @@ import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -91,6 +92,44 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
         session.close();
     }
 
+    @Test(expected = InteroperabilityException.class)
+    public void testWriteContentRange() throws Exception {
+        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
+                properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
+        ));
+        host.setDefaultPath("/dav/basic");
+        final AtomicBoolean redirected = new AtomicBoolean();
+        final DAVSession session = new DAVSession(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final DAVWriteFeature feature = new DAVWriteFeature(session);
+        final Path test = new Path("/dav/basic/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final byte[] content = RandomUtils.nextBytes(64000);
+        {
+            final TransferStatus status = new TransferStatus();
+            status.setLength(1024);
+            final ResponseOutputStream<String> out = feature.write(test, status);
+            // Write first 1024
+            new StreamCopier(status, status).withLimit(1024L).transfer(new ByteArrayInputStream(content), out);
+            out.close();
+        }
+        {
+            // Remaining chunked transfer with offset
+            final TransferStatus status = new TransferStatus();
+            status.setLength(-1);
+            status.setOffset(1024);
+            status.setAppend(true);
+            final ResponseOutputStream<String> out = feature.write(test, status);
+            new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
+            out.close();
+        }
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
+    }
+
     @Test(expected = AccessDeniedException.class)
     public void testWriteNotFound() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
@@ -147,7 +186,7 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
         final DAVWriteFeature feature = new DAVWriteFeature(session);
         final Path test = new Path("/redir-tmp/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
-        final byte[] content = RandomStringUtils.random(1000).getBytes();
+        final byte[] content = RandomUtils.nextBytes(1024);
         status.setLength(content.length);
         final ResponseOutputStream<String> out = feature.write(test, status);
         assertNotNull(out);
