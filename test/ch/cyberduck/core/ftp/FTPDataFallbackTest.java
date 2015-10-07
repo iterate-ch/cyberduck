@@ -71,7 +71,7 @@ public class FTPDataFallbackTest extends AbstractTestCase {
                 return null;
             }
         };
-        final FTPDataFallback f = new FTPDataFallback(session) {
+        final FTPDataFallback f = new FTPDataFallback(session, new DisabledPasswordStore(), new DisabledLoginCallback()) {
             @Override
             protected <T> T fallback(final DataConnectionAction<T> action) throws BackgroundException {
                 count.incrementAndGet();
@@ -103,7 +103,7 @@ public class FTPDataFallbackTest extends AbstractTestCase {
                 return null;
             }
         };
-        final FTPDataFallback f = new FTPDataFallback(session) {
+        final FTPDataFallback f = new FTPDataFallback(session, new DisabledPasswordStore(), new DisabledLoginCallback()) {
             @Override
             protected <T> T fallback(final DataConnectionAction<T> action) throws BackgroundException {
                 count.incrementAndGet();

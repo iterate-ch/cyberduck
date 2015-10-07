@@ -159,7 +159,7 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
             }
 
             @Override
-            public void login(final PasswordStore p, final LoginCallback l, final CancelCallback cancel, final Cache<Path> cache) throws BackgroundException {
+            public void login(final HostPasswordStore p, final LoginCallback l, final CancelCallback cancel, final Cache<Path> cache) throws BackgroundException {
                 if(prompt.get()) {
                     assertEquals("b", host.getCredentials().getPassword());
                     throw new LoginCanceledException();

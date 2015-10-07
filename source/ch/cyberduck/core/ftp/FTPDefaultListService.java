@@ -18,8 +18,10 @@ package ch.cyberduck.core.ftp;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
@@ -34,14 +36,21 @@ import java.util.List;
  */
 public class FTPDefaultListService implements ListService {
 
-    private FTPSession session;
+    private final FTPSession session;
 
-    private FTPListService.Command command;
+    private final FTPListService.Command command;
 
-    private FTPDataResponseReader reader;
+    private final FTPDataResponseReader reader;
 
-    public FTPDefaultListService(final FTPSession session, final CompositeFileEntryParser parser, final FTPListService.Command command) {
+    private final HostPasswordStore keychain;
+
+    private final LoginCallback prompt;
+
+    public FTPDefaultListService(final FTPSession session, final HostPasswordStore keychain, final LoginCallback prompt,
+                                 final CompositeFileEntryParser parser, final FTPListService.Command command) {
         this.session = session;
+        this.keychain = keychain;
+        this.prompt = prompt;
         this.command = command;
         this.reader = new FTPListResponseReader(parser, false);
     }
@@ -57,7 +66,7 @@ public class FTPDefaultListService implements ListService {
                 // data connection in type ASCII or type EBCDIC.
                 throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
             }
-            final List<String> list = new FTPDataFallback(session).data(new DataConnectionAction<List<String>>() {
+            final List<String> list = new FTPDataFallback(session, keychain, prompt).data(new DataConnectionAction<List<String>>() {
                 @Override
                 public List<String> execute() throws BackgroundException {
                     try {
