@@ -18,24 +18,16 @@ package ch.cyberduck.core;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.sparkle.Sandbox;
-
 /**
  * @version $Id$
  */
 public class TerminalServiceFactory extends Factory<TerminalService> {
-
-    private static final Sandbox sandbox
-            = Sandbox.get();
 
     public TerminalServiceFactory() {
         super("factory.terminalservice.class");
     }
 
     public static TerminalService get() {
-        if(sandbox.isSandboxed()) {
-            return null;
-        }
         return new TerminalServiceFactory().create();
     }
 }

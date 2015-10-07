@@ -3081,7 +3081,8 @@ public class BrowserController extends WindowController
             workdir = this.workdir();
         }
         try {
-            TerminalServiceFactory.get().open(session.getHost(), workdir);
+            final TerminalService terminal = TerminalServiceFactory.get();
+            terminal.open(session.getHost(), workdir);
         }
         catch(AccessDeniedException e) {
             this.alert(session.getHost(), e, new StringBuilder());
