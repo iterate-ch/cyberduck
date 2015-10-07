@@ -27,6 +27,7 @@ import ch.cyberduck.core.threading.LoggingUncaughtExceptionHandler;
 import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.core.threading.ThreadPool;
 
+import org.apache.commons.lang3.concurrent.ConcurrentUtils;
 import org.apache.log4j.Logger;
 
 import java.util.concurrent.Callable;
@@ -126,8 +127,8 @@ public abstract class AbstractController implements Controller {
         catch(RejectedExecutionException e) {
             log.error(String.format("Error scheduling background task %s for execution. %s", action, e.getMessage()));
             action.cleanup();
+            return ConcurrentUtils.constantFuture(null);
         }
-        return null;
     }
 
     protected void invalidate() {
