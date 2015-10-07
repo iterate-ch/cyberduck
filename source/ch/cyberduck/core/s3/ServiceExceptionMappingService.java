@@ -56,6 +56,9 @@ public class ServiceExceptionMappingService extends AbstractExceptionMappingServ
         if(HttpStatus.SC_NOT_FOUND == code) {
             return new NotfoundException(buffer.toString(), e);
         }
+        if(HttpStatus.SC_CONFLICT == code) {
+            return new AccessDeniedException(buffer.toString(), e);
+        }
         if(HttpStatus.SC_FORBIDDEN == code) {
             if(StringUtils.isNotBlank(e.getErrorCode())) {
                 if(e.getErrorCode().equals("SignatureDoesNotMatch")) {

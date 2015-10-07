@@ -25,6 +25,7 @@ import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Location;
 
@@ -67,5 +68,23 @@ public class S3BucketCreateServiceTest extends AbstractTestCase {
             assertFalse(find.find(bucket));
         }
         session.close();
+    }
+
+    @Test(expected = AccessDeniedException.class)
+    public void testCreateExistsAlreadyConflict() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                        new Credentials(
+                                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                        )));
+        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        final S3BucketCreateService service = new S3BucketCreateService(session);
+        try {
+            final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+            service.create(container, "us-east-1");
+        }
+        finally {
+            session.close();
+        }
     }
 }
