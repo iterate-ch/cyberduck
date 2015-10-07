@@ -40,16 +40,13 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
     @Test(expected = LoginCanceledException.class)
     public void testNoResolveForHTTPProxy() throws Exception {
         final Session session = new S3Session(new Host(new S3Protocol(), "unknownhost.local", new Credentials("user", "")));
-        final LoginConnectionService s = new LoginConnectionService(new DisabledProxyFinder() {
+        final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener(),
+                new DisabledProxyFinder() {
             @Override
             public Proxy find(final Host target) {
                 return new Proxy(Proxy.Type.HTTP, "proxy.local", 6666);
             }
-        }, new DisabledLoginCallback(),
-                new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(),
-                new DisabledProgressListener(),
-                new DisabledTranscriptListener());
+                });
         s.check(session, PathCache.empty());
     }
 

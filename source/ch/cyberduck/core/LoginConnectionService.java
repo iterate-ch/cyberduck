@@ -60,7 +60,7 @@ public class LoginConnectionService implements ConnectionService {
     private final FailureDiagnostics<Exception> diagnostics
             = new DefaultFailureDiagnostics();
 
-    private NotificationService growl = NotificationServiceFactory.get();
+    private NotificationService notification;
 
     private AtomicBoolean canceled
             = new AtomicBoolean();
@@ -74,33 +74,42 @@ public class LoginConnectionService implements ConnectionService {
                 listener, transcript);
     }
 
-    public LoginConnectionService(final ProxyFinder proxy,
-                                  final LoginCallback prompt,
+    public LoginConnectionService(final LoginCallback prompt,
                                   final HostKeyCallback key,
                                   final HostPasswordStore keychain,
                                   final ProgressListener listener,
-                                  final TranscriptListener transcript) {
-        this(new KeychainLoginService(prompt, keychain), proxy, key,
-                listener, transcript);
+                                  final TranscriptListener transcript,
+                                  final ProxyFinder proxy) {
+        this(new KeychainLoginService(prompt, keychain), key, listener, transcript, proxy);
     }
 
     public LoginConnectionService(final LoginService login,
                                   final HostKeyCallback key,
                                   final ProgressListener listener,
                                   final TranscriptListener transcript) {
-        this(login, ProxyFactory.get(), key, listener, transcript);
+        this(login, key, listener, transcript, ProxyFactory.get());
     }
 
     public LoginConnectionService(final LoginService login,
+                                  final HostKeyCallback key,
+                                  final ProgressListener listener,
+                                  final TranscriptListener transcript,
+                                  final ProxyFinder proxy) {
+        this(login, key, listener, transcript, proxy, NotificationServiceFactory.get());
+    }
+
+    public LoginConnectionService(final LoginService login,
+                                  final HostKeyCallback key,
+                                  final ProgressListener listener,
+                                  final TranscriptListener transcript,
                                   final ProxyFinder proxy,
-                                  final HostKeyCallback key,
-                                  final ProgressListener listener,
-                                  final TranscriptListener transcript) {
+                                  final NotificationService notification) {
         this.login = login;
         this.proxy = proxy;
         this.key = key;
         this.listener = listener;
         this.transcript = transcript;
+        this.notification = notification;
     }
 
     /**
@@ -189,7 +198,7 @@ public class LoginConnectionService implements ConnectionService {
                 bookmark.getProtocol().getName()));
 
         // New connection opened
-        growl.notify("Connection opened", session.getHost().getHostname());
+        notification.notify("Connection opened", session.getHost().getHostname());
 
         // Update last accessed timestamp
         bookmark.setTimestamp(new Date());
