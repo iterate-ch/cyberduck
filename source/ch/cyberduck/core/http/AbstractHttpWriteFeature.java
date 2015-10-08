@@ -26,6 +26,7 @@ import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.threading.NamedThreadFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 import org.apache.log4j.Logger;
@@ -83,7 +84,9 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature {
                     return command.getContentLength();
                 }
             };
-            entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, status.getMime()));
+            if(StringUtils.isNotBlank(status.getMime())) {
+                entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, status.getMime()));
+            }
             final FutureHttpResponse<T> target = new FutureHttpResponse<T>() {
                 @Override
                 public void run() {

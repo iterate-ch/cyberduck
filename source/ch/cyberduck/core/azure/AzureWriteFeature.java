@@ -30,6 +30,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.log4j.Logger;
 
@@ -95,7 +96,9 @@ public class AzureWriteFeature implements Write {
         try {
             final CloudBlockBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
                     .getBlockBlobReference(containerService.getKey(file));
-            blob.getProperties().setContentType(status.getMime());
+            if(StringUtils.isNotBlank(status.getMime())) {
+                blob.getProperties().setContentType(status.getMime());
+            }
             final HashMap<String, String> headers = new HashMap<>();
             // Add default metadata
             headers.putAll(metadata);
