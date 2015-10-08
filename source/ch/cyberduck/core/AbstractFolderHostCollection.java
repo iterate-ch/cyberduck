@@ -80,12 +80,15 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
     @Override
     public void collectionItemRemoved(final Host bookmark) {
         try {
-            this.getFile(bookmark).delete();
+            this.lock();
+            final Local file = this.getFile(bookmark);
+            file.delete();
         }
         catch(AccessDeniedException e) {
             log.error(String.format("Failure removing bookmark %s", e.getMessage()));
         }
         finally {
+            this.unlock();
             super.collectionItemRemoved(bookmark);
         }
     }
