@@ -130,6 +130,11 @@ public class Host implements Serializable, Comparable<Host> {
     private Date timestamp;
 
     /**
+     * Mount target
+     */
+    private Local volume;
+
+    /**
      * New host with the default protocol
      *
      * @param hostname The hostname of the server
@@ -308,6 +313,9 @@ public class Host implements Serializable, Comparable<Host> {
         if(null != timestamp) {
             dict.setStringForKey(String.valueOf(timestamp.getTime()), "Access Timestamp");
         }
+        if(null != volume) {
+            dict.setStringForKey(String.valueOf(volume.getAbbreviatedPath()), "Volume");
+        }
         return dict.getSerialized();
     }
 
@@ -436,7 +444,7 @@ public class Host implements Serializable, Comparable<Host> {
 
     /**
      * Sets the name for this host. Also reverts the nickname if no custom nickname is set.
-     * <p/>
+     * <p>
      * Configures credentials according to new hostname.
      *
      * @param hostname Server
@@ -631,6 +639,14 @@ public class Host implements Serializable, Comparable<Host> {
      */
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public Local getVolume() {
+        return volume;
+    }
+
+    public void setVolume(final Local volume) {
+        this.volume = volume;
     }
 
     @Override

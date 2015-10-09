@@ -166,6 +166,10 @@ public class HostDictionary {
             if(accessObj != null) {
                 bookmark.setTimestamp(new Date(Long.parseLong(accessObj.toString())));
             }
+            Object volumeObj = dict.stringForKey("Volume");
+            if(volumeObj != null) {
+                bookmark.setVolume(LocalFactory.get(volumeObj.toString()));
+            }
             return bookmark;
         }
         return null;
