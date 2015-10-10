@@ -21,9 +21,15 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.io.Checksum;
 
-import java.io.File;
+import org.apache.log4j.Logger;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.attribute.FileTime;
 
 public class LocalAttributes extends Attributes {
+    private static final Logger log = Logger.getLogger(LocalAttributes.class);
 
     private String path;
 
@@ -38,9 +44,13 @@ public class LocalAttributes extends Attributes {
 
     @Override
     public long getModificationDate() {
-        final File file = new File(path);
-        if(file.exists()) {
-            return file.lastModified();
+        if(Files.exists(Paths.get(path))) {
+            try {
+                return Files.getLastModifiedTime(Paths.get(path)).toMillis();
+            }
+            catch(IOException e) {
+                log.warn(String.format("Failure getting timestamp of %s. %s", path, e.getMessage()));
+            }
         }
         return -1;
     }
@@ -65,16 +75,23 @@ public class LocalAttributes extends Attributes {
         if(timestamp < 0) {
             return;
         }
-        if(!new File(path).setLastModified(timestamp)) {
-            throw new LocalAccessDeniedException(String.format("Cannot change timestamp for %s", path));
+        try {
+            Files.setLastModifiedTime(Paths.get(path), FileTime.fromMillis(timestamp));
+        }
+        catch(IOException e) {
+            throw new LocalAccessDeniedException(String.format("Cannot change timestamp for %s", path), e);
         }
     }
 
     @Override
     public long getSize() {
-        final File file = new File(path);
-        if(file.exists()) {
-            return new File(path).length();
+        if(Files.exists(Paths.get(path))) {
+            try {
+                return Files.size(Paths.get(path));
+            }
+            catch(IOException e) {
+                log.warn(String.format("Failure getting size of %s. %s", path, e.getMessage()));
+            }
         }
         return -1;
     }
@@ -129,17 +146,17 @@ public class LocalAttributes extends Attributes {
 
         @Override
         public boolean isReadable() {
-            return new File(path).canRead();
+            return Files.isReadable(Paths.get(path));
         }
 
         @Override
         public boolean isWritable() {
-            return new File(path).canWrite();
+            return Files.isWritable(Paths.get(path));
         }
 
         @Override
         public boolean isExecutable() {
-            return new File(path).canExecute();
+            return Files.isExecutable(Paths.get(path));
         }
     }
 
