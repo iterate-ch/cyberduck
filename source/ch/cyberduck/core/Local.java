@@ -38,15 +38,19 @@ import org.apache.log4j.Logger;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.EnumSet;
 import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 /**
  * @version $Id$
@@ -115,7 +119,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     }
 
     public boolean isVolume() {
-        return null == new File(path).getParent();
+        return null == Paths.get(path).getParent();
     }
 
     /**
@@ -124,7 +128,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
      * @see Local#exists()
      */
     public boolean isDirectory() {
-        return new File(path).isDirectory();
+        return Files.isDirectory(Paths.get(path));
     }
 
     /**
@@ -133,7 +137,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
      * @see Local#exists()
      */
     public boolean isFile() {
-        return new File(path).isFile();
+        return Files.isRegularFile(Paths.get(path));
     }
 
     /**
@@ -172,16 +176,12 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     }
 
     public void mkdir() throws AccessDeniedException {
-        final File file = new File(path);
-        if(file.exists()) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Directory %s already exists", path));
-            }
-            return;
+        try {
+            Files.createDirectories(Paths.get(path));
         }
-        if(!file.mkdirs()) {
+        catch(IOException e) {
             throw new LocalAccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
-                    "Cannot create folder {0}", "Error"), path));
+                    "Cannot create folder {0}", "Error"), path), e);
         }
     }
 
@@ -189,15 +189,11 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
      * Delete the file
      */
     public void delete() throws AccessDeniedException {
-        final File file = new File(path);
-        if(!file.exists()) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("File %s does not exists", path));
-            }
-            return;
+        try {
+            Files.deleteIfExists(Paths.get(path));
         }
-        if(!file.delete()) {
-            throw new LocalAccessDeniedException(String.format("Delete %s failed", path));
+        catch(IOException e) {
+            throw new LocalAccessDeniedException(String.format("Delete %s failed", path), e);
         }
     }
 
@@ -207,27 +203,28 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
      * @param deferred On application quit
      */
     public void delete(boolean deferred) throws AccessDeniedException {
-        if(deferred) {
-            new File(path).deleteOnExit();
-        }
-        else {
-            this.delete();
-        }
+        this.delete();
     }
 
     public AttributedList<Local> list(final Filter<String> filter) throws AccessDeniedException {
         final AttributedList<Local> children = new AttributedList<Local>();
-        final File[] files = new File(path).listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(final File dir, final String name) {
-                return filter.accept(name);
-            }
-        });
-        if(null == files) {
-            throw new LocalAccessDeniedException(String.format("Error listing files in directory %s", path));
+        try {
+            final Stream<Path> stream = Files.list(Paths.get(path)).filter(new Predicate<Path>() {
+                @Override
+                public boolean test(final Path path) {
+                    return filter.accept(path.getFileName().toString());
+                }
+            });
+            stream.forEach(new Consumer<Path>() {
+                @Override
+                public void accept(final Path f) {
+                    children.add(LocalFactory.get(f.toString()));
+                }
+            });
+            stream.close();
         }
-        for(File file : files) {
-            children.add(LocalFactory.get(file.getAbsolutePath()));
+        catch(IOException e) {
+            throw new LocalAccessDeniedException(String.format("Error listing files in directory %s", path), e);
         }
         return children;
     }
@@ -292,19 +289,22 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     }
 
     public Local getParent() {
-        return LocalFactory.get(new File(path).getParentFile().getAbsolutePath());
+        return LocalFactory.get(Paths.get(path).getParent().toString());
     }
 
     /**
      * @return True if the path exists on the file system.
      */
     public boolean exists() {
-        return new File(path).exists();
+        return Files.exists(Paths.get(path));
     }
 
     public void rename(final Local renamed) throws AccessDeniedException {
-        if(!new File(path).renameTo(new File(renamed.getAbsolute()))) {
-            throw new LocalAccessDeniedException(String.format("Rename failed for %s", renamed));
+        try {
+            Files.move(Paths.get(path), Paths.get(renamed.getAbsolute()));
+        }
+        catch(IOException e) {
+            throw new LocalAccessDeniedException(String.format("Rename failed for %s", renamed), e);
         }
     }
 
