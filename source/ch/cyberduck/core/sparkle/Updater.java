@@ -20,6 +20,7 @@ package ch.cyberduck.core.sparkle;
  */
 
 import ch.cyberduck.binding.foundation.NSObject;
+import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.rococoa.ID;
@@ -32,7 +33,9 @@ public abstract class Updater extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("SUUpdater", _Class.class);
 
     public static Updater create() {
-        return CLASS.alloc().init();
+        final Updater updater = CLASS.alloc().init();
+        updater.setUserAgentString(new PreferencesUseragentProvider().get());
+        return updater;
     }
 
     public interface _Class extends ObjCClass {
