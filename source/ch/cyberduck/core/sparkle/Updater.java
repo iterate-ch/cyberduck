@@ -33,13 +33,13 @@ public abstract class Updater extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("SUUpdater", _Class.class);
 
     public static Updater create() {
-        final Updater updater = CLASS.alloc().init();
+        final Updater updater = CLASS.sharedUpdater();
         updater.setUserAgentString(new PreferencesUseragentProvider().get());
         return updater;
     }
 
     public interface _Class extends ObjCClass {
-        Updater alloc();
+        Updater sharedUpdater();
     }
 
     public static String getFeed() {
@@ -55,8 +55,6 @@ public abstract class Updater extends NSObject {
      * Connect any menu item to this action in Interface Builder,
      * and Sparkle will check for updates and report back its findings verbosely
      * when it is invoked.
-     *
-     * @param sender
      */
     public abstract void checkForUpdates(ID sender);
 
