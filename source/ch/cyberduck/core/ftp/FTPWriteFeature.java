@@ -23,7 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.io.output.CountingOutputStream;
+import org.apache.commons.io.output.ProxyOutputStream;
 import org.apache.commons.net.ftp.FTPReply;
 import org.apache.log4j.Logger;
 
@@ -65,7 +65,7 @@ public class FTPWriteFeature extends AppendWriteFeature {
                     }
                 }
             }, new DisabledProgressListener());
-            return new CountingOutputStream(out) {
+            return new ProxyOutputStream(out) {
                 @Override
                 public void close() throws IOException {
                     super.close();
