@@ -21,6 +21,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
@@ -165,7 +166,7 @@ public class FTPListService implements ListService {
                                 new DisabledHostKeyCallback(),
                                 new DisabledPasswordStore(),
                                 listener,
-                                session
+                                new DisabledTranscriptListener()
                         ).connect(session, PathCache.empty());
                     }
                     this.remove(Command.stat);
