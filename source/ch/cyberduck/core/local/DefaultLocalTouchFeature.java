@@ -39,7 +39,7 @@ public class DefaultLocalTouchFeature implements Touch {
     @Override
     public void touch(final Local file) throws AccessDeniedException {
         final Local parent = file.getParent();
-        if(parent.exists()) {
+        if(!parent.exists()) {
             parent.mkdir();
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Created folder %s", parent));
