@@ -19,7 +19,12 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.local.features.Trash;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * @version $Id:$
@@ -28,6 +33,11 @@ public class DefaultLocalTrashFeature implements Trash {
 
     @Override
     public void trash(Local file) throws AccessDeniedException {
-        file.delete();
+        try {
+            Files.delete(Paths.get(file.getAbsolute()));
+        }
+        catch(IOException e) {
+            throw new LocalAccessDeniedException(String.format("Failed to move %s to Trash", file.getName()), e);
+        }
     }
 }
