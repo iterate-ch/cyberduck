@@ -4,3 +4,7 @@ Cyberduck for mounting volumes in the file explorer is now available from https:
 4.8 [https://trac.cyberduck.io/milestone/4.8]
 - [Feature] Support for authentication with Keystone v3 API (OpenStack Swift) (#8813)
 - [Bugfix] Certificate chain displayed not complete (#8885)
+- [Bugfix] Permission failure deleting files looking for interrupted multipart uploads (S3) (#9000)
+- [Bugfix] XML validation failure with AccessControlPolicy element (Google Storage) (#9002)
+- [Bugfix] Do not try list containers if default path is provided (OpenStack Swift) (#9038)
+- [Bugfix] Faster connection setup with many containers (OpenStack Swift)
