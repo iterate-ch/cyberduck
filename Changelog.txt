@@ -4,9 +4,9 @@ http://cyberduck.io/
 Changelog. Last modified: $Date$
 
 4.8 [https://trac.cyberduck.io/milestone/4.8]
-- [Feature] Support for authentication with Keystone v3 API (OpenStack Swift) (#8813)
 - [Feature] Importer for ExpanDrive bookmarks (Mac)
 - [Feature] Shared bookmarks and history with CLI and Mountain Duck in application group support directory (Mac)
+- [Bugfix] Files are damaged after being synchronized with mirror action (#8657)
 - [Bugfix] Certificate chain displayed not complete (#8885)
 - [Bugfix] Permission failure deleting files looking for interrupted multipart uploads (S3) (#9000)
 - [Bugfix] XML validation failure with AccessControlPolicy element (Google Storage) (#9002)
