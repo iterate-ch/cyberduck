@@ -39,12 +39,14 @@ import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.synchronization.ComparisonServiceFilter;
 import ch.cyberduck.core.transfer.synchronisation.SynchronizationPathFilter;
 
+import org.apache.commons.collections.map.LRUMap;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -69,8 +71,11 @@ public class SyncTransfer extends Transfer {
 
     private TransferItem item;
 
-    private PathCache cache
+    private PathCache listCache
             = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
+
+    private Map<TransferItem, Comparison> compareCache = Collections.<TransferItem, Comparison>synchronizedMap(new LRUMap(
+            PreferencesFactory.get().getInteger("transfer.cache.size")));
 
     public SyncTransfer(final Host host, final TransferItem item) {
         this(host, item, TransferAction.callback);
@@ -85,16 +90,16 @@ public class SyncTransfer extends Transfer {
     }
 
     private void init() {
-        upload = new UploadTransfer(host, roots).withCache(cache);
-        download = new DownloadTransfer(host, roots).withCache(cache);
+        upload = new UploadTransfer(host, roots).withCache(listCache);
+        download = new DownloadTransfer(host, roots).withCache(listCache);
     }
 
     @Override
     public Transfer withCache(final PathCache cache) {
-        this.cache = cache;
+        this.listCache = cache;
         // Populate cache for root items. See #8712
         for(TransferItem root : roots) {
-            this.cache.put(root.remote.getParent(), new AttributedList<Path>(Collections.singletonList(root.remote)));
+            this.listCache.put(root.remote.getParent(), new AttributedList<Path>(Collections.singletonList(root.remote)));
         }
         upload.withCache(cache);
         download.withCache(cache);
@@ -152,12 +157,12 @@ public class SyncTransfer extends Transfer {
         // Set chosen action (upload, download, mirror) from prompt
         return new SynchronizationPathFilter(
                 comparison = new CachingComparisonServiceFilter(
-                        new ComparisonServiceFilter(session, session.getHost().getTimezone(), listener).withCache(cache)
-                ),
+                        new ComparisonServiceFilter(session, session.getHost().getTimezone(), listener).withCache(listCache)
+                ).withCache(compareCache),
                 download.filter(session, TransferAction.overwrite, listener),
                 upload.filter(session, TransferAction.overwrite, listener),
                 action
-        ).withCache(cache);
+        ).withCache(listCache);
     }
 
     @Override
@@ -167,7 +172,7 @@ public class SyncTransfer extends Transfer {
             log.debug(String.format("Children for %s", directory));
         }
         final Set<TransferItem> children = new HashSet<TransferItem>();
-        final Find finder = new DefaultFindFeature(session).withCache(cache);
+        final Find finder = new DefaultFindFeature(session).withCache(listCache);
         if(finder.find(directory)) {
             children.addAll(download.list(session, directory, local, listener));
         }

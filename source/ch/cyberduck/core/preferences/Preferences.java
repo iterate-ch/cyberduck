@@ -510,9 +510,6 @@ public abstract class Preferences {
          */
         defaults.put("queue.download.complete.open", String.valueOf(false));
 
-        defaults.put("queue.sync.compare.hash", String.valueOf(true));
-        defaults.put("queue.sync.compare.size", String.valueOf(false));
-
         defaults.put("queue.dock.badge", String.valueOf(false));
 
         defaults.put("queue.sleep.prevent", String.valueOf(true));
