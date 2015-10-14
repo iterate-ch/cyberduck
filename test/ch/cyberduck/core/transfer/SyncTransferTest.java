@@ -25,9 +25,11 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.serializer.TransferDictionary;
+import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.test.NullLocal;
 import ch.cyberduck.core.test.NullSession;
 
@@ -128,6 +130,16 @@ public class SyncTransferTest extends AbstractTestCase {
                     public boolean exists() {
                         return true;
                     }
+
+                    @Override
+                    public LocalAttributes attributes() {
+                        return new LocalAttributes(path) {
+                            @Override
+                            public long getSize() {
+                                return 1L;
+                            }
+                        };
+                    }
                 },
                 new TransferStatus().exists(true)));
     }
@@ -135,18 +147,44 @@ public class SyncTransferTest extends AbstractTestCase {
     @Test
     public void testFilterMirror() throws Exception {
         final Path p = new Path("t", EnumSet.of(Path.Type.directory));
-        Transfer t = new SyncTransfer(new Host("t"), new TransferItem(p, new NullLocal(System.getProperty("java.io.tmpdir"), "t")));
+        SyncTransfer t = new SyncTransfer(new Host("t"), new TransferItem(p, new NullLocal(System.getProperty("java.io.tmpdir"), "t")));
         final TransferPathFilter filter = t.filter(new NullSession(new Host("t")), TransferAction.mirror, new DisabledProgressListener());
-        final Path test = new Path(p, "a", EnumSet.of(Path.Type.file));
-        assertTrue(filter.accept(test, new NullLocal(System.getProperty("java.io.tmpdir"), "a") {
-
+        assertTrue(filter.accept(new Path(p, "a", EnumSet.of(Path.Type.file)), new NullLocal(System.getProperty("java.io.tmpdir"), "a") {
                     @Override
                     public boolean exists() {
                         return true;
                     }
 
+                    @Override
+                    public LocalAttributes attributes() {
+                        return new LocalAttributes(path) {
+                            @Override
+                            public long getSize() {
+                                return 1L;
+                            }
+                        };
+                    }
                 },
                 new TransferStatus().exists(true)));
+        assertTrue(filter.accept(new Path(p, "b", EnumSet.of(Path.Type.file)), new NullLocal(System.getProperty("java.io.tmpdir"), "a") {
+                    @Override
+                    public boolean exists() {
+                        return true;
+                    }
+
+                    @Override
+                    public LocalAttributes attributes() {
+                        return new LocalAttributes(path) {
+                            @Override
+                            public long getSize() {
+                                return 0L;
+                            }
+                        };
+                    }
+                },
+                new TransferStatus().exists(true)));
+        assertEquals(Comparison.local, t.compare(new TransferItem(new Path(p, "a", EnumSet.of(Path.Type.file)), new NullLocal(System.getProperty("java.io.tmpdir"), "a"))));
+        assertEquals(Comparison.remote, t.compare(new TransferItem(new Path(p, "b", EnumSet.of(Path.Type.file)), new NullLocal(System.getProperty("java.io.tmpdir"), "a"))));
     }
 
     @Test
