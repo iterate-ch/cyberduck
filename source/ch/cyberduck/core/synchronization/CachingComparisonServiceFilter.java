@@ -50,7 +50,11 @@ public class CachingComparisonServiceFilter implements ComparePathFilter {
             }
             cache.put(new TransferItem(file, local), delegate.compare(file, local));
         }
-        return cache.get(new TransferItem(file, local));
+        final Comparison comparison = cache.get(new TransferItem(file, local));
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Return comparison %s for file %s", comparison, file));
+        }
+        return comparison;
     }
 
     public Comparison get(final TransferItem item) {
