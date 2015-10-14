@@ -67,4 +67,9 @@ public class LimitedListProgressListener implements ListProgressListener {
             throw new ListCanceledException(list);
         }
     }
+
+    protected void disable() {
+        PreferencesFactory.get().setProperty("browser.list.limit.directory", Integer.MAX_VALUE);
+        PreferencesFactory.get().setProperty("browser.list.limit.container", Integer.MAX_VALUE);
+    }
 }
