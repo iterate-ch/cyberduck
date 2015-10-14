@@ -21,10 +21,8 @@ package ch.cyberduck.core.synchronization;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferItem;
 
-import org.apache.commons.collections.map.LRUMap;
 import org.apache.log4j.Logger;
 
 import java.util.Collections;
@@ -36,8 +34,7 @@ import java.util.Map;
 public class CachingComparisonServiceFilter implements ComparePathFilter {
     private static final Logger log = Logger.getLogger(CachingComparisonServiceFilter.class);
 
-    private Map<TransferItem, Comparison> cache = Collections.<TransferItem, Comparison>synchronizedMap(new LRUMap(
-            PreferencesFactory.get().getInteger("transfer.cache.size")));
+    private Map<TransferItem, Comparison> cache = Collections.emptyMap();
 
     private ComparisonServiceFilter delegate;
 
@@ -65,5 +62,10 @@ public class CachingComparisonServiceFilter implements ComparePathFilter {
 
     public void reset() {
         cache.clear();
+    }
+
+    public CachingComparisonServiceFilter withCache(final Map<TransferItem, Comparison> cache) {
+        this.cache = cache;
+        return this;
     }
 }
