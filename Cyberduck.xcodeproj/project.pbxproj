@@ -162,13 +162,13 @@
 		4786CB6E0E253B800029848F /* Transcript.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4786CB680E253B800029848F /* Transcript.xib */; };
 		4786CB6F0E253B800029848F /* Progress.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4786CB690E253B800029848F /* Progress.xib */; };
 		4786CB700E253B800029848F /* Task.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4786CB6A0E253B800029848F /* Task.xib */; };
+		478D6D951BCE861900A80287 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4792112812F6F4FD00E35E16 /* Sparkle.framework */; };
 		478ECD090DAD5743008A5B1F /* QLPreviewPanel.h in Headers */ = {isa = PBXBuildFile; fileRef = 473240070DABC00800BF67D2 /* QLPreviewPanel.h */; };
 		478ECD0A0DAD5743008A5B1F /* QuickLook.h in Headers */ = {isa = PBXBuildFile; fileRef = 478ECC9A0DAD1B0C008A5B1F /* QuickLook.h */; };
 		478ECD100DAD5743008A5B1F /* QuickLook.m in Sources */ = {isa = PBXBuildFile; fileRef = 478ECC9B0DAD1B0C008A5B1F /* QuickLook.m */; };
 		478ECD130DAD5743008A5B1F /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		478F0DF412FB03DC000FE33C /* update.pem in Resources */ = {isa = PBXBuildFile; fileRef = 478F0DF312FB03DC000FE33C /* update.pem */; };
 		47911A180B84C4E8001A29AE /* Acknowledgments.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 47911A170B84C4E8001A29AE /* Acknowledgments.rtf */; };
-		4792112912F6F4FD00E35E16 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4792112812F6F4FD00E35E16 /* Sparkle.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		479450BD162FF74F00FC7FF9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
 		4796C7641B3317F70042891D /* HP Cloud Object Storage.cyberduckprofile in Resources */ = {isa = PBXBuildFile; fileRef = 4780ACC617634CD6007D9DD5 /* HP Cloud Object Storage.cyberduckprofile */; };
 		4796C7651B3317F70042891D /* Rackspace UK.cyberduckprofile in Resources */ = {isa = PBXBuildFile; fileRef = 4718F4A9175F432400B424AD /* Rackspace UK.cyberduckprofile */; };
@@ -2385,7 +2385,6 @@
 			files = (
 				477A10480FD08DBA00BAD4AD /* Cocoa.framework in Frameworks */,
 				4734425B102DEABD00C04C43 /* Quartz.framework in Frameworks */,
-				4792112912F6F4FD00E35E16 /* Sparkle.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2423,6 +2422,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				47C88FF117269A71001A746A /* Cocoa.framework in Frameworks */,
+				478D6D951BCE861900A80287 /* Sparkle.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6284,6 +6284,7 @@
 			buildSettings = {
 				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
 				INFOPLIST_FILE = setup/app/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_NAME = Cyberduck;
 				SECTORDER_FLAGS = "";
@@ -6537,6 +6538,7 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
 				INFOPLIST_FILE = setup/app/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				PRODUCT_NAME = Cyberduck;
 				WRAPPER_EXTENSION = app;
 			};
