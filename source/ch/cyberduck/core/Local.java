@@ -41,6 +41,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -48,9 +49,6 @@ import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.EnumSet;
 import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 /**
  * @version $Id$
@@ -208,20 +206,15 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
 
     public AttributedList<Local> list(final Filter<String> filter) throws AccessDeniedException {
         final AttributedList<Local> children = new AttributedList<Local>();
-        try {
-            final Stream<Path> stream = Files.list(Paths.get(path)).filter(new Predicate<Path>() {
-                @Override
-                public boolean test(final Path path) {
-                    return filter.accept(path.getFileName().toString());
-                }
-            });
-            stream.forEach(new Consumer<Path>() {
-                @Override
-                public void accept(final Path f) {
-                    children.add(LocalFactory.get(f.toString()));
-                }
-            });
-            stream.close();
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(path), new DirectoryStream.Filter<Path>() {
+            @Override
+            public boolean accept(final Path entry) throws IOException {
+                return filter.accept(entry.getFileName().toString());
+            }
+        })) {
+            for(Path entry : stream) {
+                children.add(LocalFactory.get(entry.toString()));
+            }
         }
         catch(IOException e) {
             throw new LocalAccessDeniedException(String.format("Error listing files in directory %s", path), e);
