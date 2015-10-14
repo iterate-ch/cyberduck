@@ -56,7 +56,6 @@
     <property name="setup" value="${home}/setup"/>
     <property name="copyright" value="Copyright (c) 2001-2015 David Kocher. Copyright (c) 2011–2015 Yves Langisch"/>
     <property name="version" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
-    <property name="revision" value="0"/>
 
     <property name="sonar.host" value="sonar.cyberduck.io"/>
 
