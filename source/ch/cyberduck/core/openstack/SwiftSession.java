@@ -193,14 +193,6 @@ public class SwiftSession extends HttpSession<Client> {
                     new SwiftLocationFeature.SwiftRegion(host.getRegion())).list(listener));
         }
         else {
-            SwiftLocationFeature.SwiftRegion region = new SwiftLocationFeature.SwiftRegion(host.getRegion());
-            if(Location.unknown.equals(region)) {
-                region = new SwiftLocationFeature.SwiftRegion(directory.attributes().getRegion());
-            }
-            if(Location.unknown.equals(region)) {
-                directory.attributes().setRegion(
-                        regionService.lookup(this.getFeature(Location.class).getLocation(directory)).getRegionId());
-            }
             return new SwiftObjectListService(this, regionService).list(directory, listener);
         }
     }
