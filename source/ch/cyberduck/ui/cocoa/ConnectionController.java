@@ -253,12 +253,8 @@ public class ConnectionController extends SheetController {
     }
 
     public void hostFieldTextDidChange(final NSNotification sender) {
-        final Host parsed = HostParser.parse(hostField.stringValue());
         if(ProtocolFactory.isURL(hostField.stringValue())) {
-            this.hostChanged(parsed);
-        }
-        else {
-            this.updateField(hostField, parsed.getHostname());
+            this.hostChanged(HostParser.parse(hostField.stringValue()));
         }
         this.updateURLLabel();
         this.readPasswordFromKeychain();
