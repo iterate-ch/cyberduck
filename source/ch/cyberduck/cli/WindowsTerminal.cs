@@ -32,7 +32,7 @@ namespace Ch.Cyberduck.Cli
 
         private static void Main(string[] args)
         {
-            // set UTF-8 encoding
+            // set UTF-8 encoding, tested in mintty (cygwin, babun) and cmd.exe
             java.lang.System.setProperty("file.encoding", "UTF-8");
             Console.OutputEncoding = System.Text.Encoding.UTF8;
 
