@@ -54,7 +54,9 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.http.HttpHeaders;
+import org.apache.log4j.Logger;
 import org.bouncycastle.util.encoders.Base64;
+import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.net.URI;
@@ -74,6 +76,7 @@ import com.microsoft.azure.storage.blob.CloudBlobClient;
  * @version $Id$
  */
 public class AzureSession extends SSLSession<CloudBlobClient> {
+    private static final Logger log = Logger.getLogger(AzureSession.class);
 
     private OperationContext context
             = new OperationContext();
@@ -105,6 +108,8 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
             final BlobRequestOptions options = client.getDefaultRequestOptions();
             options.setTimeoutIntervalInMs(this.timeout());
             options.setRetryPolicyFactory(new RetryNoRetry());
+            context.setLoggingEnabled(true);
+            context.setLogger(LoggerFactory.getLogger(log.getName()));
             context.setUserHeaders(new HashMap<String, String>(Collections.singletonMap(
                             HttpHeaders.USER_AGENT, new PreferencesUseragentProvider().get()))
             );
