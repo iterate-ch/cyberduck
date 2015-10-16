@@ -450,12 +450,7 @@ public class Host implements Serializable, Comparable<Host> {
      * @param hostname Server
      */
     public void setHostname(final String hostname) {
-        if(protocol.isHostnameConfigurable()) {
-            this.hostname = hostname.trim();
-        }
-        else {
-            this.hostname = protocol.getDefaultHostname();
-        }
+        this.hostname = hostname.trim();
         this.configure();
     }
 
