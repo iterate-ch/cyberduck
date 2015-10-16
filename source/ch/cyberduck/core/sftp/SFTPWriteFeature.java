@@ -29,6 +29,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.EnumSet;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.schmizz.sshj.sftp.OpenMode;
 import net.schmizz.sshj.sftp.RemoteFile;
@@ -73,13 +74,20 @@ public class SFTPWriteFeature extends AppendWriteFeature {
                 log.info(String.format("Skipping %d bytes", status.getOffset()));
             }
             return handle.new RemoteFileOutputStream(status.getOffset(), maxUnconfirmedWrites) {
+                private final AtomicBoolean close = new AtomicBoolean();
+
                 @Override
                 public void close() throws IOException {
+                    if(close.get()) {
+                        log.warn(String.format("Skip double close of stream %s", this));
+                        return;
+                    }
                     try {
                         super.close();
                     }
                     finally {
                         handle.close();
+                        close.set(true);
                     }
                 }
             };
