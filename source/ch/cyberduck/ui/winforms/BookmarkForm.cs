@@ -58,6 +58,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public bool HostFieldEnabled
         {
+            get { return textBoxServer.Enabled; }
             set { textBoxServer.Enabled = value; }
         }
 
@@ -166,8 +167,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             set { labelUsername.Text = value; }
         }
-
-        bool IBookmarkView.HostFieldEnabled { get; set; }
 
         public Image Favicon
         {
