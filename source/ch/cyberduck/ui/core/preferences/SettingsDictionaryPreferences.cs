@@ -346,7 +346,7 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
                 this.getProperty("application.name").ToLower().Replace(" ", "") + ".log");
             RollingFileAppender appender = new RollingFileAppender(new PatternLayout(@"%d [%t] %-5p %c - %m%n"),
                 fileName, true);
-            appender.setMaxFileSize("1MB");
+            appender.setMaxFileSize("10MB");
             appender.setMaxBackupIndex(0);
             root.addAppender(appender);
             if (Debugger.IsAttached)
