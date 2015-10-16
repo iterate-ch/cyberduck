@@ -199,4 +199,26 @@ public class FTPReadFeatureTest extends AbstractTestCase {
         });
         session.close();
     }
+
+    @Test
+    public void testDoubleCloseStream() throws Exception {
+        final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
+                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+        ));
+        final FTPSession session = new FTPSession(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        new DefaultTouchFeature(session).touch(test);
+        final TransferStatus status = new TransferStatus();
+        status.setLength(5L);
+        final Path workdir = session.workdir();
+        final InputStream in = new FTPReadFeature(session).read(new Path(workdir, "test", EnumSet.of(Path.Type.file)), status);
+        assertNotNull(in);
+        // Read 226 reply
+        in.close();
+        // Read timeout
+        in.close();
+        session.close();
+    }
 }
