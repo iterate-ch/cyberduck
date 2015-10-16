@@ -86,8 +86,8 @@ public class FTPReadFeature implements Read {
         private final AtomicBoolean close;
         private final TransferStatus status;
 
-        public ReadReplyInputStream(final InputStream in, final TransferStatus status) {
-            super(in);
+        public ReadReplyInputStream(final InputStream proxy, final TransferStatus status) {
+            super(proxy);
             this.status = status;
             this.close = new AtomicBoolean();
         }
