@@ -9,6 +9,7 @@ Changelog. Last modified: $Date$
 - [Bugfix] Files are damaged after being synchronized with mirror action (#8657)
 - [Bugfix] Certificate chain displayed not complete (#8885)
 - [Bugfix] Permission failure deleting files looking for interrupted multipart uploads (S3) (#9000)
+- [Bugfix] Support for Infrequent Access (Standard IA) storage class (S3)
 - [Bugfix] XML validation failure with AccessControlPolicy element (Google Storage) (#9002)
 - [Bugfix] Do not try list containers if default path is provided (OpenStack Swift) (#9038)
 - [Bugfix] Faster connection setup with many containers (OpenStack Swift)
