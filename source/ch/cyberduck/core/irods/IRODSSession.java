@@ -19,6 +19,7 @@ package ch.cyberduck.core.irods;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
@@ -47,6 +48,7 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.irods.jargon.core.connection.AuthScheme;
 import org.irods.jargon.core.connection.IRODSAccount;
 import org.irods.jargon.core.connection.SettableJargonProperties;
 import org.irods.jargon.core.connection.auth.AuthResponse;
@@ -117,9 +119,22 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
         try {
             final String region = this.getRegion();
             final String resource = this.getResource();
+            final String user;
+            final AuthScheme scheme;
+            final Credentials credentials = host.getCredentials();
+            if(StringUtils.contains(credentials.getUsername(), ':')) {
+                // Support non default auth scheme (PAM)
+                user = StringUtils.splitPreserveAllTokens(credentials.getUsername(), ':')[1];
+                // Defaults to standard if not found
+                scheme = AuthScheme.findTypeByString(StringUtils.splitPreserveAllTokens(credentials.getUsername(), ':')[0]);
+            }
+            else {
+                user = credentials.getUsername();
+                // We can default to Standard if not specified
+                scheme = AuthScheme.STANDARD;
+            }
             final IRODSAccount account = IRODSAccount.instance(host.getHostname(), host.getPort(),
-                    host.getCredentials().getUsername(), host.getCredentials().getPassword(),
-                    this.workdir().getAbsolute(), region, resource);
+                    user, credentials.getPassword(), this.workdir().getAbsolute(), region, resource, scheme);
 
             final IRODSAccessObjectFactory factory = client.getIRODSAccessObjectFactory();
             final AuthResponse auth = factory.authenticateIRODSAccount(account);
