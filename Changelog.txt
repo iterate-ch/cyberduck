@@ -7,6 +7,7 @@ Changelog. Last modified: $Date$
 - [Feature] Shared bookmarks and history with CLI and Mountain Duck in application group support directory (Mac)
 - [Feature] Importer for ExpanDrive bookmarks (Mac)
 - [Feature] Allow to select PuTTY install location (Windows)
+- [Feature] Authentication with PAM scheme (iRODS)
 - [Bugfix] Files are damaged after being synchronized with mirror action (#8657)
 - [Bugfix] Certificate chain displayed not complete (#8885)
 - [Bugfix] Permission failure deleting files looking for interrupted multipart uploads (S3) (#9000)
@@ -14,6 +15,7 @@ Changelog. Last modified: $Date$
 - [Bugfix] XML validation failure with AccessControlPolicy element (Google Storage) (#9002)
 - [Bugfix] Do not try list containers if default path is provided (OpenStack Swift) (#9038)
 - [Bugfix] Faster connection setup with many containers (OpenStack Swift)
+- [Bugfix] Failure uploading multiple files (iRODS) (#8911)
 
 4.7.2 [https://trac.cyberduck.io/milestone/4.7.2]
 - [Feature] Delete incomplete multipart uploads when deleting file (S3) (#8920)

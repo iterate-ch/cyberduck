@@ -2,6 +2,7 @@ Cyberduck for mounting volumes in the file explorer is now available from https:
 
 4.7.3 [https://trac.cyberduck.io/milestone/4.7.3]
 - [Feature] Allow to select PuTTY install location
+- [Feature] Authentication with PAM scheme (iRODS)
 - [Bugfix] Files are damaged after being synchronized with mirror action (#8657)
 - [Bugfix] Certificate chain displayed not complete (#8885)
 - [Bugfix] Permission failure deleting files looking for interrupted multipart uploads (S3) (#9000)
@@ -9,3 +10,4 @@ Cyberduck for mounting volumes in the file explorer is now available from https:
 - [Bugfix] XML validation failure with AccessControlPolicy element (Google Storage) (#9002)
 - [Bugfix] Do not try list containers if default path is provided (OpenStack Swift) (#9038)
 - [Bugfix] Faster connection setup with many containers (OpenStack Swift)
+- [Bugfix] Failure uploading multiple files (iRODS) (#8911)
