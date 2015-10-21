@@ -459,8 +459,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateOpenInTerminal()
         {
-            return IsMounted() && Session is SFTPSession &&
-                   File.Exists(PreferencesFactory.get().getProperty("terminal.command.ssh"));
+            return IsMounted() && Session is SFTPSession;
         }
 
         private void View_OpenInTerminal()
@@ -478,6 +477,20 @@ namespace Ch.Cyberduck.Ui.Controller
             if (null == workdir)
             {
                 workdir = Workdir;
+            }
+            if (!File.Exists(PreferencesFactory.get().getProperty("terminal.command.ssh")))
+            {
+                OpenFileDialog selectDialog = new OpenFileDialog();
+                selectDialog.Filter = "PuTTY executable (.exe)|*.exe";
+                selectDialog.FilterIndex = 1;
+                if (selectDialog.ShowDialog() == DialogResult.OK)
+                {
+                    PreferencesFactory.get().setProperty("terminal.command.ssh", selectDialog.FileName);
+                }
+                else
+                {
+                    return;
+                }
             }
             new SshTerminalService().open(host, workdir);
         }
