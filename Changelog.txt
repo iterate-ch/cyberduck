@@ -6,6 +6,7 @@ Changelog. Last modified: $Date$
 4.7.3 [https://trac.cyberduck.io/milestone/4.7.3]
 - [Feature] Shared bookmarks and history with CLI and Mountain Duck in application group support directory (Mac)
 - [Feature] Importer for ExpanDrive bookmarks (Mac)
+- [Feature] Allow to select PuTTY install location (Windows)
 - [Bugfix] Files are damaged after being synchronized with mirror action (#8657)
 - [Bugfix] Certificate chain displayed not complete (#8885)
 - [Bugfix] Permission failure deleting files looking for interrupted multipart uploads (S3) (#9000)

@@ -1,7 +1,7 @@
 Cyberduck for mounting volumes in the file explorer is now available from https://mountainduck.io/ for Mac & Windows. A command line interface (CLI) version is now available from https://duck.sh/ for Windows, Linux & Mac.
 
-
 4.7.3 [https://trac.cyberduck.io/milestone/4.7.3]
+- [Feature] Allow to select PuTTY install location
 - [Bugfix] Files are damaged after being synchronized with mirror action (#8657)
 - [Bugfix] Certificate chain displayed not complete (#8885)
 - [Bugfix] Permission failure deleting files looking for interrupted multipart uploads (S3) (#9000)
