@@ -19,7 +19,7 @@
         <key>Default Port</key>
         <string>1247</string>
         <key>Username Placeholder</key>
-        <string>iPlant username</string>
+        <string>(STANDARD|PAM:)iPlant username</string>
         <key>Password Placeholder</key>
         <string>iPlant password</string>
     </dict>
