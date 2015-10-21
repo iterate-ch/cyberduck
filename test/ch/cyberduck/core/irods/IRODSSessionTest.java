@@ -31,6 +31,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProfileReaderFactory;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 
 import org.junit.Test;
@@ -61,11 +62,36 @@ public class IRODSSessionTest extends AbstractTestCase {
     }
 
     @Test
-    public void testLogin() throws Exception {
+    public void testLoginDefault() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
                 new Local("profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 properties.getProperty("irods.key"), properties.getProperty("irods.secret")
+        ));
+
+        final IRODSSession session = new IRODSSession(host);
+
+        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        assertTrue(session.isConnected());
+        assertNotNull(session.getClient());
+
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        assertNotNull(session.workdir());
+
+        final AttributedList<Path> list = session.list(session.workdir(), new DisabledListProgressListener());
+        assertFalse(list.isEmpty());
+
+        assertTrue(session.isConnected());
+        session.close();
+        assertFalse(session.isConnected());
+    }
+
+    @Test(expected = BackgroundException.class)
+    public void testLoginPam() throws Exception {
+        final Profile profile = ProfileReaderFactory.get().read(
+                new Local("profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
+                String.format("PAM:%s", properties.getProperty("irods.key")), properties.getProperty("irods.secret")
         ));
 
         final IRODSSession session = new IRODSSession(host);
