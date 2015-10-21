@@ -91,19 +91,24 @@ public class IRODSUploadFeature implements Upload<Checksum> {
                         .getIRODSAccessObjectFactory()
                         .getDataObjectChecksumUtilitiesAO(fs.getIRODSAccount());
                 final ChecksumValue value = checksum.retrieveExistingChecksumForDataObject(f.getAbsolutePath());
-                final Checksum fingerprint = Checksum.parse(value.getChecksumStringValue());
-                if(null == fingerprint) {
-                    log.warn(String.format("Unsupported checksum algorithm %s", value.getChecksumEncoding()));
+                if(null == value) {
+                    log.warn(String.format("Missing checksum for upload %s", f));
                 }
                 else {
-                    final Checksum expected = ChecksumComputeFactory.get(fingerprint.algorithm).compute(local.getInputStream());
-                    if(!expected.equals(fingerprint)) {
-                        throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                                MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
-                                        expected, fingerprint.hash));
+                    final Checksum fingerprint = Checksum.parse(value.getChecksumStringValue());
+                    if(null == fingerprint) {
+                        log.warn(String.format("Unsupported checksum algorithm %s", value.getChecksumEncoding()));
                     }
+                    else {
+                        final Checksum expected = ChecksumComputeFactory.get(fingerprint.algorithm).compute(local.getInputStream());
+                        if(!expected.equals(fingerprint)) {
+                            throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
+                                    MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
+                                            expected, fingerprint.hash));
+                        }
+                    }
+                    return fingerprint;
                 }
-                return fingerprint;
             }
             return null;
         }
