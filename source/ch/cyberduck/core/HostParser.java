@@ -199,7 +199,7 @@ public final class HostParser {
                             path = PathNormalizer.normalize(hostname);
                         }
                         else {
-                            path = PathNormalizer.normalize(hostname) + PathNormalizer.normalize(path);
+                            path = PathNormalizer.normalize(hostname) + path;
                         }
                         hostname = protocol.getDefaultHostname();
                     }
