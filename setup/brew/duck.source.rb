@@ -1,6 +1,7 @@
 class Duck < Formula
   desc "Command-line interface for Cyberduck (a multi-protocol file transfer tool)"
   homepage "https://duck.sh/"
+  # check the changelog for the latest stable version: https://cyberduck.io/changelog/
   url "${SOURCE}"
   sha256 "${SOURCE.SHA256}"
   head "https://svn.cyberduck.io/trunk/"
@@ -17,8 +18,7 @@ class Duck < Formula
   end
 
   test do
-    filename = (testpath/"test")
-    system "#{bin}/duck", "--download", stable.url, filename
-    filename.verify_checksum stable.checksum
+    system "#{bin}/duck", "--download", Formula["when"].stable.url, testpath/"test"
+    (testpath/"test").verify_checksum Formula["when"].stable.checksum
   end
 end
