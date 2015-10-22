@@ -5,6 +5,8 @@ import ch.cyberduck.core.test.NullLocal;
 
 import org.junit.Test;
 
+import java.util.regex.Pattern;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -15,7 +17,10 @@ public class UploadRegexFilterTest extends AbstractTestCase {
 
     @Test
     public void testAccept() throws Exception {
-        assertFalse(new UploadRegexFilter().accept(new NullLocal(".DS_Store")));
-        assertTrue(new UploadRegexFilter().accept(new NullLocal("f")));
+        final Pattern pattern = Pattern.compile(".*~\\..*|\\.DS_Store|\\.svn|CVS");
+        assertFalse(new UploadRegexFilter(pattern).accept(new NullLocal(".DS_Store")));
+        assertTrue(new UploadRegexFilter(pattern).accept(new NullLocal("f")));
+        assertTrue(new UploadRegexFilter(Pattern.compile("")).accept(new NullLocal("f")));
+        assertTrue(new UploadRegexFilter(Pattern.compile("")).accept(new NullLocal(".DS_Store")));
     }
 }
