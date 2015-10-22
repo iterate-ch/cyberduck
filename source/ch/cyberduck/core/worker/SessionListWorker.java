@@ -59,7 +59,9 @@ public class SessionListWorker extends Worker<AttributedList<Path>> implements L
     public AttributedList<Path> run(final Session<?> session) throws BackgroundException {
         try {
             if(this.isCached()) {
-                return cache.get(directory);
+                final AttributedList<Path> list = cache.get(directory);
+                this.chunk(directory, list);
+                return list;
             }
             return session.list(directory, this);
         }
