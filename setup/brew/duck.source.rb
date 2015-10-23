@@ -6,13 +6,13 @@ class Duck < Formula
   sha256 "${SOURCE.SHA256}"
   head "https://svn.cyberduck.io/trunk/"
 
-  depends_on :java => ["1.7+", :build]
+  depends_on :java => ["1.8+", :build]
   depends_on :xcode => :build
   depends_on "ant" => :build
 
   def install
     revision = version.to_s.rpartition(".").last
-    system "ant", "-Dbuild.compile.target=1.7", "-Drevision=#{revision}", "cli"
+    system "ant", "-Dbuild.compile.target=1.8", "-Drevision=#{revision}", "cli"
     libexec.install Dir["build/duck.bundle/*"]
     bin.install_symlink "#{libexec}/Contents/MacOS/duck" => "duck"
   end
