@@ -303,10 +303,9 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
             log.debug(String.format("Return default size for %s", icon.name()));
             return icon;
         }
-        final NSImage copy = NSImage.imageWithData(icon.TIFFRepresentation());
         // Cache sized image
-        copy.setName(String.format("%d-%s", width, name));
-        copy.setSize(new NSSize(width, height));
-        return copy;
+        icon.setName(String.format("%d-%s", width, name));
+        icon.setSize(new NSSize(width, height));
+        return icon;
     }
 }
