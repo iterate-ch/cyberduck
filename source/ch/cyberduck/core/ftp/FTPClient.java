@@ -103,9 +103,10 @@ public class FTPClient extends FTPSClient {
                     final Object cache = sessionHostPortCache.get(context);
                     final Method method = cache.getClass().getDeclaredMethod("put", Object.class, Object.class);
                     method.setAccessible(true);
-                    final String key = String.format("%s:%s", socket.getInetAddress().getHostAddress(),
-                            String.valueOf(socket.getPort())).toLowerCase(Locale.ROOT);
-                    method.invoke(cache, key, session);
+                    method.invoke(cache, String.format("%s:%s", socket.getInetAddress().getHostName(),
+                            String.valueOf(socket.getPort())).toLowerCase(Locale.ROOT), session);
+                    method.invoke(cache, String.format("%s:%s", socket.getInetAddress().getHostAddress(),
+                            String.valueOf(socket.getPort())).toLowerCase(Locale.ROOT), session);
                 }
                 catch(NoSuchFieldException e) {
                     // Not running in expected JRE
