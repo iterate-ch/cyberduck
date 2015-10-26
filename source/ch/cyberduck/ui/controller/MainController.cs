@@ -19,7 +19,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -165,7 +164,9 @@ namespace Ch.Cyberduck.Ui.Controller
         private void StartupNextInstanceHandler(object sender, StartupNextInstanceEventArgs e)
         {
             NewBrowser();
-            CommandsAfterLaunch(e.CommandLine);
+            IList<String> stripped = new List<string>(e.CommandLine);
+            stripped.RemoveAt(0); // remove executable
+            CommandsAfterLaunch(stripped);
         }
 
         /// <summary>
@@ -195,11 +196,11 @@ namespace Ch.Cyberduck.Ui.Controller
             ShutdownStyle = ShutdownMode.AfterAllFormsClose;
         }
 
-        private void CommandsAfterLaunch(ReadOnlyCollection<string> args)
+        private void CommandsAfterLaunch(IList<string> args)
         {
-            if (args.Count > 1)
+            if (args.Count > 0)
             {
-                string filename = args[1];
+                string filename = args[0];
                 Logger.debug("applicationOpenFile:" + filename);
                 Local f = LocalFactory.get(filename);
                 if (f.exists())
@@ -222,7 +223,10 @@ namespace Ch.Cyberduck.Ui.Controller
                                     String.Format("{0}", LocaleFactory.localizedString("Continue", "License")), null,
                                     false))
                             {
-                                ;
+                                foreach (BrowserController controller in new List<BrowserController>(Browsers))
+                                {
+                                    controller.RemoveDonateButton();
+                                }
                             }
                         }
                         else

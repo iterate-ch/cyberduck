@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2015 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -11,9 +11,9 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-// 
+//  
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System;
@@ -28,8 +28,8 @@ using System.Text;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
 using ch.cyberduck.core;
-using ch.cyberduck.core.bonjour;
 using ch.cyberduck.core.aquaticprime;
+using ch.cyberduck.core.bonjour;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.ui.comparator;
@@ -720,6 +720,12 @@ namespace Ch.Cyberduck.Ui.Winforms
         public void FocusBrowser()
         {
             browser.Focus();
+        }
+
+        public void RemoveDonateButton()
+        {
+            IActiveMenu menu = ActiveMenu.GetInstance(this);
+            menu.Items.Clear();
         }
 
         public ObjectListView Browser
