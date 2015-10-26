@@ -4,8 +4,6 @@
 <dict>
         <key>CFBundleDevelopmentRegion</key>
         <string>English</string>
-        <key>CFBundleExecutable</key>
-        <string>libjli.dylib</string>
         <key>CFBundleGetInfoString</key>
         <string>Java SE 1.8.0_66</string>
         <key>CFBundleIdentifier</key>
