@@ -212,12 +212,6 @@ public class FTPSessionTest extends AbstractTestCase {
                 super.login(keychain, login, cancel);
                 assertEquals(new FTPTLSProtocol(), host.getProtocol());
             }
-
-            protected boolean isTLSSupported() throws BackgroundException {
-                final boolean s = super.isTLSSupported();
-                assertTrue(s);
-                return true;
-            }
         };
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         assertTrue(session.isConnected());
