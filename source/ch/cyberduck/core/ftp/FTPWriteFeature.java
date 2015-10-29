@@ -55,6 +55,10 @@ public class FTPWriteFeature extends AppendWriteFeature {
                 public OutputStream execute() throws BackgroundException {
                     try {
                         if(status.isAppend()) {
+                            if(!status.isExists()) {
+                                log.warn(String.format("Allocate %d bytes for file %s", status.getOffset(), file));
+                                session.getClient().allocate((int) status.getOffset());
+                            }
                             return session.getClient().appendFileStream(file.getAbsolute());
                         }
                         else {
