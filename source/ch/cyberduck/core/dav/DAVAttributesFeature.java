@@ -66,6 +66,7 @@ public class DAVAttributesFeature implements Attributes {
                 log.warn(String.format("%s is not RFC 1123 format %s", headers.get(HttpHeaders.LAST_MODIFIED), p.getMessage()));
             }
             if(!headers.containsKey(HttpHeaders.CONTENT_ENCODING)) {
+                // Set size unless response is compressed
                 attributes.setSize(NumberUtils.toLong(headers.get(HttpHeaders.CONTENT_LENGTH), -1));
             }
             if(headers.containsKey(HttpHeaders.ETAG)) {
