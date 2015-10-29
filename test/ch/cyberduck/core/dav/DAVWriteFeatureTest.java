@@ -112,6 +112,8 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
             new StreamCopier(status, status).withOffset(0L).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
+        assertTrue(new DAVFindFeature(session).find(test));
+        assertEquals(1024L, new DefaultAttributesFeature(session).find(test).getSize());
         {
             // Remaining chunked transfer with offset
             final TransferStatus status = new TransferStatus();
