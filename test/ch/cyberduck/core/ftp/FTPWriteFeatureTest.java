@@ -22,6 +22,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -122,6 +123,54 @@ public class FTPWriteFeatureTest extends AbstractTestCase {
             }
         });
     }
+
+    @Test
+    @Ignore
+    public void testWriteRangeEndFirst() throws Exception {
+        final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
+                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+        ));
+        final FTPSession session = new FTPSession(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final FTPWriteFeature feature = new FTPWriteFeature(session);
+        final Path test = new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final byte[] content = RandomUtils.nextBytes(2048);
+        {
+            // Write end of file first
+            final TransferStatus status = new TransferStatus();
+            status.setLength(1024L);
+            status.setOffset(1024L);
+            status.setAppend(true);
+            final OutputStream out = feature.write(test, status);
+            new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
+            out.close();
+        }
+        assertTrue(new DefaultFindFeature(session).find(test));
+        assertEquals(content.length, new DefaultAttributesFeature(session).find(test).getSize());
+        {
+            // Write beginning of file up to the last chunk
+            final TransferStatus status = new TransferStatus();
+            status.setExists(true);
+            status.setOffset(0L);
+            status.setLength(1024L);
+            status.setAppend(true);
+            final OutputStream out = feature.write(test, status);
+            new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
+            out.close();
+        }
+        final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
+        IOUtils.copy(new FTPReadFeature(session).read(test, new TransferStatus().length(content.length)), out);
+        assertArrayEquals(content, out.toByteArray());
+        assertTrue(new DefaultFindFeature(session).find(test));
+        assertEquals(content.length, new DefaultAttributesFeature(session).find(test).getSize());
+        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
+    }
+
 
     @Test(expected = AccessDeniedException.class)
     public void testWriteNotFound() throws Exception {
