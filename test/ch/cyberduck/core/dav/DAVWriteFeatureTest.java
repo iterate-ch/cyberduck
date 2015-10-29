@@ -132,6 +132,45 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
         });
     }
 
+    @Test
+    public void testWriteContentRangeTwoBytes() throws Exception {
+        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
+                properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
+        ));
+        host.setDefaultPath("/dav/basic");
+        final DAVSession session = new DAVSession(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final DAVWriteFeature feature = new DAVWriteFeature(session);
+        final Path test = new Path("/dav/basic/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final byte[] source = RandomUtils.nextBytes(2);
+        {
+            final TransferStatus status = new TransferStatus();
+            status.setLength(1L);
+            status.setOffset(0L);
+            final ResponseOutputStream<String> out = feature.write(test, status);
+            new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(source), out);
+            out.close();
+        }
+        {
+            final TransferStatus status = new TransferStatus();
+            status.setLength(1L);
+            status.setOffset(1L);
+            status.setAppend(true);
+            final ResponseOutputStream<String> out = feature.write(test, status);
+            new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(source), out);
+            out.close();
+        }
+        final ByteArrayOutputStream out = new ByteArrayOutputStream(2);
+        IOUtils.copy(new DAVReadFeature(session).read(test, new TransferStatus().length(2L)), out);
+        assertArrayEquals(source, out.toByteArray());
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
+    }
+
     @Test(expected = AccessDeniedException.class)
     public void testWriteNotFound() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
