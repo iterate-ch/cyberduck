@@ -101,4 +101,9 @@ public class SFTPWriteFeature extends AppendWriteFeature {
     public boolean temporary() {
         return true;
     }
+
+    @Override
+    public boolean random() {
+        return true;
+    }
 }

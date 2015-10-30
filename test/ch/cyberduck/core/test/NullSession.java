@@ -91,6 +91,11 @@ public class NullSession extends Session<Void> {
                 public boolean temporary() {
                     return false;
                 }
+
+                @Override
+                public boolean random() {
+                    return false;
+                }
             };
         }
         if(type == Read.class) {

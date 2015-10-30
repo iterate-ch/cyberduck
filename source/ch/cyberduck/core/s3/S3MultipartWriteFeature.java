@@ -132,7 +132,7 @@ public class S3MultipartWriteFeature implements Write {
         };
     }
 
-    private class MultipartOutputStream extends OutputStream {
+    private final class MultipartOutputStream extends OutputStream {
         /**
          * Completed parts
          */
@@ -247,6 +247,11 @@ public class S3MultipartWriteFeature implements Write {
 
     @Override
     public boolean temporary() {
+        return false;
+    }
+
+    @Override
+    public boolean random() {
         return false;
     }
 }
