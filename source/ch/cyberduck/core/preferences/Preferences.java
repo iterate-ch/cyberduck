@@ -881,6 +881,10 @@ public abstract class Preferences {
          */
         defaults.put("connection.socket.keepalive", String.valueOf(true));
         /**
+         * SO_LINGER
+         */
+        defaults.put("connection.socket.linger", String.valueOf(false));
+        /**
          * Socket timeout
          */
         defaults.put("connection.timeout.seconds", String.valueOf(30));
