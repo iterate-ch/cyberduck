@@ -18,6 +18,7 @@
         <module>launchservicesfiledescriptor</module>
         <module>launchservicesquarantineservice</module>
         <module>launchservicesschemehandler</module>
+        <module>findersidebarservice</module>
         <module>local</module>
         <module>proxy</module>
         <module>quicklook</module>
