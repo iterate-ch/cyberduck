@@ -174,9 +174,11 @@ public class SFTPWriteFeatureTest extends AbstractTestCase {
         {
             final TransferStatus status = new TransferStatus();
             status.setLength(1024L);
+            status.setOffset(0L);
             final OutputStream out = feature.write(test, status);
             // Write first 1024
-            new StreamCopier(status, status).withOffset(0L).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
+            new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
+            out.flush();
             out.close();
         }
         assertTrue(new DefaultFindFeature(session).find(test));
@@ -189,6 +191,7 @@ public class SFTPWriteFeatureTest extends AbstractTestCase {
             status.setAppend(true);
             final OutputStream out = feature.write(test, status);
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
+            out.flush();
             out.close();
         }
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
@@ -220,6 +223,7 @@ public class SFTPWriteFeatureTest extends AbstractTestCase {
             status.setAppend(true);
             final OutputStream out = feature.write(test, status);
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
+            out.flush();
             out.close();
         }
         assertTrue(new DefaultFindFeature(session).find(test));
@@ -233,6 +237,7 @@ public class SFTPWriteFeatureTest extends AbstractTestCase {
             status.setAppend(true);
             final OutputStream out = feature.write(test, status);
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
+            out.flush();
             out.close();
         }
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
