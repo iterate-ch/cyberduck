@@ -36,9 +36,9 @@ public class FinderSidebarService implements SidebarService {
         Native.load("findersidebarservice");
     }
 
-    private final String kLSSharedFileListFavoriteVolumes = "kLSSharedFileListFavoriteVolumes";
-    private final String kLSSharedFileListRecentServerItems = "kLSSharedFileListRecentServerItems";
-    private final String kLSSharedFileListFavoriteItems = "kLSSharedFileListFavoriteItems";
+    private final String kLSSharedFileListFavoriteVolumes = "com.apple.LSSharedFileList.FavoriteVolumes";
+    private final String kLSSharedFileListRecentServerItems = "com.apple.LSSharedFileList.RecentServers";
+    private final String kLSSharedFileListFavoriteItems = "com.apple.LSSharedFileList.FavoriteItems";
 
     @Override
     public void add(final Local file) throws LocalAccessDeniedException {
