@@ -22,7 +22,7 @@
 #import <JavaNativeFoundation/JNFString.h>
 
 JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_FinderSidebarService_addItem(JNIEnv *env, jobject this, jstring file, jstring name) {
-    LSSharedFileListRef list = LSSharedFileListCreate(kCFAllocatorDefault, kLSSharedFileListFavoriteVolumes, NULL);
+    LSSharedFileListRef list = LSSharedFileListCreate(kCFAllocatorDefault, kLSSharedFileListFavoriteItems, NULL);
     if (!list) {
 		NSLog(@"Error getting shared file list reference");
         return NO;
@@ -42,33 +42,34 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_FinderSidebarService_add
     return YES;
 }
 
-JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_FinderSidebarService_removeItem(JNIEnv *env, jobject this, jstring file) {
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_FinderSidebarService_removeItem(JNIEnv *env, jobject this, jstring file, jstring name) {
     OSStatus err;
-    LSSharedFileListRef list = LSSharedFileListCreate(kCFAllocatorDefault, kLSSharedFileListFavoriteVolumes, NULL);
+    LSSharedFileListRef list = LSSharedFileListCreate(kCFAllocatorDefault, kLSSharedFileListFavoriteItems, NULL);
     if (!list) {
         NSLog(@"Error getting shared file list reference");
-        return;
+        return NO;
     }
     UInt32 seed;
     CFArrayRef items = LSSharedFileListCopySnapshot(list, &seed);
     if (!items) {
         NSLog(@"Error getting shared file list items snapshot copy reference");
-        return;
+        return NO;
     }
     BOOL found = NO;
     for (CFIndex i = 0; i < CFArrayGetCount(items); i++) {
         NSURL *url;
         LSSharedFileListItemRef item = (LSSharedFileListItemRef)CFArrayGetValueAtIndex(items, i);
-        if (0 == (err = LSSharedFileListItemResolve(item, kLSSharedFileListNoUserInteraction|kLSSharedFileListDoNotMountVolumes, (CFURLRef*)&url, NULL))) {
+        if (noErr == (err = LSSharedFileListItemResolve(item, kLSSharedFileListNoUserInteraction|kLSSharedFileListDoNotMountVolumes, (CFURLRef*)&url, NULL))) {
             NSString *itemPath = [url path];
             [url release];
             if ([itemPath isEqualToString:JNFJavaToNSString(env, file)]) {
                 err = LSSharedFileListItemRemove(list, item);
+                found = YES;
                 break;
             }
         }
     }
     CFRelease(items);
     CFRelease(list);
-	return (err == noErr);
+	return (err == noErr) && (found);
 }

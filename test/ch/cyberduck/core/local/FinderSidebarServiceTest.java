@@ -30,20 +30,31 @@ import ch.cyberduck.core.test.Depends;
 import org.junit.Test;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
+import java.util.UUID;
+
 /**
  * @version $Id:$
  */
 @Depends(platform = Factory.Platform.Name.mac)
 public class FinderSidebarServiceTest extends AbstractTestCase {
 
-    @Test(expected = LocalAccessDeniedException.class)
+    @Test
     public void testAddNotFound() throws Exception {
         FinderSidebarService f = new FinderSidebarService();
-        f.add(LocalFactory.get(PreferencesFactory.get().getProperty("tmp.dir")));
+        final Local file = LocalFactory.get(PreferencesFactory.get().getProperty("tmp.dir"));
+        f.add(file);
+        f.remove(file);
+    }
+
+    @Test(expected = LocalAccessDeniedException.class)
+    public void testRemoveNotfound() throws Exception {
+        FinderSidebarService f = new FinderSidebarService();
+        final Local file = LocalFactory.get(PreferencesFactory.get().getProperty("tmp.dir"));
+        f.remove(file);
     }
 
     @Test
-    public void testAddHarddisk() throws Exception {
+    public void testAddMountedVolumes() throws Exception {
         FinderSidebarService f = new FinderSidebarService();
         final NSArray volumes = NSWorkspace.sharedWorkspace().mountedLocalVolumePaths();
         for(int i = 0; i < volumes.count().intValue(); i++) {
@@ -54,9 +65,11 @@ public class FinderSidebarServiceTest extends AbstractTestCase {
     }
 
     @Test
-    public void testAddMountedVolume() throws Exception {
+    public void testAddTemporaryFile() throws Exception {
         FinderSidebarService f = new FinderSidebarService();
-        f.add(LocalFactory.get("/Users/dkocher/Library/Containers/io.mountainduck/Data/Library/Application Support/Mountain Duck/Volumes/s3.amazonaws.com"));
+        final String name = UUID.randomUUID().toString();
+        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
+        f.add(l);
     }
 
     @Test

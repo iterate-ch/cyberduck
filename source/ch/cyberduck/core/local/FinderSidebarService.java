@@ -23,6 +23,9 @@ import ch.cyberduck.core.library.Native;
 
 import org.apache.log4j.Logger;
 
+import java.io.File;
+import java.io.IOException;
+
 /**
  * @version $Id:$
  */
@@ -34,14 +37,16 @@ public class FinderSidebarService implements SidebarService {
     }
 
     private final String kLSSharedFileListFavoriteVolumes = "kLSSharedFileListFavoriteVolumes";
+    private final String kLSSharedFileListRecentServerItems = "kLSSharedFileListRecentServerItems";
+    private final String kLSSharedFileListFavoriteItems = "kLSSharedFileListFavoriteItems";
 
     @Override
     public void add(final Local file) throws LocalAccessDeniedException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Add %s", file));
         }
-        if(!this.addItem(file.getAbsolute(), kLSSharedFileListFavoriteVolumes)) {
-            throw new LocalAccessDeniedException(String.format("Failure adding %s to kLSSharedFileListFavoriteVolumes", file));
+        if(!this.addItem(file.getAbsolute(), kLSSharedFileListFavoriteItems)) {
+            throw new LocalAccessDeniedException(String.format("Failure adding %s to %s", file, kLSSharedFileListFavoriteItems));
         }
     }
 
@@ -50,12 +55,27 @@ public class FinderSidebarService implements SidebarService {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Remove %s", file));
         }
-        if(!this.removeItem(kLSSharedFileListFavoriteVolumes)) {
-            throw new LocalAccessDeniedException(String.format("Failure removing %s from kLSSharedFileListFavoriteVolumes", file));
+        try {
+            if(!this.removeItem(new File(file.getAbsolute()).getCanonicalPath(), kLSSharedFileListFavoriteItems)) {
+                throw new LocalAccessDeniedException(String.format("Failure removing %s from %s", file, kLSSharedFileListFavoriteItems));
+            }
+        }
+        catch(IOException e) {
+            throw new LocalAccessDeniedException(String.format("Failure removing %s from %s", file, kLSSharedFileListFavoriteItems), e);
         }
     }
 
-    private native boolean addItem(final String file, final String name);
+    /**
+     * @param file Path
+     * @param list Shared item list name
+     * @return False on failure
+     */
+    private native boolean addItem(final String file, final String list);
 
-    private native boolean removeItem(final String name);
+    /**
+     * @param file Path
+     * @param list Shared item list name
+     * @return False on failure
+     */
+    private native boolean removeItem(final String file, final String list);
 }
