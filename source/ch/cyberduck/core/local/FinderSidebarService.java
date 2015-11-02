@@ -42,27 +42,45 @@ public class FinderSidebarService implements SidebarService {
 
     @Override
     public void add(final Local file) throws LocalAccessDeniedException {
+        this.add(file, List.favorite);
+    }
+
+    public void add(final Local file, final List list) throws LocalAccessDeniedException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Add %s", file));
         }
-        if(!this.addItem(file.getAbsolute(), kLSSharedFileListFavoriteItems)) {
-            throw new LocalAccessDeniedException(String.format("Failure adding %s to %s", file, kLSSharedFileListFavoriteItems));
+        if(!this.addItem(file.getAbsolute(), this.forList(list))) {
+            throw new LocalAccessDeniedException(String.format("Failure adding %s to %s", file, this.forList(list)));
         }
     }
 
     @Override
     public void remove(final Local file) throws LocalAccessDeniedException {
+        this.remove(file, List.favorite);
+    }
+
+    public void remove(final Local file, final List list) throws LocalAccessDeniedException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Remove %s", file));
         }
         try {
-            if(!this.removeItem(new File(file.getAbsolute()).getCanonicalPath(), kLSSharedFileListFavoriteItems)) {
-                throw new LocalAccessDeniedException(String.format("Failure removing %s from %s", file, kLSSharedFileListFavoriteItems));
+            if(!this.removeItem(new File(file.getAbsolute()).getCanonicalPath(), this.forList(list))) {
+                throw new LocalAccessDeniedException(String.format("Failure removing %s from %s", file, this.forList(list)));
             }
         }
         catch(IOException e) {
-            throw new LocalAccessDeniedException(String.format("Failure removing %s from %s", file, kLSSharedFileListFavoriteItems), e);
+            throw new LocalAccessDeniedException(String.format("Failure removing %s from %s", file, this.forList(list)), e);
         }
+    }
+
+    private String forList(final List list) {
+        switch(list) {
+            case volume:
+                return kLSSharedFileListFavoriteVolumes;
+            case server:
+                return kLSSharedFileListRecentServerItems;
+        }
+        return kLSSharedFileListFavoriteItems;
     }
 
     /**

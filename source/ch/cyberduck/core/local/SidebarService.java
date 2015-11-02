@@ -28,4 +28,10 @@ public interface SidebarService {
     void add(Local file) throws LocalAccessDeniedException;
 
     void remove(Local file) throws LocalAccessDeniedException;
+
+    enum List {
+        volume,
+        server,
+        favorite
+    }
 }

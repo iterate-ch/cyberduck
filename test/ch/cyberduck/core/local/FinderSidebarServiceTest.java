@@ -42,15 +42,15 @@ public class FinderSidebarServiceTest extends AbstractTestCase {
     public void testAddNotFound() throws Exception {
         FinderSidebarService f = new FinderSidebarService();
         final Local file = LocalFactory.get(PreferencesFactory.get().getProperty("tmp.dir"));
-        f.add(file);
-        f.remove(file);
+        f.add(file, SidebarService.List.favorite);
+        f.remove(file, SidebarService.List.favorite);
     }
 
     @Test(expected = LocalAccessDeniedException.class)
     public void testRemoveNotfound() throws Exception {
         FinderSidebarService f = new FinderSidebarService();
         final Local file = LocalFactory.get(PreferencesFactory.get().getProperty("tmp.dir"));
-        f.remove(file);
+        f.remove(file, SidebarService.List.favorite);
     }
 
     @Test
@@ -59,8 +59,7 @@ public class FinderSidebarServiceTest extends AbstractTestCase {
         final NSArray volumes = NSWorkspace.sharedWorkspace().mountedLocalVolumePaths();
         for(int i = 0; i < volumes.count().intValue(); i++) {
             final Local volume = LocalFactory.get(volumes.objectAtIndex(new NSUInteger(i)).toString());
-            f.add(volume);
-            f.remove(volume);
+            f.add(volume, SidebarService.List.favorite);
         }
     }
 
@@ -69,12 +68,14 @@ public class FinderSidebarServiceTest extends AbstractTestCase {
         FinderSidebarService f = new FinderSidebarService();
         final String name = UUID.randomUUID().toString();
         FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
-        f.add(l);
+        new DefaultLocalTouchFeature().touch(l);
+        f.add(l, SidebarService.List.favorite);
+        l.delete();
     }
 
-    @Test
+    @Test(expected = LocalAccessDeniedException.class)
     public void testRemove() throws Exception {
         FinderSidebarService f = new FinderSidebarService();
-        f.remove(LocalFactory.get(PreferencesFactory.get().getProperty("tmp.dir")));
+        f.remove(LocalFactory.get(PreferencesFactory.get().getProperty("tmp.dir")), SidebarService.List.favorite);
     }
 }
