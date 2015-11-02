@@ -22,6 +22,9 @@
 		470912ED0C36FCE00049FBCE /* Prompt.xib in Resources */ = {isa = PBXBuildFile; fileRef = 470912EB0C36FCE00049FBCE /* Prompt.xib */; };
 		47121FF71611F94000E2547D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 47121FF61611F94000E2547D /* main.m */; };
 		4716C5F50872BA9900938886 /* Command.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4716C5EF0872BA9800938886 /* Command.xib */; };
+		471BC7701BB7F4B80062C792 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
+		471BC7711BB7F4B80062C792 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47BEDBD20B9296C800141EB4 /* ApplicationServices.framework */; };
+		471BC7721BB7F4B80062C792 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */; };
 		471C664419E3E20700D7266E /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47022C221018663600488C19 /* CoreServices.framework */; };
 		471DF150167F2A7B00EAFE71 /* cyberduck-document.icns in Resources */ = {isa = PBXBuildFile; fileRef = 471DF14F167F2A7B00EAFE71 /* cyberduck-document.icns */; };
 		471F5C2E12AD1B6B0005D323 /* Alert.strings in Resources */ = {isa = PBXBuildFile; fileRef = 471F5C0C12AD1B6B0005D323 /* Alert.strings */; };
@@ -168,6 +171,8 @@
 		478ECD100DAD5743008A5B1F /* QuickLook.m in Sources */ = {isa = PBXBuildFile; fileRef = 478ECC9B0DAD1B0C008A5B1F /* QuickLook.m */; };
 		478ECD130DAD5743008A5B1F /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		478F0DF412FB03DC000FE33C /* update.pem in Resources */ = {isa = PBXBuildFile; fileRef = 478F0DF312FB03DC000FE33C /* update.pem */; };
+		4791017F1BE7AD870095838A /* FinderSidebarService.h in Headers */ = {isa = PBXBuildFile; fileRef = 4791017D1BE7AD870095838A /* FinderSidebarService.h */; };
+		479101801BE7AD870095838A /* FinderSidebarService.m in Sources */ = {isa = PBXBuildFile; fileRef = 4791017E1BE7AD870095838A /* FinderSidebarService.m */; };
 		47911A180B84C4E8001A29AE /* Acknowledgments.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 47911A170B84C4E8001A29AE /* Acknowledgments.rtf */; };
 		479450BD162FF74F00FC7FF9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
 		4796C7641B3317F70042891D /* HP Cloud Object Storage.cyberduckprofile in Resources */ = {isa = PBXBuildFile; fileRef = 4780ACC617634CD6007D9DD5 /* HP Cloud Object Storage.cyberduckprofile */; };
@@ -252,6 +257,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		471BC77B1BB7F4E00062C792 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 471BC76A1BB7F4B80062C792;
+			remoteInfo = libfindersidebarservice;
+		};
 		471E214B0A1734D7009E164E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
@@ -631,6 +643,7 @@
 		47181E9F0E17D1E500568D80 /* el */ = {isa = PBXFileReference; lastKnownFileType = text; name = el; path = el.lproj/License.txt; sourceTree = "<group>"; };
 		4718F4A9175F432400B424AD /* Rackspace UK.cyberduckprofile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Rackspace UK.cyberduckprofile"; sourceTree = "<group>"; };
 		4718F4AA175F432400B424AD /* Rackspace US.cyberduckprofile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Rackspace US.cyberduckprofile"; sourceTree = "<group>"; };
+		471BC7761BB7F4B80062C792 /* libfindersidebarservice.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libfindersidebarservice.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		471D2C5505A2505600675163 /* Cyberduck.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cyberduck.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		471DF14F167F2A7B00EAFE71 /* cyberduck-document.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = "cyberduck-document.icns"; sourceTree = "<group>"; };
 		471F5C0D12AD1B6B0005D323 /* pt_PT */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = pt_PT; path = pt_PT.lproj/Alert.strings; sourceTree = "<group>"; };
@@ -1144,6 +1157,8 @@
 		478ECD180DAD5743008A5B1F /* libquickLook.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libquickLook.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		478F0DF312FB03DC000FE33C /* update.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = update.pem; path = www/update/update.pem; sourceTree = "<group>"; };
 		4790762A0764903900676C18 /* cs */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = cs; path = cs.lproj/Localizable.strings; sourceTree = "<group>"; };
+		4791017D1BE7AD870095838A /* FinderSidebarService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FinderSidebarService.h; sourceTree = "<group>"; };
+		4791017E1BE7AD870095838A /* FinderSidebarService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FinderSidebarService.m; sourceTree = "<group>"; };
 		47911A170B84C4E8001A29AE /* Acknowledgments.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = Acknowledgments.rtf; sourceTree = "<group>"; };
 		4792112812F6F4FD00E35E16 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = lib/Sparkle.framework; sourceTree = "<group>"; };
 		4796C7271B3317F60042891D /* zh_TW */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = zh_TW; path = zh_TW.lproj/Alert.strings; sourceTree = "<group>"; };
@@ -2326,6 +2341,16 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		471BC76F1BB7F4B80062C792 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				471BC7701BB7F4B80062C792 /* Foundation.framework in Frameworks */,
+				471BC7711BB7F4B80062C792 /* ApplicationServices.framework in Frameworks */,
+				471BC7721BB7F4B80062C792 /* JavaNativeFoundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		471F77AC180439B500A4C196 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -2484,6 +2509,7 @@
 				47FB9C6B1725A5CC00FE33C1 /* libiokitsleeppreventer.dylib */,
 				471F77B3180439B500A4C196 /* libfoundationprogressservice.dylib */,
 				47C2AD801A268C880047B67A /* duck.bundle */,
+				471BC7761BB7F4B80062C792 /* libfindersidebarservice.dylib */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -3883,6 +3909,8 @@
 				47F102BF1628D5CE00923FDE /* LaunchServicesQuarantineService.m */,
 				471F77B418043A0300A4C196 /* FoundationProgressIconService.h */,
 				471F77B518043A0300A4C196 /* FoundationProgressIconService.m */,
+				4791017D1BE7AD870095838A /* FinderSidebarService.h */,
+				4791017E1BE7AD870095838A /* FinderSidebarService.m */,
 			);
 			path = local;
 			sourceTree = "<group>";
@@ -3890,6 +3918,14 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		471BC76B1BB7F4B80062C792 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4791017F1BE7AD870095838A /* FinderSidebarService.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		471F77A8180439B500A4C196 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -4002,6 +4038,24 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		471BC76A1BB7F4B80062C792 /* libfindersidebarservice */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 471BC7731BB7F4B80062C792 /* Build configuration list for PBXNativeTarget "libfindersidebarservice" */;
+			buildPhases = (
+				471BC76B1BB7F4B80062C792 /* Headers */,
+				471BC76D1BB7F4B80062C792 /* Sources */,
+				471BC76F1BB7F4B80062C792 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = libfindersidebarservice;
+			productInstallPath = /usr/local/lib;
+			productName = keychainLib;
+			productReference = 471BC7761BB7F4B80062C792 /* libfindersidebarservice.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
 		471D2C0B05A2505500675163 /* app */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 47D286C50855740C008142CF /* Build configuration list for PBXNativeTarget "app" */;
@@ -4018,6 +4072,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				471BC77C1BB7F4E00062C792 /* PBXTargetDependency */,
 				471F77BB18043A3800A4C196 /* PBXTargetDependency */,
 				479737AD162F4962002809CC /* PBXTargetDependency */,
 				47F102DA1628D61A00923FDE /* PBXTargetDependency */,
@@ -4358,6 +4413,7 @@
 				47C57EAE162F471700A272BC /* liblaunchservicesfiledescriptor */,
 				47FB9C5E1725A5CC00FE33C1 /* libiokitsleeppreventer */,
 				471F77A7180439B500A4C196 /* libfoundationprogressservice */,
+				471BC76A1BB7F4B80062C792 /* libfindersidebarservice */,
 				47C2AD7F1A268C880047B67A /* cli */,
 			);
 		};
@@ -4550,6 +4606,14 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		471BC76D1BB7F4B80062C792 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				479101801BE7AD870095838A /* FinderSidebarService.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		471F77AA180439B500A4C196 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -4680,6 +4744,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		471BC77C1BB7F4E00062C792 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 471BC76A1BB7F4B80062C792 /* libfindersidebarservice */;
+			targetProxy = 471BC77B1BB7F4E00062C792 /* PBXContainerItemProxy */;
+		};
 		471E214C0A1734D7009E164E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 4739EF670856981300405FD3 /* libkeychain */;
@@ -6112,6 +6181,35 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		471BC7741BB7F4B80062C792 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		471BC7751BB7F4B80062C792 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
+				LD_DYLIB_INSTALL_NAME = "";
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
 		471F77B1180439B500A4C196 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -6629,6 +6727,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		471BC7731BB7F4B80062C792 /* Build configuration list for PBXNativeTarget "libfindersidebarservice" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				471BC7741BB7F4B80062C792 /* Release */,
+				471BC7751BB7F4B80062C792 /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		471F77B0180439B500A4C196 /* Build configuration list for PBXNativeTarget "libfoundationprogressservice" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
