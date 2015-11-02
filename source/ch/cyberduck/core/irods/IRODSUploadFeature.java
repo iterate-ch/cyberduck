@@ -90,7 +90,7 @@ public class IRODSUploadFeature implements Upload<Checksum> {
                 final DataObjectChecksumUtilitiesAO checksum = fs
                         .getIRODSAccessObjectFactory()
                         .getDataObjectChecksumUtilitiesAO(fs.getIRODSAccount());
-                final ChecksumValue value = checksum.retrieveExistingChecksumForDataObject(f.getAbsolutePath());
+                final ChecksumValue value = checksum.computeChecksumOnDataObject(f);
                 final Checksum fingerprint = Checksum.parse(value.getChecksumStringValue());
                 if(null == fingerprint) {
                     log.warn(String.format("Unsupported checksum algorithm %s", value.getChecksumEncoding()));

@@ -52,6 +52,8 @@ import java.util.Set;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static org.junit.Assert.*;
 
@@ -188,9 +190,9 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
                 try {
                     assertSame(session, worker.borrow());
                     try {
-                        lock.await();
+                        lock.await(1, TimeUnit.MINUTES);
                     }
-                    catch(InterruptedException | BrokenBarrierException e) {
+                    catch(InterruptedException | BrokenBarrierException | TimeoutException e) {
                         fail();
                     }
                 }
@@ -200,10 +202,11 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
             }
         }).start();
         worker.release(reuse);
-        lock.await();
+        lock.await(1, TimeUnit.MINUTES);
     }
 
     @Test
+    @Ignore
     public void testConcurrentSessions() throws Exception {
         final int files = 5;
         final int connections = 3;
@@ -287,7 +290,7 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
                 connections);
 
         assertTrue(worker.run(null));
-        lock.await();
+        lock.await(1, TimeUnit.MINUTES);
         for(int i = 1; i <= files; i++) {
             assertTrue(transferred.contains(new Path("/t" + i, EnumSet.of(Path.Type.file))));
         }
@@ -320,9 +323,9 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
                 try {
                     assertSame(session, worker.borrow());
                     try {
-                        lock.await();
+                        lock.await(1, TimeUnit.MINUTES);
                     }
-                    catch(InterruptedException | BrokenBarrierException e) {
+                    catch(InterruptedException | BrokenBarrierException | TimeoutException e) {
                         fail();
                     }
                 }
@@ -336,7 +339,6 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
     }
 
     @Test
-    @Ignore
     public void testAwait() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "localhost", new Credentials("u", "p"));
         final Transfer t = new UploadTransfer(host,

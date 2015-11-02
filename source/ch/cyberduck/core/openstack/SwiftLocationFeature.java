@@ -23,6 +23,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Location;
 
 import org.apache.commons.lang3.StringUtils;
@@ -108,6 +109,9 @@ public class SwiftLocationFeature implements Location {
                     catch(IOException e) {
                         throw new DefaultIOExceptionMappingService().map(e);
                     }
+                }
+                if(!cache.containsKey(container)) {
+                    throw new NotfoundException(container.getAbsolute());
                 }
             }
             else {

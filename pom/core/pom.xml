@@ -64,7 +64,7 @@
         <dependency>
             <groupId>com.microsoft.azure</groupId>
             <artifactId>azure-storage</artifactId>
-            <version>3.1.0</version>
+            <version>4.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.hierynomus</groupId>

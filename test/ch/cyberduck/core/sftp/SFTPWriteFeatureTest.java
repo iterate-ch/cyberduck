@@ -18,10 +18,13 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.ThrottledOutputStream;
+import ch.cyberduck.core.shared.DefaultAttributesFeature;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -155,5 +158,97 @@ public class SFTPWriteFeatureTest extends AbstractTestCase {
                 new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 0L, PathCache.empty()).append);
         assertEquals(true, new SFTPWriteFeature(session).append(
                 new Path(session.workdir(), "test", EnumSet.of(Path.Type.file)), 0L, PathCache.empty()).append);
+    }
+
+    @Test
+    public void testWriteContentRange() throws Exception {
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
+                properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
+        ));
+        final SFTPSession session = new SFTPSession(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final SFTPWriteFeature feature = new SFTPWriteFeature(session);
+        final Path test = new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final byte[] content = RandomUtils.nextBytes(64000);
+        {
+            final TransferStatus status = new TransferStatus();
+            status.setLength(1024L);
+            status.setOffset(0L);
+            final OutputStream out = feature.write(test, status);
+            // Write first 1024
+            new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
+            out.flush();
+            out.close();
+        }
+        assertTrue(new DefaultFindFeature(session).find(test));
+        assertEquals(1024L, new DefaultAttributesFeature(session).find(test).getSize());
+        {
+            // Remaining chunked transfer with offset
+            final TransferStatus status = new TransferStatus().exists(true);
+            status.setLength(content.length - 1024L);
+            status.setOffset(1024L);
+            status.setAppend(true);
+            final OutputStream out = feature.write(test, status);
+            new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
+            out.flush();
+            out.close();
+        }
+        final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
+        IOUtils.copy(new SFTPReadFeature(session).read(test, new TransferStatus().length(content.length)), out);
+        assertArrayEquals(content, out.toByteArray());
+        new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
+    }
+
+    @Test
+    public void testWriteRangeEndFirst() throws Exception {
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
+                properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
+        ));
+        final SFTPSession session = new SFTPSession(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final SFTPWriteFeature feature = new SFTPWriteFeature(session);
+        final Path test = new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final byte[] content = RandomUtils.nextBytes(2048);
+        {
+            // Write end of file first
+            final TransferStatus status = new TransferStatus();
+            status.setLength(1024L);
+            status.setOffset(1024L);
+            status.setAppend(true);
+            final OutputStream out = feature.write(test, status);
+            new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
+            out.flush();
+            out.close();
+        }
+        assertEquals(2048, new DefaultAttributesFeature(session).find(test).getSize());
+        {
+            // Write beginning of file up to the last chunk
+            final TransferStatus status = new TransferStatus().exists(true);
+            status.setExists(true);
+            status.setOffset(0L);
+            status.setLength(1024L);
+            status.setAppend(true);
+            final OutputStream out = feature.write(test, status);
+            new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
+            out.flush();
+            out.close();
+        }
+        assertEquals(2048, new DefaultAttributesFeature(session).find(test).getSize());
+        final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
+        IOUtils.copy(new SFTPReadFeature(session).read(test, new TransferStatus().length(content.length)), out);
+        assertArrayEquals(content, out.toByteArray());
+        assertTrue(new DefaultFindFeature(session).find(test));
+        assertEquals(content.length, new DefaultAttributesFeature(session).find(test).getSize());
+        new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
     }
 }

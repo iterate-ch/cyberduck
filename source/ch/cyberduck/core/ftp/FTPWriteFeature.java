@@ -23,12 +23,13 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.io.output.CountingOutputStream;
+import org.apache.commons.io.output.ProxyOutputStream;
 import org.apache.commons.net.ftp.FTPReply;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @version $Id$
@@ -54,6 +55,10 @@ public class FTPWriteFeature extends AppendWriteFeature {
                 public OutputStream execute() throws BackgroundException {
                     try {
                         if(status.isAppend()) {
+                            if(!status.isExists()) {
+                                log.warn(String.format("Allocate %d bytes for file %s", status.getOffset(), file));
+                                session.getClient().allocate((int) status.getOffset());
+                            }
                             return session.getClient().appendFileStream(file.getAbsolute());
                         }
                         else {
@@ -65,24 +70,7 @@ public class FTPWriteFeature extends AppendWriteFeature {
                     }
                 }
             }, new DisabledProgressListener());
-            return new CountingOutputStream(out) {
-                @Override
-                public void close() throws IOException {
-                    super.close();
-                    // Read 226 status after closing stream
-                    int reply = session.getClient().getReply();
-                    if(!FTPReply.isPositiveCompletion(reply)) {
-                        if(status.isSegment()) {
-                            // Ignore 451 and 426 response because stream was prematurely closed
-                            log.warn(String.format("Ignore unexpected reply %s when completing file segment", session.getClient().getReplyString()));
-                        }
-                        else {
-                            log.warn(String.format("Unexpected reply %s when completing file download", session.getClient().getReplyString()));
-                            throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
-                        }
-                    }
-                }
-            };
+            return new ReadReplyOutputStream(out, status);
         }
         catch(IOException e) {
             throw new FTPExceptionMappingService().map("Upload {0} failed", e, file);
@@ -92,5 +80,47 @@ public class FTPWriteFeature extends AppendWriteFeature {
     @Override
     public boolean temporary() {
         return true;
+    }
+
+    @Override
+    public boolean random() {
+        return false;
+    }
+
+    private final class ReadReplyOutputStream extends ProxyOutputStream {
+        private final AtomicBoolean close;
+        private final TransferStatus status;
+
+        public ReadReplyOutputStream(final OutputStream proxy, final TransferStatus status) {
+            super(proxy);
+            this.status = status;
+            this.close = new AtomicBoolean();
+        }
+
+        @Override
+        public void close() throws IOException {
+            if(close.get()) {
+                log.warn(String.format("Skip double close of stream %s", this));
+                return;
+            }
+            try {
+                super.close();
+                // Read 226 status after closing stream
+                int reply = session.getClient().getReply();
+                if(!FTPReply.isPositiveCompletion(reply)) {
+                    if(status.isSegment()) {
+                        // Ignore 451 and 426 response because stream was prematurely closed
+                        log.warn(String.format("Ignore unexpected reply %s when completing file segment", session.getClient().getReplyString()));
+                    }
+                    else {
+                        log.warn(String.format("Unexpected reply %s when completing file download", session.getClient().getReplyString()));
+                        throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
+                    }
+                }
+            }
+            finally {
+                close.set(true);
+            }
+        }
     }
 }

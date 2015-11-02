@@ -29,6 +29,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.EnumSet;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.schmizz.sshj.sftp.OpenMode;
 import net.schmizz.sshj.sftp.RemoteFile;
@@ -54,8 +55,14 @@ public class SFTPWriteFeature extends AppendWriteFeature {
         try {
             final RemoteFile handle;
             if(status.isAppend()) {
-                handle = session.sftp().open(file.getAbsolute(),
-                        EnumSet.of(OpenMode.WRITE, OpenMode.APPEND));
+                if(status.isExists()) {
+                    // No append flag. Otherwise the offset field of SSH_FXP_WRITE requests is ignored.
+                    handle = session.sftp().open(file.getAbsolute(), EnumSet.of(OpenMode.WRITE));
+                }
+                else {
+                    // Allocate offset
+                    handle = session.sftp().open(file.getAbsolute(), EnumSet.of(OpenMode.CREAT, OpenMode.WRITE));
+                }
             }
             else {
                 if(status.isExists() && !status.isRename()) {
@@ -64,6 +71,7 @@ public class SFTPWriteFeature extends AppendWriteFeature {
                         session.sftp().remove(file.getAbsolute());
                     }
                 }
+                // A new file is created; if the file already exists, it is opened and truncated.
                 handle = session.sftp().open(file.getAbsolute(),
                         EnumSet.of(OpenMode.CREAT, OpenMode.TRUNC, OpenMode.WRITE));
             }
@@ -72,14 +80,22 @@ public class SFTPWriteFeature extends AppendWriteFeature {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Skipping %d bytes", status.getOffset()));
             }
+            // Open stream at offset
             return handle.new RemoteFileOutputStream(status.getOffset(), maxUnconfirmedWrites) {
+                private final AtomicBoolean close = new AtomicBoolean();
+
                 @Override
                 public void close() throws IOException {
+                    if(close.get()) {
+                        log.warn(String.format("Skip double close of stream %s", this));
+                        return;
+                    }
                     try {
                         super.close();
                     }
                     finally {
                         handle.close();
+                        close.set(true);
                     }
                 }
             };
@@ -91,6 +107,11 @@ public class SFTPWriteFeature extends AppendWriteFeature {
 
     @Override
     public boolean temporary() {
+        return true;
+    }
+
+    @Override
+    public boolean random() {
         return true;
     }
 }

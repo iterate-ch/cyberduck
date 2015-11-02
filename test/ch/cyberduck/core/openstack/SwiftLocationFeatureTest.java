@@ -9,6 +9,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Location;
 
 import org.junit.Test;
@@ -63,6 +64,19 @@ public class SwiftLocationFeatureTest extends AbstractTestCase {
         final SwiftLocationFeature.SwiftRegion region = new SwiftLocationFeature.SwiftRegion(null);
         assertNull(region.getIdentifier());
         assertEquals("Unknown", region.toString());
+    }
+
+    @Test(expected = NotfoundException.class)
+    public void testLookupContainerNotfound() throws Exception {
+        final SwiftSession session = new SwiftSession(
+                new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
+                        new Credentials(
+                                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+                        )));
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path container = new Path("notfound.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        new SwiftLocationFeature(session).getLocation(container);
     }
 
     @Test

@@ -52,6 +52,11 @@ public interface Write {
      */
     boolean temporary();
 
+    /**
+     * @return True if supporting random writes with arbitrary offset and length
+     */
+    boolean random();
+
     final class Append {
         /**
          * Append to file

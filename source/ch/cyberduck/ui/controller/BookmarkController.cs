@@ -484,6 +484,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.AnonymousChecked = _host.getCredentials().isAnonymousLogin();
             View.SelectedProtocol = _host.getProtocol();
             View.SelectedTransferMode = _host.getTransfer();
+            View.SelectedEncoding = _host.getEncoding() == null ? Default : _host.getEncoding();
             View.EncodingFieldEnabled = _host.getProtocol().isEncodingConfigurable();
             View.ConnectModeFieldEnabled = _host.getProtocol().getType() == Protocol.Type.ftp;
             if (_host.getProtocol().getType() == Protocol.Type.ftp)

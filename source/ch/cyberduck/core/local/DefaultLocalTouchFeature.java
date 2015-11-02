@@ -25,8 +25,9 @@ import ch.cyberduck.core.local.features.Touch;
 
 import org.apache.log4j.Logger;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.MessageFormat;
 
 /**
@@ -36,36 +37,29 @@ public class DefaultLocalTouchFeature implements Touch {
     private static final Logger log = Logger.getLogger(DefaultLocalTouchFeature.class);
 
     @Override
-    public void touch(final Local l) throws AccessDeniedException {
-        final File file = new File(l.getAbsolute());
-        final File parent = file.getParentFile();
+    public void touch(final Local file) throws AccessDeniedException {
+        final Local parent = file.getParent();
         if(!parent.exists()) {
-            if(!parent.mkdirs()) {
-                throw new LocalAccessDeniedException(MessageFormat.format(
-                        LocaleFactory.localizedString("Cannot create folder {0}", "Error"), l.getAbsolute()));
-            }
+            parent.mkdir();
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Created folder %s", parent));
             }
         }
-        if(l.exists()) {
+        if(file.exists()) {
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Skip creating file %s", l));
+                log.debug(String.format("Skip creating file %s", file));
             }
             return;
         }
         try {
-            if(!file.createNewFile()) {
-                throw new LocalAccessDeniedException(MessageFormat.format(
-                        LocaleFactory.localizedString("Cannot create {0}", "Error"), l.getAbsolute()));
-            }
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Created file %s", file));
-            }
+            Files.createFile(Paths.get(file.getAbsolute()));
         }
         catch(IOException e) {
             throw new LocalAccessDeniedException(MessageFormat.format(
-                    LocaleFactory.localizedString("Cannot create {0}", "Error"), l.getAbsolute()), e);
+                    LocaleFactory.localizedString("Cannot create {0}", "Error"), file.getAbsolute()), e);
+        }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Created file %s", file));
         }
     }
 }

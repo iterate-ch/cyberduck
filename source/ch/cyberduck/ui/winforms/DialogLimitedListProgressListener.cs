@@ -76,6 +76,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                                         if (verificationChecked)
                                         {
                                             _supressed = true;
+                                            disable();
                                         }
                                     });
                         };

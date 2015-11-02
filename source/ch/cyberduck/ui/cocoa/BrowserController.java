@@ -353,6 +353,7 @@ public class BrowserController extends WindowController
     }
 
     /**
+     * Make the browser reload its content. Will make use of the cache.
      */
     protected void reload() {
         if(this.isMounted()) {
@@ -367,8 +368,9 @@ public class BrowserController extends WindowController
     }
 
     /**
-     * Make the browser reload its content. Will make use of the cache.
+     * Make the browser reload its content. Invalidates the cache.
      *
+     * @param workdir  Use working directory as the current root of the browser
      * @param selected The items to be selected
      */
     protected void reload(final Path workdir, final List<Path> changed, final List<Path> selected) {
@@ -376,8 +378,9 @@ public class BrowserController extends WindowController
     }
 
     /**
-     * Make the browser reload its content. Will make use of the cache.
+     * Make the browser reload its content. Invalidates the cache.
      *
+     * @param workdir  Use working directory as the current root of the browser
      * @param folders  Folders to render
      * @param selected The items to be selected
      */
@@ -385,6 +388,14 @@ public class BrowserController extends WindowController
         this.reload(workdir, folders, selected, true);
     }
 
+    /**
+     * Make the browser reload its content. Invalidates the cache.
+     *
+     * @param workdir    Use working directory as the current root of the browser
+     * @param folders    Folders to render
+     * @param selected   The items to be selected
+     * @param invalidate Invalidate the cache before rendering
+     */
     protected void reload(final Path workdir, final Set<Path> folders, final List<Path> selected, final boolean invalidate) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Reload data with selected files %s", selected));
@@ -427,7 +438,7 @@ public class BrowserController extends WindowController
     /**
      * @param browser  Browser view
      * @param model    Browser Model
-     * @param workdir  Working directory
+     * @param workdir  Use working directory as the current root of the browser
      * @param selected Selected files in browser
      * @param folder   Folder to render
      */

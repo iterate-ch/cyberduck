@@ -21,6 +21,7 @@ import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -43,6 +44,7 @@ import static org.junit.Assert.*;
 public class SwiftLargeObjectUploadFeatureTest extends AbstractTestCase {
 
     @Test
+    @Ignore
     public void testUploadHP() throws Exception {
         final Host host = new Host(new SwiftProtocol() {
             @Override
@@ -114,7 +116,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractTestCase {
         assertNull(new SwiftAttributesFeature(session).find(test).getChecksum());
         assertNull(new DefaultAttributesFeature(session).find(test).getChecksum());
 
-        assertEquals(1048576 + 1048576 + 1, status.getOffset());
+        assertEquals(content.length, status.getOffset());
         assertTrue(status.isComplete());
         assertFalse(status.isCanceled());
 
@@ -122,7 +124,8 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractTestCase {
         final InputStream in = new SwiftReadFeature(session, regionService).read(test, new TransferStatus());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         new StreamCopier(status, status).transfer(in, buffer);
-        IOUtils.closeQuietly(in);
+        in.close();
+        buffer.close();
         assertArrayEquals(content, buffer.toByteArray());
         final Map<String, String> metadata = new SwiftMetadataFeature(session).getMetadata(test);
         assertFalse(metadata.isEmpty());

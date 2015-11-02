@@ -29,7 +29,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 
@@ -87,7 +86,7 @@ public class ComparisonServiceFilter implements ComparePathFilter {
                     return Comparison.equal;
                 }
                 final PathAttributes attributes = attribute.find(file);
-                if(PreferencesFactory.get().getBoolean("queue.sync.compare.hash")) {
+                {
                     // MD5/ETag Checksum is supported
                     if(attributes.getChecksum() != null) {
                         progress.message(MessageFormat.format(
@@ -101,18 +100,22 @@ public class ComparisonServiceFilter implements ComparePathFilter {
                         }
                     }
                 }
-                if(PreferencesFactory.get().getBoolean("queue.sync.compare.size")) {
+                // We must always compare the size because the download filter will have already created a temporary 0 byte file
+                {
                     final Comparison comparison = size.compare(attributes, local.attributes());
+                    if(!Comparison.notequal.equals(comparison)) {
+                        // Decision is available. Equal local or remote.
+                        return comparison;
+                    }
+                    // Continue to decide with timestamp when both files exist and are not zero bytes
+                }
+                // Default comparison is using timestamp of file.
+                {
+                    final Comparison comparison = timestamp.compare(attributes, local.attributes());
                     if(!Comparison.notequal.equals(comparison)) {
                         // Decision is available
                         return comparison;
                     }
-                }
-                // Default comparison is using timestamp of file.
-                final Comparison comparison = timestamp.compare(attributes, local.attributes());
-                if(!Comparison.notequal.equals(comparison)) {
-                    // Decision is available
-                    return comparison;
                 }
             }
             else {

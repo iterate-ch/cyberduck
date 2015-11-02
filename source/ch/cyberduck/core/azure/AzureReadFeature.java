@@ -74,6 +74,10 @@ public class AzureReadFeature implements Read {
                 try {
                     StreamCopier.skip(in, status.getOffset());
                 }
+                catch(IndexOutOfBoundsException e) {
+                    // If offset is invalid
+                    throw new BackgroundException(e);
+                }
                 catch(IOException e) {
                     throw new DefaultIOExceptionMappingService().map(e);
                 }

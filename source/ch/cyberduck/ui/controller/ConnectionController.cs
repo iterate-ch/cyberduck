@@ -238,19 +238,15 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChangedServerEvent()
         {
-            Host parsed = HostParser.parse(View.Hostname);
             if (ProtocolFactory.isURL(View.Hostname))
             {
+                Host parsed = HostParser.parse(View.Hostname);
                 View.Hostname = parsed.getHostname();
                 View.SelectedProtocol = parsed.getProtocol();
                 View.Port = parsed.getPort().ToString();
                 View.Username = parsed.getCredentials().getUsername();
                 View.Path = parsed.getDefaultPath();
                 View.AnonymousChecked = parsed.getCredentials().isAnonymousLogin();
-            }
-            else
-            {
-                View.Hostname = parsed.getHostname();
             }
             UpdateUrlLabel();
             UpdateIdentity();

@@ -51,6 +51,13 @@ public class CommandLinePathParserTest extends AbstractTestCase {
                 new CommandLinePathParser(input).parse("ftps://u@test.cyberduck.ch/d/"));
         assertEquals(new Path("/d", EnumSet.of(Path.Type.file)),
                 new CommandLinePathParser(input).parse("ftps://u@test.cyberduck.ch/d"));
+
+        assertEquals(new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.directory)),
+                new CommandLinePathParser(input).parse("s3://u@test.cyberduck.ch/"));
+        assertEquals(new Path("/test.cyberduck.ch/d", EnumSet.of(Path.Type.directory)),
+                new CommandLinePathParser(input).parse("s3://u@test.cyberduck.ch/d/"));
+        assertEquals(new Path("/test.cyberduck.ch/d", EnumSet.of(Path.Type.file)),
+                new CommandLinePathParser(input).parse("s3://u@test.cyberduck.ch/d"));
     }
 
     @Test

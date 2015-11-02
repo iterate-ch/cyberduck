@@ -21,7 +21,6 @@ package ch.cyberduck.cli;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.IOKitSleepPreventer;
 import ch.cyberduck.core.Keychain;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.MemoryPreferences;
 import ch.cyberduck.core.diagnostics.SystemConfigurationReachability;
 import ch.cyberduck.core.editor.DefaultEditorFactory;
@@ -39,7 +38,6 @@ import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
 import ch.cyberduck.core.local.WorkspaceIconService;
 import ch.cyberduck.core.local.WorkspaceSymlinkFeature;
 import ch.cyberduck.core.local.features.DefaultSymlinkFeature;
-import ch.cyberduck.core.preferences.ApplicationResourcesFinderFactory;
 import ch.cyberduck.core.preferences.BundleApplicationResourcesFinder;
 import ch.cyberduck.core.preferences.SecurityApplicationGroupSupportDirectoryFinder;
 import ch.cyberduck.core.preferences.StaticApplicationResourcesFinder;
@@ -122,6 +120,9 @@ public class TerminalPreferences extends MemoryPreferences {
     @Override
     protected void setDefaults() {
         super.setDefaults();
+
+        defaults.put("website.home", "http://duck.sh/");
+        defaults.put("website.help", "http://help.duck.sh/");
 
         System.setProperty("jna.library.path", this.getProperty("java.library.path"));
 

@@ -207,4 +207,9 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
     public boolean temporary() {
         return false;
     }
+
+    @Override
+    public boolean random() {
+        return false;
+    }
 }

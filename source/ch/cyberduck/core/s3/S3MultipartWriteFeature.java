@@ -38,6 +38,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @version $Id:$
@@ -131,7 +132,7 @@ public class S3MultipartWriteFeature implements Write {
         };
     }
 
-    private class MultipartOutputStream extends OutputStream {
+    private final class MultipartOutputStream extends OutputStream {
         /**
          * Completed parts
          */
@@ -142,6 +143,8 @@ public class S3MultipartWriteFeature implements Write {
         private final Path file;
 
         private int partNumber;
+
+        private final AtomicBoolean close = new AtomicBoolean();
 
         public MultipartOutputStream(final MultipartUpload multipart, final Path file) {
             this.multipart = multipart;
@@ -193,6 +196,10 @@ public class S3MultipartWriteFeature implements Write {
         @Override
         public void close() throws IOException {
             try {
+                if(close.get()) {
+                    log.warn(String.format("Skip double close of stream %s", this));
+                    return;
+                }
                 final MultipartCompleted complete = session.getClient().multipartCompleteUpload(multipart, completed);
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Completed multipart upload for %s with checksum %s",
@@ -223,6 +230,9 @@ public class S3MultipartWriteFeature implements Write {
             catch(ServiceException e) {
                 throw new IOException(e.getErrorMessage(), e);
             }
+            finally {
+                close.set(true);
+            }
         }
     }
 
@@ -237,6 +247,11 @@ public class S3MultipartWriteFeature implements Write {
 
     @Override
     public boolean temporary() {
+        return false;
+    }
+
+    @Override
+    public boolean random() {
         return false;
     }
 }

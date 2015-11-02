@@ -208,6 +208,7 @@ public class UserDefaultsPreferences extends Preferences {
 
         final NSBundle bundle = NSBundle.mainBundle();
         defaults.put("application.name", bundle.objectForInfoDictionaryKey("CFBundleName").toString());
+        defaults.put("application.copyright", bundle.objectForInfoDictionaryKey("NSHumanReadableCopyright").toString());
         defaults.put("application.identifier",
                 bundle.objectForInfoDictionaryKey("CFBundleIdentifier").toString());
         final NSObject version = bundle.objectForInfoDictionaryKey("CFBundleShortVersionString");

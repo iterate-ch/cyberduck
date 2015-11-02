@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2015 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,7 @@
 using ch.cyberduck.cli;
 using ch.cyberduck.core.preferences;
 using org.apache.commons.cli;
+using Console = System.Console;
 
 namespace Ch.Cyberduck.Cli
 {
@@ -31,6 +32,10 @@ namespace Ch.Cyberduck.Cli
 
         private static void Main(string[] args)
         {
+            // set UTF-8 encoding, tested in mintty (cygwin, babun) and cmd.exe
+            java.lang.System.setProperty("file.encoding", "UTF-8");
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+
             Preferences defaults = new WindowsTerminalPreferences();
             PreferencesFactory.set(defaults);
             open(args, defaults);

@@ -73,7 +73,7 @@ public class PromptLimitedListProgressListener extends LimitedListProgressListen
                             c.set(false);
                         }
                         if(alert.suppressionButton().state() == NSCell.NSOnState) {
-                            suppressed = true;
+                            disable();
                         }
                     }
                 };
@@ -83,5 +83,11 @@ public class PromptLimitedListProgressListener extends LimitedListProgressListen
                 }
             }
         }
+    }
+
+    @Override
+    protected void disable() {
+        super.disable();
+        suppressed = true;
     }
 }

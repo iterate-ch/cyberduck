@@ -14,7 +14,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.http.HttpUploadFeature;
@@ -33,6 +32,7 @@ import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
@@ -92,13 +92,12 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
         session.close();
     }
 
-    @Test(expected = InteroperabilityException.class)
+    @Test
     public void testWriteContentRange() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
                 properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
         ));
         host.setDefaultPath("/dav/basic");
-        final AtomicBoolean redirected = new AtomicBoolean();
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -107,22 +106,157 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
         final byte[] content = RandomUtils.nextBytes(64000);
         {
             final TransferStatus status = new TransferStatus();
-            status.setLength(1024);
+            status.setOffset(0L);
+            status.setLength(1024L);
             final ResponseOutputStream<String> out = feature.write(test, status);
             // Write first 1024
-            new StreamCopier(status, status).withLimit(1024L).transfer(new ByteArrayInputStream(content), out);
+            new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
+        assertTrue(new DAVFindFeature(session).find(test));
+        assertEquals(1024L, new DefaultAttributesFeature(session).find(test).getSize());
         {
             // Remaining chunked transfer with offset
             final TransferStatus status = new TransferStatus();
-            status.setLength(-1);
-            status.setOffset(1024);
+            status.setLength(content.length - 1024L);
+            status.setOffset(1024L);
             status.setAppend(true);
             final ResponseOutputStream<String> out = feature.write(test, status);
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
+        final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
+        IOUtils.copy(new DAVReadFeature(session).read(test, new TransferStatus().length(content.length)), out);
+        assertArrayEquals(content, out.toByteArray());
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
+    }
+
+    @Test
+    public void testWriteRangeEndFirst() throws Exception {
+        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
+                properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
+        ));
+        host.setDefaultPath("/dav/basic");
+        final DAVSession session = new DAVSession(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final DAVWriteFeature feature = new DAVWriteFeature(session);
+        final Path test = new Path("/dav/basic/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final byte[] content = RandomUtils.nextBytes(2048);
+        {
+            // Write end of file first
+            final TransferStatus status = new TransferStatus();
+            status.setLength(1024L);
+            status.setOffset(1024L);
+            status.setAppend(true);
+            final ResponseOutputStream<String> out = feature.write(test, status);
+            new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
+            out.close();
+        }
+        assertTrue(new DAVFindFeature(session).find(test));
+        assertEquals(content.length, new DefaultAttributesFeature(session).find(test).getSize());
+        {
+            // Write beginning of file up to the last chunk
+            final TransferStatus status = new TransferStatus();
+            status.setOffset(0L);
+            status.setLength(1024L);
+            status.setAppend(true);
+            final ResponseOutputStream<String> out = feature.write(test, status);
+            new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
+            out.close();
+        }
+        final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
+        IOUtils.copy(new DAVReadFeature(session).read(test, new TransferStatus().length(content.length)), out);
+        assertArrayEquals(content, out.toByteArray());
+        assertTrue(new DAVFindFeature(session).find(test));
+        assertEquals(content.length, new DefaultAttributesFeature(session).find(test).getSize());
+        final byte[] buffer = new byte[content.length];
+        final InputStream in = new DAVReadFeature(session).read(test, new TransferStatus().length(content.length));
+        IOUtils.readFully(in, buffer);
+        IOUtils.closeQuietly(in);
+        assertArrayEquals(content, buffer);
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
+    }
+
+    @Test
+    public void testWriteContentRangeTwoBytes() throws Exception {
+        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
+                properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
+        ));
+        host.setDefaultPath("/dav/basic");
+        final DAVSession session = new DAVSession(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final DAVWriteFeature feature = new DAVWriteFeature(session);
+        final Path test = new Path("/dav/basic/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final byte[] source = RandomUtils.nextBytes(2);
+        {
+            final TransferStatus status = new TransferStatus();
+            status.setLength(1L);
+            status.setOffset(0L);
+            final ResponseOutputStream<String> out = feature.write(test, status);
+            new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(source), out);
+            out.close();
+        }
+        {
+            final TransferStatus status = new TransferStatus();
+            status.setLength(1L);
+            status.setOffset(1L);
+            status.setAppend(true);
+            final ResponseOutputStream<String> out = feature.write(test, status);
+            new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(source), out);
+            out.close();
+        }
+        final ByteArrayOutputStream out = new ByteArrayOutputStream(source.length);
+        IOUtils.copy(new DAVReadFeature(session).read(test, new TransferStatus().length(source.length)), out);
+        assertArrayEquals(source, out.toByteArray());
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
+    }
+
+    @Test
+    public void testWriteContentRangeThreeBytes() throws Exception {
+        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
+                properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
+        ));
+        host.setDefaultPath("/dav/basic");
+        final DAVSession session = new DAVSession(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final DAVWriteFeature feature = new DAVWriteFeature(session);
+        final Path test = new Path("/dav/basic/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final byte[] source = RandomUtils.nextBytes(3);
+        {
+            final TransferStatus status = new TransferStatus();
+            status.setLength(1L);
+            status.setOffset(0L);
+            final ResponseOutputStream<String> out = feature.write(test, status);
+            new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(source), out);
+            out.close();
+        }
+        {
+            final TransferStatus status = new TransferStatus();
+            status.setLength(2L);
+            status.setOffset(1L);
+            status.setAppend(true);
+            final ResponseOutputStream<String> out = feature.write(test, status);
+            new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(source), out);
+            out.close();
+        }
+        final ByteArrayOutputStream out = new ByteArrayOutputStream(source.length);
+        IOUtils.copy(new DAVReadFeature(session).read(test, new TransferStatus().length(source.length)), out);
+        assertArrayEquals(source, out.toByteArray());
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {
