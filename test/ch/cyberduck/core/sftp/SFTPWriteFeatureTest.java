@@ -185,7 +185,7 @@ public class SFTPWriteFeatureTest extends AbstractTestCase {
         assertEquals(1024L, new DefaultAttributesFeature(session).find(test).getSize());
         {
             // Remaining chunked transfer with offset
-            final TransferStatus status = new TransferStatus();
+            final TransferStatus status = new TransferStatus().exists(true);
             status.setLength(content.length - 1024L);
             status.setOffset(1024L);
             status.setAppend(true);
@@ -226,11 +226,10 @@ public class SFTPWriteFeatureTest extends AbstractTestCase {
             out.flush();
             out.close();
         }
-        assertTrue(new DefaultFindFeature(session).find(test));
-        assertEquals(content.length, new DefaultAttributesFeature(session).find(test).getSize());
+        assertEquals(2048, new DefaultAttributesFeature(session).find(test).getSize());
         {
             // Write beginning of file up to the last chunk
-            final TransferStatus status = new TransferStatus();
+            final TransferStatus status = new TransferStatus().exists(true);
             status.setExists(true);
             status.setOffset(0L);
             status.setLength(1024L);
@@ -240,6 +239,7 @@ public class SFTPWriteFeatureTest extends AbstractTestCase {
             out.flush();
             out.close();
         }
+        assertEquals(2048, new DefaultAttributesFeature(session).find(test).getSize());
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
         IOUtils.copy(new SFTPReadFeature(session).read(test, new TransferStatus().length(content.length)), out);
         assertArrayEquals(content, out.toByteArray());
