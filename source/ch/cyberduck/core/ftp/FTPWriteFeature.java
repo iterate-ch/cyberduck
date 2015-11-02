@@ -82,6 +82,11 @@ public class FTPWriteFeature extends AppendWriteFeature {
         return true;
     }
 
+    @Override
+    public boolean random() {
+        return false;
+    }
+
     private final class ReadReplyOutputStream extends ProxyOutputStream {
         private final AtomicBoolean close;
         private final TransferStatus status;

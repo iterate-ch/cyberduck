@@ -48,7 +48,7 @@ public class IRODSWriteFeature extends AppendWriteFeature {
         try {
             final IRODSFileSystemAO fs = session.filesystem();
             return new PackingIrodsOutputStream(fs.getIRODSFileFactory().instanceIRODSFileOutputStream(
-                    file.getAbsolute(), status.isAppend() ? DataObjInp.OpenFlags.READ_WRITE : DataObjInp.OpenFlags.WRITE_TRUNCATE));
+                    file.getAbsolute(), status.isAppend() ? DataObjInp.OpenFlags.WRITE : DataObjInp.OpenFlags.WRITE_TRUNCATE));
         }
         catch(JargonException e) {
             throw new IRODSExceptionMappingService().map("Uploading {0} failed", e, file);
@@ -60,6 +60,11 @@ public class IRODSWriteFeature extends AppendWriteFeature {
 
     @Override
     public boolean temporary() {
+        return false;
+    }
+
+    @Override
+    public boolean random() {
         return false;
     }
 }
