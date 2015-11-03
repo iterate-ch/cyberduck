@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.cocoa;
+package ch.cyberduck.binding.application;
 
 /*
  *  Copyright (c) 2008 David Kocher. All rights reserved.
@@ -26,6 +26,7 @@ import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.binding.foundation.NSMutableAttributedString;
 import ch.cyberduck.binding.foundation.NSNumber;
 import ch.cyberduck.binding.foundation.NSRange;
+import ch.cyberduck.ui.cocoa.BundleController;
 
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.cocoa.foundation.NSUInteger;

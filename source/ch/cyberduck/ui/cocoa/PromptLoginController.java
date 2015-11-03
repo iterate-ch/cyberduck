@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.Outlet;
+import ch.cyberduck.binding.application.HyperlinkAttributedStringFactory;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSCell;
