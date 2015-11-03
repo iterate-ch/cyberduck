@@ -36,18 +36,24 @@ public class FinderSidebarService implements SidebarService {
         Native.load("findersidebarservice");
     }
 
-    private final String kLSSharedFileListFavoriteVolumes = "com.apple.LSSharedFileList.FavoriteVolumes";
-    private final String kLSSharedFileListRecentServerItems = "com.apple.LSSharedFileList.RecentServers";
-    private final String kLSSharedFileListFavoriteItems = "com.apple.LSSharedFileList.FavoriteItems";
+    private static final String kLSSharedFileListFavoriteVolumes = "com.apple.LSSharedFileList.FavoriteVolumes";
+    private static final String kLSSharedFileListRecentServerItems = "com.apple.LSSharedFileList.RecentServers";
+    private static final String kLSSharedFileListFavoriteItems = "com.apple.LSSharedFileList.FavoriteItems";
+
+    private final List list;
+
+    public FinderSidebarService() {
+        this.list = List.favorite;
+    }
+
+    public FinderSidebarService(final List list) {
+        this.list = list;
+    }
 
     @Override
     public void add(final Local file) throws LocalAccessDeniedException {
-        this.add(file, List.favorite);
-    }
-
-    public void add(final Local file, final List list) throws LocalAccessDeniedException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Add %s", file));
+            log.debug(String.format("Add %s to %s", file, this.forList(list)));
         }
         if(!this.addItem(file.getAbsolute(), this.forList(list))) {
             throw new LocalAccessDeniedException(String.format("Failure adding %s to %s", file, this.forList(list)));
@@ -56,12 +62,8 @@ public class FinderSidebarService implements SidebarService {
 
     @Override
     public void remove(final Local file) throws LocalAccessDeniedException {
-        this.remove(file, List.favorite);
-    }
-
-    public void remove(final Local file, final List list) throws LocalAccessDeniedException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Remove %s", file));
+            log.debug(String.format("Remove %s in %s", file, this.forList(list)));
         }
         try {
             if(!this.removeItem(new File(file.getAbsolute()).getCanonicalPath(), this.forList(list))) {
