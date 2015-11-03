@@ -24,8 +24,8 @@ import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
-import ch.cyberduck.ui.cocoa.AlertController;
-import ch.cyberduck.ui.cocoa.WindowController;
+import ch.cyberduck.binding.AlertController;
+import ch.cyberduck.binding.WindowController;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 

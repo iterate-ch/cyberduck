@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSTabView;
 import ch.cyberduck.binding.application.NSTabViewItem;

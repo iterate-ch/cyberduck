@@ -19,6 +19,10 @@ package ch.cyberduck.ui.cocoa;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.Action;
+import ch.cyberduck.binding.Delegate;
+import ch.cyberduck.binding.Outlet;
+import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.*;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSIndexSet;

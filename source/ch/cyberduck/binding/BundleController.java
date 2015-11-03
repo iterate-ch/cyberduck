@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.cocoa;
+package ch.cyberduck.binding;
 
 /*
  *  Copyright (c) 2007 David Kocher. All rights reserved.
@@ -18,7 +18,6 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSColor;
 import ch.cyberduck.binding.application.NSFont;
@@ -28,6 +27,7 @@ import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.binding.foundation.NSBundle;
 import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.core.FactoryException;
+import ch.cyberduck.binding.application.TableCellAttributes;
 
 import org.apache.log4j.Logger;
 
@@ -54,7 +54,7 @@ public abstract class BundleController extends ProxyController {
                     NSAttributedString.ParagraphStyleAttributeName)
     );
 
-    protected void loadBundle() {
+    public void loadBundle() {
         final String bundleName = this.getBundleName();
         if(null == bundleName) {
             log.debug(String.format("No bundle to load for controller %s", this.toString()));
@@ -63,7 +63,7 @@ public abstract class BundleController extends ProxyController {
         this.loadBundle(bundleName);
     }
 
-    protected void loadBundle(final String bundleName) {
+    public void loadBundle(final String bundleName) {
         if(awaked) {
             log.warn(String.format("Bundle %s already loaded", bundleName));
             return;
@@ -103,7 +103,7 @@ public abstract class BundleController extends ProxyController {
 
     protected abstract String getBundleName();
 
-    protected int alert(final NSAlert alert) {
+    public int alert(final NSAlert alert) {
         return alert.runModal();
     }
 }
