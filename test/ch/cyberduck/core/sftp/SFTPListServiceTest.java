@@ -48,7 +48,7 @@ public class SFTPListServiceTest extends AbstractTestCase {
         assertTrue(list.contains(new Path(home, "test", EnumSet.of(Path.Type.file))));
         assertEquals(new Permission(Permission.Action.read_write, Permission.Action.read_write, Permission.Action.read_write),
                 list.get(new Path(home, "test", EnumSet.of(Path.Type.file))).attributes().getPermission());
-        assertTrue(list.contains(new Path(home, "test.directory", EnumSet.of(Path.Type.file))));
+        assertTrue(list.contains(new Path(home, "test.directory", EnumSet.of(Path.Type.directory))));
         assertTrue(list.contains(new Path(home, "test.symlink", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink))));
         assertEquals(new Path(home, "test", EnumSet.of(Path.Type.file)), list.get(new Path(home, "test.symlink", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink))).getSymlinkTarget());
         assertTrue(list.contains(new Path(home, "test.symlink-absolute", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink))));
