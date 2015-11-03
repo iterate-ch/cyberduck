@@ -103,7 +103,7 @@ public abstract class BundleController extends ProxyController {
 
     protected abstract String getBundleName();
 
-    protected int alert(final NSAlert alert) {
+    public int alert(final NSAlert alert) {
         return alert.runModal();
     }
 }

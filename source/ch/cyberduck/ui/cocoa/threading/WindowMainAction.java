@@ -18,7 +18,7 @@ package ch.cyberduck.ui.cocoa.threading;
  */
 
 import ch.cyberduck.core.threading.ControllerMainAction;
-import ch.cyberduck.ui.cocoa.WindowController;
+import ch.cyberduck.binding.WindowController;
 
 /**
  * @version $Id$

@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.cocoa;
+package ch.cyberduck.binding;
 
 /*
  *  Copyright (c) 2005 David Kocher. All rights reserved.
@@ -18,8 +18,6 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.binding.Action;
-import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSCell;
@@ -39,6 +37,8 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.ui.cocoa.BundleController;
+import ch.cyberduck.ui.cocoa.WindowListener;
 import ch.cyberduck.ui.cocoa.threading.PanelAlertCallback;
 
 import org.apache.commons.lang3.StringUtils;
@@ -213,7 +213,7 @@ public abstract class WindowController extends BundleController implements NSWin
      * @return Return code from the dialog if called from background thread.
      */
     @Override
-    protected int alert(final NSAlert alert) {
+    public int alert(final NSAlert alert) {
         return this.alert(alert, (String) null);
     }
 
@@ -222,7 +222,7 @@ public abstract class WindowController extends BundleController implements NSWin
      * @param help  Help URL
      * @return Button selection
      */
-    protected int alert(final NSAlert alert, final String help) {
+    public int alert(final NSAlert alert, final String help) {
         final int[] response = new int[1];
         this.alert(alert, new SheetCallback() {
             @Override
@@ -239,7 +239,7 @@ public abstract class WindowController extends BundleController implements NSWin
      * @param alert    Sheet
      * @param callback Dismissed notification
      */
-    protected void alert(final NSAlert alert, final SheetCallback callback) {
+    public void alert(final NSAlert alert, final SheetCallback callback) {
         this.alert(alert, callback, null);
     }
 
@@ -248,7 +248,7 @@ public abstract class WindowController extends BundleController implements NSWin
      * @param callback Dismissed notification
      * @param help     Help URL
      */
-    protected void alert(final NSAlert alert, final SheetCallback callback, final String help) {
+    public void alert(final NSAlert alert, final SheetCallback callback, final String help) {
         final SheetController c = new AlertController(this, alert) {
             @Override
             public void callback(final int returncode) {

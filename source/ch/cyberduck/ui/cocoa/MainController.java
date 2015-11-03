@@ -19,9 +19,12 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.binding.Action;
+import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.binding.Delegate;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.ProxyController;
+import ch.cyberduck.binding.SheetController;
+import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSApplication;
 import ch.cyberduck.binding.application.NSButton;

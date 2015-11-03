@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.cocoa;
+package ch.cyberduck.binding;
 
 /*
  *  Copyright (c) 2005 David Kocher. All rights reserved.
@@ -18,7 +18,6 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.application.AppKitFunctionsLibrary;
 import ch.cyberduck.binding.application.NSApplication;
 import ch.cyberduck.binding.application.NSButton;
@@ -26,6 +25,7 @@ import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.foundation.NSThread;
 import ch.cyberduck.core.threading.ControllerMainAction;
+import ch.cyberduck.binding.application.PanelReturnCodeMapper;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
