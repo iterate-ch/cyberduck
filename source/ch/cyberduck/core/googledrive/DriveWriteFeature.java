@@ -56,6 +56,11 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<File> {
     }
 
     @Override
+    public boolean random() {
+        return false;
+    }
+
+    @Override
     public ResponseOutputStream<File> write(final Path file, final TransferStatus status) throws BackgroundException {
         final File body = new File();
         body.setTitle(file.getName());

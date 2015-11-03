@@ -93,7 +93,7 @@ public class DriveSession extends HttpSession<Drive> {
     }
 
     @Override
-    public void login(final PasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
+    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
                       final Cache<Path> cache) throws BackgroundException {
         final String accesstoken = keychain.getPassword(host.getProtocol().getScheme(),
                 host.getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google Drive OAuth2 Access Token");
