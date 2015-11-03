@@ -18,6 +18,9 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.Action;
+import ch.cyberduck.binding.Delegate;
+import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.NSColor;
 import ch.cyberduck.binding.application.NSFont;

@@ -18,6 +18,8 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.Action;
+import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSCell;
@@ -198,16 +200,6 @@ public abstract class WindowController extends BundleController implements NSWin
             toggle.performClick(null);
         }
         toggle.setState(select ? NSCell.NSOnState : NSCell.NSOffState);
-    }
-
-    /**
-     * @return True if this window has a sheet attached
-     */
-    public boolean hasSheet() {
-        if(null == window) {
-            return false;
-        }
-        return window.attachedSheet() != null;
     }
 
     @Override

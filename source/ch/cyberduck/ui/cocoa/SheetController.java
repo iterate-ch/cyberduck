@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.application.AppKitFunctionsLibrary;
 import ch.cyberduck.binding.application.NSApplication;
 import ch.cyberduck.binding.application.NSButton;

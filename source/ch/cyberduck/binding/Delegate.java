@@ -1,8 +1,7 @@
-package ch.cyberduck.ui.cocoa;
+package ch.cyberduck.binding;
 
 /*
- * Copyright (c) 2002-2009 David Kocher. All rights reserved.
- *
+ * Copyright (c) 2002-2015 David Kocher. All rights reserved.
  * http://cyberduck.ch/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,14 +14,13 @@ package ch.cyberduck.ui.cocoa;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * Bug fixes, suggestions and comments should be sent to:
- * dkocher@cyberduck.ch
+ * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-@java.lang.annotation.Target({java.lang.annotation.ElementType.METHOD})
+@java.lang.annotation.Target({java.lang.annotation.ElementType.FIELD})
 @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.SOURCE)
-public @interface Action {
+public @interface Delegate {
 }
