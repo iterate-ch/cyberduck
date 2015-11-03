@@ -37,7 +37,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.binding.Action;
 import ch.cyberduck.ui.cocoa.MainController;
-import ch.cyberduck.ui.cocoa.TableCellAttributes;
+import ch.cyberduck.binding.application.TableCellAttributes;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;

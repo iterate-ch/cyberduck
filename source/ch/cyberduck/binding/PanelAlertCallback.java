@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.cocoa.threading;
+package ch.cyberduck.binding;
 
 /*
  * Copyright (c) 2002-2013 David Kocher. All rights reserved.

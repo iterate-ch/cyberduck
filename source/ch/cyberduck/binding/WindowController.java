@@ -37,9 +37,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.ui.cocoa.BundleController;
-import ch.cyberduck.ui.cocoa.WindowListener;
-import ch.cyberduck.ui.cocoa.threading.PanelAlertCallback;
+import ch.cyberduck.binding.application.WindowListener;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
