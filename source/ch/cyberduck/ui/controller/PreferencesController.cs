@@ -1171,10 +1171,14 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             IList<KeyValuePair<string, string>> storageClasses = new List<KeyValuePair<string, string>>();
             storageClasses.Add(new KeyValuePair<string, string>(S3Object.STORAGE_CLASS_STANDARD,
-                LocaleFactory.localizedString(S3Object.STORAGE_CLASS_STANDARD, "S3")));
+                LocaleFactory.localizedString(S3Object.STORAGE_CLASS_STANDARD, "S3"))
+            );
+            storageClasses.Add(new KeyValuePair<string, string>("STANDARD_IA",
+                LocaleFactory.localizedString("STANDARD_IA", "S3"))
+            );
             storageClasses.Add(new KeyValuePair<string, string>(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY,
-                LocaleFactory.localizedString(
-                    LocaleFactory.localizedString(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, "S3"), "S3")));
+                LocaleFactory.localizedString(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, "S3"))
+            );
             View.PopulateDefaultStorageClasses(storageClasses);
         }
 
