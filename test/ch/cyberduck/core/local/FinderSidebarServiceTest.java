@@ -40,42 +40,42 @@ public class FinderSidebarServiceTest extends AbstractTestCase {
 
     @Test
     public void testAddNotFound() throws Exception {
-        FinderSidebarService f = new FinderSidebarService();
+        FinderSidebarService f = new FinderSidebarService(SidebarService.List.favorite);
         final Local file = LocalFactory.get(PreferencesFactory.get().getProperty("tmp.dir"));
-        f.add(file, SidebarService.List.favorite);
-        f.remove(file, SidebarService.List.favorite);
+        f.add(file);
+        f.remove(file);
     }
 
     @Test(expected = LocalAccessDeniedException.class)
     public void testRemoveNotfound() throws Exception {
-        FinderSidebarService f = new FinderSidebarService();
+        FinderSidebarService f = new FinderSidebarService(SidebarService.List.favorite);
         final Local file = LocalFactory.get(PreferencesFactory.get().getProperty("tmp.dir"));
-        f.remove(file, SidebarService.List.favorite);
+        f.remove(file);
     }
 
     @Test
     public void testAddMountedVolumes() throws Exception {
-        FinderSidebarService f = new FinderSidebarService();
+        FinderSidebarService f = new FinderSidebarService(SidebarService.List.favorite);
         final NSArray volumes = NSWorkspace.sharedWorkspace().mountedLocalVolumePaths();
         for(int i = 0; i < volumes.count().intValue(); i++) {
             final Local volume = LocalFactory.get(volumes.objectAtIndex(new NSUInteger(i)).toString());
-            f.add(volume, SidebarService.List.favorite);
+            f.add(volume);
         }
     }
 
     @Test
     public void testAddTemporaryFile() throws Exception {
-        FinderSidebarService f = new FinderSidebarService();
+        FinderSidebarService f = new FinderSidebarService(SidebarService.List.favorite);
         final String name = UUID.randomUUID().toString();
         FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
         new DefaultLocalTouchFeature().touch(l);
-        f.add(l, SidebarService.List.favorite);
+        f.add(l);
         l.delete();
     }
 
     @Test(expected = LocalAccessDeniedException.class)
     public void testRemove() throws Exception {
-        FinderSidebarService f = new FinderSidebarService();
-        f.remove(LocalFactory.get(PreferencesFactory.get().getProperty("tmp.dir")), SidebarService.List.favorite);
+        FinderSidebarService f = new FinderSidebarService(SidebarService.List.favorite);
+        f.remove(LocalFactory.get(PreferencesFactory.get().getProperty("tmp.dir")));
     }
 }
