@@ -49,6 +49,7 @@ import com.google.api.client.auth.oauth2.BearerToken;
 import com.google.api.client.auth.oauth2.ClientParametersAuthentication;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.TokenResponse;
+import com.google.api.client.googleapis.auth.oauth2.GoogleOAuthConstants;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.HttpTransport;
@@ -132,6 +133,7 @@ public class DriveSession extends HttpSession<Drive> {
                                 preferences.getProperty("google.drive.client.id"),
                                 preferences.getProperty("google.drive.client.secret")
                         ))
+                        .setTokenServerEncodedUrl(GoogleOAuthConstants.TOKEN_SERVER_URL)
                         .setJsonFactory(json).build()
                         .setFromTokenResponse(response);
 
@@ -158,6 +160,7 @@ public class DriveSession extends HttpSession<Drive> {
                             preferences.getProperty("google.drive.client.id"),
                             preferences.getProperty("google.drive.client.secret")
                     ))
+                    .setTokenServerEncodedUrl(GoogleOAuthConstants.TOKEN_SERVER_URL)
                     .setJsonFactory(json).build()
                     .setAccessToken(accesstoken)
                     .setRefreshToken(refreshtoken)
