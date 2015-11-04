@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>ch.cyberduck</groupId>
@@ -71,6 +72,11 @@
             <groupId>com.hierynomus</groupId>
             <artifactId>sshj</artifactId>
             <version>0.13.0</version>
+        </dependency>
+        <dependency>
+            <groupId>net.vrallev.ecc</groupId>
+            <artifactId>ecc-25519-java</artifactId>
+            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>com.jcraft</groupId>
@@ -190,8 +196,8 @@
                         </goals>
                         <configuration>
                             <tasks>
-                                <property name="version" value="${project.version}" />
-                                <ant antfile="${project.basedir}/../../build.xml" target="clean" dir="${project.basedir}/../../" />
+                                <property name="version" value="${project.version}"/>
+                                <ant antfile="${project.basedir}/../../build.xml" target="clean" dir="${project.basedir}/../../"/>
                             </tasks>
                         </configuration>
                     </execution>
@@ -203,8 +209,8 @@
                         </goals>
                         <configuration>
                             <tasks>
-                                <property name="version" value="${project.version}" />
-                                <ant antfile="${project.basedir}/../../build.xml" target="build" dir="${project.basedir}/../../" />
+                                <property name="version" value="${project.version}"/>
+                                <ant antfile="${project.basedir}/../../build.xml" target="build" dir="${project.basedir}/../../"/>
                             </tasks>
                         </configuration>
                     </execution>
