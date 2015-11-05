@@ -21,8 +21,9 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.binding.application.NSApplication;
 import ch.cyberduck.binding.foundation.NSBundle;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.preferences.ApplicationUserDefaultsPreferences;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.preferences.UserDefaultsPreferences;
 import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.core.threading.LoggingUncaughtExceptionHandler;
@@ -54,7 +55,7 @@ public final class MainApplication {
             final NSApplication app = NSApplication.sharedApplication();
 
             // Register factory implementations.
-            final UserDefaultsPreferences preferences = new UserDefaultsPreferences();
+            final Preferences preferences = new ApplicationUserDefaultsPreferences();
             PreferencesFactory.set(preferences);
             ProtocolFactory.register();
 
