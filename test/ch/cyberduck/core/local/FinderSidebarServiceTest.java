@@ -60,6 +60,7 @@ public class FinderSidebarServiceTest extends AbstractTestCase {
         for(int i = 0; i < volumes.count().intValue(); i++) {
             final Local volume = LocalFactory.get(volumes.objectAtIndex(new NSUInteger(i)).toString());
             f.add(volume);
+            f.remove(volume);
         }
     }
 
