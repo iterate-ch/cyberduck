@@ -43,7 +43,6 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_FinderSidebarService_add
 }
 
 JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_FinderSidebarService_removeItem(JNIEnv *env, jobject this, jstring file, jstring name) {
-    OSStatus err;
     LSSharedFileListRef list = LSSharedFileListCreate(kCFAllocatorDefault, (CFStringRef)JNFJavaToNSString(env, name), NULL);
     if (!list) {
         NSLog(@"Error getting shared file list reference");
@@ -55,21 +54,31 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_FinderSidebarService_rem
         NSLog(@"Error getting shared file list items snapshot copy reference");
         return NO;
     }
-    BOOL found = NO;
+    OSStatus err;
     for (CFIndex i = 0; i < CFArrayGetCount(items); i++) {
-        NSURL *url;
         LSSharedFileListItemRef item = (LSSharedFileListItemRef)CFArrayGetValueAtIndex(items, i);
-        if (noErr == (err = LSSharedFileListItemResolve(item, kLSSharedFileListNoUserInteraction|kLSSharedFileListDoNotMountVolumes, (CFURLRef*)&url, NULL))) {
+        NSURL *url;
+        if (noErr == (err = LSSharedFileListItemResolve(item, kLSSharedFileListNoUserInteraction, (CFURLRef*)&url, NULL))) {
             NSString *itemPath = [url path];
             [url release];
             if ([itemPath isEqualToString:JNFJavaToNSString(env, file)]) {
-                err = LSSharedFileListItemRemove(list, item);
-                found = YES;
-                break;
+                NSLog(@"Remove shared file list item %@", itemPath);
+                if(noErr == (err = LSSharedFileListItemRemove(list, item))) {
+                    break;
+                }
+                else {
+                    NSLog(@"Error removing shared file list item. %s", GetMacOSStatusErrorString(err));
+                }
             }
+            else {
+                NSLog(@"Ignore shared file list item %@", itemPath);
+            }
+        }
+        else {
+            NSLog(@"Error resolving shared file list item. %s", GetMacOSStatusErrorString(err));
         }
     }
     CFRelease(items);
     CFRelease(list);
-	return (err == noErr) && (found);
+	return err == noErr;
 }
