@@ -62,16 +62,12 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_FinderSidebarService_rem
             NSString *itemPath = [url path];
             [url release];
             if ([itemPath isEqualToString:JNFJavaToNSString(env, file)]) {
-                NSLog(@"Remove shared file list item %@", itemPath);
                 if(noErr == (err = LSSharedFileListItemRemove(list, item))) {
                     break;
                 }
                 else {
                     NSLog(@"Error removing shared file list item. %s", GetMacOSStatusErrorString(err));
                 }
-            }
-            else {
-                NSLog(@"Ignore shared file list item %@", itemPath);
             }
         }
         else {
