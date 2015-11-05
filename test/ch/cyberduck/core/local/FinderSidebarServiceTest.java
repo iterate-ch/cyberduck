@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.test.Depends;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
@@ -54,7 +55,7 @@ public class FinderSidebarServiceTest extends AbstractTestCase {
     }
 
     @Test
-    public void testAddMountedVolumes() throws Exception {
+    public void testAddMountedVolumesInFavorites() throws Exception {
         FinderSidebarService f = new FinderSidebarService(SidebarService.List.favorite);
         final NSArray volumes = NSWorkspace.sharedWorkspace().mountedLocalVolumePaths();
         for(int i = 0; i < volumes.count().intValue(); i++) {
@@ -65,12 +66,49 @@ public class FinderSidebarServiceTest extends AbstractTestCase {
     }
 
     @Test
-    public void testAddTemporaryFile() throws Exception {
+    @Ignore
+    public void testAddMountedVolumesInVolumes() throws Exception {
+        FinderSidebarService f = new FinderSidebarService(SidebarService.List.volume);
+        final NSArray volumes = NSWorkspace.sharedWorkspace().mountedLocalVolumePaths();
+        for(int i = 0; i < volumes.count().intValue(); i++) {
+            final Local volume = LocalFactory.get(volumes.objectAtIndex(new NSUInteger(i)).toString());
+            f.add(volume);
+            f.remove(volume);
+        }
+    }
+
+    @Test
+    @Ignore
+    public void testAddMountedVolumesInServers() throws Exception {
+        FinderSidebarService f = new FinderSidebarService(SidebarService.List.server);
+        final NSArray volumes = NSWorkspace.sharedWorkspace().mountedLocalVolumePaths();
+        for(int i = 0; i < volumes.count().intValue(); i++) {
+            final Local volume = LocalFactory.get(volumes.objectAtIndex(new NSUInteger(i)).toString());
+            f.add(volume);
+            f.remove(volume);
+        }
+    }
+
+    @Test
+    public void testAddTemporaryFileInFavorites() throws Exception {
         FinderSidebarService f = new FinderSidebarService(SidebarService.List.favorite);
         final String name = UUID.randomUUID().toString();
         FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
         new DefaultLocalTouchFeature().touch(l);
         f.add(l);
+        f.remove(l);
+        l.delete();
+    }
+
+    @Test
+    @Ignore
+    public void testAddTemporaryFileInVolumes() throws Exception {
+        FinderSidebarService f = new FinderSidebarService(SidebarService.List.volume);
+        final String name = UUID.randomUUID().toString();
+        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
+        new DefaultLocalTouchFeature().touch(l);
+        f.add(l);
+        f.remove(l);
         l.delete();
     }
 
