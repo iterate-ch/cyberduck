@@ -165,7 +165,6 @@
 		4786CB6E0E253B800029848F /* Transcript.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4786CB680E253B800029848F /* Transcript.xib */; };
 		4786CB6F0E253B800029848F /* Progress.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4786CB690E253B800029848F /* Progress.xib */; };
 		4786CB700E253B800029848F /* Task.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4786CB6A0E253B800029848F /* Task.xib */; };
-		478D6D951BCE861900A80287 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4792112812F6F4FD00E35E16 /* Sparkle.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		478ECD090DAD5743008A5B1F /* QLPreviewPanel.h in Headers */ = {isa = PBXBuildFile; fileRef = 473240070DABC00800BF67D2 /* QLPreviewPanel.h */; };
 		478ECD0A0DAD5743008A5B1F /* QuickLook.h in Headers */ = {isa = PBXBuildFile; fileRef = 478ECC9A0DAD1B0C008A5B1F /* QuickLook.h */; };
 		478ECD100DAD5743008A5B1F /* QuickLook.m in Sources */ = {isa = PBXBuildFile; fileRef = 478ECC9B0DAD1B0C008A5B1F /* QuickLook.m */; };
@@ -2447,7 +2446,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				47C88FF117269A71001A746A /* Cocoa.framework in Frameworks */,
-				478D6D951BCE861900A80287 /* Sparkle.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
