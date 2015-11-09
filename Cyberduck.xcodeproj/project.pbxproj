@@ -4055,6 +4055,7 @@
 				470C646B1328CBDD00146FB6 /* CopyFiles */,
 				47472EEF177F78620090A595 /* CopyFiles */,
 				47EFE4E11BED03E7009AC47B /* ShellScript */,
+				47C067EC1BF0B6510087D486 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -4590,6 +4591,20 @@
 			shellPath = /bin/sh;
 			shellScript = "find \"${TARGET_BUILD_DIR}/${PRODUCT_NAME}.app/Contents/Resources\" \\( -name info.xib \\) -type f -delete\nfind \"${TARGET_BUILD_DIR}/${PRODUCT_NAME}.app/Contents/Resources\" \\( -name classes.xib \\) -type f -delete\nfind \"${TARGET_BUILD_DIR}/${PRODUCT_NAME}.app/Contents/Resources\" \\( -name data.dependency \\) -type f -delete\n";
 		};
+		47C067EC1BF0B6510087D486 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ \"${CONFIGURATION}\" == 'Mac App Store' ]\nthen\nsed -i '.temp' 's/SU/None/g' \"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\"\nfi";
+			showEnvVarsInLog = 0;
+		};
 		47EFE4E11BED03E7009AC47B /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -4601,7 +4616,8 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#!/bin/sh\nif [ $CONFIGURATION == 'Mac App Store' ]\nthen\nrm -rf \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/Sparkle.framework\"\nfi";
+			shellScript = "if [ \"${CONFIGURATION}\" == 'Mac App Store' ]\nthen\nrm -rf \"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Sparkle.framework\"\nfi";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
