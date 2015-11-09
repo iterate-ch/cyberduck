@@ -200,6 +200,7 @@
 		47B888A917984584004E298A /* Folder.xib in Resources */ = {isa = PBXBuildFile; fileRef = 47B888A817984584004E298A /* Folder.xib */; };
 		47BCF18E13BB4EC700D26E4C /* setup/app/container-migration.plist in Resources */ = {isa = PBXBuildFile; fileRef = 47BCF18D13BB4EC700D26E4C /* setup/app/container-migration.plist */; };
 		47BEDBD30B9296C800141EB4 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47BEDBD20B9296C800141EB4 /* ApplicationServices.framework */; };
+		47C2536A1BF0D94000863EAF /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4792112812F6F4FD00E35E16 /* Sparkle.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		47C57EAC162F45F200A272BC /* FinderLocal.h in Headers */ = {isa = PBXBuildFile; fileRef = 47C57EAA162F45F200A272BC /* FinderLocal.h */; };
 		47C57EAD162F45F200A272BC /* FinderLocal.m in Sources */ = {isa = PBXBuildFile; fileRef = 47C57EAB162F45F200A272BC /* FinderLocal.m */; };
 		47C57EB5162F471700A272BC /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 474522C51076B68E00823467 /* ApplicationServices.framework */; };
@@ -435,6 +436,16 @@
 			dstSubfolderSpec = 7;
 			files = (
 				47472EF5177F788E0090A595 /* Rackspace US.cyberduckprofile in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		47C253691BF0D92800863EAF /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				47C2536A1BF0D94000863EAF /* Sparkle.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4054,6 +4065,7 @@
 				47C2724412E99D8600A13758 /* Frameworks */,
 				470C646B1328CBDD00146FB6 /* CopyFiles */,
 				47472EEF177F78620090A595 /* CopyFiles */,
+				47C253691BF0D92800863EAF /* CopyFiles */,
 				47EFE4E11BED03E7009AC47B /* ShellScript */,
 			);
 			buildRules = (
