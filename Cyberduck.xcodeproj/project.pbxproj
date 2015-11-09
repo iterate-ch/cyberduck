@@ -153,7 +153,6 @@
 		477A10E10FD08DE900BAD4AD /* ProxyForJava.m in Sources */ = {isa = PBXBuildFile; fileRef = 477A108B0FD08DE800BAD4AD /* ProxyForJava.m */; };
 		477A10E20FD08DE900BAD4AD /* Rococoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 477A108C0FD08DE800BAD4AD /* Rococoa.h */; };
 		477A10E30FD08DE900BAD4AD /* Rococoa.m in Sources */ = {isa = PBXBuildFile; fileRef = 477A108D0FD08DE800BAD4AD /* Rococoa.m */; };
-		477F379F1B2E06B40025EACA /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4792112812F6F4FD00E35E16 /* Sparkle.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4781AF410828423100B3E0FA /* download0.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4781AF400828423100B3E0FA /* download0.icns */; };
 		4781DFE5162FF6FE001F4993 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
 		4781DFE6162FF703001F4993 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
@@ -436,16 +435,6 @@
 			dstSubfolderSpec = 7;
 			files = (
 				47472EF5177F788E0090A595 /* Rackspace US.cyberduckprofile in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		477F379E1B2E06AA0025EACA /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				477F379F1B2E06B40025EACA /* Sparkle.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4065,7 +4054,7 @@
 				47C2724412E99D8600A13758 /* Frameworks */,
 				470C646B1328CBDD00146FB6 /* CopyFiles */,
 				47472EEF177F78620090A595 /* CopyFiles */,
-				477F379E1B2E06AA0025EACA /* CopyFiles */,
+				47EFE4E11BED03E7009AC47B /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -4600,6 +4589,20 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "find \"${TARGET_BUILD_DIR}/${PRODUCT_NAME}.app/Contents/Resources\" \\( -name info.xib \\) -type f -delete\nfind \"${TARGET_BUILD_DIR}/${PRODUCT_NAME}.app/Contents/Resources\" \\( -name classes.xib \\) -type f -delete\nfind \"${TARGET_BUILD_DIR}/${PRODUCT_NAME}.app/Contents/Resources\" \\( -name data.dependency \\) -type f -delete\n";
+		};
+		47EFE4E11BED03E7009AC47B /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ \"${CONFIGURATION}\" == 'Mac App Store' ]\nthen\nrm -rf \"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Sparkle.framework\"\nfi";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -6193,21 +6196,6 @@
 			};
 			name = Release;
 		};
-		471BC7751BB7F4B80062C792 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
-				);
-				LD_DYLIB_INSTALL_NAME = "";
-				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
 		471F77B1180439B500A4C196 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -6221,21 +6209,6 @@
 				PRODUCT_NAME = libfoundationprogressservice;
 			};
 			name = Release;
-		};
-		471F77B2180439B500A4C196 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
-				);
-				LD_DYLIB_INSTALL_NAME = "";
-				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libfoundationprogressservice;
-			};
-			name = Debug;
 		};
 		4739EF720856981300405FD3 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -6335,164 +6308,6 @@
 			};
 			name = Release;
 		};
-		4797D2791628276C00340E1C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
-				);
-				LD_DYLIB_INSTALL_NAME = "";
-				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = liblaunchservicesapplicationfinder;
-			};
-			name = Debug;
-		};
-		47A8AD5E100A6A9E00DC800C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
-				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)";
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/lib\"";
-				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_DEBUGGING_SYMBOLS = default;
-				GCC_ENABLE_OBJC_GC = unsupported;
-				GCC_VERSION = "";
-				HEADER_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers\"";
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				SDKROOT = macosx;
-				SEPARATE_STRIP = NO;
-				STRIP_INSTALLED_PRODUCT = NO;
-				WARNING_CFLAGS = (
-					"-Wall",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-			};
-			name = Debug;
-		};
-		47A8AD5F100A6A9E00DC800C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
-				INFOPLIST_FILE = setup/app/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				PRODUCT_NAME = Cyberduck;
-				SECTORDER_FLAGS = "";
-				WRAPPER_EXTENSION = app;
-			};
-			name = Debug;
-		};
-		47A8AD64100A6A9E00DC800C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
-				);
-				LD_DYLIB_INSTALL_NAME = "";
-				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libkeychain;
-			};
-			name = Debug;
-		};
-		47A8AD67100A6A9E00DC800C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
-				);
-				LD_DYLIB_INSTALL_NAME = "";
-				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libproxy;
-			};
-			name = Debug;
-		};
-		47A8AD68100A6A9E00DC800C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
-				);
-				LD_DYLIB_INSTALL_NAME = "";
-				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = liblocal;
-			};
-			name = Debug;
-		};
-		47A8AD6A100A6A9E00DC800C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
-				);
-				LD_DYLIB_INSTALL_NAME = "";
-				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libdiagnostics;
-			};
-			name = Debug;
-		};
-		47A8AD6B100A6A9E00DC800C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
-				);
-				LD_DYLIB_INSTALL_NAME = "";
-				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = liblaunchservicesschemehandler;
-			};
-			name = Debug;
-		};
-		47A8AD6C100A6A9E00DC800C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
-				);
-				LD_DYLIB_INSTALL_NAME = "";
-				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libquickLook;
-			};
-			name = Debug;
-		};
-		47A8AD6E100A6A9E00DC800C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/lib\"",
-				);
-				LD_DYLIB_INSTALL_NAME = "";
-				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = librococoa;
-			};
-			name = Debug;
-		};
 		47BEDB020B92960400141EB4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -6550,55 +6365,6 @@
 			};
 			name = Release;
 		};
-		47C2AD851A268C880047B67A /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COMBINE_HIDPI_IMAGES = YES;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks",
-				);
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
-				INFOPLIST_FILE = setup/pkg/Info.plist;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
-				MACH_O_TYPE = mh_execute;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				MTL_ENABLE_DEBUG_INFO = YES;
-				PRODUCT_MODULE_NAME = duck;
-				PRODUCT_NAME = duck;
-				SKIP_INSTALL = YES;
-				VERSIONING_SYSTEM = "";
-				WRAPPER_EXTENSION = bundle;
-			};
-			name = Debug;
-		};
 		47C57EB8162F471700A272BC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -6612,21 +6378,6 @@
 				PRODUCT_NAME = liblaunchservicesfiledescriptor;
 			};
 			name = Release;
-		};
-		47C57EB9162F471700A272BC /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
-				);
-				LD_DYLIB_INSTALL_NAME = "";
-				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = liblaunchservicesfiledescriptor;
-			};
-			name = Debug;
 		};
 		47D286C70855740C008142CF /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -6652,7 +6403,11 @@
 				GCC_DEBUGGING_SYMBOLS = default;
 				GCC_ENABLE_OBJC_GC = unsupported;
 				HEADER_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers\"";
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Sparkle,
+				);
 				SDKROOT = macosx;
 				SEPARATE_STRIP = YES;
 				STRIP_INSTALLED_PRODUCT = YES;
@@ -6663,6 +6418,267 @@
 				);
 			};
 			name = Release;
+		};
+		47EFE4D11BECFE81009AC47B /* Mac App Store */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/lib\"";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DEBUGGING_SYMBOLS = default;
+				GCC_ENABLE_OBJC_GC = unsupported;
+				HEADER_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers\"";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				SDKROOT = macosx;
+				SEPARATE_STRIP = YES;
+				STRIP_INSTALLED_PRODUCT = YES;
+				WARNING_CFLAGS = (
+					"-Wall",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+			};
+			name = "Mac App Store";
+		};
+		47EFE4D21BECFE81009AC47B /* Mac App Store */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
+				INFOPLIST_FILE = setup/app/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
+				PRODUCT_NAME = Cyberduck;
+				WRAPPER_EXTENSION = app;
+			};
+			name = "Mac App Store";
+		};
+		47EFE4D31BECFE81009AC47B /* Mac App Store */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libkeychain;
+			};
+			name = "Mac App Store";
+		};
+		47EFE4D41BECFE81009AC47B /* Mac App Store */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libproxy;
+			};
+			name = "Mac App Store";
+		};
+		47EFE4D51BECFE81009AC47B /* Mac App Store */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = liblocal;
+			};
+			name = "Mac App Store";
+		};
+		47EFE4D61BECFE81009AC47B /* Mac App Store */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libdiagnostics;
+			};
+			name = "Mac App Store";
+		};
+		47EFE4D71BECFE81009AC47B /* Mac App Store */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libquickLook;
+			};
+			name = "Mac App Store";
+		};
+		47EFE4D81BECFE81009AC47B /* Mac App Store */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/lib\"",
+				);
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = librococoa;
+			};
+			name = "Mac App Store";
+		};
+		47EFE4D91BECFE81009AC47B /* Mac App Store */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = liblaunchservicesschemehandler;
+			};
+			name = "Mac App Store";
+		};
+		47EFE4DA1BECFE81009AC47B /* Mac App Store */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = liblaunchservicesapplicationfinder;
+			};
+			name = "Mac App Store";
+		};
+		47EFE4DB1BECFE81009AC47B /* Mac App Store */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = liblaunchservicesquarantineservice;
+			};
+			name = "Mac App Store";
+		};
+		47EFE4DC1BECFE81009AC47B /* Mac App Store */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = liblaunchservicesfiledescriptor;
+			};
+			name = "Mac App Store";
+		};
+		47EFE4DD1BECFE81009AC47B /* Mac App Store */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libiokitsleeppreventer;
+			};
+			name = "Mac App Store";
+		};
+		47EFE4DE1BECFE81009AC47B /* Mac App Store */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libfoundationprogressservice;
+			};
+			name = "Mac App Store";
+		};
+		47EFE4DF1BECFE81009AC47B /* Mac App Store */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Mac App Store";
+		};
+		47EFE4E01BECFE81009AC47B /* Mac App Store */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
+				INFOPLIST_FILE = setup/pkg/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				MACH_O_TYPE = mh_execute;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_MODULE_NAME = duck;
+				PRODUCT_NAME = duck;
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "";
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = "Mac App Store";
 		};
 		47F102B71628D57500923FDE /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -6678,21 +6694,6 @@
 			};
 			name = Release;
 		};
-		47F102B81628D57500923FDE /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
-				);
-				LD_DYLIB_INSTALL_NAME = "";
-				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = liblaunchservicesquarantineservice;
-			};
-			name = Debug;
-		};
 		47FB9C691725A5CC00FE33C1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -6707,21 +6708,6 @@
 			};
 			name = Release;
 		};
-		47FB9C6A1725A5CC00FE33C1 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
-				);
-				LD_DYLIB_INSTALL_NAME = "";
-				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libiokitsleeppreventer;
-			};
-			name = Debug;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -6729,7 +6715,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				471BC7741BB7F4B80062C792 /* Release */,
-				471BC7751BB7F4B80062C792 /* Debug */,
+				47EFE4DF1BECFE81009AC47B /* Mac App Store */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -6738,7 +6724,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				471F77B1180439B500A4C196 /* Release */,
-				471F77B2180439B500A4C196 /* Debug */,
+				47EFE4DE1BECFE81009AC47B /* Mac App Store */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -6747,7 +6733,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4739EF720856981300405FD3 /* Release */,
-				47A8AD64100A6A9E00DC800C /* Debug */,
+				47EFE4D31BECFE81009AC47B /* Mac App Store */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -6756,7 +6742,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4739EFAF0856990900405FD3 /* Release */,
-				47A8AD67100A6A9E00DC800C /* Debug */,
+				47EFE4D41BECFE81009AC47B /* Mac App Store */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -6765,7 +6751,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4739EFC00856991200405FD3 /* Release */,
-				47A8AD68100A6A9E00DC800C /* Debug */,
+				47EFE4D51BECFE81009AC47B /* Mac App Store */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -6774,7 +6760,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4762DAC409FC42EC0034C662 /* Release */,
-				47A8AD6A100A6A9E00DC800C /* Debug */,
+				47EFE4D61BECFE81009AC47B /* Mac App Store */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -6783,7 +6769,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				477A104C0FD08DBA00BAD4AD /* Release */,
-				47A8AD6E100A6A9E00DC800C /* Debug */,
+				47EFE4D81BECFE81009AC47B /* Mac App Store */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -6792,7 +6778,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				478ECD170DAD5743008A5B1F /* Release */,
-				47A8AD6C100A6A9E00DC800C /* Debug */,
+				47EFE4D71BECFE81009AC47B /* Mac App Store */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -6801,7 +6787,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4797D2781628276C00340E1C /* Release */,
-				4797D2791628276C00340E1C /* Debug */,
+				47EFE4DA1BECFE81009AC47B /* Mac App Store */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -6810,7 +6796,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				47BEDB020B92960400141EB4 /* Release */,
-				47A8AD6B100A6A9E00DC800C /* Debug */,
+				47EFE4D91BECFE81009AC47B /* Mac App Store */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -6819,7 +6805,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				47C2AD841A268C880047B67A /* Release */,
-				47C2AD851A268C880047B67A /* Debug */,
+				47EFE4E01BECFE81009AC47B /* Mac App Store */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -6828,7 +6814,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				47C57EB8162F471700A272BC /* Release */,
-				47C57EB9162F471700A272BC /* Debug */,
+				47EFE4DC1BECFE81009AC47B /* Mac App Store */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -6837,7 +6823,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				47D286C70855740C008142CF /* Release */,
-				47A8AD5F100A6A9E00DC800C /* Debug */,
+				47EFE4D21BECFE81009AC47B /* Mac App Store */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -6846,7 +6832,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				47D286EF0855740D008142CF /* Release */,
-				47A8AD5E100A6A9E00DC800C /* Debug */,
+				47EFE4D11BECFE81009AC47B /* Mac App Store */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -6855,7 +6841,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				47F102B71628D57500923FDE /* Release */,
-				47F102B81628D57500923FDE /* Debug */,
+				47EFE4DB1BECFE81009AC47B /* Mac App Store */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -6864,7 +6850,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				47FB9C691725A5CC00FE33C1 /* Release */,
-				47FB9C6A1725A5CC00FE33C1 /* Debug */,
+				47EFE4DD1BECFE81009AC47B /* Mac App Store */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
