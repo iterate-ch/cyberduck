@@ -4055,7 +4055,8 @@
 				470C646B1328CBDD00146FB6 /* CopyFiles */,
 				47472EEF177F78620090A595 /* CopyFiles */,
 				47EFE4E11BED03E7009AC47B /* ShellScript */,
-				47C067EC1BF0B6510087D486 /* ShellScript */,
+				47C067EC1BF0B6510087D486 /* Run Script */,
+				470829E01BF0BF0200B605D6 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -4577,6 +4578,20 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		470829E01BF0BF0200B605D6 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ \"${CONFIGURATION}\" == 'Release' ]\nthen\nsed -i '.temp' 's/${SPARKLE_KEY_PREFIX}/SU/g' \"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\"\nfi";
+			showEnvVarsInLog = 0;
+		};
 		4735940F0CE76EE50085DEAC /* Prune NIBs */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -4591,18 +4606,19 @@
 			shellPath = /bin/sh;
 			shellScript = "find \"${TARGET_BUILD_DIR}/${PRODUCT_NAME}.app/Contents/Resources\" \\( -name info.xib \\) -type f -delete\nfind \"${TARGET_BUILD_DIR}/${PRODUCT_NAME}.app/Contents/Resources\" \\( -name classes.xib \\) -type f -delete\nfind \"${TARGET_BUILD_DIR}/${PRODUCT_NAME}.app/Contents/Resources\" \\( -name data.dependency \\) -type f -delete\n";
 		};
-		47C067EC1BF0B6510087D486 /* ShellScript */ = {
+		47C067EC1BF0B6510087D486 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
+			name = "Run Script";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ \"${CONFIGURATION}\" == 'Mac App Store' ]\nthen\nsed -i '.temp' 's/SU/None/g' \"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\"\nfi";
+			shellScript = "if [ \"${CONFIGURATION}\" == 'Mac App Store' ]\nthen\nsed -i '.temp' 's/${SPARKLE_KEY_PREFIX}/None/g' \"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\"\nfi";
 			showEnvVarsInLog = 0;
 		};
 		47EFE4E11BED03E7009AC47B /* ShellScript */ = {
