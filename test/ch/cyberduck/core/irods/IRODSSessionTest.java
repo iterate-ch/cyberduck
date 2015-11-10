@@ -86,7 +86,7 @@ public class IRODSSessionTest extends AbstractTestCase {
         assertFalse(session.isConnected());
     }
 
-    @Test(expected = BackgroundException.class)
+    @Test
     public void testLoginPam() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
                 new Local("profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
