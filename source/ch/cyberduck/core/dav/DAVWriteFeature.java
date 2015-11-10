@@ -89,7 +89,9 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
             }
         }
         if(expect) {
-            headers.add(new BasicHeader(HTTP.EXPECT_DIRECTIVE, HTTP.EXPECT_CONTINUE));
+            if(status.getLength() > 0L) {
+                headers.add(new BasicHeader(HTTP.EXPECT_DIRECTIVE, HTTP.EXPECT_CONTINUE));
+            }
         }
         return this.write(file, headers, status);
     }
