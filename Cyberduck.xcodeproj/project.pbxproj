@@ -4600,7 +4600,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "sed -i '.tmp' 's/${SPARKLE_KEY_PREFIX}/SU/g' \"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\"\nrm \"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\".tmp";
+			shellScript = "sed -i '.tmp' 's/${SPARKLE_KEY_PREFIX}/'${SPARKLE_KEY_PREFIX}'/g' \"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\"\nrm \"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\".tmp";
 			showEnvVarsInLog = 0;
 		};
 		4735940F0CE76EE50085DEAC /* Prune NIBs */ = {
