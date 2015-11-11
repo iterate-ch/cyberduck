@@ -106,8 +106,11 @@ public class FinderSidebarServiceTest extends AbstractTestCase {
         final String name = UUID.randomUUID().toString();
         FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
         l.mkdir();
+        FinderLocal t = new FinderLocal(l, name);
+        new DefaultLocalTouchFeature().touch(t);
         f.add(l);
         f.remove(l);
+        t.delete();
         l.delete();
     }
 
