@@ -55,8 +55,13 @@ public class FinderSidebarService implements SidebarService {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Add %s to %s", file, this.forList(list)));
         }
-        if(!this.addItem(file.getAbsolute(), this.forList(list))) {
-            throw new LocalAccessDeniedException(String.format("Failure adding %s to %s", file, this.forList(list)));
+        try {
+            if(!this.addItem(new File(file.getAbsolute()).getCanonicalPath(), this.forList(list))) {
+                throw new LocalAccessDeniedException(String.format("Failure adding %s to %s", file, this.forList(list)));
+            }
+        }
+        catch(IOException e) {
+            throw new LocalAccessDeniedException(String.format("Failure adding %s to %s", file, this.forList(list)), e);
         }
     }
 
