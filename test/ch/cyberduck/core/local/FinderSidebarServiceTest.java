@@ -100,6 +100,17 @@ public class FinderSidebarServiceTest extends AbstractTestCase {
         l.delete();
     }
 
+    @Test(expected = LocalAccessDeniedException.class)
+    public void testRemoveFail() throws Exception {
+        FinderSidebarService f = new FinderSidebarService(SidebarService.List.favorite);
+        final String name = UUID.randomUUID().toString();
+        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
+        new DefaultLocalTouchFeature().touch(l);
+        f.add(l);
+        l.delete();
+        f.remove(l);
+    }
+
     @Test
     public void testAddTemporaryDirectoryInFavorites() throws Exception {
         FinderSidebarService f = new FinderSidebarService(SidebarService.List.favorite);
