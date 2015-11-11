@@ -101,6 +101,17 @@ public class FinderSidebarServiceTest extends AbstractTestCase {
     }
 
     @Test
+    public void testAddTemporaryDirectoryInFavorites() throws Exception {
+        FinderSidebarService f = new FinderSidebarService(SidebarService.List.favorite);
+        final String name = UUID.randomUUID().toString();
+        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
+        l.mkdir();
+        f.add(l);
+        f.remove(l);
+        l.delete();
+    }
+
+    @Test
     @Ignore
     public void testAddTemporaryFileInVolumes() throws Exception {
         FinderSidebarService f = new FinderSidebarService(SidebarService.List.volume);
