@@ -18,6 +18,7 @@ package ch.cyberduck.core.preferences;
  *  feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.logging.SystemLogAppender;
 import ch.cyberduck.ui.cocoa.AlertHostKeyController;
 import ch.cyberduck.ui.cocoa.CopyPromptController;
 import ch.cyberduck.ui.cocoa.DownloadPromptController;
@@ -26,6 +27,9 @@ import ch.cyberduck.ui.cocoa.SyncPromptController;
 import ch.cyberduck.ui.cocoa.UploadPromptController;
 import ch.cyberduck.ui.cocoa.UserDefaultsDateFormatter;
 import ch.cyberduck.ui.cocoa.threading.AlertTransferErrorCallback;
+
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 
 /**
  * @version $Id:$
@@ -44,5 +48,14 @@ public class ApplicationUserDefaultsPreferences extends UserDefaultsPreferences 
         defaults.put("factory.transferpromptcallback.upload.class", UploadPromptController.class.getName());
         defaults.put("factory.transferpromptcallback.copy.class", CopyPromptController.class.getName());
         defaults.put("factory.transferpromptcallback.sync.class", SyncPromptController.class.getName());
+    }
+
+    @Override
+    protected void post() {
+        super.post();
+        Logger root = Logger.getRootLogger();
+        final SystemLogAppender appender = new SystemLogAppender();
+        appender.setLayout(new PatternLayout("%d [%t] %-5p %c - %m%n"));
+        root.addAppender(appender);
     }
 }
