@@ -6219,6 +6219,7 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -6233,6 +6234,7 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = libfoundationprogressservice;
 			};
 			name = Release;
@@ -6247,6 +6249,7 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = libkeychain;
 			};
 			name = Release;
@@ -6261,6 +6264,7 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = libproxy;
 			};
 			name = Release;
@@ -6275,6 +6279,7 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = liblocal;
 			};
 			name = Release;
@@ -6289,6 +6294,7 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = libdiagnostics;
 			};
 			name = Release;
@@ -6303,6 +6309,7 @@
 					"\"$(SRCROOT)/lib\"",
 				);
 				MACH_O_TYPE = mh_dylib;
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = librococoa;
 			};
 			name = Release;
@@ -6317,6 +6324,7 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = libquickLook;
 			};
 			name = Release;
@@ -6331,6 +6339,7 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = liblaunchservicesapplicationfinder;
 			};
 			name = Release;
@@ -6345,6 +6354,7 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = liblaunchservicesschemehandler;
 			};
 			name = Release;
@@ -6384,6 +6394,7 @@
 				MACH_O_TYPE = mh_execute;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "";
 				PRODUCT_MODULE_NAME = duck;
 				PRODUCT_NAME = duck;
 				SKIP_INSTALL = YES;
@@ -6402,6 +6413,7 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = liblaunchservicesfiledescriptor;
 			};
 			name = Release;
@@ -6717,6 +6729,7 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = liblaunchservicesquarantineservice;
 			};
 			name = Release;
@@ -6731,6 +6744,7 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = libiokitsleeppreventer;
 			};
 			name = Release;
