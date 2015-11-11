@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.cocoa.logging;
+package ch.cyberduck.core.logging;
 
 /*
  * Copyright (c) 2012 David Kocher. All rights reserved.
