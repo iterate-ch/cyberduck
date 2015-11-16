@@ -715,10 +715,10 @@ public class DAVSessionTest extends AbstractTestCase {
         final DAVSession session = new DAVSession(host, new DefaultX509TrustManager() {
             @Override
             public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
-                assertEquals(2, certs.length);
+                assertEquals(3, certs.length);
                 assertEquals("CN=StartCom Class 2 Primary Intermediate Server CA,OU=Secure Digital Certificate Signing,O=StartCom Ltd.,C=IL",
-                        certs[certs.length - 1].getSubjectX500Principal().getName());
-                assertEquals("2.5.4.13=ip1NjJWcr2wjLBL6,C=CH,ST=Bern,L=Bern,O=iterate GmbH,CN=*.cyberduck.io,E=hostmaster@cyberduck.io",
+                        certs[1].getSubjectX500Principal().getName());
+                assertEquals("C=CH,ST=Bern,L=Bern,O=iterate GmbH,CN=*.cyberduck.io,E=hostmaster@cyberduck.io",
                         certs[0].getSubjectDN().getName());
                 verified.set(true);
                 super.verify(hostname, certs, cipher);
