@@ -1,5 +1,6 @@
 package ch.cyberduck.ui.cocoa;
 
+import ch.cyberduck.binding.application.HyperlinkAttributedStringFactory;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Factory;

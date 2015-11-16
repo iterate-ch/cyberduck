@@ -27,7 +27,7 @@ import ch.cyberduck.core.local.RevealServiceFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
-import ch.cyberduck.ui.cocoa.Action;
+import ch.cyberduck.binding.Action;
 
 import org.rococoa.Foundation;
 import org.rococoa.Selector;

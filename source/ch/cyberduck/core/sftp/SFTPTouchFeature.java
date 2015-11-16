@@ -49,7 +49,7 @@ public class SFTPTouchFeature implements Touch {
                 final FileAttributes attr = new FileAttributes.Builder()
                         .withPermissions(Integer.parseInt(permission.getMode(), 8))
                         .build();
-                final RemoteFile handle = session.sftp().open(file.getAbsolute(), EnumSet.of(OpenMode.CREAT), attr);
+                final RemoteFile handle = session.sftp().open(file.getAbsolute(), EnumSet.of(OpenMode.CREAT, OpenMode.TRUNC), attr);
                 handle.close();
             }
             catch(IOException e) {

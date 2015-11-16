@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.cocoa.threading;
+package ch.cyberduck.binding;
 
 /*
  * Copyright (c) 2002-2013 David Kocher. All rights reserved.
@@ -29,9 +29,9 @@ import ch.cyberduck.core.notification.NotificationAlertCallback;
 import ch.cyberduck.core.threading.AlertCallback;
 import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
 import ch.cyberduck.core.threading.FailureDiagnostics;
-import ch.cyberduck.ui.cocoa.AlertController;
+import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.ui.cocoa.TranscriptController;
-import ch.cyberduck.ui.cocoa.WindowController;
+import ch.cyberduck.binding.WindowController;
 
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.cocoa.foundation.NSRect;

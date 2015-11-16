@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.cocoa;
+package ch.cyberduck.binding.application;
 
 /*
  * Copyright (c) 2002-2015 David Kocher. All rights reserved.
@@ -16,10 +16,6 @@ package ch.cyberduck.ui.cocoa;
  *
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
-
-import ch.cyberduck.binding.application.NSButton;
-import ch.cyberduck.binding.application.NSPanel;
-import ch.cyberduck.binding.application.SheetCallback;
 
 import org.apache.log4j.Logger;
 

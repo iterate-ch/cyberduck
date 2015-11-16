@@ -3,7 +3,7 @@ package ch.cyberduck.ui.cocoa.threading;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.test.Depends;
-import ch.cyberduck.ui.cocoa.WindowController;
+import ch.cyberduck.binding.WindowController;
 
 import org.junit.Test;
 

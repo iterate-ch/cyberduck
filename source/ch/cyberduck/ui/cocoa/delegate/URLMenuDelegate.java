@@ -32,8 +32,8 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.resources.IconCacheFactory;
-import ch.cyberduck.ui.cocoa.Action;
-import ch.cyberduck.ui.cocoa.TableCellAttributes;
+import ch.cyberduck.binding.Action;
+import ch.cyberduck.binding.application.TableCellAttributes;
 
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.Foundation;

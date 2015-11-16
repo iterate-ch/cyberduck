@@ -26,6 +26,7 @@ import ch.cyberduck.binding.application.NSEvent;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSPasteboard;
 import ch.cyberduck.binding.application.NSTableView;
+import ch.cyberduck.binding.application.TableCellAttributes;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.binding.foundation.NSFileManager;

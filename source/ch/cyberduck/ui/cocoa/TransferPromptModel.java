@@ -22,6 +22,7 @@ import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSOutlineView;
 import ch.cyberduck.binding.application.NSTableColumn;
+import ch.cyberduck.binding.application.TableCellAttributes;
 import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.binding.foundation.NSNumber;
 import ch.cyberduck.binding.foundation.NSObject;

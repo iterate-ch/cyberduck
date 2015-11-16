@@ -22,6 +22,9 @@
 		470912ED0C36FCE00049FBCE /* Prompt.xib in Resources */ = {isa = PBXBuildFile; fileRef = 470912EB0C36FCE00049FBCE /* Prompt.xib */; };
 		47121FF71611F94000E2547D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 47121FF61611F94000E2547D /* main.m */; };
 		4716C5F50872BA9900938886 /* Command.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4716C5EF0872BA9800938886 /* Command.xib */; };
+		471BC7701BB7F4B80062C792 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
+		471BC7711BB7F4B80062C792 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47BEDBD20B9296C800141EB4 /* ApplicationServices.framework */; };
+		471BC7721BB7F4B80062C792 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */; };
 		471C664419E3E20700D7266E /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47022C221018663600488C19 /* CoreServices.framework */; };
 		471DF150167F2A7B00EAFE71 /* cyberduck-document.icns in Resources */ = {isa = PBXBuildFile; fileRef = 471DF14F167F2A7B00EAFE71 /* cyberduck-document.icns */; };
 		471F5C2E12AD1B6B0005D323 /* Alert.strings in Resources */ = {isa = PBXBuildFile; fileRef = 471F5C0C12AD1B6B0005D323 /* Alert.strings */; };
@@ -150,7 +153,6 @@
 		477A10E10FD08DE900BAD4AD /* ProxyForJava.m in Sources */ = {isa = PBXBuildFile; fileRef = 477A108B0FD08DE800BAD4AD /* ProxyForJava.m */; };
 		477A10E20FD08DE900BAD4AD /* Rococoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 477A108C0FD08DE800BAD4AD /* Rococoa.h */; };
 		477A10E30FD08DE900BAD4AD /* Rococoa.m in Sources */ = {isa = PBXBuildFile; fileRef = 477A108D0FD08DE800BAD4AD /* Rococoa.m */; };
-		477F379F1B2E06B40025EACA /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4792112812F6F4FD00E35E16 /* Sparkle.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4781AF410828423100B3E0FA /* download0.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4781AF400828423100B3E0FA /* download0.icns */; };
 		4781DFE5162FF6FE001F4993 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
 		4781DFE6162FF703001F4993 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
@@ -162,12 +164,13 @@
 		4786CB6E0E253B800029848F /* Transcript.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4786CB680E253B800029848F /* Transcript.xib */; };
 		4786CB6F0E253B800029848F /* Progress.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4786CB690E253B800029848F /* Progress.xib */; };
 		4786CB700E253B800029848F /* Task.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4786CB6A0E253B800029848F /* Task.xib */; };
-		478D6D951BCE861900A80287 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4792112812F6F4FD00E35E16 /* Sparkle.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		478ECD090DAD5743008A5B1F /* QLPreviewPanel.h in Headers */ = {isa = PBXBuildFile; fileRef = 473240070DABC00800BF67D2 /* QLPreviewPanel.h */; };
 		478ECD0A0DAD5743008A5B1F /* QuickLook.h in Headers */ = {isa = PBXBuildFile; fileRef = 478ECC9A0DAD1B0C008A5B1F /* QuickLook.h */; };
 		478ECD100DAD5743008A5B1F /* QuickLook.m in Sources */ = {isa = PBXBuildFile; fileRef = 478ECC9B0DAD1B0C008A5B1F /* QuickLook.m */; };
 		478ECD130DAD5743008A5B1F /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		478F0DF412FB03DC000FE33C /* update.pem in Resources */ = {isa = PBXBuildFile; fileRef = 478F0DF312FB03DC000FE33C /* update.pem */; };
+		4791017F1BE7AD870095838A /* FinderSidebarService.h in Headers */ = {isa = PBXBuildFile; fileRef = 4791017D1BE7AD870095838A /* FinderSidebarService.h */; };
+		479101801BE7AD870095838A /* FinderSidebarService.m in Sources */ = {isa = PBXBuildFile; fileRef = 4791017E1BE7AD870095838A /* FinderSidebarService.m */; };
 		47911A180B84C4E8001A29AE /* Acknowledgments.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 47911A170B84C4E8001A29AE /* Acknowledgments.rtf */; };
 		479450BD162FF74F00FC7FF9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
 		4796C7641B3317F70042891D /* HP Cloud Object Storage.cyberduckprofile in Resources */ = {isa = PBXBuildFile; fileRef = 4780ACC617634CD6007D9DD5 /* HP Cloud Object Storage.cyberduckprofile */; };
@@ -197,6 +200,7 @@
 		47B888A917984584004E298A /* Folder.xib in Resources */ = {isa = PBXBuildFile; fileRef = 47B888A817984584004E298A /* Folder.xib */; };
 		47BCF18E13BB4EC700D26E4C /* setup/app/container-migration.plist in Resources */ = {isa = PBXBuildFile; fileRef = 47BCF18D13BB4EC700D26E4C /* setup/app/container-migration.plist */; };
 		47BEDBD30B9296C800141EB4 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47BEDBD20B9296C800141EB4 /* ApplicationServices.framework */; };
+		47C2536A1BF0D94000863EAF /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4792112812F6F4FD00E35E16 /* Sparkle.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		47C57EAC162F45F200A272BC /* FinderLocal.h in Headers */ = {isa = PBXBuildFile; fileRef = 47C57EAA162F45F200A272BC /* FinderLocal.h */; };
 		47C57EAD162F45F200A272BC /* FinderLocal.m in Sources */ = {isa = PBXBuildFile; fileRef = 47C57EAB162F45F200A272BC /* FinderLocal.m */; };
 		47C57EB5162F471700A272BC /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 474522C51076B68E00823467 /* ApplicationServices.framework */; };
@@ -252,6 +256,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		471BC77B1BB7F4E00062C792 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 471BC76A1BB7F4B80062C792;
+			remoteInfo = libfindersidebarservice;
+		};
 		471E214B0A1734D7009E164E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
@@ -428,13 +439,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		477F379E1B2E06AA0025EACA /* CopyFiles */ = {
+		47C253691BF0D92800863EAF /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				477F379F1B2E06B40025EACA /* Sparkle.framework in CopyFiles */,
+				47C2536A1BF0D94000863EAF /* Sparkle.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -631,6 +642,7 @@
 		47181E9F0E17D1E500568D80 /* el */ = {isa = PBXFileReference; lastKnownFileType = text; name = el; path = el.lproj/License.txt; sourceTree = "<group>"; };
 		4718F4A9175F432400B424AD /* Rackspace UK.cyberduckprofile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Rackspace UK.cyberduckprofile"; sourceTree = "<group>"; };
 		4718F4AA175F432400B424AD /* Rackspace US.cyberduckprofile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Rackspace US.cyberduckprofile"; sourceTree = "<group>"; };
+		471BC7761BB7F4B80062C792 /* libfindersidebarservice.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libfindersidebarservice.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		471D2C5505A2505600675163 /* Cyberduck.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cyberduck.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		471DF14F167F2A7B00EAFE71 /* cyberduck-document.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = "cyberduck-document.icns"; sourceTree = "<group>"; };
 		471F5C0D12AD1B6B0005D323 /* pt_PT */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = pt_PT; path = pt_PT.lproj/Alert.strings; sourceTree = "<group>"; };
@@ -1144,6 +1156,8 @@
 		478ECD180DAD5743008A5B1F /* libquickLook.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libquickLook.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		478F0DF312FB03DC000FE33C /* update.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = update.pem; path = www/update/update.pem; sourceTree = "<group>"; };
 		4790762A0764903900676C18 /* cs */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = cs; path = cs.lproj/Localizable.strings; sourceTree = "<group>"; };
+		4791017D1BE7AD870095838A /* FinderSidebarService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FinderSidebarService.h; sourceTree = "<group>"; };
+		4791017E1BE7AD870095838A /* FinderSidebarService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FinderSidebarService.m; sourceTree = "<group>"; };
 		47911A170B84C4E8001A29AE /* Acknowledgments.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = Acknowledgments.rtf; sourceTree = "<group>"; };
 		4792112812F6F4FD00E35E16 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = lib/Sparkle.framework; sourceTree = "<group>"; };
 		4796C7271B3317F60042891D /* zh_TW */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = zh_TW; path = zh_TW.lproj/Alert.strings; sourceTree = "<group>"; };
@@ -2326,6 +2340,16 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		471BC76F1BB7F4B80062C792 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				471BC7701BB7F4B80062C792 /* Foundation.framework in Frameworks */,
+				471BC7711BB7F4B80062C792 /* ApplicationServices.framework in Frameworks */,
+				471BC7721BB7F4B80062C792 /* JavaNativeFoundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		471F77AC180439B500A4C196 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -2422,7 +2446,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				47C88FF117269A71001A746A /* Cocoa.framework in Frameworks */,
-				478D6D951BCE861900A80287 /* Sparkle.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2484,6 +2507,7 @@
 				47FB9C6B1725A5CC00FE33C1 /* libiokitsleeppreventer.dylib */,
 				471F77B3180439B500A4C196 /* libfoundationprogressservice.dylib */,
 				47C2AD801A268C880047B67A /* duck.bundle */,
+				471BC7761BB7F4B80062C792 /* libfindersidebarservice.dylib */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -3883,6 +3907,8 @@
 				47F102BF1628D5CE00923FDE /* LaunchServicesQuarantineService.m */,
 				471F77B418043A0300A4C196 /* FoundationProgressIconService.h */,
 				471F77B518043A0300A4C196 /* FoundationProgressIconService.m */,
+				4791017D1BE7AD870095838A /* FinderSidebarService.h */,
+				4791017E1BE7AD870095838A /* FinderSidebarService.m */,
 			);
 			path = local;
 			sourceTree = "<group>";
@@ -3890,6 +3916,14 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		471BC76B1BB7F4B80062C792 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4791017F1BE7AD870095838A /* FinderSidebarService.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		471F77A8180439B500A4C196 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -4002,6 +4036,24 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		471BC76A1BB7F4B80062C792 /* libfindersidebarservice */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 471BC7731BB7F4B80062C792 /* Build configuration list for PBXNativeTarget "libfindersidebarservice" */;
+			buildPhases = (
+				471BC76B1BB7F4B80062C792 /* Headers */,
+				471BC76D1BB7F4B80062C792 /* Sources */,
+				471BC76F1BB7F4B80062C792 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = libfindersidebarservice;
+			productInstallPath = /usr/local/lib;
+			productName = keychainLib;
+			productReference = 471BC7761BB7F4B80062C792 /* libfindersidebarservice.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
 		471D2C0B05A2505500675163 /* app */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 47D286C50855740C008142CF /* Build configuration list for PBXNativeTarget "app" */;
@@ -4013,11 +4065,14 @@
 				47C2724412E99D8600A13758 /* Frameworks */,
 				470C646B1328CBDD00146FB6 /* CopyFiles */,
 				47472EEF177F78620090A595 /* CopyFiles */,
-				477F379E1B2E06AA0025EACA /* CopyFiles */,
+				47C253691BF0D92800863EAF /* CopyFiles */,
+				47EFE4E11BED03E7009AC47B /* ShellScript */,
+				4723B4F01BF13FE8004FF004 /* ShellScript */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				471BC77C1BB7F4E00062C792 /* PBXTargetDependency */,
 				471F77BB18043A3800A4C196 /* PBXTargetDependency */,
 				479737AD162F4962002809CC /* PBXTargetDependency */,
 				47F102DA1628D61A00923FDE /* PBXTargetDependency */,
@@ -4358,6 +4413,7 @@
 				47C57EAE162F471700A272BC /* liblaunchservicesfiledescriptor */,
 				47FB9C5E1725A5CC00FE33C1 /* libiokitsleeppreventer */,
 				471F77A7180439B500A4C196 /* libfoundationprogressservice */,
+				471BC76A1BB7F4B80062C792 /* libfindersidebarservice */,
 				47C2AD7F1A268C880047B67A /* cli */,
 			);
 		};
@@ -4533,6 +4589,20 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		4723B4F01BF13FE8004FF004 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "sed -i '.tmp' 's/${SPARKLE_KEY_PREFIX}/'${SPARKLE_KEY_PREFIX}'/g' \"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\"\nrm \"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\".tmp";
+			showEnvVarsInLog = 0;
+		};
 		4735940F0CE76EE50085DEAC /* Prune NIBs */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -4547,9 +4617,31 @@
 			shellPath = /bin/sh;
 			shellScript = "find \"${TARGET_BUILD_DIR}/${PRODUCT_NAME}.app/Contents/Resources\" \\( -name info.xib \\) -type f -delete\nfind \"${TARGET_BUILD_DIR}/${PRODUCT_NAME}.app/Contents/Resources\" \\( -name classes.xib \\) -type f -delete\nfind \"${TARGET_BUILD_DIR}/${PRODUCT_NAME}.app/Contents/Resources\" \\( -name data.dependency \\) -type f -delete\n";
 		};
+		47EFE4E11BED03E7009AC47B /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ \"${CONFIGURATION}\" == 'Mac App Store' ]\nthen\nrm -rf \"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Sparkle.framework\"\nfi";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		471BC76D1BB7F4B80062C792 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				479101801BE7AD870095838A /* FinderSidebarService.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		471F77AA180439B500A4C196 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -4680,6 +4772,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		471BC77C1BB7F4E00062C792 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 471BC76A1BB7F4B80062C792 /* libfindersidebarservice */;
+			targetProxy = 471BC77B1BB7F4E00062C792 /* PBXContainerItemProxy */;
+		};
 		471E214C0A1734D7009E164E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 4739EF670856981300405FD3 /* libkeychain */;
@@ -6112,6 +6209,21 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		471BC7741BB7F4B80062C792 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
+				MACH_O_TYPE = mh_dylib;
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		471F77B1180439B500A4C196 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -6122,24 +6234,10 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = libfoundationprogressservice;
 			};
 			name = Release;
-		};
-		471F77B2180439B500A4C196 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
-				);
-				LD_DYLIB_INSTALL_NAME = "";
-				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libfoundationprogressservice;
-			};
-			name = Debug;
 		};
 		4739EF720856981300405FD3 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -6151,6 +6249,7 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = libkeychain;
 			};
 			name = Release;
@@ -6165,6 +6264,7 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = libproxy;
 			};
 			name = Release;
@@ -6179,6 +6279,7 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = liblocal;
 			};
 			name = Release;
@@ -6193,6 +6294,7 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = libdiagnostics;
 			};
 			name = Release;
@@ -6207,6 +6309,7 @@
 					"\"$(SRCROOT)/lib\"",
 				);
 				MACH_O_TYPE = mh_dylib;
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = librococoa;
 			};
 			name = Release;
@@ -6221,6 +6324,7 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = libquickLook;
 			};
 			name = Release;
@@ -6235,167 +6339,10 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = liblaunchservicesapplicationfinder;
 			};
 			name = Release;
-		};
-		4797D2791628276C00340E1C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
-				);
-				LD_DYLIB_INSTALL_NAME = "";
-				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = liblaunchservicesapplicationfinder;
-			};
-			name = Debug;
-		};
-		47A8AD5E100A6A9E00DC800C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
-				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)";
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/lib\"";
-				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_DEBUGGING_SYMBOLS = default;
-				GCC_ENABLE_OBJC_GC = unsupported;
-				GCC_VERSION = "";
-				HEADER_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers\"";
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				SDKROOT = macosx;
-				SEPARATE_STRIP = NO;
-				STRIP_INSTALLED_PRODUCT = NO;
-				WARNING_CFLAGS = (
-					"-Wall",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-			};
-			name = Debug;
-		};
-		47A8AD5F100A6A9E00DC800C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
-				INFOPLIST_FILE = setup/app/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				PRODUCT_NAME = Cyberduck;
-				SECTORDER_FLAGS = "";
-				WRAPPER_EXTENSION = app;
-			};
-			name = Debug;
-		};
-		47A8AD64100A6A9E00DC800C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
-				);
-				LD_DYLIB_INSTALL_NAME = "";
-				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libkeychain;
-			};
-			name = Debug;
-		};
-		47A8AD67100A6A9E00DC800C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
-				);
-				LD_DYLIB_INSTALL_NAME = "";
-				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libproxy;
-			};
-			name = Debug;
-		};
-		47A8AD68100A6A9E00DC800C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
-				);
-				LD_DYLIB_INSTALL_NAME = "";
-				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = liblocal;
-			};
-			name = Debug;
-		};
-		47A8AD6A100A6A9E00DC800C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
-				);
-				LD_DYLIB_INSTALL_NAME = "";
-				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libdiagnostics;
-			};
-			name = Debug;
-		};
-		47A8AD6B100A6A9E00DC800C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
-				);
-				LD_DYLIB_INSTALL_NAME = "";
-				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = liblaunchservicesschemehandler;
-			};
-			name = Debug;
-		};
-		47A8AD6C100A6A9E00DC800C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
-				);
-				LD_DYLIB_INSTALL_NAME = "";
-				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libquickLook;
-			};
-			name = Debug;
-		};
-		47A8AD6E100A6A9E00DC800C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/lib\"",
-				);
-				LD_DYLIB_INSTALL_NAME = "";
-				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = librococoa;
-			};
-			name = Debug;
 		};
 		47BEDB020B92960400141EB4 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -6407,11 +6354,329 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = liblaunchservicesschemehandler;
 			};
 			name = Release;
 		};
 		47C2AD841A268C880047B67A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
+				INFOPLIST_FILE = setup/pkg/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				MACH_O_TYPE = mh_execute;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "";
+				PRODUCT_MODULE_NAME = duck;
+				PRODUCT_NAME = duck;
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "";
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Release;
+		};
+		47C57EB8162F471700A272BC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
+				MACH_O_TYPE = mh_dylib;
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = liblaunchservicesfiledescriptor;
+			};
+			name = Release;
+		};
+		47D286C70855740C008142CF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
+				INFOPLIST_FILE = setup/app/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
+				PRODUCT_NAME = Cyberduck;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		47D286EF0855740D008142CF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/lib\"";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DEBUGGING_SYMBOLS = default;
+				GCC_ENABLE_OBJC_GC = unsupported;
+				HEADER_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers\"";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Sparkle,
+				);
+				SDKROOT = macosx;
+				SEPARATE_STRIP = YES;
+				STRIP_INSTALLED_PRODUCT = YES;
+				WARNING_CFLAGS = (
+					"-Wall",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+			};
+			name = Release;
+		};
+		47EFE4D11BECFE81009AC47B /* Mac App Store */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/lib\"";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DEBUGGING_SYMBOLS = default;
+				GCC_ENABLE_OBJC_GC = unsupported;
+				HEADER_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers\"";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				SDKROOT = macosx;
+				SEPARATE_STRIP = YES;
+				STRIP_INSTALLED_PRODUCT = YES;
+				WARNING_CFLAGS = (
+					"-Wall",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+			};
+			name = "Mac App Store";
+		};
+		47EFE4D21BECFE81009AC47B /* Mac App Store */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
+				INFOPLIST_FILE = setup/app/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
+				PRODUCT_NAME = Cyberduck;
+				WRAPPER_EXTENSION = app;
+			};
+			name = "Mac App Store";
+		};
+		47EFE4D31BECFE81009AC47B /* Mac App Store */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libkeychain;
+			};
+			name = "Mac App Store";
+		};
+		47EFE4D41BECFE81009AC47B /* Mac App Store */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libproxy;
+			};
+			name = "Mac App Store";
+		};
+		47EFE4D51BECFE81009AC47B /* Mac App Store */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = liblocal;
+			};
+			name = "Mac App Store";
+		};
+		47EFE4D61BECFE81009AC47B /* Mac App Store */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libdiagnostics;
+			};
+			name = "Mac App Store";
+		};
+		47EFE4D71BECFE81009AC47B /* Mac App Store */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libquickLook;
+			};
+			name = "Mac App Store";
+		};
+		47EFE4D81BECFE81009AC47B /* Mac App Store */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/lib\"",
+				);
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = librococoa;
+			};
+			name = "Mac App Store";
+		};
+		47EFE4D91BECFE81009AC47B /* Mac App Store */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = liblaunchservicesschemehandler;
+			};
+			name = "Mac App Store";
+		};
+		47EFE4DA1BECFE81009AC47B /* Mac App Store */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = liblaunchservicesapplicationfinder;
+			};
+			name = "Mac App Store";
+		};
+		47EFE4DB1BECFE81009AC47B /* Mac App Store */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = liblaunchservicesquarantineservice;
+			};
+			name = "Mac App Store";
+		};
+		47EFE4DC1BECFE81009AC47B /* Mac App Store */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = liblaunchservicesfiledescriptor;
+			};
+			name = "Mac App Store";
+		};
+		47EFE4DD1BECFE81009AC47B /* Mac App Store */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libiokitsleeppreventer;
+			};
+			name = "Mac App Store";
+		};
+		47EFE4DE1BECFE81009AC47B /* Mac App Store */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libfoundationprogressservice;
+			};
+			name = "Mac App Store";
+		};
+		47EFE4DF1BECFE81009AC47B /* Mac App Store */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Mac App Store";
+		};
+		47EFE4E01BECFE81009AC47B /* Mac App Store */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -6452,121 +6717,7 @@
 				VERSIONING_SYSTEM = "";
 				WRAPPER_EXTENSION = bundle;
 			};
-			name = Release;
-		};
-		47C2AD851A268C880047B67A /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COMBINE_HIDPI_IMAGES = YES;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks",
-				);
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
-				INFOPLIST_FILE = setup/pkg/Info.plist;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
-				MACH_O_TYPE = mh_execute;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				MTL_ENABLE_DEBUG_INFO = YES;
-				PRODUCT_MODULE_NAME = duck;
-				PRODUCT_NAME = duck;
-				SKIP_INSTALL = YES;
-				VERSIONING_SYSTEM = "";
-				WRAPPER_EXTENSION = bundle;
-			};
-			name = Debug;
-		};
-		47C57EB8162F471700A272BC /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
-				);
-				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = liblaunchservicesfiledescriptor;
-			};
-			name = Release;
-		};
-		47C57EB9162F471700A272BC /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
-				);
-				LD_DYLIB_INSTALL_NAME = "";
-				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = liblaunchservicesfiledescriptor;
-			};
-			name = Debug;
-		};
-		47D286C70855740C008142CF /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
-				INFOPLIST_FILE = setup/app/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
-				PRODUCT_NAME = Cyberduck;
-				WRAPPER_EXTENSION = app;
-			};
-			name = Release;
-		};
-		47D286EF0855740D008142CF /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
-				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)";
-				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/lib\"";
-				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_DEBUGGING_SYMBOLS = default;
-				GCC_ENABLE_OBJC_GC = unsupported;
-				HEADER_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers\"";
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				SDKROOT = macosx;
-				SEPARATE_STRIP = YES;
-				STRIP_INSTALLED_PRODUCT = YES;
-				WARNING_CFLAGS = (
-					"-Wall",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-			};
-			name = Release;
+			name = "Mac App Store";
 		};
 		47F102B71628D57500923FDE /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -6578,24 +6729,10 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = liblaunchservicesquarantineservice;
 			};
 			name = Release;
-		};
-		47F102B81628D57500923FDE /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
-				);
-				LD_DYLIB_INSTALL_NAME = "";
-				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = liblaunchservicesquarantineservice;
-			};
-			name = Debug;
 		};
 		47FB9C691725A5CC00FE33C1 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -6607,33 +6744,28 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = libiokitsleeppreventer;
 			};
 			name = Release;
 		};
-		47FB9C6A1725A5CC00FE33C1 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
-				);
-				LD_DYLIB_INSTALL_NAME = "";
-				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libiokitsleeppreventer;
-			};
-			name = Debug;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		471BC7731BB7F4B80062C792 /* Build configuration list for PBXNativeTarget "libfindersidebarservice" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				471BC7741BB7F4B80062C792 /* Release */,
+				47EFE4DF1BECFE81009AC47B /* Mac App Store */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		471F77B0180439B500A4C196 /* Build configuration list for PBXNativeTarget "libfoundationprogressservice" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				471F77B1180439B500A4C196 /* Release */,
-				471F77B2180439B500A4C196 /* Debug */,
+				47EFE4DE1BECFE81009AC47B /* Mac App Store */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -6642,7 +6774,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4739EF720856981300405FD3 /* Release */,
-				47A8AD64100A6A9E00DC800C /* Debug */,
+				47EFE4D31BECFE81009AC47B /* Mac App Store */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -6651,7 +6783,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4739EFAF0856990900405FD3 /* Release */,
-				47A8AD67100A6A9E00DC800C /* Debug */,
+				47EFE4D41BECFE81009AC47B /* Mac App Store */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -6660,7 +6792,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4739EFC00856991200405FD3 /* Release */,
-				47A8AD68100A6A9E00DC800C /* Debug */,
+				47EFE4D51BECFE81009AC47B /* Mac App Store */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -6669,7 +6801,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4762DAC409FC42EC0034C662 /* Release */,
-				47A8AD6A100A6A9E00DC800C /* Debug */,
+				47EFE4D61BECFE81009AC47B /* Mac App Store */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -6678,7 +6810,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				477A104C0FD08DBA00BAD4AD /* Release */,
-				47A8AD6E100A6A9E00DC800C /* Debug */,
+				47EFE4D81BECFE81009AC47B /* Mac App Store */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -6687,7 +6819,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				478ECD170DAD5743008A5B1F /* Release */,
-				47A8AD6C100A6A9E00DC800C /* Debug */,
+				47EFE4D71BECFE81009AC47B /* Mac App Store */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -6696,7 +6828,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4797D2781628276C00340E1C /* Release */,
-				4797D2791628276C00340E1C /* Debug */,
+				47EFE4DA1BECFE81009AC47B /* Mac App Store */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -6705,7 +6837,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				47BEDB020B92960400141EB4 /* Release */,
-				47A8AD6B100A6A9E00DC800C /* Debug */,
+				47EFE4D91BECFE81009AC47B /* Mac App Store */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -6714,7 +6846,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				47C2AD841A268C880047B67A /* Release */,
-				47C2AD851A268C880047B67A /* Debug */,
+				47EFE4E01BECFE81009AC47B /* Mac App Store */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -6723,7 +6855,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				47C57EB8162F471700A272BC /* Release */,
-				47C57EB9162F471700A272BC /* Debug */,
+				47EFE4DC1BECFE81009AC47B /* Mac App Store */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -6732,7 +6864,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				47D286C70855740C008142CF /* Release */,
-				47A8AD5F100A6A9E00DC800C /* Debug */,
+				47EFE4D21BECFE81009AC47B /* Mac App Store */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -6741,7 +6873,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				47D286EF0855740D008142CF /* Release */,
-				47A8AD5E100A6A9E00DC800C /* Debug */,
+				47EFE4D11BECFE81009AC47B /* Mac App Store */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -6750,7 +6882,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				47F102B71628D57500923FDE /* Release */,
-				47F102B81628D57500923FDE /* Debug */,
+				47EFE4DB1BECFE81009AC47B /* Mac App Store */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -6759,7 +6891,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				47FB9C691725A5CC00FE33C1 /* Release */,
-				47FB9C6A1725A5CC00FE33C1 /* Debug */,
+				47EFE4DD1BECFE81009AC47B /* Mac App Store */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
