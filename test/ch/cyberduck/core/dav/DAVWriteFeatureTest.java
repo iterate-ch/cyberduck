@@ -266,7 +266,7 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
     }
 
     @Test(expected = AccessDeniedException.class)
-    public void testWriteNotFound() throws Exception {
+    public void testWriteZeroBytesAccessDenied() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
                 properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
         ));
@@ -283,6 +283,20 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
         catch(IOException e) {
             throw (Exception) e.getCause();
         }
+    }
+
+    @Test(expected = AccessDeniedException.class)
+    public void testWriteAccessDenied() throws Exception {
+        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
+                properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
+        ));
+        host.setDefaultPath("/dav/basic");
+        final DAVSession session = new DAVSession(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path test = new Path(new DefaultHomeFinderService(session).find().getAbsolute() + "/nosuchdirectory/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        // With Expect: Continue header
+        new DAVWriteFeature(session).write(test, new TransferStatus().length(1L));
     }
 
     @Test
