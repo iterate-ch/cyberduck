@@ -119,7 +119,7 @@
             <classpath path="${lib.ext}/ant-ikvmc.0.5.jar"/>
         </taskdef>
         <ikvmc target="library" out="${build}/Cyberduck.Core.dll" home="${ikvm.home}"
-               version="${version.full}" debug="false" verbose="true">
+               classloader="ikvm.runtime.AssemblyClassLoader" version="${version.full}" debug="false" verbose="true">
             <fileset file="${build}/config-${version}.jar"/>
             <fileset file="${build}/core-${version}.jar"/>
             <fileset file="${build}/fs-${version}.jar"/>
