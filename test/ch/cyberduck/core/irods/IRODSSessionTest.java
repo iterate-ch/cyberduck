@@ -101,7 +101,7 @@ public class IRODSSessionTest extends AbstractTestCase {
         host.setHostname("irods.wrangler.tacc.utexas.edu");
         host.setPort(1247);
         host.setRegion("taccWranglerZ");
-        host.setDefaultPath("/taccWranglerZ/projects/WranglerTeamIrods");
+        host.setDefaultPath("/taccWranglerZ/home/iterate");
         final AtomicBoolean verified = new AtomicBoolean();
         final IRODSSession session = new IRODSSession(host, new DisabledX509TrustManager() {
             @Override
