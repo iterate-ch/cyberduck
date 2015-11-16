@@ -18,6 +18,7 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
@@ -194,8 +195,13 @@ public class FTPWriteFeatureTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertEquals(false, new FTPWriteFeature(session).append(
                 new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 0L, PathCache.empty()).append);
-        assertEquals(true, new FTPWriteFeature(session).append(
-                new Path(session.workdir(), "test", EnumSet.of(Path.Type.file)), 0L, PathCache.empty()).append);
-
+        final Path f = new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        new DefaultTouchFeature(session).touch(f);
+        assertEquals(true, new FTPWriteFeature(session).append(f, 0L, PathCache.empty()).append);
+        new FTPDeleteFeature(session).delete(Collections.singletonList(f), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
     }
 }
