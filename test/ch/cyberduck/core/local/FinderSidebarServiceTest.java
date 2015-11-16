@@ -37,6 +37,7 @@ import java.util.UUID;
  * @version $Id:$
  */
 @Depends(platform = Factory.Platform.Name.mac)
+@Ignore
 public class FinderSidebarServiceTest extends AbstractTestCase {
 
     @Test
