@@ -33,6 +33,7 @@ import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
@@ -274,7 +275,14 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path(new DefaultHomeFinderService(session).find().getAbsolute() + "/nosuchdirectory/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new DAVWriteFeature(session).write(test, new TransferStatus());
+        final ResponseOutputStream<String> write = new DAVWriteFeature(session).write(test, new TransferStatus());
+        try {
+            write.close();
+            write.getResponse();
+        }
+        catch(IOException e) {
+            throw (Exception) e.getCause();
+        }
     }
 
     @Test
