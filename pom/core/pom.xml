@@ -177,7 +177,7 @@
         <dependency>
             <groupId>org.irods.jargon</groupId>
             <artifactId>jargon-core</artifactId>
-            <version>4.0.2.4</version>
+            <version>4.0.2.4-RELEASE</version>
         </dependency>
     </dependencies>
 
