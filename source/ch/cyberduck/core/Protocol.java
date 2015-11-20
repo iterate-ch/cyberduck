@@ -66,10 +66,7 @@ public interface Protocol extends Comparable<Protocol> {
         googlestorage {
             @Override
             public boolean validate(final Credentials credentials, final LoginOptions options) {
-                if(options.user) {
-                    // OAuth only requires the project token
-                    return StringUtils.isNotBlank(credentials.getUsername());
-                }
+                // OAuth only requires the project token
                 return true;
             }
         },
