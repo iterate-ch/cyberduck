@@ -144,12 +144,11 @@ public class ReceiptVerifier implements LicenseVerifier {
                 log.error(String.format("Expected set of attributes for %s", asn));
                 return false;
             }
-            if(!StringUtils.equals("ch.sudo.cyberduck", StringUtils.trim(bundleIdentifier))) {
+            if(!StringUtils.equals(PreferencesFactory.get().getDefault("application.identifier"), StringUtils.trim(bundleIdentifier))) {
                 log.error(String.format("Bundle identifier %s in ASN set does not match", bundleIdentifier));
                 return false;
             }
-            if(!StringUtils.equals(PreferencesFactory.get().getDefault("CFBundleShortVersionString"),
-                    StringUtils.trim(bundleVersion))) {
+            if(!StringUtils.equals(PreferencesFactory.get().getDefault("application.version"), StringUtils.trim(bundleVersion))) {
                 log.warn(String.format("Bundle version %s in ASN set does not match", bundleVersion));
             }
             final NetworkInterface en0 = NetworkInterface.getByName("en0");
