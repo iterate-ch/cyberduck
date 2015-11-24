@@ -53,7 +53,7 @@ import java.util.List;
  * @version $Id$
  */
 public class S3ObjectListService implements ListService {
-    private static final Logger log = Logger.getLogger(S3Session.class);
+    private static final Logger log = Logger.getLogger(S3ObjectListService.class);
 
     private final Preferences preferences
             = PreferencesFactory.get();
@@ -93,9 +93,9 @@ public class S3ObjectListService implements ListService {
             // occurrence of the delimiter will be rolled up into a single result
             // element in the CommonPrefixes collection. These rolled-up keys are
             // not returned elsewhere in the response.
-            final AttributedList<Path> children = new AttributedList<Path>();
+            final AttributedList<Path> objects = new AttributedList<Path>();
             final Path container = containerService.getContainer(directory);
-            children.addAll(this.listObjects(container, directory, prefix, String.valueOf(Path.DELIMITER), listener));
+            objects.addAll(this.listObjects(container, directory, prefix, String.valueOf(Path.DELIMITER), listener));
             if(preferences.getBoolean("s3.revisions.enable")) {
                 final Versioning feature = session.getFeature(Versioning.class);
                 if(feature != null && feature.getConfiguration(container).isEnabled()) {
@@ -106,16 +106,16 @@ public class S3ObjectListService implements ListService {
                                 container.getName(), prefix, String.valueOf(Path.DELIMITER),
                                 preferences.getInteger("s3.listing.chunksize"),
                                 priorLastKey, priorLastVersionId, true);
-                        children.addAll(this.listVersions(container, directory,
+                        objects.addAll(this.listVersions(container, directory,
                                 Arrays.asList(chunk.getItems())));
                         priorLastKey = chunk.getNextKeyMarker();
                         priorLastVersionId = chunk.getNextVersionIdMarker();
-                        listener.chunk(directory, children);
+                        listener.chunk(directory, objects);
                     }
                     while(priorLastKey != null);
                 }
             }
-            return children;
+            return objects;
         }
         catch(ServiceException e) {
             throw new ServiceExceptionMappingService().map("Listing directory {0} failed", e, directory);
