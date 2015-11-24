@@ -62,6 +62,12 @@ public final class GoogleStorageProtocol extends AbstractProtocol {
     }
 
     @Override
+    public boolean isPasswordConfigurable() {
+        // Only provide Project ID or Number
+        return false;
+    }
+
+    @Override
     public String getDefaultHostname() {
         return "storage.googleapis.com";
     }
