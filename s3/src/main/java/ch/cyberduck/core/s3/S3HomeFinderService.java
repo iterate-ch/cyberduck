@@ -20,6 +20,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
@@ -33,7 +34,7 @@ public class S3HomeFinderService extends DefaultHomeFinderService {
     private PathContainerService containerService
             = new S3PathContainerService();
 
-    public S3HomeFinderService(final S3Session session) {
+    public S3HomeFinderService(final Session session) {
         super(session);
     }
 
