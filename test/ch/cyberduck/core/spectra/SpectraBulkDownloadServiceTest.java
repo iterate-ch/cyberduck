@@ -6,7 +6,7 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -22,7 +22,7 @@ import java.util.UUID;
  */
 public class SpectraBulkDownloadServiceTest extends AbstractTestCase {
 
-    @Test(expected = InteroperabilityException.class)
+    @Test(expected = NotfoundException.class)
     public void testPre() throws Exception {
         final Host host = new Host(new SpectraProtocol(), "192.168.56.101", 8080, new Credentials(
                 "aXRlcmF0ZQ==", "sVYKkwL9"
