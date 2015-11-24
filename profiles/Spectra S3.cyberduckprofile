@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>Protocol</key>
+        <string>spectra</string>
+        <key>Vendor</key>
+        <string>spectralogic</string>
+        <key>Description</key>
+        <string>Spectra BlackPearlDeep Storage Gateway</string>
+        <key>Scheme</key>
+        <string>https</string>
+        <key>Default Hostname</key>
+        <string>blackpearl.hostname</string>
+        <key>Default Port</key>
+        <string>443</string>
+        <key>Port Configurable</key>
+        <false/>
+        <key>Username Placeholder</key>
+        <string>S3 Access ID</string>
+        <key>Password Placeholder</key>
+        <string>S3 Secret Key</string>
+    </dict>
+</plist>
