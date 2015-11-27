@@ -23,7 +23,7 @@
 #import <Foundation/Foundation.h>
 #import <JavaNativeFoundation/JNFString.h>
 
-JNIEXPORT void JNICALL Java_ch_cyberduck_core_local_LaunchServicesQuarantineService_setQuarantine(JNIEnv *env, jobject this, jstring path, jstring originUrl, jstring dataUrl)
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_LaunchServicesQuarantineService_setQuarantine(JNIEnv *env, jobject this, jstring path, jstring originUrl, jstring dataUrl)
 {
 	NSURL* url = [NSURL fileURLWithPath:JNFJavaToNSString(env, path)];
 	FSRef ref;
@@ -36,12 +36,15 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_local_LaunchServicesQuarantineServ
 
         if(LSSetItemAttribute(&ref, kLSRolesAll, kLSItemQuarantineProperties, (CFDictionaryRef*) attrs) != noErr) {
             NSLog(@"Error writing quarantine attribute");
+    		return FALSE;
         }
         [attrs release];
+        return TRUE;
 	}
+    return FALSE;
 }
 
-JNIEXPORT void JNICALL Java_ch_cyberduck_core_local_LaunchServicesQuarantineService_setWhereFrom(JNIEnv *env, jobject this, jstring path, jstring dataUrl)
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_LaunchServicesQuarantineService_setWhereFrom(JNIEnv *env, jobject this, jstring path, jstring dataUrl)
 {
 	typedef OSStatus (*MDItemSetAttribute_type)(MDItemRef, CFStringRef, CFTypeRef);
 	static MDItemSetAttribute_type mdItemSetAttributeFunc = NULL;
@@ -50,17 +53,18 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_local_LaunchServicesQuarantineServ
 		didSymbolLookup = true;
 		CFBundleRef metadataBundle = CFBundleGetBundleWithIdentifier(CFSTR("com.apple.Metadata"));
 		if (!metadataBundle) {
-			return;
+    		return FALSE;
 		}
 		mdItemSetAttributeFunc = (MDItemSetAttribute_type)CFBundleGetFunctionPointerForName(metadataBundle, CFSTR("MDItemSetAttribute"));
 	}
 	if (!mdItemSetAttributeFunc) {
-		return;
+		return FALSE;
 	}
 	MDItemRef mdItem = MDItemCreate(NULL, (CFStringRef)JNFJavaToNSString(env, path));
 	if (!mdItem) {
-	   return;
+		return FALSE;
 	}
 	mdItemSetAttributeFunc(mdItem, kMDItemWhereFroms, (CFMutableArrayRef)[NSMutableArray arrayWithObject:JNFJavaToNSString(env, dataUrl)]);
 	CFRelease(mdItem);
+    return TRUE;
 }

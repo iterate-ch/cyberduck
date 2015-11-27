@@ -19,6 +19,7 @@ package ch.cyberduck.core.local;
  */
 
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 
 /**
  * @version $Id$
@@ -28,10 +29,10 @@ public interface QuarantineService {
      * @param originUrl Page that linked to the downloaded file
      * @param dataUrl   Href where the file was downloaded from
      */
-    void setQuarantine(Local file, String originUrl, String dataUrl);
+    void setQuarantine(Local file, String originUrl, String dataUrl) throws LocalAccessDeniedException;
 
     /**
      * @param dataUrl Href where the file was downloaded from
      */
-    void setWhereFrom(Local file, String dataUrl);
+    void setWhereFrom(Local file, String dataUrl) throws LocalAccessDeniedException;
 }
