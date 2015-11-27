@@ -12,7 +12,7 @@ extern "C" {
  * Method:    setQuarantine
  * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_ch_cyberduck_core_local_LaunchServicesQuarantineService_setQuarantine
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_LaunchServicesQuarantineService_setQuarantine
   (JNIEnv *, jobject, jstring, jstring, jstring);
 
 /*
@@ -20,7 +20,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_local_LaunchServicesQuarantineServ
  * Method:    setWhereFrom
  * Signature: (Ljava/lang/String;Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_ch_cyberduck_core_local_LaunchServicesQuarantineService_setWhereFrom
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_LaunchServicesQuarantineService_setWhereFrom
   (JNIEnv *, jobject, jstring, jstring);
 
 #ifdef __cplusplus

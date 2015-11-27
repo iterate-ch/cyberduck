@@ -19,6 +19,7 @@ package ch.cyberduck.core.local;
  */
 
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.library.Native;
 
 import org.apache.commons.lang3.StringUtils;
@@ -45,7 +46,7 @@ public final class LaunchServicesQuarantineService implements QuarantineService 
      *                  actaully streamed or downloaded, if available
      */
     @Override
-    public void setQuarantine(final Local file, final String originUrl, final String dataUrl) {
+    public void setQuarantine(final Local file, final String originUrl, final String dataUrl) throws LocalAccessDeniedException {
         if(StringUtils.isEmpty(originUrl)) {
             log.warn("No origin url given for quarantine");
             return;
@@ -55,7 +56,9 @@ public final class LaunchServicesQuarantineService implements QuarantineService 
             return;
         }
         synchronized(lock) {
-            this.setQuarantine(file.getAbsolute(), originUrl, dataUrl);
+            if(!this.setQuarantine(file.getAbsolute(), originUrl, dataUrl)) {
+                throw new LocalAccessDeniedException(file.getAbsolute());
+            }
         }
     }
 
@@ -66,7 +69,7 @@ public final class LaunchServicesQuarantineService implements QuarantineService 
      * @param originUrl Page that linked to the downloaded file
      * @param dataUrl   Href where the file was downloaded from
      */
-    private native void setQuarantine(String path, String originUrl, String dataUrl);
+    private native boolean setQuarantine(String path, String originUrl, String dataUrl);
 
     /**
      * Set the kMDItemWhereFroms on the file.
@@ -74,13 +77,15 @@ public final class LaunchServicesQuarantineService implements QuarantineService 
      * @param dataUrl Href where the file was downloaded from
      */
     @Override
-    public void setWhereFrom(final Local file, final String dataUrl) {
+    public void setWhereFrom(final Local file, final String dataUrl) throws LocalAccessDeniedException {
         synchronized(lock) {
             if(StringUtils.isBlank(dataUrl)) {
                 log.warn("No data url given");
                 return;
             }
-            this.setWhereFrom(file.getAbsolute(), dataUrl);
+            if(!this.setWhereFrom(file.getAbsolute(), dataUrl)) {
+                throw new LocalAccessDeniedException(file.getAbsolute());
+            }
         }
     }
 
@@ -90,5 +95,5 @@ public final class LaunchServicesQuarantineService implements QuarantineService 
      * @param path    Absolute path reference
      * @param dataUrl Href where the file was downloaded from
      */
-    private native void setWhereFrom(String path, String dataUrl);
+    private native boolean setWhereFrom(String path, String dataUrl);
 }

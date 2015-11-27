@@ -301,14 +301,19 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                 }
                 final DescriptiveUrl provider = session.getFeature(UrlProvider.class).toUrl(file).find(DescriptiveUrl.Type.provider);
                 if(!DescriptiveUrl.EMPTY.equals(provider)) {
-                    if(options.quarantine) {
-                        // Set quarantine attributes
-                        quarantine.setQuarantine(local, new HostUrlProvider(false).get(session.getHost()),
-                                provider.getUrl());
+                    try {
+                        if(options.quarantine) {
+                            // Set quarantine attributes
+                            quarantine.setQuarantine(local, new HostUrlProvider(false).get(session.getHost()),
+                                    provider.getUrl());
+                        }
+                        if(this.options.wherefrom) {
+                            // Set quarantine attributes
+                            quarantine.setWhereFrom(local, provider.getUrl());
+                        }
                     }
-                    if(this.options.wherefrom) {
-                        // Set quarantine attributes
-                        quarantine.setWhereFrom(local, provider.getUrl());
+                    catch(LocalAccessDeniedException e) {
+                        log.warn(String.format("Failure to quarantine file %s. %s", file, e.getMessage()));
                     }
                 }
                 if(options.open) {
