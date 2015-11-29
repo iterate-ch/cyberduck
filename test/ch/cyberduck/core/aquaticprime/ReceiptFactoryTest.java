@@ -28,17 +28,16 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
+@Ignore
 @Depends(platform = Factory.Platform.Name.mac)
 public class ReceiptFactoryTest extends AbstractTestCase {
 
     @Test
-    @Ignore
     public void testCreate() throws Exception {
         assertEquals(new Receipt(null, "c42c030b8670"), new ReceiptFactory().create());
     }
 
     @Test
-    @Ignore
     public void testOpen() throws Exception {
         // Expect exit code 173
         new ReceiptFactory().open();
