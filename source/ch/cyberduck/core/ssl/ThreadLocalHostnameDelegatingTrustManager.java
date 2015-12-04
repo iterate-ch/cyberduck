@@ -18,6 +18,10 @@ package ch.cyberduck.core.ssl;
  * feedback@cyberduck.io
  */
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -26,6 +30,8 @@ import java.security.cert.X509Certificate;
  * @version $Id$
  */
 public final class ThreadLocalHostnameDelegatingTrustManager implements X509TrustManager, TrustManagerHostnameCallback {
+    private static final Logger log = Logger.getLogger(ThreadLocalHostnameDelegatingTrustManager.class);
+
     /**
      * Target hostname of current request stored as thread local
      */
@@ -34,9 +40,19 @@ public final class ThreadLocalHostnameDelegatingTrustManager implements X509Trus
 
     private X509TrustManager delegate;
 
+    /**
+     * Lax hostname verification
+     */
+    private final boolean strict;
+
     public ThreadLocalHostnameDelegatingTrustManager(final X509TrustManager delegate, final String hostname) {
+        this(delegate, hostname, false);
+    }
+
+    public ThreadLocalHostnameDelegatingTrustManager(final X509TrustManager delegate, final String hostname, final boolean strict) {
         this.delegate = delegate;
-        this.target.set(hostname);
+        this.strict = strict;
+        this.setTarget(hostname);
     }
 
     @Override
@@ -70,7 +86,23 @@ public final class ThreadLocalHostnameDelegatingTrustManager implements X509Trus
         return target.get();
     }
 
-    public void setTarget(final String target) {
-        this.target.set(target);
+    public void setTarget(final String hostname) {
+        final String simple;
+        if(strict) {
+            simple = hostname;
+        }
+        else {
+            final String[] parts = StringUtils.split(hostname, '.');
+            if(parts.length > 4) {
+                log.warn(String.format("Rewrite hostname target to %s", hostname));
+                ArrayUtils.reverse(parts);
+                // Rewrite c.cyberduck.s3.amazonaws.com which does not match wildcard certificate *.s3.amazonaws.com
+                simple = StringUtils.join(parts[3], ".", parts[2], ".", parts[1], ".", parts[0]);
+            }
+            else {
+                simple = hostname;
+            }
+        }
+        this.target.set(simple);
     }
 }
