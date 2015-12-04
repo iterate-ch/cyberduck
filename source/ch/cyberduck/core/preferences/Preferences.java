@@ -74,6 +74,7 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 import java.net.URL;
 import java.security.Security;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -1066,7 +1067,11 @@ public abstract class Preferences {
      * @return The configured values determined by a whitespace separator.
      */
     public List<String> getList(final String property) {
-        return Arrays.asList(this.getProperty(property).split("(?<!\\\\)\\p{javaWhitespace}+"));
+        final String value = this.getProperty(property);
+        if(StringUtils.isBlank(value)) {
+            return Collections.emptyList();
+        }
+        return Arrays.asList(value.split("(?<!\\\\)\\p{javaWhitespace}+"));
     }
 
     public Map<String, String> getMap(final String property) {
