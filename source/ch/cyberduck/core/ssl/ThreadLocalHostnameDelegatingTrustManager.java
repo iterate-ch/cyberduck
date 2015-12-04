@@ -94,10 +94,10 @@ public final class ThreadLocalHostnameDelegatingTrustManager implements X509Trus
         else {
             final String[] parts = StringUtils.split(hostname, '.');
             if(parts.length > 4) {
-                log.warn(String.format("Rewrite hostname target to %s", hostname));
                 ArrayUtils.reverse(parts);
                 // Rewrite c.cyberduck.s3.amazonaws.com which does not match wildcard certificate *.s3.amazonaws.com
                 simple = StringUtils.join(parts[3], ".", parts[2], ".", parts[1], ".", parts[0]);
+                log.warn(String.format("Rewrite hostname target to %s", simple));
             }
             else {
                 simple = hostname;
