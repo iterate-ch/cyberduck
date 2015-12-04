@@ -25,7 +25,7 @@ using java.lang;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
-    internal class DialogLimitedListProgressListener : LimitedListProgressListener
+    public class DialogLimitedListProgressListener : LimitedListProgressListener
     {
         private readonly WindowController _controller;
         private bool _supressed;
