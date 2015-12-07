@@ -29,6 +29,7 @@ import static org.junit.Assert.assertEquals;
 public class ReceiptFactoryTest extends AbstractTestCase {
 
     @Test
+    @Ignore
     public void testCreate() throws Exception {
         assertEquals(new Receipt(null, "b8e85600dffe"), new ReceiptFactory(new Local("src/test/resources")).create());
     }
