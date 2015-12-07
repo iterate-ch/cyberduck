@@ -25,11 +25,6 @@ import ch.cyberduck.core.Host;
  */
 public class DisabledProxyFinder implements ProxyFinder {
     @Override
-    public boolean usePassiveFTP() {
-        return true;
-    }
-
-    @Override
     public Proxy find(final Host target) {
         return Proxy.DIRECT;
     }

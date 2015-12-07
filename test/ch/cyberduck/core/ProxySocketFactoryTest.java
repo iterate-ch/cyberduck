@@ -63,11 +63,6 @@ public class ProxySocketFactoryTest extends AbstractTestCase {
         }, new DefaultSocketConfigurator(),
                 new ProxyFinder() {
                     @Override
-                    public boolean usePassiveFTP() {
-                        return true;
-                    }
-
-                    @Override
                     public Proxy find(final Host target) {
                         return new Proxy(Proxy.Type.SOCKS, "localhost", 7000);
                     }

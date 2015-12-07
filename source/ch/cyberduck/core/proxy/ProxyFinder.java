@@ -25,10 +25,5 @@ import ch.cyberduck.core.Host;
  * @version $Id$
  */
 public interface ProxyFinder {
-    /**
-     * @return True if PASV should be used by default
-     */
-    boolean usePassiveFTP();
-
     Proxy find(Host target);
 }

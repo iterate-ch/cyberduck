@@ -99,11 +99,6 @@ public class DAVSessionTest extends AbstractTestCase {
                 new ProxySocketFactory(host.getProtocol(), new DefaultTrustManagerHostnameCallback(host),
                         new DefaultSocketConfigurator(), new ProxyFinder() {
                     @Override
-                    public boolean usePassiveFTP() {
-                        return false;
-                    }
-
-                    @Override
                     public Proxy find(final Host target) {
                         return new Proxy(Proxy.Type.HTTP, "localhost", 1111);
                     }
@@ -127,11 +122,6 @@ public class DAVSessionTest extends AbstractTestCase {
                 new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DefaultCertificateStore()),
                 new CertificateStoreX509KeyManager(new DefaultCertificateStore()),
                 new ProxyFinder() {
-                    @Override
-                    public boolean usePassiveFTP() {
-                        return false;
-                    }
-
                     @Override
                     public Proxy find(final Host target) {
                         return new Proxy(Proxy.Type.HTTP, "localhost", 3128);
@@ -168,11 +158,6 @@ public class DAVSessionTest extends AbstractTestCase {
                 new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DefaultCertificateStore()),
                 new CertificateStoreX509KeyManager(new DefaultCertificateStore()),
                 new ProxyFinder() {
-                    @Override
-                    public boolean usePassiveFTP() {
-                        return false;
-                    }
-
                     @Override
                     public Proxy find(final Host target) {
                         return new Proxy(Proxy.Type.HTTP, "localhost", 5555);

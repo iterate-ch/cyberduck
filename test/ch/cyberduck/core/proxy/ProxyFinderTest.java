@@ -36,11 +36,6 @@ public class ProxyFinderTest extends AbstractTestCase {
     public void testWildcard() {
         AbstractProxyFinder p = new AbstractProxyFinder() {
             @Override
-            public boolean usePassiveFTP() {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
             public Proxy find(final Host target) {
                 throw new UnsupportedOperationException();
             }
