@@ -31,6 +31,7 @@ import java.util.Arrays;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
+@Ignore
 public class KeychainStoreTest extends AbstractTestCase {
 
     @Test
