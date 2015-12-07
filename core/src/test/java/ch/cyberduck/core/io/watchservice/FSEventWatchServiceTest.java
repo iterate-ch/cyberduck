@@ -42,6 +42,7 @@ import java.util.concurrent.TimeoutException;
 import static java.nio.file.StandardWatchEventKinds.*;
 import static org.junit.Assert.*;
 
+@Ignore
 public class FSEventWatchServiceTest extends AbstractTestCase {
 
     @Test
@@ -65,7 +66,6 @@ public class FSEventWatchServiceTest extends AbstractTestCase {
     }
 
     @Test
-    @Ignore
     public void testListenerEventWatchService() throws Exception {
         final FileWatcher watcher = new FileWatcher(new FSEventWatchService());
         final Local file = new Local(System.getProperty("java.io.tmpdir") + "é", UUID.randomUUID().toString());
