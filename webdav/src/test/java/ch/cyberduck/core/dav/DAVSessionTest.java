@@ -412,6 +412,7 @@ public class DAVSessionTest extends AbstractTestCase {
     }
 
     @Test
+    @Ignore
     public void testFeatures() throws Exception {
         final Session session = new DAVSession(new Host(new DAVProtocol(), "h"));
         assertNull(session.getFeature(UnixPermission.class));
