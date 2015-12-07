@@ -21,20 +21,17 @@
  *	Bug fixes, suggestions and comments should be sent to:
  *	dkocher@cyberduck.io
  -->
-<project name="Cyberduck" default="build" basedir=".">
+<project name="Cyberduck" basedir=".">
 
     <property file="build.properties"/>
     <property file="tools.properties"/>
 
     <property environment="env"/>
 
-    <property name="app.name" value="${ant.project.name}"/>
-    <property name="app.update.feed" value=""/>
-
     <property name="debug" value="on"/>
-    <property name="home" location="."/>
-    <property name="unittests" value="${home}/test"/>
-    <property name="build" value="${home}/build"/>
+    <property name="module" location="."/>
+    <property name="home" location="${module}/.."/>
+    <property name="build" value="${module}/target"/>
     <property name="build.compile.target" value="${ant.java.version}"/>
     <property name="configuration" value="release"/>
     <property name="build.deploy" location="${build}/${configuration}"/>
@@ -47,9 +44,6 @@
     <property name="img" value="${home}/img"/>
     <property name="lib" value="${home}/lib"/>
     <property name="lib.ext" value="${lib}/ext"/>
-    <property name="source" value="${home}/source"/>
-    <property name="resources" value="${home}/resources"/>
-    <property name="doc" value="${home}/doc"/>
     <property name="www" value="${home}/www"/>
     <property name="www.update" value="${www}/update"/>
     <property name="www.help" value="${www}/help"/>
@@ -57,38 +51,38 @@
     <property name="copyright" value="Copyright (c) 2001-2015 David Kocher. Copyright (c) 2011–2015 Yves Langisch"/>
     <property name="version" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
 
+    <property name="bundle.contents" value="Contents"/>
+    <property name="bundle.home" value="${bundle.contents}/Home"/>
+    <property name="bundle.macos" value="${bundle.contents}/MacOS"/>
+    <property name="bundle.library" value="${bundle.contents}/Library"/>
+    <property name="bundle.login" value="${bundle.library}/LoginItems"/>
+    <property name="bundle.frameworks" value="${bundle.contents}/Frameworks"/>
+    <property name="bundle.resources" value="${bundle.contents}/Resources"/>
+    <property name="bundle.spotlight" value="${bundle.library}/Spotlight"/>
+    <property name="bundle.profiles" value="${bundle.resources}/Profiles"/>
+    <property name="bundle.bookmarks" value="${bundle.resources}/Bookmarks"/>
+
     <property name="sonar.host" value="sonar.cyberduck.io"/>
 
-    <condition property="platform" value="mac">
+    <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+        <classpath path="${lib.ext}/ant-contrib-1.0b3.jar"/>
+    </taskdef>
+
+    <condition property="platform.mac">
         <os family="mac"/>
     </condition>
-    <condition property="platform" value="windows">
+    <condition property="platform.windows">
         <os family="windows"/>
     </condition>
-    <condition property="platform" value="linux">
-        <os family="unix"/>
+    <condition property="platform.linux">
+        <and>
+            <not>
+                <!-- Exclude OS X-->
+                <isset property="platform.mac"/>
+            </not>
+            <os family="unix"/>
+        </and>
     </condition>
-
-    <import description="Platform specific targets" file="build-${platform}.xml"/>
-
-    <path id="test.classpath">
-        <path refid="build.classpath"/>
-        <pathelement location="${build.unittests}"/>
-        <pathelement location="${build}"/>
-        <fileset dir="${build}">
-            <include name="*.jar"/>
-        </fileset>
-        <fileset dir="${lib.ext}">
-            <include name="*.jar"/>
-        </fileset>
-    </path>
-
-    <path id="build.classpath">
-        <!-- Include all libraries -->
-        <fileset dir="${lib}">
-            <include name="*.jar"/>
-        </fileset>
-    </path>
 
     <target name="init" depends="timestamp">
         <echo message=""/>
@@ -96,24 +90,12 @@
         <echo message="   Java Version: ${ant.java.version}"/>
         <echo message="	  Project Home:		${home}"/>
         <echo message="	  Project Build:	${build}"/>
-        <echo message="	  Project Source:	${source}"/>
         <echo message="	  ---------------------------------------------------------------"/>
         <echo message=""/>
-        <echo message="Building ${app.name} on ${os.name}/${os.arch} at ${touch.time}..."/>
-
-        <mkdir dir="${build}"/>
-        <mkdir dir="${build.deploy}"/>
-        <mkdir dir="${build.classes}"/>
-        <mkdir dir="${build.unittests}"/>
-        <mkdir dir="${build.unittests.reports}"/>
-        <mkdir dir="${build.unittests.reports}/html"/>
+        <echo message="Building ${ant.project.name} on ${os.name}/${os.arch} at ${touch.time}..."/>
+        <buildnumber file="build.number"/>
+        <echo message="Build number ${build.number}"/>
     </target>
-
-    <target name="build" description="Build GUI application"
-            depends="archive, _build"/>
-
-    <target name="cli" description="Build CLI application"
-            depends="archive, _cli"/>
 
     <target name="timestamp">
         <tstamp>
@@ -124,243 +106,23 @@
         </tstamp>
     </target>
 
-    <target name="revision" depends="init">
-        <echo message="Calculating revision..."/>
-
-        <taskdef resource="net/sf/antcontrib/antcontrib.properties">
-            <classpath path="${lib.ext}/ant-contrib-1.0b3.jar"/>
-        </taskdef>
-
-        <property environment="env"/>
-        <echo message="env.SVN_REVISION=${env.SVN_REVISION}"/>
-
-        <!-- Remove any non-digits (e.g. a trailing M) from the current revision -->
-        <propertyregex property="revision"
-                       input="${env.SVN_REVISION}"
-                       regexp="([\d]+).*"
-                       select="\1"/>
-        <property name="revision" value="${revision}"/>
-        <echo message="revision=${revision}"/>
-        <buildnumber file="build.number"/>
-        <echo message="Build number ${build.number}"/>
+    <target name="tarball">
+        <antcall target="tar">
+            <param name="directory" value="${home}"/>
+            <param name="source" value="."/>
+            <param name="target" value="duck-src-${version}.${revision}.tar.gz"/>
+        </antcall>
+        <checksum file="${build.deploy}/duck-src-${version}.${revision}.tar.gz"
+                  algorithm="sha-256" property="source.sha256"/>
     </target>
 
-    <target name="compile" depends="init" description="Compile the source tree">
-        <javac fork="true"
-               includeantruntime="false"
-               debug="${debug}"
-               encoding="utf-8"
-               srcdir="${source}"
-               target="${build.compile.target}"
-               source="${build.compile.target}"
-               deprecation="on"
-               listfiles="on"
-               extdirs=""
-               destdir="${build.classes}">
-            <classpath refid="build.classpath"/>
-            <compilerarg line="-profile compact3"/>
-        </javac>
-    </target>
 
-    <target name="archive" depends="compile, manifest" description="Create archives">
-        <jar jarfile="${build}/config-${version}.jar"
-             update="yes"
-             manifest="${build}/MANIFEST.MF">
-            <fileset dir="${lib}">
-                <include name="mime.types"/>
-                <include name="log4j-*.xml"/>
-            </fileset>
-        </jar>
-        <jar jarfile="${build}/core-${version}.jar"
-             update="yes"
-             manifest="${build}/MANIFEST.MF">
-            <fileset dir="${build.classes}">
-                <include name="ch/cyberduck/core/**/*.class"/>
-            </fileset>
-        </jar>
-        <jar jarfile="${build}/fs-${version}.jar"
-             update="yes"
-             manifest="${build}/MANIFEST.MF">
-            <fileset dir="${build.classes}">
-                <include name="ch/cyberduck/fs/**/*.class"/>
-            </fileset>
-        </jar>
-        <jar jarfile="${build}/ui-${version}.jar"
-             update="yes"
-             manifest="${build}/MANIFEST.MF">
-            <fileset dir="${build.classes}/">
-                <include name="ch/cyberduck/ui/**/*.class"/>
-                <exclude name="ch/cyberduck/ui/cocoa/**/*.class"/>
-            </fileset>
-        </jar>
-        <jar jarfile="${build}/binding-${version}.jar"
-             update="yes"
-             manifest="${build}/MANIFEST.MF">
-            <fileset dir="${build.classes}/">
-                <include name="ch/cyberduck/binding/**/*.class"/>
-            </fileset>
-        </jar>
-        <jar jarfile="${build}/cocoa-${version}.jar"
-             update="yes"
-             manifest="${build}/MANIFEST.MF">
-            <fileset dir="${build.classes}/">
-                <include name="ch/cyberduck/ui/cocoa/**/*.class"/>
-            </fileset>
-        </jar>
-
-        <taskdef resource="net/sf/antcontrib/antcontrib.properties">
-            <classpath path="${lib.ext}/ant-contrib-1.0b3.jar"/>
-        </taskdef>
-        <var name="manifest.lib.classpath" unset="true"/>
-        <manifestclasspath property="manifest.lib.classpath"
-                           jarfile="${lib}/cli-${version}.jar">
-            <!-- Convert paths relative to target jarfile -->
-            <classpath refid="build.classpath"/>
-        </manifestclasspath>
-        <var name="manifest.build.classpath" unset="true"/>
-        <manifestclasspath property="manifest.build.classpath"
-                           jarfile="${build}/cli-${version}.jar">
-            <!-- Convert paths relative to target jarfile -->
-            <classpath>
-                <fileset dir="${build}" includes="*.jar"/>
-            </classpath>
-        </manifestclasspath>
-        <jar jarfile="${build}/cli-${version}.jar"
-             update="yes">
-            <fileset dir="${build.classes}">
-                <include name="ch/cyberduck/cli/*.class"/>
-            </fileset>
-            <manifest>
-                <attribute name="Specification-Title" value="${app.name}"/>
-                <attribute name="Specification-Version" value="${version}"/>
-                <attribute name="Specification-Vendor" value="${copyright}"/>
-                <attribute name="Implementation-Version" value="${revision}"/>
-                <attribute name="Main-Class" value="ch.cyberduck.cli.Terminal"/>
-                <attribute name="Class-Path" value="${manifest.lib.classpath} ${manifest.build.classpath}"/>
-            </manifest>
-        </jar>
-    </target>
-
-    <target name="doc" depends="init" description="Generate Javadoc">
-        <mkdir dir="${doc}"/>
-        <javadoc packagenames="ch.cyberduck.*,com.*,org.*"
-                 sourcepath="${source}"
-                 destdir="${doc}"
-                 author="true"
-                 version="true"
-                 use="true"
-                 windowtitle="${app.name} API"
-                 doctitle="${app.name}"
-                 bottom="${copyright}">
-            <classpath refid="build.classpath"/>
-        </javadoc>
-    </target>
-
-    <target name="clean" description="Delete compiled classes, jar files, jni libraries and application bundle">
-        <delete dir="${build}"/>
-    </target>
-
-    <target name="manifest" depends="revision" description="Create manifest file">
-        <manifest file="${build}/MANIFEST.MF">
-            <attribute name="Specification-Title" value="${app.name}"/>
-            <attribute name="Specification-Version" value="${version}"/>
-            <attribute name="Specification-Vendor" value="${copyright}"/>
-            <attribute name="Implementation-Version" value="${revision}"/>
-        </manifest>
-    </target>
-
-    <target name="test-compile" depends="build">
-        <javac fork="true"
-               debug="${debug}"
-               includeantruntime="false"
-               encoding="utf-8"
-               target="${build.compile.target}"
-               source="${build.compile.target}"
-               deprecation="off"
-               srcdir="${unittests}"
-               destdir="${build.unittests}"
-               includes="**/*.java">
-            <classpath refid="test.classpath"/>
-        </javac>
-    </target>
-
-    <target name="test" depends="test-compile" description="Runs all tests">
-        <taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
-            <classpath path="${lib.ext}/junit-4.11.jar"/>
-            <classpath path="${lib.ext}/hamcrest-core-1.3.jar"/>
-        </taskdef>
-        <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
-            <classpath path="${lib.ext}/jacocoant.jar"/>
-        </taskdef>
-        <copy todir="${build}">
-            <fileset dir="${lib}">
-                <!-- Include libjnidispatch.dylib -->
-                <include name="*.dylib"/>
-            </fileset>
-        </copy>
-        <echo message="Running tests with ${jvm.runtime.bin}/java"/>
-        <!-- Get all properties available to pass them to test task -->
-        <propertyset id="test.systemproperties">
-            <propertyref builtin="commandline"/>
-        </propertyset>
-        <jacoco:coverage destfile="${build}/jacoco.exec" xmlns:jacoco="antlib:org.jacoco.ant">
-            <junit jvm="${jvm.runtime.bin}/java" fork="yes" forkmode="once"
-                   printsummary="on" filtertrace="on"
-                   haltonfailure="no" failureproperty="test.failed"
-                   showoutput="yes"
-                   dir="${home}">
-                <classpath refid="test.classpath"/>
-                <formatter type="plain" usefile="false"/>
-                <formatter type="xml" extension=".xml" usefile="true"/>
-                <batchtest todir="${build.unittests.reports}">
-                    <fileset dir="${build.unittests}">
-                        <include name="${build.unittests.include}"/>
-                    </fileset>
-                </batchtest>
-                <syspropertyset refid="test.systemproperties"/>
-                <sysproperty key="java.library.path" value="${build}"/>
-                <sysproperty key="jna.library.path" value="${build}"/>
-            </junit>
-        </jacoco:coverage>
-        <junitreport todir="${build.unittests.reports}/html">
-            <fileset dir="${build.unittests.reports}">
-                <include name="TEST-*.xml"/>
-            </fileset>
-            <report format="frames" todir="${build.unittests.reports}/html"/>
-        </junitreport>
-        <!--<fail message="Test failure detected" if="test.failed"/>-->
-    </target>
-
-    <target name="sonar" depends="test" description="Run Sonar">
-        <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
-            <classpath path="${lib.ext}/sonar-ant-task-2.2.jar"/>
-        </taskdef>
-        <property name="sonar.projectName" value="${app.name}"/>
-        <property name="sonar.projectKey" value="ch.cyberduck:cyberduck-${platform}"/>
-        <property name="sonar.projectVersion" value="${revision}"/>
-        <property name="sonar.projectBaseDir" value="${home}"/>
-        <property name="sonar.sources" value="${source}"/>
-        <property name="sonar.exclusions" value="**/binding/**/*.java,**/cocoa/**/*.java"/>
-        <property name="sonar.coverage.exclusions" value="**/binding/**/*.java,**/cocoa/**/*.java"/>
-        <property name="sonar.tests" value="${unittests}"/>
-        <property name="sonar.binaries" value="${build.classes}"/>
-        <property name="sonar.junit.reportsPath" value="${build.unittests.reports}"/>
-        <pathconvert property="sonar.libraries" refid="build.classpath" pathsep=","/>
-        <property name="sonar.host.url" value="https://${sonar.host}"/>
-        <property name="sonar.jdbc.url"
-                  value="jdbc:mysql://${sonar.host}:3306/sonar?useUnicode=true&amp;characterEncoding=utf8"/>
-        <property name="sonar.jdbc.username" value="sonar"/>
-        <property name="sonar.jdbc.password" value="sonar"/>
-        <property name="sonar.jdbc.driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="sonar.core.codeCoveragePlugin" value="jacoco"/>
-        <property name="sonar.jacoco.reportPath" value="${build}/jacoco.exec"/>
-        <property name="sonar.jacoco.antTargets" value="test"/>
-        <property name="sonar.links.homepage" value="http://cyberduck.io"/>
-        <property name="sonar.links.ci" value="https://ci.cyberduck.io"/>
-        <property name="sonar.links.issue" value="https://trac.cyberduck.io"/>
-        <property name="sonar.scm.url" value="scm:svn:http://svn.cyberduck.io/trunk"/>
-        <property name="sonar.links.scm" value="https://svn.cyberduck.io"/>
-        <property name="sonar.links.scm_dev" value="https://svn.cyberduck.io"/>
-        <sonar:sonar xmlns:sonar="antlib:org.sonar.ant"/>
+    <target name="tar">
+        <mkdir dir="${build.deploy}"/>
+        <exec dir="${directory}" executable="tar" spawn="false" failonerror="true">
+            <arg line="--exclude .svn --exclude .git --exclude target -czf ${build.deploy}/${target} ${source}"/>
+        </exec>
+        <echo message="Calculating MD5 sum..."/>
+        <checksum file="${build.deploy}/${target}" algorithm="md5"/>
     </target>
 </project>

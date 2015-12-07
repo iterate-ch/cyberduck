@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ *	$Revision$
+ *	$Date$
+ *
+ *  Copyright (c) 2005-2012 David Kocher. All rights reserved.
+ *  http://cyberduck.io/
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	Bug fixes, suggestions and comments should be sent to:
+ *	dkocher@cyberduck.io
+ -->
+<project name="Cyberduck for Windows" basedir=".">
+
+    <import file="../build.xml"/>
+
+    <!-- try to detect the process architecture (32/64bit) -->
+    <condition property="programFiles" value="${env.ProgramFiles(x86)}">
+        <available file="${env.ProgramFiles(x86)}"/>
+    </condition>
+    <condition property="programFiles" value="${env.ProgramFiles}">
+        <available file="${env.ProgramFiles}"/>
+    </condition>
+
+    <property name="configuration" value="release"/>
+    <property name="architecture" value="x86"/>
+    <property name="nsis.home" value="${programFiles}/NSIS"/>
+    <property name="winsdk.home" value="${programFiles}/Windows Kits/8.1/bin/x86"/>
+    <property name="wybuild.home" value="${programFiles}/wyBuild"/>
+    <property name="ikvm.home" value="${lib}/ikvm-8.1.5717.0"/>
+
+    <property name="jvm.runtime.bin" value="${java.home}/bin"/>
+    <property name="cpack.bin" value="${env.ChocolateyInstall}/bin/cpack"/>
+
+    <property name="chocolatey.source" value="${setup}/chocolatey"/>
+    <property name="chocolatey.target" value="${build.deploy}"/>
+
+    <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
+        <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
+    </taskdef>
+
+    <target name="version">
+        <propertyregex property="minor"
+                       input="${cyberduck.version.minor}.0"
+                       regexp="(\d)([\w\d]*)\.(\d)(\.\d)?"
+                       select="\1.\3"/>
+        <property name="version.full"
+                  value="${cyberduck.version.major}.${minor}.${revision}"/>
+        <property name="version.short"
+                  value="${version} (${revision})"/>
+        <!-- pattern = "[revision] ([major].[minor])" -->
+        <property name="updaterversion"
+                  value="${revision} (${version})"/>
+    </target>
+
+    <target name="build" depends="version">
+        <msbuild buildfile="source/ch/cyberduck/Cyberduck.csproj">
+            <target name="Clean"/>
+            <target name="Build"/>
+
+            <property name="Version" value="${version.full}"/>
+            <property name="ShortVersion" value="${version.short}"/>
+            <property name="Configuration" value="${configuration}"/>
+            <property name="Platform" value="${architecture}"/>
+        </msbuild>
+    </target>
+
+    <target name="package">
+        <copy todir="${build}">
+            <fileset dir="${home}">
+                <include name="*.ico"/>
+            </fileset>
+        </copy>
+
+        <loadfile property="changes" srcFile="${www.update}/changelog.txt"/>
+
+        <copy file="${www.update}/version.xml" todir="${build}" overwrite="true"/>
+        <replace file="${build}/version.xml" summary="true" encoding="UTF-8">
+            <replacefilter token="${VERSION}" value="${updaterversion}"/>
+            <replacefilter token="${CHANGES}" value="${changes}"/>
+            <replacefilter token="${BUILDPATH}" value="${build}"/>
+        </replace>
+
+        <!-- copy wyUpdate project over to the build directory -->
+        <copy file="${www.update}/${app.update.feed}/changelog.wyp" tofile="${build}/changelog.wyp" overwrite="true"/>
+
+        <exec executable="${wybuild.home}/wybuild.cmd.exe" failonerror="true" dir="${build}">
+            <arg value="${build}/changelog.wyp"/>
+            <arg value="/bwu"/>
+            <arg value="/bu"/>
+            <arg value="-add=${build}/version.xml"/>
+        </exec>
+
+        <!-- overwrite generated wyUpdate.exe -->
+        <copy file="${www.update}/Updater.exe" todir="${build}/update" overwrite="true"/>
+
+        <property name="setup.file"
+                  location="${build.deploy}/${app.name}-Installer-${version}.${revision}.exe"/>
+        <exec executable="${nsis.home}/makensis" failonerror="true">
+            <arg value="/DBASEDIR=${build}"/>
+            <arg value="/DPRODUCT_VERSION=${version}"/>
+            <arg value="/DSETUPFILE=${setup.file}"/>
+            <arg value="${setup}/nsi/cyberduck.nsi"/>
+        </exec>
+        <exec executable="${winsdk.home}/signtool.exe" failonerror="true">
+            <arg line='sign /r "StartCom" /tr http://timestamp.globalsign.com/scripts/timestamp.dll "${setup.file}"'/>
+        </exec>
+        <checksum file="${setup.file}" algorithm="md5"/>
+    </target>
+</project>

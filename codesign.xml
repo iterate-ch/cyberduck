@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ *	$Revision: 6757 $
+ *	$Date: 2010-08-25 13:25:44 +0200 (Mi, 25 Aug 2010) $
+ *
+ *  Copyright (c) 2005-2012 David Kocher. All rights reserved.
+ *  http://cyberduck.io/
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.package
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	Bug fixes, suggestions and comments should be sent to:
+ *	dkocher@cyberduck.io
+ -->
+<project name="Codesign" basedir=".">
+
+    <property name="installer.certificate" value="3rd Party Mac Developer Installer: David Kocher (G69SCX94XU)"/>
+    <property name="installer.keychain" value="${user.home}/Library/Keychains/codesign.keychain"/>
+
+    <property name="codesign.certificate" value="Developer ID Application: David Kocher"/>
+    <property name="codesign.keychain" value="${user.home}/Library/Keychains/codesign.keychain"/>
+
+    <!-- Designated requirement -->
+    <property name="codesign.requirement.source" value="${setup}/app/codesign-requirement.txt"/>
+    <property name="codesign.requirement" value="${setup}/app/codesign-requirement.bin"/>
+    <property name="codesign.options" value="--force"/>
+    <property name="codesign.arg" value=""/>
+
+    <target name="codesign" depends="compile-codesign-requirement">
+        <echo message="Code signing ${bundle} with certificate ${codesign.certificate} and entitlements ${codesign.arg}..."/>
+        <apply executable="/usr/bin/codesign" failonerror="true"
+               type="both"
+               parallel="false" spawn="false" force="true">
+            <arg line="${codesign.options} --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
+            <fileset dir="${bundle}/${bundle.spotlight}" erroronmissingdir="false">
+                <include name="*.mdimporter"/>
+            </fileset>
+            <srcfile/>
+        </apply>
+        <apply executable="/usr/bin/codesign" failonerror="true"
+               type="both"
+               parallel="false" spawn="false" force="true">
+            <arg line="${codesign.options} --identifier ch.sudo.cyberduck --sign '${codesign.certificate}' --keychain ${codesign.keychain} ${codesign.arg} -v"/>
+            <fileset dir="${bundle}/${bundle.frameworks}">
+                <include name="*.dylib"/>
+                <include name="*.jar"/>
+            </fileset>
+            <srcfile/>
+        </apply>
+        <apply executable="/usr/bin/codesign" failonerror="true"
+               type="both"
+               parallel="false" spawn="false" force="true">
+            <arg line="${codesign.options} --identifier net.java.openjdk.jre --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
+            <fileset dir="${bundle}/${bundle.runtime}" erroronmissingdir="false">
+                <include name="**/*.dylib"/>
+                <include name="**/*.jar"/>
+            </fileset>
+            <fileset dir="${bundle}/${bundle.macos}">
+                <include name="*.jre"/>
+            </fileset>
+            <srcfile/>
+        </apply>
+        <apply executable="/usr/bin/codesign" failonerror="true"
+               type="both"
+               parallel="false" spawn="false" force="true">
+            <arg line="${codesign.options} --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
+            <fileset dir="${bundle}/${bundle.frameworks}">
+                <include name="*.framework/Versions/A"/>
+            </fileset>
+            <srcfile/>
+        </apply>
+        <apply executable="/usr/bin/codesign" failonerror="true"
+               type="both"
+               parallel="false" spawn="false" force="true">
+            <arg line="${codesign.options} --sign '${codesign.certificate}' --keychain ${codesign.keychain} ${codesign.arg} -v"/>
+            <file name="${bundle}"/>
+            <srcfile/>
+        </apply>
+        <antcall target="verify-signature">
+            <param name="bundle" value="${bundle}"/>
+        </antcall>
+        <antcall target="verify-spctl">
+            <param name="bundle" value="${bundle}"/>
+        </antcall>
+    </target>
+
+    <target name="compile-codesign-requirement">
+        <echo message="Compile codesign requirement ${codesign.requirement}..."/>
+        <exec executable="/usr/bin/csreq" failonerror="true">
+            <arg line="-r ${codesign.requirement.source} -b ${codesign.requirement}"/>
+        </exec>
+    </target>
+
+    <target name="verify-signature">
+        <echo message="Print codesign requirement for ${bundle}..."/>
+        <exec executable="/usr/bin/codesign" failonerror="true">
+            <arg line="-d -r- --deep-verify '${bundle}'"/>
+        </exec>
+    </target>
+
+    <target name="verify-spctl">
+        <echo message="Print system policy verification for ${bundle}..."/>
+        <exec executable="/usr/sbin/spctl" failonerror="true">
+            <arg line="-v --assess --type execute '${bundle}'"/>
+        </exec>
+    </target>
+</project>

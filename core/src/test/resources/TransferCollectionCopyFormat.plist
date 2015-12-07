@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <array>
+        <dict>
+            <key>Bandwidth</key>
+            <string>-1.0</string>
+            <key>Current</key>
+            <string>109648</string>
+            <key>Destination</key>
+            <dict>
+                <key>Access Timestamp</key>
+                <string>1367485526579</string>
+                <key>CDN Credentials</key>
+                <string>0EZZWKSC9Y6B33ARJY02</string>
+                <key>Download Folder</key>
+                <string>~/Downloads/Sandbox</string>
+                <key>Encoding</key>
+                <string>UTF-8</string>
+                <key>FTP Connect Mode</key>
+                <string>passive</string>
+                <key>Hostname</key>
+                <string>sudo.ch</string>
+                <key>Nickname</key>
+                <string>sandbox</string>
+                <key>Path</key>
+                <string>/sandbox</string>
+                <key>Port</key>
+                <string>21</string>
+                <key>Protocol</key>
+                <string>test</string>
+                <key>Timezone</key>
+                <string>Europe/Zurich</string>
+                <key>UUID</key>
+                <string>6aa21d17-6b36-4987-988a-fbb86e75a206</string>
+                <key>Username</key>
+                <string>dkocher</string>
+            </dict>
+            <key>Destinations</key>
+            <array>
+                <dict>
+                    <key>Attributes</key>
+                    <dict>
+                        <key>Duplicate</key>
+                        <string>false</string>
+                        <key>Type</key>
+                        <string>1</string>
+                    </dict>
+                    <key>Remote</key>
+                    <string>/sandbox/1301-130.zip</string>
+                </dict>
+            </array>
+            <key>Host</key>
+            <dict>
+                <key>Access Timestamp</key>
+                <string>1367485526424</string>
+                <key>Hostname</key>
+                <string>ftp.heise.de</string>
+                <key>Nickname</key>
+                <string>ftp.heise.de – FTP</string>
+                <key>Port</key>
+                <string>21</string>
+                <key>Protocol</key>
+                <string>test</string>
+                <key>Timezone</key>
+                <string>Europe/Zurich</string>
+                <key>UUID</key>
+                <string>0c827635-ce6b-4f1c-8cf7-8d3c2aa9dd3f</string>
+                <key>Username</key>
+                <string>anonymous</string>
+                <key>Web URL</key>
+                <string>http://heise.de/pub/ix/benches</string>
+            </dict>
+            <key>Kind</key>
+            <string>3</string>
+            <key>Roots</key>
+            <array>
+                <dict>
+                    <key>Attributes</key>
+                    <dict>
+                        <key>Duplicate</key>
+                        <string>false</string>
+                        <key>Modified</key>
+                        <string>1361197140000</string>
+                        <key>Size</key>
+                        <string>109648</string>
+                        <key>Type</key>
+                        <string>1</string>
+                    </dict>
+                    <key>Remote</key>
+                    <string>/pub/hacks/listings/1301-130.zip</string>
+                </dict>
+            </array>
+            <key>Size</key>
+            <string>109648</string>
+            <key>Timestamp</key>
+            <string>1367485527728</string>
+        </dict>
+    </array>
+</plist>

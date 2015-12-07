@@ -1,0 +1,158 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProjectGuid>{AC161B73-0B4B-4A32-B0D7-205AC89D83A5}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Core</RootNamespace>
+    <AssemblyName>Cyberduck.Core.Native</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>target</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>1</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>target</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="core">
+      <HintPath>core\target\Cyberduck.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Beans">
+      <HintPath>lib\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Beans.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Charsets">
+      <HintPath>lib\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Charsets.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Core">
+      <HintPath>lib\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Jdbc">
+      <HintPath>lib\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Jdbc.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Localedata">
+      <HintPath>lib\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Localedata.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Security">
+      <HintPath>lib\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Text">
+      <HintPath>lib\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Text.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.XML.API">
+      <HintPath>lib\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.XML.API.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.XML.Bind">
+      <HintPath>lib\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.XML.Bind.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.XML.Parse">
+      <HintPath>lib\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.XML.Parse.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.XML.Transform">
+      <HintPath>lib\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.XML.Transform.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.XML.XPath">
+      <HintPath>lib\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.XML.XPath.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.Runtime">
+      <HintPath>lib\ikvm-8.1.5717.0\bin\IKVM.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.Runtime.JNI">
+      <HintPath>lib\ikvm-8.1.5717.0\bin\IKVM.Runtime.JNI.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="Bonjour">
+      <Guid>{18FBED6D-F2B7-4EC8-A4A4-46282E635308}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\AtomicBoolean.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\collections\IndexedLinkedList.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\collections\LRUCache.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\DataProtector.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\editor\SystemEditorFactory.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\editor\SystemWatchEditor.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\editor\SystemWatchEditorFactory.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\i18n\DictionaryLocale.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\DataProtectorPasswordStore.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\ListAdapter.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\local\DefaultBrowserLauncher.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\local\ExplorerRevealService.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\local\RecycleLocalTrashFeature.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\local\RegistryApplicationFinder.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\local\SystemLocal.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\local\Win32FileDescriptor.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\local\WindowsApplicationLauncher.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\local\WindowsTemporaryFileService.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\NativeConstants.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\NativeListEnumerator.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\NativeMethods.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\OSVersion.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\preferences\RoamingSupportDirectoryFinder.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\preferences\AssemblyApplicationResourcesFinder.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\preferences\SettingsDictionary.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\bonjour\Rendezvous.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\RFC2253.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\SerializableDictionary.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\Shell32.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\SshTerminalService.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\ssl\HostnameVerifier.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\proxy\SystemProxy.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\diagnostics\TcpReachability.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\Utils.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\urlhandler\URLSchemeHandlerConfiguration.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <!-- add localizations -->
+    <EmbeddedResource Include="*.lproj/*.strings" />
+    <EmbeddedResource Include="*.lproj/*.strings.1" />
+    <EmbeddedResource Include="*.lproj/*.txt" />
+    <EmbeddedResource Include="lib/Sparkle.framework/Versions/A/Resources/*.lproj/Sparkle.strings" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets. -->
+  <!-- Import of the MSBuildCommunityTask targets -->
+  <Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.targets" />
+  <Target Name="AssemblyInfo">
+    <AssemblyInfo CodeLanguage="CS" OutputFile="Properties\AssemblyInfo.cs" AssemblyTitle="Cyberduck" AssemblyDescription="Libre FTP, SFTP, WebDAV, S3 and OpenStack Swift browser for Mac and Windows." AssemblyCompany="iterate GmbH" AssemblyProduct="Cyberduck" AssemblyCopyright="Copyright (c) 2001-2015 David Kocher. Copyright (c) 2011–2015 Yves Langisch" ComVisible="false" Guid="5fc1c120-24c7-469d-b52b-9bce20db208d" AssemblyVersion="$(Version)" AssemblyFileVersion="$(Version)" AssemblyInformationalVersion="$(ShortVersion)" Condition="$(Version) != '0' " />
+  </Target>
+  <Target Name="BeforeBuild">
+    <CallTarget Targets="AssemblyInfo" />
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+</Project>

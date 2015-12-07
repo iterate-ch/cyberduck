@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ *	$Revision: 6757 $
+ *	$Date: 2010-08-25 13:25:44 +0200 (Mi, 25 Aug 2010) $
+ *
+ *  Copyright (c) 2005-2012 David Kocher. All rights reserved.
+ *  http://cyberduck.io/
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.package
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	Bug fixes, suggestions and comments should be sent to:
+ *	dkocher@cyberduck.io
+ -->
+<project name="Cyberduck for Mac" basedir=".">
+
+    <import file="../build.xml"/>
+
+    <property name="app.name" value="Cyberduck"/>
+    <property name="app.update.feed" value=""/>
+
+    <property name="app.bundle" value="${build}/${app.name}.app"/>
+
+    <property name="app.runtime.system.min" value="10.7"/>
+
+    <property name="sparkle.key.prefix" value="SU"/>
+    <property name="sparkle.feed" value="/dev/null"/>
+
+    <property name="spotlight" value="${home}/Spotlight Importer"/>
+    <property name="build.spotlight" value="${spotlight}/build/${configuration}"/>
+
+    <property name="build.xcodeoptions" value="SYMROOT=${build} SDKROOT=macosx MACOSX_DEPLOYMENT_TARGET=${app.runtime.system.min}"/>
+
+    <import file="../runtime.xml"/>
+    <import file="../codesign.xml"/>
+    <import file="../archive.xml"/>
+
+    <target name="spotlight">
+        <local name="build.settings"/>
+        <property name="build.settings"
+                  value="${build.xcodeoptions} VERSION=${version} REVISION=${revision} COPYRIGHT='${copyright}'"/>
+        <echo message="Build settings ${build.settings}"/>
+        <exec dir="${spotlight}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
+            <arg line="xcodebuild -project ../'Spotlight Importer.xcodeproj' -configuration '${xcode.configuration}' ${build.settings}"/>
+        </exec>
+        <copy todir="${app.bundle}/${bundle.spotlight}">
+            <fileset dir="${build.spotlight}">
+                <include name="*.mdimporter/**"/>
+            </fileset>
+        </copy>
+        <chmod perm="a+x" type="file">
+            <fileset dir="${app.bundle}/${bundle.spotlight}">
+                <include name="**/MacOS/*"/>
+            </fileset>
+        </chmod>
+    </target>
+
+    <target name="build">
+        <echo message="Building ${app.bundle}"/>
+        <local name="build.settings"/>
+        <property name="build.settings"
+                  value="${build.xcodeoptions} VERSION=${version} REVISION=${revision} SPARKLEFEED='${sparkle.feed}' SPARKLE_KEY_PREFIX='${sparkle.key.prefix}' COPYRIGHT='${copyright}'"/>
+        <echo message="Build settings ${build.settings}"/>
+        <exec dir="${home}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
+            <arg line="xcodebuild -project ${home}/'Cyberduck.xcodeproj' -configuration '${xcode.configuration}' -target '${xcode.target}' ${build.settings}"/>
+        </exec>
+        <antcall target="runtime">
+            <param name="bundle" value="${app.bundle}"/>
+        </antcall>
+    </target>
+
+    <target name="package" depends="build, spotlight">
+        <antcall target="codesign">
+            <param name="bundle" value="${app.bundle}"/>
+        </antcall>
+        <antcall target="tar">
+            <param name="directory" value="${build}"/>
+            <param name="target" value="${app.name}-${revision}.tar.gz"/>
+            <param name="source" value="${app.name}.app"/>
+        </antcall>
+        <antcall target="zip">
+            <param name="directory" value="${build}"/>
+            <param name="target" value="${app.name}-${version}.zip"/>
+            <param name="source" value="${app.name}.app"/>
+        </antcall>
+        <checksum file="${build.deploy}/${app.name}-${revision}.tar.gz"
+                  algorithm="md5" property="md5sum"/>
+        <echo message="Calculating DSA signature..."/>
+        <exec dir="${home}" executable="sh" outputproperty="signature.dsa" failonerror="true">
+            <arg value="-o"/>
+            <arg value="pipefail"/>
+            <arg value="-c"/>
+            <arg value="openssl dgst -sha1 -binary '${build.deploy}/${app.name}-${revision}.tar.gz' | openssl dgst -dss1 -sign ${www.update}/private.pem | openssl enc -base64"/>
+        </exec>
+        <echo message="DSASIGNATURE=${signature.dsa}"/>
+        <echo message="MD5SUM=${md5sum}"/>
+        <copy todir="${build.deploy}" overwrite="true">
+            <fileset dir="${www.update}">
+                <include name="changelog.rss"/>
+                <include name="changelog.html"/>
+            </fileset>
+        </copy>
+        <replace dir="${build.deploy}" summary="true" encoding="UTF-8">
+            <include name="changelog.rss"/>
+            <replacefilter token="${TIMESTAMP}" value="${touch.time}"/>
+            <replacefilter token="${ARCHIVE}"
+                           value="https://update.cyberduck.io/${app.update.feed}/${app.name}-${revision}.tar.gz"/>
+            <replacefilter token="${CHANGELOG}" value="https://version.cyberduck.io/${app.update.feed}/changelog.html"/>
+            <replacefilter token="${REVISION}" value="${revision}"/>
+            <replacefilter token="${VERSION}" value="${version}"/>
+            <replacefilter token="${DSASIGNATURE}" value="${signature.dsa}"/>
+            <replacefilter token="${COPYRIGHT}" value="${copyright}"/>
+            <replacefilter token="${MACOSX_DEPLOYMENT_TARGET}" value="${app.runtime.system.min}"/>
+        </replace>
+        <echo message="Building ${build.deploy}/${app.name}-${version}.${revision}.pkg"/>
+        <exec dir="${build.deploy}" executable="/usr/bin/productbuild" spawn="false" failonerror="true">
+            <arg line="--component ${app.bundle} /Applications --version ${version} --sign '${installer.certificate}' --keychain ${installer.keychain} ${build.deploy}/${app.name}-${version}.${revision}.pkg"/>
+        </exec>
+        <checksum file="${build.deploy}/${app.name}-${version}.${revision}.pkg" algorithm="md5"/>
+    </target>
+</project>

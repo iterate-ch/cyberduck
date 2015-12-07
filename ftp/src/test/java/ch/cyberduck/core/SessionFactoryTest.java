@@ -1,0 +1,24 @@
+package ch.cyberduck.core;
+
+import ch.cyberduck.core.ftp.FTPProtocol;
+import ch.cyberduck.core.ftp.FTPTLSProtocol;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+
+import org.junit.Test;
+
+import static org.junit.Assert.assertNotNull;
+
+/**
+ * @version $Id$
+ */
+public class SessionFactoryTest extends AbstractTestCase {
+
+    @Test
+    public void testCreateSession() throws Exception {
+        assertNotNull(SessionFactory.create(new Host(new FTPProtocol()),
+                new DefaultX509TrustManager(), new DefaultX509KeyManager()));
+        assertNotNull(SessionFactory.create(new Host(new FTPTLSProtocol()),
+                new DefaultX509TrustManager(), new DefaultX509KeyManager()));
+    }
+}
