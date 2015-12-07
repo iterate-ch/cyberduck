@@ -3,6 +3,7 @@ package ch.cyberduck.core.aquaticprime;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Local;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -10,6 +11,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
+@Ignore
 public class ReceiptVerifierTest extends AbstractTestCase {
 
     @Test
