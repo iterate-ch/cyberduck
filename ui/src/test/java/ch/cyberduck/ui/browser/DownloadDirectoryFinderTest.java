@@ -20,8 +20,8 @@ package ch.cyberduck.ui.browser;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.local.FinderLocal;
 
 import org.junit.Test;
 
@@ -37,9 +37,9 @@ public class DownloadDirectoryFinderTest extends AbstractTestCase {
         final DownloadDirectoryFinder finder = new DownloadDirectoryFinder();
         assertEquals(System.getProperty("user.dir"), finder.find(host).getAbsolute());
         // Does not exist
-        host.setDownloadFolder(new FinderLocal("/t"));
+        host.setDownloadFolder(new Local("/t"));
         assertEquals(System.getProperty("user.dir"), finder.find(host).getAbsolute());
-        final FinderLocal folder = new FinderLocal("~/Documents");
+        final Local folder = new Local("~/Documents");
         folder.mkdir();
         host.setDownloadFolder(folder);
         assertEquals("~/Documents", finder.find(host).getAbbreviatedPath());
