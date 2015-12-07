@@ -1,14 +1,12 @@
 package ch.cyberduck.core;
 
 import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.proxy.SystemConfigurationProxy;
 import ch.cyberduck.core.test.Depends;
 
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @version $Id$
@@ -22,12 +20,6 @@ public class SystemConfigurationProxyTest extends AbstractTestCase {
         assertEquals(Proxy.Type.DIRECT, proxy.find(new Host("cyberduck.io")).getType());
 //        assertEquals(Proxy.Type.HTTP, proxy.find(new Host(ProtocolFactory.WEBDAV, "cyberduck.io")).getType());
 //        assertEquals(Proxy.Type.HTTPS, proxy.find(new Host(ProtocolFactory.WEBDAV_SSL, "cyberduck.io")).getType());
-    }
-
-    @Test
-    public void testPassiveFTP() throws Exception {
-        final ProxyFinder proxy = new SystemConfigurationProxy();
-        assertTrue(proxy.usePassiveFTP());
     }
 
     @Test

@@ -20,11 +20,6 @@ public class EnvironmentVariableProxyFinder implements ProxyFinder {
             = PreferencesFactory.get();
 
     @Override
-    public boolean usePassiveFTP() {
-        return true;
-    }
-
-    @Override
     public Proxy find(final Host target) {
         if(!preferences.getBoolean("connection.proxy.enable")) {
             return Proxy.DIRECT;

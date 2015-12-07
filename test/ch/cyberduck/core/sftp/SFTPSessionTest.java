@@ -267,11 +267,6 @@ public class SFTPSessionTest extends AbstractTestCase {
                 new ProxySocketFactory(host.getProtocol(), new DefaultTrustManagerHostnameCallback(host),
                         new DefaultSocketConfigurator(), new ProxyFinder() {
                     @Override
-                    public boolean usePassiveFTP() {
-                        return false;
-                    }
-
-                    @Override
                     public Proxy find(final Host target) {
                         return new Proxy(Proxy.Type.HTTP, "localhost", 3128);
                     }

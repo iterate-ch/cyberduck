@@ -29,11 +29,6 @@ import java.util.regex.PatternSyntaxException;
 public abstract class AbstractProxyFinder implements ProxyFinder {
     private static final Logger log = Logger.getLogger(AbstractProxyFinder.class);
 
-    @Override
-    public boolean usePassiveFTP() {
-        return true;
-    }
-
     /**
      * @param wildcard Pattern
      * @param hostname Server

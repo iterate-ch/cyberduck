@@ -43,7 +43,6 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.idna.PunycodeConverter;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
@@ -199,11 +198,8 @@ public class FTPSession extends SSLSession<FTPClient> {
 
     protected FTPConnectMode getConnectMode() {
         if(FTPConnectMode.unknown == host.getFTPConnectMode()) {
-            if(ProxyFactory.get().usePassiveFTP()) {
-                // Default to PASV
-                return FTPConnectMode.passive;
-            }
-            return FTPConnectMode.active;
+            // Default to PASV
+            return FTPConnectMode.passive;
         }
         return this.host.getFTPConnectMode();
 

@@ -46,18 +46,6 @@ public final class SystemConfigurationProxy extends AbstractProxyFinder implemen
     private Preferences preferences
             = PreferencesFactory.get();
 
-    /**
-     * Use passive connect mode
-     *
-     * @return True if enabled in the system preferences
-     */
-    public native boolean usePassiveFTPNative();
-
-    @Override
-    public boolean usePassiveFTP() {
-        return this.usePassiveFTPNative();
-    }
-
     @Override
     public Proxy find(final Host target) {
         if(!preferences.getBoolean("connection.proxy.enable")) {
