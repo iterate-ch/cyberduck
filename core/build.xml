@@ -33,6 +33,9 @@
     <property name="xcode.target" value="libcore"/>
 
     <target name="dll" if="platform.windows">
+        <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
+            <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
+        </taskdef>
         <!-- Create DLL Cyberduck.Core.Native -->
         <msbuild buildfile="../Cyberduck Core.csproj">
             <target name="Clean"/>

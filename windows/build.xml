@@ -44,10 +44,6 @@
     <property name="chocolatey.source" value="${setup}/chocolatey"/>
     <property name="chocolatey.target" value="${build.deploy}"/>
 
-    <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
-        <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
-    </taskdef>
-
     <target name="version">
         <propertyregex property="minor"
                        input="${cyberduck.version.minor}.0"
@@ -63,7 +59,10 @@
     </target>
 
     <target name="build" depends="version">
-        <msbuild buildfile="source/ch/cyberduck/Cyberduck.csproj">
+        <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
+            <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
+        </taskdef>
+        <msbuild buildfile="../Cyberduck.csproj">
             <target name="Clean"/>
             <target name="Build"/>
 
