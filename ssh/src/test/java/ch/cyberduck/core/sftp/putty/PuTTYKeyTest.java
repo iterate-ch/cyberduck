@@ -1,5 +1,6 @@
 package ch.cyberduck.core.sftp.putty;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -142,6 +143,7 @@ public class PuTTYKeyTest {
     }
 
     @Test
+    @Ignore
     public void testCorrectPassphraseRsa() throws Exception {
         PuTTYKeyFile key = new PuTTYKeyFile();
         key.init(new StringReader(ppk1024_passphrase), new PasswordFinder() {
@@ -180,6 +182,7 @@ public class PuTTYKeyTest {
     }
 
     @Test
+    @Ignore
     public void testCorrectPassphraseDsa() throws Exception {
         PuTTYKeyFile key = new PuTTYKeyFile();
         key.init(new StringReader(ppkdsa_passphrase), new PasswordFinder() {
