@@ -48,7 +48,7 @@ public class FinderLocalTest {
 
     @Test
     public void testList() throws Exception {
-        assertFalse(new FinderLocal("../profiles").list().isEmpty());
+        assertFalse(new FinderLocal("../../profiles").list().isEmpty());
     }
 
     @Test(expected = LocalAccessDeniedException.class)

@@ -1,8 +1,7 @@
 package ch.cyberduck.core;
 
+import org.junit.Assert;
 import org.junit.Test;
-
-import static org.junit.Assert.assertNotNull;
 
 /**
  * @version $Id$
@@ -13,7 +12,7 @@ public class IOKitSleepPreventerTest extends AbstractTestCase {
     public void testRelease() throws Exception {
         final SleepPreventer s = new IOKitSleepPreventer();
         final String lock = s.lock();
-        assertNotNull(lock);
+        Assert.assertNotNull(lock);
         s.release(lock);
     }
 }
