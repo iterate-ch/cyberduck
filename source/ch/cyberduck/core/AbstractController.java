@@ -19,10 +19,9 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
-import ch.cyberduck.core.threading.ControllerMainAction;
+import ch.cyberduck.core.threading.BackgroundCallable;
 import ch.cyberduck.core.threading.LoggingUncaughtExceptionHandler;
 import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.core.threading.ThreadPool;
@@ -107,7 +106,7 @@ public abstract class AbstractController implements Controller {
         registry.add(action);
         action.init();
         // Start background task
-        final Callable<T> command = new BackgroundCallable<T>(action);
+        final Callable<T> command = new BackgroundCallable<T>(action, this, registry);
         try {
             final Future<T> task;
             if(null == action.lock()) {
@@ -142,86 +141,8 @@ public abstract class AbstractController implements Controller {
         concurrentExecutor.shutdown(false);
     }
 
-    private final class BackgroundCallable<T> implements Callable<T> {
-        private final BackgroundAction<T> action;
-
-        /**
-         * Keep client stacktrace
-         */
-        private final Exception client = new Exception();
-
-        public BackgroundCallable(final BackgroundAction<T> action) {
-            this.action = action;
-        }
-
-        @Override
-        public T call() {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Acquired lock for background runnable %s", action));
-            }
-            if(action.isCanceled()) {
-                // Canceled action yields no result
-                return null;
-            }
-            try {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Prepare background action %s", action));
-                }
-                action.prepare();
-                // Execute the action of the runnable
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Call background action %s", action));
-                }
-                return action.call();
-            }
-            catch(ConnectionCanceledException e) {
-                log.warn(String.format("Connection canceled for background task %s", action));
-            }
-            catch(Exception e) {
-                failure(client, e);
-            }
-            finally {
-                try {
-                    action.finish();
-                }
-                finally {
-                    registry.remove(action);
-                }
-                // If there was any failure, display the summary now
-                if(action.alert()) {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Retry background action %s", action));
-                    }
-                    // Retry
-                    this.call();
-                }
-                else {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Invoke cleanup for background action %s", action));
-                    }
-                    // Invoke the cleanup on the main thread to let the action synchronize the user interface
-                    invoke(new ControllerMainAction(AbstractController.this) {
-                        @Override
-                        public void run() {
-                            try {
-                                action.cleanup();
-                            }
-                            catch(Exception e) {
-                                log.error(String.format("Exception running cleanup task %s", e.getMessage()), e);
-                            }
-                        }
-                    });
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Releasing lock for background runnable %s", action));
-                    }
-                }
-            }
-            // Canceled action yields no result
-            return null;
-        }
-    }
-
-    protected void failure(final Exception trace, final Exception failure) {
+    @Override
+    public void failure(final Exception trace, final Exception failure) {
         trace.initCause(failure);
         log.error(String.format("Unhandled exception running background task %s", failure.getMessage()), trace);
     }
