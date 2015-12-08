@@ -66,6 +66,7 @@ public class CommandLinePathParserTest  {
 
     @Test
     public void testParseProfile() throws Exception {
+        ProtocolFactory.register(new SwiftProtocol());
         final ProfilePlistReader reader = new ProfilePlistReader(new DeserializerFactory(PlistDeserializer.class.getName()));
         ProtocolFactory.register(new SwiftProtocol());
         final Profile profile = reader.read(
