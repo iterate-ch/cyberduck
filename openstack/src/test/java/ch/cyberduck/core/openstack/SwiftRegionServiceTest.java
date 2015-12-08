@@ -12,6 +12,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProfileReaderFactory;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.features.Location;
 
 import org.junit.Test;
@@ -64,8 +65,9 @@ public class SwiftRegionServiceTest extends AbstractTestCase {
 
     @Test
     public void testFindDefaultLocationInBookmark() throws Exception {
+        ProtocolFactory.register(new SwiftProtocol());
         final Profile profile = ProfileReaderFactory.get().read(
-                new Local("profiles/Rackspace US (IAD).cyberduckprofile"));
+                new Local("../profiles/Rackspace US (IAD).cyberduckprofile"));
         final SwiftSession session = new SwiftSession(
                 new Host(profile, "identity.api.rackspacecloud.com",
                         new Credentials(
