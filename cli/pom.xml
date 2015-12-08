@@ -82,7 +82,7 @@
                                 <configuration>
                                     <tasks>
                                         <property name="version" value="${project.version}"/>
-                                        <property name="revision" value="${commitsCount}"/>
+                                        <property name="revision" value="${git.commitsCount}"/>
                                         <property name="app.runtime.system.min" value="10.8.3"/>
                                         <ant antfile="${project.basedir}/build.xml" target="build" dir="."/>
                                     </tasks>

@@ -103,7 +103,7 @@
                                 <configuration>
                                     <tasks>
                                         <property name="version" value="${project.version}"/>
-                                        <property name="revision" value="${commitsCount}" />
+                                        <property name="revision" value="${git.commitsCount}"/>
                                         <property name="xcode.target" value="app"/>
                                         <property name="xcode.configuration" value="${xcode.configuration}"/>
                                         <property name="app.runtime.system.min" value="10.8.3"/>
@@ -122,7 +122,7 @@
                                 <configuration>
                                     <tasks>
                                         <property name="version" value="${project.version}"/>
-                                        <property name="revision" value="${commitsCount}" />
+                                        <property name="revision" value="${git.commitsCount}"/>
                                         <property name="xcode.target" value="app"/>
                                         <property name="xcode.configuration" value="${xcode.configuration}"/>
                                         <property name="app.runtime.system.min" value="10.8.3"/>
