@@ -19,6 +19,7 @@ import ch.cyberduck.core.sftp.openssh.OpenSSHHostKeyVerifier;
 import ch.cyberduck.core.socket.DefaultSocketConfigurator;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.security.PublicKey;
@@ -257,6 +258,7 @@ public class SFTPSessionTest extends AbstractTestCase {
         session.close();
     }
 
+    @Ignore
     @Test(expected = ConnectionRefusedException.class)
     public void testConnectHttpProxy() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(

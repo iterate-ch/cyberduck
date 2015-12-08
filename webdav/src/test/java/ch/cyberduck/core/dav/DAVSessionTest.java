@@ -121,6 +121,7 @@ public class DAVSessionTest extends AbstractTestCase {
     }
 
     @Test
+    @Ignore
     public void testConnectHttpProxy() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io", new Credentials(
                 PreferencesFactory.get().getProperty("connection.login.anon.name"), null

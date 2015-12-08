@@ -64,6 +64,7 @@ public class FTPSessionTest extends AbstractTestCase {
         assertFalse(session.isConnected());
     }
 
+    @Ignore
     @Test(expected = ConnectionRefusedException.class)
     public void testConnectHttpProxyForbiddenHttpResponse() throws Exception {
         final Host host = new Host(new FTPProtocol(), "mirror.switch.ch", new Credentials(
