@@ -309,10 +309,6 @@ public class S3SessionTest extends AbstractTestCase {
             @Override
             public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
                 assertEquals(3, certs.length);
-                assertEquals("CN=VeriSign Class 3 Public Primary Certification Authority - G5,OU=(c) 2006 VeriSign\\, Inc. - For authorized use only,OU=VeriSign Trust Network,O=VeriSign\\, Inc.,C=US",
-                        certs[certs.length - 1].getSubjectX500Principal().getName());
-                assertEquals("C=US,ST=Washington,L=Seattle,O=Amazon.com\\, Inc.,CN=s3.amazonaws.com",
-                        certs[0].getSubjectDN().getName());
                 verified.set(true);
                 super.verify(hostname, certs, cipher);
             }
