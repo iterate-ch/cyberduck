@@ -32,6 +32,10 @@
             <version>4.0.2.4-RELEASE</version>
             <exclusions>
                 <exclusion>
+                    <groupId>com.claymoresystems</groupId>
+                    <artifactId>puretls</artifactId>
+                </exclusion>
+                <exclusion>
                     <groupId>org.globus.jglobus</groupId>
                     <artifactId>cog-jglobus</artifactId>
                 </exclusion>
