@@ -143,7 +143,7 @@
                             <Specification-Title>Cyberduck CLI</Specification-Title>
                             <Specification-Version>${project.version}</Specification-Version>
                             <Specification-Vendor>iterate GmbH</Specification-Vendor>
-                            <Implementation-Version>${commitsCount}</Implementation-Version>
+                            <Implementation-Version>${git.commitsCount}</Implementation-Version>
                         </manifestEntries>
                     </archive>
                 </configuration>
