@@ -69,6 +69,10 @@ namespace Ch.Cyberduck.Ui.Winforms
                                 SysIcons.Warning,
                                 delegate(int option, bool verificationChecked)
                                     {
+                                        if (option == 0)
+                                        {
+                                            _supressed = true;
+                                        }
                                         if (option == 1)
                                         {
                                             c.SetValue(false);
