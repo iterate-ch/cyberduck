@@ -21,6 +21,8 @@ import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * @version $Id$
  */
@@ -33,6 +35,11 @@ public final class DAVSSLProtocol extends AbstractProtocol {
     @Override
     public String getDescription() {
         return LocaleFactory.localizedString("WebDAV (HTTP/SSL)");
+    }
+
+    @Override
+    public String getPrefix() {
+        return String.format("%s.%s", this.getClass().getPackage().getName(), StringUtils.upperCase(this.getType().name()));
     }
 
     @Override

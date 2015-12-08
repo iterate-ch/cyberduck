@@ -52,6 +52,11 @@ public final class GoogleStorageProtocol extends AbstractProtocol {
     }
 
     @Override
+    public String getPrefix() {
+        return String.format("%s.%s", this.getClass().getPackage().getName(), "GoogleStorage");
+    }
+
+    @Override
     public String disk() {
         return "googlestorage";
     }

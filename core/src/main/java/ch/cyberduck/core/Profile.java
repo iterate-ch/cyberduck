@@ -68,6 +68,11 @@ public final class Profile implements Protocol, Serializable {
         return parent;
     }
 
+    @Override
+    public String getPrefix() {
+        return parent.getPrefix();
+    }
+
     /**
      * @return False if missing required fields in profile.
      */

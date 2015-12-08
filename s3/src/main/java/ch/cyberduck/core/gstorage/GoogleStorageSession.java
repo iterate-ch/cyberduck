@@ -49,7 +49,6 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
-import ch.cyberduck.core.s3.S3MultipartWriteFeature;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.s3.S3SingleUploadService;
 import ch.cyberduck.core.s3.S3WriteFeature;

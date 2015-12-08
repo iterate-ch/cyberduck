@@ -24,7 +24,6 @@ import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.apache.log4j.Logger;
 
@@ -43,15 +42,10 @@ public final class SessionFactory {
             log.debug(String.format("Create session for %s", host));
         }
         final Protocol protocol = host.getProtocol();
-        final String prefix = protocol.getType().name();
-        Class<Session> name;
+        final String prefix = protocol.getPrefix();
+
         try {
-            try {
-                name = (Class<Session>) Class.forName(String.format("%s.%s.%sSession", "ch.cyberduck.core", prefix, StringUtils.upperCase(prefix)));
-            }
-            catch(ClassNotFoundException e) {
-                name = (Class<Session>) Class.forName(String.format("%s.%s.%sSession", "ch.cyberduck.core", prefix, StringUtils.capitalize(prefix)));
-            }
+            final Class<Session> name = (Class<Session>) Class.forName(String.format("%sSession", prefix));
             final Constructor<Session> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name,
                     host.getClass(), trust.getClass(), key.getClass());
             if(null == constructor) {

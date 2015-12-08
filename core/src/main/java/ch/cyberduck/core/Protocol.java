@@ -178,6 +178,8 @@ public interface Protocol extends Comparable<Protocol> {
      */
     String getIdentifier();
 
+    String getPrefix();
+
     /**
      * @return Human readable description
      */

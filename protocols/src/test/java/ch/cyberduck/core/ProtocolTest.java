@@ -9,7 +9,6 @@ import ch.cyberduck.core.openstack.SwiftProtocol;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
