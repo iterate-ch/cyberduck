@@ -49,6 +49,7 @@ import ch.cyberduck.core.udt.qloudsonic.QloudsonicProxyProvider;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -67,6 +68,7 @@ import com.barchart.udt.ExceptionUDT;
 
 import static org.junit.Assert.*;
 
+@Ignore
 public class UDTProxyConfiguratorTest extends AbstractTestCase {
 
     @Test(expected = ConnectionRefusedException.class)
