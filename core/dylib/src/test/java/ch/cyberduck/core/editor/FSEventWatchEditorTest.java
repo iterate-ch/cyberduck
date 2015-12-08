@@ -22,10 +22,10 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.local.Application;
-import ch.cyberduck.core.NullSession;
 
 import org.junit.Test;
 

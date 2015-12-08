@@ -25,7 +25,6 @@ import ch.cyberduck.core.socket.DefaultSocketConfigurator;
 import ch.cyberduck.core.socket.SocketConfigurator;
 import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
