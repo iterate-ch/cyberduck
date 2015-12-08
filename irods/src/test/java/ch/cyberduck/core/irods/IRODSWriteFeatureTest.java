@@ -76,7 +76,7 @@ public class IRODSWriteFeatureTest extends AbstractTestCase {
             assertNotNull(out);
 
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-            IOUtils.closeQuietly(out);
+            out.close();
             assertTrue(session.getFeature(Find.class).find(test));
 
             final PathAttributes attributes = session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
@@ -85,7 +85,7 @@ public class IRODSWriteFeatureTest extends AbstractTestCase {
             final InputStream in = session.getFeature(Read.class).read(test, new TransferStatus());
             final byte[] buffer = new byte[content.length];
             IOUtils.readFully(in, buffer);
-            IOUtils.closeQuietly(in);
+            in.close();
             assertArrayEquals(content, buffer);
         }
         {
@@ -102,7 +102,7 @@ public class IRODSWriteFeatureTest extends AbstractTestCase {
             assertNotNull(out);
 
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(newcontent), out);
-            IOUtils.closeQuietly(out);
+            out.close();
             assertTrue(session.getFeature(Find.class).find(test));
 
             final PathAttributes attributes = session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
@@ -111,7 +111,7 @@ public class IRODSWriteFeatureTest extends AbstractTestCase {
             final InputStream in = session.getFeature(Read.class).read(test, new TransferStatus());
             final byte[] buffer = new byte[newcontent.length];
             IOUtils.readFully(in, buffer);
-            IOUtils.closeQuietly(in);
+            in.close();
             assertArrayEquals(newcontent, buffer);
         }
 
@@ -152,7 +152,7 @@ public class IRODSWriteFeatureTest extends AbstractTestCase {
         assertNotNull(out);
 
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        IOUtils.closeQuietly(out);
+        out.close();
         assertTrue(session.getFeature(Find.class).find(test));
 
         final PathAttributes attributes = session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
@@ -161,7 +161,7 @@ public class IRODSWriteFeatureTest extends AbstractTestCase {
         final InputStream in = session.getFeature(Read.class).read(test, new TransferStatus());
         final byte[] buffer = new byte[content.length];
         IOUtils.readFully(in, buffer);
-        IOUtils.closeQuietly(in);
+        in.close();
         assertArrayEquals(content, buffer);
 
         // Append
@@ -179,7 +179,7 @@ public class IRODSWriteFeatureTest extends AbstractTestCase {
         assertNotNull(out_append);
 
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content_append), out_append);
-        IOUtils.closeQuietly(out_append);
+        out_append.close();
         assertTrue(session.getFeature(Find.class).find(test));
 
         final PathAttributes attributes_complete = session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
@@ -188,7 +188,7 @@ public class IRODSWriteFeatureTest extends AbstractTestCase {
         final InputStream in_append = session.getFeature(Read.class).read(test, new TransferStatus());
         final byte[] buffer_complete = new byte[content.length + content_append.length];
         IOUtils.readFully(in_append, buffer_complete);
-        IOUtils.closeQuietly(in_append);
+        in_append.close();
 
         byte[] complete = new byte[content.length + content_append.length];
         System.arraycopy(content, 0, complete, 0, content.length);
