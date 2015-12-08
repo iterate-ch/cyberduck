@@ -30,6 +30,12 @@
             <groupId>org.irods.jargon</groupId>
             <artifactId>jargon-core</artifactId>
             <version>4.0.2.4-RELEASE</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.globus.jglobus</groupId>
+                    <artifactId>cog-jglobus</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 
