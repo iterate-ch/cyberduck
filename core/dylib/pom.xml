@@ -20,13 +20,6 @@
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
-            <artifactId>libcore</artifactId>
-            <type>dylib</type>
-            <scope>test</scope>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.cyberduck</groupId>
             <artifactId>test</artifactId>
             <type>pom</type>
             <scope>test</scope>
@@ -71,7 +64,7 @@
                         <artifactId>build-helper-maven-plugin</artifactId>
                         <executions>
                             <execution>
-                                <phase>package</phase>
+                                <phase>generate-sources</phase>
                                 <goals>
                                     <goal>attach-artifact</goal>
                                 </goals>
@@ -79,7 +72,7 @@
                                     <artifacts>
                                         <artifact>
                                             <type>dylib</type>
-                                            <file>../target/libcore.dylib</file>
+                                            <file>${project.build.directory}/libcore.dylib</file>
                                         </artifact>
                                     </artifacts>
                                 </configuration>

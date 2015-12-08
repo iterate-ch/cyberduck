@@ -28,7 +28,7 @@
                         <executions>
                             <execution>
                                 <id>install-dll</id>
-                                <phase>package</phase>
+                                <phase>generate-sources</phase>
                                 <goals>
                                     <goal>attach-artifact</goal>
                                 </goals>
@@ -36,7 +36,7 @@
                                     <artifacts>
                                         <artifact>
                                             <type>dll</type>
-                                            <file>../target/Cyberduck.Core.Native.dll</file>
+                                            <file>${project.build.directory}/Cyberduck.Core.Native.dll</file>
                                         </artifact>
                                     </artifacts>
                                 </configuration>
