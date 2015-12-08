@@ -14,6 +14,28 @@
 
     <profiles>
         <profile>
+            <id>mac</id>
+            <activation>
+                <os>
+                    <family>Mac</family>
+                </os>
+            </activation>
+            <properties>
+                <maven.test.skip>true</maven.test.skip>
+            </properties>
+        </profile>
+        <profile>
+            <id>linux</id>
+            <activation>
+                <os>
+                    <family>Linux</family>
+                </os>
+            </activation>
+            <properties>
+                <maven.test.skip>true</maven.test.skip>
+            </properties>
+        </profile>
+        <profile>
             <id>windows</id>
             <activation>
                 <os>
@@ -28,7 +50,7 @@
                         <executions>
                             <execution>
                                 <id>install-dll</id>
-                                <phase>package</phase>
+                                <phase>generate-sources</phase>
                                 <goals>
                                     <goal>attach-artifact</goal>
                                 </goals>
@@ -36,7 +58,7 @@
                                     <artifacts>
                                         <artifact>
                                             <type>dll</type>
-                                            <file>../target/Cyberduck.Core.dll</file>
+                                            <file>${project.build.directory}/Cyberduck.Core.dll</file>
                                         </artifact>
                                     </artifacts>
                                 </configuration>
