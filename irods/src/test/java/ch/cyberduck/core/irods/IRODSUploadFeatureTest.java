@@ -30,6 +30,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProfileReaderFactory;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
@@ -39,6 +40,7 @@ import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -57,11 +59,16 @@ import static org.junit.Assert.*;
  */
 public class IRODSUploadFeatureTest extends AbstractTestCase {
 
+    @BeforeClass
+    public static void protocol() {
+        ProtocolFactory.register(new IRODSProtocol());
+    }
+
     @Test
     @Ignore
     public void testAppend() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
-                new Local("profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
+                new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 properties.getProperty("irods.key"), properties.getProperty("irods.secret")
         ));
@@ -111,7 +118,7 @@ public class IRODSUploadFeatureTest extends AbstractTestCase {
     @Test
     public void testWrite() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
-                new Local("profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
+                new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 properties.getProperty("irods.key"), properties.getProperty("irods.secret")
         ));
@@ -151,7 +158,7 @@ public class IRODSUploadFeatureTest extends AbstractTestCase {
     @Test
     public void testInterruptStatus() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
-                new Local("profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
+                new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 properties.getProperty("irods.key"), properties.getProperty("irods.secret")
         ));

@@ -26,6 +26,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -42,10 +43,15 @@ import static org.junit.Assert.*;
  */
 public class IRODSWriteFeatureTest extends AbstractTestCase {
 
+    @BeforeClass
+    public static void protocol() {
+        ProtocolFactory.register(new IRODSProtocol());
+    }
+
     @Test
     public void testWrite() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
-                new Local("profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
+                new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 properties.getProperty("irods.key"), properties.getProperty("irods.secret")
         ));
@@ -121,7 +127,7 @@ public class IRODSWriteFeatureTest extends AbstractTestCase {
     @Test
     public void testWriteAppend() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
-                new Local("profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
+                new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 properties.getProperty("irods.key"), properties.getProperty("irods.secret")
         ));

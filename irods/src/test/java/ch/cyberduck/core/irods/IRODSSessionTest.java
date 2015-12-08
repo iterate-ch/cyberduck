@@ -17,23 +17,11 @@ package ch.cyberduck.core.irods;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledTranscriptListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Profile;
-import ch.cyberduck.core.ProfileReaderFactory;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -43,10 +31,15 @@ import static org.junit.Assert.*;
  */
 public class IRODSSessionTest extends AbstractTestCase {
 
+    @BeforeClass
+    public static void protocol() {
+        ProtocolFactory.register(new IRODSProtocol());
+    }
+
     @Test
     public void testConnect() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
-                new Local("profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
+                new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 properties.getProperty("irods.key"), properties.getProperty("irods.secret")
         ));
@@ -64,7 +57,7 @@ public class IRODSSessionTest extends AbstractTestCase {
     @Test
     public void testLoginDefault() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
-                new Local("profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
+                new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 properties.getProperty("irods.key"), properties.getProperty("irods.secret")
         ));
@@ -89,7 +82,7 @@ public class IRODSSessionTest extends AbstractTestCase {
     @Test(expected = BackgroundException.class)
     public void testLoginPam() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
-                new Local("profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
+                new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 String.format("PAM:%s", properties.getProperty("irods.key")), properties.getProperty("irods.secret")
         ));
@@ -114,7 +107,7 @@ public class IRODSSessionTest extends AbstractTestCase {
     @Test(expected = LoginFailureException.class)
     public void testLoginFailure() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
-                new Local("profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
+                new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("a", "a"));
 
         final IRODSSession session = new IRODSSession(host);

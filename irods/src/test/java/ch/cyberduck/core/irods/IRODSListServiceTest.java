@@ -17,22 +17,10 @@ package ch.cyberduck.core.irods;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledTranscriptListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Profile;
-import ch.cyberduck.core.ProfileReaderFactory;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.NotfoundException;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.EnumSet;
@@ -45,10 +33,15 @@ import static org.junit.Assert.*;
  */
 public class IRODSListServiceTest extends AbstractTestCase {
 
+    @BeforeClass
+    public static void protocol() {
+        ProtocolFactory.register(new IRODSProtocol());
+    }
+
     @Test
     public void testList() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
-                new Local("profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
+                new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 properties.getProperty("irods.key"), properties.getProperty("irods.secret")
         ));
@@ -78,7 +71,7 @@ public class IRODSListServiceTest extends AbstractTestCase {
     @Test(expected = NotfoundException.class)
     public void testListNotfound() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
-                new Local("profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
+                new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 properties.getProperty("irods.key"), properties.getProperty("irods.secret")
         ));

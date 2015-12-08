@@ -29,8 +29,10 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProfileReaderFactory;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.features.Delete;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -42,10 +44,15 @@ import static org.junit.Assert.assertTrue;
 
 public class IRODSTouchFeatureTest extends AbstractTestCase {
 
+    @BeforeClass
+    public static void protocol() {
+        ProtocolFactory.register(new IRODSProtocol());
+    }
+
     @Test
     public void testTouch() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
-                new Local("profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
+                new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 properties.getProperty("irods.key"), properties.getProperty("irods.secret")
         ));
