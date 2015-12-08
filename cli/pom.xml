@@ -92,6 +92,38 @@
                     </plugin>
                 </plugins>
             </build>
+            <dependencies>
+                <dependency>
+                    <groupId>ch.cyberduck</groupId>
+                    <artifactId>libcore</artifactId>
+                    <type>dylib</type>
+                    <scope>runtime</scope>
+                    <version>${project.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>windows</id>
+            <activation>
+                <os>
+                    <family>Windows</family>
+                </os>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>ch.cyberduck</groupId>
+                    <artifactId>Cyberduck.Core</artifactId>
+                    <type>dll</type>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>ch.cyberduck</groupId>
+                    <artifactId>Cyberduck.Core.Native</artifactId>
+                    <type>dll</type>
+                    <version>${project.version}</version>
+                </dependency>
+            </dependencies>
         </profile>
     </profiles>
 
@@ -141,13 +173,6 @@
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.cyberduck</groupId>
-            <artifactId>libcore</artifactId>
-            <type>dylib</type>
-            <scope>runtime</scope>
             <version>${project.version}</version>
         </dependency>
         <dependency>

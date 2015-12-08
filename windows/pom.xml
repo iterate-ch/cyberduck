@@ -74,23 +74,41 @@
                     </plugin>
                 </plugins>
             </build>
+            <dependencies>
+                <dependency>
+                    <groupId>ch.cyberduck</groupId>
+                    <artifactId>Cyberduck.Core</artifactId>
+                    <type>dll</type>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>ch.cyberduck</groupId>
+                    <artifactId>Cyberduck.Core.Native</artifactId>
+                    <type>dll</type>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>objectlistview</groupId>
+                    <artifactId>objectlistview</artifactId>
+                    <classifier>native</classifier>
+                    <type>dll</type>
+                    <version>2.5.1.35588</version>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>net.structuremap</groupId>
+                    <artifactId>structuremap</artifactId>
+                    <classifier>native</classifier>
+                    <type>dll</type>
+                    <version>2.6.1</version>
+                    <scope>runtime</scope>
+                </dependency>
+            </dependencies>
         </profile>
     </profiles>
 
     <dependencies>
-        <dependency>
-            <groupId>ch.cyberduck</groupId>
-            <artifactId>Cyberduck.Core</artifactId>
-            <type>dll</type>
-            <version>${project.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>ch.cyberduck</groupId>
-            <artifactId>Cyberduck.Core.Native</artifactId>
-            <type>dll</type>
-            <version>${project.version}</version>
-        </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>protocols</artifactId>
@@ -106,22 +124,6 @@
             <groupId>ch.cyberduck</groupId>
             <artifactId>ui</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>objectlistview</groupId>
-            <artifactId>objectlistview</artifactId>
-            <classifier>native</classifier>
-            <type>dll</type>
-            <version>2.5.1.35588</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.structuremap</groupId>
-            <artifactId>structuremap</artifactId>
-            <classifier>native</classifier>
-            <type>dll</type>
-            <version>2.6.1</version>
-            <scope>runtime</scope>
         </dependency>
     </dependencies>
 </project>

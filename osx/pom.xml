@@ -136,6 +136,15 @@
                     </plugin>
                 </plugins>
             </build>
+            <dependencies>
+                <dependency>
+                    <groupId>ch.cyberduck</groupId>
+                    <artifactId>libcore</artifactId>
+                    <type>dylib</type>
+                    <scope>runtime</scope>
+                    <version>${project.version}</version>
+                </dependency>
+            </dependencies>
         </profile>
     </profiles>
 
@@ -143,13 +152,6 @@
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.cyberduck</groupId>
-            <artifactId>libcore</artifactId>
-            <type>dylib</type>
-            <scope>runtime</scope>
             <version>${project.version}</version>
         </dependency>
         <dependency>
