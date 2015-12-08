@@ -190,8 +190,9 @@ public class UDTProxyConfiguratorTest extends AbstractTestCase {
 
     @Test
     public void testUnsecureConnection() throws Exception {
+        ProtocolFactory.register(new S3Protocol());
         final Profile profile = ProfileReaderFactory.get().read(
-                new Local("profiles/S3 (HTTP).cyberduckprofile"));
+                new Local("../profiles/S3 (HTTP).cyberduckprofile"));
         final Host host = new Host(profile, "s3.amazonaws.com", new Credentials(
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
         ));
@@ -207,8 +208,9 @@ public class UDTProxyConfiguratorTest extends AbstractTestCase {
 
     @Test
     public void testWrite() throws Exception {
+        ProtocolFactory.register(new S3Protocol());
         final Profile profile = ProfileReaderFactory.get().read(
-                new Local("profiles/S3 (HTTP).cyberduckprofile"));
+                new Local("../profiles/S3 (HTTP).cyberduckprofile"));
         final Host host = new Host(profile, "s3.amazonaws.com", new Credentials(
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
         ));
