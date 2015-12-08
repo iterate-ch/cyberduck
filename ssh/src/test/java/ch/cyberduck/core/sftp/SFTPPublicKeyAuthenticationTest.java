@@ -12,12 +12,13 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.local.LocalTouchFactory;
+import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import java.io.StringReader;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
@@ -32,21 +33,25 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractTestCase {
         final Credentials credentials = new Credentials(
                 properties.getProperty("sftp.user")
         );
-        final Local key = new Local(System.getProperty("java.io.tmpdir"), "k");
-        credentials.setIdentity(key);
-        LocalTouchFactory.get().touch(key);
-        IOUtils.copy(new StringReader(properties.getProperty("sftp.key")), key.getOutputStream(false));
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", credentials);
-        final SFTPSession session = new SFTPSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        assertTrue(new SFTPPublicKeyAuthentication(session).authenticate(host, new DisabledLoginCallback() {
-            @Override
-            public void prompt(Host bookmark, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
-                fail();
-            }
-        }, new DisabledCancelCallback()));
-        session.close();
-        key.delete();
+        final Local key = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        try {
+            credentials.setIdentity(key);
+            new DefaultLocalTouchFeature().touch(key);
+            IOUtils.copy(new StringReader(properties.getProperty("sftp.key")), key.getOutputStream(false));
+            final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", credentials);
+            final SFTPSession session = new SFTPSession(host);
+            session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+            assertTrue(new SFTPPublicKeyAuthentication(session).authenticate(host, new DisabledLoginCallback() {
+                @Override
+                public void prompt(Host bookmark, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
+                    fail();
+                }
+            }, new DisabledCancelCallback()));
+            session.close();
+        }
+        finally {
+            key.delete();
+        }
     }
 
     @Test(expected = LoginFailureException.class)
@@ -54,23 +59,27 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractTestCase {
         final Credentials credentials = new Credentials(
                 properties.getProperty("sftp.user"), ""
         );
-        final Local key = new Local(System.getProperty("java.io.tmpdir"), "k");
-        credentials.setIdentity(key);
-        LocalTouchFactory.get().touch(key);
-        IOUtils.copy(new StringReader(properties.getProperty("sftp.key.putty")), key.getOutputStream(false));
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", credentials);
-        final SFTPSession session = new SFTPSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        final AtomicBoolean p = new AtomicBoolean();
-        assertFalse(new SFTPPublicKeyAuthentication(session).authenticate(host, new DisabledLoginCallback() {
-            @Override
-            public void prompt(Host bookmark, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
-                p.set(true);
-            }
-        }, new DisabledCancelCallback()));
-        assertTrue(p.get());
-        session.close();
-        key.delete();
+        final Local key = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        try {
+            credentials.setIdentity(key);
+            new DefaultLocalTouchFeature().touch(key);
+            IOUtils.copy(new StringReader(properties.getProperty("sftp.key.putty")), key.getOutputStream(false));
+            final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", credentials);
+            final SFTPSession session = new SFTPSession(host);
+            session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+            final AtomicBoolean p = new AtomicBoolean();
+            assertFalse(new SFTPPublicKeyAuthentication(session).authenticate(host, new DisabledLoginCallback() {
+                @Override
+                public void prompt(Host bookmark, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
+                    p.set(true);
+                }
+            }, new DisabledCancelCallback()));
+            assertTrue(p.get());
+            session.close();
+        }
+        finally {
+            key.delete();
+        }
     }
 
     @Test(expected = LoginFailureException.class)
@@ -78,23 +87,27 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractTestCase {
         final Credentials credentials = new Credentials(
                 properties.getProperty("sftp.user"), ""
         );
-        final Local key = new Local(System.getProperty("java.io.tmpdir"), "k");
-        credentials.setIdentity(key);
-        LocalTouchFactory.get().touch(key);
-        IOUtils.copy(new StringReader(properties.getProperty("sftp.key.openssh.rsa")), key.getOutputStream(false));
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", credentials);
-        final SFTPSession session = new SFTPSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        final AtomicBoolean p = new AtomicBoolean();
-        assertTrue(new SFTPPublicKeyAuthentication(session).authenticate(host, new DisabledLoginCallback() {
-            @Override
-            public void prompt(Host bookmark, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
-                p.set(true);
-            }
-        }, new DisabledCancelCallback()));
-        assertTrue(p.get());
-        session.close();
-        key.delete();
+        final Local key = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        try {
+            credentials.setIdentity(key);
+            new DefaultLocalTouchFeature().touch(key);
+            IOUtils.copy(new StringReader(properties.getProperty("sftp.key.openssh.rsa")), key.getOutputStream(false));
+            final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", credentials);
+            final SFTPSession session = new SFTPSession(host);
+            session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+            final AtomicBoolean p = new AtomicBoolean();
+            assertTrue(new SFTPPublicKeyAuthentication(session).authenticate(host, new DisabledLoginCallback() {
+                @Override
+                public void prompt(Host bookmark, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
+                    p.set(true);
+                }
+            }, new DisabledCancelCallback()));
+            assertTrue(p.get());
+            session.close();
+        }
+        finally {
+            key.delete();
+        }
     }
 
     @Test(expected = InteroperabilityException.class)
@@ -102,20 +115,24 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractTestCase {
         final Credentials credentials = new Credentials(
                 properties.getProperty("sftp.user"), ""
         );
-        final Local key = new Local(System.getProperty("java.io.tmpdir"), "k");
-        credentials.setIdentity(key);
-        LocalTouchFactory.get().touch(key);
-        IOUtils.copy(new StringReader("--unknown format"), key.getOutputStream(false));
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", credentials);
-        final SFTPSession session = new SFTPSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        assertTrue(new SFTPPublicKeyAuthentication(session).authenticate(host, new DisabledLoginCallback() {
-            @Override
-            public void prompt(Host bookmark, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
-                fail();
-            }
-        }, new DisabledCancelCallback()));
-        session.close();
-        key.delete();
+        final Local key = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        try {
+            credentials.setIdentity(key);
+            new DefaultLocalTouchFeature().touch(key);
+            IOUtils.copy(new StringReader("--unknown format"), key.getOutputStream(false));
+            final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", credentials);
+            final SFTPSession session = new SFTPSession(host);
+            session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+            assertTrue(new SFTPPublicKeyAuthentication(session).authenticate(host, new DisabledLoginCallback() {
+                @Override
+                public void prompt(Host bookmark, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
+                    fail();
+                }
+            }, new DisabledCancelCallback()));
+            session.close();
+        }
+        finally {
+            key.delete();
+        }
     }
 }
