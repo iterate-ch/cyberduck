@@ -9,6 +9,10 @@
     <artifactId>irods</artifactId>
     <packaging>jar</packaging>
 
+    <properties>
+        <maven.test.skip>true</maven.test.skip>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>ch.cyberduck</groupId>
