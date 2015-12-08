@@ -43,8 +43,9 @@ public class S3SessionTest extends AbstractTestCase {
 
     @Test
     public void testHttpProfile() throws Exception {
+        ProtocolFactory.register(new S3Protocol());
         final Profile profile = ProfileReaderFactory.get().read(
-                new Local("profiles/S3 (HTTP).cyberduckprofile"));
+                new Local("../profiles/S3 (HTTP).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
         ));
@@ -263,16 +264,18 @@ public class S3SessionTest extends AbstractTestCase {
 
     @Test
     public void testBucketVirtualHostStyleEucalyptusDefaultHost() throws Exception {
+        ProtocolFactory.register(new S3Protocol());
         final Profile profile = ProfileReaderFactory.get().read(
-                new Local("profiles/Eucalyptus Walrus S3.cyberduckprofile"));
+                new Local("../profiles/Eucalyptus Walrus S3.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname());
         assertTrue(new S3Session(host).configure().getBoolProperty("s3service.disable-dns-buckets", false));
     }
 
     @Test
     public void testBucketVirtualHostStyleEucalyptusCustomDeployment() throws Exception {
+        ProtocolFactory.register(new S3Protocol());
         final Profile profile = ProfileReaderFactory.get().read(
-                new Local("profiles/Eucalyptus Walrus S3.cyberduckprofile"));
+                new Local("../profiles/Eucalyptus Walrus S3.cyberduckprofile"));
         final Host host = new Host(profile, "ec.cyberduck.io");
         assertTrue(new S3Session(host).configure().getBoolProperty("s3service.disable-dns-buckets", false));
     }
@@ -280,8 +283,9 @@ public class S3SessionTest extends AbstractTestCase {
     @Test(expected = LoginFailureException.class)
     @Ignore
     public void testTemporaryAccessToken() throws Exception {
+        ProtocolFactory.register(new S3Protocol());
         final Profile profile = ProfileReaderFactory.get().read(
-                new Local("profiles/S3 (Temporary Credentials).cyberduckprofile"));
+                new Local("../profiles/S3 (Temporary Credentials).cyberduckprofile"));
         assertTrue(profile.validate(new Credentials(), new LoginOptions(profile)));
         final Host host = new Host(profile);
         final S3Session s = new S3Session(host);
