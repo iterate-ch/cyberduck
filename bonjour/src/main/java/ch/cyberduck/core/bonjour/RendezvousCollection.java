@@ -23,7 +23,6 @@ import ch.cyberduck.core.AbstractHostCollection;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 
-import java.util.Collection;
 import java.util.Iterator;
 
 /**
@@ -32,11 +31,17 @@ import java.util.Iterator;
 public final class RendezvousCollection extends AbstractHostCollection implements RendezvousListener {
     private static final long serialVersionUID = 6468881403370416829L;
 
-    private static final RendezvousCollection RENDEZVOUS_COLLECTION
-            = new RendezvousCollection();
+    private static RendezvousCollection RENDEZVOUS_COLLECTION;
+
+    private static final Object lock = new Object();
 
     public static RendezvousCollection defaultCollection() {
-        return RENDEZVOUS_COLLECTION;
+        synchronized(lock) {
+            if(null == RENDEZVOUS_COLLECTION) {
+                RENDEZVOUS_COLLECTION = new RendezvousCollection();
+            }
+            return RENDEZVOUS_COLLECTION;
+        }
     }
 
     private final Rendezvous rendezvous;
@@ -47,7 +52,7 @@ public final class RendezvousCollection extends AbstractHostCollection implement
 
     public RendezvousCollection(final Rendezvous rendezvous) {
         this.rendezvous = rendezvous;
-        rendezvous.addListener(this);
+        this.rendezvous.addListener(this);
         this.collectionLoaded();
     }
 
