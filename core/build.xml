@@ -32,6 +32,9 @@
     <property name="xcode.configuration" value="Release"/>
     <property name="xcode.target" value="libcore"/>
 
+    <property name="msbuild.configuration" value="release"/>
+    <property name="msbuild.architecture" value="x86"/>
+
     <target name="dll" if="platform.windows">
         <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
             <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
@@ -41,10 +44,10 @@
             <target name="Clean"/>
             <target name="Build"/>
 
-            <property name="Version" value="${version.full}"/>
-            <property name="ShortVersion" value="${version.short}"/>
-            <property name="Configuration" value="${configuration}"/>
-            <property name="Platform" value="${architecture}"/>
+            <property name="Version" value="${normalized.version}.${revision}"/>
+            <property name="ShortVersion" value="${normalized.version} (${revision})"/>
+            <property name="Configuration" value="${msbuild.configuration}"/>
+            <property name="Platform" value="${msbuild.architecture}"/>
             <property name="OutputType" value="Library"/>
         </msbuild>
         <taskdef name="ikvmc" classname="net.ikvm.ant.IkvmcTask">
@@ -52,7 +55,7 @@
         </taskdef>
         <!-- Create DLL Cyberduck.Core -->
         <ikvmc target="library" out="${build}/Cyberduck.Core.dll" home="${ikvm.home}"
-               classloader="ikvm.runtime.AssemblyClassLoader" version="${version.full}" debug="false" verbose="true">
+               classloader="ikvm.runtime.AssemblyClassLoader" version="${normalized.version}" debug="false" verbose="true">
             <fileset dir="${lib}">
                 <include name="1.8.0*/Contents/Home/lib/ext/sunec.jar"/>
             </fileset>
@@ -75,5 +78,5 @@
         </exec>
     </target>
 
-    <target name="build" depends="dylib, dll" />
+    <target name="build" depends="version,dylib,dll" />
 </project>

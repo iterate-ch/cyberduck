@@ -62,8 +62,6 @@
     <property name="bundle.profiles" value="${bundle.resources}/Profiles"/>
     <property name="bundle.bookmarks" value="${bundle.resources}/Bookmarks"/>
 
-    <property name="sonar.host" value="sonar.cyberduck.io"/>
-
     <taskdef resource="net/sf/antcontrib/antcontrib.properties">
         <classpath path="${lib.ext}/ant-contrib-1.0b3.jar"/>
     </taskdef>
@@ -95,6 +93,15 @@
         <echo message="Building ${ant.project.name} on ${os.name}/${os.arch} at ${touch.time}..."/>
         <buildnumber file="build.number"/>
         <echo message="Build number ${build.number}"/>
+    </target>
+
+    <target name="version" depends="init">
+        <propertyregex property="normalized.version"
+                       input="${version}"
+                       regexp="(\d)+\.(\d)+\.(\d)+(-SNAPSHOT)?"
+                       select="\1.\2.\3"/>
+        <echo message="Version ${normalized.version}"/>
+        <echo message="Revision ${revision}"/>
     </target>
 
     <target name="timestamp">

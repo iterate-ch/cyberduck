@@ -62,7 +62,7 @@
         </chmod>
     </target>
 
-    <target name="build">
+    <target name="build" depends="version">
         <echo message="Building ${app.bundle}"/>
         <local name="build.settings"/>
         <property name="build.settings"
@@ -76,7 +76,7 @@
         </antcall>
     </target>
 
-    <target name="package" depends="build, spotlight">
+    <target name="package" depends="build,spotlight">
         <antcall target="codesign">
             <param name="bundle" value="${app.bundle}"/>
         </antcall>
