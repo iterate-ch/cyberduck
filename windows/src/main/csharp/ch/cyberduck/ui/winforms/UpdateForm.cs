@@ -70,18 +70,25 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public void CheckForUpdates(bool background)
         {
-            SetFeedUrl();
             if (!background)
             {
-                UpdateStatusLabel(LocaleFactory.localizedString("Checking for updates...", "Sparkle"), false);
-                tableLayoutPanel.RowStyles[7].SizeType = SizeType.AutoSize;
-                SetStatusChecking(true);
-                updater.ForceCheckForUpdate(true);
-                Show();
+                BeginInvoke((Action) (() =>
+                {
+                    SetFeedUrl();
+                    UpdateStatusLabel(LocaleFactory.localizedString("Checking for updates...", "Sparkle"), false);
+                    tableLayoutPanel.RowStyles[7].SizeType = SizeType.AutoSize;
+                    SetStatusChecking(true);
+                    updater.ForceCheckForUpdate(true);
+                    Show();
+                }));
             }
             else
             {
-                updater.ForceCheckForUpdate(true);
+                BeginInvoke((Action) (() =>
+                {
+                    SetFeedUrl();
+                    updater.ForceCheckForUpdate(true);
+                }));
             }
         }
 

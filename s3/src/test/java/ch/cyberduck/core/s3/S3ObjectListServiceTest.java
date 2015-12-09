@@ -29,16 +29,23 @@ import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
+import ch.cyberduck.core.ssl.KeychainX509KeyManager;
+import ch.cyberduck.core.ssl.KeychainX509TrustManager;
+import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 
 import org.jets3t.service.Jets3tProperties;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
@@ -275,5 +282,47 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
         finally {
             session.close();
         }
+    }
+
+    @Test
+    public void testLaxHostnameVerification() throws Exception {
+        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
+                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+        ));
+        final KeychainX509TrustManager trust = new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(host),
+                new DisabledCertificateStore() {
+                    @Override
+                    public boolean isTrusted(final String hostname, final List<X509Certificate> certificates) {
+                        assertEquals("ch.s3.amazonaws.com", hostname);
+                        return true;
+                    }
+                });
+        final S3Session session = new S3Session(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname(), false),
+                new KeychainX509KeyManager(new DisabledCertificateStore()), new DisabledProxyFinder());
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        new S3ObjectListService(session).list(
+                new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
+        session.close();
+    }
+
+    @Test
+    public void testStrictHostnameVerification() throws Exception {
+        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
+                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+        ));
+        final KeychainX509TrustManager trust = new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(host),
+                new DisabledCertificateStore() {
+                    @Override
+                    public boolean isTrusted(final String hostname, final List<X509Certificate> certificates) {
+                        assertEquals("test.cyberduck.ch.s3.amazonaws.com", hostname);
+                        return true;
+                    }
+                });
+        final S3Session session = new S3Session(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname(), true),
+                new KeychainX509KeyManager(new DisabledCertificateStore()), new DisabledProxyFinder());
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        new S3ObjectListService(session).list(
+                new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
+        session.close();
     }
 }

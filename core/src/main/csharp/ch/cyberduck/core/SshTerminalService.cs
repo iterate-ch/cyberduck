@@ -36,7 +36,7 @@ namespace Ch.Cyberduck.Core
             tw.Close();
             String ssh = String.Format(PreferencesFactory.get().getProperty("terminal.command.ssh.args"),
                                        identity
-                                           ? "-i " + host.getCredentials().getIdentity().getAbsolute()
+                                           ? string.Format("-i \"{0}\"", host.getCredentials().getIdentity().getAbsolute())
                                            : String.Empty, host.getCredentials().getUsername(), host.getHostname(),
                                        Convert.ToString(host.getPort()), tempFile);
             ApplicationLauncherFactory.get()

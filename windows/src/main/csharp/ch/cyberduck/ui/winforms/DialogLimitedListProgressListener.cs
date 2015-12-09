@@ -25,7 +25,7 @@ using java.lang;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
-    internal class DialogLimitedListProgressListener : LimitedListProgressListener
+    public class DialogLimitedListProgressListener : LimitedListProgressListener
     {
         private readonly WindowController _controller;
         private bool _supressed;
@@ -69,6 +69,10 @@ namespace Ch.Cyberduck.Ui.Winforms
                                 SysIcons.Warning,
                                 delegate(int option, bool verificationChecked)
                                     {
+                                        if (option == 0)
+                                        {
+                                            _supressed = true;
+                                        }
                                         if (option == 1)
                                         {
                                             c.SetValue(false);

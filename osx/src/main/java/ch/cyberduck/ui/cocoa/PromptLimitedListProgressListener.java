@@ -69,6 +69,9 @@ public class PromptLimitedListProgressListener extends LimitedListProgressListen
                 final AlertController sheet = new AlertController(controller, alert) {
                     @Override
                     public void callback(final int returncode) {
+                        if(returncode == SheetCallback.DEFAULT_OPTION) {
+                            suppressed = true;
+                        }
                         if(returncode == SheetCallback.CANCEL_OPTION) {
                             c.set(false);
                         }

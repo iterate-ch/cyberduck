@@ -72,6 +72,7 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 import java.net.URL;
 import java.security.Security;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -725,8 +726,7 @@ public abstract class Preferences {
         defaults.put("openstack.upload.largeobject.segments.prefix", ".file-segments/");
         defaults.put("openstack.upload.largeobject.threshold", String.valueOf(2L * 1024L * 1024L * 1024L)); // 2GB
         defaults.put("openstack.upload.largeobject.required.threshold", String.valueOf(5L * 1024L * 1024L * 1024L)); // 5GB
-        // Default maximum number of segments is 1000. With 50MB segements this gives a maximum object size of 50GB
-        defaults.put("openstack.upload.largeobject.size", String.valueOf(100L * 1024L * 1024L)); // 100MB
+        defaults.put("openstack.upload.largeobject.size", String.valueOf(1000L * 1024L * 1024L)); // 1GB
         // Remove segments when deleting large object manifest
         defaults.put("openstack.upload.largeobject.cleanup", String.valueOf(true));
 
@@ -1054,7 +1054,11 @@ public abstract class Preferences {
      * @return The configured values determined by a whitespace separator.
      */
     public List<String> getList(final String property) {
-        return Arrays.asList(this.getProperty(property).split("(?<!\\\\)\\p{javaWhitespace}+"));
+        final String value = this.getProperty(property);
+        if(StringUtils.isBlank(value)) {
+            return Collections.emptyList();
+        }
+        return Arrays.asList(value.split("(?<!\\\\)\\p{javaWhitespace}+"));
     }
 
     public Map<String, String> getMap(final String property) {

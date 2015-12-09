@@ -73,11 +73,6 @@ public class FTPSessionTest extends AbstractTestCase {
         final FTPSession session = new FTPSession(host, new ProxySocketFactory(host.getProtocol(), new DefaultTrustManagerHostnameCallback(host),
                 new DefaultSocketConfigurator(), new ProxyFinder() {
             @Override
-            public boolean usePassiveFTP() {
-                return false;
-            }
-
-            @Override
             public Proxy find(final Host target) {
                 return new Proxy(Proxy.Type.HTTP, "localhost", 3128);
             }

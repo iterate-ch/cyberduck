@@ -41,11 +41,6 @@ public class DefaultProxyFinder implements ProxyFinder {
             = new ProxyHostUrlProvider();
 
     @Override
-    public boolean usePassiveFTP() {
-        return true;
-    }
-
-    @Override
     public Proxy find(final Host target) {
         if(!preferences.getBoolean("connection.proxy.enable")) {
             return Proxy.DIRECT;

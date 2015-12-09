@@ -94,6 +94,7 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
             log.debug(String.format("Configure client %s with properties %s", client, properties));
         }
         client.getIrodsSession().setJargonProperties(properties);
+        client.getIrodsSession().setX509TrustManager(trust);
         return client;
     }
 

@@ -20,9 +20,15 @@ package ch.cyberduck.core.irods;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.security.cert.X509Certificate;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
@@ -79,15 +85,25 @@ public class IRODSSessionTest extends AbstractTestCase {
         assertFalse(session.isConnected());
     }
 
-    @Test(expected = BackgroundException.class)
+    @Test
     public void testLoginPam() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
                 new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-                String.format("PAM:%s", properties.getProperty("irods.key")), properties.getProperty("irods.secret")
+                properties.getProperty("tacc.key"), properties.getProperty("tacc.secret")
         ));
-
-        final IRODSSession session = new IRODSSession(host);
+        host.setHostname("irods.wrangler.tacc.utexas.edu");
+        host.setPort(1247);
+        host.setRegion("taccWranglerZ");
+        host.setDefaultPath("/taccWranglerZ/home/iterate");
+        final AtomicBoolean verified = new AtomicBoolean();
+        final IRODSSession session = new IRODSSession(host, new DisabledX509TrustManager() {
+            @Override
+            protected void accept(final List<X509Certificate> certs) {
+                verified.set(true);
+                super.accept(certs);
+            }
+        }, new DefaultX509KeyManager());
 
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         assertTrue(session.isConnected());
@@ -95,11 +111,8 @@ public class IRODSSessionTest extends AbstractTestCase {
 
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertNotNull(session.workdir());
+        assertTrue(verified.get());
 
-        final AttributedList<Path> list = session.list(session.workdir(), new DisabledListProgressListener());
-        assertFalse(list.isEmpty());
-
-        assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
     }
