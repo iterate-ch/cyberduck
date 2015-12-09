@@ -38,6 +38,9 @@
     <property name="msbuild.configuration" value="release"/>
     <property name="msbuild.architecture" value="x86"/>
 
+    <property name="app.runtime.system.min" value="10.7"/>
+    <property name="build.xcodeoptions" value="SYMROOT=${build} SDKROOT=macosx MACOSX_DEPLOYMENT_TARGET=${app.runtime.system.min}"/>
+
     <property name="xcode.configuration" value="Release"/>
     <property name="xcode.target" value="cli"/>
 
@@ -152,8 +155,10 @@
 
     <target name="osx" if="${platform.mac}" depends="tarball">
         <echo message="Building ${cli.bundle}"/>
+        <local name="build.settings"/>
         <property name="build.settings"
-                  value="MACOSX_DEPLOYMENT_TARGET=${app.runtime.system.min} VERSION=${version} REVISION=${revision} COPYRIGHT='${copyright}'"/>
+                  value="${build.xcodeoptions} VERSION=${version} REVISION=${revision} COPYRIGHT='${copyright}'"/>
+        <echo message="Build settings ${build.settings}"/>
         <exec dir="${home}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
             <arg line="xcodebuild -project ${home}/'Cyberduck.xcodeproj' -configuration '${xcode.configuration}' -target '${xcode.target}' ${build.settings}"/>
         </exec>
