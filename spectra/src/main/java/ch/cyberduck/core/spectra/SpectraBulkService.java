@@ -38,7 +38,7 @@ public class SpectraBulkService implements Bulk<UUID> {
 
     @Override
     public UUID pre(final Transfer.Type type, final Map<Path, TransferStatus> files) throws BackgroundException {
-        final Ds3ClientHelpers helper = Ds3ClientHelpers.wrap(session.getClient());
+        final Ds3ClientHelpers helper = Ds3ClientHelpers.wrap(new SpectraClientBuilder().wrap(session));
         final Map<Path, List<Ds3Object>> jobs = new HashMap<Path, List<Ds3Object>>();
         for(Map.Entry<Path, TransferStatus> item : files.entrySet()) {
             final Path container = containerService.getContainer(item.getKey());
