@@ -53,8 +53,8 @@
             <target name="Clean"/>
             <target name="Build"/>
 
-            <property name="Version" value="${normalized.version}.${revision}"/>
-            <property name="ShortVersion" value="${normalized.version} (${revision})"/>
+            <property name="Version" value="${version}.${revision}"/>
+            <property name="ShortVersion" value="${version} (${revision})"/>
             <property name="Configuration" value="${msbuild.configuration}"/>
             <property name="Platform" value="${msbuild.architecture}"/>
         </msbuild>

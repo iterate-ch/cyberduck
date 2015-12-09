@@ -44,8 +44,8 @@
             <target name="Clean"/>
             <target name="Build"/>
 
-            <property name="Version" value="${normalized.version}.${revision}"/>
-            <property name="ShortVersion" value="${normalized.version} (${revision})"/>
+            <property name="Version" value="${version}.${revision}"/>
+            <property name="ShortVersion" value="${version} (${revision})"/>
             <property name="Configuration" value="${msbuild.configuration}"/>
             <property name="Platform" value="${msbuild.architecture}"/>
             <property name="OutputType" value="Library"/>
@@ -55,7 +55,7 @@
         </taskdef>
         <!-- Create DLL Cyberduck.Core -->
         <ikvmc target="library" out="${build}/Cyberduck.Core.dll" home="${ikvm.home}"
-               classloader="ikvm.runtime.AssemblyClassLoader" version="${normalized.version}" debug="false" verbose="true">
+               classloader="ikvm.runtime.AssemblyClassLoader" version="${version}" debug="false" verbose="true">
             <fileset dir="${lib}">
                 <include name="1.8.0*/Contents/Home/lib/ext/sunec.jar"/>
             </fileset>

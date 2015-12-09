@@ -96,11 +96,12 @@
     </target>
 
     <target name="version" depends="init">
-        <propertyregex property="normalized.version"
+        <propertyregex property="version"
+                       override="true"
                        input="${version}"
                        regexp="(\d)+\.(\d)+\.(\d)+(-SNAPSHOT)?"
                        select="\1.\2.\3"/>
-        <echo message="Version ${normalized.version}"/>
+        <echo message="Version ${version}"/>
         <echo message="Revision ${revision}"/>
     </target>
 
