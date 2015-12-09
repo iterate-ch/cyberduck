@@ -24,6 +24,7 @@ import java.security.SignatureException;
 import java.util.EnumSet;
 import java.util.List;
 
+import com.spectralogic.ds3client.Ds3Client;
 import com.spectralogic.ds3client.commands.GetBucketRequest;
 import com.spectralogic.ds3client.commands.GetBucketResponse;
 import com.spectralogic.ds3client.models.CommonPrefixes;
@@ -63,12 +64,13 @@ public class SpectraObjectListService implements ListService {
                     prefix += Path.DELIMITER;
                 }
             }
+            final Ds3Client client = new SpectraClientBuilder().wrap(session);
             final Path bucket = containerService.getContainer(directory);
             // Null if listing is complete
             String marker = null;
             do {
                 // Get the list of objects from the bucket that you want to perform the bulk get with.
-                final GetBucketResponse chunk = session.getClient().getBucket(
+                final GetBucketResponse chunk = client.getBucket(
                         new GetBucketRequest(PathNormalizer.name(URIEncoder.encode(bucket.getName())))
                                 .withDelimiter(String.valueOf(Path.DELIMITER))
                                 .withMaxKeys(preferences.getInteger("s3.listing.chunksize"))
