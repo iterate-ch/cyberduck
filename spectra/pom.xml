@@ -33,6 +33,13 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>test</artifactId>
+            <type>pom</type>
+            <scope>test</scope>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.spectralogic.ds3</groupId>
             <artifactId>ds3-sdk</artifactId>
             <version>1.2.0-RC2</version>
