@@ -84,7 +84,8 @@ public interface Protocol extends Comparable<Protocol> {
                 return false;
             }
         },
-        irods;
+        irods,
+        spectra;
 
         /**
          * Check login credentials for validity for this protocol.
