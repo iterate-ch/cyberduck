@@ -24,6 +24,7 @@
         <!-- Protocols -->
         <module>udt</module>
         <module>irods</module>
+        <module>spectra</module>
         <module>s3</module>
         <module>openstack</module>
         <module>webdav</module>
