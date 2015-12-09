@@ -19,6 +19,11 @@ public class SpectraTLSProtocol extends SpectraProtocol {
     }
 
     @Override
+    public Type getType() {
+        return Type.spectra;
+    }
+
+    @Override
     public String getIdentifier() {
         return "spectra-tls";
     }
