@@ -26,16 +26,15 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
+@Ignore
 public class ReceiptFactoryTest extends AbstractTestCase {
 
     @Test
-    @Ignore
     public void testCreate() throws Exception {
         assertEquals(new Receipt(null, "b8e85600dffe"), new ReceiptFactory(new Local("src/test/resources")).create());
     }
 
     @Test
-    @Ignore
     public void testOpen() throws Exception {
         // Expect exit code 173
         new ReceiptFactory().open();
