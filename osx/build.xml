@@ -24,10 +24,8 @@
     <import file="../build.xml"/>
 
     <property name="app.name" value="Cyberduck"/>
-    <property name="app.update.feed" value=""/>
-
     <property name="app.bundle" value="${build}/${app.name}.app"/>
-
+    <property name="app.update.feed" value=""/>
     <property name="app.runtime.system.min" value="10.7"/>
 
     <property name="sparkle.key.prefix" value="SU"/>
