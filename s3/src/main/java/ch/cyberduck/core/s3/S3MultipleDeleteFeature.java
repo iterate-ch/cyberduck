@@ -123,7 +123,7 @@ public class S3MultipleDeleteFeature implements Delete {
      * @param keys      Key and version ID for versioned object or null
      * @throws ch.cyberduck.core.exception.ConnectionCanceledException Authentication canceled for MFA delete
      */
-    protected void delete(final Path container, final List<ObjectKeyAndVersion> keys, final LoginCallback prompt)
+    public void delete(final Path container, final List<ObjectKeyAndVersion> keys, final LoginCallback prompt)
             throws BackgroundException {
         try {
             if(versioningService != null
