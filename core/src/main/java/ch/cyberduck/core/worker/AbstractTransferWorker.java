@@ -231,6 +231,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
             }
             this.await();
             meter.reset();
+            transfer.pre(session, table);
             // Transfer all files sequentially
             for(TransferItem next : transfer.getRoots()) {
                 this.transfer(next, action);
