@@ -29,6 +29,7 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Upload;
@@ -58,6 +59,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @version $Id$
@@ -200,6 +202,14 @@ public class UploadTransfer extends Transfer {
             return TransferAction.overwrite;
         }
         return action;
+    }
+
+    @Override
+    public void pre(final Session<?> session, final Map<Path, TransferStatus> files) throws BackgroundException {
+        final Bulk feature = session.getFeature(Bulk.class);
+        if(null != feature) {
+            feature.pre(Type.upload, files);
+        }
     }
 
     @Override

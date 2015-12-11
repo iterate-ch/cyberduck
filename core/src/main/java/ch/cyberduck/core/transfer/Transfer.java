@@ -40,6 +40,7 @@ import org.apache.log4j.Logger;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -285,6 +286,10 @@ public abstract class Transfer implements Serializable {
      */
     public abstract List<TransferItem> list(Session<?> session, Path directory, Local local,
                                             ListProgressListener listener) throws BackgroundException;
+
+    public void pre(final Session<?> session, final Map<Path, TransferStatus> files) throws BackgroundException {
+        //
+    }
 
     /**
      * The actual transfer implementation
