@@ -31,7 +31,7 @@ import org.rococoa.ID;
 public class ProxyController extends AbstractController {
     private static final Logger log = Logger.getLogger(ProxyController.class);
 
-    private final Proxy proxy = new Proxy();
+    private final Proxy proxy = new Proxy(this);
 
     public ID id() {
         return proxy.id();
