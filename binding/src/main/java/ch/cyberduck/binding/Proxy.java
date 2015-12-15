@@ -23,13 +23,24 @@ public class Proxy {
 
     private ID id;
 
+    private Object target;
+
+    public Proxy() {
+        // Callback to self
+        this.target = this;
+    }
+
+    public Proxy(final Object target) {
+        this.target = target;
+    }
+
     public NSObject proxy() {
         return this.proxy(NSObject.class);
     }
 
     protected NSObject proxy(Class<? extends NSObject> type) {
         if(null == proxy) {
-            proxy = Rococoa.proxy(this, type);
+            proxy = Rococoa.proxy(target, type);
         }
         return proxy;
     }
