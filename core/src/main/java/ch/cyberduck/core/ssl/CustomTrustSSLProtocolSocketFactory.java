@@ -72,7 +72,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
             rpng = SecureRandom.getInstance(random);
         }
         catch(NoSuchAlgorithmException e) {
-            log.error(String.format("Failure %s obtaining secure random %s", e.getMessage(), random));
+            log.warn(String.format("Failure %s obtaining secure random %s", e.getMessage(), random));
         }
     }
 
