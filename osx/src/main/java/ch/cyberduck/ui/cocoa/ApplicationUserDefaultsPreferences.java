@@ -19,8 +19,8 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.logging.SystemLogAppender;
-import ch.cyberduck.core.preferences.UserDefaultsPreferences;
 import ch.cyberduck.core.threading.AlertTransferErrorCallback;
+import ch.cyberduck.preferences.ApplicationPreferences;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
@@ -28,7 +28,7 @@ import org.apache.log4j.PatternLayout;
 /**
  * @version $Id:$
  */
-public class ApplicationUserDefaultsPreferences extends UserDefaultsPreferences {
+public class ApplicationUserDefaultsPreferences extends ApplicationPreferences {
 
     @Override
     protected void setDefaults() {
