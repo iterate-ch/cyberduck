@@ -56,7 +56,7 @@ public abstract class Factory<T> {
     }
 
 
-    public static enum Platform {
+    public enum Platform {
         osname {
             @Override
             public String toString() {
@@ -78,7 +78,7 @@ public abstract class Factory<T> {
             return this.toString().matches(regex);
         }
 
-        public static enum Name {
+        public enum Name {
             mac,
             windows,
             linux,
