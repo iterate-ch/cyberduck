@@ -57,8 +57,8 @@ public class SpectraMultipleDeleteFeatureTest extends AbstractTestCase {
 
     @Test
     public void testDeleteFile() throws Exception {
-        final Host host = new Host(new SpectraProtocol(), "192.168.56.101", 8080, new Credentials(
-                "aXRlcmF0ZQ==", "sVYKkwL9"
+        final Host host = new Host(new SpectraProtocol(), properties.getProperty("spectra.hostname"), 8080, new Credentials(
+                properties.getProperty("spectra.user"), properties.getProperty("spectra.key")
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
@@ -82,8 +82,8 @@ public class SpectraMultipleDeleteFeatureTest extends AbstractTestCase {
 
     @Test
     public void testDeletePlaceholder() throws Exception {
-        final Host host = new Host(new SpectraProtocol(), "192.168.56.101", 8080, new Credentials(
-                "aXRlcmF0ZQ==", "sVYKkwL9"
+        final Host host = new Host(new SpectraProtocol(), properties.getProperty("spectra.hostname"), 8080, new Credentials(
+                properties.getProperty("spectra.user"), properties.getProperty("spectra.key")
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
@@ -106,8 +106,8 @@ public class SpectraMultipleDeleteFeatureTest extends AbstractTestCase {
 
     @Test(expected = NotfoundException.class)
     public void testDeleteNotFoundBucket() throws Exception {
-        final Host host = new Host(new SpectraProtocol(), "192.168.56.101", 8080, new Credentials(
-                "aXRlcmF0ZQ==", "sVYKkwL9"
+        final Host host = new Host(new SpectraProtocol(), properties.getProperty("spectra.hostname"), 8080, new Credentials(
+                properties.getProperty("spectra.user"), properties.getProperty("spectra.key")
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
