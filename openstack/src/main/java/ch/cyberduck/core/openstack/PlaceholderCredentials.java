@@ -26,11 +26,21 @@ import ch.cyberduck.core.Protocol;
 /**
  * @version $Id$
  */
-public final class TenantCredentials extends Credentials {
+public final class PlaceholderCredentials extends Credentials {
+
+    private final String placeholder;
+
+    public PlaceholderCredentials() {
+        this(LocaleFactory.localizedString("Tenant", "Mosso"));
+    }
+
+    public PlaceholderCredentials(final String placeholder) {
+        this.placeholder = placeholder;
+    }
 
     @Override
     public String getUsernamePlaceholder() {
-        return LocaleFactory.localizedString("Tenant", "Mosso");
+        return placeholder;
     }
 
     @Override
