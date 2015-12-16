@@ -81,8 +81,8 @@ public class AbstractTestCase {
 
     @Before
     public void preferences() {
-        Logger.getRootLogger().setLevel(Level.INFO);
-        Logger.getLogger("ch.cyberduck").setLevel(Level.DEBUG);
+        Logger.getRootLogger().setLevel(Level.WARN);
+        Logger.getLogger(AbstractTestCase.class.getPackage().getName()).setLevel(Level.DEBUG);
     }
 
     @After
