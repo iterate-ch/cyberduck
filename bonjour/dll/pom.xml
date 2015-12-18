@@ -12,17 +12,6 @@
     <artifactId>Cyberduck.Bonjour</artifactId>
     <packaging>pom</packaging>
 
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-clean-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
     <profiles>
         <profile>
             <id>mac</id>
@@ -61,7 +50,7 @@
                         <executions>
                             <execution>
                                 <id>install-dll</id>
-                                <phase>generate-sources</phase>
+                                <phase>install</phase>
                                 <goals>
                                     <goal>attach-artifact</goal>
                                 </goals>
@@ -76,8 +65,36 @@
                             </execution>
                         </executions>
                     </plugin>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>run-ant-target</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <tasks>
+                                        <property name="home" value="${main.basedir}"/>
+                                        <property name="version" value="${project.version}"/>
+                                        <property name="revision" value="${git.commitsCount}"/>
+                                        <ant antfile="${project.basedir}/build.xml" target="build" dir="."/>
+                                    </tasks>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
                 </plugins>
             </build>
         </profile>
     </profiles>
+
+    <dependencies>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>bonjour</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>

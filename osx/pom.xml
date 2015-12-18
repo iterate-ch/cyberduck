@@ -39,6 +39,11 @@
                     <family>Mac</family>
                 </os>
             </activation>
+            <properties>
+                <xcode.configuration>Release</xcode.configuration>
+                <sparkle.feed>/dev/null</sparkle.feed>
+                <sparkle.key.prefix>None</sparkle.key.prefix>
+            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -106,6 +111,7 @@
                                         <property name="version" value="${project.version}"/>
                                         <property name="revision" value="${git.commitsCount}"/>
                                         <property name="xcode.target" value="app"/>
+                                        <!-- 'Release' or 'Mac App Store' -->
                                         <property name="xcode.configuration" value="${xcode.configuration}"/>
                                         <property name="app.runtime.system.min" value="10.8.3"/>
                                         <property name="sparkle.feed" value="${sparkle.feed}"/>
@@ -126,6 +132,7 @@
                                         <property name="version" value="${project.version}"/>
                                         <property name="revision" value="${git.commitsCount}"/>
                                         <property name="xcode.target" value="app"/>
+                                        <!-- 'Release' or 'Mac App Store' -->
                                         <property name="xcode.configuration" value="${xcode.configuration}"/>
                                         <property name="app.runtime.system.min" value="10.8.3"/>
                                         <property name="codesign.certificate" value="${codesign.certificate}"/>

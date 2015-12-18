@@ -21,10 +21,7 @@
  -->
 <project name="Cyberduck Native Libraries" basedir=".">
 
-    <import file="../build.xml"/>
-
-    <property name="msbuild.configuration" value="release"/>
-    <property name="msbuild.architecture" value="x86"/>
+    <import file="../../build.xml"/>
 
     <property name="ikvm.home" value="${lib}/ikvm-8.1.5717.0"/>
 
@@ -32,12 +29,13 @@
         <taskdef name="ikvmc" classname="net.ikvm.ant.IkvmcTask">
             <classpath path="${lib.ext}/ant-ikvmc.0.5.jar"/>
         </taskdef>
-        <mkdir dir="${module}/dll/target"/>
-        <!-- Create DLL Cyberduck.Bonjour -->
-        <ikvmc target="library" out="${module}/dll/target/Cyberduck.Bonjour.dll" home="${ikvm.home}"
+        <mkdir dir="${build}"/>
+        <!-- Create DLL Cyberduck.Core -->
+        <ikvmc target="library" out="${build}/Cyberduck.Core.dll" home="${ikvm.home}"
                classloader="ikvm.runtime.AssemblyClassLoader" version="${version}" debug="false" verbose="true">
-            <reference path="${build}/Cyberduck.Core.dll"/>
-            <reference path="${build}/Cyberduck.Protocols.dll"/>
+            <fileset dir="${lib}">
+                <include name="1.8.0*/Contents/Home/lib/ext/sunec.jar"/>
+            </fileset>
             <fileset dir="${build}">
                 <include name="*.jar"/>
                 <exclude name="asm-*.jar"/>
@@ -45,22 +43,8 @@
                 <exclude name="*-sources.jar"/>
                 <exclude name="*-tests.jar"/>
             </fileset>
+            <resource name="/com/sun/jna/win32-x86/jnidispatch.dll" path="${build}/jnidispatch.dll"/>
         </ikvmc>
-
-        <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
-            <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
-        </taskdef>
-        <!-- Create DLL Cyberduck.Core.Native -->
-        <msbuild buildfile="../Cyberduck Bonjour.csproj">
-            <target name="Clean"/>
-            <target name="Build"/>
-
-            <property name="Version" value="${version}.${revision}"/>
-            <property name="ShortVersion" value="${version} (${revision})"/>
-            <property name="Configuration" value="${msbuild.configuration}"/>
-            <property name="Platform" value="${msbuild.architecture}"/>
-            <property name="OutputType" value="Library"/>
-        </msbuild>
     </target>
 
     <target name="build" depends="version,dll" />

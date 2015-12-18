@@ -21,19 +21,7 @@
  -->
 <project name="Cyberduck Native Libraries" basedir=".">
 
-    <import file="../build.xml"/>
-
-    <property name="sparkle.key.prefix" value="SU"/>
-    <property name="sparkle.feed" value="/dev/null"/>
-
-    <property name="app.runtime.system.min" value="10.7"/>
-    <property name="build.xcodeoptions" value="SYMROOT=${module}/dylib/target SDKROOT=macosx MACOSX_DEPLOYMENT_TARGET=${app.runtime.system.min}"/>
-
-    <property name="xcode.configuration" value="Release"/>
-    <property name="xcode.target" value="libcore"/>
-
-    <property name="msbuild.configuration" value="release"/>
-    <property name="msbuild.architecture" value="x86"/>
+    <import file="../../build.xml"/>
 
     <property name="ikvm.home" value="${lib}/ikvm-8.1.5717.0"/>
 
@@ -41,9 +29,9 @@
         <taskdef name="ikvmc" classname="net.ikvm.ant.IkvmcTask">
             <classpath path="${lib.ext}/ant-ikvmc.0.5.jar"/>
         </taskdef>
-        <mkdir dir="${module}/dll/target"/>
+        <mkdir dir="${build}"/>
         <!-- Create DLL Cyberduck.Protocols -->
-        <ikvmc target="library" out="${module}/dll/target/Cyberduck.Protocols.dll" home="${ikvm.home}"
+        <ikvmc target="library" out="${build}/Cyberduck.Protocols.dll" home="${ikvm.home}"
                classloader="ikvm.runtime.AssemblyClassLoader" version="${version}" debug="false" verbose="true">
             <reference path="${build}/Cyberduck.Core.dll"/>
             <fileset dir="${build}">

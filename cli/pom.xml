@@ -110,13 +110,6 @@
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
-                <dependency>
-                    <groupId>ch.cyberduck</groupId>
-                    <artifactId>Cyberduck.Cli</artifactId>
-                    <type>dll</type>
-                    <version>${project.version}</version>
-                    <scope>runtime</scope>
-                </dependency>
             </dependencies>
         </profile>
     </profiles>
@@ -154,6 +147,7 @@
                         </goals>
                         <configuration>
                             <tasks>
+                                <property name="home" value="${main.basedir}"/>
                                 <property name="version" value="${project.version}"/>
                                 <property name="revision" value="${git.commitsCount}"/>
                                 <ant antfile="${project.basedir}/build.xml" target="build" dir="."/>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ *	$Revision: 6757 $
+ *	$Date: 2010-08-25 13:25:44 +0200 (Mi, 25 Aug 2010) $
+ *
+ *  Copyright (c) 2005-2012 David Kocher. All rights reserved.
+ *  http://cyberduck.io/
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.package
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	Bug fixes, suggestions and comments should be sent to:
+ *	dkocher@cyberduck.io
+ -->
+<project name="Cyberduck Native Libraries" basedir=".">
+
+    <import file="../../build.xml"/>
+
+    <property name="app.runtime.system.min" value="10.7"/>
+    <property name="build.xcodeoptions" value="SYMROOT=${build} SDKROOT=macosx MACOSX_DEPLOYMENT_TARGET=${app.runtime.system.min}"/>
+
+    <property name="xcode.configuration" value="Release"/>
+    <property name="xcode.target" value="libcore"/>
+
+    <target name="dylib" if="platform.mac">
+        <local name="build.settings"/>
+        <property name="build.settings"
+                  value="${build.xcodeoptions} VERSION=${version} REVISION=${revision} COPYRIGHT='${copyright}'"/>
+        <echo message="Build settings ${build.settings}"/>
+        <exec dir="${home}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
+            <arg line="xcodebuild -project ${home}/'Cyberduck.xcodeproj' -configuration '${xcode.configuration}' -target '${xcode.target}' ${build.settings}"/>
+        </exec>
+    </target>
+
+    <target name="build" depends="version,dylib" />
+</project>

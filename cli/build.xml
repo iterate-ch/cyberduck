@@ -57,27 +57,7 @@
 
     <target name="build" depends="version,windows,fx,osx"/>
 
-    <target name="dll" if="platform.windows">
-        <taskdef name="ikvmc" classname="net.ikvm.ant.IkvmcTask">
-            <classpath path="${lib.ext}/ant-ikvmc.0.5.jar"/>
-        </taskdef>
-        <mkdir dir="${module}/dll/target"/>
-        <!-- Create DLL Cyberduck.Importer -->
-        <ikvmc target="library" out="${module}/dll/target/Cyberduck.Cli.dll" home="${ikvm.home}"
-               classloader="ikvm.runtime.AssemblyClassLoader" version="${version}" debug="false" verbose="true">
-            <reference path="${build}/Cyberduck.Core.dll"/>
-            <reference path="${build}/Cyberduck.Protocols.dll"/>
-            <fileset dir="${build}">
-                <include name="*.jar"/>
-                <exclude name="asm-*.jar"/>
-                <exclude name="cglib-*.jar"/>
-                <exclude name="*-sources.jar"/>
-                <exclude name="*-tests.jar"/>
-            </fileset>
-        </ikvmc>
-    </target>
-
-    <target name="windows" if="platform.windows" depends="dll">
+    <target name="windows" if="platform.windows">
         <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
             <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
         </taskdef>

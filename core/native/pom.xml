@@ -12,17 +12,6 @@
     <artifactId>Cyberduck.Core.Native</artifactId>
     <packaging>pom</packaging>
 
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-clean-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
     <profiles>
         <profile>
             <id>windows</id>
@@ -39,7 +28,7 @@
                         <executions>
                             <execution>
                                 <id>install-dll</id>
-                                <phase>generate-sources</phase>
+                                <phase>install</phase>
                                 <goals>
                                     <goal>attach-artifact</goal>
                                 </goals>
@@ -50,6 +39,26 @@
                                             <file>${project.build.directory}/Cyberduck.Core.Native.dll</file>
                                         </artifact>
                                     </artifacts>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>run-ant-target</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <tasks>
+                                        <property name="home" value="${main.basedir}"/>
+                                        <property name="version" value="${project.version}"/>
+                                        <property name="revision" value="${git.commitsCount}"/>
+                                        <ant antfile="${project.basedir}/build.xml" target="build" dir="."/>
+                                    </tasks>
                                 </configuration>
                             </execution>
                         </executions>

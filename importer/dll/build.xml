@@ -21,10 +21,7 @@
  -->
 <project name="Cyberduck Native Libraries" basedir=".">
 
-    <import file="../build.xml"/>
-
-    <property name="msbuild.configuration" value="release"/>
-    <property name="msbuild.architecture" value="x86"/>
+    <import file="../../build.xml"/>
 
     <property name="ikvm.home" value="${lib}/ikvm-8.1.5717.0"/>
 
@@ -32,9 +29,9 @@
         <taskdef name="ikvmc" classname="net.ikvm.ant.IkvmcTask">
             <classpath path="${lib.ext}/ant-ikvmc.0.5.jar"/>
         </taskdef>
-        <mkdir dir="${module}/dll/target"/>
+        <mkdir dir="${build}"/>
         <!-- Create DLL Cyberduck.Importer -->
-        <ikvmc target="library" out="${module}/dll/target/Cyberduck.Importer.dll" home="${ikvm.home}"
+        <ikvmc target="library" out="${build}/Cyberduck.Importer.dll" home="${ikvm.home}"
                classloader="ikvm.runtime.AssemblyClassLoader" version="${version}" debug="false" verbose="true">
             <reference path="${build}/Cyberduck.Core.dll"/>
             <reference path="${build}/Cyberduck.Protocols.dll"/>
