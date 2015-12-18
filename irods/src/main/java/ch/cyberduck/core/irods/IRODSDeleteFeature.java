@@ -61,10 +61,10 @@ public class IRODSDeleteFeature implements Delete {
                     throw new NotfoundException(String.format("%s doesn't exist", file.getAbsolute()));
                 }
                 if(f.isFile()) {
-                    session.filesystem().fileDeleteNoForce(f);
+                    session.filesystem().fileDeleteForce(f);
                 }
                 else if(f.isDirectory()) {
-                    session.filesystem().directoryDeleteNoForce(f);
+                    session.filesystem().directoryDeleteForce(f);
                 }
             }
             catch(JargonException e) {

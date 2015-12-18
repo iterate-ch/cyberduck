@@ -985,7 +985,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             if (controller.View.Browser.Equals(dropargs.SourceListView))
                             {
                                 controller.transfer(
-                                    new CopyTransfer(controller.Session.getHost(), Session.getHost(),
+                                    new CopyTransfer(controller.Session.getHost(), Session,
                                         Utils.ConvertToJavaMap(files)), new List<Path>(files.Values), false);
                                 break;
                             }
@@ -2868,7 +2868,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (CheckOverwrite(selected.Values))
             {
-                CopyTransfer copy = new CopyTransfer(Session.getHost(), Session.getHost(),
+                CopyTransfer copy = new CopyTransfer(Session.getHost(), Session,
                     Utils.ConvertToJavaMap(selected));
                 List<Path> changed = new List<Path>();
                 changed.AddRange(selected.Values);

@@ -113,24 +113,4 @@
                     locale="en"/>
         </tstamp>
     </target>
-
-    <target name="tarball">
-        <antcall target="tar">
-            <param name="directory" value="${home}"/>
-            <param name="source" value="."/>
-            <param name="target" value="duck-src-${version}.${revision}.tar.gz"/>
-        </antcall>
-        <checksum file="${build.deploy}/duck-src-${version}.${revision}.tar.gz"
-                  algorithm="sha-256" property="source.sha256"/>
-    </target>
-
-
-    <target name="tar">
-        <mkdir dir="${build.deploy}"/>
-        <exec dir="${directory}" executable="tar" spawn="false" failonerror="true">
-            <arg line="--exclude .svn --exclude .git --exclude target -czf ${build.deploy}/${target} ${source}"/>
-        </exec>
-        <echo message="Calculating MD5 sum..."/>
-        <checksum file="${build.deploy}/${target}" algorithm="md5"/>
-    </target>
 </project>

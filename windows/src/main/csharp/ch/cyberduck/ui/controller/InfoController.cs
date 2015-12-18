@@ -194,9 +194,9 @@ namespace Ch.Cyberduck.Ui.Controller
             else
             {
                 // Currently these settings are only available for Amazon S3
-                View.ToolbarS3Label = ProtocolFactory.S3_SSL.getName();
+                View.ToolbarS3Label = new S3Protocol().getName();
                 View.ToolbarS3Image =
-                    IconCache.Instance.GetProtocolImages(32).Images[ProtocolFactory.S3_SSL.getProvider()];
+                    IconCache.Instance.GetProtocolImages(32).Images[new S3Protocol().getProvider()];
             }
             //ACL or permission view
             View.AclPanel = session.getFeature(typeof (AclPermission)) != null;
@@ -214,7 +214,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 View.ToolbarDistributionEnabled = false;
                 View.ToolbarDistributionImage =
-                    IconCache.Instance.GetProtocolImages(32).Images[ProtocolFactory.S3_SSL.getProvider()];
+                    IconCache.Instance.GetProtocolImages(32).Images[new S3Protocol().getProvider()];
             }
             else
             {
@@ -228,7 +228,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 else
                 {
                     View.ToolbarDistributionImage =
-                        IconCache.Instance.GetProtocolImages(32).Images[ProtocolFactory.S3_SSL.getProvider()];
+                        IconCache.Instance.GetProtocolImages(32).Images[new S3Protocol().getProvider()];
                 }
             }
             if (anonymous)

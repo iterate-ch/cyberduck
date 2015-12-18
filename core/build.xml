@@ -35,7 +35,29 @@
     <property name="msbuild.configuration" value="release"/>
     <property name="msbuild.architecture" value="x86"/>
 
+    <property name="ikvm.home" value="${lib}/ikvm-8.1.5717.0"/>
+
     <target name="dll" if="platform.windows">
+        <taskdef name="ikvmc" classname="net.ikvm.ant.IkvmcTask">
+            <classpath path="${lib.ext}/ant-ikvmc.0.5.jar"/>
+        </taskdef>
+        <mkdir dir="${module}/dll/target"/>
+        <!-- Create DLL Cyberduck.Core -->
+        <ikvmc target="library" out="${module}/dll/target/Cyberduck.Core.dll" home="${ikvm.home}"
+               classloader="ikvm.runtime.AssemblyClassLoader" version="${version}" debug="false" verbose="true">
+            <fileset dir="${lib}">
+                <include name="1.8.0*/Contents/Home/lib/ext/sunec.jar"/>
+            </fileset>
+            <fileset dir="${build}">
+                <include name="*.jar"/>
+                <exclude name="asm-*.jar"/>
+                <exclude name="cglib-*.jar"/>
+                <exclude name="*-sources.jar"/>
+                <exclude name="*-tests.jar"/>
+            </fileset>
+            <resource name="/com/sun/jna/win32-x86/jnidispatch.dll" path="${build}/jnidispatch.dll"/>
+        </ikvmc>
+
         <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
             <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
         </taskdef>
@@ -50,22 +72,6 @@
             <property name="Platform" value="${msbuild.architecture}"/>
             <property name="OutputType" value="Library"/>
         </msbuild>
-        <taskdef name="ikvmc" classname="net.ikvm.ant.IkvmcTask">
-            <classpath path="${lib.ext}/ant-ikvmc.0.5.jar"/>
-        </taskdef>
-        <!-- Create DLL Cyberduck.Core -->
-        <ikvmc target="library" out="${build}/Cyberduck.Core.dll" home="${ikvm.home}"
-               classloader="ikvm.runtime.AssemblyClassLoader" version="${version}" debug="false" verbose="true">
-            <fileset dir="${lib}">
-                <include name="1.8.0*/Contents/Home/lib/ext/sunec.jar"/>
-            </fileset>
-            <fileset dir="${build}">
-                <include name="*.jar"/>
-                <exclude name="asm-*.jar"/>
-                <exclude name="cglib-*.jar"/>
-            </fileset>
-            <resource name="/com/sun/jna/win32-x86/jnidispatch.dll" path="${build}/jnidispatch.dll"/>
-        </ikvmc>
     </target>
 
     <target name="dylib" if="platform.mac">

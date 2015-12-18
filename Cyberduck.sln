@@ -5,13 +5,15 @@ VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cyberduck", "Cyberduck.csproj", "{04AFCFBB-97D5-44EA-B087-F0CFAEB51E30}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cyberduck Test", "..\..\..\test\ch\cyberduck\Cyberduck Test.csproj", "{18C4C52D-F639-4A5E-A8B6-FC2950C8DC91}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cyberduck Test", "Cyberduck Test.csproj", "{18C4C52D-F639-4A5E-A8B6-FC2950C8DC91}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cyberduck CLI", "Cyberduck CLI.csproj", "{4B14000D-F435-4ECA-A119-7AEF03792DEE}"
 EndProject
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "Cyberduck CLI-WiX", "Cyberduck CLI-WiX.wixproj", "{F6975079-F730-4A31-9909-DE536E524764}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cyberduck Core", "Cyberduck Core.csproj", "{AC161B73-0B4B-4A32-B0D7-205AC89D83A5}"
+EndProject
+Project("{F18C9ABF-2238-4810-9ABD-CBFA0CC03DCE}") = "Cyberduck Bonjour", "Cyberduck Bonjour.csproj", "{710A5CCB-1BD0-41F1-8348-676845DFCF3B}"
 EndProject
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "Cyberduck CLI-WiX-Bootstrapper", "Cyberduck CLI-WiX-Bootstrapper.wixproj", "{EF87DE0E-BC36-4D3C-8852-C8AD11D01F04}"
 EndProject
@@ -87,6 +89,16 @@ Global
 		{EF87DE0E-BC36-4D3C-8852-C8AD11D01F04}.Release|Mixed Platforms.Build.0 = Release|x86
 		{EF87DE0E-BC36-4D3C-8852-C8AD11D01F04}.Release|x86.ActiveCfg = Release|x86
 		{EF87DE0E-BC36-4D3C-8852-C8AD11D01F04}.Release|x86.Build.0 = Release|x86
+		{710A5CCB-1BD0-41F1-8348-676845DFCF3B}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{710A5CCB-1BD0-41F1-8348-676845DFCF3B}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{710A5CCB-1BD0-41F1-8348-676845DFCF3B}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{710A5CCB-1BD0-41F1-8348-676845DFCF3B}.Debug|x86.ActiveCfg = Debug|x86
+		{710A5CCB-1BD0-41F1-8348-676845DFCF3B}.Debug|x86.Build.0 = Debug|x86
+		{710A5CCB-1BD0-41F1-8348-676845DFCF3B}.Release|Any CPU.ActiveCfg = Release|x86
+		{710A5CCB-1BD0-41F1-8348-676845DFCF3B}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{710A5CCB-1BD0-41F1-8348-676845DFCF3B}.Release|Mixed Platforms.Build.0 = Release|x86
+		{710A5CCB-1BD0-41F1-8348-676845DFCF3B}.Release|x86.ActiveCfg = Release|x86
+		{710A5CCB-1BD0-41F1-8348-676845DFCF3B}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

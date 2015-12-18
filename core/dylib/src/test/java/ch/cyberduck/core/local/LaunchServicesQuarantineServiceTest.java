@@ -4,6 +4,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullLocal;
 
 import org.apache.commons.lang3.StringUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.UUID;
@@ -12,8 +13,8 @@ import java.util.concurrent.Callable;
 /**
  * @version $Id$
  */
-public class
-LaunchServicesQuarantineServiceTest {
+@Ignore
+public class LaunchServicesQuarantineServiceTest {
 
     @Test
     public void testSetQuarantineEmptyUrl() throws Exception {

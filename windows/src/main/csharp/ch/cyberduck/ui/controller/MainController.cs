@@ -34,7 +34,7 @@ using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.serializer;
 using Ch.Cyberduck.Ui.Core;
 using Ch.Cyberduck.Ui.Core.Preferences;
-using Ch.Cyberduck.Ui.Core.Urlhandler;
+using Ch.Cyberduck.Core.Urlhandler;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using java.util;
 using Microsoft.VisualBasic.ApplicationServices;

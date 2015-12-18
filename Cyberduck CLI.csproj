@@ -36,9 +36,17 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="core, Version=4.6.2.16195, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Cyberduck.Core">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>core\target\Cyberduck.Core.dll</HintPath>
+      <HintPath>cli\target\Cyberduck.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Cyberduck.Protocols">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>cli\target\Cyberduck.Protocols.dll</HintPath>
+    </Reference>
+    <Reference Include="Cyberduck.Cli">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>cli\target\Cyberduck.Cli.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.Beans">
       <HintPath>lib\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Beans.dll</HintPath>
@@ -103,12 +111,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="cli\WindowsTerminal.cs" />
-    <Compile Include="cli\WindowsTerminalPreferences.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="cli\src\main\csharp\ch\cyberduck\cli\WindowsTerminal.cs" />
+    <Compile Include="cli\src\main\csharp\ch\cyberduck\cli\WindowsTerminalPreferences.cs" />
+    <Compile Include="cli\target\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="Windows Core.csproj">
+    <ProjectReference Include="Cyberduck Core.csproj">
       <Project>{ac161b73-0b4b-4a32-b0d7-205ac89d83a5}</Project>
       <Name>Windows Core</Name>
     </ProjectReference>
@@ -116,7 +124,12 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets. -->
+  <Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.targets" />
+  <Target Name="AssemblyInfo">
+    <AssemblyInfo CodeLanguage="CS" OutputFile="cli\target\AssemblyInfo.cs" AssemblyTitle="Cyberduck" AssemblyDescription="Libre FTP, SFTP, WebDAV, S3 and OpenStack Swift browser for Mac and Windows." AssemblyCompany="iterate GmbH" AssemblyProduct="Cyberduck" AssemblyCopyright="Copyright (c) 2001-2015 David Kocher. Copyright (c) 2011–2015 Yves Langisch" ComVisible="false" Guid="5fc1c120-24c7-469d-b52b-9bce20db208d" AssemblyVersion="$(Version)" AssemblyFileVersion="$(Version)" AssemblyInformationalVersion="$(ShortVersion)" Condition="$(Version) != '0' " />
+  </Target>
   <Target Name="BeforeBuild">
+    <CallTarget Targets="AssemblyInfo" />
     <ItemGroup>
       <AdditionalResources Include="Acknowledgments.rtf" />
       <AdditionalResources Include="en.lproj\License.txt" />

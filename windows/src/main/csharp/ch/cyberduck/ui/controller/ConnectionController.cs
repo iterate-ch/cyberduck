@@ -24,6 +24,7 @@ using ch.cyberduck.core.diagnostics;
 using ch.cyberduck.core.ftp;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
+using ch.cyberduck.core.sftp;
 using ch.cyberduck.core.threading;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Core.Preferences;
@@ -86,7 +87,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 credentials.setUsername(View.Username);
                 credentials.setPassword(View.Password);
                 credentials.setSaved(View.SavePasswordChecked);
-                if (protocol.getType() == Protocol.Type.ssh)
+                if (protocol.getType() == Protocol.Type.sftp)
                 {
                     if (View.PkCheckboxState)
                     {
@@ -238,7 +239,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChangedServerEvent()
         {
-            if (ProtocolFactory.isURL(View.Hostname))
+            if (Scheme.isURL(View.Hostname))
             {
                 Host parsed = HostParser.parse(View.Hostname);
                 View.Hostname = parsed.getHostname();
@@ -378,11 +379,11 @@ namespace Ch.Cyberduck.Ui.Controller
         /// </summary>
         private void UpdateIdentity()
         {
-            View.PkCheckboxEnabled = View.SelectedProtocol.Equals(ProtocolFactory.SFTP);
+            View.PkCheckboxEnabled = View.SelectedProtocol.Equals(new SFTPProtocol());
             if (Utils.IsNotBlank(View.Hostname))
             {
                 Credentials credentials =
-                    CredentialsConfiguratorFactory.get(View.SelectedProtocol).configure(new Host(View.Hostname));
+                    CredentialsConfiguratorFactory.get(View.SelectedProtocol).configure(new Host(new SFTPProtocol(), View.Hostname));
                 if (credentials.isPublicKeyAuthentication())
                 {
                     // No previously manually selected key
@@ -436,19 +437,21 @@ namespace Ch.Cyberduck.Ui.Controller
         }
 
         private void OnReachability(object state)
-        {
-            background(new ReachabilityAction(this, View.Hostname));
+        {            
+            background(new ReachabilityAction(this, View.SelectedProtocol, View.Hostname));
         }
 
         private class ReachabilityAction : AbstractBackgroundAction
         {
             private readonly ConnectionController _controller;
+            private readonly Protocol _protocol;
             private readonly string _hostname;
             private bool _reachable;
 
-            public ReachabilityAction(ConnectionController controller, String hostname)
+            public ReachabilityAction(ConnectionController controller, Protocol protocol, String hostname)
             {
                 _controller = controller;
+                _protocol = protocol;
                 _hostname = hostname;
             }
 
@@ -456,7 +459,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 if (!String.IsNullOrEmpty(_hostname))
                 {
-                    _reachable = ReachabilityFactory.get().isReachable(new Host(_hostname));
+                    _reachable = ReachabilityFactory.get().isReachable(new Host(_protocol, _hostname));
                 }
                 else
                 {

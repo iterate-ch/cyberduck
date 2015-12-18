@@ -16,11 +16,13 @@
         <module>core/dylib</module>
         <module>core/dll</module>
         <module>core/native</module>
-        <module>ui</module>
         <module>fs</module>
         <!-- Native components -->
         <module>bonjour</module>
+        <module>bonjour/dll</module>
+        <module>bonjour/native</module>
         <module>importer</module>
+        <module>importer/dll</module>
         <!-- Protocols -->
         <module>udt</module>
         <module>irods</module>
@@ -32,12 +34,14 @@
         <module>ssh</module>
         <module>ftp</module>
         <module>protocols</module>
+        <module>protocols/dll</module>
         <!-- Test -->
         <module>test</module>
         <!-- Platforms -->
         <module>osx</module>
         <module>windows</module>
         <module>cli</module>
+        <module>cli/dll</module>
     </modules>
 
     <scm>

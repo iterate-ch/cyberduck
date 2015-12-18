@@ -51,8 +51,9 @@
     <CodeAnalysisFailOnMissingRules>true</CodeAnalysisFailOnMissingRules>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="core">
-      <HintPath>core\target\Cyberduck.Core.dll</HintPath>
+    <Reference Include="Cyberduck.Core">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>windows\target\Cyberduck.Core.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.Core">
       <HintPath>lib\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Core.dll</HintPath>

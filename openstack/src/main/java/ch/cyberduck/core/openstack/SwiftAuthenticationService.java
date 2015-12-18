@@ -85,10 +85,11 @@ public class SwiftAuthenticationService {
         if(host.getProtocol().getDefaultHostname().endsWith("identity.api.rackspacecloud.com")
                 || host.getHostname().endsWith("identity.api.rackspacecloud.com")) {
             return Collections.singleton(new Authentication20RAXUsernameKeyRequest(
-                            URI.create(url.toString()),
-                            credentials.getUsername(), credentials.getPassword(), null)
+                    URI.create(url.toString()),
+                    credentials.getUsername(), credentials.getPassword(), null)
             );
         }
+        final LoginOptions options = new LoginOptions().password(false);
         if(context.contains("1.0")) {
             return Collections.singleton(new Authentication10UsernameKeyRequest(URI.create(url.toString()),
                     credentials.getUsername(), credentials.getPassword()));
@@ -102,65 +103,86 @@ public class SwiftAuthenticationService {
             final String user;
             final String tenant;
             if(StringUtils.contains(credentials.getUsername(), ':')) {
-                tenant = StringUtils.splitPreserveAllTokens(credentials.getUsername(), ':')[0];
-                user = StringUtils.splitPreserveAllTokens(credentials.getUsername(), ':')[1];
+                final String[] parts = StringUtils.splitPreserveAllTokens(credentials.getUsername(), ':');
+                tenant = parts[0];
+                user = parts[1];
             }
             else {
                 user = credentials.getUsername();
-                final Credentials tenantCredentials = new TenantCredentials();
-                final LoginOptions options = new LoginOptions();
-                options.password = false;
+                final Credentials tenantCredentials = new PlaceholderCredentials(LocaleFactory.localizedString("Tenant Name", "Mosso"));
                 prompt.prompt(host, tenantCredentials,
                         LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
                         LocaleFactory.localizedString("Tenant Name", "Mosso"), options);
                 tenant = tenantCredentials.getUsername();
-                if(tenant != null) {
-                    // Save tenant in username
-                    credentials.setUsername(String.format("%s:%s", tenant, credentials.getUsername()));
-                }
+                // Save tenant in username
+                credentials.setUsername(String.format("%s:%s", tenant, credentials.getUsername()));
             }
-            final Set<AuthenticationRequest> options = new LinkedHashSet<AuthenticationRequest>();
-            options.add(new Authentication20UsernamePasswordRequest(
-                            URI.create(url.toString()),
-                            user, credentials.getPassword(), tenant)
+            final Set<AuthenticationRequest> requests = new LinkedHashSet<AuthenticationRequest>();
+            requests.add(new Authentication20UsernamePasswordRequest(
+                    URI.create(url.toString()),
+                    user, credentials.getPassword(), tenant)
             );
-            options.add(new Authentication20UsernamePasswordTenantIdRequest(
-                            URI.create(url.toString()),
-                            user, credentials.getPassword(), tenant)
+            requests.add(new Authentication20UsernamePasswordTenantIdRequest(
+                    URI.create(url.toString()),
+                    user, credentials.getPassword(), tenant)
             );
-            options.add(new Authentication20AccessKeySecretKeyRequest(
+            requests.add(new Authentication20AccessKeySecretKeyRequest(
                     URI.create(url.toString()),
                     user, credentials.getPassword(), tenant));
-            return options;
+            return requests;
         }
         else if(context.contains("3")) {
             // Prompt for project
             final String user;
-            final String tenant;
+            final String project;
+            final String domain;
             if(StringUtils.contains(credentials.getUsername(), ':')) {
-                tenant = StringUtils.splitPreserveAllTokens(credentials.getUsername(), ':')[0];
-                user = StringUtils.splitPreserveAllTokens(credentials.getUsername(), ':')[1];
+                final String[] parts = StringUtils.splitPreserveAllTokens(credentials.getUsername(), ':');
+                if(parts.length == 3) {
+                    project = parts[0];
+                    domain = parts[1];
+                    user = parts[2];
+                }
+                else {
+                    project = parts[0];
+                    user = parts[1];
+                    final Credentials projectDomain = new PlaceholderCredentials(LocaleFactory.localizedString("Project Domain Name", "Mosso"));
+                    prompt.prompt(host, projectDomain,
+                            LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                            LocaleFactory.localizedString("Project Domain Name", "Mosso"), options);
+                    domain = projectDomain.getUsername();
+                    // Save project name and domain in username
+                    credentials.setUsername(String.format("%s:%s:%s", project, domain, credentials.getUsername()));
+                }
             }
             else {
                 user = credentials.getUsername();
-                final Credentials tenantCredentials = new TenantCredentials();
-                final LoginOptions options = new LoginOptions();
-                options.password = false;
-                prompt.prompt(host, tenantCredentials,
+                final Credentials projectName = new PlaceholderCredentials(LocaleFactory.localizedString("Project Name", "Mosso"));
+                prompt.prompt(host, projectName,
                         LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                        LocaleFactory.localizedString("Project", "Mosso"), options);
-                tenant = tenantCredentials.getUsername();
-                if(tenant != null) {
-                    // Save tenant in username
-                    credentials.setUsername(String.format("%s:%s", tenant, credentials.getUsername()));
+                        LocaleFactory.localizedString("Project Name", "Mosso"), options);
+                if(StringUtils.contains(credentials.getUsername(), ':')) {
+                    final String[] parts = StringUtils.splitPreserveAllTokens(projectName.getUsername(), ':');
+                    project = parts[0];
+                    domain = parts[1];
                 }
+                else {
+                    project = projectName.getUsername();
+                    final Credentials projectDomain = new PlaceholderCredentials(LocaleFactory.localizedString("Project Domain Name", "Mosso"));
+                    prompt.prompt(host, projectDomain,
+                            LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                            LocaleFactory.localizedString("Project Domain Name", "Mosso"), options);
+                    domain = projectDomain.getUsername();
+                }
+                // Save project name and domain in username
+                credentials.setUsername(String.format("%s:%s:%s", project, domain, credentials.getUsername()));
             }
-            final Set<AuthenticationRequest> options = new LinkedHashSet<AuthenticationRequest>();
-            options.add(new Authentication3UsernamePasswordProjectRequest(
-                            URI.create(url.toString()),
-                            user, credentials.getPassword(), tenant)
+            final Set<AuthenticationRequest> requests = new LinkedHashSet<AuthenticationRequest>();
+            requests.add(new Authentication3UsernamePasswordProjectRequest(
+                    URI.create(url.toString()),
+                    user, credentials.getPassword(), project, domain)
             );
-            return options;
+            return requests;
         }
         else {
             log.warn(String.format("Unknown context version in %s. Default to v1 authentication.", context));

@@ -45,11 +45,11 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
 import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
+import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
-import ch.cyberduck.core.s3.S3MultipartWriteFeature;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.s3.S3SingleUploadService;
 import ch.cyberduck.core.s3.S3WriteFeature;
@@ -154,6 +154,9 @@ public class GoogleStorageSession extends S3Session {
             final String url = oauth.generateBrowserUrlToAuthorizeNativeApplication(
                     OAuthConstants.GSOAuth2_10.Scopes.FullControl
             );
+            if(preferences.getBoolean("google.storage.oauth.openbrowser")) {
+                BrowserLauncherFactory.get().open(url);
+            }
             final LoginOptions options = new LoginOptions().keychain(false);
             controller.prompt(host, host.getCredentials(),
                     LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"), url, options);

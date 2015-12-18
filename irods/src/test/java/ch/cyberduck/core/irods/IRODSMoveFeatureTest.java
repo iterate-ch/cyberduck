@@ -32,7 +32,6 @@ import ch.cyberduck.core.ProfileReaderFactory;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 
 import org.junit.BeforeClass;
@@ -56,7 +55,7 @@ public class IRODSMoveFeatureTest extends AbstractTestCase {
     }
 
     @Test
-    public void testMove() throws Exception {
+    public void testMoveDirectory() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
                 new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
@@ -69,19 +68,47 @@ public class IRODSMoveFeatureTest extends AbstractTestCase {
 
         final Path source = new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path destination = new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        session.getFeature(Directory.class).mkdir(source);
-        assertTrue(session.getFeature(Find.class).find(source));
-        assertFalse(session.getFeature(Find.class).find(destination));
-
-        new IRODSMoveFeature(session).move(source, destination, false, new Delete.Callback() {
+        new IRODSDirectoryFeature(session).mkdir(source);
+        new IRODSDirectoryFeature(session).mkdir(destination);
+        new IRODSMoveFeature(session).move(source, destination, true, new Delete.Callback() {
             @Override
             public void delete(final Path file) {
             }
         });
         assertFalse(session.getFeature(Find.class).find(source));
         assertTrue(session.getFeature(Find.class).find(destination));
+        session.getFeature(Delete.class).delete(Arrays.asList(destination), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
+        assertFalse(session.getFeature(Find.class).find(destination));
+        session.close();
+    }
 
+    @Test
+    public void testMoveFile() throws Exception {
+        final Profile profile = ProfileReaderFactory.get().read(
+                new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
+                properties.getProperty("irods.key"), properties.getProperty("irods.secret")
+        ));
 
+        final IRODSSession session = new IRODSSession(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+
+        final Path source = new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path destination = new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        new IRODSTouchFeature(session).touch(source);
+        new IRODSTouchFeature(session).touch(destination);
+        new IRODSMoveFeature(session).move(source, destination, true, new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
+        assertFalse(session.getFeature(Find.class).find(source));
+        assertTrue(session.getFeature(Find.class).find(destination));
         session.getFeature(Delete.class).delete(Arrays.asList(destination), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {
