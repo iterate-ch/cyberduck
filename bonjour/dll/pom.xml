@@ -80,4 +80,12 @@
             </build>
         </profile>
     </profiles>
+
+    <dependencies>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>bonjour</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>
