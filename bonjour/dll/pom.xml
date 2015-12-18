@@ -50,7 +50,7 @@
                         <executions>
                             <execution>
                                 <id>install-dll</id>
-                                <phase>install</phase>
+                                <phase>verify</phase>
                                 <goals>
                                     <goal>attach-artifact</goal>
                                 </goals>
