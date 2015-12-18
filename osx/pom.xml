@@ -102,6 +102,7 @@
                                 </goals>
                                 <configuration>
                                     <tasks>
+                                        <property name="home" value="${main.basedir}"/>
                                         <property name="version" value="${project.version}"/>
                                         <property name="revision" value="${git.commitsCount}"/>
                                         <property name="xcode.target" value="app"/>
@@ -121,6 +122,7 @@
                                 </goals>
                                 <configuration>
                                     <tasks>
+                                        <property name="home" value="${main.basedir}"/>
                                         <property name="version" value="${project.version}"/>
                                         <property name="revision" value="${git.commitsCount}"/>
                                         <property name="xcode.target" value="app"/>
@@ -164,11 +166,6 @@
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>binding</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.cyberduck</groupId>
-            <artifactId>ui</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
