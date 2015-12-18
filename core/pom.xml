@@ -53,6 +53,9 @@
                     <family>Windows</family>
                 </os>
             </activation>
+            <properties>
+                <maven.test.skip>true</maven.test.skip>
+            </properties>
             <build>
                 <plugins>
                     <plugin>
