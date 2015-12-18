@@ -55,6 +55,12 @@
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
+            <artifactId>test</artifactId>
+            <scope>test</scope>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
             <artifactId>ftp</artifactId>
             <version>${project.version}</version>
         </dependency>
