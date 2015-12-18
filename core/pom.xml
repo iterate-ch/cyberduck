@@ -17,7 +17,7 @@
                 <executions>
                     <execution>
                         <id>run-ant-target</id>
-                        <phase>generate-sources</phase>
+                        <phase>verify</phase>
                         <goals>
                             <goal>run</goal>
                         </goals>
@@ -81,6 +81,12 @@
                     <artifactId>sunmscapi</artifactId>
                     <classifier>native</classifier>
                     <type>dll</type>
+                    <version>7.0.250.17</version>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>sunmscapi</groupId>
+                    <artifactId>sunmscapi</artifactId>
                     <version>7.0.250.17</version>
                     <scope>runtime</scope>
                 </dependency>

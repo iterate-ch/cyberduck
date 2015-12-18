@@ -44,17 +44,44 @@
     <property name="xcode.configuration" value="Release"/>
     <property name="xcode.target" value="cli"/>
 
+    <property name="ikvm.home" value="${lib}/ikvm-8.1.5717.0"/>
+
+    <property name="cpack.bin" value="${env.ChocolateyInstall}/bin/cpack"/>
+
+    <property name="chocolatey.source" value="${setup}/chocolatey"/>
+    <property name="chocolatey.target" value="${build.deploy}"/>
+
     <import file="../runtime.xml"/>
     <import file="../codesign.xml"/>
     <import file="../archive.xml"/>
 
     <target name="build" depends="version,windows,fx,osx"/>
 
-    <target name="windows" if="${platform.windows}">
+    <target name="dll" if="platform.windows">
+        <taskdef name="ikvmc" classname="net.ikvm.ant.IkvmcTask">
+            <classpath path="${lib.ext}/ant-ikvmc.0.5.jar"/>
+        </taskdef>
+        <mkdir dir="${module}/dll/target"/>
+        <!-- Create DLL Cyberduck.Importer -->
+        <ikvmc target="library" out="${module}/dll/target/Cyberduck.Cli.dll" home="${ikvm.home}"
+               classloader="ikvm.runtime.AssemblyClassLoader" version="${version}" debug="false" verbose="true">
+            <reference path="${build}/Cyberduck.Core.dll"/>
+            <reference path="${build}/Cyberduck.Protocols.dll"/>
+            <fileset dir="${build}">
+                <include name="*.jar"/>
+                <exclude name="asm-*.jar"/>
+                <exclude name="cglib-*.jar"/>
+                <exclude name="*-sources.jar"/>
+                <exclude name="*-tests.jar"/>
+            </fileset>
+        </ikvmc>
+    </target>
+
+    <target name="windows" if="platform.windows" depends="dll">
         <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
             <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
         </taskdef>
-        <msbuild buildfile="../CLI-WiX-Bootstrapper.wixproj">
+        <msbuild buildfile="../Cyberduck CLI-WiX-Bootstrapper.wixproj">
             <target name="Clean"/>
             <target name="Build"/>
 
@@ -63,7 +90,7 @@
             <property name="Configuration" value="${msbuild.configuration}"/>
             <property name="Platform" value="${msbuild.architecture}"/>
         </msbuild>
-        <checksum file="${build.deploy}/duck-${version}.exe" algorithm="md5"/>
+        <checksum file="${build.deploy}/duck-${version}.${revision}.exe" algorithm="md5"/>
 
         <copy todir="${chocolatey.target}">
             <fileset dir="${chocolatey.source}">
@@ -79,7 +106,7 @@
         <exec executable="${cpack.bin}" dir="${chocolatey.target}" failonerror="true"/>
     </target>
 
-    <target name="fx" if="${platform.linux}">
+    <target name="fx" if="platform.linux">
         <copy file="${setup}/rpm/duck.spec" todir="${rpm.spec}"/>
         <copy file="${setup}/deb/duck.control" tofile="${deb.control}"/>
         <copy file="${setup}/deb/duck.postinstall" tofile="${deb.postinstall}"/>
@@ -153,7 +180,7 @@
         </fx:deploy>
     </target>
 
-    <target name="osx" if="${platform.mac}" depends="tarball">
+    <target name="osx" if="platform.mac" depends="source-tar">
         <echo message="Building ${cli.bundle}"/>
         <local name="build.settings"/>
         <property name="build.settings"

@@ -242,7 +242,7 @@ namespace Ch.Cyberduck.Ui.Controller
             String input = View.Hostname;
             Host parsed = HostParser.parse(input);
             _host.setHostname(parsed.getHostname());
-            if (ProtocolFactory.isURL(input))
+            if (Scheme.isURL(input))
             {
                 _host.setProtocol(parsed.getProtocol());
                 _host.setPort(parsed.getPort());
@@ -491,7 +491,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 View.SelectedConnectMode = _host.getFTPConnectMode();
             }
-            View.PkCheckboxEnabled = _host.getProtocol().getType() == Protocol.Type.ssh;
+            View.PkCheckboxEnabled = _host.getProtocol().getType() == Protocol.Type.sftp;
             if (_host.getCredentials().isPublicKeyAuthentication())
             {
                 View.PkCheckboxState = true;

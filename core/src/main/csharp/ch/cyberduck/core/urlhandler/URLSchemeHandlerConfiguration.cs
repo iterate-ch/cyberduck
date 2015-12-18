@@ -21,7 +21,7 @@ using System.Windows.Forms;
 using Microsoft.Win32;
 using org.apache.log4j;
 
-namespace Ch.Cyberduck.Ui.Core.Urlhandler
+namespace Ch.Cyberduck.Core.Urlhandler
 {
     public class URLSchemeHandlerConfiguration
     {
