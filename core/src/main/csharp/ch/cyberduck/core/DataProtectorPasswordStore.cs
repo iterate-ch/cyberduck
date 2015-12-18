@@ -36,14 +36,14 @@ namespace Ch.Cyberduck.Core
 
         public override string getPassword(String hostName, String user)
         {
-            Host host = new Host(hostName);
+            Host host = new Host(ProtocolFactory.forScheme(Scheme.ftp.name()), hostName);
             host.getCredentials().setUsername(user);
             return getPassword(host);
         }
 
         public override void addPassword(String hostName, String user, String password)
         {
-            Host host = new Host(hostName);
+            Host host = new Host(ProtocolFactory.forScheme(Scheme.ftp.name()), hostName);
             host.getCredentials().setUsername(user);
             PreferencesFactory.get().setProperty(new HostUrlProvider().get(host), DataProtector.Encrypt(password));
         }

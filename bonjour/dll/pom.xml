@@ -9,7 +9,7 @@
         <relativePath>../../pom.xml</relativePath>
         <version>4.8.0-SNAPSHOT</version>
     </parent>
-    <artifactId>Cyberduck.Core.Native</artifactId>
+    <artifactId>Cyberduck.Bonjour</artifactId>
     <packaging>pom</packaging>
 
     <build>
@@ -24,6 +24,28 @@
     </build>
 
     <profiles>
+        <profile>
+            <id>mac</id>
+            <activation>
+                <os>
+                    <family>Mac</family>
+                </os>
+            </activation>
+            <properties>
+                <maven.test.skip>true</maven.test.skip>
+            </properties>
+        </profile>
+        <profile>
+            <id>linux</id>
+            <activation>
+                <os>
+                    <family>Linux</family>
+                </os>
+            </activation>
+            <properties>
+                <maven.test.skip>true</maven.test.skip>
+            </properties>
+        </profile>
         <profile>
             <id>windows</id>
             <activation>
@@ -47,7 +69,7 @@
                                     <artifacts>
                                         <artifact>
                                             <type>dll</type>
-                                            <file>${project.build.directory}/Cyberduck.Core.Native.dll</file>
+                                            <file>${project.build.directory}/Cyberduck.Bonjour.dll</file>
                                         </artifact>
                                     </artifacts>
                                 </configuration>
@@ -58,44 +80,4 @@
             </build>
         </profile>
     </profiles>
-
-    <dependencies>
-        <dependency>
-            <groupId>ch.cyberduck</groupId>
-            <artifactId>core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.microsoft</groupId>
-            <artifactId>msvcr100</artifactId>
-            <classifier>native</classifier>
-            <type>dll</type>
-            <version>10.0.40219.325</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.microsoft</groupId>
-            <artifactId>msvcp120</artifactId>
-            <classifier>native</classifier>
-            <type>dll</type>
-            <version>12.0.21005.1</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.microsoft</groupId>
-            <artifactId>msvcr120</artifactId>
-            <classifier>native</classifier>
-            <type>dll</type>
-            <version>12.0.21005.1</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.microsoft</groupId>
-            <artifactId>vccorlib120</artifactId>
-            <classifier>native</classifier>
-            <type>dll</type>
-            <version>12.0.21005.1</version>
-            <scope>runtime</scope>
-        </dependency>
-    </dependencies>
 </project>

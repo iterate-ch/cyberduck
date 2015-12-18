@@ -42,47 +42,21 @@
             <classpath path="${lib.ext}/ant-ikvmc.0.5.jar"/>
         </taskdef>
         <mkdir dir="${module}/dll/target"/>
-        <!-- Create DLL Cyberduck.Core -->
-        <ikvmc target="library" out="${module}/dll/target/Cyberduck.Core.dll" home="${ikvm.home}"
+        <!-- Create DLL Cyberduck.Protocols -->
+        <ikvmc target="library" out="${module}/dll/target/Cyberduck.Protocols.dll" home="${ikvm.home}"
                classloader="ikvm.runtime.AssemblyClassLoader" version="${version}" debug="false" verbose="true">
-            <fileset dir="${lib}">
-                <include name="1.8.0*/Contents/Home/lib/ext/sunec.jar"/>
-            </fileset>
+            <reference path="${build}/Cyberduck.Core.dll"/>
             <fileset dir="${build}">
                 <include name="*.jar"/>
-                <exclude name="asm-*.jar"/>
-                <exclude name="cglib-*.jar"/>
                 <exclude name="*-sources.jar"/>
                 <exclude name="*-tests.jar"/>
             </fileset>
-            <resource name="/com/sun/jna/win32-x86/jnidispatch.dll" path="${build}/jnidispatch.dll"/>
         </ikvmc>
 
         <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
             <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
         </taskdef>
-        <!-- Create DLL Cyberduck.Core.Native -->
-        <msbuild buildfile="../Cyberduck Core.csproj">
-            <target name="Clean"/>
-            <target name="Build"/>
-
-            <property name="Version" value="${version}.${revision}"/>
-            <property name="ShortVersion" value="${version} (${revision})"/>
-            <property name="Configuration" value="${msbuild.configuration}"/>
-            <property name="Platform" value="${msbuild.architecture}"/>
-            <property name="OutputType" value="Library"/>
-        </msbuild>
     </target>
 
-    <target name="dylib" if="platform.mac">
-        <local name="build.settings"/>
-        <property name="build.settings"
-                  value="${build.xcodeoptions} VERSION=${version} REVISION=${revision} COPYRIGHT='${copyright}'"/>
-        <echo message="Build settings ${build.settings}"/>
-        <exec dir="${home}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
-            <arg line="xcodebuild -project ${home}/'Cyberduck.xcodeproj' -configuration '${xcode.configuration}' -target '${xcode.target}' ${build.settings}"/>
-        </exec>
-    </target>
-
-    <target name="build" depends="version,dylib,dll" />
+    <target name="build" depends="version,dll" />
 </project>

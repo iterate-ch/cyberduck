@@ -25,6 +25,7 @@ using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.io;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
+using ch.cyberduck.core.s3;
 using ch.cyberduck.core.transfer;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Winforms;
@@ -1156,7 +1157,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void PopulateDefaultBucketLocations()
         {
             IList<KeyValuePair<string, string>> defaultBucketLocations = new List<KeyValuePair<string, string>>();
-            Set locations = ProtocolFactory.S3_SSL.getRegions();
+            Set locations = new S3Protocol().getRegions();
             Iterator iter = locations.iterator();
             while (iter.hasNext())
             {
