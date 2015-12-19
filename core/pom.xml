@@ -33,9 +33,6 @@
                     <family>Windows</family>
                 </os>
             </activation>
-            <properties>
-                <maven.test.skip>true</maven.test.skip>
-            </properties>
             <dependencies>
                 <dependency>
                     <groupId>sunmscapi</groupId>
