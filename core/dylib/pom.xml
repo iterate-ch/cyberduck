@@ -10,7 +10,7 @@
         <version>4.8.0-SNAPSHOT</version>
     </parent>
     <artifactId>libcore</artifactId>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
 
     <profiles>
         <profile>
