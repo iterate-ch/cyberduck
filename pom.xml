@@ -41,6 +41,9 @@
         <module>windows</module>
         <module>cli</module>
         <module>cli/dll</module>
+        <module>cli/linux</module>
+        <module>cli/windows</module>
+        <module>cli/osx</module>
     </modules>
 
     <scm>
@@ -214,6 +217,23 @@
                 <plugin>
                     <artifactId>maven-antrun-plugin</artifactId>
                     <version>1.8</version>
+                    <executions>
+                        <execution>
+                            <id>run-ant-target</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>run</goal>
+                            </goals>
+                            <configuration>
+                                <tasks>
+                                    <property name="home" value="${main.basedir}"/>
+                                    <property name="version" value="${project.version}"/>
+                                    <property name="revision" value="${git.commitsCount}"/>
+                                    <ant antfile="${project.basedir}/build.xml" target="build" dir="."/>
+                                </tasks>
+                            </configuration>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

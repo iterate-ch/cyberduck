@@ -118,7 +118,7 @@
                         <artifactId>maven-antrun-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>run-ant-build-target</id>
+                                <id>run-ant-target</id>
                                 <phase>package</phase>
                                 <goals>
                                     <goal>run</goal>

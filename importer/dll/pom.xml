@@ -67,41 +67,9 @@
                     </plugin>
                     <plugin>
                         <artifactId>maven-dependency-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>copy-dependencies-jar-target</id>
-                                <phase>generate-sources</phase>
-                                <goals>
-                                    <goal>copy-dependencies</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${project.build.directory}</outputDirectory>
-                                    <includeTypes>jar</includeTypes>
-                                    <includeScope>runtime</includeScope>
-                                    <stripClassifier>true</stripClassifier>
-                                </configuration>
-                            </execution>
-                        </executions>
                     </plugin>
                     <plugin>
                         <artifactId>maven-antrun-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>run-ant-target</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <tasks>
-                                        <property name="home" value="${main.basedir}"/>
-                                        <property name="version" value="${project.version}"/>
-                                        <property name="revision" value="${git.commitsCount}"/>
-                                        <ant antfile="${project.basedir}/build.xml" target="build" dir="."/>
-                                    </tasks>
-                                </configuration>
-                            </execution>
-                        </executions>
                     </plugin>
                 </plugins>
             </build>
