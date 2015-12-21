@@ -57,6 +57,13 @@
                     <family>Mac</family>
                 </os>
             </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
             <dependencies>
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
