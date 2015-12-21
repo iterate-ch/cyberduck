@@ -94,6 +94,24 @@
                                     <outputDirectory>${project.build.directory}/Cyberduck.app/Contents/Resources</outputDirectory>
                                 </configuration>
                             </execution>
+                            <execution>
+                                <id>unpack-frameworks</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>unpack</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>com.github</groupId>
+                                            <artifactId>sparkle</artifactId>
+                                            <type>zip</type>
+                                            <version>1.11.0</version>
+                                        </artifactItem>
+                                    </artifactItems>
+                                    <outputDirectory>${project.build.directory}</outputDirectory>
+                                </configuration>
+                            </execution>
                         </executions>
                     </plugin>
                     <plugin>
