@@ -139,13 +139,13 @@
     </ItemGroup>
     <ItemGroup>
       <JNASupport Include="lib\ikvm-8.1.5717.0\bin\ikvm-native-win32-x86.dll" />
-      <JNASupport Include="core\target\jnidispatch.dll" />
+      <JNASupport Include="cli\target\jnidispatch.dll" />
     </ItemGroup>
     <ItemGroup>
-      <SunMSCAPI Include="core\target\sunmscapi.dll" />
+      <SunMSCAPI Include="cli\target\sunmscapi.dll" />
     </ItemGroup>
     <ItemGroup>
-      <ECSupport Include="core\target\sunec.dll" />
+      <ECSupport Include="cli\target\sunec.dll" />
     </ItemGroup>
     <Copy SourceFiles="@(AdditionalResources)" DestinationFolder="$(OutputPath)" />
     <Copy SourceFiles="@(DefaultProfiles)" DestinationFolder="$(OutputPath)\profiles" />
