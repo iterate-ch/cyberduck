@@ -93,6 +93,28 @@
                     </plugin>
                 </plugins>
             </build>
+            <dependencies>
+                <dependency>
+                    <groupId>ch.cyberduck</groupId>
+                    <artifactId>Cyberduck.Core</artifactId>
+                    <type>dll</type>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>ch.cyberduck</groupId>
+                    <artifactId>Cyberduck.Core.Native</artifactId>
+                    <type>dll</type>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>ch.cyberduck</groupId>
+                    <artifactId>Cyberduck.Protocols</artifactId>
+                    <type>dll</type>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+            </dependencies>
         </profile>
     </profiles>
 
