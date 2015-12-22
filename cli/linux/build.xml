@@ -19,10 +19,11 @@
  *	Bug fixes, suggestions and comments should be sent to:
  *	dkocher@cyberduck.io
  -->
-<project name="Cyberduck Native Libraries" basedir="." xmlns:fx="javafx:com.sun.javafx.tools.ant">
+<project name="Cyberduck CLI Linux" basedir="." xmlns:fx="javafx:com.sun.javafx.tools.ant">
 
     <import file="../../build.xml"/>
 
+    <property name="app.name" value="duck"/>
     <property name="app.icon" value="${home}/cyberduck-application.png"/>
     <property name="rpm.spec" value="${build.bundles}/package/linux"/>
     <property name="deb.control" value="${build.bundles}/package/linux/control"/>
