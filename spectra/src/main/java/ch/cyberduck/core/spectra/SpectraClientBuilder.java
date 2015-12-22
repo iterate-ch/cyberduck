@@ -21,7 +21,7 @@ import com.spectralogic.ds3client.networking.ConnectionDetails;
 public class SpectraClientBuilder {
     public Ds3Client wrap(final S3Session session) {
         final Host host = session.getHost();
-        final Ds3ClientImpl client = new Ds3ClientImpl(new NetworkClientImpl(new ConnectionDetails() {
+        return new Ds3ClientImpl(new NetworkClientImpl(new ConnectionDetails() {
             @Override
             public String getEndpoint() {
                 return String.format("%s:%d", host.getHostname(), host.getPort());
@@ -57,6 +57,5 @@ public class SpectraClientBuilder {
                 return true;
             }
         }, (CloseableHttpClient) session.getClient().getHttpClient()));
-        return client;
     }
 }
