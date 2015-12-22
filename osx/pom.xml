@@ -39,6 +39,11 @@
                     <family>Mac</family>
                 </os>
             </activation>
+            <properties>
+                <xcode.configuration>Release</xcode.configuration>
+                <sparkle.feed>/dev/null</sparkle.feed>
+                <sparkle.key.prefix>None</sparkle.key.prefix>
+            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -89,22 +94,60 @@
                                     <outputDirectory>${project.build.directory}/Cyberduck.app/Contents/Resources</outputDirectory>
                                 </configuration>
                             </execution>
+                            <execution>
+                                <id>unpack-frameworks</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>unpack</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>org.sparkle-project</groupId>
+                                            <artifactId>sparkle</artifactId>
+                                            <type>zip</type>
+                                            <version>1.13.0</version>
+                                        </artifactItem>
+                                    </artifactItems>
+                                    <outputDirectory>${project.build.directory}</outputDirectory>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>unpack-runtime</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>unpack</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>com.oracle.java</groupId>
+                                            <artifactId>jre</artifactId>
+                                            <type>zip</type>
+                                            <version>8u66</version>
+                                        </artifactItem>
+                                    </artifactItems>
+                                    <outputDirectory>${project.build.directory}</outputDirectory>
+                                </configuration>
+                            </execution>
                         </executions>
                     </plugin>
                     <plugin>
                         <artifactId>maven-antrun-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>run-ant-build-target</id>
+                                <id>run-ant-target</id>
                                 <phase>package</phase>
                                 <goals>
                                     <goal>run</goal>
                                 </goals>
                                 <configuration>
                                     <tasks>
+                                        <property name="home" value="${main.basedir}"/>
                                         <property name="version" value="${project.version}"/>
                                         <property name="revision" value="${git.commitsCount}"/>
                                         <property name="xcode.target" value="app"/>
+                                        <!-- 'Release' or 'Mac App Store' -->
                                         <property name="xcode.configuration" value="${xcode.configuration}"/>
                                         <property name="app.runtime.system.min" value="10.8.3"/>
                                         <property name="sparkle.feed" value="${sparkle.feed}"/>
@@ -121,9 +164,11 @@
                                 </goals>
                                 <configuration>
                                     <tasks>
+                                        <property name="home" value="${main.basedir}"/>
                                         <property name="version" value="${project.version}"/>
                                         <property name="revision" value="${git.commitsCount}"/>
                                         <property name="xcode.target" value="app"/>
+                                        <!-- 'Release' or 'Mac App Store' -->
                                         <property name="xcode.configuration" value="${xcode.configuration}"/>
                                         <property name="app.runtime.system.min" value="10.8.3"/>
                                         <property name="codesign.certificate" value="${codesign.certificate}"/>
@@ -164,11 +209,6 @@
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>binding</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.cyberduck</groupId>
-            <artifactId>ui</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

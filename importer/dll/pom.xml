@@ -12,17 +12,6 @@
     <artifactId>Cyberduck.Importer</artifactId>
     <packaging>pom</packaging>
 
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-clean-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
     <profiles>
         <profile>
             <id>mac</id>
@@ -61,7 +50,7 @@
                         <executions>
                             <execution>
                                 <id>install-dll</id>
-                                <phase>generate-sources</phase>
+                                <phase>verify</phase>
                                 <goals>
                                     <goal>attach-artifact</goal>
                                 </goals>
@@ -75,6 +64,32 @@
                                 </configuration>
                             </execution>
                         </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>unpack-runtime</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>unpack</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>net.ikvm</groupId>
+                                            <artifactId>ikvm</artifactId>
+                                            <type>zip</type>
+                                            <version>8.1.5717.0</version>
+                                        </artifactItem>
+                                    </artifactItems>
+                                    <outputDirectory>${project.build.directory}</outputDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
                     </plugin>
                 </plugins>
             </build>

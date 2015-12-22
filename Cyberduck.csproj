@@ -107,58 +107,58 @@
       <HintPath>windows\target\lib\ExceptionReporter.WinForms.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.Beans">
-      <HintPath>lib\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Beans.dll</HintPath>
+      <HintPath>windows\target\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Beans.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.Charsets">
-      <HintPath>lib\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Charsets.dll</HintPath>
+      <HintPath>windows\target\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Charsets.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.Core">
-      <HintPath>lib\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Core.dll</HintPath>
+      <HintPath>windows\target\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Core.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.Jdbc">
-      <HintPath>lib\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Jdbc.dll</HintPath>
+      <HintPath>windows\target\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Jdbc.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.Localedata">
-      <HintPath>lib\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Localedata.dll</HintPath>
+      <HintPath>windows\target\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Localedata.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.Management">
-      <HintPath>lib\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Management.dll</HintPath>
+      <HintPath>windows\target\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Management.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.Naming">
-      <HintPath>lib\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Naming.dll</HintPath>
+      <HintPath>windows\target\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Naming.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.Security">
-      <HintPath>lib\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Security.dll</HintPath>
+      <HintPath>windows\target\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Security.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.SwingAWT">
-      <HintPath>lib\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.SwingAWT.dll</HintPath>
+      <HintPath>windows\target\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.SwingAWT.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.Text">
-      <HintPath>lib\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Text.dll</HintPath>
+      <HintPath>windows\target\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Text.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.Util">
-      <HintPath>lib\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Util.dll</HintPath>
+      <HintPath>windows\target\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Util.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.XML.API">
-      <HintPath>lib\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.XML.API.dll</HintPath>
+      <HintPath>windows\target\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.XML.API.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.XML.Bind">
-      <HintPath>lib\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.XML.Bind.dll</HintPath>
+      <HintPath>windows\target\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.XML.Bind.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.XML.Parse">
-      <HintPath>lib\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.XML.Parse.dll</HintPath>
+      <HintPath>windows\target\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.XML.Parse.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.XML.Transform">
-      <HintPath>lib\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.XML.Transform.dll</HintPath>
+      <HintPath>windows\target\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.XML.Transform.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.XML.XPath">
-      <HintPath>lib\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.XML.XPath.dll</HintPath>
+      <HintPath>windows\target\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.XML.XPath.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.Runtime">
-      <HintPath>lib\ikvm-8.1.5717.0\bin\IKVM.Runtime.dll</HintPath>
+      <HintPath>windows\target\ikvm-8.1.5717.0\bin\IKVM.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.Runtime.JNI">
-      <HintPath>lib\ikvm-8.1.5717.0\bin\IKVM.Runtime.JNI.dll</HintPath>
+      <HintPath>windows\target\ikvm-8.1.5717.0\bin\IKVM.Runtime.JNI.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="ObjectListView, Version=2.4.1.20671, Culture=neutral, PublicKeyToken=b1c5bf581481bcd4, processorArchitecture=MSIL">
@@ -171,9 +171,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
-    <Reference Include="System.Core">
-      <HintPath>windows\target\System.Core.dll</HintPath>
-    </Reference>
+    <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
     <Reference Include="System.Design" />
@@ -657,14 +655,14 @@
       <DefaultProfiles Include="profiles\Rackspace US.cyberduckprofile" />
     </ItemGroup>
     <ItemGroup>
-      <JNASupport Include="lib\ikvm-8.1.5717.0\bin\ikvm-native-win32-x86.dll" />
-      <JNASupport Include="core\target\jnidispatch.dll" />
+      <JNASupport Include="windows\target\ikvm-8.1.5717.0\bin\ikvm-native-win32-x86.dll" />
+      <JNASupport Include="windows\target\jnidispatch.dll" />
     </ItemGroup>
     <ItemGroup>
-      <SunMSCAPI Include="core\target\sunmscapi.dll" />
+      <SunMSCAPI Include="windows\target\sunmscapi.dll" />
     </ItemGroup>
     <ItemGroup>
-      <ECSupport Include="core\target\sunec.dll" />
+      <ECSupport Include="windows\target\sunec.dll" />
     </ItemGroup>
     <Copy SourceFiles="@(DefaultBookmarks)" DestinationFolder="$(OutputPath)\bookmarks" />
     <Copy SourceFiles="@(DefaultProfiles)" DestinationFolder="$(OutputPath)\profiles" />

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ *	$Revision: 6757 $
+ *	$Date: 2010-08-25 13:25:44 +0200 (Mi, 25 Aug 2010) $
+ *
+ *  Copyright (c) 2005-2012 David Kocher. All rights reserved.
+ *  http://cyberduck.io/
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.package
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	Bug fixes, suggestions and comments should be sent to:
+ *	dkocher@cyberduck.io
+ -->
+<project name="Cyberduck Native Libraries" basedir=".">
+
+    <import file="../../build.xml"/>
+
+    <property name="ikvm.home" value="${build}/ikvm-8.1.5717.0"/>
+
+    <target name="dll" if="platform.windows">
+        <taskdef name="ikvmc" classname="net.ikvm.ant.IkvmcTask">
+            <classpath path="${lib.ext}/ant-ikvmc.0.5.jar"/>
+        </taskdef>
+        <mkdir dir="${build}"/>
+        <!-- Create DLL Cyberduck.Protocols -->
+        <ikvmc target="library" out="${build}/Cyberduck.Protocols.dll" home="${ikvm.home}"
+               classloader="ikvm.runtime.AssemblyClassLoader" version="${version}" debug="false" verbose="true">
+            <reference path="${build}/Cyberduck.Core.dll"/>
+            <fileset dir="${build}">
+                <include name="*.jar"/>
+                <exclude name="*-sources.jar"/>
+                <exclude name="*-tests.jar"/>
+            </fileset>
+        </ikvmc>
+
+        <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
+            <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
+        </taskdef>
+    </target>
+
+    <target name="build" depends="version,dll" />
+</project>

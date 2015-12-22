@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ *	$Revision$
+ *	$Date$
+ *
+ *  Copyright (c) 2005-2012 David Kocher. All rights reserved.
+ *  http://cyberduck.io/
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	Bug fixes, suggestions and comments should be sent to:
+ *	dkocher@cyberduck.io
+ -->
+<project name="Cyberduck CLI Windows" basedir=".">
+
+    <import file="../../build.xml"/>
+
+    <property name="msbuild.configuration" value="release"/>
+    <property name="msbuild.architecture" value="x86"/>
+
+    <property name="cpack.bin" value="${env.ChocolateyInstall}/bin/cpack"/>
+
+    <property name="chocolatey.source" value="${setup}/chocolatey"/>
+    <property name="chocolatey.target" value="${build.deploy}"/>
+
+    <target name="build" depends="version" if="platform.windows">
+        <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
+            <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
+        </taskdef>
+        <msbuild buildfile="../../Cyberduck CLI-WiX-Bootstrapper.wixproj">
+            <target name="Clean"/>
+            <target name="Build"/>
+
+            <property name="Version" value="${version}.${revision}"/>
+            <property name="ShortVersion" value="${version} (${revision})"/>
+            <property name="Configuration" value="${msbuild.configuration}"/>
+            <property name="Platform" value="${msbuild.architecture}"/>
+        </msbuild>
+        <checksum file="${build.deploy}/duck-${version}.${revision}.exe" algorithm="md5"/>
+
+        <copy todir="${chocolatey.target}">
+            <fileset dir="${chocolatey.source}">
+                <include name="*/**"/>
+            </fileset>
+        </copy>
+        <replace dir="${chocolatey.target}" summary="true" encoding="UTF-8">
+            <include name="*.nuspec"/>
+            <include name="tools/*.ps1"/>
+            <replacefilter token="${VERSION}" value="${version}"/>
+            <replacefilter token="${REVISION}" value="${revision}"/>
+        </replace>
+        <exec executable="${cpack.bin}" dir="${chocolatey.target}" failonerror="true"/>
+    </target>
+</project>

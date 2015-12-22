@@ -23,6 +23,8 @@
 
     <import file="../build.xml"/>
 
+    <property name="app.name" value="Cyberduck"/>
+
     <!-- try to detect the process architecture (32/64bit) -->
     <condition property="programFiles" value="${env.ProgramFiles(x86)}">
         <available file="${env.ProgramFiles(x86)}"/>
@@ -37,7 +39,6 @@
     <property name="nsis.home" value="${programFiles}/NSIS"/>
     <property name="winsdk.home" value="${programFiles}/Windows Kits/8.1/bin/x86"/>
     <property name="wybuild.home" value="${programFiles}/wyBuild"/>
-    <property name="ikvm.home" value="${lib}/ikvm-8.1.5717.0"/>
 
     <property name="jvm.runtime.bin" value="${java.home}/bin"/>
     <property name="cpack.bin" value="${env.ChocolateyInstall}/bin/cpack"/>

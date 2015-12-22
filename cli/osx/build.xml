@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ *	$Revision$
+ *	$Date$
+ *
+ *  Copyright (c) 2005-2012 David Kocher. All rights reserved.
+ *  http://cyberduck.io/
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	Bug fixes, suggestions and comments should be sent to:
+ *	dkocher@cyberduck.io
+ -->
+<project name="Cyberduck CLI Mac" basedir=".">
+
+    <import file="../../build.xml"/>
+
+    <property name="jvm.runtime.bin" value="${java.home}/bin"/>
+
+    <property name="cli.bundle" value="${build}/duck.bundle"/>
+
+    <property name="app.name" value="Cyberduck"/>
+    <property name="app.runtime.system.min" value="10.7"/>
+    <property name="build.xcodeoptions" value="SYMROOT=${build} SDKROOT=macosx MACOSX_DEPLOYMENT_TARGET=${app.runtime.system.min}"/>
+
+    <property name="xcode.configuration" value="Release"/>
+    <property name="xcode.target" value="cli"/>
+
+    <import file="../../runtime.xml"/>
+    <import file="../../codesign.xml"/>
+    <import file="../../archive.xml"/>
+
+    <target name="build" depends="version,source-tar" if="platform.mac">
+        <echo message="Building ${cli.bundle}"/>
+        <local name="build.settings"/>
+        <property name="build.settings"
+                  value="${build.xcodeoptions} VERSION=${version} REVISION=${revision} COPYRIGHT='${copyright}'"/>
+        <echo message="Build settings ${build.settings}"/>
+        <exec dir="${home}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
+            <arg line="xcodebuild -project ${home}/'Cyberduck.xcodeproj' -configuration '${xcode.configuration}' -target '${xcode.target}' ${build.settings}"/>
+        </exec>
+        <!-- Copy runtime -->
+        <antcall target="runtime">
+            <param name="bundle" value="${cli.bundle}"/>
+        </antcall>
+        <antcall target="codesign">
+            <param name="bundle" value="${cli.bundle}"/>
+            <param name="codesign.options" value="--force"/>
+        </antcall>
+        <antcall target="tar">
+            <param name="directory" value="${build}"/>
+            <param name="source" value="duck.bundle"/>
+            <param name="target" value="duck-${version}.${revision}.tar.gz"/>
+        </antcall>
+        <checksum file="${build.deploy}/duck-${version}.${revision}.tar.gz"
+                  algorithm="sha1" property="archive.sha1"/>
+        <copy todir="${build.deploy}" overwrite="true">
+            <fileset dir="${setup}/brew">
+                <include name="*.rb"/>
+            </fileset>
+        </copy>
+        <replace dir="${build.deploy}" summary="true" encoding="UTF-8">
+            <include name="*.rb"/>
+            <replacefilter token="${REVISION}" value="${revision}"/>
+            <replacefilter token="${VERSION}" value="${version}"/>
+            <replacefilter token="${ARCHIVE.SHA1}" value="${archive.sha1}"/>
+            <replacefilter token="${ARCHIVE}"
+                           value="https://dist.duck.sh/duck-${version}.${revision}.tar.gz"/>
+            <replacefilter token="${SOURCE.SHA256}" value="${source.sha256}"/>
+            <replacefilter token="${SOURCE}"
+                           value="https://dist.duck.sh/duck-src-${version}.${revision}.tar.gz"/>
+        </replace>
+        <exec dir="${build.deploy}" executable="/usr/bin/pkgbuild" spawn="false" failonerror="true">
+            <arg line="--component ${cli.bundle} --install-location /usr/local --version ${version} --scripts ${setup}/pkg --sign '${installer.certificate}' --keychain ${codesign.keychain} ${build.deploy}/duck-${version}.${revision}.pkg"/>
+        </exec>
+        <checksum file="${build.deploy}/duck-${version}.${revision}.pkg" algorithm="md5"/>
+        <exec executable="/usr/sbin/pkgutil" failonerror="true">
+            <arg line="--check-signature ${build.deploy}/duck-${version}.${revision}.pkg"/>
+        </exec>
+    </target>
+</project>

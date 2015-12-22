@@ -10,103 +10,6 @@
     <artifactId>cli</artifactId>
     <packaging>jar</packaging>
 
-    <profiles>
-        <profile>
-            <id>mac</id>
-            <activation>
-                <os>
-                    <family>Mac</family>
-                </os>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-dependency-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>copy-dependencies-jar-bundle</id>
-                                <phase>generate-sources</phase>
-                                <goals>
-                                    <goal>copy-dependencies</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${project.build.directory}/duck.bundle/Contents/Resources</outputDirectory>
-                                    <includeTypes>jar</includeTypes>
-                                    <includeScope>runtime</includeScope>
-                                    <stripClassifier>true</stripClassifier>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>copy-dependencies-dylib-bundle</id>
-                                <phase>generate-sources</phase>
-                                <goals>
-                                    <goal>copy-dependencies</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${project.build.directory}/duck.bundle/Contents/Frameworks</outputDirectory>
-                                    <includeTypes>dylib</includeTypes>
-                                    <includeScope>runtime</includeScope>
-                                    <stripClassifier>true</stripClassifier>
-                                    <stripVersion>true</stripVersion>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>copy-artfifact-bundle</id>
-                                <phase>install</phase>
-                                <goals>
-                                    <goal>copy</goal>
-                                </goals>
-                                <configuration>
-                                    <artifactItems>
-                                        <artifactItem>
-                                            <groupId>${project.groupId}</groupId>
-                                            <artifactId>${project.artifactId}</artifactId>
-                                            <version>${project.version}</version>
-                                            <type>${project.packaging}</type>
-                                        </artifactItem>
-                                    </artifactItems>
-                                    <outputDirectory>${project.build.directory}/duck.bundle/Contents/Resources</outputDirectory>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-            <dependencies>
-                <dependency>
-                    <groupId>ch.cyberduck</groupId>
-                    <artifactId>libcore</artifactId>
-                    <type>dylib</type>
-                    <scope>runtime</scope>
-                    <version>${project.version}</version>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>windows</id>
-            <activation>
-                <os>
-                    <family>Windows</family>
-                </os>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>ch.cyberduck</groupId>
-                    <artifactId>Cyberduck.Core</artifactId>
-                    <type>dll</type>
-                    <version>${project.version}</version>
-                    <scope>runtime</scope>
-                </dependency>
-                <dependency>
-                    <groupId>ch.cyberduck</groupId>
-                    <artifactId>Cyberduck.Core.Native</artifactId>
-                    <type>dll</type>
-                    <version>${project.version}</version>
-                </dependency>
-            </dependencies>
-        </profile>
-    </profiles>
-
     <build>
         <plugins>
             <plugin>
@@ -129,74 +32,10 @@
                     </archive>
                 </configuration>
             </plugin>
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>run-ant-target</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <tasks>
-                                <property name="version" value="${project.version}"/>
-                                <property name="revision" value="${git.commitsCount}"/>
-                                <ant antfile="${project.basedir}/build.xml" target="build" dir="."/>
-                            </tasks>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-dependencies-jar-bundle</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}</outputDirectory>
-                            <includeTypes>jar</includeTypes>
-                            <includeScope>runtime</includeScope>
-                            <stripClassifier>true</stripClassifier>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 
     <dependencies>
-        <dependency>
-            <groupId>ch.cyberduck</groupId>
-            <artifactId>Cyberduck.Core</artifactId>
-            <type>dll</type>
-            <version>${project.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>ch.cyberduck</groupId>
-            <artifactId>Cyberduck.Core.Native</artifactId>
-            <type>dll</type>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.cyberduck</groupId>
-            <artifactId>Cyberduck.Protocols</artifactId>
-            <type>dll</type>
-            <version>${project.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>ch.cyberduck</groupId>
-            <artifactId>Cyberduck.Cli</artifactId>
-            <type>dll</type>
-            <version>${project.version}</version>
-            <scope>runtime</scope>
-        </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>core</artifactId>

@@ -42,6 +42,9 @@
         <module>windows</module>
         <module>cli</module>
         <module>cli/dll</module>
+        <module>cli/linux</module>
+        <module>cli/windows</module>
+        <module>cli/osx</module>
     </modules>
 
     <scm>
@@ -132,6 +135,11 @@
                 <version>2.2.4</version>
             </dependency>
             <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>1.2.17</version>
+            </dependency>
+            <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>1.7.12</version>
@@ -185,10 +193,6 @@
                     <version>2.5.2</version>
                 </plugin>
                 <plugin>
-                    <artifactId>maven-dependency-plugin</artifactId>
-                    <version>2.10</version>
-                </plugin>
-                <plugin>
                     <artifactId>maven-source-plugin</artifactId>
                     <version>2.4</version>
                 </plugin>
@@ -214,6 +218,23 @@
                 <plugin>
                     <artifactId>maven-antrun-plugin</artifactId>
                     <version>1.8</version>
+                    <executions>
+                        <execution>
+                            <id>run-ant-target</id>
+                            <phase>compile</phase>
+                            <goals>
+                                <goal>run</goal>
+                            </goals>
+                            <configuration>
+                                <tasks>
+                                    <property name="home" value="${main.basedir}"/>
+                                    <property name="version" value="${project.version}"/>
+                                    <property name="revision" value="${git.commitsCount}"/>
+                                    <ant antfile="${project.basedir}/build.xml" target="build" dir="."/>
+                                </tasks>
+                            </configuration>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -238,6 +259,64 @@
                 <plugin>
                     <artifactId>maven-clean-plugin</artifactId>
                     <version>3.0.0</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>2.10</version>
+                    <executions>
+                        <execution>
+                            <id>copy-dependencies-dylib-target</id>
+                            <phase>generate-sources</phase>
+                            <goals>
+                                <goal>copy-dependencies</goal>
+                            </goals>
+                            <configuration>
+                                <outputDirectory>${project.build.directory}</outputDirectory>
+                                <includeTypes>dylib</includeTypes>
+                                <stripClassifier>true</stripClassifier>
+                                <stripVersion>true</stripVersion>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>copy-dependencies-dll-target</id>
+                            <phase>generate-sources</phase>
+                            <goals>
+                                <goal>copy-dependencies</goal>
+                            </goals>
+                            <configuration>
+                                <outputDirectory>${project.build.directory}</outputDirectory>
+                                <includeTypes>dll</includeTypes>
+                                <stripClassifier>true</stripClassifier>
+                                <stripVersion>true</stripVersion>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>copy-dependencies-so-target</id>
+                            <phase>generate-sources</phase>
+                            <goals>
+                                <goal>copy-dependencies</goal>
+                            </goals>
+                            <configuration>
+                                <outputDirectory>${project.build.directory}</outputDirectory>
+                                <includeTypes>so</includeTypes>
+                                <stripClassifier>true</stripClassifier>
+                                <stripVersion>true</stripVersion>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>copy-dependencies-jar-target</id>
+                            <phase>generate-sources</phase>
+                            <goals>
+                                <goal>copy-dependencies</goal>
+                            </goals>
+                            <configuration>
+                                <outputDirectory>${project.build.directory}</outputDirectory>
+                                <includeTypes>jar</includeTypes>
+                                <includeScope>runtime</includeScope>
+                                <stripClassifier>true</stripClassifier>
+                            </configuration>
+                        </execution>
+                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -269,58 +348,38 @@
                 </executions>
             </plugin>
             <plugin>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-dependencies-dylib-target</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}</outputDirectory>
-                            <includeTypes>dylib</includeTypes>
-                            <stripClassifier>true</stripClassifier>
-                            <stripVersion>true</stripVersion>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-dependencies-dll-target</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}</outputDirectory>
-                            <includeTypes>dll</includeTypes>
-                            <stripClassifier>true</stripClassifier>
-                            <stripVersion>true</stripVersion>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-dependencies-so-target</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}</outputDirectory>
-                            <includeTypes>so</includeTypes>
-                            <stripClassifier>true</stripClassifier>
-                            <stripVersion>true</stripVersion>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <systemPropertiesFile>${env.HOME}/test.properties</systemPropertiesFile>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.commonjava.maven.plugins</groupId>
+                <artifactId>directory-maven-plugin</artifactId>
+                <version>0.1</version>
+                <executions>
+                    <execution>
+                        <id>directories</id>
+                        <goals>
+                            <goal>execution-root</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <property>main.basedir</property>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </dependency>
+    </dependencies>
 
     <distributionManagement>
         <repository>
