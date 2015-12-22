@@ -23,12 +23,11 @@
 
     <import file="../../build.xml"/>
 
-    <property name="app.name" value="${ant.project.name}"/>
-
     <property name="jvm.runtime.bin" value="${java.home}/bin"/>
 
     <property name="cli.bundle" value="${build}/duck.bundle"/>
 
+    <property name="app.name" value="Cyberduck"/>
     <property name="app.runtime.system.min" value="10.7"/>
     <property name="build.xcodeoptions" value="SYMROOT=${build} SDKROOT=macosx MACOSX_DEPLOYMENT_TARGET=${app.runtime.system.min}"/>
 
