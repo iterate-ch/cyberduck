@@ -106,7 +106,7 @@ public class DAVReadFeatureTest {
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new DAVReadFeature(session).read(test, status);
+        final InputStream in = new DAVReadFeature(session).read(test, status.length(content.length - 100));
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
