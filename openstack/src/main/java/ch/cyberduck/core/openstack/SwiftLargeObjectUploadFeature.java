@@ -81,7 +81,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
 
     public SwiftLargeObjectUploadFeature(final SwiftSession session, final SwiftRegionService regionService,
                                          final Long segmentSize) {
-        this(session, regionService, new SwiftObjectListService(session, regionService), new SwiftSegmentService(session), new SwiftWriteFeature(session, regionService),
+        this(session, regionService, new SwiftObjectListService(session, regionService), new SwiftSegmentService(session, regionService), new SwiftWriteFeature(session, regionService),
                 segmentSize, PreferencesFactory.get().getInteger("openstack.upload.largeobject.concurrency"));
     }
 

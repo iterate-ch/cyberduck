@@ -105,7 +105,7 @@ public class SwiftThresholdUploadService implements Upload {
         if(PreferencesFactory.get().getBoolean("openstack.upload.largeobject.cleanup")) {
             if(!status.isAppend()) {
                 // Cleanup if necessary
-                segments.addAll(new SwiftSegmentService(session).list(file));
+                segments.addAll(new SwiftSegmentService(session, regionService).list(file));
             }
         }
         final Object checksum = feature.upload(file, local, throttle, listener, status, callback);

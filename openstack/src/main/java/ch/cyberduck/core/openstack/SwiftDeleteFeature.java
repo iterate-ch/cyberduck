@@ -54,7 +54,7 @@ public class SwiftDeleteFeature implements Delete {
     }
 
     public SwiftDeleteFeature(final SwiftSession session, final SwiftRegionService regionService) {
-        this(session, new SwiftSegmentService(session), regionService);
+        this(session, new SwiftSegmentService(session, regionService), regionService);
     }
 
     public SwiftDeleteFeature(final SwiftSession session, final SwiftSegmentService segmentService,
