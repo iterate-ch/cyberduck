@@ -21,6 +21,7 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.s3.RequestEntityRestStorageService;
 import ch.cyberduck.core.s3.S3Protocol;
@@ -62,6 +63,9 @@ public class SpectraSession extends S3Session {
     public <T> T getFeature(final Class<T> type) {
         if(type == Bulk.class) {
             return (T) new SpectraBulkService(this);
+        }
+        if(type == Touch.class) {
+            return (T) new SpectraTouchFeature(this);
         }
         return super.getFeature(type);
     }
