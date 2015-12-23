@@ -23,7 +23,6 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
@@ -52,7 +51,6 @@ public class S3ReadFeature implements Read {
         try {
             final S3Object object;
             final Versioning feature = session.getFeature(Versioning.class);
-            final HttpRange range = HttpRange.withStatus(status);
             if(feature != null && feature.getConfiguration(containerService.getContainer(file)).isEnabled()) {
                 object = session.getClient().getVersionedObject(
                         file.attributes().getVersionId(),
@@ -61,8 +59,8 @@ public class S3ReadFeature implements Read {
                         null, // ifUnmodifiedSince
                         null, // ifMatch
                         null, // ifNoneMatch
-                        status.isAppend() ? range.getStart() : null,
-                        status.isAppend() ? (range.getEnd() == -1 ? null : range.getEnd()) : null);
+                        status.isAppend() ? status.getOffset() : null,
+                        status.isAppend() && status.getLength() > 0 ? status.getOffset() + status.getLength() : null);
                 return object.getDataInputStream();
             }
             else {
@@ -73,8 +71,8 @@ public class S3ReadFeature implements Read {
                         null, // ifUnmodifiedSince
                         null, // ifMatch
                         null, // ifNoneMatch
-                        status.isAppend() ? range.getStart() : null,
-                        status.isAppend() ? (range.getEnd() == -1 ? null : range.getEnd()) : null);
+                        status.isAppend() ? status.getOffset() : null,
+                        status.isAppend() && status.getLength() > 0 ? status.getOffset() + status.getLength() : null);
             }
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Reading stream with content length %d", object.getContentLength()));
