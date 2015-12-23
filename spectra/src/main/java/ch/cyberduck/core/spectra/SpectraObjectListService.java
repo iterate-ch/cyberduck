@@ -31,9 +31,6 @@ import com.spectralogic.ds3client.models.CommonPrefixes;
 import com.spectralogic.ds3client.models.Contents;
 import com.spectralogic.ds3client.networking.FailedRequestException;
 
-/**
- * @version $Id:$
- */
 public class SpectraObjectListService implements ListService {
     private static final Logger log = Logger.getLogger(SpectraObjectListService.class);
 

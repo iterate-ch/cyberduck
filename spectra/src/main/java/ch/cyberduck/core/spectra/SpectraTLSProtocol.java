@@ -3,9 +3,6 @@ package ch.cyberduck.core.spectra;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
 
-/**
- * @version $Id:$
- */
 public class SpectraTLSProtocol extends SpectraProtocol {
 
     @Override

@@ -22,9 +22,6 @@ import com.spectralogic.ds3client.models.bulk.Ds3Object;
 import com.spectralogic.ds3client.networking.FailedRequestException;
 import com.spectralogic.ds3client.serializer.XmlProcessingException;
 
-/**
- * @version $Id:$
- */
 public class SpectraBulkService implements Bulk<UUID> {
 
     private final SpectraSession session;

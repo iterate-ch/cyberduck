@@ -8,9 +8,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.Collections;
 
-/**
- * @version $Id:$
- */
 public class SpectraTouchFeature implements Touch {
 
     private final SpectraSession session;

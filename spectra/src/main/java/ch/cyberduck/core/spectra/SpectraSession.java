@@ -16,9 +16,6 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id:$
- */
 public class SpectraSession extends S3Session {
     private static final Logger log = Logger.getLogger(SpectraSession.class);
 

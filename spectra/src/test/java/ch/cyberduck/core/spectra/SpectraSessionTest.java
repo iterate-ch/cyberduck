@@ -20,9 +20,6 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.assertFalse;
 
-/**
- * @version $Id:$
- */
 public class SpectraSessionTest extends AbstractTestCase {
 
     @Test(expected = LoginFailureException.class)
