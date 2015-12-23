@@ -25,6 +25,7 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
+import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -34,6 +35,7 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -46,6 +48,7 @@ import com.github.sardine.impl.handler.ETagResponseHandler;
  * @version $Id$
  */
 public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements Write {
+    private static final Logger log = Logger.getLogger(DAVWriteFeature.class);
 
     private DAVSession session;
 
@@ -74,19 +77,11 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
     public ResponseOutputStream<String> write(final Path file, final TransferStatus status) throws BackgroundException {
         final List<Header> headers = new ArrayList<Header>();
         if(status.isAppend()) {
-            if(-1 == status.getLength()) {
-                // Complete length unknown. An asterisk
-                // character ("*") in place of the complete-length indicates that the
-                // representation length was unknown when the header field was generated.
-                headers.add(new BasicHeader(HttpHeaders.CONTENT_RANGE, String.format("bytes %d-*/*",
-                        status.getOffset()))
-                );
+            final String header = HttpRange.withStatus(status).toHeader(HttpHeaders.CONTENT_RANGE);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Add range header %s for file %s", header, file));
             }
-            else {
-                headers.add(new BasicHeader(HttpHeaders.CONTENT_RANGE, String.format("bytes %d-%d/%d",
-                        status.getOffset(), status.getOffset() + status.getLength() - 1, status.getOffset() + status.getLength()))
-                );
-            }
+            headers.add(new BasicHeader(HttpHeaders.CONTENT_RANGE, header));
         }
         if(expect) {
             if(status.getLength() > 0L) {
