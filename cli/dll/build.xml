@@ -35,6 +35,7 @@
                classloader="ikvm.runtime.AssemblyClassLoader" version="${version}" debug="false" verbose="true">
             <reference path="${build}/Cyberduck.Core.dll"/>
             <reference path="${build}/Cyberduck.Protocols.dll"/>
+            <arg value="-skipDuplicates"/>
             <fileset dir="${build}">
                 <include name="*.jar"/>
                 <exclude name="asm-*.jar"/>

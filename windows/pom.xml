@@ -39,7 +39,7 @@
                                             <groupId>net.ikvm</groupId>
                                             <artifactId>ikvm</artifactId>
                                             <type>zip</type>
-                                            <version>8.1.5717.0</version>
+                                            <version>8.1.5717.0.patched</version>
                                         </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${project.build.directory}</outputDirectory>
