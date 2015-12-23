@@ -15,9 +15,6 @@ import com.spectralogic.ds3client.NetworkClientImpl;
 import com.spectralogic.ds3client.models.Credentials;
 import com.spectralogic.ds3client.networking.ConnectionDetails;
 
-/**
- * @version $Id:$
- */
 public class SpectraClientBuilder {
     public Ds3Client wrap(final S3Session session) {
         final Host host = session.getHost();

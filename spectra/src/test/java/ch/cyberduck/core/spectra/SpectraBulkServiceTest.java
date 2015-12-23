@@ -18,9 +18,6 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-/**
- * @version $Id:$
- */
 public class SpectraBulkServiceTest extends AbstractTestCase {
 
     @Test

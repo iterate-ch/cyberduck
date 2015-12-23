@@ -16,9 +16,6 @@ import java.io.IOException;
 
 import com.spectralogic.ds3client.networking.FailedRequestException;
 
-/**
- * @version $Id:$
- */
 public class SpectraExceptionMappingService extends AbstractExceptionMappingService<FailedRequestException> {
 
     @Override
