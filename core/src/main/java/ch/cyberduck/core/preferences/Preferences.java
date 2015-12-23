@@ -722,6 +722,8 @@ public abstract class Preferences {
 
         defaults.put("openstack.upload.md5", String.valueOf(true));
 
+        defaults.put("openstack.write.largeupload", String.valueOf(false));
+
         defaults.put("openstack.upload.largeobject", String.valueOf(true));
         defaults.put("openstack.upload.largeobject.concurrency", String.valueOf(5));
         defaults.put("openstack.upload.largeobject.segments.prefix", ".file-segments/");
