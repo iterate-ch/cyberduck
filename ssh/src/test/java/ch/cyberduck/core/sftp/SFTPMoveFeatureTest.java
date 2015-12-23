@@ -81,7 +81,7 @@ public class SFTPMoveFeatureTest extends AbstractTestCase {
         new SFTPTouchFeature(session).touch(test);
         final Path target = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SFTPTouchFeature(session).touch(target);
-        new SFTPMoveFeature(session).move(test, target, false, new Delete.Callback() {
+        new SFTPMoveFeature(session).move(test, target, true, new Delete.Callback() {
             @Override
             public void delete(final Path file) {
             }

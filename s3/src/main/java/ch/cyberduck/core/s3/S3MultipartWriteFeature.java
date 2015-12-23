@@ -166,14 +166,13 @@ public class S3MultipartWriteFeature implements Write {
                 final Map<String, String> parameters = new HashMap<String, String>();
                 parameters.put("uploadId", multipart.getUploadId());
                 parameters.put("partNumber", String.valueOf(++partNumber));
-                final TransferStatus status = new TransferStatus().parameters(parameters).length(len).skip(off);
+                final TransferStatus status = new TransferStatus().parameters(parameters).length(len);
                 switch(session.getSignatureVersion()) {
                     case AWS4HMACSHA256:
                         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(b, off, len)));
                         break;
                 }
-                final S3Object part = new S3WriteFeature(session).getDetails(containerService.getKey(file),
-                        status);
+                final S3Object part = new S3WriteFeature(session).getDetails(containerService.getKey(file), status);
                 session.getClient().putObjectWithRequestEntityImpl(
                         containerService.getContainer(file).getName(), part,
                         new ByteArrayEntity(b, off, len), parameters);

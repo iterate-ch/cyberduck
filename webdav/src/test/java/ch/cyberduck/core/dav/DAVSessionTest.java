@@ -556,6 +556,7 @@ public class DAVSessionTest extends AbstractTestCase {
     }
 
     @Test(expected = InteroperabilityException.class)
+    @Ignore
     public void testMutualTlsUnknownCA() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "auth.startssl.com");
         final DAVSession session = new DAVSession(host, new DefaultX509TrustManager(),
@@ -588,7 +589,12 @@ public class DAVSessionTest extends AbstractTestCase {
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
                 new DisabledProgressListener(), new DisabledTranscriptListener());
-        c.connect(session, PathCache.empty());
+        try {
+            c.connect(session, PathCache.empty());
+        }
+        catch(InteroperabilityException e) {
+            throw e;
+        }
     }
 
     @Test(expected = InteroperabilityException.class)

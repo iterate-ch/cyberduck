@@ -34,6 +34,7 @@
         <ikvmc target="library" out="${build}/Cyberduck.Protocols.dll" home="${ikvm.home}"
                classloader="ikvm.runtime.AssemblyClassLoader" version="${version}" debug="false" verbose="true">
             <reference path="${build}/Cyberduck.Core.dll"/>
+            <arg value="-skipDuplicates"/>
             <fileset dir="${build}">
                 <include name="*.jar"/>
                 <exclude name="*-sources.jar"/>
