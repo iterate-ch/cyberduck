@@ -27,7 +27,6 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.s3.S3AttributesFeature;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3ReadFeature;
 import ch.cyberduck.core.s3.S3WriteFeature;
@@ -121,7 +120,6 @@ public class SpectraReadFeatureTest extends AbstractTestCase {
         IOUtils.closeQuietly(out);
         status.setAppend(true);
         status.setOffset(100L);
-        new S3AttributesFeature(session).find(test);
         final InputStream in = new S3ReadFeature(session).read(test, status.length(content.length - 100));
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
