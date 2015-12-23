@@ -179,14 +179,15 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Creating SLO manifest %s for %s", manifest, file));
             }
-            final StorageObject stored = new StorageObject(manifest);
-            session.getClient().createSLOManifestObject(regionService.lookup(
-                            containerService.getContainer(file)),
+            final StorageObject stored = new StorageObject(containerService.getKey(file));
+            final String checksum = session.getClient().createSLOManifestObject(regionService.lookup(
+                    containerService.getContainer(file)),
                     containerService.getContainer(file).getName(),
                     status.getMime(),
                     containerService.getKey(file), manifest, Collections.<String, String>emptyMap());
             // The value of the Content-Length header is the total size of all segment objects, and the value of the ETag header is calculated by taking
             // the ETag value of each segment, concatenating them together, and then returning the MD5 checksum of the result.
+            stored.setMd5sum(checksum);
             return stored;
         }
         catch(GenericException e) {
