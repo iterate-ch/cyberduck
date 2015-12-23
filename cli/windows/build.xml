@@ -19,7 +19,7 @@
  *	Bug fixes, suggestions and comments should be sent to:
  *	dkocher@cyberduck.io
  -->
-<project name="Cyberduck Native Libraries" basedir=".">
+<project name="Cyberduck CLI Windows" basedir=".">
 
     <import file="../../build.xml"/>
 
