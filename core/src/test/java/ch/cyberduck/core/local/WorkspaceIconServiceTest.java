@@ -40,7 +40,7 @@ public class WorkspaceIconServiceTest extends AbstractTestCase {
         final Local file = new Local(PreferencesFactory.get().getProperty("tmp.dir"),
                 UUID.randomUUID().toString());
         LocalTouchFactory.get().touch(file);
-        assertTrue(s.update(file, NSImage.imageWithContentsOfFile("../../img/download0.icns")));
+        assertTrue(s.update(file, NSImage.imageWithContentsOfFile("../img/download0.icns")));
         file.delete();
     }
 
@@ -52,7 +52,7 @@ public class WorkspaceIconServiceTest extends AbstractTestCase {
         assertFalse(s.remove(file));
         LocalTouchFactory.get().touch(file);
         assertFalse(s.remove(file));
-        assertTrue(s.update(file, NSImage.imageWithContentsOfFile("../../img/download0.icns")));
+        assertTrue(s.update(file, NSImage.imageWithContentsOfFile("../img/download0.icns")));
         assertTrue(s.remove(file));
         file.delete();
     }
