@@ -1,7 +1,5 @@
 package ch.cyberduck.core.local;
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
@@ -9,7 +7,7 @@ import static org.junit.Assert.assertFalse;
 /**
  * @version $Id$
  */
-public class WorkspaceBrowserLauncherTest extends AbstractTestCase {
+public class WorkspaceBrowserLauncherTest {
 
     @Test
     public void testOpen() throws Exception {

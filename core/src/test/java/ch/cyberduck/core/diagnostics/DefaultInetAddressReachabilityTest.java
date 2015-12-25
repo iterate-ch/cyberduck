@@ -17,7 +17,6 @@ package ch.cyberduck.core.diagnostics;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.TestProtocol;
 
@@ -31,7 +30,7 @@ import static org.junit.Assert.assertTrue;
  * @version $Id$
  */
 @Ignore
-public class DefaultInetAddressReachabilityTest extends AbstractTestCase {
+public class DefaultInetAddressReachabilityTest {
 
     @Test
     public void testIsReachablePort80() throws Exception {

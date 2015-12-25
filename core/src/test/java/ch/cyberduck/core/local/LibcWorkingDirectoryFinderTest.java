@@ -17,13 +17,11 @@ package ch.cyberduck.core.local;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
 
-public class LibcWorkingDirectoryFinderTest extends AbstractTestCase {
+public class LibcWorkingDirectoryFinderTest {
 
     @Test
     public void testFind() throws Exception {

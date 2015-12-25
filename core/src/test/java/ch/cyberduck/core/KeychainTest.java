@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
  * @version $Id$
  */
 @Ignore
-public class KeychainTest extends AbstractTestCase {
+public class KeychainTest {
 
     @Test
     public void testFindPassword() throws Exception {

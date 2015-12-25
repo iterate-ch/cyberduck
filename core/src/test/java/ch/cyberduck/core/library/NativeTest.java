@@ -17,8 +17,6 @@ package ch.cyberduck.core.library;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
@@ -26,7 +24,7 @@ import static org.junit.Assert.assertFalse;
 /**
  * @version $Id$
  */
-public class NativeTest extends AbstractTestCase {
+public class NativeTest {
 
     @Test
     public void testLoad() throws Exception {

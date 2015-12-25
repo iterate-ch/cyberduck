@@ -26,7 +26,7 @@ import static org.junit.Assert.assertNotEquals;
 /**
  * @version $Id:$
  */
-public class HeaderTest extends AbstractTestCase {
+public class HeaderTest {
 
     @Test
     public void testEquals() throws Exception {

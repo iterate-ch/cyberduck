@@ -32,7 +32,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 @Ignore
-public class KeychainStoreTest extends AbstractTestCase {
+public class KeychainStoreTest {
 
     @Test
     public void testGetAliasesForIssuerDN() throws Exception {

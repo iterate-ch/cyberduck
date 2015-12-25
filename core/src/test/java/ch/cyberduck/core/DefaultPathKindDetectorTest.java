@@ -7,7 +7,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class DefaultPathKindDetectorTest extends AbstractTestCase {
+public class DefaultPathKindDetectorTest {
 
     @Test
     public void testDetect() throws Exception {

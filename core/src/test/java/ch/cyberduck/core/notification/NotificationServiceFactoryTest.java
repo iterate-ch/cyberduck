@@ -18,8 +18,6 @@ package ch.cyberduck.core.notification;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.junit.Test;
 
 import static org.junit.Assert.assertSame;
@@ -27,7 +25,7 @@ import static org.junit.Assert.assertSame;
 /**
  * @version $Id$
  */
-public class NotificationServiceFactoryTest extends AbstractTestCase {
+public class NotificationServiceFactoryTest {
 
     @Test
     public void testGet() throws Exception {

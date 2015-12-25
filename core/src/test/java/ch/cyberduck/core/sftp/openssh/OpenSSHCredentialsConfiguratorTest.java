@@ -18,14 +18,13 @@ package ch.cyberduck.core.sftp.openssh;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.sftp.openssh.config.transport.OpenSshConfig;
-import ch.cyberduck.core.NullLocal;
 
 import org.junit.Test;
 
@@ -34,7 +33,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class OpenSSHCredentialsConfiguratorTest extends AbstractTestCase {
+public class OpenSSHCredentialsConfiguratorTest {
 
     @Test
     public void testNoConfigure() throws Exception {

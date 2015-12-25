@@ -25,7 +25,7 @@ import static org.junit.Assert.assertFalse;
 /**
  * @version $Id:$
  */
-public class LoginOptionsTest extends AbstractTestCase {
+public class LoginOptionsTest {
 
     @Test
     public void testEquals() throws Exception {

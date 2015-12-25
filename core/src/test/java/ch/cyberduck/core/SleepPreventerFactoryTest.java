@@ -7,7 +7,7 @@ import static org.junit.Assert.assertNull;
 /**
  * @version $Id:$
  */
-public class SleepPreventerFactoryTest extends AbstractTestCase {
+public class SleepPreventerFactoryTest {
 
     @Test
     public void testLock() throws Exception {

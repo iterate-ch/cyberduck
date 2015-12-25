@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class AttributedListTest extends AbstractTestCase {
+public class AttributedListTest {
 
     @Test
     public void testFilter() throws Exception {

@@ -1,10 +1,9 @@
 package ch.cyberduck.core.worker;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.NullSession;
 
 import org.junit.Test;
 
@@ -16,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class ReadSizeWorkerTest extends AbstractTestCase {
+public class ReadSizeWorkerTest {
 
     @Test
     public void testRun() throws Exception {

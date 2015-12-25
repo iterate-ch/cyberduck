@@ -1,7 +1,5 @@
 package ch.cyberduck.core.local;
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
@@ -9,7 +7,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  * @version $Id:$
  */
-public class ApplicationBadgeLabelerFactoryTest extends AbstractTestCase {
+public class ApplicationBadgeLabelerFactoryTest {
 
     @Test
     public void testGet() throws Exception {

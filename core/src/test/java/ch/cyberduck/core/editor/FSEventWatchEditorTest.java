@@ -18,7 +18,6 @@ package ch.cyberduck.core.editor;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
@@ -36,7 +35,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class FSEventWatchEditorTest extends AbstractTestCase {
+public class FSEventWatchEditorTest {
 
     @Test
     public void testTemporaryPath() throws Exception {

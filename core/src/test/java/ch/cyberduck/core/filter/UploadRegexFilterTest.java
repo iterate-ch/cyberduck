@@ -1,6 +1,5 @@
 package ch.cyberduck.core.filter;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.NullLocal;
 
 import org.junit.Test;
@@ -13,7 +12,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class UploadRegexFilterTest extends AbstractTestCase {
+public class UploadRegexFilterTest {
 
     @Test
     public void testAccept() throws Exception {

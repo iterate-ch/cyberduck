@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class TransferCollectionTest extends AbstractTestCase {
+public class TransferCollectionTest {
 
     @Test
     public void testEmpty() throws Exception {
@@ -70,6 +70,7 @@ public class TransferCollectionTest extends AbstractTestCase {
 
     @Test
     public void testLoadCopyWithDestination() throws Exception {
+        ProtocolFactory.register(new TestProtocol());
         TransferCollection c = new TransferCollection(new Local("src/test/resources/TransferCollectionCopyFormat.plist")) {
             @Override
             public void trash() {

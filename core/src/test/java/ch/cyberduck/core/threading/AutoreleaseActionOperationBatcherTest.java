@@ -18,14 +18,12 @@ package ch.cyberduck.core.threading;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.junit.Test;
 
 /**
  * @version $Id$
  */
-public class AutoreleaseActionOperationBatcherTest extends AbstractTestCase {
+public class AutoreleaseActionOperationBatcherTest {
 
     @Test
     public void testOperate() throws Exception {

@@ -27,7 +27,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class HostTest extends AbstractTestCase {
+public class HostTest {
 
     @Test
     public void testWebURL() {

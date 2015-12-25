@@ -1,7 +1,5 @@
 package ch.cyberduck.core.transfer;
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -9,7 +7,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class SpeedometerTest extends AbstractTestCase {
+public class SpeedometerTest {
 
     @Test
     public void testProgressRemaining() throws Exception {

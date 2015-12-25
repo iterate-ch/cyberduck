@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class CredentialsTest extends AbstractTestCase {
+public class CredentialsTest {
 
     @Test
     public void testEquals() {

@@ -17,7 +17,6 @@ package ch.cyberduck.core.transfer.download;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Path;
 
 import org.junit.Test;
@@ -29,7 +28,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class DownloadRegexPriorityComparatorTest extends AbstractTestCase {
+public class DownloadRegexPriorityComparatorTest {
 
     @Test
     public void testCompare() throws Exception {

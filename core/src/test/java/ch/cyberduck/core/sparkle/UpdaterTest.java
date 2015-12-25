@@ -18,15 +18,13 @@ package ch.cyberduck.core.sparkle;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
 
 @Ignore
-public class UpdaterTest extends AbstractTestCase {
+public class UpdaterTest {
 
     @Test
     public void testCreate() throws Exception {

@@ -17,7 +17,6 @@ package ch.cyberduck.core.transfer;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -37,7 +36,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class TransferQueueTest extends AbstractTestCase {
+public class TransferQueueTest {
 
     @Test
     public void testAddRemove() throws Exception {

@@ -1,6 +1,5 @@
 package ch.cyberduck.core.cdn;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.FactoryException;
 
 import org.junit.Test;
@@ -12,7 +11,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class DistributionTest extends AbstractTestCase {
+public class DistributionTest {
 
     @Test
     public void testEquals() throws Exception {

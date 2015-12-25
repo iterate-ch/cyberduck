@@ -10,7 +10,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class ArchiveTest extends AbstractTestCase {
+public class ArchiveTest {
 
     @Test
     public void testForName() throws Exception {

@@ -1,8 +1,7 @@
 package ch.cyberduck.core.transfer.normalizer;
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.NullLocal;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.transfer.TransferItem;
 
 import org.junit.Test;
@@ -17,7 +16,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class UploadRootPathsNormalizerTest extends AbstractTestCase {
+public class UploadRootPathsNormalizerTest {
 
     @Test
     public void testNormalize() throws Exception {

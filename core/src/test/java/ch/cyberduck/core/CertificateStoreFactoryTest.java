@@ -28,7 +28,7 @@ import static org.junit.Assert.assertSame;
 /**
  * @version $Id$
  */
-public class CertificateStoreFactoryTest extends AbstractTestCase {
+public class CertificateStoreFactoryTest {
 
     public void testGet() throws Exception {
         assertSame(CertificateStoreFactory.get(), CertificateStoreFactory.get());

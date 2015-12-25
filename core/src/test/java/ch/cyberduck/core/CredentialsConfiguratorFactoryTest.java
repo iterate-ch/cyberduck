@@ -25,7 +25,7 @@ import static org.junit.Assert.assertSame;
 /**
  * @version $Id:$
  */
-public class CredentialsConfiguratorFactoryTest extends AbstractTestCase {
+public class CredentialsConfiguratorFactoryTest {
 
     @Test
     public void testGet() throws Exception {

@@ -24,7 +24,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class AttributesTest extends AbstractTestCase {
+public class AttributesTest {
 
     @Test
     public void testClone() throws Exception {

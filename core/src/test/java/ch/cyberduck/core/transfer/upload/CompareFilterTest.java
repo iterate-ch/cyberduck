@@ -17,17 +17,16 @@ package ch.cyberduck.core.transfer.upload;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.NullLocal;
+import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.synchronization.ComparisonServiceFilter;
-import ch.cyberduck.core.NullLocal;
-import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.DisabledUploadSymlinkResolver;
 
@@ -41,18 +40,18 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class CompareFilterTest extends AbstractTestCase {
+public class CompareFilterTest {
 
     @Test
     public void testAcceptEqual() throws Exception {
         final CompareFilter filter = new CompareFilter(new DisabledUploadSymlinkResolver(),
                 new NullSession(new Host(new TestProtocol())), new UploadFilterOptions(),
                 new ComparisonServiceFilter(new NullSession(new Host(new TestProtocol())), null, new DisabledProgressListener()) {
-            @Override
-            public Comparison compare(final Path file, final Local local) throws BackgroundException {
-                return Comparison.equal;
-            }
-        }
+                    @Override
+                    public Comparison compare(final Path file, final Local local) throws BackgroundException {
+                        return Comparison.equal;
+                    }
+                }
         );
         final Path file = new Path("/", EnumSet.of(Path.Type.file));
         assertFalse(filter.accept(file, new NullLocal("t") {
@@ -68,11 +67,11 @@ public class CompareFilterTest extends AbstractTestCase {
         final CompareFilter filter = new CompareFilter(new DisabledUploadSymlinkResolver(),
                 new NullSession(new Host(new TestProtocol())), new UploadFilterOptions(),
                 new ComparisonServiceFilter(new NullSession(new Host(new TestProtocol())), null, new DisabledProgressListener()) {
-            @Override
-            public Comparison compare(final Path file, final Local local) throws BackgroundException {
-                return Comparison.equal;
-            }
-        });
+                    @Override
+                    public Comparison compare(final Path file, final Local local) throws BackgroundException {
+                        return Comparison.equal;
+                    }
+                });
         assertTrue(
                 filter.accept(new Path("/n", EnumSet.of(Path.Type.directory)), new NullLocal("/n") {
                             @Override

@@ -18,17 +18,16 @@ package ch.cyberduck.core.worker;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.UnixPermission;
-import ch.cyberduck.core.NullSession;
 
 import org.junit.Test;
 
@@ -41,7 +40,7 @@ import static org.junit.Assert.fail;
 /**
  * @version $Id$
  */
-public class WritePermissionWorkerTest extends AbstractTestCase {
+public class WritePermissionWorkerTest {
 
     @Test
     public void testRun() throws Exception {

@@ -1,6 +1,5 @@
 package ch.cyberduck.core.io;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -22,7 +21,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class StreamCopierTest extends AbstractTestCase {
+public class StreamCopierTest {
 
     @Test
     public void testIntegrity() throws Exception {

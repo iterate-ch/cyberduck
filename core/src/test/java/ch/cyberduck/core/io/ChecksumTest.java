@@ -18,14 +18,12 @@ package ch.cyberduck.core.io;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-public class ChecksumTest extends AbstractTestCase {
+public class ChecksumTest {
 
     @Test
     public void testParse() throws Exception {

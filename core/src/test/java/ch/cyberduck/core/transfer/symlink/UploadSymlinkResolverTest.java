@@ -1,11 +1,10 @@
 package ch.cyberduck.core.transfer.symlink;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Symlink;
-import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.transfer.TransferItem;
 
 import org.junit.Test;
@@ -20,7 +19,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class UploadSymlinkResolverTest extends AbstractTestCase {
+public class UploadSymlinkResolverTest {
 
     @Test
     public void testNoSymbolicLink() throws Exception {

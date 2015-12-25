@@ -17,13 +17,11 @@ package ch.cyberduck.core.local;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class ApplicationTest extends AbstractTestCase {
+public class ApplicationTest {
 
     @Test
     public void testEquals() throws Exception {

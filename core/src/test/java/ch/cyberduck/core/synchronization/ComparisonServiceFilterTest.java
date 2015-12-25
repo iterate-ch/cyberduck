@@ -1,9 +1,10 @@
 package ch.cyberduck.core.synchronization;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocalAttributes;
+import ch.cyberduck.core.NullLocal;
+import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
@@ -13,8 +14,6 @@ import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
-import ch.cyberduck.core.NullLocal;
-import ch.cyberduck.core.NullSession;
 
 import org.junit.Test;
 
@@ -29,7 +28,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class ComparisonServiceFilterTest extends AbstractTestCase {
+public class ComparisonServiceFilterTest {
 
     @Test
     public void testCompareEqualResultFile() throws Exception {

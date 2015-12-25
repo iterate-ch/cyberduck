@@ -26,7 +26,7 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
-public class PathTest extends AbstractTestCase {
+public class PathTest {
 
     @Test
     public void testDictionaryDirectory() {

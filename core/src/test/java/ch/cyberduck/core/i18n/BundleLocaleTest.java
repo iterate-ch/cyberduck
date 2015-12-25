@@ -1,7 +1,5 @@
 package ch.cyberduck.core.i18n;
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -9,7 +7,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class BundleLocaleTest extends AbstractTestCase {
+public class BundleLocaleTest {
 
     @Test
     public void testGet() throws Exception {

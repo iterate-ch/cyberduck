@@ -17,7 +17,6 @@ package ch.cyberduck.core.local;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.FactoryException;
 
 import org.junit.Test;
@@ -25,7 +24,7 @@ import org.junit.Test;
 /**
  * @version $Id$
  */
-public class RevealServiceFactoryTest extends AbstractTestCase {
+public class RevealServiceFactoryTest {
 
     @Test(expected = FactoryException.class)
     public void testGet() throws Exception {

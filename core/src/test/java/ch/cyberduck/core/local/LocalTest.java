@@ -1,6 +1,5 @@
 package ch.cyberduck.core.local;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -17,7 +16,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class LocalTest extends AbstractTestCase {
+public class LocalTest {
 
     @Test
     public void testList() throws Exception {
@@ -28,12 +27,6 @@ public class LocalTest extends AbstractTestCase {
                 return false;
             }
         }).isEmpty());
-    }
-
-    private final class TestLocal extends Local {
-        private TestLocal(final String name) {
-            super(name);
-        }
     }
 
     @Test(expected = AccessDeniedException.class)
@@ -87,6 +80,27 @@ public class LocalTest extends AbstractTestCase {
         }
     }
 
+    @Test(expected = LocalAccessDeniedException.class)
+    public void testRenameExistingDirectory() throws Exception {
+        final TestLocal l = new TestLocal(System.getProperty("java.io.tmpdir") + UUID.randomUUID().toString());
+        l.mkdir();
+        final TestLocal n = new TestLocal(System.getProperty("java.io.tmpdir") + UUID.randomUUID().toString());
+        n.rename(l);
+    }
+
+    @Test
+    @Ignore
+    public void testRenameDirectory() throws Exception {
+        final TestLocal l = new TestLocal(System.getProperty("java.io.tmpdir") + UUID.randomUUID().toString());
+        final TestLocal n = new TestLocal(System.getProperty("java.io.tmpdir") + UUID.randomUUID().toString());
+        n.mkdir();
+        n.rename(l);
+        assertFalse(n.exists());
+        assertTrue(l.exists());
+        l.delete();
+        assertFalse(l.exists());
+    }
+
     private static class WindowsLocal extends Local {
 
         public WindowsLocal(final String parent, final String name) {
@@ -107,24 +121,9 @@ public class LocalTest extends AbstractTestCase {
         }
     }
 
-    @Test(expected = LocalAccessDeniedException.class)
-    public void testRenameExistingDirectory() throws Exception {
-        final TestLocal l = new TestLocal(System.getProperty("java.io.tmpdir") + UUID.randomUUID().toString());
-        l.mkdir();
-        final TestLocal n = new TestLocal(System.getProperty("java.io.tmpdir") + UUID.randomUUID().toString());
-        n.rename(l);
-    }
-
-    @Test
-    @Ignore
-    public void testRenameDirectory() throws Exception {
-        final TestLocal l = new TestLocal(System.getProperty("java.io.tmpdir") + UUID.randomUUID().toString());
-        final TestLocal n = new TestLocal(System.getProperty("java.io.tmpdir") + UUID.randomUUID().toString());
-        n.mkdir();
-        n.rename(l);
-        assertFalse(n.exists());
-        assertTrue(l.exists());
-        l.delete();
-        assertFalse(l.exists());
+    private final class TestLocal extends Local {
+        private TestLocal(final String name) {
+            super(name);
+        }
     }
 }

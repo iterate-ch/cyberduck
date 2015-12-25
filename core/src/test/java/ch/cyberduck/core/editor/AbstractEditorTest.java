@@ -17,10 +17,10 @@ package ch.cyberduck.core.editor;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TestProtocol;
@@ -31,7 +31,6 @@ import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.local.DisabledApplicationQuitCallback;
 import ch.cyberduck.core.local.DisabledFileWatcherListener;
 import ch.cyberduck.core.local.FileWatcherListener;
-import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -48,18 +47,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class AbstractEditorTest extends AbstractTestCase {
-
-    private class DisabledEditor extends AbstractEditor {
-        public DisabledEditor(final Application application, final Session session, final Path file) {
-            super(application, session, file, new DisabledProgressListener());
-        }
-
-        @Override
-        protected void watch(final Local local, final FileWatcherListener listener) throws IOException {
-            //
-        }
-    }
+public class AbstractEditorTest {
 
     @Test
     public void testEquals() throws Exception {
@@ -121,5 +109,16 @@ public class AbstractEditorTest extends AbstractTestCase {
         assertNotNull(editor.getLocal());
         assertTrue(e.get());
         assertTrue(editor.getLocal().exists());
+    }
+
+    private class DisabledEditor extends AbstractEditor {
+        public DisabledEditor(final Application application, final Session session, final Path file) {
+            super(application, session, file, new DisabledProgressListener());
+        }
+
+        @Override
+        protected void watch(final Local local, final FileWatcherListener listener) throws IOException {
+            //
+        }
     }
 }

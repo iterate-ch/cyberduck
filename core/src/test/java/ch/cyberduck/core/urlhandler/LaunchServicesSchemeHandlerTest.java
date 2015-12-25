@@ -1,4 +1,3 @@
-
 package ch.cyberduck.core.urlhandler;
 
 import ch.cyberduck.core.Scheme;

@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class PathCacheTest extends AbstractTestCase {
+public class PathCacheTest {
 
     @Test
     public void testLookup() throws Exception {

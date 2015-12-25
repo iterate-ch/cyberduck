@@ -7,7 +7,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class HostUrlProviderTest extends AbstractTestCase {
+public class HostUrlProviderTest {
 
     @Test
     public void testToUrl() {

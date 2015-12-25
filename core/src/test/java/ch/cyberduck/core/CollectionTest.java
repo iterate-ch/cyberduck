@@ -10,7 +10,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class CollectionTest extends AbstractTestCase {
+public class CollectionTest {
 
     @Test
     public void testClear() throws Exception {

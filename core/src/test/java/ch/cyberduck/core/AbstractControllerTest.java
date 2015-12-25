@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class AbstractControllerTest extends AbstractTestCase {
+public class AbstractControllerTest {
 
     @Test
     public void testBackground() throws Exception {

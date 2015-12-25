@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class KeychainLoginServiceTest extends AbstractTestCase {
+public class KeychainLoginServiceTest {
 
     @Test(expected = LoginCanceledException.class)
     public void testMessages() throws Exception {

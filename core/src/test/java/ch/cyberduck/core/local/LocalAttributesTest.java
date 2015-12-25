@@ -1,6 +1,5 @@
 package ch.cyberduck.core.local;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.Permission;
 
@@ -14,7 +13,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class LocalAttributesTest extends AbstractTestCase {
+public class LocalAttributesTest {
 
     @Test
     public void testGetSize() throws Exception {

@@ -1,11 +1,10 @@
 package ch.cyberduck.core.pasteboard;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.NullSession;
 
 import org.junit.Test;
 
@@ -14,7 +13,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class PathPasteboardFactoryTest extends AbstractTestCase {
+public class PathPasteboardFactoryTest {
 
     @Test
     public void testGetPasteboard() throws Exception {

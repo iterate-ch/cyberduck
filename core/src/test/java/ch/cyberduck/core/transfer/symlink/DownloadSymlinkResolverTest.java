@@ -1,7 +1,6 @@
 package ch.cyberduck.core.transfer.symlink;
 
 import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.transfer.TransferItem;
@@ -17,7 +16,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class DownloadSymlinkResolverTest extends AbstractTestCase {
+public class DownloadSymlinkResolverTest {
 
     @Test
     public void testNotSupported() throws Exception {

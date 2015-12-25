@@ -18,8 +18,6 @@ package ch.cyberduck.core.threading;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -36,7 +34,7 @@ import static org.junit.Assert.fail;
 /**
  * @version $Id$
  */
-public class ThreadPoolTest extends AbstractTestCase {
+public class ThreadPoolTest {
 
     @Test(expected = RejectedExecutionException.class)
     public void testShutdown() throws Exception {

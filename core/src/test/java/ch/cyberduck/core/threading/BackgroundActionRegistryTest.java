@@ -18,7 +18,6 @@ package ch.cyberduck.core.threading;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import org.junit.Test;
@@ -31,7 +30,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class BackgroundActionRegistryTest extends AbstractTestCase {
+public class BackgroundActionRegistryTest {
 
     @Test
     public void testGlobal() throws Exception {

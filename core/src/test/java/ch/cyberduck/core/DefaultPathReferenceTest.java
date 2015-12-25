@@ -26,7 +26,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class DefaultPathReferenceTest extends AbstractTestCase {
+public class DefaultPathReferenceTest {
 
     @Test
     public void testUnique() throws Exception {

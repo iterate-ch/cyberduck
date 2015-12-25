@@ -24,7 +24,7 @@ import org.junit.Test;
 
 import java.util.EnumSet;
 
-public class LimitedListProgressListenerTest extends AbstractTestCase {
+public class LimitedListProgressListenerTest {
 
     @Test
     public void testChunk() throws Exception {

@@ -9,7 +9,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id:$
  */
-public class DescriptiveUrlBagTest extends AbstractTestCase {
+public class DescriptiveUrlBagTest {
 
     @Test
     public void testFilter() throws Exception {

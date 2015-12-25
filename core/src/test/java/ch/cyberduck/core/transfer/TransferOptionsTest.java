@@ -1,6 +1,5 @@
 package ch.cyberduck.core.transfer;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.junit.Test;
@@ -10,7 +9,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class TransferOptionsTest extends AbstractTestCase {
+public class TransferOptionsTest {
 
     @Test
     public void testQuarantine() {

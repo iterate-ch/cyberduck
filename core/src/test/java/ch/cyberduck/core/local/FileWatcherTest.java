@@ -1,6 +1,5 @@
 package ch.cyberduck.core.local;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.io.watchservice.DisabledWatchService;
 
@@ -14,7 +13,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class FileWatcherTest extends AbstractTestCase {
+public class FileWatcherTest {
 
     @Test
     public void testMatchDefaultLocal() throws IOException {

@@ -7,7 +7,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class URIEncoderTest extends AbstractTestCase {
+public class URIEncoderTest {
 
     @Test
     public void testEncode() throws Exception {

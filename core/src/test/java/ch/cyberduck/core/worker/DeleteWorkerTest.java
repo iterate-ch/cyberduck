@@ -1,19 +1,18 @@
 package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.NullSession;
 
 import org.junit.Test;
 
@@ -27,7 +26,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class DeleteWorkerTest extends AbstractTestCase {
+public class DeleteWorkerTest {
 
     @Test
     public void testCompile() throws Exception {

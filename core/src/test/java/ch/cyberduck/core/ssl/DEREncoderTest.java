@@ -17,8 +17,6 @@ package ch.cyberduck.core.ssl;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.junit.Test;
 
 import java.io.FileInputStream;
@@ -32,7 +30,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class DEREncoderTest extends AbstractTestCase {
+public class DEREncoderTest {
 
     @Test
     public void testEncode() throws Exception {

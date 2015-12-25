@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class StringAppenderTest extends AbstractTestCase {
+public class StringAppenderTest {
 
     @Test
     public void testAppend() throws Exception {

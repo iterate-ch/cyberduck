@@ -19,7 +19,6 @@ package ch.cyberduck.core.preferences;
  */
 
 import ch.cyberduck.binding.foundation.NSBundle;
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.NotfoundException;
 
@@ -28,7 +27,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class BundleApplicationResourcesFinderTest extends AbstractTestCase {
+public class BundleApplicationResourcesFinderTest {
 
     @Test
     public void testBundle() throws Exception {

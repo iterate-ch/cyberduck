@@ -18,13 +18,11 @@ package ch.cyberduck.core.editor;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
 
-public class DefaultEditorFactoryTest extends AbstractTestCase {
+public class DefaultEditorFactoryTest {
 
     @Test
     public void testGetDefaultEditor() throws Exception {

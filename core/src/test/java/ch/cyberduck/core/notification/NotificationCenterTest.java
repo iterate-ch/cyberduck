@@ -1,13 +1,11 @@
 package ch.cyberduck.core.notification;
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.junit.Test;
 
 /**
  * @version $Id$
  */
-public class NotificationCenterTest extends AbstractTestCase {
+public class NotificationCenterTest {
 
     @Test
     public void testNotify() throws Exception {

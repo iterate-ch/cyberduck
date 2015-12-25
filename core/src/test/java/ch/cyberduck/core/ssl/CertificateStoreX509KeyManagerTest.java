@@ -18,7 +18,6 @@ package ch.cyberduck.core.ssl;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.DisabledCertificateStore;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
@@ -36,7 +35,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class CertificateStoreX509KeyManagerTest extends AbstractTestCase {
+public class CertificateStoreX509KeyManagerTest {
 
     @Test
     public void testChooseClientAliasNotfound() throws Exception {

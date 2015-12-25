@@ -1,6 +1,5 @@
 package ch.cyberduck.core.local;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
 
@@ -13,7 +12,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class TemporaryFileServiceTest extends AbstractTestCase {
+public class TemporaryFileServiceTest {
 
     @Test
     public void testCreateFile() throws Exception {

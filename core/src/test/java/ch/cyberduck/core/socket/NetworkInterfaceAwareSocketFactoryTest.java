@@ -17,8 +17,6 @@ package ch.cyberduck.core.socket;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.junit.Test;
 
 import java.net.Inet6Address;
@@ -33,7 +31,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class NetworkInterfaceAwareSocketFactoryTest extends AbstractTestCase {
+public class NetworkInterfaceAwareSocketFactoryTest {
 
     @Test
     public void testFindWithExplicitInterfaceZoneId() throws Exception {

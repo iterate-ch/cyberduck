@@ -18,7 +18,6 @@ package ch.cyberduck.core.aquaticprime;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Local;
 
 import org.junit.Ignore;
@@ -27,7 +26,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 @Ignore
-public class ReceiptFactoryTest extends AbstractTestCase {
+public class ReceiptFactoryTest {
 
     @Test
     public void testCreate() throws Exception {

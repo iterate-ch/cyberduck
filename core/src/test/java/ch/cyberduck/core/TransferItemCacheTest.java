@@ -29,7 +29,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class TransferItemCacheTest extends AbstractTestCase {
+public class TransferItemCacheTest {
 
     @Test
     public void testRemove() throws Exception {

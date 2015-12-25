@@ -1,15 +1,14 @@
 package ch.cyberduck.core.transfer.download;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocalAttributes;
+import ch.cyberduck.core.NullLocal;
+import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
-import ch.cyberduck.core.NullLocal;
-import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.DisabledDownloadSymlinkResolver;
 
@@ -23,7 +22,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class OverwriteFilterTest extends AbstractTestCase {
+public class OverwriteFilterTest {
 
     @Test
     public void testAccept() throws Exception {

@@ -18,8 +18,6 @@ package ch.cyberduck.core.local;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.junit.Test;
 
 import java.util.List;
@@ -29,7 +27,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class LaunchServicesApplicationFinderTest extends AbstractTestCase {
+public class LaunchServicesApplicationFinderTest {
 
     @Test
     public void testFindAll() throws Exception {

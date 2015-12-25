@@ -1,6 +1,5 @@
 package ch.cyberduck.core.local;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -14,7 +13,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class WorkspaceSymlinkFeatureTest extends AbstractTestCase {
+public class WorkspaceSymlinkFeatureTest {
 
     @Test
     public void testSymlink() throws Exception {

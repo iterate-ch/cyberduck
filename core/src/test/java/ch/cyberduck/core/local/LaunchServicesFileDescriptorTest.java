@@ -18,8 +18,6 @@ package ch.cyberduck.core.local;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
@@ -27,7 +25,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class LaunchServicesFileDescriptorTest extends AbstractTestCase {
+public class LaunchServicesFileDescriptorTest {
 
     @Test
     public void testGetKind() throws Exception {

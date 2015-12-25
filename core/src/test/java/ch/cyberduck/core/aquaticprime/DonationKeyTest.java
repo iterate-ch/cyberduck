@@ -1,6 +1,5 @@
 package ch.cyberduck.core.aquaticprime;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.local.LocalTouchFactory;
 
@@ -12,7 +11,7 @@ import static org.junit.Assert.assertFalse;
 /**
  * @version $Id$
  */
-public class DonationKeyTest extends AbstractTestCase {
+public class DonationKeyTest {
 
     @Test
     public void testVerifyInvalidFile() throws Exception {

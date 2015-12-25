@@ -7,7 +7,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class PathNormalizerTest extends AbstractTestCase {
+public class PathNormalizerTest {
 
     @Test
     public void testNormalize() throws Exception {

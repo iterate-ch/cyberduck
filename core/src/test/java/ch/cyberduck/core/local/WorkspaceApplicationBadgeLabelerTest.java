@@ -1,13 +1,11 @@
 package ch.cyberduck.core.local;
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.junit.Test;
 
 /**
  * @version $Id$
  */
-public class WorkspaceApplicationBadgeLabelerTest extends AbstractTestCase{
+public class WorkspaceApplicationBadgeLabelerTest {
 
     @Test
     public void testBadge() throws Exception {

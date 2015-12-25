@@ -7,7 +7,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class MappingMimeTypeServiceTest extends AbstractTestCase {
+public class MappingMimeTypeServiceTest {
 
     @Test
     public void testGetMime() throws Exception {

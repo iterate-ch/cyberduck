@@ -11,10 +11,11 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class FolderBookmarkCollectionTest extends AbstractTestCase {
+public class FolderBookmarkCollectionTest {
 
     @Test
     public void testLoad() throws Exception {
+        ProtocolFactory.register(new TestProtocol());
         final Local source = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final Local b = new Local(source, String.format("%s.duck", UUID.randomUUID().toString()));
         final String bookmark = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +

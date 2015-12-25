@@ -18,13 +18,11 @@ package ch.cyberduck.core.local;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class WorkdirPrefixerTest extends AbstractTestCase {
+public class WorkdirPrefixerTest {
 
     @Test
     public void testNormalize() throws Exception {

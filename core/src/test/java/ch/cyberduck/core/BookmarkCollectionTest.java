@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id:$
  */
-public class BookmarkCollectionTest extends AbstractTestCase {
+public class BookmarkCollectionTest {
 
     @Test
     public void testDefault() throws Exception {

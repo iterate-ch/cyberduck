@@ -18,7 +18,6 @@ package ch.cyberduck.core.editor;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
 
@@ -31,7 +30,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class FSEventWatchEditorFactoryTest extends AbstractTestCase {
+public class FSEventWatchEditorFactoryTest {
 
     @Test
     public void testGetEditor() throws Exception {

@@ -1,7 +1,5 @@
 package ch.cyberduck.core.ssl;
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.junit.Test;
 
 import java.io.FileInputStream;
@@ -13,7 +11,7 @@ import java.security.cert.X509Certificate;
 /**
  * @version $Id$
  */
-public class DefaultX509TrustManagerTest extends AbstractTestCase {
+public class DefaultX509TrustManagerTest {
 
     @Test(expected = CertificateExpiredException.class)
     public void testCheckServerTrusted() throws Exception {

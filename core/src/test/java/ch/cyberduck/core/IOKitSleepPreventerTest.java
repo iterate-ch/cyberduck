@@ -6,7 +6,7 @@ import org.junit.Test;
 /**
  * @version $Id$
  */
-public class IOKitSleepPreventerTest extends AbstractTestCase {
+public class IOKitSleepPreventerTest {
 
     @Test
     public void testRelease() throws Exception {

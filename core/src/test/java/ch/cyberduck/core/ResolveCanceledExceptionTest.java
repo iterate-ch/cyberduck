@@ -10,7 +10,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class ResolveCanceledExceptionTest extends AbstractTestCase {
+public class ResolveCanceledExceptionTest {
 
     @Test
     public void testInstance() {

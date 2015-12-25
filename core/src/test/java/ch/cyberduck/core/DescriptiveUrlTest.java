@@ -9,7 +9,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class DescriptiveUrlTest extends AbstractTestCase {
+public class DescriptiveUrlTest {
 
     @Test
     public void testEquals() throws Exception {

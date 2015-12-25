@@ -18,7 +18,6 @@ package ch.cyberduck.core.sftp.openssh;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.sftp.openssh.config.transport.OpenSshConfig;
 
@@ -29,7 +28,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class OpenSSHHostnameConfiguratorTest extends AbstractTestCase {
+public class OpenSSHHostnameConfiguratorTest {
 
     @Test
     public void testLookup() throws Exception {

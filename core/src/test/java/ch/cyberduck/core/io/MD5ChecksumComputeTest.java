@@ -1,7 +1,5 @@
 package ch.cyberduck.core.io;
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
@@ -10,7 +8,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class MD5ChecksumComputeTest extends AbstractTestCase {
+public class MD5ChecksumComputeTest {
 
     @Test
     public void testCompute() throws Exception {

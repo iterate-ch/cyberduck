@@ -10,7 +10,7 @@ import static org.junit.Assert.assertNull;
 /**
  * @version $Id$
  */
-public class NavigationTest extends AbstractTestCase {
+public class NavigationTest {
 
     @Test
     public void testEmpty() throws Exception {

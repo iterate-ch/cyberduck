@@ -30,15 +30,15 @@ public class FixedRandom extends SecureRandom {
         //
     }
 
-    @Override
-    public void nextBytes(byte[] bytes) {
-        //
-    }
-
     /**
      * @return Return a SecureRandom which produces the same value.
      */
     public static SecureRandom createFixedRandom() throws NoSuchAlgorithmException {
         return new FixedRandom();
+    }
+
+    @Override
+    public void nextBytes(byte[] bytes) {
+        //
     }
 }

@@ -1,6 +1,5 @@
 package ch.cyberduck.core.local;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
 
@@ -14,7 +13,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class DefaultLocalTouchFeatureTest extends AbstractTestCase {
+public class DefaultLocalTouchFeatureTest {
 
     @Test
     public void testTouch() throws Exception {

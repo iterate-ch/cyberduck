@@ -1,7 +1,5 @@
 package ch.cyberduck.core;
 
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.AccessDeniedException;
 
 import org.apache.commons.io.input.NullInputStream;

@@ -27,7 +27,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class PermissionTest extends AbstractTestCase {
+public class PermissionTest {
 
     @Test
     public void testGetAsDictionary() throws Exception {

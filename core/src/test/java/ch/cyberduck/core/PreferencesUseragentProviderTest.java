@@ -7,7 +7,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id:$
  */
-public class PreferencesUseragentProviderTest extends AbstractTestCase {
+public class PreferencesUseragentProviderTest {
 
     @Test
     public void testGet() throws Exception {

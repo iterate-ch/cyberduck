@@ -18,8 +18,6 @@ package ch.cyberduck.core.resources;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.junit.Test;
 
 import static org.junit.Assert.assertSame;
@@ -27,7 +25,7 @@ import static org.junit.Assert.assertSame;
 /**
  * @version $Id$
  */
-public class IconCacheFactoryTest extends AbstractTestCase {
+public class IconCacheFactoryTest {
 
     @Test
     public void testGet() throws Exception {

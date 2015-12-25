@@ -7,7 +7,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class PathRelativizerTest extends AbstractTestCase {
+public class PathRelativizerTest {
 
     @Test
     public void testRelativize() throws Exception {

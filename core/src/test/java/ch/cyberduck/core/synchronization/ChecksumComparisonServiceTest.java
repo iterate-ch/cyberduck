@@ -1,6 +1,5 @@
 package ch.cyberduck.core.synchronization;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.io.Checksum;
@@ -13,7 +12,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class ChecksumComparisonServiceTest extends AbstractTestCase {
+public class ChecksumComparisonServiceTest {
 
     @Test
     public void testCompare() throws Exception {

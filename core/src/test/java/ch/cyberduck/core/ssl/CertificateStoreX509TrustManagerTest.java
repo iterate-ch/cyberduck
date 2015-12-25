@@ -1,6 +1,5 @@
 package ch.cyberduck.core.ssl;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.DefaultCertificateStore;
 import ch.cyberduck.core.DisabledCertificateStore;
 
@@ -16,7 +15,7 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public class CertificateStoreX509TrustManagerTest extends AbstractTestCase {
+public class CertificateStoreX509TrustManagerTest {
 
     @Test(expected = CertificateException.class)
     public void testCheckExpired() throws Exception {

@@ -1,7 +1,5 @@
 package ch.cyberduck.core.logging;
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
@@ -11,7 +9,7 @@ import org.junit.Test;
 /**
  * @version $Id$
  */
-public class SystemLogAppenderTest extends AbstractTestCase {
+public class SystemLogAppenderTest {
 
     @Test
     public void testAppend() throws Exception {

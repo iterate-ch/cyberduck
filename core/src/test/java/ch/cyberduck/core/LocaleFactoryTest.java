@@ -24,7 +24,7 @@ import java.text.MessageFormat;
 
 import static org.junit.Assert.assertEquals;
 
-public class LocaleFactoryTest extends AbstractTestCase{
+public class LocaleFactoryTest {
 
     @Test
     public void testFormat() throws Exception {

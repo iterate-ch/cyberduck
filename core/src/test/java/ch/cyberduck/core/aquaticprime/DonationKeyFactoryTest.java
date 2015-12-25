@@ -18,15 +18,13 @@ package ch.cyberduck.core.aquaticprime;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
 @Ignore
-public class DonationKeyFactoryTest extends AbstractTestCase {
+public class DonationKeyFactoryTest {
 
     @Test
     public void testCreate() throws Exception {

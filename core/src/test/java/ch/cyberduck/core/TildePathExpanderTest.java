@@ -18,8 +18,6 @@ package ch.cyberduck.core;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.exception.ConnectionCanceledException;
-
 import org.junit.Test;
 
 import java.util.EnumSet;
@@ -27,7 +25,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
-public class TildePathExpanderTest extends AbstractTestCase {
+public class TildePathExpanderTest {
 
     @Test
     public void testExpand() throws Exception {

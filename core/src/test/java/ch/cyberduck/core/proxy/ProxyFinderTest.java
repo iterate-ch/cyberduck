@@ -19,7 +19,6 @@ package ch.cyberduck.core.proxy;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
 
 import org.junit.Test;
@@ -30,7 +29,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class ProxyFinderTest extends AbstractTestCase {
+public class ProxyFinderTest {
 
     @Test
     public void testWildcard() {

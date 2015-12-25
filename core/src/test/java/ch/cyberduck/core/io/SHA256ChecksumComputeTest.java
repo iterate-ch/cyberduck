@@ -18,14 +18,12 @@ package ch.cyberduck.core.io;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.apache.commons.io.input.NullInputStream;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class SHA256ChecksumComputeTest extends AbstractTestCase {
+public class SHA256ChecksumComputeTest {
 
     @Test
     public void testCompute() throws Exception {

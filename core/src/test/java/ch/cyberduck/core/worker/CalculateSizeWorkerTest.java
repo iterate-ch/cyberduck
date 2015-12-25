@@ -1,11 +1,10 @@
 package ch.cyberduck.core.worker;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.NullSession;
 
 import org.junit.Test;
 
@@ -18,7 +17,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class CalculateSizeWorkerTest extends AbstractTestCase {
+public class CalculateSizeWorkerTest {
 
     @Test
     public void testRun() throws Exception {

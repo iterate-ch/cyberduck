@@ -17,8 +17,6 @@ package ch.cyberduck.core.idna;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -26,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class PunycodeConverterTest extends AbstractTestCase {
+public class PunycodeConverterTest {
 
     @Test
     public void testConvert() throws Exception {

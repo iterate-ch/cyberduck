@@ -17,8 +17,6 @@ package ch.cyberduck.core.transfer;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
@@ -26,7 +24,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class TransferTransferQueueFactoryTest extends AbstractTestCase {
+public class TransferTransferQueueFactoryTest {
 
     @Test
     public void testGet() throws Exception {

@@ -18,17 +18,16 @@ package ch.cyberduck.core.editor;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.core.local.DisabledApplicationQuitCallback;
 import ch.cyberduck.core.local.DisabledFileWatcherListener;
-import ch.cyberduck.core.NullSession;
 
 import org.junit.Test;
 
@@ -37,7 +36,7 @@ import java.nio.file.NoSuchFileException;
 import java.util.EnumSet;
 import java.util.UUID;
 
-public class DefaultWatchEditorTest extends AbstractTestCase {
+public class DefaultWatchEditorTest {
 
     @Test(expected = NoSuchFileException.class)
     public void testNotfound() throws Exception {

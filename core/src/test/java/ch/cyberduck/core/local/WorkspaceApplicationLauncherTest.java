@@ -18,7 +18,6 @@ package ch.cyberduck.core.local;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.NullLocal;
 
 import org.junit.Test;
@@ -28,7 +27,7 @@ import java.util.UUID;
 /**
  * @version $Id$
  */
-public class WorkspaceApplicationLauncherTest extends AbstractTestCase {
+public class WorkspaceApplicationLauncherTest {
 
     @Test
     public void testOpen() throws Exception {

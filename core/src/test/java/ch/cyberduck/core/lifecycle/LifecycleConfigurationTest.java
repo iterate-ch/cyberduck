@@ -1,7 +1,5 @@
 package ch.cyberduck.core.lifecycle;
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -10,7 +8,7 @@ import static org.junit.Assert.assertFalse;
 /**
  * @version $Id$
  */
-public class LifecycleConfigurationTest extends AbstractTestCase {
+public class LifecycleConfigurationTest {
 
     @Test
     public void testEquals() {

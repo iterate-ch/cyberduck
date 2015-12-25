@@ -1,10 +1,11 @@
 package ch.cyberduck.core.transfer.synchronisation;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalAttributes;
+import ch.cyberduck.core.NullLocal;
+import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TestProtocol;
@@ -12,8 +13,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.synchronization.ComparePathFilter;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.synchronization.ComparisonServiceFilter;
-import ch.cyberduck.core.NullLocal;
-import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -32,7 +31,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class SynchronizationPathFilterTest extends AbstractTestCase {
+public class SynchronizationPathFilterTest {
 
     @Test
     public void testPrepare() throws Exception {

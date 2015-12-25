@@ -17,7 +17,6 @@ package ch.cyberduck.core.local;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 
@@ -31,7 +30,7 @@ import static org.junit.Assert.assertNull;
 /**
  * @version $Id$
  */
-public class PanelSandboxBookmarkResolverTest extends AbstractTestCase {
+public class PanelSandboxBookmarkResolverTest {
 
     @Test(expected = LocalAccessDeniedException.class)
     public void testCreateNotFound() throws Exception {

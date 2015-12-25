@@ -7,8 +7,6 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.NullLocal;
-import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferItemCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
@@ -32,7 +30,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class SingleTransferWorkerTest extends AbstractTestCase {
+public class SingleTransferWorkerTest {
 
     @Test
     public void testUploadPrepareOverrideRootDoesNotExist() throws Exception {

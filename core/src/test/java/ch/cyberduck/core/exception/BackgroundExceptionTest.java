@@ -1,7 +1,5 @@
 package ch.cyberduck.core.exception;
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.junit.Test;
 
 import java.io.IOException;
@@ -13,7 +11,7 @@ import static org.junit.Assert.assertNull;
 /**
  * @version $Id$
  */
-public class BackgroundExceptionTest extends AbstractTestCase {
+public class BackgroundExceptionTest {
 
     @Test
     public void testGetMessage() throws Exception {

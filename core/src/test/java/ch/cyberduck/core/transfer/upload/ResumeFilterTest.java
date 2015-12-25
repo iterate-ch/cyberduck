@@ -1,10 +1,11 @@
 package ch.cyberduck.core.transfer.upload;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocalAttributes;
+import ch.cyberduck.core.NullLocal;
+import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.TestProtocol;
@@ -14,8 +15,6 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
-import ch.cyberduck.core.NullLocal;
-import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.DisabledUploadSymlinkResolver;
 
@@ -29,7 +28,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class ResumeFilterTest extends AbstractTestCase {
+public class ResumeFilterTest {
 
     @Test
     public void testAccept() throws Exception {

@@ -18,7 +18,6 @@ package ch.cyberduck.core.transfer;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
@@ -31,7 +30,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
-public class TransferSpeedometerTest extends AbstractTestCase {
+public class TransferSpeedometerTest {
 
     @Test
     public void testReset() throws Exception {

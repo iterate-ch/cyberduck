@@ -18,7 +18,6 @@ package ch.cyberduck.core.ssl;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import org.junit.Test;
@@ -31,7 +30,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class SSLExceptionMappingServiceTest extends AbstractTestCase {
+public class SSLExceptionMappingServiceTest {
 
     @Test
     public void testMap() throws Exception {

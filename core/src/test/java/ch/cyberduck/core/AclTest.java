@@ -25,7 +25,7 @@ import static org.junit.Assert.assertNotEquals;
 /**
  * @version $Id:$
  */
-public class AclTest extends AbstractTestCase {
+public class AclTest {
 
     @Test
     public void testEquals() {

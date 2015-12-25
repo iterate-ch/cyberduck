@@ -20,7 +20,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class LoginConnectionServiceTest extends AbstractTestCase {
+public class LoginConnectionServiceTest {
 
     @Test(expected = LoginCanceledException.class)
     public void testNoResolveForHTTPProxy() throws Exception {

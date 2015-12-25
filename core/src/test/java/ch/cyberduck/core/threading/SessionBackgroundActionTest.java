@@ -18,10 +18,10 @@ package ch.cyberduck.core.threading;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
@@ -31,7 +31,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.NullSession;
 
 import org.junit.Test;
 
@@ -42,7 +41,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class SessionBackgroundActionTest extends AbstractTestCase {
+public class SessionBackgroundActionTest {
 
     @Test
     public void testGetExceptionCanceled() throws Exception {

@@ -1,7 +1,5 @@
 package ch.cyberduck.core.date;
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.junit.Test;
 
 import java.util.TimeZone;
@@ -11,7 +9,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class MDTMSecondsDateFormatterTest extends AbstractTestCase {
+public class MDTMSecondsDateFormatterTest {
 
     @Test
     public void testParse() throws Exception {

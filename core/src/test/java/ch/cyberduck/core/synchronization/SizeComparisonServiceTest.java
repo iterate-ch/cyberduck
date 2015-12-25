@@ -1,6 +1,5 @@
 package ch.cyberduck.core.synchronization;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.PathAttributes;
 
@@ -11,7 +10,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class SizeComparisonServiceTest extends AbstractTestCase {
+public class SizeComparisonServiceTest {
 
     @Test
     public void testCompare() throws Exception {

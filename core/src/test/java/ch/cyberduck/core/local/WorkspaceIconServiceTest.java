@@ -1,7 +1,6 @@
 package ch.cyberduck.core.local;
 
 import ch.cyberduck.binding.application.NSImage;
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -15,7 +14,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class WorkspaceIconServiceTest extends AbstractTestCase {
+public class WorkspaceIconServiceTest {
 
     @Test
     public void testSetProgressNoFile() throws Exception {

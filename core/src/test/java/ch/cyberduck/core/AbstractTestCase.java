@@ -43,19 +43,14 @@ import java.util.Properties;
  */
 public class AbstractTestCase {
 
+    protected static Properties properties = System.getProperties();
+
     static {
         Security.insertProviderAt(new BouncyCastleProvider(), 1);
         BasicConfigurator.configure();
     }
 
     private ActionOperationBatcher pool;
-
-    @Before
-    public void pool() {
-        pool = ActionOperationBatcherFactory.get();
-    }
-
-    protected static Properties properties = System.getProperties();
 
     @BeforeClass
     public static void properties() throws IOException {
@@ -76,6 +71,11 @@ public class AbstractTestCase {
     @BeforeClass
     public static void protocols() throws Exception {
         ProtocolFactory.register(new TestProtocol());
+    }
+
+    @Before
+    public void pool() {
+        pool = ActionOperationBatcherFactory.get();
     }
 
     @Before

@@ -17,17 +17,16 @@ package ch.cyberduck.core.threading;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.NullSession;
 
 import org.junit.Test;
 
@@ -37,7 +36,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  * @version $Id$
  */
-public class BackgroundActionPauserTest extends AbstractTestCase {
+public class BackgroundActionPauserTest {
 
     @Test
     public void testAwait() throws Exception {

@@ -18,7 +18,6 @@ package ch.cyberduck.core.transfer.normalizer;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Path;
 
 import org.junit.Test;
@@ -32,7 +31,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class CopyRootPathsNormalizerTest extends AbstractTestCase {
+public class CopyRootPathsNormalizerTest {
 
     @Test
     public void testNormalizeNone() throws Exception {

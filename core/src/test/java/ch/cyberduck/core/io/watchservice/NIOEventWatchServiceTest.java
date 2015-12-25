@@ -18,7 +18,6 @@ package ch.cyberduck.core.io.watchservice;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.local.DisabledFileWatcherListener;
 import ch.cyberduck.core.local.FileWatcher;
@@ -44,7 +43,7 @@ import static java.nio.file.StandardWatchEventKinds.*;
 import static org.junit.Assert.*;
 
 @Ignore
-public class NIOEventWatchServiceTest extends AbstractTestCase {
+public class NIOEventWatchServiceTest {
 
     @Test(expected = IOException.class)
     public void testNotfound() throws Exception {

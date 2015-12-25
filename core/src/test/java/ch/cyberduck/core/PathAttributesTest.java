@@ -9,7 +9,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class PathAttributesTest extends AbstractTestCase {
+public class PathAttributesTest {
 
     @Test
     public void testGetAsDictionary() throws Exception {

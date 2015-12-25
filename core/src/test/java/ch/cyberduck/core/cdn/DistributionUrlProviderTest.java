@@ -1,6 +1,5 @@
 package ch.cyberduck.core.cdn;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
 
@@ -14,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class DistributionUrlProviderTest extends AbstractTestCase {
+public class DistributionUrlProviderTest {
 
     @Test
     public void testDownload() throws Exception {

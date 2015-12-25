@@ -1,13 +1,12 @@
 package ch.cyberduck.core.worker;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Headers;
-import ch.cyberduck.core.NullSession;
 
 import org.junit.Test;
 
@@ -23,7 +22,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class WriteMetadataWorkerTest extends AbstractTestCase {
+public class WriteMetadataWorkerTest {
 
     @Test
     public void testEmpty() throws Exception {

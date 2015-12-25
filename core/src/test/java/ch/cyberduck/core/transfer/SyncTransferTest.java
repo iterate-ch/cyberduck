@@ -18,7 +18,6 @@ package ch.cyberduck.core.transfer;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledProgressListener;
@@ -26,11 +25,11 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalAttributes;
+import ch.cyberduck.core.NullLocal;
+import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.synchronization.Comparison;
-import ch.cyberduck.core.NullLocal;
-import ch.cyberduck.core.NullSession;
 
 import org.junit.Test;
 
@@ -44,7 +43,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class SyncTransferTest extends AbstractTestCase {
+public class SyncTransferTest {
 
     @Test
     public void testAction() throws Exception {

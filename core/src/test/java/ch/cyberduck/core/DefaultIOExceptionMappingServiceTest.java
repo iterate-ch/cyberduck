@@ -35,7 +35,7 @@ import static org.junit.Assert.assertSame;
 /**
  * @version $Id$
  */
-public class DefaultIOExceptionMappingServiceTest extends AbstractTestCase {
+public class DefaultIOExceptionMappingServiceTest {
 
     @Test
     public void testMap() throws Exception {

@@ -18,13 +18,11 @@ package ch.cyberduck.core.local;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class TildeExpanderTest extends AbstractTestCase {
+public class TildeExpanderTest {
 
     @Test
     public void testExpand() throws Exception {

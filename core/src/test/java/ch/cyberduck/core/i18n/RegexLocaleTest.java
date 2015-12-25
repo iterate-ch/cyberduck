@@ -17,7 +17,6 @@ package ch.cyberduck.core.i18n;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.local.WorkdirPrefixer;
 
@@ -25,7 +24,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class RegexLocaleTest extends AbstractTestCase {
+public class RegexLocaleTest {
 
     @Test
     public void testLocalize() throws Exception {

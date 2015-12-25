@@ -1,14 +1,13 @@
 package ch.cyberduck.core.worker;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
-import ch.cyberduck.core.NullSession;
 
 import org.junit.Test;
 
@@ -22,7 +21,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class WriteAclWorkerTest extends AbstractTestCase {
+public class WriteAclWorkerTest {
 
     @Test
     public void testRunNoFiles() throws Exception {
@@ -36,7 +35,7 @@ public class WriteAclWorkerTest extends AbstractTestCase {
         worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
             public <T> T getFeature(Class<T> type) {
-                if (type.equals(AclPermission.class)) {
+                if(type.equals(AclPermission.class)) {
                     return (T) new AclPermission() {
                         @Override
                         public Acl getPermission(final Path file) throws BackgroundException {
@@ -78,7 +77,7 @@ public class WriteAclWorkerTest extends AbstractTestCase {
         worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
             public <T> T getFeature(Class<T> type) {
-                if (type.equals(AclPermission.class)) {
+                if(type.equals(AclPermission.class)) {
                     return (T) new AclPermission() {
                         @Override
                         public Acl getPermission(final Path file) throws BackgroundException {
@@ -121,7 +120,7 @@ public class WriteAclWorkerTest extends AbstractTestCase {
         worker.run(new NullSession(new Host(new TestProtocol())) {
                        @Override
                        public <T> T getFeature(Class<T> type) {
-                           if (type.equals(AclPermission.class)) {
+                           if(type.equals(AclPermission.class)) {
                                return (T) new AclPermission() {
                                    @Override
                                    public Acl getPermission(final Path file) throws BackgroundException {

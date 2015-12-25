@@ -1,6 +1,5 @@
 package ch.cyberduck.core.identity;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -14,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class DefaultCredentialsIdentityConfigurationTest extends AbstractTestCase {
+public class DefaultCredentialsIdentityConfigurationTest {
 
     @Test
     public void testGetUserCredentials() throws Exception {

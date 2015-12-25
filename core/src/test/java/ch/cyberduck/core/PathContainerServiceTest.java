@@ -26,7 +26,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class PathContainerServiceTest extends AbstractTestCase {
+public class PathContainerServiceTest {
 
     @Test
     public void testIsContainer() throws Exception {

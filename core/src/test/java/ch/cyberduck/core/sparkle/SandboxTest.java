@@ -18,13 +18,11 @@ package ch.cyberduck.core.sparkle;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
 
-public class SandboxTest extends AbstractTestCase{
+public class SandboxTest {
 
     @Test
     public void testIsSandboxed() throws Exception {

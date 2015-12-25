@@ -1,6 +1,5 @@
 package ch.cyberduck.core.local;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Local;
 
 import org.junit.Test;
@@ -13,7 +12,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class WorkspaceTrashFeatureTest extends AbstractTestCase {
+public class WorkspaceTrashFeatureTest {
 
     @Test
     public void testTrash() throws Exception {

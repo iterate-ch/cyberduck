@@ -40,7 +40,7 @@ import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
-public class ProxySocketFactoryTest extends AbstractTestCase {
+public class ProxySocketFactoryTest {
 
     @Test
     public void testCreateSocketNoProxy() throws Exception {

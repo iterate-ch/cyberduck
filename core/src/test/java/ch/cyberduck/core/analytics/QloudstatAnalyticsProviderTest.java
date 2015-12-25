@@ -1,6 +1,5 @@
 package ch.cyberduck.core.analytics;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Scheme;
 
@@ -10,7 +9,7 @@ import org.junit.Test;
 /**
  * @version $Id$
  */
-public class QloudstatAnalyticsProviderTest extends AbstractTestCase {
+public class QloudstatAnalyticsProviderTest {
 
     @Test
     public void testGetSetupS3() {

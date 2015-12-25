@@ -17,7 +17,6 @@ package ch.cyberduck.core.local.features;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -32,7 +31,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class DefaultSymlinkFeatureTest extends AbstractTestCase {
+public class DefaultSymlinkFeatureTest {
 
     @Test
     public void testSymlink() throws Exception {
