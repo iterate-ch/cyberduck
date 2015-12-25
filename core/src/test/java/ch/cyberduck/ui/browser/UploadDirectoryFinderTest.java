@@ -18,7 +18,6 @@ package ch.cyberduck.ui.browser;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.TestProtocol;
@@ -28,7 +27,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-public class UploadDirectoryFinderTest extends AbstractTestCase {
+public class UploadDirectoryFinderTest {
 
     @Test
     public void testFind() throws Exception {

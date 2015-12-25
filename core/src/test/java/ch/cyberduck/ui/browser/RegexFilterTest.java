@@ -1,6 +1,5 @@
 package ch.cyberduck.ui.browser;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Path;
 
 import org.junit.Test;
@@ -13,7 +12,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class RegexFilterTest extends AbstractTestCase {
+public class RegexFilterTest {
 
     @Test
     public void testAccept() throws Exception {

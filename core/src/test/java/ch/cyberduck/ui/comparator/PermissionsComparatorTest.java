@@ -18,7 +18,6 @@ package ch.cyberduck.ui.comparator;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Path;
 
 import org.junit.Test;
@@ -30,7 +29,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class PermissionsComparatorTest extends AbstractTestCase {
+public class PermissionsComparatorTest {
 
     @Test
     public void testCompareFirst() throws Exception {

@@ -1,6 +1,5 @@
 package ch.cyberduck.ui.browser;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Path;
 
 import org.junit.Test;
@@ -12,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class PathTooltipServiceTest extends AbstractTestCase {
+public class PathTooltipServiceTest {
 
     @Test
     public void testGetTooltip() throws Exception {

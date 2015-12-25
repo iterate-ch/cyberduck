@@ -1,6 +1,5 @@
 package ch.cyberduck.ui.comparator;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Path;
 
 import org.junit.Test;
@@ -12,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class FilenameComparatorTest extends AbstractTestCase {
+public class FilenameComparatorTest {
 
     @Test
     public void testCompareFirst() throws Exception {
