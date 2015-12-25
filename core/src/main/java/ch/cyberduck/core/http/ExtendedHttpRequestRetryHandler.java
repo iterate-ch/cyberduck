@@ -54,9 +54,10 @@ public class ExtendedHttpRequestRetryHandler extends DefaultHttpRequestRetryHand
 
     @Override
     public boolean retryRequest(final IOException exception, final int executionCount, final HttpContext context) {
-        if(ExceptionUtils.getRootCause(exception) != null) {
-            if(ExceptionUtils.getRootCause(exception) instanceof RuntimeException) {
-                log.warn(String.format("Cancel retry request with execution count %d for failure %s", executionCount, exception));
+        final Throwable cause = ExceptionUtils.getRootCause(exception);
+        if(cause != null) {
+            if(cause instanceof RuntimeException) {
+                log.warn(String.format("Cancel retry request with execution count %d for failure %s", executionCount, cause));
                 return false;
             }
         }
