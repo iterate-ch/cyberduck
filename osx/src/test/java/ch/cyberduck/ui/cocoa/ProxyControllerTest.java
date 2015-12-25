@@ -1,6 +1,5 @@
 package ch.cyberduck.ui.cocoa;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
@@ -18,7 +17,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class ProxyControllerTest extends AbstractTestCase {
+public class ProxyControllerTest {
 
     @Test
     public void testInvokeNoWait() throws Exception {

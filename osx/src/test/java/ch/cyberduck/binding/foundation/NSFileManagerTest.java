@@ -18,8 +18,6 @@ package ch.cyberduck.binding.foundation;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
@@ -27,7 +25,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  * @version $Id$
  */
-public class NSFileManagerTest extends AbstractTestCase {
+public class NSFileManagerTest {
 
     @Test
     public void testContainerURLForSecurityApplicationGroupIdentifier() throws Exception {

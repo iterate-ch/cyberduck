@@ -1,6 +1,5 @@
 package ch.cyberduck.ui.cocoa;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.date.UserDateFormatter;
 
 import org.junit.Test;
@@ -10,7 +9,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  * @version $Id$
  */
-public class UserDefaultsDateFormatterTest extends AbstractTestCase {
+public class UserDefaultsDateFormatterTest {
 
     @Test
     public void testGetShortFormat() throws Exception {

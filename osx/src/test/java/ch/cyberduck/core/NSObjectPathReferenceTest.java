@@ -12,7 +12,7 @@ import static org.junit.Assert.assertNotSame;
 /**
  * @version $Id$
  */
-public class NSObjectPathReferenceTest extends AbstractTestCase {
+public class NSObjectPathReferenceTest {
 
     @Test
     public void testUnique() throws Exception {

@@ -1,6 +1,5 @@
 package ch.cyberduck.ui.cocoa;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Local;
 
@@ -11,7 +10,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class HyperlinkAttributedStringFactoryTest extends AbstractTestCase {
+public class HyperlinkAttributedStringFactoryTest {
 
     @Test
     public void testCreate() throws Exception {

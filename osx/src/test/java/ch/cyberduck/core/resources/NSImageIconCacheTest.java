@@ -19,7 +19,6 @@ package ch.cyberduck.core.resources;
  */
 
 import ch.cyberduck.binding.application.NSImage;
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.FinderLocal;
@@ -36,7 +35,7 @@ import static org.junit.Assert.*;
  * @version $Id$
  */
 @Ignore
-public class NSImageIconCacheTest extends AbstractTestCase {
+public class NSImageIconCacheTest {
 
     @Test
     public void testFolderIcon16() throws Exception {

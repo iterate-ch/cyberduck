@@ -17,9 +17,6 @@ package ch.cyberduck.binding.application;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
@@ -27,10 +24,9 @@ import static org.junit.Assert.assertNotNull;
 /**
  * @version $Id$
  */
-public class NSStatusBarTest extends AbstractTestCase {
+public class NSStatusBarTest {
 
     @Test
-    @Ignore
     public void testSystemStatusBar() throws Exception {
         assertNotNull(NSStatusBar.systemStatusBar());
         assertNotNull(NSStatusBar.systemStatusBar().statusItemWithLength(NSStatusBar.NSSquareStatusItemLength));

@@ -1,6 +1,5 @@
 package ch.cyberduck.ui;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.UserDefaultsPreferences;
 
@@ -14,7 +13,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class UserDefaultsPreferencesTest extends AbstractTestCase {
+public class UserDefaultsPreferencesTest {
 
     @Test
     public void testGetListEscapedWhitespace() throws Exception {

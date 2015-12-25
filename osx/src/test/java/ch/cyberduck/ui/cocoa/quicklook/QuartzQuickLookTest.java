@@ -1,6 +1,5 @@
 package ch.cyberduck.ui.cocoa.quicklook;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullLocal;
 
@@ -16,7 +15,7 @@ import static org.junit.Assert.assertTrue;
  * @version $Id$
  */
 @Ignore
-public class QuartzQuickLookTest extends AbstractTestCase {
+public class QuartzQuickLookTest {
 
     @Test
     public void testSelect() throws Exception {

@@ -17,8 +17,6 @@ package ch.cyberduck.binding.foundation;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.junit.Ignore;
 import org.junit.Test;
 import org.rococoa.cocoa.foundation.NSPoint;
@@ -29,7 +27,7 @@ import static org.junit.Assert.assertNotEquals;
 /**
  * @version $Id$
  */
-public class NSPointTest extends AbstractTestCase {
+public class NSPointTest {
 
     @Test
     @Ignore
