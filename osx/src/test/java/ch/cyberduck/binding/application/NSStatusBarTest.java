@@ -17,6 +17,7 @@ package ch.cyberduck.binding.application;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
@@ -24,6 +25,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  * @version $Id$
  */
+@Ignore
 public class NSStatusBarTest {
 
     @Test
