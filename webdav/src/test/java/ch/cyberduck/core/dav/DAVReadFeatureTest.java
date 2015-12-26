@@ -46,7 +46,7 @@ public class DAVReadFeatureTest extends AbstractTestCase {
     @Test(expected = NotfoundException.class)
     public void testReadNotFound() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
+                System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
@@ -84,7 +84,7 @@ public class DAVReadFeatureTest extends AbstractTestCase {
     @Test
     public void testReadRange() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
+                System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
@@ -126,7 +126,7 @@ public class DAVReadFeatureTest extends AbstractTestCase {
     @Test
     public void testReadRangeUnknownLength() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
+                System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);

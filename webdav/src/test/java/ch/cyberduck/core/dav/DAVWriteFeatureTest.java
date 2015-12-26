@@ -51,7 +51,7 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
     @Test
     public void testReadWrite() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
+                System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
@@ -96,7 +96,7 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
     @Test
     public void testWriteContentRange() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
+                System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
@@ -139,7 +139,7 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
     @Test
     public void testWriteRangeEndFirst() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
+                System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
@@ -190,7 +190,7 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
     @Test
     public void testWriteContentRangeTwoBytes() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
+                System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
@@ -229,7 +229,7 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
     @Test
     public void testWriteContentRangeThreeBytes() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
+                System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
@@ -268,7 +268,7 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
     @Test(expected = AccessDeniedException.class)
     public void testWriteZeroBytesAccessDenied() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
+                System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
@@ -288,7 +288,7 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
     @Test(expected = AccessDeniedException.class)
     public void testWriteAccessDenied() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
+                System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
@@ -302,7 +302,7 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
     @Test
     public void testAppend() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
+                System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
@@ -324,7 +324,7 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
     @Test
     public void testUploadRedirect() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
+                System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
         ));
         host.setDefaultPath("/dav/basic");
         final AtomicBoolean redirected = new AtomicBoolean();

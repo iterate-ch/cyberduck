@@ -49,7 +49,7 @@ public class DAVMoveFeatureTest extends AbstractTestCase {
     @Test
     public void testMove() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
+                System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
@@ -75,7 +75,7 @@ public class DAVMoveFeatureTest extends AbstractTestCase {
     @Test
     public void testMoveOverride() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
+                System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
@@ -102,7 +102,7 @@ public class DAVMoveFeatureTest extends AbstractTestCase {
     @Test(expected = NotfoundException.class)
     public void testMoveNotFound() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
+                System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);

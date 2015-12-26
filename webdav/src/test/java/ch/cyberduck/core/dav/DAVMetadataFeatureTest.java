@@ -80,7 +80,7 @@ public class DAVMetadataFeatureTest extends AbstractTestCase {
     @Test
     public void testSetMetadataFile() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
+                System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
@@ -106,7 +106,7 @@ public class DAVMetadataFeatureTest extends AbstractTestCase {
     @Test
     public void testSetMetadataFolder() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
+                System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
