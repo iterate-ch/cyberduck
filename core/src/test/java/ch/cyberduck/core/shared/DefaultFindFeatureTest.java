@@ -1,6 +1,5 @@
 package ch.cyberduck.core.shared;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
@@ -20,7 +19,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class DefaultFindFeatureTest extends AbstractTestCase {
+public class DefaultFindFeatureTest {
 
     @Test
     public void testFind() throws Exception {

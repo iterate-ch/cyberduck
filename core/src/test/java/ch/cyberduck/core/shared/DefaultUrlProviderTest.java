@@ -1,12 +1,11 @@
 package ch.cyberduck.core.shared;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.sftp.SFTPProtocol;
 
 import org.junit.Test;
 
@@ -17,7 +16,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class DefaultUrlProviderTest extends AbstractTestCase {
+public class DefaultUrlProviderTest {
 
     @Test
     public void testDav() throws Exception {
@@ -44,7 +43,12 @@ public class DefaultUrlProviderTest extends AbstractTestCase {
 
     @Test
     public void testSftp() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
+        final Host host = new Host(new TestProtocol() {
+            @Override
+            public Scheme getScheme() {
+                return Scheme.sftp;
+            }
+        }, "test.cyberduck.ch", new Credentials(
                 "u", "p"
         ));
         host.setDefaultPath("/my/documentroot");
