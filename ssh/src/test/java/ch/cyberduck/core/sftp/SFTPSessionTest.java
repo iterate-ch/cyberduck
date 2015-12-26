@@ -225,6 +225,7 @@ public class SFTPSessionTest {
     }
 
     @Test
+    @Ignore
     public void testUsernameChangeReconnect() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials("u1", "p1"));
         final Session session = new SFTPSession(host);
