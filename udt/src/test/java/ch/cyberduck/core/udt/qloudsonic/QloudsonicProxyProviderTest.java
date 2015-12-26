@@ -18,11 +18,9 @@ package ch.cyberduck.core.udt.qloudsonic;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.junit.Test;
 
-public class QloudsonicProxyProviderTest extends AbstractTestCase {
+public class QloudsonicProxyProviderTest {
 
     @Test(expected = MissingReceiptException.class)
     public void testHeaders() throws Exception {
