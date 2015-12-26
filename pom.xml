@@ -366,7 +366,7 @@
                     <execution>
                         <id>directories</id>
                         <goals>
-                            <goal>execution-root</goal>
+                            <goal>highest-basedir</goal>
                         </goals>
                         <phase>initialize</phase>
                         <configuration>
