@@ -57,7 +57,7 @@ public class FTPReadFeatureTest extends AbstractTestCase {
     @Test(expected = NotfoundException.class)
     public void testReadNotFound() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -69,7 +69,7 @@ public class FTPReadFeatureTest extends AbstractTestCase {
     @Test
     public void testRead() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -107,7 +107,7 @@ public class FTPReadFeatureTest extends AbstractTestCase {
     @Test
     public void testReadRange() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -143,7 +143,7 @@ public class FTPReadFeatureTest extends AbstractTestCase {
     @Test
     public void testAbortNoRead() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -170,7 +170,7 @@ public class FTPReadFeatureTest extends AbstractTestCase {
     @Test
     public void testAbortPartialRead() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -203,7 +203,7 @@ public class FTPReadFeatureTest extends AbstractTestCase {
     @Test
     public void testDoubleCloseStream() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());

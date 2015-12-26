@@ -49,7 +49,7 @@ public class FTPUTIMETimestampFeatureTest extends AbstractTestCase {
     @Test(expected = BackgroundException.class)
     public void testSetTimestamp() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));

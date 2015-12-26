@@ -40,7 +40,7 @@ public class FTPListServiceTest extends AbstractTestCase {
     @Test
     public void testList() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -66,7 +66,7 @@ public class FTPListServiceTest extends AbstractTestCase {
     @Test
     public void testListExtended() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -94,7 +94,7 @@ public class FTPListServiceTest extends AbstractTestCase {
     @Test
     public void testListEmptyDirectoryStat() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -110,7 +110,7 @@ public class FTPListServiceTest extends AbstractTestCase {
     @Test
     public void testListEmptyDirectoryList() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -126,7 +126,7 @@ public class FTPListServiceTest extends AbstractTestCase {
     @Test
     public void testPostProcessing() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -146,7 +146,7 @@ public class FTPListServiceTest extends AbstractTestCase {
     @Test
     public void testListIOFailureStat() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -178,7 +178,7 @@ public class FTPListServiceTest extends AbstractTestCase {
     @Test(expected = NotfoundException.class)
     public void testListNotfound() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());

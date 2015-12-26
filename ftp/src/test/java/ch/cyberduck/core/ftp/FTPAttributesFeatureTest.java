@@ -49,7 +49,7 @@ public class FTPAttributesFeatureTest extends AbstractTestCase {
     @Test(expected = InteroperabilityException.class)
     public void testAttributesUnknownCommand() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host) {
             @Override

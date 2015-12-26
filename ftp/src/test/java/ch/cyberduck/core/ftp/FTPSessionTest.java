@@ -107,7 +107,7 @@ public class FTPSessionTest extends AbstractTestCase {
     @Test
     public void testConnect() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
@@ -127,7 +127,7 @@ public class FTPSessionTest extends AbstractTestCase {
     @Test(expected = BackgroundException.class)
     public void testWorkdir() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
@@ -137,7 +137,7 @@ public class FTPSessionTest extends AbstractTestCase {
     @Test
     public void testTouch() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
@@ -171,7 +171,7 @@ public class FTPSessionTest extends AbstractTestCase {
     @Test(expected = NotfoundException.class)
     public void testNotfound() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
@@ -185,7 +185,7 @@ public class FTPSessionTest extends AbstractTestCase {
     @Test
     public void testMountFallbackNotfound() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));
         host.setDefaultPath(UUID.randomUUID().toString());
         final FTPSession session = new FTPSession(host);
@@ -199,7 +199,7 @@ public class FTPSessionTest extends AbstractTestCase {
     @Test
     public void testConnectionTlsUpgrade() throws Exception {
         final Host host = new Host(new FTPProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host) {
             @Override
@@ -236,7 +236,7 @@ public class FTPSessionTest extends AbstractTestCase {
     @Test
     public void testFeatures() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
         assertNotNull(session.getFeature(DistributionConfiguration.class));
@@ -254,7 +254,7 @@ public class FTPSessionTest extends AbstractTestCase {
     @Test
     public void testCloseFailure() throws Exception {
         final Host host = new Host(new FTPProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));
         final BackgroundException failure = new BackgroundException(new FTPException(500, "f"));
         final FTPSession session = new FTPSession(host) {
@@ -279,7 +279,7 @@ public class FTPSessionTest extends AbstractTestCase {
     @Ignore
     public void testConnectMutualTls() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));
         final AtomicBoolean callback = new AtomicBoolean();
         final FTPSession session = new FTPSession(host, new DefaultX509TrustManager(),
