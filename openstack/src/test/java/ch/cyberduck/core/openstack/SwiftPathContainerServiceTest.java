@@ -18,7 +18,6 @@ package ch.cyberduck.core.openstack;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Path;
 
 import org.junit.Test;
@@ -27,7 +26,7 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
 
-public class SwiftPathContainerServiceTest extends AbstractTestCase {
+public class SwiftPathContainerServiceTest {
 
     @Test
     public void testLookup() throws Exception {

@@ -1,6 +1,5 @@
 package ch.cyberduck.core.openstack;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
@@ -40,12 +39,12 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class SwiftWriteFeatureTest extends AbstractTestCase {
+public class SwiftWriteFeatureTest {
 
     @Test
     public void testWrite() throws Exception {
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
-                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -89,7 +88,7 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
     @Test
     public void testAppendNoSegmentFound() throws Exception {
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
-                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -112,7 +111,7 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
     @Test
     public void testAppendSegmentFound() throws Exception {
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
-                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -140,7 +139,7 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
     @Test
     public void testOverride() throws Exception {
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
-                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -187,7 +186,7 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
     @Test
     public void testNotFound() throws Exception {
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
-                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));

@@ -1,6 +1,5 @@
 package ch.cyberduck.core.openstack;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 
@@ -14,7 +13,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class SwiftTouchFeatureTest extends AbstractTestCase {
+public class SwiftTouchFeatureTest {
 
     @Test
     public void testFile() {

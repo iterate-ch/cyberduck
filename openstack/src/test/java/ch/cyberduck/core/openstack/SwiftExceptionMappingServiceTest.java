@@ -18,7 +18,6 @@ package ch.cyberduck.core.openstack;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.exception.AccessDeniedException;
 
 import org.apache.http.Header;
@@ -35,7 +34,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class SwiftExceptionMappingServiceTest extends AbstractTestCase {
+public class SwiftExceptionMappingServiceTest {
 
     @Test
     public void testLoginFailure() throws Exception {

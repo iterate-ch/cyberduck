@@ -22,7 +22,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class SwiftSessionTest extends AbstractTestCase {
+public class SwiftSessionTest {
 
     @Test
     public void testFeatures() throws Exception {
@@ -41,7 +41,7 @@ public class SwiftSessionTest extends AbstractTestCase {
     @Test
     public void testConnectRackspace() throws Exception {
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
-                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
@@ -64,7 +64,7 @@ public class SwiftSessionTest extends AbstractTestCase {
         final Profile profile = ProfileReaderFactory.get().read(
                 new Local("../profiles/Rackspace UK.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
@@ -96,7 +96,7 @@ public class SwiftSessionTest extends AbstractTestCase {
                 return "/v1.0";
             }
         }, "region-a.geo-1.identity.hpcloudsvc.com", 35357, new Credentials(
-                properties.getProperty("hpcloud.user"), properties.getProperty("hpcloud.password")
+                System.getProperties().getProperty("hpcloud.user"), System.getProperties().getProperty("hpcloud.password")
         ));
         final SwiftSession session = new SwiftSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
@@ -117,7 +117,7 @@ public class SwiftSessionTest extends AbstractTestCase {
             }
         };
         final Host host = new Host(protocol, "region-a.geo-1.identity.hpcloudsvc.com", 35357, new Credentials(
-                properties.getProperty("hpcloud.key"), properties.getProperty("hpcloud.secret")
+                System.getProperties().getProperty("hpcloud.key"), System.getProperties().getProperty("hpcloud.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
@@ -138,7 +138,7 @@ public class SwiftSessionTest extends AbstractTestCase {
             }
         };
         final Host host = new Host(protocol, "storage.us2.oraclecloud.com", new Credentials(
-                properties.getProperty("oraclecloud.key"), properties.getProperty("oraclecloud.secret")
+                System.getProperties().getProperty("oraclecloud.key"), System.getProperties().getProperty("oraclecloud.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
@@ -151,7 +151,7 @@ public class SwiftSessionTest extends AbstractTestCase {
     public void testConnectEvault() throws Exception {
         final SwiftProtocol protocol = new SwiftProtocol();
         final Host host = new Host(protocol, "auth.lts2.evault.com", new Credentials(
-                properties.getProperty("evault.openstack.key"), properties.getProperty("evault.openstack.secret")
+                System.getProperties().getProperty("evault.openstack.key"), System.getProperties().getProperty("evault.openstack.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));

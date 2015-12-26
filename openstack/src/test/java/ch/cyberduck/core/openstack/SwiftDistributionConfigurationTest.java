@@ -1,6 +1,5 @@
 package ch.cyberduck.core.openstack;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledCancelCallback;
@@ -32,7 +31,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class SwiftDistributionConfigurationTest extends AbstractTestCase {
+public class SwiftDistributionConfigurationTest {
 
     @Test
     public void testGetName() throws Exception {
@@ -57,7 +56,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
     @Test
     public void testReadRackspace() throws Exception {
         final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
-                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -88,7 +87,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
     @Test
     public void testWriteRackspace() throws Exception {
         final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
-                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -115,7 +114,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
             }
         };
         final Host host = new Host(protocol, "region-a.geo-1.identity.hpcloudsvc.com", 35357);
-        host.setCredentials(properties.getProperty("hpcloud.key"), properties.getProperty("hpcloud.secret"));
+        host.setCredentials(System.getProperties().getProperty("hpcloud.key"), System.getProperties().getProperty("hpcloud.secret"));
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());

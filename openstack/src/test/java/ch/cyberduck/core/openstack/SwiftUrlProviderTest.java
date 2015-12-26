@@ -17,7 +17,6 @@ package ch.cyberduck.core.openstack;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DescriptiveUrlBag;
@@ -51,12 +50,12 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class SwiftUrlProviderTest extends AbstractTestCase {
+public class SwiftUrlProviderTest {
 
     @Test
     public void testGet() throws Exception {
         final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
-                new Credentials(properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret"))
+                new Credentials(System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret"))
         ));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -70,7 +69,7 @@ public class SwiftUrlProviderTest extends AbstractTestCase {
     @Test
     public void testSigned() throws Exception {
         final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
-                new Credentials(properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret"))
+                new Credentials(System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret"))
         ));
         final UrlProvider provider = new SwiftUrlProvider(session, session.accounts);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -107,7 +106,7 @@ public class SwiftUrlProviderTest extends AbstractTestCase {
     @Test
     public void testTempUrl() throws Exception {
         final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
-                new Credentials(properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret"))
+                new Credentials(System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret"))
         ));
         final Region region = new Region("DFW", URI.create("http://storage101.hkg1.clouddrive.com/v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee"), URI.create("http://m"));
         Map<Region, AccountInfo> accounts = new HashMap<Region, AccountInfo>();

@@ -1,6 +1,5 @@
 package ch.cyberduck.core.openstack;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -25,7 +24,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class SwiftMultipleDeleteFeatureTest extends AbstractTestCase {
+public class SwiftMultipleDeleteFeatureTest {
 
     @Test
     public void testDeleteHP() throws Exception {
@@ -37,7 +36,7 @@ public class SwiftMultipleDeleteFeatureTest extends AbstractTestCase {
                 return "/v2.0/tokens";
             }
         }, "region-a.geo-1.identity.hpcloudsvc.com", 35357, new Credentials(
-                properties.getProperty("hpcloud.key"), properties.getProperty("hpcloud.secret")
+                System.getProperties().getProperty("hpcloud.key"), System.getProperties().getProperty("hpcloud.secret")
         )), container);
     }
 
@@ -47,7 +46,7 @@ public class SwiftMultipleDeleteFeatureTest extends AbstractTestCase {
         container.attributes().setRegion("DFW");
         this.delete(new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                 new Credentials(
-                        properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret"))), container);
+                        System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret"))), container);
     }
 
     protected void delete(final Host host, final Path container) throws Exception {
@@ -77,7 +76,7 @@ public class SwiftMultipleDeleteFeatureTest extends AbstractTestCase {
         final SwiftSession session = new SwiftSession(
                 new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                         new Credentials(
-                                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+                                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());

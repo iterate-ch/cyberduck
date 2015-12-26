@@ -17,7 +17,6 @@ package ch.cyberduck.core.openstack;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -46,13 +45,13 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class SwiftDirectoryFeatureTest extends AbstractTestCase {
+public class SwiftDirectoryFeatureTest {
 
     @Test
     @Ignore
     public void testCreateContainer() throws Exception {
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
-                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -75,7 +74,7 @@ public class SwiftDirectoryFeatureTest extends AbstractTestCase {
     @Test
     public void testCreatePlaceholder() throws Exception {
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
-                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
         final AtomicBoolean put = new AtomicBoolean();

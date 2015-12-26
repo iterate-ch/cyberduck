@@ -1,6 +1,5 @@
 package ch.cyberduck.core.openstack;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
@@ -41,7 +40,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class SwiftLargeObjectUploadFeatureTest extends AbstractTestCase {
+public class SwiftLargeObjectUploadFeatureTest {
 
     @Test
     @Ignore
@@ -52,7 +51,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractTestCase {
                 return "/v2.0/tokens";
             }
         }, "region-a.geo-1.identity.hpcloudsvc.com", 35357, new Credentials(
-                properties.getProperty("hpcloud.key"), properties.getProperty("hpcloud.secret")
+                System.getProperties().getProperty("hpcloud.key"), System.getProperties().getProperty("hpcloud.secret")
         ));
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("region-a.geo-1");
@@ -67,7 +66,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractTestCase {
                 return "/v2.0/tokens";
             }
         }, "region-a.geo-1.identity.hpcloudsvc.com", 35357, new Credentials(
-                properties.getProperty("hpcloud.key"), properties.getProperty("hpcloud.secret")
+                System.getProperties().getProperty("hpcloud.key"), System.getProperties().getProperty("hpcloud.secret")
         ));
         final Path container = new Path("t.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("region-b.geo-1");
@@ -78,7 +77,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractTestCase {
     public void testUploadRax() throws Exception {
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                 new Credentials(
-                        properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")));
+                        System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")));
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         this.test(host, container);

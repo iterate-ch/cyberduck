@@ -1,6 +1,5 @@
 package ch.cyberduck.core.openstack;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -27,14 +26,14 @@ import static org.junit.Assert.assertNotNull;
 /**
  * @version $Id$
  */
-public class SwiftAttributesFeatureTest extends AbstractTestCase {
+public class SwiftAttributesFeatureTest {
 
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {
         final SwiftSession session = new SwiftSession(
                 new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                         new Credentials(
-                                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+                                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
                         )));
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
@@ -50,7 +49,7 @@ public class SwiftAttributesFeatureTest extends AbstractTestCase {
         final SwiftSession session = new SwiftSession(
                 new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                         new Credentials(
-                                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+                                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
                         )));
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
@@ -77,7 +76,7 @@ public class SwiftAttributesFeatureTest extends AbstractTestCase {
         final SwiftSession session = new SwiftSession(
                 new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                         new Credentials(
-                                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+                                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
                         )));
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
@@ -93,7 +92,7 @@ public class SwiftAttributesFeatureTest extends AbstractTestCase {
         final SwiftSession session = new SwiftSession(
                 new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                         new Credentials(
-                                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+                                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
                         )));
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());

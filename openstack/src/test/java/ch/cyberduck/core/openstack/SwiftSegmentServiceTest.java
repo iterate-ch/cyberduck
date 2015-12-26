@@ -1,6 +1,5 @@
 package ch.cyberduck.core.openstack;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -27,14 +26,14 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class SwiftSegmentServiceTest extends AbstractTestCase {
+public class SwiftSegmentServiceTest {
 
     @Test
     public void testList() throws Exception {
         final SwiftSession session = new SwiftSession(
                 new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                         new Credentials(
-                                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+                                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -49,7 +48,7 @@ public class SwiftSegmentServiceTest extends AbstractTestCase {
         final SwiftSession session = new SwiftSession(
                 new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                         new Credentials(
-                                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+                                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
                         )));
         final SwiftSegmentService service = new SwiftSegmentService(session);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -68,7 +67,7 @@ public class SwiftSegmentServiceTest extends AbstractTestCase {
         final SwiftSession session = new SwiftSession(
                 new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                         new Credentials(
-                                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+                                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
                         )));
         final SwiftSegmentService service = new SwiftSegmentService(session);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -87,7 +86,7 @@ public class SwiftSegmentServiceTest extends AbstractTestCase {
         final SwiftSession session = new SwiftSession(
                 new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                         new Credentials(
-                                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+                                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
                         )));
         final SwiftSegmentService service = new SwiftSegmentService(session, ".prefix/");
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));

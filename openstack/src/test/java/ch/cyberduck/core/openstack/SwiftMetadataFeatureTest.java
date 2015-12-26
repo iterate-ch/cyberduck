@@ -17,7 +17,6 @@ package ch.cyberduck.core.openstack;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -40,14 +39,14 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class SwiftMetadataFeatureTest extends AbstractTestCase {
+public class SwiftMetadataFeatureTest {
 
     @Test
     public void testGetContainerMetadata() throws Exception {
         final SwiftSession session = new SwiftSession(
                 new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                         new Credentials(
-                                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+                                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -65,7 +64,7 @@ public class SwiftMetadataFeatureTest extends AbstractTestCase {
         final SwiftSession session = new SwiftSession(
                 new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                         new Credentials(
-                                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+                                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());

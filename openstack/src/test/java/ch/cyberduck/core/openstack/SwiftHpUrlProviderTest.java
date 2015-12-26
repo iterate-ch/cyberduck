@@ -17,7 +17,6 @@ package ch.cyberduck.core.openstack;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -38,7 +37,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class SwiftHpUrlProviderTest extends AbstractTestCase {
+public class SwiftHpUrlProviderTest {
 
     @Test
     public void testSigned() throws Exception {
@@ -49,7 +48,7 @@ public class SwiftHpUrlProviderTest extends AbstractTestCase {
             }
         };
         final Host host = new Host(protocol, "region-a.geo-1.identity.hpcloudsvc.com", 35357, new Credentials(
-                properties.getProperty("hpcloud.key"), properties.getProperty("hpcloud.secret")
+                System.getProperties().getProperty("hpcloud.key"), System.getProperties().getProperty("hpcloud.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -57,7 +56,7 @@ public class SwiftHpUrlProviderTest extends AbstractTestCase {
         final SwiftHpUrlProvider provider = new SwiftHpUrlProvider(session, new DisabledPasswordStore() {
             @Override
             public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
-                return properties.getProperty("hpcloud.secret");
+                return System.getProperties().getProperty("hpcloud.secret");
             }
         });
         final Iterator<DescriptiveUrl> iterator = provider.sign(new Region("region-a.geo-1", URI.create("https://region-a.geo-1.objects.hpcloudsvc.com/v1/88650632417788"), null),

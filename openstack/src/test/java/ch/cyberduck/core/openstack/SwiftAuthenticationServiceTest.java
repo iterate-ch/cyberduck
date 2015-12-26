@@ -1,6 +1,5 @@
 package ch.cyberduck.core.openstack;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
@@ -29,7 +28,7 @@ import static org.junit.Assert.fail;
 /**
  * @version $Id$
  */
-public class SwiftAuthenticationServiceTest extends AbstractTestCase {
+public class SwiftAuthenticationServiceTest {
 
     @Test
     public void testGetRequest() throws Exception {

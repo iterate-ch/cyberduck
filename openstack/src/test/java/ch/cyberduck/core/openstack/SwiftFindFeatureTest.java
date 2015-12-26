@@ -1,6 +1,5 @@
 package ch.cyberduck.core.openstack;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
@@ -31,14 +30,14 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class SwiftFindFeatureTest extends AbstractTestCase {
+public class SwiftFindFeatureTest {
 
     @Test
     public void testFindContainer() throws Exception {
         final SwiftSession session = new SwiftSession(
                 new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                         new Credentials(
-                                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+                                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -54,7 +53,7 @@ public class SwiftFindFeatureTest extends AbstractTestCase {
         final SwiftSession session = new SwiftSession(
                 new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                         new Credentials(
-                                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+                                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());

@@ -17,10 +17,8 @@ package ch.cyberduck.core.openstack;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.ChecksumException;
 
 import org.apache.commons.io.input.NullInputStream;
@@ -36,7 +34,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class SwiftSmallObjectUploadFeatureTest extends AbstractTestCase {
+public class SwiftSmallObjectUploadFeatureTest {
 
     @Test
     public void testDecorate() throws Exception {
