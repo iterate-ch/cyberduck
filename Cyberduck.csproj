@@ -56,7 +56,7 @@
     <WarningLevel>1</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <OutputPath>windows\target\</OutputPath>
+    <OutputPath>windows\target</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Optimize>true</Optimize>
@@ -67,7 +67,7 @@
   <PropertyGroup Condition="'$(OutputType)' == 'Library'">
     <StartupObject>
     </StartupObject>
-    <OutputPath>windows\target\dll</OutputPath>
+    <OutputPath>windows\dll\target</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Optimize>true</Optimize>
