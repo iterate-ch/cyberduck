@@ -1,11 +1,7 @@
 package ch.cyberduck.core;
 
-import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.ftp.FTPProtocol;
-import ch.cyberduck.core.sftp.SFTPProtocol;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -13,14 +9,14 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class LoginCallbackTest extends AbstractTestCase {
+public class LoginCallbackTest {
 
     @Test(expected = LoginCanceledException.class)
     public void testCheckFTP() throws Exception {
         LoginCallback c = new DisabledLoginCallback() {
             @Override
             public void prompt(Host bookmark, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
-                assertEquals(new FTPProtocol(), bookmark.getProtocol());
+                assertEquals(new TestProtocol(), bookmark.getProtocol());
                 assertEquals("t", title);
                 assertEquals("r", reason);
                 assertTrue(options.keychain);
@@ -33,7 +29,7 @@ public class LoginCallbackTest extends AbstractTestCase {
         options.keychain = true;
         options.publickey = true;
         options.anonymous = false;
-        c.prompt(new Host(new FTPProtocol()), new Credentials(), "t", "r", options);
+        c.prompt(new Host(new TestProtocol()), new Credentials(), "t", "r", options);
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -41,7 +37,7 @@ public class LoginCallbackTest extends AbstractTestCase {
         LoginCallback c = new DisabledLoginCallback() {
             @Override
             public void prompt(Host bookmark, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
-                assertEquals(new SFTPProtocol(), bookmark.getProtocol());
+                assertEquals(new TestProtocol(), bookmark.getProtocol());
                 assertEquals("t", title);
                 assertEquals("r", reason);
                 assertTrue(options.keychain);
@@ -54,7 +50,7 @@ public class LoginCallbackTest extends AbstractTestCase {
         options.keychain = true;
         options.publickey = true;
         options.anonymous = false;
-        c.prompt(new Host(new SFTPProtocol()), new Credentials(), "t", "r", options);
+        c.prompt(new Host(new TestProtocol()), new Credentials(), "t", "r", options);
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -63,7 +59,7 @@ public class LoginCallbackTest extends AbstractTestCase {
         LoginCallback c = new DisabledLoginCallback() {
             @Override
             public void prompt(Host bookmark, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
-                assertEquals(new DAVProtocol(), bookmark.getProtocol());
+                assertEquals(new TestProtocol(), bookmark.getProtocol());
                 assertEquals(user, credentials);
                 assertEquals("r", reason);
                 assertEquals("t", title);
@@ -73,6 +69,6 @@ public class LoginCallbackTest extends AbstractTestCase {
                 throw new LoginCanceledException();
             }
         };
-        c.prompt(new Host(new DAVProtocol()), user, "t", "r", new LoginOptions(new DAVProtocol()));
+        c.prompt(new Host(new TestProtocol()), user, "t", "r", new LoginOptions(new TestProtocol()));
     }
 }
