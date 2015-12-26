@@ -322,6 +322,11 @@
                         </execution>
                     </executions>
                 </plugin>
+                <plugin>
+                    <groupId>org.commonjava.maven.plugins</groupId>
+                    <artifactId>directory-maven-plugin</artifactId>
+                    <version>0.1</version>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
@@ -357,23 +362,6 @@
                 <configuration>
                     <systemPropertiesFile>${env.HOME}/test.properties</systemPropertiesFile>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.commonjava.maven.plugins</groupId>
-                <artifactId>directory-maven-plugin</artifactId>
-                <version>0.1</version>
-                <executions>
-                    <execution>
-                        <id>directories</id>
-                        <goals>
-                            <goal>highest-basedir</goal>
-                        </goals>
-                        <phase>initialize</phase>
-                        <configuration>
-                            <property>main.basedir</property>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
@@ -421,4 +409,91 @@
             </snapshots>
         </repository>
     </repositories>
+
+    <profiles>
+        <profile>
+            <id>windows</id>
+            <activation>
+                <os>
+                    <family>Windows</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.commonjava.maven.plugins</groupId>
+                        <artifactId>directory-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>directories</id>
+                                <goals>
+                                    <goal>execution-root</goal>
+                                </goals>
+                                <phase>initialize</phase>
+                                <configuration>
+                                    <property>main.basedir</property>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>linux</id>
+            <activation>
+                <os>
+                    <family>Linux</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.commonjava.maven.plugins</groupId>
+                        <artifactId>directory-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>directories</id>
+                                <goals>
+                                    <goal>highest-basedir</goal>
+                                </goals>
+                                <phase>initialize</phase>
+                                <configuration>
+                                    <property>main.basedir</property>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>mac</id>
+            <activation>
+                <os>
+                    <family>Mac</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.commonjava.maven.plugins</groupId>
+                        <artifactId>directory-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>directories</id>
+                                <goals>
+                                    <goal>highest-basedir</goal>
+                                </goals>
+                                <phase>initialize</phase>
+                                <configuration>
+                                    <property>main.basedir</property>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
