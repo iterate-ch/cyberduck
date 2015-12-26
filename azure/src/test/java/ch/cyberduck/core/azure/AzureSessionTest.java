@@ -25,7 +25,7 @@ public class AzureSessionTest extends AbstractTestCase {
     @Test
     public void testConnect() throws Exception {
         final Host host = new Host(new AzureProtocol(), "cyberduck.blob.core.windows.net", new Credentials(
-                properties.getProperty("azure.account"), properties.getProperty("azure.key")
+                System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
         ));
         final AzureSession session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
@@ -38,7 +38,7 @@ public class AzureSessionTest extends AbstractTestCase {
     @Test(expected = LoginCanceledException.class)
     public void testConnectInvalidKey() throws Exception {
         final Host host = new Host(new AzureProtocol(), "cyberduck.blob.core.windows.net", new Credentials(
-                properties.getProperty("azure.account"), "6h9BmTcabGajIE/AVGzgu9JcC15JjrzkjdAIe+2daRK8XlyVdYT6zHtFMwXOtrlCw74jX9R0w4GN56vKQjOpVA=="
+                System.getProperties().getProperty("azure.account"), "6h9BmTcabGajIE/AVGzgu9JcC15JjrzkjdAIe+2daRK8XlyVdYT6zHtFMwXOtrlCw74jX9R0w4GN56vKQjOpVA=="
         ));
         final AzureSession session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginCallback() {
@@ -55,7 +55,7 @@ public class AzureSessionTest extends AbstractTestCase {
     @Test(expected = LoginCanceledException.class)
     public void testConnectKeyNotBase64() throws Exception {
         final Host host = new Host(new AzureProtocol(), "cyberduck.blob.core.windows.net", new Credentials(
-                properties.getProperty("azure.account"), "6h9B"
+                System.getProperties().getProperty("azure.account"), "6h9B"
         ));
         final AzureSession session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginCallback() {

@@ -31,7 +31,7 @@ public class AzureDeleteFeatureTest extends AbstractTestCase {
     @Test(expected = NotfoundException.class)
     public void testDeleteNotFoundBucket() throws Exception {
         final Host host = new Host(new AzureProtocol(), "cyberduck.blob.core.windows.net", new Credentials(
-                properties.getProperty("azure.account"), properties.getProperty("azure.key")
+                System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
         ));
         final AzureSession session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
@@ -47,7 +47,7 @@ public class AzureDeleteFeatureTest extends AbstractTestCase {
     @Test(expected = NotfoundException.class)
     public void testDeleteNotFoundKey() throws Exception {
         final Host host = new Host(new AzureProtocol(), "cyberduck.blob.core.windows.net", new Credentials(
-                properties.getProperty("azure.account"), properties.getProperty("azure.key")
+                System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
         ));
         final AzureSession session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
@@ -64,7 +64,7 @@ public class AzureDeleteFeatureTest extends AbstractTestCase {
     @Test
     public void testDeletePlaceholder() throws Exception {
         final Host host = new Host(new AzureProtocol(), "cyberduck.blob.core.windows.net", new Credentials(
-                properties.getProperty("azure.account"), properties.getProperty("azure.key")
+                System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
         ));
         final AzureSession session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
@@ -85,7 +85,7 @@ public class AzureDeleteFeatureTest extends AbstractTestCase {
     @Test
     public void testDeleteKey() throws Exception {
         final Host host = new Host(new AzureProtocol(), "cyberduck.blob.core.windows.net", new Credentials(
-                properties.getProperty("azure.account"), properties.getProperty("azure.key")
+                System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
         ));
         final AzureSession session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),

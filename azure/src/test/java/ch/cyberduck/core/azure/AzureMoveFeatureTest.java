@@ -30,7 +30,7 @@ public class AzureMoveFeatureTest extends AbstractTestCase {
     @Test
     public void testMove() throws Exception {
         final Host host = new Host(new AzureProtocol(), "cyberduck.blob.core.windows.net", new Credentials(
-                properties.getProperty("azure.account"), properties.getProperty("azure.key")
+                System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
         ));
         final AzureSession session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),

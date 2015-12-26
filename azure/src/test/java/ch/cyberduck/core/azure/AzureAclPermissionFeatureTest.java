@@ -27,7 +27,7 @@ public class AzureAclPermissionFeatureTest extends AbstractTestCase {
     @Test(expected = NotfoundException.class)
     public void testNotFound() throws Exception {
         final Host host = new Host(new AzureProtocol(), "cyberduck.blob.core.windows.net", new Credentials(
-                properties.getProperty("azure.account"), properties.getProperty("azure.key")
+                System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
         ));
         final AzureSession session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
@@ -40,7 +40,7 @@ public class AzureAclPermissionFeatureTest extends AbstractTestCase {
     @Test(expected = NotfoundException.class)
     public void testReadNotFoundContainer() throws Exception {
         final Host host = new Host(new AzureProtocol(), "cyberduck.blob.core.windows.net", new Credentials(
-                properties.getProperty("azure.account"), properties.getProperty("azure.key")
+                System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
         ));
         final AzureSession session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
