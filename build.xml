@@ -30,7 +30,6 @@
 
     <property name="debug" value="on"/>
     <property name="module" location="."/>
-    <property name="home" location="${module}/.."/>
     <property name="build" value="${module}/target"/>
     <property name="build.compile.target" value="${ant.java.version}"/>
     <property name="configuration" value="release"/>
@@ -86,8 +85,9 @@
         <echo message=""/>
         <echo message="	  ---------------------------------------------------------------"/>
         <echo message="   Java Version: ${ant.java.version}"/>
-        <echo message="	  Project Home:		${home}"/>
-        <echo message="	  Project Build:	${build}"/>
+        <echo message="	  Home:		    ${home}"/>
+        <echo message="	  Module:		${module}"/>
+        <echo message="	  Build Target:	${build}"/>
         <echo message="	  ---------------------------------------------------------------"/>
         <echo message=""/>
         <echo message="Building ${ant.project.name} on ${os.name}/${os.arch} at ${touch.time}..."/>
