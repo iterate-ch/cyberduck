@@ -18,7 +18,6 @@ package ch.cyberduck.core.s3;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -40,7 +39,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class ServiceExceptionMappingServiceTest extends AbstractTestCase {
+public class ServiceExceptionMappingServiceTest {
 
     @Test
     public void testLoginFailure() throws Exception {

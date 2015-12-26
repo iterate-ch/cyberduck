@@ -17,7 +17,6 @@ package ch.cyberduck.core.gstorage;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -44,12 +43,12 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class GoogleStorageDirectoryFeatureTest extends AbstractTestCase {
+public class GoogleStorageDirectoryFeatureTest {
 
     @Test
     public void testMakeBucket() throws Exception {
         final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
-                properties.getProperty("google.projectid"), null
+                System.getProperties().getProperty("google.projectid"), null
         ));
         final GoogleStorageSession session = new GoogleStorageSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -57,10 +56,10 @@ public class GoogleStorageDirectoryFeatureTest extends AbstractTestCase {
             @Override
             public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
                 if(user.equals("Google OAuth2 Access Token")) {
-                    return properties.getProperty("google.accesstoken");
+                    return System.getProperties().getProperty("google.accesstoken");
                 }
                 if(user.equals("Google OAuth2 Refresh Token")) {
-                    return properties.getProperty("google.refreshtoken");
+                    return System.getProperties().getProperty("google.refreshtoken");
                 }
                 return null;
             }
@@ -79,7 +78,7 @@ public class GoogleStorageDirectoryFeatureTest extends AbstractTestCase {
     @Test
     public void testMakeDirectory() throws Exception {
         final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
-                properties.getProperty("google.projectid"), null
+                System.getProperties().getProperty("google.projectid"), null
         ));
         final GoogleStorageSession session = new GoogleStorageSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -87,10 +86,10 @@ public class GoogleStorageDirectoryFeatureTest extends AbstractTestCase {
             @Override
             public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
                 if(user.equals("Google OAuth2 Access Token")) {
-                    return properties.getProperty("google.accesstoken");
+                    return System.getProperties().getProperty("google.accesstoken");
                 }
                 if(user.equals("Google OAuth2 Refresh Token")) {
-                    return properties.getProperty("google.refreshtoken");
+                    return System.getProperties().getProperty("google.refreshtoken");
                 }
                 return null;
             }

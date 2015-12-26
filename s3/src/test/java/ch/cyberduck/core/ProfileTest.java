@@ -24,7 +24,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
-public class ProfileTest extends AbstractTestCase {
+public class ProfileTest {
 
     @Test
     public void testEquals() throws Exception {

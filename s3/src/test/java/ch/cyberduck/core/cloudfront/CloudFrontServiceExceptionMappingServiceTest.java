@@ -18,7 +18,6 @@ package ch.cyberduck.core.cloudfront;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.exception.LoginFailureException;
 
 import org.jets3t.service.CloudFrontServiceException;
@@ -30,7 +29,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class CloudFrontServiceExceptionMappingServiceTest extends AbstractTestCase {
+public class CloudFrontServiceExceptionMappingServiceTest {
 
     @Test
     public void testLoginFailure() throws Exception {

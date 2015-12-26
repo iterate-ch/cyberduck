@@ -1,6 +1,5 @@
 package ch.cyberduck.core.s3;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -18,7 +17,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class S3UrlProviderTest extends AbstractTestCase {
+public class S3UrlProviderTest {
 
     @Test
     public void testToHttpURL() throws Exception {
@@ -94,7 +93,7 @@ public class S3UrlProviderTest extends AbstractTestCase {
     @Test
     public void testToSignedUrl() throws Exception {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                properties.getProperty("s3.key"), null
+                System.getProperties().getProperty("s3.key"), null
         )));
         final S3UrlProvider provider = new S3UrlProvider(session, new DisabledPasswordStore() {
             @Override
@@ -125,7 +124,7 @@ public class S3UrlProviderTest extends AbstractTestCase {
     @Test
     public void testPlaceholder() throws Exception {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                properties.getProperty("s3.key"), null
+                System.getProperties().getProperty("s3.key"), null
         )));
         assertTrue(
                 new S3UrlProvider(session).toUrl(new Path("/test.cyberduck.ch/test", EnumSet.of(Path.Type.directory))).filter(DescriptiveUrl.Type.signed).isEmpty());

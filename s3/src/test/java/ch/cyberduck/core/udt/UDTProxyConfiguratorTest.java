@@ -69,12 +69,12 @@ import com.barchart.udt.ExceptionUDT;
 import static org.junit.Assert.*;
 
 @Ignore
-public class UDTProxyConfiguratorTest extends AbstractTestCase {
+public class UDTProxyConfiguratorTest {
 
     @Test(expected = ConnectionRefusedException.class)
     public void testConnectNoServer() throws Exception {
         final Host host = new Host(new S3Protocol(), "s3.amazonaws.com", new Credentials(
-                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         final UDTProxyConfigurator proxy = new UDTProxyConfigurator(new S3LocationFeature.S3Region("ap-northeast-1"),
                 new LocalhostProxyProvider() {
@@ -103,7 +103,7 @@ public class UDTProxyConfiguratorTest extends AbstractTestCase {
     @Test(expected = MissingReceiptException.class)
     public void testConnectNoReceipt() throws Exception {
         final Host host = new Host(new S3Protocol(), "s3.amazonaws.com", new Credentials(
-                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         final UDTProxyConfigurator proxy = new UDTProxyConfigurator(new S3LocationFeature.S3Region("ap-northeast-1"),
                 new QloudsonicProxyProvider(), new DefaultX509TrustManager(), new DefaultX509KeyManager());
@@ -115,7 +115,7 @@ public class UDTProxyConfiguratorTest extends AbstractTestCase {
     @Test(expected = ConnectionCanceledException.class)
     public void testConnectFailureCertificateTls() throws Exception {
         final Host host = new Host(new S3Protocol(), "s3.amazonaws.com", new Credentials(
-                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         final UDTProxyConfigurator proxy = new UDTProxyConfigurator(new S3LocationFeature.S3Region("ap-northeast-1"),
                 new LocalhostProxyProvider(), new AbstractX509TrustManager() {
@@ -149,7 +149,7 @@ public class UDTProxyConfiguratorTest extends AbstractTestCase {
     @Test(expected = QuotaException.class)
     public void testUploadQuotaFailure() throws Exception {
         final Host host = new Host(new S3Protocol(), "s3.amazonaws.com", new Credentials(
-                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         final UDTProxyConfigurator proxy = new UDTProxyConfigurator(new S3LocationFeature.S3Region("ap-northeast-1"),
                 new LocalhostProxyProvider() {
@@ -196,7 +196,7 @@ public class UDTProxyConfiguratorTest extends AbstractTestCase {
         final Profile profile = ProfileReaderFactory.get().read(
                 new Local("../profiles/S3 (HTTP).cyberduckprofile"));
         final Host host = new Host(profile, "s3.amazonaws.com", new Credentials(
-                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         final UDTProxyConfigurator proxy = new UDTProxyConfigurator(new S3LocationFeature.S3Region("ap-northeast-1"),
                 new LocalhostProxyProvider(), new DefaultX509TrustManager(), new DefaultX509KeyManager());
@@ -214,7 +214,7 @@ public class UDTProxyConfiguratorTest extends AbstractTestCase {
         final Profile profile = ProfileReaderFactory.get().read(
                 new Local("../profiles/S3 (HTTP).cyberduckprofile"));
         final Host host = new Host(profile, "s3.amazonaws.com", new Credentials(
-                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         final UDTProxyConfigurator proxy = new UDTProxyConfigurator(new S3LocationFeature.S3Region("ap-northeast-1"),
                 new LocalhostProxyProvider(), new DefaultX509TrustManager(), new DefaultX509KeyManager());
@@ -269,7 +269,7 @@ public class UDTProxyConfiguratorTest extends AbstractTestCase {
     @Test
     public void testReadRange() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         final UDTProxyConfigurator proxy = new UDTProxyConfigurator(new S3LocationFeature.S3Region("ap-northeast-1"),
                 new LocalhostProxyProvider(), new DefaultX509TrustManager() {

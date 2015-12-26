@@ -17,7 +17,6 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -45,13 +44,13 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class S3DirectoryFeatureTest extends AbstractTestCase {
+public class S3DirectoryFeatureTest {
 
     @Test
     @Ignore
     public void testCreateBucket() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         final S3Session session = new S3Session(host);
         session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256);
@@ -75,7 +74,7 @@ public class S3DirectoryFeatureTest extends AbstractTestCase {
     @Test
     public void testCreatePlaceholder() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         final S3Session session = new S3Session(host);
         final AtomicBoolean b = new AtomicBoolean();

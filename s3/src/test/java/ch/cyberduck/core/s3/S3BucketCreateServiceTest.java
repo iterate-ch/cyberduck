@@ -17,7 +17,6 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -40,7 +39,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class S3BucketCreateServiceTest extends AbstractTestCase {
+public class S3BucketCreateServiceTest {
 
     @Test
     @Ignore
@@ -48,7 +47,7 @@ public class S3BucketCreateServiceTest extends AbstractTestCase {
         final S3Session session = new S3Session(
                 new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                         new Credentials(
-                                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         final S3FindFeature find = new S3FindFeature(session);
@@ -74,7 +73,7 @@ public class S3BucketCreateServiceTest extends AbstractTestCase {
         final S3Session session = new S3Session(
                 new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                         new Credentials(
-                                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         final S3BucketCreateService service = new S3BucketCreateService(session);

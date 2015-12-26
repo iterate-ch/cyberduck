@@ -1,6 +1,5 @@
 package ch.cyberduck.core.s3;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -36,13 +35,13 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class S3ThresholdUploadServiceTest extends AbstractTestCase {
+public class S3ThresholdUploadServiceTest {
 
     @Test
     @Ignore
     public void testInteroperabilityEvault() throws Exception {
         final Host host = new Host(new S3Protocol(), "s3.lts2.evault.com", new Credentials(
-                properties.getProperty("evault.s3.key"), properties.getProperty("evault.s3.secret")
+                System.getProperties().getProperty("evault.s3.key"), System.getProperties().getProperty("evault.s3.secret")
         ));
         final S3Session session = new S3Session(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),

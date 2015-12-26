@@ -1,6 +1,5 @@
 package ch.cyberduck.core.cloudfront;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledTranscriptListener;
@@ -27,7 +26,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractTestCase {
+public class WebsiteCloudFrontDistributionConfigurationTest {
 
     @Test
     public void testGetMethodsAWS() throws Exception {
@@ -102,7 +101,7 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractTest
     @Test
     public void testReadNoWebsiteConfiguration() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
-        host.setCredentials(properties.getProperty("s3.key"), properties.getProperty("s3.secret"));
+        host.setCredentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"));
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         final WebsiteCloudFrontDistributionConfiguration configuration

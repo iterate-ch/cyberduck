@@ -18,7 +18,6 @@ package ch.cyberduck.core.iam;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LoginFailureException;
 
@@ -31,7 +30,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class AmazonServiceExceptionMappingServiceTest extends AbstractTestCase {
+public class AmazonServiceExceptionMappingServiceTest {
 
     @Test
     public void testLoginFailure() throws Exception {

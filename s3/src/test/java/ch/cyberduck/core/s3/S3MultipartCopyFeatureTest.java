@@ -17,7 +17,6 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -43,12 +42,12 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-public class S3MultipartCopyFeatureTest extends AbstractTestCase {
+public class S3MultipartCopyFeatureTest {
 
     @Test
     public void testCopyZeroLength() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                new Credentials(properties.getProperty("s3.key"), properties.getProperty("s3.secret"))
+                new Credentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"))
         );
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -78,7 +77,7 @@ public class S3MultipartCopyFeatureTest extends AbstractTestCase {
     @Test
     public void testCopy() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                new Credentials(properties.getProperty("s3.key"), properties.getProperty("s3.secret"))
+                new Credentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"))
         );
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -118,7 +117,7 @@ public class S3MultipartCopyFeatureTest extends AbstractTestCase {
     @Test
     public void testCopyAWS4Signature() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                new Credentials(properties.getProperty("s3.key"), properties.getProperty("s3.secret"))
+                new Credentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"))
         );
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());

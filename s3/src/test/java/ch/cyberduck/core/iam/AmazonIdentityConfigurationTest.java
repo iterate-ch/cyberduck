@@ -1,6 +1,5 @@
 package ch.cyberduck.core.iam;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
@@ -20,12 +19,12 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class AmazonIdentityConfigurationTest extends AbstractTestCase {
+public class AmazonIdentityConfigurationTest {
 
     @Test
     public void testCreateUser() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         final AmazonIdentityConfiguration iam = new AmazonIdentityConfiguration(host);
         final String username = UUID.randomUUID().toString();
@@ -64,7 +63,7 @@ public class AmazonIdentityConfigurationTest extends AbstractTestCase {
     @Test(expected = ConnectionTimeoutException.class)
     public void testTimeout() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         final AmazonIdentityConfiguration iam = new AmazonIdentityConfiguration(host, 1);
         final String username = UUID.randomUUID().toString();

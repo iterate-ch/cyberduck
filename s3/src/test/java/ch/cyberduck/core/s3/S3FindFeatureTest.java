@@ -1,6 +1,5 @@
 package ch.cyberduck.core.s3;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
@@ -25,14 +24,14 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class S3FindFeatureTest extends AbstractTestCase {
+public class S3FindFeatureTest {
 
     @Test
     public void testFindNotFound() throws Exception {
         final S3Session session = new S3Session(
                 new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                         new Credentials(
-                                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -45,7 +44,7 @@ public class S3FindFeatureTest extends AbstractTestCase {
     @Test
     public void testFindUnknownBucket() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -58,7 +57,7 @@ public class S3FindFeatureTest extends AbstractTestCase {
     @Test
     public void testFindBucket() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -109,7 +108,7 @@ public class S3FindFeatureTest extends AbstractTestCase {
         final S3Session session = new S3Session(
                 new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                         new Credentials(
-                                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());

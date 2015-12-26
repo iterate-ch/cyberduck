@@ -1,6 +1,5 @@
 package ch.cyberduck.core.s3;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -19,7 +18,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class S3BucketListServiceTest extends AbstractTestCase {
+public class S3BucketListServiceTest {
 
     @Test
     public void testGetContainer() throws Exception {
@@ -32,7 +31,7 @@ public class S3BucketListServiceTest extends AbstractTestCase {
         final S3Session session = new S3Session(
                 new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                         new Credentials(
-                                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         final List<Path> list = new S3BucketListService(session).list(new DisabledListProgressListener());
@@ -46,7 +45,7 @@ public class S3BucketListServiceTest extends AbstractTestCase {
         final S3Session session = new S3Session(
                 new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), 443, "/",
                         new Credentials(
-                                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         final List<Path> list = new S3BucketListService(session).list(new DisabledListProgressListener());
@@ -60,7 +59,7 @@ public class S3BucketListServiceTest extends AbstractTestCase {
         final S3Session session = new S3Session(
                 new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                         new Credentials(
-                                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         final List<Path> list = new S3BucketListService(session, new S3LocationFeature.S3Region("eu-central-1"))

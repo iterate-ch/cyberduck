@@ -1,6 +1,5 @@
 package ch.cyberduck.core.s3;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -26,12 +25,12 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class S3MoveFeatureTest extends AbstractTestCase {
+public class S3MoveFeatureTest {
 
     @Test
     public void testMove() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -59,17 +58,17 @@ public class S3MoveFeatureTest extends AbstractTestCase {
     @Test
     public void testMoveGoogleStorage() throws Exception {
         final GoogleStorageSession session = new GoogleStorageSession(new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
-                properties.getProperty("google.projectid"), null
+                System.getProperties().getProperty("google.projectid"), null
         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore() {
             @Override
             public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
                 if(user.equals("Google OAuth2 Access Token")) {
-                    return properties.getProperty("google.accesstoken");
+                    return System.getProperties().getProperty("google.accesstoken");
                 }
                 if(user.equals("Google OAuth2 Refresh Token")) {
-                    return properties.getProperty("google.refreshtoken");
+                    return System.getProperties().getProperty("google.refreshtoken");
                 }
                 return null;
             }
@@ -99,7 +98,7 @@ public class S3MoveFeatureTest extends AbstractTestCase {
         final S3Session session = new S3Session(
                 new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                         new Credentials(
-                                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -132,7 +131,7 @@ public class S3MoveFeatureTest extends AbstractTestCase {
     @Test
     public void testMoveWithServerSideEncryptionBucketPolicy() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());

@@ -1,6 +1,5 @@
 package ch.cyberduck.core.gstorage;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledCancelCallback;
@@ -34,7 +33,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractTestCase {
+public class GoogleStorageWebsiteDistributionConfigurationTest {
 
     @Test
     public void testGetMethods() throws Exception {
@@ -66,7 +65,7 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractT
     @Test
     public void testRead() throws Exception {
         final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
-                properties.getProperty("google.projectid"), null
+                System.getProperties().getProperty("google.projectid"), null
         ));
         final GoogleStorageSession session = new GoogleStorageSession(host);
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
@@ -76,10 +75,10 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractT
             @Override
             public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
                 if(user.equals("Google OAuth2 Access Token")) {
-                    return properties.getProperty("google.accesstoken");
+                    return System.getProperties().getProperty("google.accesstoken");
                 }
                 if(user.equals("Google OAuth2 Refresh Token")) {
-                    return properties.getProperty("google.refreshtoken");
+                    return System.getProperties().getProperty("google.refreshtoken");
                 }
                 return null;
             }
@@ -97,7 +96,7 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractT
     @Test
     public void testWrite() throws Exception {
         final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
-                properties.getProperty("google.projectid"), null
+                System.getProperties().getProperty("google.projectid"), null
         ));
         final GoogleStorageSession session = new GoogleStorageSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -105,10 +104,10 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractT
             @Override
             public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
                 if(user.equals("Google OAuth2 Access Token")) {
-                    return properties.getProperty("google.accesstoken");
+                    return System.getProperties().getProperty("google.accesstoken");
                 }
                 if(user.equals("Google OAuth2 Refresh Token")) {
-                    return properties.getProperty("google.refreshtoken");
+                    return System.getProperties().getProperty("google.refreshtoken");
                 }
                 return null;
             }
@@ -130,7 +129,7 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractT
     @Test
     public void testFeatures() {
         final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
-                properties.getProperty("google.projectid"), null
+                System.getProperties().getProperty("google.projectid"), null
         ));
         final GoogleStorageSession session = new GoogleStorageSession(host);
         final DistributionConfiguration d = new GoogleStorageWebsiteDistributionConfiguration(

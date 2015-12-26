@@ -17,7 +17,6 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
 
@@ -29,7 +28,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class S3SessionCredentialsRetrieverTest extends AbstractTestCase {
+public class S3SessionCredentialsRetrieverTest {
 
     @Test
     public void testParse() throws Exception {

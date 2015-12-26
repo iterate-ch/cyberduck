@@ -17,7 +17,6 @@ package ch.cyberduck.core.gstorage;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Host;
@@ -32,12 +31,12 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class GoogleStorageUrlProviderTest extends AbstractTestCase {
+public class GoogleStorageUrlProviderTest {
 
     @Test
     public void testGet() throws Exception {
         final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
-                properties.getProperty("google.projectid"), null
+                System.getProperties().getProperty("google.projectid"), null
         ));
         final GoogleStorageSession session = new GoogleStorageSession(host);
         assertEquals("https://storage.cloud.google.com/c/f", new GoogleStorageUrlProvider(session).toUrl(
@@ -47,7 +46,7 @@ public class GoogleStorageUrlProviderTest extends AbstractTestCase {
     @Test
     public void testGetEncoded() throws Exception {
         final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
-                properties.getProperty("google.projectid"), null
+                System.getProperties().getProperty("google.projectid"), null
         ));
         final GoogleStorageSession session = new GoogleStorageSession(host);
         assertEquals("https://storage.cloud.google.com/container/Screen%20Shot%202013-07-18%20at%2023.55.10.png", new GoogleStorageUrlProvider(session).toUrl(

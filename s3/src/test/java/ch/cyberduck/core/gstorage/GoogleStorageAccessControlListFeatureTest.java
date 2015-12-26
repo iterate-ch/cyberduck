@@ -1,6 +1,5 @@
 package ch.cyberduck.core.gstorage;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
@@ -27,22 +26,22 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class GoogleStorageAccessControlListFeatureTest extends AbstractTestCase {
+public class GoogleStorageAccessControlListFeatureTest {
 
     @Test
     public void testWrite() throws Exception {
         final GoogleStorageSession session = new GoogleStorageSession(new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
-                properties.getProperty("google.projectid"), null
+                System.getProperties().getProperty("google.projectid"), null
         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore() {
             @Override
             public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
                 if(user.equals("Google OAuth2 Access Token")) {
-                    return properties.getProperty("google.accesstoken");
+                    return System.getProperties().getProperty("google.accesstoken");
                 }
                 if(user.equals("Google OAuth2 Refresh Token")) {
-                    return properties.getProperty("google.refreshtoken");
+                    return System.getProperties().getProperty("google.refreshtoken");
                 }
                 return null;
             }
@@ -68,17 +67,17 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractTestCase 
     @Test
     public void testReadBucket() throws Exception {
         final GoogleStorageSession session = new GoogleStorageSession(new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
-                properties.getProperty("google.projectid"), null
+                System.getProperties().getProperty("google.projectid"), null
         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore() {
             @Override
             public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
                 if(user.equals("Google OAuth2 Access Token")) {
-                    return properties.getProperty("google.accesstoken");
+                    return System.getProperties().getProperty("google.accesstoken");
                 }
                 if(user.equals("Google OAuth2 Refresh Token")) {
-                    return properties.getProperty("google.refreshtoken");
+                    return System.getProperties().getProperty("google.refreshtoken");
                 }
                 return null;
             }
@@ -95,7 +94,7 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractTestCase 
     @Test
     public void testRoles() throws Exception {
         final GoogleStorageSession session = new GoogleStorageSession(new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
-                properties.getProperty("google.projectid"), null
+                System.getProperties().getProperty("google.projectid"), null
         )));
         final GoogleStorageAccessControlListFeature f = new GoogleStorageAccessControlListFeature(session);
         assertTrue(f.getAvailableAclUsers().contains(new Acl.CanonicalUser()));

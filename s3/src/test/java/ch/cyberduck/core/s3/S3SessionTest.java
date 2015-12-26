@@ -39,7 +39,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class S3SessionTest extends AbstractTestCase {
+public class S3SessionTest {
 
     @Test
     public void testHttpProfile() throws Exception {
@@ -47,7 +47,7 @@ public class S3SessionTest extends AbstractTestCase {
         final Profile profile = ProfileReaderFactory.get().read(
                 new Local("../profiles/S3 (HTTP).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         assertFalse(host.getProtocol().isSecure());
         final S3Session session = new S3Session(host, new X509TrustManager() {
@@ -86,7 +86,7 @@ public class S3SessionTest extends AbstractTestCase {
     @Test
     public void testConnectUnsecured() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         final S3Session session = new S3Session(host);
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
@@ -111,7 +111,7 @@ public class S3SessionTest extends AbstractTestCase {
     @Test
     public void testConnectDefaultPath() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         host.setDefaultPath("/test.cyberduck.ch");
         final S3Session session = new S3Session(host);
@@ -126,7 +126,7 @@ public class S3SessionTest extends AbstractTestCase {
     @Test(expected = LoginFailureException.class)
     public void testLoginFailure() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                properties.getProperty("s3.key"), "s"
+                System.getProperties().getProperty("s3.key"), "s"
         ));
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -136,7 +136,7 @@ public class S3SessionTest extends AbstractTestCase {
     @Test
     public void testLoginFailureFix() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                properties.getProperty("s3.key"), "s"
+                System.getProperties().getProperty("s3.key"), "s"
         ));
         final AtomicBoolean p = new AtomicBoolean();
         final S3Session session = new S3Session(host);
@@ -147,7 +147,7 @@ public class S3SessionTest extends AbstractTestCase {
                     throw new LoginCanceledException();
                 }
                 p.set(true);
-                credentials.setPassword(properties.getProperty("s3.secret"));
+                credentials.setPassword(System.getProperties().getProperty("s3.secret"));
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
         assertTrue(p.get());
@@ -157,7 +157,7 @@ public class S3SessionTest extends AbstractTestCase {
     @Test(expected = BackgroundException.class)
     public void testCustomHostnameUnknown() throws Exception {
         final Host host = new Host(new S3Protocol(), "testu.cyberduck.ch", new Credentials(
-                properties.getProperty("s3.key"), "s"
+                System.getProperties().getProperty("s3.key"), "s"
         ));
         final S3Session session = new S3Session(host);
         try {
@@ -173,7 +173,7 @@ public class S3SessionTest extends AbstractTestCase {
     @Test(expected = AccessDeniedException.class)
     public void testCustomHostname() throws Exception {
         final Host host = new Host(new S3Protocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("s3.key"), "s"
+                System.getProperties().getProperty("s3.key"), "s"
         ));
         final AtomicBoolean set = new AtomicBoolean();
         final S3Session session = new S3Session(host);
@@ -208,7 +208,7 @@ public class S3SessionTest extends AbstractTestCase {
     @Test
     public void testConnectInteroperabilityEvault() throws Exception {
         final Host host = new Host(new S3Protocol(), "s3.lts2.evault.com", new Credentials(
-                properties.getProperty("evault.s3.key"), properties.getProperty("evault.s3.secret")
+                System.getProperties().getProperty("evault.s3.key"), System.getProperties().getProperty("evault.s3.secret")
         ));
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -302,7 +302,7 @@ public class S3SessionTest extends AbstractTestCase {
     @Test
     public void testTrustChain() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         final AtomicBoolean verified = new AtomicBoolean();
         final S3Session session = new S3Session(host, new DefaultX509TrustManager() {

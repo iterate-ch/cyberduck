@@ -1,7 +1,5 @@
 package ch.cyberduck.core.s3;
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.HttpClientContext;
@@ -19,7 +17,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id: $
  */
-public class S3HttpRequestRetryHandlerTest extends AbstractTestCase {
+public class S3HttpRequestRetryHandlerTest {
 
     @Test
     public void testRetryRequest() throws Exception {

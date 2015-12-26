@@ -1,6 +1,5 @@
 package ch.cyberduck.core.gstorage;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -26,12 +25,12 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class GoogleStorageBucketCreateServiceTest extends AbstractTestCase {
+public class GoogleStorageBucketCreateServiceTest {
 
     @Test
     public void testCreate() throws Exception {
         final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
-                properties.getProperty("google.projectid"), null
+                System.getProperties().getProperty("google.projectid"), null
         ));
         final GoogleStorageSession session = new GoogleStorageSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -39,10 +38,10 @@ public class GoogleStorageBucketCreateServiceTest extends AbstractTestCase {
             @Override
             public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
                 if(user.equals("Google OAuth2 Access Token")) {
-                    return properties.getProperty("google.accesstoken");
+                    return System.getProperties().getProperty("google.accesstoken");
                 }
                 if(user.equals("Google OAuth2 Refresh Token")) {
-                    return properties.getProperty("google.refreshtoken");
+                    return System.getProperties().getProperty("google.refreshtoken");
                 }
                 return null;
             }

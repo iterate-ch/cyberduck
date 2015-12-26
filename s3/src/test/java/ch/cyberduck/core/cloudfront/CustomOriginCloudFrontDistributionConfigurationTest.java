@@ -1,6 +1,5 @@
 package ch.cyberduck.core.cloudfront;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledTranscriptListener;
@@ -29,7 +28,7 @@ import static org.junit.Assert.assertNull;
  * @version $Id$
  */
 @Ignore
-public class CustomOriginCloudFrontDistributionConfigurationTest extends AbstractTestCase {
+public class CustomOriginCloudFrontDistributionConfigurationTest {
 
     @Test
     public void testGetMethods() throws Exception {
@@ -88,8 +87,8 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends Abstrac
     @Test
     public void testReadNoConfiguredDistributionForOrigin() throws Exception {
         final Host origin = new Host(new TestProtocol(), "myhost.localdomain");
-        origin.getCdnCredentials().setUsername(properties.getProperty("s3.key"));
-        origin.getCdnCredentials().setPassword(properties.getProperty("s3.secret"));
+        origin.getCdnCredentials().setUsername(System.getProperties().getProperty("s3.key"));
+        origin.getCdnCredentials().setPassword(System.getProperties().getProperty("s3.secret"));
         final CustomOriginCloudFrontDistributionConfiguration configuration
                 = new CustomOriginCloudFrontDistributionConfiguration(origin, new DefaultX509TrustManager() {
             @Override
@@ -110,8 +109,8 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends Abstrac
         final Host origin = new Host(new TestProtocol(), "myhost.localdomain");
         origin.setWebURL("http://test.cyberduck.ch");
         origin.setDefaultPath("public_html");
-        origin.getCdnCredentials().setUsername(properties.getProperty("s3.key"));
-        origin.getCdnCredentials().setPassword(properties.getProperty("s3.secret"));
+        origin.getCdnCredentials().setUsername(System.getProperties().getProperty("s3.key"));
+        origin.getCdnCredentials().setPassword(System.getProperties().getProperty("s3.secret"));
         final CustomOriginCloudFrontDistributionConfiguration configuration
                 = new CustomOriginCloudFrontDistributionConfiguration(origin, new DefaultX509TrustManager() {
             @Override

@@ -17,7 +17,6 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -37,12 +36,12 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class S3CopyFeatureTest extends AbstractTestCase {
+public class S3CopyFeatureTest {
 
     @Test
     public void testCopy() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                new Credentials(properties.getProperty("s3.key"), properties.getProperty("s3.secret"))
+                new Credentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"))
         );
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
