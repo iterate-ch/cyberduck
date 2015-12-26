@@ -18,7 +18,6 @@ package ch.cyberduck.core.sftp;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -38,7 +37,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class SFTPExceptionMappingServiceTest extends AbstractTestCase {
+public class SFTPExceptionMappingServiceTest {
 
     @Test
     public void testMapReadFailure() throws Exception {

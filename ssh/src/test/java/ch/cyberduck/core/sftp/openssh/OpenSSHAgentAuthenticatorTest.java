@@ -18,8 +18,6 @@ package ch.cyberduck.core.sftp.openssh;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -33,7 +31,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  * @version $Id$
  */
-public class OpenSSHAgentAuthenticatorTest extends AbstractTestCase {
+public class OpenSSHAgentAuthenticatorTest {
 
     @Test
     @Ignore

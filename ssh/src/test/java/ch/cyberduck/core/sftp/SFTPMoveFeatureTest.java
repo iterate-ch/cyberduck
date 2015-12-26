@@ -17,7 +17,6 @@ package ch.cyberduck.core.sftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -42,12 +41,12 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class SFTPMoveFeatureTest extends AbstractTestCase {
+public class SFTPMoveFeatureTest {
 
     @Test
     public void testMove() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
+                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -72,7 +71,7 @@ public class SFTPMoveFeatureTest extends AbstractTestCase {
     @Test
     public void testMoveOverride() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
+                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -98,7 +97,7 @@ public class SFTPMoveFeatureTest extends AbstractTestCase {
     @Test(expected = NotfoundException.class)
     public void testMoveNotFound() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
+                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());

@@ -38,12 +38,12 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class SFTPSessionTest extends AbstractTestCase {
+public class SFTPSessionTest {
 
     @Test
     public void testLoginPassword() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
+                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
         assertFalse(session.isConnected());
@@ -130,7 +130,7 @@ public class SFTPSessionTest extends AbstractTestCase {
     @Test(expected = LoginCanceledException.class)
     public void testWorkdir() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
+                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
@@ -246,8 +246,8 @@ public class SFTPSessionTest extends AbstractTestCase {
                     assertEquals("Login failed", title);
 //                    assertEquals("Too many authentication failures for u1. Please contact your web hosting service provider for assistance.", reason);
 //                    assertEquals("Exhausted available authentication methods. Please contact your web hosting service provider for assistance.", reason);
-                    credentials.setUsername(properties.getProperty("sftp.user"));
-                    credentials.setPassword(properties.getProperty("sftp.password"));
+                    credentials.setUsername(System.getProperties().getProperty("sftp.user"));
+                    credentials.setPassword(System.getProperties().getProperty("sftp.password"));
                     change.set(true);
                 }
             }
@@ -262,7 +262,7 @@ public class SFTPSessionTest extends AbstractTestCase {
     @Test(expected = ConnectionRefusedException.class)
     public void testConnectHttpProxy() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
+                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host,
                 new ProxySocketFactory(host.getProtocol(), new DefaultTrustManagerHostnameCallback(host),

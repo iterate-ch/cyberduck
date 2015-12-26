@@ -17,7 +17,6 @@ package ch.cyberduck.core.sftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -34,12 +33,12 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class SFTPPasswordAuthenticationTest extends AbstractTestCase {
+public class SFTPPasswordAuthenticationTest {
 
     @Test
     public void testAuthenticate() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
+                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -50,7 +49,7 @@ public class SFTPPasswordAuthenticationTest extends AbstractTestCase {
     @Test(expected = LoginFailureException.class)
     public void testAuthenticateFailure() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("sftp.user"), "p"
+                System.getProperties().getProperty("sftp.user"), "p"
         ));
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());

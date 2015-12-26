@@ -18,8 +18,6 @@ package ch.cyberduck.core.sftp.putty;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.junit.Test;
 
 import java.util.Collection;
@@ -32,7 +30,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class PageantAuthenticatorTest extends AbstractTestCase {
+public class PageantAuthenticatorTest {
 
     @Test
     public void testGetIdentities() throws Exception {

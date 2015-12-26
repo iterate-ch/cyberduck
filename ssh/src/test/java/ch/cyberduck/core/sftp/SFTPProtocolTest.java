@@ -18,7 +18,6 @@ package ch.cyberduck.core.sftp;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.LoginOptions;
 
@@ -27,7 +26,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class SFTPProtocolTest extends AbstractTestCase {
+public class SFTPProtocolTest {
 
     @Test
     public void testValidateToken() throws Exception {

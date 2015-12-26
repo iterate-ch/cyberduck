@@ -1,6 +1,5 @@
 package ch.cyberduck.core.sftp;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -18,7 +17,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class PreferencesHostKeyVerifierTest extends AbstractTestCase {
+public class PreferencesHostKeyVerifierTest {
 
     @Test
     public void testVerifyAcceptServerHostKey() throws Exception {

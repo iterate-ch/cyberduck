@@ -1,6 +1,5 @@
 package ch.cyberduck.core.sftp;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -26,18 +25,18 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class SFTPPublicKeyAuthenticationTest extends AbstractTestCase {
+public class SFTPPublicKeyAuthenticationTest {
 
     @Test
     public void testAuthenticateKeyNoPassword() throws Exception {
         final Credentials credentials = new Credentials(
-                properties.getProperty("sftp.user")
+                System.getProperties().getProperty("sftp.user")
         );
         final Local key = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         try {
             credentials.setIdentity(key);
             new DefaultLocalTouchFeature().touch(key);
-            IOUtils.copy(new StringReader(properties.getProperty("sftp.key")), key.getOutputStream(false));
+            IOUtils.copy(new StringReader(System.getProperties().getProperty("sftp.key")), key.getOutputStream(false));
             final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", credentials);
             final SFTPSession session = new SFTPSession(host);
             session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -57,13 +56,13 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractTestCase {
     @Test(expected = LoginFailureException.class)
     public void testAuthenticatePuTTYKeyWithWrongPassword() throws Exception {
         final Credentials credentials = new Credentials(
-                properties.getProperty("sftp.user"), ""
+                System.getProperties().getProperty("sftp.user"), ""
         );
         final Local key = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         try {
             credentials.setIdentity(key);
             new DefaultLocalTouchFeature().touch(key);
-            IOUtils.copy(new StringReader(properties.getProperty("sftp.key.putty")), key.getOutputStream(false));
+            IOUtils.copy(new StringReader(System.getProperties().getProperty("sftp.key.putty")), key.getOutputStream(false));
             final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", credentials);
             final SFTPSession session = new SFTPSession(host);
             session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -85,13 +84,13 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractTestCase {
     @Test(expected = LoginFailureException.class)
     public void testAuthenticateOpenSSHKeyWithPassword() throws Exception {
         final Credentials credentials = new Credentials(
-                properties.getProperty("sftp.user"), ""
+                System.getProperties().getProperty("sftp.user"), ""
         );
         final Local key = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         try {
             credentials.setIdentity(key);
             new DefaultLocalTouchFeature().touch(key);
-            IOUtils.copy(new StringReader(properties.getProperty("sftp.key.openssh.rsa")), key.getOutputStream(false));
+            IOUtils.copy(new StringReader(System.getProperties().getProperty("sftp.key.openssh.rsa")), key.getOutputStream(false));
             final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", credentials);
             final SFTPSession session = new SFTPSession(host);
             session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -113,7 +112,7 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractTestCase {
     @Test(expected = InteroperabilityException.class)
     public void testUnknownFormat() throws Exception {
         final Credentials credentials = new Credentials(
-                properties.getProperty("sftp.user"), ""
+                System.getProperties().getProperty("sftp.user"), ""
         );
         final Local key = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         try {

@@ -1,6 +1,5 @@
 package ch.cyberduck.core.sftp.openssh;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -20,7 +19,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class OpenSSHHostKeyVerifierTest extends AbstractTestCase {
+public class OpenSSHHostKeyVerifierTest {
 
     @Test
     public void testVerifyServerHostKey() throws Exception {
