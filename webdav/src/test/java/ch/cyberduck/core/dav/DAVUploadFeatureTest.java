@@ -17,7 +17,6 @@ package ch.cyberduck.core.dav;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
@@ -50,7 +49,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class DAVUploadFeatureTest extends AbstractTestCase {
+public class DAVUploadFeatureTest {
 
     @Test
     public void testDecorate() throws Exception {

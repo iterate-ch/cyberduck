@@ -17,7 +17,6 @@ package ch.cyberduck.core.dav;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -42,7 +41,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class DAVCopyFeatureTest extends AbstractTestCase {
+public class DAVCopyFeatureTest {
 
     @Test
     public void testCopy() throws Exception {

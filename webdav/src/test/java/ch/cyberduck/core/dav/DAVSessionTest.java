@@ -50,7 +50,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class DAVSessionTest extends AbstractTestCase {
+public class DAVSessionTest {
 
     @Test
     public void testConnect() throws Exception {

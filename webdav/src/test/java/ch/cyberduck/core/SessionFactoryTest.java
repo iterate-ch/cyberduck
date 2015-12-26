@@ -12,7 +12,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  * @version $Id$
  */
-public class SessionFactoryTest extends AbstractTestCase {
+public class SessionFactoryTest {
 
     @Test
     public void testCreateSession() throws Exception {

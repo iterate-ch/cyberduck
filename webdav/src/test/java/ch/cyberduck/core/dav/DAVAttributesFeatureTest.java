@@ -1,6 +1,5 @@
 package ch.cyberduck.core.dav;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -24,7 +23,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  * @version $Id$
  */
-public class DAVAttributesFeatureTest extends AbstractTestCase {
+public class DAVAttributesFeatureTest {
 
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {

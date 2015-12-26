@@ -1,6 +1,5 @@
 package ch.cyberduck.core.dav;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
@@ -26,7 +25,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class DAVFindFeatureTest extends AbstractTestCase {
+public class DAVFindFeatureTest {
 
     @Test
     public void testFind() throws Exception {

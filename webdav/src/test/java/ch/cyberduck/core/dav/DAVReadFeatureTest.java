@@ -1,6 +1,5 @@
 package ch.cyberduck.core.dav;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
@@ -41,7 +40,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class DAVReadFeatureTest extends AbstractTestCase {
+public class DAVReadFeatureTest {
 
     @Test(expected = NotfoundException.class)
     public void testReadNotFound() throws Exception {

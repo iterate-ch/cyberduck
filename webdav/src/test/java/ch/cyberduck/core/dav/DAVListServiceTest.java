@@ -17,7 +17,6 @@ package ch.cyberduck.core.dav;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
@@ -40,7 +39,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class DAVListServiceTest extends AbstractTestCase {
+public class DAVListServiceTest {
 
     @Test(expected = NotfoundException.class)
     public void testListNotfound() throws Exception {
