@@ -25,7 +25,7 @@
 			<key>Library</key>
 			<string>$APP_PACKAGE/Contents/MacOS/Runtime.jre</string>
 			<key>MainClass</key>
-			<string>ch.cyberduck.cli.Terminal</string>
+			<string>ch.cyberduck.cli.ApplicationTerminal</string>
 			<key>StartOnMainThread</key>
 			<true/>
 			<key>VMOptions</key>

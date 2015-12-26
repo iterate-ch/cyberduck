@@ -220,10 +220,10 @@
 		47F85C3D1C0F103E00FDA856 /* QLPreviewPanel.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F85C2B1C0F103E00FDA856 /* QLPreviewPanel.h */; };
 		47F85C401C0F103E00FDA856 /* SNDisclosableView.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F85C2E1C0F103E00FDA856 /* SNDisclosableView.h */; };
 		47F85C411C0F103E00FDA856 /* SNDisclosableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F85C2F1C0F103E00FDA856 /* SNDisclosableView.m */; };
-		47F85C481C0F106A00FDA856 /* launcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F85C461C0F106A00FDA856 /* launcher.h */; };
-		47F85C491C0F106A00FDA856 /* launcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F85C471C0F106A00FDA856 /* launcher.m */; };
-		47F85C4A1C0F106A00FDA856 /* launcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F85C471C0F106A00FDA856 /* launcher.m */; };
-		47F85C4C1C0F107100FDA856 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F85C4B1C0F107100FDA856 /* main.m */; };
+		47FB79D81C2E9E67008D3B9C /* launcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 47FB79D51C2E9E67008D3B9C /* launcher.h */; };
+		47FB79D91C2E9E67008D3B9C /* launcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 47FB79D61C2E9E67008D3B9C /* launcher.m */; };
+		47FB79DA1C2E9E67008D3B9C /* launcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 47FB79D61C2E9E67008D3B9C /* launcher.m */; };
+		47FB79DC1C2E9E67008D3B9C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 47FB79D71C2E9E67008D3B9C /* main.m */; };
 		47FC190C099FB8AF0082431D /* Crash.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47FC190A099FB8AF0082431D /* Crash.strings */; };
 /* End PBXBuildFile section */
 
@@ -1490,9 +1490,9 @@
 		47F85C2B1C0F103E00FDA856 /* QLPreviewPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QLPreviewPanel.h; path = osx/src/main/objc/QLPreviewPanel.h; sourceTree = "<group>"; };
 		47F85C2E1C0F103E00FDA856 /* SNDisclosableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SNDisclosableView.h; path = osx/src/main/objc/SNDisclosableView.h; sourceTree = "<group>"; };
 		47F85C2F1C0F103E00FDA856 /* SNDisclosableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SNDisclosableView.m; path = osx/src/main/objc/SNDisclosableView.m; sourceTree = "<group>"; };
-		47F85C461C0F106A00FDA856 /* launcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = launcher.h; path = cli/src/main/objc/launcher.h; sourceTree = "<group>"; };
-		47F85C471C0F106A00FDA856 /* launcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = launcher.m; path = cli/src/main/objc/launcher.m; sourceTree = "<group>"; };
-		47F85C4B1C0F107100FDA856 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = cli/src/main/objc/main.m; sourceTree = "<group>"; };
+		47FB79D51C2E9E67008D3B9C /* launcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = launcher.h; path = cli/osx/src/main/objc/launcher.h; sourceTree = "<group>"; };
+		47FB79D61C2E9E67008D3B9C /* launcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = launcher.m; path = cli/osx/src/main/objc/launcher.m; sourceTree = "<group>"; };
+		47FB79D71C2E9E67008D3B9C /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = cli/osx/src/main/objc/main.m; sourceTree = "<group>"; };
 		47FC190B099FB8AF0082431D /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = en; path = en.lproj/Crash.strings; sourceTree = "<group>"; };
 		47FC191F099FC1290082431D /* fr */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = fr; path = fr.lproj/Crash.strings; sourceTree = "<group>"; };
 		47FC1943099FDB310082431D /* it */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = it; path = it.lproj/Crash.strings; sourceTree = "<group>"; };
@@ -1584,9 +1584,9 @@
 		29B97314FDCFA39411CA2CEA /* cyberduck-cocoa */ = {
 			isa = PBXGroup;
 			children = (
-				47F85C461C0F106A00FDA856 /* launcher.h */,
-				47F85C471C0F106A00FDA856 /* launcher.m */,
-				47F85C4B1C0F107100FDA856 /* main.m */,
+				47FB79D51C2E9E67008D3B9C /* launcher.h */,
+				47FB79D61C2E9E67008D3B9C /* launcher.m */,
+				47FB79D71C2E9E67008D3B9C /* main.m */,
 				47F85C1D1C0F102600FDA856 /* App */,
 				4741639206C4F58D00AC0BD2 /* Resources */,
 				474152D706C4F08A00AC0BD2 /* Core */,
@@ -1886,9 +1886,9 @@
 				47F85C321C0F103E00FDA856 /* CDListView.h in Headers */,
 				47F85C341C0F103E00FDA856 /* CDOutlineCell.h in Headers */,
 				47F85C301C0F103E00FDA856 /* CDBookmarkCell.h in Headers */,
+				47FB79D81C2E9E67008D3B9C /* launcher.h in Headers */,
 				47F85C361C0F103E00FDA856 /* CDOutlineView.h in Headers */,
 				47F85C3D1C0F103E00FDA856 /* QLPreviewPanel.h in Headers */,
-				47F85C481C0F106A00FDA856 /* launcher.h in Headers */,
 				47F85C3A1C0F103E00FDA856 /* CTGradientView.h in Headers */,
 				47F85C401C0F103E00FDA856 /* SNDisclosableView.h in Headers */,
 				47F85C381C0F103E00FDA856 /* CTGradient.h in Headers */,
@@ -2272,7 +2272,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				47F85C491C0F106A00FDA856 /* launcher.m in Sources */,
 				47F85C371C0F103E00FDA856 /* CDOutlineView.m in Sources */,
 				47F85C311C0F103E00FDA856 /* CDBookmarkCell.m in Sources */,
 				47F85C351C0F103E00FDA856 /* CDOutlineCell.m in Sources */,
@@ -2280,6 +2279,7 @@
 				47F85C331C0F103E00FDA856 /* CDListView.m in Sources */,
 				47F85C391C0F103E00FDA856 /* CTGradient.m in Sources */,
 				47F85C3C1C0F103E00FDA856 /* main.m in Sources */,
+				47FB79D91C2E9E67008D3B9C /* launcher.m in Sources */,
 				47F85C3B1C0F103E00FDA856 /* CTGradientView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2288,8 +2288,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				47F85C4C1C0F107100FDA856 /* main.m in Sources */,
-				47F85C4A1C0F106A00FDA856 /* launcher.m in Sources */,
+				47FB79DC1C2E9E67008D3B9C /* main.m in Sources */,
+				47FB79DA1C2E9E67008D3B9C /* launcher.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
