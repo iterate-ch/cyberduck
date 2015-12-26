@@ -25,7 +25,7 @@ namespace Ch.Cyberduck.Core
 {
     public class DataProtectorPasswordStore : HostPasswordStore
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (Keychain).FullName);
+        private static readonly Logger Log = Logger.getLogger(typeof (DataProtectorPasswordStore).FullName);
 
         public override string getPassword(Scheme scheme, int port, String hostName, String user)
         {
