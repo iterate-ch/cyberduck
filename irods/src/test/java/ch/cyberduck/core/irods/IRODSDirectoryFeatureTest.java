@@ -18,7 +18,6 @@ package ch.cyberduck.core.irods;
  */
 
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -47,7 +46,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class IRODSDirectoryFeatureTest extends AbstractTestCase {
+public class IRODSDirectoryFeatureTest {
 
     @BeforeClass
     public static void protocol() {
@@ -59,7 +58,7 @@ public class IRODSDirectoryFeatureTest extends AbstractTestCase {
         final Profile profile = ProfileReaderFactory.get().read(
                 new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-                properties.getProperty("irods.key"), properties.getProperty("irods.secret")
+                System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
         ));
 
         final IRODSSession session = new IRODSSession(host);

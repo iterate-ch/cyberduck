@@ -41,7 +41,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id: IRODSReadFeatureTest.java 17029 2015-02-27 13:09:19Z dkocher $
  */
-public class IRODSWriteFeatureTest extends AbstractTestCase {
+public class IRODSWriteFeatureTest {
 
     @BeforeClass
     public static void protocol() {
@@ -53,7 +53,7 @@ public class IRODSWriteFeatureTest extends AbstractTestCase {
         final Profile profile = ProfileReaderFactory.get().read(
                 new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-                properties.getProperty("irods.key"), properties.getProperty("irods.secret")
+                System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
         ));
 
         final IRODSSession session = new IRODSSession(host);
@@ -129,7 +129,7 @@ public class IRODSWriteFeatureTest extends AbstractTestCase {
         final Profile profile = ProfileReaderFactory.get().read(
                 new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-                properties.getProperty("irods.key"), properties.getProperty("irods.secret")
+                System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
         ));
 
         final IRODSSession session = new IRODSSession(host);
@@ -139,7 +139,7 @@ public class IRODSWriteFeatureTest extends AbstractTestCase {
         final Path test = new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         assertFalse(session.getFeature(Find.class).find(test));
 
-        final byte[] content = RandomStringUtils.random((int) (Math.random()*100)).getBytes();
+        final byte[] content = RandomStringUtils.random((int) (Math.random() * 100)).getBytes();
 
         final TransferStatus status = new TransferStatus();
         status.setAppend(true);
@@ -166,7 +166,7 @@ public class IRODSWriteFeatureTest extends AbstractTestCase {
 
         // Append
 
-        final byte[] content_append = RandomStringUtils.random((int) (Math.random()*100)).getBytes();
+        final byte[] content_append = RandomStringUtils.random((int) (Math.random() * 100)).getBytes();
 
         final TransferStatus status_append = new TransferStatus();
         status_append.setAppend(true);

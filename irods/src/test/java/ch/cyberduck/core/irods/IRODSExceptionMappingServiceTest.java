@@ -17,7 +17,6 @@ package ch.cyberduck.core.irods;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -32,7 +31,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class IRODSExceptionMappingServiceTest extends AbstractTestCase {
+public class IRODSExceptionMappingServiceTest {
 
     @Test
     public void testMap() throws Exception {
