@@ -55,21 +55,13 @@ public final class BackgroundCallable<T> implements Callable<T> {
         }
         catch(Exception e) {
             controller.failure(client, e);
-        }
-        finally {
-            try {
-                action.finish();
-            }
-            finally {
-                registry.remove(action);
-            }
             // If there was any failure, display the summary now
             if(action.alert()) {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Retry background action %s", action));
                 }
                 // Retry
-                this.call();
+                return this.call();
             }
             else {
                 if(log.isDebugEnabled()) {
@@ -90,6 +82,14 @@ public final class BackgroundCallable<T> implements Callable<T> {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Releasing lock for background runnable %s", action));
                 }
+            }
+        }
+        finally {
+            try {
+                action.finish();
+            }
+            finally {
+                registry.remove(action);
             }
         }
         // Canceled action yields no result
