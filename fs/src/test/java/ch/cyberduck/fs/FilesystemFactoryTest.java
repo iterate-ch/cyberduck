@@ -17,7 +17,6 @@ package ch.cyberduck.fs;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.PathCache;
 
@@ -26,7 +25,7 @@ import org.junit.Test;
 /**
  * @version $Id$
  */
-public class FilesystemFactoryTest extends AbstractTestCase {
+public class FilesystemFactoryTest {
 
     @Test(expected = FactoryException.class)
     public void testFactory() throws Exception {
