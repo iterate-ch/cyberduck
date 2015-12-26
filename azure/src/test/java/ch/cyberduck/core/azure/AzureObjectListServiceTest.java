@@ -1,6 +1,5 @@
 package ch.cyberduck.core.azure;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -23,7 +22,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  * @version $Id$
  */
-public class AzureObjectListServiceTest extends AbstractTestCase {
+public class AzureObjectListServiceTest {
 
     @Test
     public void testList() throws Exception {

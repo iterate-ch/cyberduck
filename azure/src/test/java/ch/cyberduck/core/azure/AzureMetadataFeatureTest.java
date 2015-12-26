@@ -1,6 +1,5 @@
 package ch.cyberduck.core.azure;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -25,7 +24,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class AzureMetadataFeatureTest extends AbstractTestCase {
+public class AzureMetadataFeatureTest {
 
     @Test
     public void testSetMetadata() throws Exception {

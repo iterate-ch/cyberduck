@@ -1,6 +1,5 @@
 package ch.cyberduck.core.azure;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -22,7 +21,7 @@ import java.util.UUID;
 /**
  * @version $Id$
  */
-public class AzureAclPermissionFeatureTest extends AbstractTestCase {
+public class AzureAclPermissionFeatureTest {
 
     @Test(expected = NotfoundException.class)
     public void testNotFound() throws Exception {

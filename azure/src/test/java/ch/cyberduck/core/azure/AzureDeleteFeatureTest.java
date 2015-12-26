@@ -1,6 +1,5 @@
 package ch.cyberduck.core.azure;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -26,7 +25,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class AzureDeleteFeatureTest extends AbstractTestCase {
+public class AzureDeleteFeatureTest {
 
     @Test(expected = NotfoundException.class)
     public void testDeleteNotFoundBucket() throws Exception {

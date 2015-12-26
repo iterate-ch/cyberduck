@@ -1,6 +1,5 @@
 package ch.cyberduck.core.azure;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -26,7 +25,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class AzureAttributesFeatureTest extends AbstractTestCase {
+public class AzureAttributesFeatureTest {
 
     @Test(expected = NotfoundException.class)
     public void testNotFound() throws Exception {

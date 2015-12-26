@@ -1,6 +1,5 @@
 package ch.cyberduck.core.azure;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -23,7 +22,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class AzureLoggingFeatureTest extends AbstractTestCase {
+public class AzureLoggingFeatureTest {
 
     @Test
     public void testSetConfiguration() throws Exception {

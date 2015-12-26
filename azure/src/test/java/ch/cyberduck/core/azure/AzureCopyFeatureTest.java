@@ -1,6 +1,5 @@
 package ch.cyberduck.core.azure;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -24,7 +23,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class AzureCopyFeatureTest extends AbstractTestCase {
+public class AzureCopyFeatureTest {
 
     @Test
     public void testCopy() throws Exception {
