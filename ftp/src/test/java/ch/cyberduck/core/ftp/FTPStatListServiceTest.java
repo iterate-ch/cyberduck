@@ -17,7 +17,6 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
@@ -47,7 +46,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class FTPStatListServiceTest extends AbstractTestCase {
+public class FTPStatListServiceTest {
 
     @Test
     public void testList() throws Exception {

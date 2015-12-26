@@ -17,7 +17,6 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
@@ -39,7 +38,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class FTPListResponseReaderTest extends AbstractTestCase {
+public class FTPListResponseReaderTest {
 
     @Test(expected = FTPInvalidListException.class)
     public void test3243() throws Exception {

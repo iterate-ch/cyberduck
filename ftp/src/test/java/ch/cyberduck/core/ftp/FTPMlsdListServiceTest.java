@@ -17,7 +17,6 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -41,7 +40,7 @@ import static org.junit.Assert.assertFalse;
 /**
  * @version $Id$
  */
-public class FTPMlsdListServiceTest extends AbstractTestCase {
+public class FTPMlsdListServiceTest {
 
     @Test(expected = InteroperabilityException.class)
     public void testListNotSupportedTest() throws Exception {

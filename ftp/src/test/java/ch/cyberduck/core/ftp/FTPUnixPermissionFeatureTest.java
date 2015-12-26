@@ -1,6 +1,5 @@
 package ch.cyberduck.core.ftp;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -26,7 +25,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class FTPUnixPermissionFeatureTest extends AbstractTestCase {
+public class FTPUnixPermissionFeatureTest {
 
     @Test
     public void testSetUnixPermission() throws Exception {

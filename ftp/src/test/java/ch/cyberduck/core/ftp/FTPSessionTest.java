@@ -39,7 +39,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class FTPSessionTest extends AbstractTestCase {
+public class FTPSessionTest {
 
     @Test
     public void testConnectAnonymous() throws Exception {

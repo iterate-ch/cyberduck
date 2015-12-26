@@ -1,6 +1,5 @@
 package ch.cyberduck.core.ftp;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
@@ -20,7 +19,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class FTPExceptionMappingServiceTest extends AbstractTestCase {
+public class FTPExceptionMappingServiceTest {
 
     @Test
     public void testMap() throws Exception {

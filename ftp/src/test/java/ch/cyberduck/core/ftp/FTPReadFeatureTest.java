@@ -18,7 +18,6 @@ package ch.cyberduck.core.ftp;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -52,7 +51,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class FTPReadFeatureTest extends AbstractTestCase {
+public class FTPReadFeatureTest {
 
     @Test(expected = NotfoundException.class)
     public void testReadNotFound() throws Exception {

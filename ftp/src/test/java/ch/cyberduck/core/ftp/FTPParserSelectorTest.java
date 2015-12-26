@@ -1,6 +1,5 @@
 package ch.cyberduck.core.ftp;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 
 import org.junit.Test;
@@ -12,7 +11,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  * @version $Id$
  */
-public class FTPParserSelectorTest extends AbstractTestCase {
+public class FTPParserSelectorTest {
 
     @Test
     public void testGetParser() throws Exception {

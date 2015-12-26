@@ -18,7 +18,6 @@ package ch.cyberduck.core.ftp;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Attributes;
 import ch.cyberduck.core.Credentials;
@@ -44,7 +43,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class FTPAttributesFeatureTest extends AbstractTestCase {
+public class FTPAttributesFeatureTest {
 
     @Test(expected = InteroperabilityException.class)
     public void testAttributesUnknownCommand() throws Exception {

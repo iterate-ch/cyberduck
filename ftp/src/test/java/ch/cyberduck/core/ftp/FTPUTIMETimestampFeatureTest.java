@@ -17,7 +17,6 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -44,7 +43,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class FTPUTIMETimestampFeatureTest extends AbstractTestCase {
+public class FTPUTIMETimestampFeatureTest {
 
     @Test(expected = BackgroundException.class)
     public void testSetTimestamp() throws Exception {

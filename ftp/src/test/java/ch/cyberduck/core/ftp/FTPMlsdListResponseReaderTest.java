@@ -17,7 +17,6 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
@@ -37,7 +36,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
+public class FTPMlsdListResponseReaderTest {
 
     @Test
     public void testMlsd() throws Exception {

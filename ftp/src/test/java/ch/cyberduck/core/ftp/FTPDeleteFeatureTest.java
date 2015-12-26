@@ -17,7 +17,6 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -39,7 +38,7 @@ import java.util.UUID;
 /**
  * @version $Id$
  */
-public class FTPDeleteFeatureTest extends AbstractTestCase {
+public class FTPDeleteFeatureTest {
 
     @Test(expected = NotfoundException.class)
     public void testDeleteNotFound() throws Exception {

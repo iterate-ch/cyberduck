@@ -1,6 +1,5 @@
 package ch.cyberduck.core.ftp;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -39,7 +38,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class FTPWriteFeatureTest extends AbstractTestCase {
+public class FTPWriteFeatureTest {
 
     @Test
     public void testReadWrite() throws Exception {
