@@ -14,6 +14,7 @@
 
 package ch.cyberduck.core.preferences;
 
+import ch.cyberduck.cli.TerminalPreferences;
 import ch.cyberduck.core.IOKitSleepPreventer;
 import ch.cyberduck.core.Keychain;
 import ch.cyberduck.core.diagnostics.SystemConfigurationReachability;

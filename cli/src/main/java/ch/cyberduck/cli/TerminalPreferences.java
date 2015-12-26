@@ -12,19 +12,16 @@
  * GNU General Public License for more details.
  */
 
-package ch.cyberduck.core.preferences;
+package ch.cyberduck.cli;
 
-import ch.cyberduck.cli.TerminalCertificateStore;
-import ch.cyberduck.cli.TerminalHostKeyVerifier;
-import ch.cyberduck.cli.TerminalLoginCallback;
-import ch.cyberduck.cli.TerminalNotification;
-import ch.cyberduck.cli.TerminalTransferErrorCallback;
-import ch.cyberduck.cli.TerminalTransferPrompt;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.editor.DefaultEditorFactory;
 import ch.cyberduck.core.i18n.RegexLocale;
 import ch.cyberduck.core.local.ExecApplicationLauncher;
 import ch.cyberduck.core.local.features.DefaultSymlinkFeature;
+import ch.cyberduck.core.preferences.MemoryPreferences;
+import ch.cyberduck.core.preferences.StaticApplicationResourcesFinder;
+import ch.cyberduck.core.preferences.UserHomeSupportDirectoryFinder;
 import ch.cyberduck.core.proxy.EnvironmentVariableProxyFinder;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
