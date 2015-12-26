@@ -18,8 +18,6 @@ package ch.cyberduck.core.preferences;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.MemoryPreferences;
-
 import org.apache.log4j.Logger;
 
 /**

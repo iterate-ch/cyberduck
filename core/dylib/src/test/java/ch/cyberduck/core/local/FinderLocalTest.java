@@ -1,9 +1,24 @@
+/*
+ * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
 package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -20,13 +35,13 @@ public class FinderLocalTest {
     public void testEqual() throws Exception {
         final String name = UUID.randomUUID().toString();
         FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
-        assertEquals(new FinderLocal(System.getProperty("java.io.tmpdir"), name), l);
+        Assert.assertEquals(new FinderLocal(System.getProperty("java.io.tmpdir"), name), l);
         LocalTouchFactory.get().touch(l);
-        assertEquals(new FinderLocal(System.getProperty("java.io.tmpdir"), name), l);
+        Assert.assertEquals(new FinderLocal(System.getProperty("java.io.tmpdir"), name), l);
         final FinderLocal other = new FinderLocal(System.getProperty("java.io.tmpdir"), name + "-");
-        assertNotSame(other, l);
+        Assert.assertNotSame(other, l);
         LocalTouchFactory.get().touch(other);
-        assertNotSame(other, l);
+        Assert.assertNotSame(other, l);
     }
 
     @Test(expected = LocalAccessDeniedException.class)
@@ -41,14 +56,14 @@ public class FinderLocalTest {
         final String name = UUID.randomUUID().toString();
         FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
         LocalTouchFactory.get().touch(l);
-        assertTrue(l.exists());
-        assertTrue(new FinderLocal(System.getProperty("java.io.tmpdir"), StringUtils.upperCase(name)).exists());
-        assertTrue(new FinderLocal(System.getProperty("java.io.tmpdir"), StringUtils.lowerCase(name)).exists());
+        Assert.assertTrue(l.exists());
+        Assert.assertTrue(new FinderLocal(System.getProperty("java.io.tmpdir"), StringUtils.upperCase(name)).exists());
+        Assert.assertTrue(new FinderLocal(System.getProperty("java.io.tmpdir"), StringUtils.lowerCase(name)).exists());
     }
 
     @Test
     public void testList() throws Exception {
-        assertFalse(new FinderLocal("../profiles").list().isEmpty());
+        Assert.assertFalse(new FinderLocal("../profiles").list().isEmpty());
     }
 
     @Test(expected = LocalAccessDeniedException.class)
@@ -59,20 +74,20 @@ public class FinderLocalTest {
             l.list();
         }
         catch(LocalAccessDeniedException e) {
-            assertEquals("The folder “" + name + "” doesn’t exist. Please verify disk permissions.", e.getDetail());
+            Assert.assertEquals("The folder “" + name + "” doesn’t exist. Please verify disk permissions.", e.getDetail());
             throw e;
         }
     }
 
     @Test
     public void testTilde() throws Exception {
-        assertEquals(System.getProperty("user.home") + "/f", new FinderLocal("~/f").getAbsolute());
-        assertEquals("~/f", new FinderLocal("~/f").getAbbreviatedPath());
+        Assert.assertEquals(System.getProperty("user.home") + "/f", new FinderLocal("~/f").getAbsolute());
+        Assert.assertEquals("~/f", new FinderLocal("~/f").getAbbreviatedPath());
     }
 
     @Test
     public void testDisplayName() throws Exception {
-        assertEquals("f/a", new FinderLocal(System.getProperty("java.io.tmpdir"), "f:a").getDisplayName());
+        Assert.assertEquals("f/a", new FinderLocal(System.getProperty("java.io.tmpdir"), "f:a").getDisplayName());
     }
 
     @Test
@@ -95,46 +110,46 @@ public class FinderLocalTest {
     public void testMkdir() throws Exception {
         FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         l.mkdir();
-        assertTrue(l.exists());
+        Assert.assertTrue(l.exists());
         l.mkdir();
-        assertTrue(l.exists());
+        Assert.assertTrue(l.exists());
         l.delete();
     }
 
     @Test
     public void testToUrl() throws Exception {
-        assertEquals("file:/c/file", new FinderLocal("/c/file").toURL());
+        Assert.assertEquals("file:/c/file", new FinderLocal("/c/file").toURL());
     }
 
     @Test
     @Ignore
     public void testBookmark() throws Exception {
         FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        assertNull(l.getBookmark());
+        Assert.assertNull(l.getBookmark());
         LocalTouchFactory.get().touch(l);
-        assertNotNull(l.getBookmark());
-        assertEquals(l.getBookmark(), l.getBookmark());
-        assertSame(l.getBookmark(), l.getBookmark());
+        Assert.assertNotNull(l.getBookmark());
+        Assert.assertEquals(l.getBookmark(), l.getBookmark());
+        Assert.assertSame(l.getBookmark(), l.getBookmark());
     }
 
     @Test
     public void testBookmarkSaved() throws Exception {
         FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        assertNull(l.getBookmark());
+        Assert.assertNull(l.getBookmark());
         l.setBookmark("a");
-        assertEquals("a", l.getBookmark());
-        assertNotNull(l.getOutputStream(false));
-        assertNotNull(l.getInputStream());
+        Assert.assertEquals("a", l.getBookmark());
+        Assert.assertNotNull(l.getOutputStream(false));
+        Assert.assertNotNull(l.getInputStream());
     }
 
     @Test(expected = NotfoundException.class)
     public void testSymlinkTargetNotfound() throws Exception {
         FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         try {
-            assertNull(l.getSymlinkTarget());
+            Assert.assertNull(l.getSymlinkTarget());
         }
         catch(NotfoundException e) {
-            assertEquals("File not found", e.getMessage());
+            Assert.assertEquals("File not found", e.getMessage());
             throw e;
         }
     }
@@ -142,24 +157,24 @@ public class FinderLocalTest {
     @Test
     public void testSymlinkTarget() throws Exception {
         FinderLocal l = new FinderLocal("/var");
-        assertNotNull(l.getSymlinkTarget());
+        Assert.assertNotNull(l.getSymlinkTarget());
     }
 
     @Test
     public void testSymbolicLink() throws Exception {
-        assertTrue(new FinderLocal("/tmp").isSymbolicLink());
-        assertFalse(new FinderLocal("/private/tmp").isSymbolicLink());
-        assertFalse(new FinderLocal("/t").isSymbolicLink());
+        Assert.assertTrue(new FinderLocal("/tmp").isSymbolicLink());
+        Assert.assertFalse(new FinderLocal("/private/tmp").isSymbolicLink());
+        Assert.assertFalse(new FinderLocal("/t").isSymbolicLink());
     }
 
     @Test
     public void testGetSymlinkTarget() throws Exception {
-        assertEquals(new FinderLocal("/private/tmp"), new FinderLocal("/tmp").getSymlinkTarget());
+        Assert.assertEquals(new FinderLocal("/private/tmp"), new FinderLocal("/tmp").getSymlinkTarget());
     }
 
     @Test
     public void testGetSymlinkTargetAbsolute() throws Exception {
-        assertEquals(new FinderLocal("/System/Library/Frameworks/JavaVM.framework/Versions/Current/Commands/java"),
+        Assert.assertEquals(new FinderLocal("/System/Library/Frameworks/JavaVM.framework/Versions/Current/Commands/java"),
                 new FinderLocal("/usr/bin/java").getSymlinkTarget());
     }
 }

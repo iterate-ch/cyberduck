@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.preferences.MemoryPreferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.ActionOperationBatcherFactory;

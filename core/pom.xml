@@ -25,82 +25,10 @@
         </plugins>
     </build>
 
-    <profiles>
-        <profile>
-            <id>mac</id>
-            <activation>
-                <os>
-                    <family>Mac</family>
-                </os>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-dependency-plugin</artifactId>
-                    </plugin>
-                </plugins>
-            </build>
-            <dependencies>
-                <dependency>
-                    <groupId>ch.cyberduck</groupId>
-                    <artifactId>libcore</artifactId>
-                    <type>dylib</type>
-                    <scope>runtime</scope>
-                    <version>${project.version}</version>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>windows</id>
-            <activation>
-                <os>
-                    <family>Windows</family>
-                </os>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>sunmscapi</groupId>
-                    <artifactId>sunmscapi</artifactId>
-                    <classifier>native</classifier>
-                    <type>dll</type>
-                    <version>7.0.250.17</version>
-                    <scope>runtime</scope>
-                </dependency>
-                <dependency>
-                    <groupId>sunmscapi</groupId>
-                    <artifactId>sunmscapi</artifactId>
-                    <version>7.0.250.17</version>
-                    <scope>runtime</scope>
-                </dependency>
-                <dependency>
-                    <groupId>sunec</groupId>
-                    <artifactId>sunec</artifactId>
-                    <classifier>native</classifier>
-                    <type>dll</type>
-                    <version>8.0.40.26</version>
-                    <scope>runtime</scope>
-                </dependency>
-                <dependency>
-                    <groupId>net.java.dev.jna</groupId>
-                    <artifactId>jnidispatch</artifactId>
-                    <classifier>native</classifier>
-                    <type>dll</type>
-                    <version>4.2</version>
-                    <scope>runtime</scope>
-                </dependency>
-            </dependencies>
-        </profile>
-    </profiles>
-
     <dependencies>
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>config</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.cyberduck</groupId>
-            <artifactId>binding</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -171,11 +99,6 @@
         <dependency>
             <groupId>net.java.dev.jna</groupId>
             <artifactId>jna</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
-            <version>2.2.2</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

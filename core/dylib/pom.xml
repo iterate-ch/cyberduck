@@ -10,7 +10,6 @@
         <version>4.8.0-SNAPSHOT</version>
     </parent>
     <artifactId>libcore</artifactId>
-    <packaging>pom</packaging>
 
     <profiles>
         <profile>
@@ -74,4 +73,23 @@
             </build>
         </profile>
     </profiles>
+    <dependencies>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>binding</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>test</artifactId>
+            <type>pom</type>
+            <scope>test</scope>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>

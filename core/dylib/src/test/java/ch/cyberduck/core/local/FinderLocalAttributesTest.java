@@ -1,7 +1,22 @@
+/*
+ * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
 package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.Permission;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
@@ -35,7 +50,7 @@ public class FinderLocalAttributesTest {
         final File f = new File(UUID.randomUUID().toString());
         f.createNewFile();
         FinderLocalAttributes a = new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath()));
-        assertTrue(a.getCreationDate() > 0);
+        Assert.assertTrue(a.getCreationDate() > 0);
         f.delete();
     }
 
@@ -45,7 +60,7 @@ public class FinderLocalAttributesTest {
         final File f = new File(UUID.randomUUID().toString());
         f.createNewFile();
         FinderLocalAttributes a = new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath()));
-        assertTrue(a.getAccessedDate() > 0);
+        Assert.assertTrue(a.getAccessedDate() > 0);
         f.delete();
     }
 
@@ -55,7 +70,7 @@ public class FinderLocalAttributesTest {
         final File f = new File(UUID.randomUUID().toString());
         f.createNewFile();
         FinderLocalAttributes a = new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath()));
-        assertTrue(a.getModificationDate() > 0);
+        Assert.assertTrue(a.getModificationDate() > 0);
         f.delete();
     }
 
@@ -64,7 +79,7 @@ public class FinderLocalAttributesTest {
         final File f = new File(UUID.randomUUID().toString());
         f.createNewFile();
         FinderLocalAttributes a = new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath()));
-        assertNotNull(a.getOwner());
+        Assert.assertNotNull(a.getOwner());
         f.delete();
     }
 
@@ -73,42 +88,42 @@ public class FinderLocalAttributesTest {
         final File f = new File(UUID.randomUUID().toString());
         f.createNewFile();
         FinderLocalAttributes a = new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath()));
-        assertNotNull(a.getGroup());
+        Assert.assertNotNull(a.getGroup());
         f.delete();
     }
 
     @Test
     public void testGetInode() throws Exception {
-        assertNull(new FinderLocalAttributes(new FinderLocal(UUID.randomUUID().toString())).getInode());
+        Assert.assertNull(new FinderLocalAttributes(new FinderLocal(UUID.randomUUID().toString())).getInode());
         final File f = new File(UUID.randomUUID().toString());
         f.createNewFile();
         FinderLocalAttributes a = new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath()));
-        assertTrue(a.getInode() > 0);
+        Assert.assertTrue(a.getInode() > 0);
         f.delete();
     }
 
     @Test
     public void testIsBundle() throws Exception {
         FinderLocalAttributes a = new FinderLocalAttributes(new FinderLocal(UUID.randomUUID().toString()));
-        assertFalse(a.isBundle());
+        Assert.assertFalse(a.isBundle());
     }
 
     @Test
     public void testIsSymbolicLink() throws Exception {
-        assertFalse(new FinderLocalAttributes(new FinderLocal(UUID.randomUUID().toString())).isSymbolicLink());
-        assertTrue(new FinderLocalAttributes(new FinderLocal("/tmp")).isSymbolicLink());
+        Assert.assertFalse(new FinderLocalAttributes(new FinderLocal(UUID.randomUUID().toString())).isSymbolicLink());
+        Assert.assertTrue(new FinderLocalAttributes(new FinderLocal("/tmp")).isSymbolicLink());
     }
 
     @Test
     public void testPermission() throws Exception {
         final File f = new File(UUID.randomUUID().toString());
         f.createNewFile();
-        assertTrue(new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath())).getPermission().isReadable());
-        assertTrue(new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath())).getPermission().isWritable());
-        assertFalse(new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath())).getPermission().isExecutable());
+        Assert.assertTrue(new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath())).getPermission().isReadable());
+        Assert.assertTrue(new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath())).getPermission().isWritable());
+        Assert.assertFalse(new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath())).getPermission().isExecutable());
         f.delete();
-        assertTrue(new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath())).getPermission().isReadable());
-        assertTrue(new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath())).getPermission().isWritable());
-        assertTrue(new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath())).getPermission().isExecutable());
+        Assert.assertTrue(new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath())).getPermission().isReadable());
+        Assert.assertTrue(new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath())).getPermission().isWritable());
+        Assert.assertTrue(new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath())).getPermission().isExecutable());
     }
 }

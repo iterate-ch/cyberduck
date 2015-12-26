@@ -185,6 +185,11 @@
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>libcore</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>ch.cyberduck</groupId>
+                    <artifactId>libcore</artifactId>
                     <type>dylib</type>
                     <scope>runtime</scope>
                     <version>${project.version}</version>

@@ -28,6 +28,10 @@
             <artifactId>jna</artifactId>
         </dependency>
         <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+        </dependency>
+        <dependency>
             <groupId>net.java.dev.jna</groupId>
             <artifactId>libjnidispatch</artifactId>
             <classifier>native</classifier>
