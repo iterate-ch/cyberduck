@@ -19,7 +19,6 @@ package ch.cyberduck.core.ftp.parser;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.ftp.FTPParserSelector;
 
 import org.apache.commons.net.ftp.FTPFile;
@@ -35,7 +34,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  * @version $Id$
  */
-public class MicrosoftFTPEntryParserTest extends AbstractTestCase {
+public class MicrosoftFTPEntryParserTest {
 
     private FTPFileEntryParser parser;
 

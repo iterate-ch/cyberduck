@@ -18,7 +18,6 @@ package ch.cyberduck.core.ftp.parser;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.ftp.FTPParserSelector;
 
 import org.apache.commons.net.ftp.FTPFile;
@@ -33,7 +32,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class HPTru64ParserTest extends AbstractTestCase {
+public class HPTru64ParserTest {
 
     private FTPFileEntryParser parser;
 

@@ -15,7 +15,6 @@
  */
 package ch.cyberduck.core.ftp.parser;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.ftp.FTPParserSelector;
 
 import org.apache.commons.net.ftp.FTPFile;
@@ -29,7 +28,7 @@ import java.util.Locale;
 
 import static org.junit.Assert.*;
 
-public class NTFTPEntryParserTest extends AbstractTestCase {
+public class NTFTPEntryParserTest {
 
     private static final String[] samples =
             {
