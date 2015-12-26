@@ -24,8 +24,6 @@ import org.junit.Test;
 
 import java.util.UUID;
 
-import static org.junit.Assert.*;
-
 /**
  * @version $Id$
  */
@@ -63,7 +61,7 @@ public class FinderLocalTest {
 
     @Test
     public void testList() throws Exception {
-        Assert.assertFalse(new FinderLocal("../profiles").list().isEmpty());
+        Assert.assertFalse(new FinderLocal("../../profiles").list().isEmpty());
     }
 
     @Test(expected = LocalAccessDeniedException.class)
