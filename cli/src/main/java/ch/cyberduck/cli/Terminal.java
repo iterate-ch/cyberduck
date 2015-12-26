@@ -39,6 +39,7 @@ import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.openstack.SwiftProtocol;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.TerminalPreferences;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.ssl.CertificateStoreX509TrustManager;
