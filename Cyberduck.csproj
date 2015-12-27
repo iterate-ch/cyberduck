@@ -66,6 +66,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(OutputType)' == 'Library'">
     <StartupObject></StartupObject>
+    <AssemblyName>Cyberduck.Native</AssemblyName>
     <OutputPath>windows\target\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
