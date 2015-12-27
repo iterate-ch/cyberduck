@@ -60,7 +60,7 @@
             <property name="Platform" value="${msbuild.architecture}"/>
         </msbuild>
         <!-- Create DLL Cyberduck.dll -->
-        <msbuild buildfile="../../Cyberduck.csproj">
+        <msbuild buildfile="../Cyberduck.csproj">
             <target name="Clean"/>
             <target name="Build"/>
 
