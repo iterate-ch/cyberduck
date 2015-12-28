@@ -172,6 +172,11 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
+    public String getPrefix() {
+        return String.format("%s.%s", this.getClass().getPackage().getName(), StringUtils.capitalize(this.getType().name()));
+    }
+
+    @Override
     public boolean validate(Credentials credentials, LoginOptions options) {
         return this.getType().validate(credentials, options);
     }
