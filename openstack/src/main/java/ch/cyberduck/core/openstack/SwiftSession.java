@@ -48,6 +48,7 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -79,10 +80,13 @@ import ch.iterate.openstack.swift.model.Region;
 public class SwiftSession extends HttpSession<Client> {
     private static final Logger log = Logger.getLogger(SwiftSession.class);
 
+    private final Preferences preferences
+            = PreferencesFactory.get();
+
     private final SwiftRegionService regionService
             = new SwiftRegionService(this);
 
-    private SwiftDistributionConfiguration cdn
+    private final SwiftDistributionConfiguration cdn
             = new SwiftDistributionConfiguration(this, regionService);
 
     protected Map<Region, AccountInfo> accounts
@@ -151,7 +155,7 @@ public class SwiftSession extends HttpSession<Client> {
                 }
                 cancel.verify();
             }
-            if(PreferencesFactory.get().getBoolean("openstack.account.preload")) {
+            if(preferences.getBoolean("openstack.account.preload")) {
                 final ThreadPool pool = new ThreadPool("accounts");
                 try {
                     pool.execute(new Runnable() {
@@ -203,6 +207,9 @@ public class SwiftSession extends HttpSession<Client> {
             return (T) new SwiftReadFeature(this, regionService);
         }
         if(type == Write.class) {
+            if(preferences.getBoolean("openstack.write.largeupload")) {
+                return (T) new SwiftLargeUploadWriteFeature(this, regionService, new SwiftSegmentService(this, regionService));
+            }
             return (T) new SwiftWriteFeature(this, regionService);
         }
         if(type == Upload.class) {
