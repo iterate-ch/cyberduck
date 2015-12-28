@@ -51,7 +51,6 @@
             <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
         </taskdef>
         <msbuild buildfile="../Cyberduck.csproj">
-            <target name="Clean"/>
             <target name="Build"/>
 
             <property name="Version" value="${version}.${revision}"/>
@@ -61,7 +60,6 @@
         </msbuild>
         <!-- Create DLL Cyberduck.dll -->
         <msbuild buildfile="../Cyberduck.csproj">
-            <target name="Clean"/>
             <target name="Build"/>
 
             <property name="Version" value="${version}.${revision}"/>
