@@ -79,13 +79,14 @@
         <antcall target="codesign">
             <param name="bundle" value="${app.bundle}"/>
         </antcall>
+        <mkdir dir="${build.deploy}"/>
         <antcall target="tar">
-            <param name="directory" value="${build}"/>
+            <param name="directory" value="${build.deploy}"/>
             <param name="target" value="${app.name}-${revision}.tar.gz"/>
             <param name="source" value="${app.name}.app"/>
         </antcall>
         <antcall target="zip">
-            <param name="directory" value="${build}"/>
+            <param name="directory" value="${build.deploy}"/>
             <param name="target" value="${app.name}-${version}.zip"/>
             <param name="source" value="${app.name}.app"/>
         </antcall>

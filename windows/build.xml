@@ -43,9 +43,6 @@
     <property name="jvm.runtime.bin" value="${java.home}/bin"/>
     <property name="cpack.bin" value="${env.ChocolateyInstall}/bin/cpack"/>
 
-    <property name="chocolatey.source" value="${setup}/chocolatey"/>
-    <property name="chocolatey.target" value="${build.deploy}"/>
-
     <target name="build" depends="version">
         <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
             <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
@@ -101,6 +98,8 @@
 
         <!-- overwrite generated wyUpdate.exe -->
         <copy file="${www.update}/Updater.exe" todir="${build}/update" overwrite="true"/>
+
+        <mkdir dir="${build.deploy}"/>
 
         <property name="setup.file"
                   location="${build.deploy}/${app.name}-Installer-${version}.${revision}.exe"/>
