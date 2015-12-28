@@ -38,4 +38,9 @@ public class UDTTLSProtocol extends AbstractProtocol {
     public Scheme getScheme() {
         return Scheme.udts;
     }
+
+    @Override
+    public String getPrefix() {
+        return null;
+    }
 }
