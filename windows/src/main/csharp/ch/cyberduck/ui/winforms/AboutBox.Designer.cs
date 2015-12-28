@@ -241,43 +241,5 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.Label labelRegistered;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.Button updateButton;
-            this.tableLayoutPanel2.SuspendLayout();
-            this.tableLayoutPanel.Controls.Add(this.labelCopyright, 0, 6);
-            this.tableLayoutPanel.Controls.Add(this.creditsRichTextBox, 0, 5);
-            this.tableLayoutPanel.Controls.Add(this.tableLayoutPanel1, 0, 8);
-            this.tableLayoutPanel.Controls.Add(this.tableLayoutPanel2, 0, 4);
-            this.tableLayoutPanel.RowCount = 9;
-            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            // tableLayoutPanel2
-            //
-            this.tableLayoutPanel2.AutoSize = true;
-            this.tableLayoutPanel2.ColumnCount = 3;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.Controls.Add(this.updateButton, 1, 0);
-            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 227);
-            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.RowCount = 1;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(359, 25);
-            this.tableLayoutPanel2.TabIndex = 26;
-            //
-            // updateButton
-            //
-            this.updateButton.AutoSize = true;
-            this.updateButton.Location = new System.Drawing.Point(120, 0);
-            this.updateButton.Margin = new System.Windows.Forms.Padding(0);
-            this.updateButton.Name = "updateButton";
-            this.updateButton.Size = new System.Drawing.Size(118, 25);
-            this.updateButton.TabIndex = 0;
-            this.updateButton.Text = "Check for Update…";
-            this.updateButton.UseVisualStyleBackColor = true;
-            //
-            this.tableLayoutPanel2.ResumeLayout(false);
-            this.tableLayoutPanel2.PerformLayout();
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.Button updateButton;
     }
 }
