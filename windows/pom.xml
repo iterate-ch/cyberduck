@@ -23,9 +23,6 @@
                 <plugins>
                     <plugin>
                         <artifactId>maven-dependency-plugin</artifactId>
-                    </plugin>
-                    <plugin>
-                        <artifactId>maven-dependency-plugin</artifactId>
                         <executions>
                             <execution>
                                 <id>unpack-runtime</id>
@@ -61,6 +58,7 @@
                                         <property name="home" value="${main.basedir}"/>
                                         <property name="version" value="${project.version}"/>
                                         <property name="revision" value="${git.commitsCount}"/>
+                                        <property name="sparkle.feed" value="${sparkle.feed}"/>
                                         <ant antfile="${project.basedir}/build.xml" target="package" dir="."/>
                                     </tasks>
                                 </configuration>
@@ -197,6 +195,18 @@
                     <scope>runtime</scope>
                 </dependency>
             </dependencies>
+        </profile>
+        <profile>
+            <id>sparkle</id>
+            <!-- activate profile for non-Jenkins builds -->
+            <activation>
+                <property>
+                    <name>!JENKINS_HOME</name>
+                </property>
+            </activation>
+            <properties>
+                <sparkle.feed>nightly</sparkle.feed>
+            </properties>
         </profile>
     </profiles>
 

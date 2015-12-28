@@ -89,7 +89,7 @@
         </replace>
 
         <!-- copy wyUpdate project over to the build directory -->
-        <copy file="${www.update}/${app.update.feed}/changelog.wyp" tofile="${build}/changelog.wyp" overwrite="true"/>
+        <copy file="${www.update}/${sparkle.feed}/changelog.wyp" tofile="${build}/changelog.wyp" overwrite="true"/>
 
         <exec executable="${wybuild.home}/wybuild.cmd.exe" failonerror="true" dir="${build}">
             <arg value="${build}/changelog.wyp"/>

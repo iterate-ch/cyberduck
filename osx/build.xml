@@ -25,7 +25,6 @@
 
     <property name="app.name" value="Cyberduck"/>
     <property name="app.bundle" value="${build}/${app.name}.app"/>
-    <property name="app.update.feed" value=""/>
 
     <property name="sparkle.key.prefix" value="SU"/>
     <property name="sparkle.feed" value="/dev/null"/>
@@ -111,8 +110,8 @@
             <include name="changelog.rss"/>
             <replacefilter token="${TIMESTAMP}" value="${touch.time}"/>
             <replacefilter token="${ARCHIVE}"
-                           value="https://update.cyberduck.io/${app.update.feed}/${app.name}-${revision}.tar.gz"/>
-            <replacefilter token="${CHANGELOG}" value="https://version.cyberduck.io/${app.update.feed}/changelog.html"/>
+                           value="https://update.cyberduck.io/${sparkle.feed}/${app.name}-${revision}.tar.gz"/>
+            <replacefilter token="${CHANGELOG}" value="https://version.cyberduck.io/${sparkle.feed}/changelog.html"/>
             <replacefilter token="${REVISION}" value="${revision}"/>
             <replacefilter token="${VERSION}" value="${version}"/>
             <replacefilter token="${DSASIGNATURE}" value="${signature.dsa}"/>
