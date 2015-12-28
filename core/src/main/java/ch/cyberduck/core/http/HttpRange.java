@@ -22,7 +22,13 @@ import java.util.Objects;
 
 public class HttpRange {
 
+    /**
+     * Start byte offset
+     */
     private final long start;
+    /**
+     * End byte inclusive
+     */
     private final long end;
     private final long length;
 
@@ -63,6 +69,8 @@ public class HttpRange {
 
     public String toHeader(final String header) {
         switch(header) {
+            // Content-Range entity-header is sent with a partial entity-body to specify where
+            // in the full entity-body the partial body should be applied.
             case HttpHeaders.CONTENT_RANGE:
                 if(-1 == length) {
                     // Complete length unknown. An asterisk
