@@ -19,10 +19,10 @@ import ch.cyberduck.core.exception.BackgroundException;
 
 import org.junit.Test;
 
+import java.util.Stack;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.Assert.*;
 
 public class BackgroundCallableTest {
 
@@ -86,5 +86,40 @@ public class BackgroundCallableTest {
             }
         }, new BackgroundActionRegistry());
         assertNull(c.call());
+    }
+
+    @Test
+    public void testCallInvokeCleanup() throws Exception {
+        final Object run = new Object();
+        final Object finish = new Object();
+        final Object cleanup = new Object();
+        final Stack stack = new Stack();
+
+        final BackgroundCallable<Object> c = new BackgroundCallable<>(new AbstractBackgroundAction<Object>() {
+            @Override
+            public Object run() throws BackgroundException {
+                stack.push(run);
+                return run;
+            }
+
+            @Override
+            public void finish() {
+                stack.push(finish);
+            }
+
+            @Override
+            public void cleanup() {
+                stack.push(cleanup);
+            }
+        }, new AbstractController() {
+            @Override
+            public void invoke(final MainAction runnable, final boolean wait) {
+                runnable.run();
+            }
+        }, new BackgroundActionRegistry());
+        assertSame(run, c.call());
+        assertEquals(cleanup, stack.pop());
+        assertEquals(finish, stack.pop());
+        assertEquals(run, stack.pop());
     }
 }
