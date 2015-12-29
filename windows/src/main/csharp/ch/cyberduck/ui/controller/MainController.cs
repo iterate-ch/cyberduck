@@ -27,11 +27,19 @@ using System.Windows.Forms;
 using Windows7.DesktopIntegration;
 using ch.cyberduck.core;
 using ch.cyberduck.core.aquaticprime;
+using ch.cyberduck.core.azure;
 using ch.cyberduck.core.bonjour;
+using ch.cyberduck.core.dav;
+using ch.cyberduck.core.ftp;
+using ch.cyberduck.core.gstorage;
 using ch.cyberduck.core.importer;
+using ch.cyberduck.core.irods;
 using ch.cyberduck.core.notification;
+using ch.cyberduck.core.openstack;
 using ch.cyberduck.core.preferences;
+using ch.cyberduck.core.s3;
 using ch.cyberduck.core.serializer;
+using ch.cyberduck.core.sftp;
 using Ch.Cyberduck.Ui.Core;
 using Ch.Cyberduck.Ui.Core.Preferences;
 using Ch.Cyberduck.Core.Urlhandler;
@@ -75,7 +83,8 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             StructureMapBootstrapper.Bootstrap();
             PreferencesFactory.set(new SettingsDictionaryPreferences());
-            ProtocolFactory.register();
+            ProtocolFactory.register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(), new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(),
+                                             new GoogleStorageProtocol(), new AzureProtocol(), new IRODSProtocol());
 
             if (!Debugger.IsAttached)
             {
