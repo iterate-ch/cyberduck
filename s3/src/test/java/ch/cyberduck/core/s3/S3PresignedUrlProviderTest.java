@@ -17,8 +17,11 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.test.IntegrationTest;
+
 import org.jets3t.service.utils.SignatureUtils;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.net.URI;
 
@@ -28,6 +31,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  * @version $Id$
  */
+@Category(IntegrationTest.class)
 public class S3PresignedUrlProviderTest {
 
     @Test

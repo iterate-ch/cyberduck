@@ -12,8 +12,10 @@ import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 import java.util.UUID;
@@ -24,6 +26,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  * @version $Id$
  */
+@Category(IntegrationTest.class)
 public class AzureUrlProviderTest {
 
     @Test
