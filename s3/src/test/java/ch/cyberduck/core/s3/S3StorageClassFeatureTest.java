@@ -28,9 +28,11 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.jets3t.service.model.S3Object;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -43,6 +45,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
+@Category(IntegrationTest.class)
 public class S3StorageClassFeatureTest {
 
     @Test

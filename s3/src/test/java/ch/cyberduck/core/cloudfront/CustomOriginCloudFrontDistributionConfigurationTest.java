@@ -12,9 +12,11 @@ import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -28,6 +30,7 @@ import static org.junit.Assert.assertNull;
  * @version $Id$
  */
 @Ignore
+@Category(IntegrationTest.class)
 public class CustomOriginCloudFrontDistributionConfigurationTest {
 
     @Test

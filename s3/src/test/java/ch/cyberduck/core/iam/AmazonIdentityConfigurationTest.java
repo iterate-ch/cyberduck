@@ -9,8 +9,10 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
 import ch.cyberduck.core.threading.FailureDiagnostics;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.UUID;
 
@@ -19,6 +21,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
+@Category(IntegrationTest.class)
 public class AmazonIdentityConfigurationTest {
 
     @Test
