@@ -38,4 +38,9 @@ public class UDTProtocol extends AbstractProtocol {
     public Scheme getScheme() {
         return Scheme.udt;
     }
+
+    @Override
+    public String getPrefix() {
+        return null;
+    }
 }

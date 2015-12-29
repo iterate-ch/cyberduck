@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2015 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -11,20 +11,20 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-// 
+//  
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System;
 using System.Drawing;
 using System.Reflection;
-using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Controller;
 using ch.cyberduck.core;
 using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
+using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Ui.Controller;
 using Path = System.IO.Path;
 
 namespace Ch.Cyberduck.Ui.Winforms
@@ -50,37 +50,20 @@ namespace Ch.Cyberduck.Ui.Winforms
             creditsRichTextBox.SelectAll();
             creditsRichTextBox.SelectionFont = new Font(Font.FontFamily, 9);
             creditsRichTextBox.DeselectAll();
-            creditsRichTextBox.LinkClicked +=
-                (sender, e) => BrowserLauncherFactory.get().open(e.LinkText);
+            creditsRichTextBox.LinkClicked += (sender, e) => BrowserLauncherFactory.get().open(e.LinkText);
 
             ackButton.Click +=
                 delegate { ApplicationLauncherFactory.get().open(LocalFactory.get("Acknowledgments.rtf")); };
-        }
-
-        public virtual string RegisteredText()
-        {
-            return LicenseFactory.find().ToString();
-        }
-        public virtual Image ApplicationIcon()
-        {
-            return IconCache.Instance.IconForName("cyberduck", 128);
-        }
-
-        public virtual string Credits()
-        {
-            return ResourcesBundle.Credits;
-        }
-        public virtual string Copyright()
-        {
-            return LocaleFactory.localizedString("NSHumanReadableCopyright", "InfoPlist");
+            updateButton.Click +=
+                delegate { UpdateController.Instance.ForceCheckForUpdates(false); };
         }
 
         public string AssemblyTitle
         {
             get
             {
-                object[] attributes =
-                    Assembly.GetEntryAssembly().GetCustomAttributes(typeof (AssemblyTitleAttribute), false);
+                object[] attributes = Assembly.GetEntryAssembly()
+                    .GetCustomAttributes(typeof (AssemblyTitleAttribute), false);
                 if (attributes.Length > 0)
                 {
                     AssemblyTitleAttribute titleAttribute = (AssemblyTitleAttribute) attributes[0];
@@ -111,8 +94,8 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             get
             {
-                object[] attributes =
-                    Assembly.GetEntryAssembly().GetCustomAttributes(typeof (AssemblyProductAttribute), false);
+                object[] attributes = Assembly.GetEntryAssembly()
+                    .GetCustomAttributes(typeof (AssemblyProductAttribute), false);
                 if (attributes.Length == 0)
                 {
                     return "";
@@ -139,8 +122,8 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             get
             {
-                object[] attributes =
-                    Assembly.GetEntryAssembly().GetCustomAttributes(typeof (AssemblyCompanyAttribute), false);
+                object[] attributes = Assembly.GetEntryAssembly()
+                    .GetCustomAttributes(typeof (AssemblyCompanyAttribute), false);
                 if (attributes.Length == 0)
                 {
                     return String.Empty;
@@ -152,6 +135,26 @@ namespace Ch.Cyberduck.Ui.Winforms
         public override string[] BundleNames
         {
             get { return new[] {"Main", "Localizable"}; }
+        }
+
+        public virtual string RegisteredText()
+        {
+            return LicenseFactory.find().ToString();
+        }
+
+        public virtual Image ApplicationIcon()
+        {
+            return IconCache.Instance.IconForName("cyberduck", 128);
+        }
+
+        public virtual string Credits()
+        {
+            return ResourcesBundle.Credits;
+        }
+
+        public virtual string Copyright()
+        {
+            return LocaleFactory.localizedString("NSHumanReadableCopyright", "InfoPlist");
         }
     }
 }

@@ -101,10 +101,10 @@
       <HintPath>windows\target\Cyberduck.Importer.dll</HintPath>
     </Reference>
     <Reference Include="CustomOpenFileFolderDialog">
-      <HintPath>windows\target\lib\CustomOpenFileFolderDialog.dll</HintPath>
+      <HintPath>windows\target\CustomOpenFileFolderDialog.dll</HintPath>
     </Reference>
     <Reference Include="ExceptionReporter.WinForms">
-      <HintPath>windows\target\lib\ExceptionReporter.WinForms.dll</HintPath>
+      <HintPath>windows\target\ExceptionReporter.WinForms.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.Beans">
       <HintPath>windows\target\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Beans.dll</HintPath>
@@ -262,6 +262,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
       <LastGenOutput>ResourcesBundle.Designer.cs</LastGenOutput>
+      <LogicalName>Ch.Cyberduck.ResourcesBundle.resources</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\AboutBox.resx">
       <DependentUpon>AboutBox.cs</DependentUpon>

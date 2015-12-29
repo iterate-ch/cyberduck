@@ -722,12 +722,16 @@ public abstract class Preferences {
 
         defaults.put("openstack.upload.md5", String.valueOf(true));
 
+        defaults.put("openstack.write.largeupload", String.valueOf(false));
+
         defaults.put("openstack.upload.largeobject", String.valueOf(true));
         defaults.put("openstack.upload.largeobject.concurrency", String.valueOf(5));
         defaults.put("openstack.upload.largeobject.segments.prefix", ".file-segments/");
         defaults.put("openstack.upload.largeobject.threshold", String.valueOf(2L * 1024L * 1024L * 1024L)); // 2GB
         defaults.put("openstack.upload.largeobject.required.threshold", String.valueOf(5L * 1024L * 1024L * 1024L)); // 5GB
         defaults.put("openstack.upload.largeobject.size", String.valueOf(1000L * 1024L * 1024L)); // 1GB
+        // Each segment, except for the final one, must be at least 1 megabyte
+        defaults.put("openstack.upload.largeobject.size.minimum", String.valueOf(1 * 1024L * 1024L)); // 1MB
         // Remove segments when deleting large object manifest
         defaults.put("openstack.upload.largeobject.cleanup", String.valueOf(true));
 

@@ -33,7 +33,7 @@
     <property name="codesign.options" value="--force"/>
     <property name="codesign.arg" value=""/>
 
-    <target name="codesign" depends="compile-codesign-requirement">
+    <target name="codesign" depends="dotclean,compile-codesign-requirement">
         <echo message="Code signing ${bundle} with certificate ${codesign.certificate} and entitlements ${codesign.arg}..."/>
         <apply executable="/usr/bin/codesign" failonerror="true"
                type="both"
@@ -109,6 +109,12 @@
         <echo message="Print system policy verification for ${bundle}..."/>
         <exec executable="/usr/sbin/spctl" failonerror="true">
             <arg line="-v --assess --type execute '${bundle}'"/>
+        </exec>
+    </target>
+
+    <target name="dotclean">
+        <exec executable="/usr/sbin/dot_clean" failonerror="true">
+            <arg line="-m --keep=native '${bundle}'"/>
         </exec>
     </target>
 </project>
