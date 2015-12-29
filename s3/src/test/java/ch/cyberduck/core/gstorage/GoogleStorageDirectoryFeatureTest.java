@@ -31,8 +31,10 @@ import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3FindFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -43,6 +45,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
+@Category(IntegrationTest.class)
 public class GoogleStorageDirectoryFeatureTest {
 
     @Test

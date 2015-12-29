@@ -20,9 +20,11 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.input.NullInputStream;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.security.MessageDigest;
 import java.util.EnumSet;
@@ -34,6 +36,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
+@Category(IntegrationTest.class)
 public class SwiftSmallObjectUploadFeatureTest {
 
     @Test

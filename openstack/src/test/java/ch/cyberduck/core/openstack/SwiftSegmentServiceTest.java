@@ -10,9 +10,11 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -26,6 +28,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
+@Category(IntegrationTest.class)
 public class SwiftSegmentServiceTest {
 
     @Test

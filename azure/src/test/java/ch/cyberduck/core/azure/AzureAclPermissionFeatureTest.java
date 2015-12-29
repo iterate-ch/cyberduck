@@ -11,8 +11,10 @@ import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 import java.util.UUID;
@@ -21,6 +23,7 @@ import java.util.UUID;
 /**
  * @version $Id$
  */
+@Category(IntegrationTest.class)
 public class AzureAclPermissionFeatureTest {
 
     @Test(expected = NotfoundException.class)

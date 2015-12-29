@@ -19,12 +19,14 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.http.Header;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.StatusLine;
 import org.apache.http.message.BasicStatusLine;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import ch.iterate.openstack.swift.exception.GenericException;
 
@@ -34,6 +36,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
+@Category(IntegrationTest.class)
 public class SwiftExceptionMappingServiceTest {
 
     @Test

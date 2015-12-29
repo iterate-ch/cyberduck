@@ -24,14 +24,17 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import static org.junit.Assert.assertFalse;
 
 /**
  * @version $Id$
  */
+@Category(IntegrationTest.class)
 public class SFTPChallengeResponseAuthenticationTest {
 
     @Test(expected = LoginFailureException.class)

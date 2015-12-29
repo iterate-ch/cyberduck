@@ -9,8 +9,10 @@ import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProfileReaderFactory;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -28,6 +30,7 @@ import static org.junit.Assert.fail;
 /**
  * @version $Id$
  */
+@Category(IntegrationTest.class)
 public class SwiftAuthenticationServiceTest {
 
     @Test
