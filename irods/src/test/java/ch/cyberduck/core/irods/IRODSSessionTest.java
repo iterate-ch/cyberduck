@@ -34,9 +34,11 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.security.cert.X509Certificate;
 import java.util.List;
@@ -47,6 +49,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
+@Category(IntegrationTest.class)
 public class IRODSSessionTest {
 
     @BeforeClass
