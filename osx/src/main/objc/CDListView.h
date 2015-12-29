@@ -17,8 +17,7 @@
  */
 
 #import <Cocoa/Cocoa.h>
-#import "QLPreviewPanel.h"
-#define QLPreviewPanel NSClassFromString(@"QLPreviewPanel")
+#import <Quartz/Quartz.h>
 
 @interface CDListView : NSTableView {
 
