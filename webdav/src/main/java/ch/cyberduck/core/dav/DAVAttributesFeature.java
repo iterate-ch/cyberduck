@@ -26,7 +26,6 @@ import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.http.HttpHeaders;
@@ -42,7 +41,6 @@ import com.github.sardine.impl.handler.HeadersResponseHandler;
 /**
  * @version $Id$
  */
-@Category(IntegrationTest.class)
 public class DAVAttributesFeature implements Attributes {
     private static final Logger log = Logger.getLogger(DAVAttributesFeature.class);
 
