@@ -12,9 +12,11 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.io.StringReader;
 import java.util.UUID;
@@ -25,6 +27,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
+@Category(IntegrationTest.class)
 public class SFTPPublicKeyAuthenticationTest {
 
     @Test
