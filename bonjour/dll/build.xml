@@ -29,7 +29,7 @@
         <taskdef name="ikvmc" classname="net.ikvm.ant.IkvmcTask">
             <classpath path="${lib.ext}/ant-ikvmc.0.5.jar"/>
         </taskdef>
-        <mkdir dir="${module}/dll/target"/>
+        <mkdir dir="${build}"/>
         <!-- Create DLL Cyberduck.Bonjour -->
         <ikvmc target="library" out="${build}/Cyberduck.Bonjour.dll" home="${ikvm.home}"
                classloader="ikvm.runtime.AssemblyClassLoader" version="${version}" debug="false" verbose="true">
