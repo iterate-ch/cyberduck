@@ -354,6 +354,10 @@
                         <phase>generate-sources</phase>
                     </execution>
                 </executions>
+                <configuration>
+                    <repositoryDirectory>${project.basedir}</repositoryDirectory>
+                    <runOnlyAtExecutionRoot>false</runOnlyAtExecutionRoot>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
