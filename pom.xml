@@ -257,6 +257,22 @@
                             <java.library.path>${project.build.directory}</java.library.path>
                             <jna.library.path>${project.build.directory}</jna.library.path>
                         </systemPropertyVariables>
+                        <excludedGroups>ch.cyberduck.test.IntegrationTest</excludedGroups>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>2.19</version>
+                    <configuration>
+                        <systemPropertyVariables>
+                            <java.library.path>${project.build.directory}</java.library.path>
+                            <jna.library.path>${project.build.directory}</jna.library.path>
+                        </systemPropertyVariables>
+                        <includes>
+                            <include>**/*.java</include>
+                        </includes>
+                        <groups>ch.cyberduck.test.IntegrationTest</groups>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -361,6 +377,18 @@
                 <configuration>
                     <systemPropertiesFile>${env.HOME}/test.properties</systemPropertiesFile>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
