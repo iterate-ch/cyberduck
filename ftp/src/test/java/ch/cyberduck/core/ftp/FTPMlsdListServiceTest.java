@@ -32,14 +32,17 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import static org.junit.Assert.assertFalse;
 
 /**
  * @version $Id$
  */
+@Category(IntegrationTest.class)
 public class FTPMlsdListServiceTest {
 
     @Test(expected = InteroperabilityException.class)
