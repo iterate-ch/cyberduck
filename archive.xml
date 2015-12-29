@@ -41,6 +41,7 @@
     </target>
 
     <target name="zip" if="platform.mac">
+        <mkdir dir="${build.deploy}"/>
         <echo message="Creating ZIP archive from ${directory}/${source}"/>
         <exec dir="${directory}" executable="ditto" spawn="false" failonerror="true">
             <arg line="-c -k --keepParent ${source} ${build.deploy}/${target}"/>
