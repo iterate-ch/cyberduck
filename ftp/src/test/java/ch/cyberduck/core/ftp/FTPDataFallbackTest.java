@@ -29,8 +29,10 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.net.SocketTimeoutException;
 import java.util.EnumSet;
@@ -41,6 +43,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
+@Category(IntegrationTest.class)
 public class FTPDataFallbackTest {
 
     @Test

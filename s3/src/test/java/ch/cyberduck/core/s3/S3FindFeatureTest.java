@@ -12,8 +12,10 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -24,6 +26,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
+@Category(IntegrationTest.class)
 public class S3FindFeatureTest {
 
     @Test

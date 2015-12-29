@@ -18,9 +18,11 @@ import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.sftp.openssh.OpenSSHHostKeyVerifier;
 import ch.cyberduck.core.socket.DefaultSocketConfigurator;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.security.PublicKey;
 import java.util.Arrays;
@@ -38,6 +40,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
+@Category(IntegrationTest.class)
 public class SFTPSessionTest {
 
     @Test

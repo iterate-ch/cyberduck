@@ -33,8 +33,10 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
@@ -43,6 +45,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
+@Category(IntegrationTest.class)
 public class FTPAttributesFeatureTest {
 
     @Test(expected = InteroperabilityException.class)

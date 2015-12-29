@@ -11,14 +11,17 @@ import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import static org.junit.Assert.*;
 
 /**
  * @version $Id$
  */
+@Category(IntegrationTest.class)
 public class AzureSessionTest {
 
     @Test

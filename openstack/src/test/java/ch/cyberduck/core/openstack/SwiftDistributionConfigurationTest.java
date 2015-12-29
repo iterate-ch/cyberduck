@@ -18,8 +18,10 @@ import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.cdn.features.Purge;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.identity.IdentityConfiguration;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.net.URI;
 import java.util.Collections;
@@ -31,6 +33,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
+@Category(IntegrationTest.class)
 public class SwiftDistributionConfigurationTest {
 
     @Test

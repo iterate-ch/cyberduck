@@ -28,9 +28,11 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.jets3t.service.model.container.ObjectKeyAndVersion;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,6 +46,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
+@Category(IntegrationTest.class)
 public class S3MultipleDeleteFeatureTest {
 
     @Test

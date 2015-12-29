@@ -19,15 +19,18 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.security.AWSSessionCredentials;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import static org.junit.Assert.assertEquals;
 
+@Category(IntegrationTest.class)
 public class S3SessionCredentialsRetrieverTest {
 
     @Test

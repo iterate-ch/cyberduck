@@ -31,10 +31,12 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 import ch.cyberduck.core.ftp.parser.LaxUnixFTPEntryParser;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.net.ftp.FTPFileEntryParser;
 import org.apache.commons.net.ftp.parser.UnixFTPEntryParser;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -46,6 +48,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
+@Category(IntegrationTest.class)
 public class FTPStatListServiceTest {
 
     @Test
