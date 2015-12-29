@@ -262,6 +262,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
       <LastGenOutput>ResourcesBundle.Designer.cs</LastGenOutput>
+      <LogicalName>Ch.Cyberduck.ResourcesBundle.resources</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\AboutBox.resx">
       <DependentUpon>AboutBox.cs</DependentUpon>
