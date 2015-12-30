@@ -3,17 +3,17 @@
 <plist version="1.0">
     <dict>
         <key>Protocol</key>
-        <string>spectra-tls</string>
+        <string>spectra</string>
         <key>Vendor</key>
         <string>spectralogic</string>
         <key>Description</key>
-        <string>Spectra BlackPearl Deep Storage Gateway (HTTPS)</string>
+        <string>Spectra BlackPearl Deep Storage Gateway (HTTP)</string>
         <key>Scheme</key>
-        <string>https</string>
+        <string>http</string>
         <key>Default Hostname</key>
         <string>blackpearl.hostname</string>
         <key>Default Port</key>
-        <string>443</string>
+        <string>80</string>
         <key>Port Configurable</key>
         <false/>
         <key>Username Placeholder</key>
