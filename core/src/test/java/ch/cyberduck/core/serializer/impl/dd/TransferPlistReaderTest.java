@@ -42,7 +42,6 @@ public class TransferPlistReaderTest extends AbstractTestCase {
         );
         assertTrue(t instanceof UploadTransfer);
         assertEquals("identity.api.rackspacecloud.com", t.getHost().getHostname());
-        assertEquals(Protocol.Type.swift, t.getHost().getProtocol().getType());
         assertEquals("/test.cyberduck.ch/bookmarks_en.png", t.getRoot().remote.getAbsolute());
         assertEquals("C:\\Users\\Yves Langisch\\Pictures\\bookmarks_en.png", t.getRoot().local.getAbsolute());
     }
@@ -54,7 +53,6 @@ public class TransferPlistReaderTest extends AbstractTestCase {
         );
         assertTrue(t instanceof DownloadTransfer);
         assertEquals("s3.amazonaws.com", t.getHost().getHostname());
-        assertEquals(Protocol.Type.s3, t.getHost().getProtocol().getType());
         assertEquals("/cyberduck/Cyberduck-3.3.zip", t.getRoot().remote.getAbsolute());
         assertEquals("C:\\Users\\Yves Langisch\\Desktop\\Cyberduck-3.3.zip", t.getRoot().local.getAbsolute());
     }

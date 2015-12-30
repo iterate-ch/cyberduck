@@ -19,27 +19,14 @@ package ch.cyberduck.core.serializer.impl.dd;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.azure.AzureProtocol;
-import ch.cyberduck.core.dav.DAVProtocol;
-import ch.cyberduck.core.dav.DAVSSLProtocol;
+import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.ftp.FTPProtocol;
-import ch.cyberduck.core.ftp.FTPTLSProtocol;
-import ch.cyberduck.core.gstorage.GoogleStorageProtocol;
-import ch.cyberduck.core.irods.IRODSProtocol;
-import ch.cyberduck.core.openstack.SwiftProtocol;
-import ch.cyberduck.core.s3.S3LocationFeature;
-import ch.cyberduck.core.s3.S3Protocol;
-import ch.cyberduck.core.sftp.SFTPProtocol;
 
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Set;
@@ -51,31 +38,12 @@ import static org.junit.Assert.*;
  */
 public class ProfilePlistReaderTest extends AbstractTestCase {
 
-    @BeforeClass
-    public static void register() {
-        ProtocolFactory.register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(), new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(),
-                new GoogleStorageProtocol(), new AzureProtocol(), new IRODSProtocol());
-    }
-
     @Test
     public void testDeserializeDropbox() throws Exception {
         final Profile profile = new ProfilePlistReader().read(
                 new Local("src/test/resources/Dropbox.cyberduckprofile")
         );
         assertNull(profile);
-    }
-
-    @Test
-    public void testAll() throws Exception {
-        for(Local l : new Local("../profiles").list().filter(new Filter<Local>() {
-            @Override
-            public boolean accept(final Local file) {
-                return file.getName().endsWith(".cyberduckprofile");
-            }
-        })) {
-            final Profile profile = new ProfilePlistReader().read(l);
-            assertNotNull(profile);
-        }
     }
 
     @Test
@@ -86,32 +54,32 @@ public class ProfilePlistReaderTest extends AbstractTestCase {
         assertNotNull(profile);
         final Set<Location.Name> regions = profile.getRegions();
         assertEquals(2, regions.size());
-        assertTrue("custom", regions.contains(new S3LocationFeature.S3Region("custom")));
-        assertTrue("custom2", regions.contains(new S3LocationFeature.S3Region("custom2")));
+        assertTrue("custom", regions.contains(new Location.Name("custom")));
+        assertTrue("custom2", regions.contains(new Location.Name("custom2")));
     }
 
     @Test
     public void testEquals() throws Exception {
         final Profile profile = new ProfilePlistReader().read(
-                new Local("../profiles/Eucalyptus Walrus S3.cyberduckprofile")
+                new Local("src/test/resources/Eucalyptus Walrus S3.cyberduckprofile")
         );
         assertEquals(profile, new ProfilePlistReader().read(
-                new Local("../profiles/Eucalyptus Walrus S3.cyberduckprofile")
+                new Local("src/test/resources/Eucalyptus Walrus S3.cyberduckprofile")
         ));
         Assert.assertEquals(Protocol.Type.s3, profile.getType());
-        assertEquals(new S3Protocol(), profile.getProtocol());
-        assertNotSame(new S3Protocol().getDefaultHostname(), profile.getDefaultHostname());
-        assertEquals(new S3Protocol().getScheme(), profile.getScheme());
+        assertEquals(new TestProtocol(), profile.getProtocol());
+        assertNotSame(new TestProtocol().getDefaultHostname(), profile.getDefaultHostname());
+        assertEquals(new TestProtocol().getScheme(), profile.getScheme());
         assertEquals("eucalyptus", profile.getProvider());
     }
 
     @Test
     public void testEqualsDifferentScheme() throws Exception {
         final Profile https = new ProfilePlistReader().read(
-                new Local("../profiles/Openstack Swift (Swauth).cyberduckprofile")
+                new Local("src/test/resources/Openstack Swift (Swauth).cyberduckprofile")
         );
         final Profile http = new ProfilePlistReader().read(
-                new Local("../profiles/Openstack Swift (Swauth HTTP).cyberduckprofile")
+                new Local("src/test/resources/Openstack Swift (Swauth HTTP).cyberduckprofile")
         );
         assertNotEquals(https, http);
     }
@@ -130,13 +98,13 @@ public class ProfilePlistReaderTest extends AbstractTestCase {
     @Test
     public void testProviderProfileHPCloud() throws Exception {
         final Profile profile = new ProfilePlistReader().read(
-                new Local("../profiles/HP Cloud Object Storage.cyberduckprofile")
+                new Local("src/test/resources/HP Cloud Object Storage.cyberduckprofile")
         );
         assertEquals(profile, new ProfilePlistReader().read(
-                new Local("../profiles/HP Cloud Object Storage.cyberduckprofile")
+                new Local("src/test/resources/HP Cloud Object Storage.cyberduckprofile")
         ));
         assertEquals(Protocol.Type.swift, profile.getType());
-        assertEquals(new SwiftProtocol(), profile.getProtocol());
+        assertEquals(new TestProtocol(), profile.getProtocol());
         assertFalse(profile.isHostnameConfigurable());
         assertFalse(profile.isPortConfigurable());
         assertEquals("swift", profile.getIdentifier());
@@ -150,20 +118,20 @@ public class ProfilePlistReaderTest extends AbstractTestCase {
         assertEquals(35357, profile.getDefaultPort());
         assertEquals("region-a.geo-1.identity.hpcloudsvc.com", profile.getDefaultHostname());
         assertEquals("/v2.0/tokens", profile.getContext());
-        assertFalse(profile.disk().equals(new SwiftProtocol().disk()));
+        assertFalse(profile.disk().equals(new TestProtocol().disk()));
         assertNotNull(profile.getProvider());
     }
 
     @Test
     public void testProviderProfileS3HTTP() throws Exception {
         final Profile profile = new ProfilePlistReader().read(
-                new Local("../profiles/S3 (HTTP).cyberduckprofile")
+                new Local("src/test/resources/S3 (HTTP).cyberduckprofile")
         );
         assertEquals(profile, new ProfilePlistReader().read(
-                new Local("../profiles/S3 (HTTP).cyberduckprofile")
+                new Local("src/test/resources/S3 (HTTP).cyberduckprofile")
         ));
         assertEquals(Protocol.Type.s3, profile.getType());
-        assertEquals(new S3Protocol(), profile.getProtocol());
+        assertEquals(new TestProtocol(), profile.getProtocol());
         assertTrue(profile.isHostnameConfigurable());
         assertTrue(profile.isPortConfigurable());
         assertEquals("s3", profile.getIdentifier());
@@ -172,8 +140,8 @@ public class ProfilePlistReaderTest extends AbstractTestCase {
         assertEquals(profile.disk(), profile.disk());
         assertEquals(profile.icon(), profile.disk());
         assertEquals(80, profile.getDefaultPort());
-        assertEquals(new S3Protocol().getDefaultHostname(), profile.getDefaultHostname());
-        assertTrue(profile.disk().equals(new S3Protocol().disk()));
+        assertEquals(new TestProtocol().getDefaultHostname(), profile.getDefaultHostname());
+        assertTrue(profile.disk().equals(new TestProtocol().disk()));
         assertNotNull(profile.getProvider());
     }
 
@@ -186,7 +154,7 @@ public class ProfilePlistReaderTest extends AbstractTestCase {
                 new Local("../profiles/S3 (HTTPS).cyberduckprofile")
         ));
         assertEquals(Protocol.Type.s3, profile.getType());
-        assertEquals(new S3Protocol(), profile.getProtocol());
+        assertEquals(new TestProtocol(), profile.getProtocol());
         assertTrue(profile.isHostnameConfigurable());
         assertTrue(profile.isPortConfigurable());
         assertEquals("s3", profile.getIdentifier());
@@ -195,8 +163,8 @@ public class ProfilePlistReaderTest extends AbstractTestCase {
         assertEquals(profile.disk(), profile.disk());
         assertEquals(profile.icon(), profile.disk());
         assertEquals(443, profile.getDefaultPort());
-        assertEquals(new S3Protocol().getDefaultHostname(), profile.getDefaultHostname());
-        assertTrue(profile.disk().equals(new S3Protocol().disk()));
+        assertEquals(new TestProtocol().getDefaultHostname(), profile.getDefaultHostname());
+        assertTrue(profile.disk().equals(new TestProtocol().disk()));
         assertNotNull(profile.getProvider());
     }
 }

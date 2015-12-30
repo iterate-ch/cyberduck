@@ -6,7 +6,7 @@
     <key>Host</key>
     <dict>
       <key>Protocol</key>
-      <string>s3</string>
+      <string>test</string>
       <key>Nickname</key>
       <string>Amazon (HTTPS)</string>
       <key>UUID</key>
