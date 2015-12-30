@@ -193,7 +193,7 @@ public class TransferDictionary {
                         }
                         files.put(roots.get(i).remote, target);
                     }
-                    final Host target = new HostDictionary(deserializer).deserialize(destinationObj);
+                    final Host target = new HostDictionary(protocols, deserializer).deserialize(destinationObj);
                     if(null == target) {
                         log.warn("Missing target host in copy transfer");
                         return null;

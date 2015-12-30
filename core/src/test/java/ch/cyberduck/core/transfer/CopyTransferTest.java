@@ -24,6 +24,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -50,7 +51,7 @@ public class CopyTransferTest {
                 new NullSession(new Host(new TestProtocol())), Collections.singletonMap(test, new Path("d", EnumSet.of(Path.Type.file))));
         t.addSize(4L);
         t.addTransferred(3L);
-        final Transfer serialized = new TransferDictionary().deserialize(t.serialize(SerializerFactory.get()));
+        final Transfer serialized = new TransferDictionary(new ProtocolFactory(Collections.singleton(new TestProtocol()))).deserialize(t.serialize(SerializerFactory.get()));
         assertNotSame(t, serialized);
         assertEquals(t.roots, serialized.getRoots());
         assertEquals(t.files, ((CopyTransfer) serialized).files);
