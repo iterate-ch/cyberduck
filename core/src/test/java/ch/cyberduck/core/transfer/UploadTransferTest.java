@@ -8,13 +8,9 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.filter.UploadRegexFilter;
-import ch.cyberduck.core.ftp.FTPSession;
-import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.local.LocalTouchFactory;
-import ch.cyberduck.core.openstack.SwiftSession;
-import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.transfer.upload.AbstractUploadFilter;
 import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.core.transfer.upload.UploadRegexPriorityComparator;
@@ -225,12 +221,20 @@ public class UploadTransferTest extends AbstractTestCase {
 
     @Test
     public void testPrepareUploadOverrideFilter() throws Exception {
-        final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
+        final Host host = new Host(new TestProtocol(), "test.cyberduck.ch", new Credentials(
                 properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
         ));
-        final FTPSession session = new FTPSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Session<?> session = new NullSession(host) {
+            @Override
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
+                if(file.equals(new Path("/", EnumSet.of(Path.Type.volume, Path.Type.directory)))) {
+                    return new AttributedList<>(Collections.singletonList(new Path("/transfer", EnumSet.of(Path.Type.directory))));
+                }
+                final Path f = new Path("/transfer/test", EnumSet.of(Path.Type.file));
+                f.attributes().setSize(5L);
+                return new AttributedList<>(Collections.singletonList(f));
+            }
+        };
         final Path test = new Path("/transfer", EnumSet.of(Path.Type.directory));
         final String name = UUID.randomUUID().toString();
         final Local local = new Local(System.getProperty("java.io.tmpdir"), "transfer");
@@ -257,12 +261,20 @@ public class UploadTransferTest extends AbstractTestCase {
 
     @Test
     public void testPrepareUploadResumeFilter() throws Exception {
-        final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
+        final Host host = new Host(new TestProtocol(), "test.cyberduck.ch", new Credentials(
                 properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
         ));
-        final FTPSession session = new FTPSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Session<?> session = new NullSession(host) {
+            @Override
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
+                if(file.equals(new Path("/", EnumSet.of(Path.Type.volume, Path.Type.directory)))) {
+                    return new AttributedList<>(Collections.singletonList(new Path("/transfer", EnumSet.of(Path.Type.directory))));
+                }
+                final Path f = new Path("/transfer/test", EnumSet.of(Path.Type.file));
+                f.attributes().setSize(5L);
+                return new AttributedList<>(Collections.singletonList(f));
+            }
+        };
         final Path test = new Path("/transfer", EnumSet.of(Path.Type.directory));
         final String name = "test";
         final Local local = new Local(System.getProperty("java.io.tmpdir") + "/transfer", name);
@@ -419,7 +431,7 @@ public class UploadTransferTest extends AbstractTestCase {
     public void testTemporaryDisabledLargeUpload() throws Exception {
         final Host h = new Host(new TestProtocol());
         final AbstractUploadFilter f = new UploadTransfer(h, Collections.<TransferItem>emptyList())
-                .filter(new SwiftSession(h), TransferAction.overwrite, new DisabledProgressListener());
+                .filter(new NullSession(h), TransferAction.overwrite, new DisabledProgressListener());
         final Path file = new Path("/t", EnumSet.of(Path.Type.file));
         final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus());
         assertNull(status.getRename().local);
@@ -430,7 +442,7 @@ public class UploadTransferTest extends AbstractTestCase {
     public void testTemporaryDisabledMultipartUpload() throws Exception {
         final Host h = new Host(new TestProtocol());
         final AbstractUploadFilter f = new UploadTransfer(h, Collections.<TransferItem>emptyList())
-                .filter(new S3Session(h), TransferAction.overwrite, new DisabledProgressListener());
+                .filter(new NullSession(h), TransferAction.overwrite, new DisabledProgressListener());
         final Path file = new Path("/t", EnumSet.of(Path.Type.file));
         final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus());
         assertNull(status.getRename().local);

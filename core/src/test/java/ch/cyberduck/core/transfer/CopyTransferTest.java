@@ -23,20 +23,18 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.ftp.FTPProtocol;
-import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.TransferDictionary;
-import ch.cyberduck.core.sftp.SFTPProtocol;
-import ch.cyberduck.core.NullSession;
 
 import org.junit.Test;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
@@ -49,8 +47,8 @@ public class CopyTransferTest extends AbstractTestCase {
     @Test
     public void testSerialize() throws Exception {
         final Path test = new Path("t", EnumSet.of(Path.Type.file));
-        CopyTransfer t = new CopyTransfer(new Host(new SFTPProtocol()),
-                new FTPSession(new Host(new FTPProtocol())), Collections.singletonMap(test, new Path("d", EnumSet.of(Path.Type.file))));
+        CopyTransfer t = new CopyTransfer(new Host(new TestProtocol()),
+                new NullSession(new Host(new TestProtocol())), Collections.singletonMap(test, new Path("d", EnumSet.of(Path.Type.file))));
         t.addSize(4L);
         t.addTransferred(3L);
         final Transfer serialized = new TransferDictionary().deserialize(t.serialize(SerializerFactory.get()));
@@ -65,20 +63,20 @@ public class CopyTransferTest extends AbstractTestCase {
     @Test
     public void testActionPromptCancel() throws Exception {
         final Path test = new Path("t", EnumSet.of(Path.Type.file));
-        CopyTransfer t = new CopyTransfer(new Host(new SFTPProtocol(), "t"),
-                new NullSession(new Host(new FTPProtocol(), "t")),
+        CopyTransfer t = new CopyTransfer(new Host(new TestProtocol(), "t"),
+                new NullSession(new Host(new TestProtocol(), "t")),
                 Collections.singletonMap(test, new Path("d", EnumSet.of(Path.Type.file))), new BandwidthThrottle(BandwidthThrottle.UNLIMITED));
-        assertEquals(TransferAction.cancel, t.action(new NullSession(new Host(new SFTPProtocol(), "t")), false, true,
+        assertEquals(TransferAction.cancel, t.action(new NullSession(new Host(new TestProtocol(), "t")), false, true,
                 new DisabledTransferPrompt(), new DisabledListProgressListener()));
     }
 
     @Test
     public void testActionPrompt() throws Exception {
         final Path test = new Path("t", EnumSet.of(Path.Type.file));
-        CopyTransfer t = new CopyTransfer(new Host(new SFTPProtocol(), "t"),
-                new NullSession(new Host(new FTPProtocol(), "t")),
+        CopyTransfer t = new CopyTransfer(new Host(new TestProtocol(), "t"),
+                new NullSession(new Host(new TestProtocol(), "t")),
                 Collections.singletonMap(test, new Path("d", EnumSet.of(Path.Type.file))), new BandwidthThrottle(BandwidthThrottle.UNLIMITED));
-        assertEquals(TransferAction.comparison, t.action(new NullSession(new Host(new SFTPProtocol(), "t")), false, true,
+        assertEquals(TransferAction.comparison, t.action(new NullSession(new Host(new TestProtocol(), "t")), false, true,
                 new DisabledTransferPrompt() {
                     @Override
                     public TransferAction prompt(final TransferItem file) {
@@ -90,9 +88,9 @@ public class CopyTransferTest extends AbstractTestCase {
     @Test
     public void testList() throws Exception {
         Transfer t = new CopyTransfer(new Host(new TestProtocol()),
-                new NullSession(new Host(new TestProtocol())), Collections.singletonMap(
+                new NullSession(new Host(new TestProtocol())), new HashMap<>(Collections.singletonMap(
                 new Path("/s", EnumSet.of(Path.Type.directory)),
-                new Path("/t", EnumSet.of(Path.Type.directory))));
+                new Path("/t", EnumSet.of(Path.Type.directory)))));
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
