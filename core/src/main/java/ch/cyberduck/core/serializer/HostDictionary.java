@@ -39,12 +39,22 @@ public class HostDictionary {
     private static final Logger log = Logger.getLogger(HostDictionary.class);
 
     private DeserializerFactory deserializer;
+    private final ProtocolFactory protocols;
 
     public HostDictionary() {
-        this.deserializer = new DeserializerFactory();
+        this(ProtocolFactory.global);
+    }
+
+    public HostDictionary(final ProtocolFactory protocols) {
+        this(protocols, new DeserializerFactory());
     }
 
     public HostDictionary(final DeserializerFactory deserializer) {
+        this(ProtocolFactory.global, deserializer);
+    }
+
+    public HostDictionary(final ProtocolFactory protocols, final DeserializerFactory deserializer) {
+        this.protocols = protocols;
         this.deserializer = deserializer;
     }
 
@@ -55,7 +65,7 @@ public class HostDictionary {
             log.warn(String.format("Missing protocol key in %s", serialized));
             return null;
         }
-        final Protocol p = ProtocolFactory.forName(protocolObj.toString());
+        final Protocol p = protocols.find(protocolObj.toString());
         if(null != p) {
             final Host bookmark = new Host(p);
             Object hostnameObj = dict.stringForKey("Hostname");

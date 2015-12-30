@@ -19,6 +19,7 @@ package ch.cyberduck.core.serializer.impl.dd;
  */
 
 import ch.cyberduck.core.DeserializerFactory;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.serializer.TransferDictionary;
 import ch.cyberduck.core.transfer.Transfer;
 
@@ -29,18 +30,28 @@ import com.dd.plist.NSDictionary;
  */
 public class TransferPlistReader extends PlistReader<Transfer> {
 
-    private DeserializerFactory deserializer;
+    private final DeserializerFactory deserializer;
+    private final ProtocolFactory protocols;
 
     public TransferPlistReader() {
-        this.deserializer = new DeserializerFactory();
+        this(new DeserializerFactory());
     }
 
     public TransferPlistReader(final DeserializerFactory deserializer) {
+        this(ProtocolFactory.global, deserializer);
+    }
+
+    public TransferPlistReader(final ProtocolFactory protocols) {
+        this(protocols, new DeserializerFactory());
+    }
+
+    public TransferPlistReader(final ProtocolFactory protocols, final DeserializerFactory deserializer) {
         this.deserializer = deserializer;
+        this.protocols = protocols;
     }
 
     @Override
     public Transfer deserialize(final NSDictionary dict) {
-        return new TransferDictionary(deserializer).deserialize(dict);
+        return new TransferDictionary(protocols, deserializer).deserialize(dict);
     }
 }

@@ -19,11 +19,15 @@ package ch.cyberduck.core.serializer.impl.dd;
  */
 
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.UploadTransfer;
 
 import org.junit.Test;
+
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -35,7 +39,7 @@ public class TransferPlistReaderTest {
 
     @Test
     public void testDeserializeUpload() throws Exception {
-        final Transfer t = new TransferPlistReader().read(
+        final Transfer t = new TransferPlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol()))).read(
                 new Local("src/test/resources/c44b5120-8dfe-41af-acd3-da99d87b811f.cyberducktransfer")
         );
         assertTrue(t instanceof UploadTransfer);
@@ -46,7 +50,7 @@ public class TransferPlistReaderTest {
 
     @Test
     public void testDeserializeDownload() throws Exception {
-        final Transfer t = new TransferPlistReader().read(
+        final Transfer t = new TransferPlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol()))).read(
                 new Local("src/test/resources/fcea1809-1d75-42f1-92b5-99b38bc1d63e.cyberducktransfer")
         );
         assertTrue(t instanceof DownloadTransfer);

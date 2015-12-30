@@ -23,6 +23,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.DownloadTransfer;
@@ -47,12 +48,22 @@ public class TransferDictionary {
     private static final Logger log = Logger.getLogger(TransferDictionary.class);
 
     private DeserializerFactory deserializer;
+    private final ProtocolFactory protocols;
 
     public TransferDictionary() {
-        this.deserializer = new DeserializerFactory();
+        this(ProtocolFactory.global);
+    }
+
+    public TransferDictionary(final ProtocolFactory protocols) {
+        this(protocols, new DeserializerFactory());
     }
 
     public TransferDictionary(final DeserializerFactory deserializer) {
+        this(ProtocolFactory.global, deserializer);
+    }
+
+    public TransferDictionary(final ProtocolFactory protocols, final DeserializerFactory deserializer) {
+        this.protocols = protocols;
         this.deserializer = deserializer;
     }
 
@@ -63,7 +74,7 @@ public class TransferDictionary {
             log.warn("Missing host in transfer");
             return null;
         }
-        final Host host = new HostDictionary(deserializer).deserialize(hostObj);
+        final Host host = new HostDictionary(protocols, deserializer).deserialize(hostObj);
         if(null == host) {
             log.warn("Invalid host in transfer");
             return null;
