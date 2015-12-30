@@ -233,6 +233,7 @@
                                     <property name="home" value="${main.basedir}"/>
                                     <property name="version" value="${project.version}"/>
                                     <property name="revision" value="${git.commitsCount}"/>
+                                    <property name="git.revision" value="${git.revision}"/>
                                     <ant antfile="${project.basedir}/build.xml" target="build" dir="."/>
                                 </tasks>
                             </configuration>

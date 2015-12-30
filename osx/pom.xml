@@ -141,6 +141,7 @@
                                         <property name="home" value="${main.basedir}"/>
                                         <property name="version" value="${project.version}"/>
                                         <property name="revision" value="${git.commitsCount}"/>
+                                        <property name="git.revision" value="${git.revision}"/>
                                         <property name="xcode.target" value="app"/>
                                         <!-- 'Release' or 'Mac App Store' -->
                                         <property name="xcode.configuration" value="${xcode.configuration}"/>
@@ -161,6 +162,7 @@
                                         <property name="home" value="${main.basedir}"/>
                                         <property name="version" value="${project.version}"/>
                                         <property name="revision" value="${git.commitsCount}"/>
+                                        <property name="git.revision" value="${git.revision}"/>
                                         <property name="xcode.target" value="app"/>
                                         <!-- 'Release' or 'Mac App Store' -->
                                         <property name="xcode.configuration" value="${xcode.configuration}"/>
