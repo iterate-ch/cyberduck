@@ -14,8 +14,6 @@
         <string>blackpearl.hostname</string>
         <key>Default Port</key>
         <string>80</string>
-        <key>Port Configurable</key>
-        <false/>
         <key>Username Placeholder</key>
         <string>S3 Access ID</string>
         <key>Password Placeholder</key>
