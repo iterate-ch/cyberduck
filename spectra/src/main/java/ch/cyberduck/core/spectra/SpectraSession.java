@@ -52,7 +52,7 @@ public class SpectraSession extends S3Session {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         if(directory.isRoot()) {
             // List all buckets
-            return super.list(directory, listener);
+            return new AttributedList<Path>(new SpectraBucketListService(this).list(listener));
         }
         else {
             return new SpectraObjectListService(this).list(directory, listener);
