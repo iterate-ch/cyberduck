@@ -1,15 +1,25 @@
 package ch.cyberduck.core.worker;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractController;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Controller;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ListCanceledException;
-import ch.cyberduck.core.sftp.SFTPProtocol;
-import ch.cyberduck.core.sftp.SFTPSession;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
 
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.concurrent.Future;
 
@@ -18,16 +28,17 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class SessionListWorkerTest extends AbstractTestCase {
+public class SessionListWorkerTest {
 
     @Test
     public void testRun() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
-        ));
-        final SFTPSession session = new SFTPSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Host host = new Host(new TestProtocol());
+        final Session<?> session = new NullSession(host) {
+            @Override
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws NotfoundException {
+                return new AttributedList<>(Collections.singletonList(new Path("/home/jenkins/f", EnumSet.of(Path.Type.file))));
+            }
+        };
         final PathCache cache = new PathCache(1);
         final SessionListWorker worker = new SessionListWorker(cache,
                 new Path("/home/jenkins", EnumSet.of(Path.Type.directory)),
@@ -41,12 +52,8 @@ public class SessionListWorkerTest extends AbstractTestCase {
 
     @Test
     public void testCacheNotFoundWithController() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
-        ));
-        final SFTPSession session = new SFTPSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Host host = new Host(new TestProtocol());
+        final Session<?> session = new NullSession(host);
         final PathCache cache = new PathCache(1);
         final SessionListWorker worker = new SessionListWorker(cache,
                 new Path("/home/notfound", EnumSet.of(Path.Type.directory)),
@@ -64,17 +71,13 @@ public class SessionListWorkerTest extends AbstractTestCase {
 
     @Test
     public void testCacheListCanceledWithController() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
-        ));
-        final SFTPSession session = new SFTPSession(host) {
+        final Host host = new Host(new TestProtocol());
+        final Session<?> session = new NullSession(host) {
             @Override
             public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
                 throw new ListCanceledException(AttributedList.<Path>emptyList());
             }
         };
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final PathCache cache = new PathCache(1);
         final SessionListWorker worker = new SessionListWorker(cache,
                 new Path("/home/notfound", EnumSet.of(Path.Type.directory)),

@@ -33,6 +33,9 @@ import java.util.UUID;
  */
 public class TemporaryFileService {
 
+    private final String delimiter
+            = PreferencesFactory.get().getProperty("local.delimiter");
+
     public Local create(final Path file) {
         return this.create(UUID.randomUUID().toString(), file);
     }
@@ -43,9 +46,9 @@ public class TemporaryFileService {
     public Local create(final String uid, final Path file) {
         final Local folder = LocalFactory.get(
                 new File(PreferencesFactory.get().getProperty("tmp.dir"),
-                        uid + String.valueOf(Path.DELIMITER) +
-                                this.shorten(file.getParent().getAbsolute()) + String.valueOf(Path.DELIMITER) + new DefaultPathReference(file).attributes()).getAbsolutePath());
-        return LocalFactory.get(folder, String.format("%s", PathNormalizer.name(file.getAbsolute())));
+                        uid + delimiter + this.shorten(file.getParent().getAbsolute())
+                                + delimiter + new DefaultPathReference(file).attributes()).getAbsolutePath());
+        return LocalFactory.get(folder, PathNormalizer.name(file.getAbsolute()));
     }
 
     protected String shorten(final String path) {

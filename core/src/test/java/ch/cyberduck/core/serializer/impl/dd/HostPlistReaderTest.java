@@ -18,14 +18,12 @@ package ch.cyberduck.core.serializer.impl.dd;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
-import ch.cyberduck.core.s3.S3Protocol;
-import ch.cyberduck.core.sftp.SFTPProtocol;
 
 import org.junit.Test;
 
@@ -34,7 +32,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class HostPlistReaderTest extends AbstractTestCase {
+public class HostPlistReaderTest {
 
     @Test(expected = LocalAccessDeniedException.class)
     public void testDeserializeNoSuchFile() throws Exception {
@@ -51,32 +49,35 @@ public class HostPlistReaderTest extends AbstractTestCase {
 
     @Test
     public void testRead() throws Exception {
+        ProtocolFactory.register(new TestProtocol());
         HostPlistReader reader = new HostPlistReader();
         final Host read = reader.read(new Local(
                 "src/test/resources/s3.amazonaws.com – S3.duck"));
         assertNotNull(read);
         assertEquals("Amazon Simple Storage Service & CloudFront CDN", read.getComment());
-        assertEquals(new S3Protocol(), read.getProtocol());
+        assertEquals(new TestProtocol(), read.getProtocol());
     }
 
     @Test
     public void testReadPrivateKey() throws Exception {
+        ProtocolFactory.register(new TestProtocol());
         HostPlistReader reader = new HostPlistReader();
         final Host read = reader.read(new Local(
                 "src/test/resources/Private Key Legacy.duck"));
         assertNotNull(read);
-        assertEquals(new SFTPProtocol(), read.getProtocol());
+        assertEquals(new TestProtocol(), read.getProtocol());
         assertNotNull(read.getCredentials().getIdentity());
         assertEquals("~/.ssh/key.pem", read.getCredentials().getIdentity().getAbbreviatedPath());
     }
 
     @Test
     public void testReadPrivateKeyBookmark() throws Exception {
+        ProtocolFactory.register(new TestProtocol());
         HostPlistReader reader = new HostPlistReader();
         final Host read = reader.read(new Local(
                 "src/test/resources/Private Key.duck"));
         assertNotNull(read);
-        assertEquals(new SFTPProtocol(), read.getProtocol());
+        assertEquals(new TestProtocol(), read.getProtocol());
         assertNotNull(read.getCredentials().getIdentity());
         assertEquals("~/.ssh/key.pem", read.getCredentials().getIdentity().getAbbreviatedPath());
     }

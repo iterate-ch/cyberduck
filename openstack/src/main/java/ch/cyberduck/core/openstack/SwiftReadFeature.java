@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
@@ -56,15 +57,16 @@ public class SwiftReadFeature implements Read {
         try {
             final ContentLengthInputStream stream;
             if(status.isAppend()) {
-                if(status.getLength() > 0) {
+                final HttpRange range = HttpRange.withStatus(status);
+                if(-1 == range.getEnd()) {
                     stream = session.getClient().getObject(regionService.lookup(file),
                             containerService.getContainer(file).getName(), containerService.getKey(file),
-                            status.getOffset(), status.getLength());
+                            range.getStart());
                 }
                 else {
                     stream = session.getClient().getObject(regionService.lookup(file),
                             containerService.getContainer(file).getName(), containerService.getKey(file),
-                            status.getOffset());
+                            range.getStart(), range.getLength());
                 }
             }
             else {

@@ -21,7 +21,7 @@
 <plist version="1.0">
     <dict>
         <key>Protocol</key>
-        <string>s3</string>
+        <string>test</string>
         <key>Vendor</key>
         <string>eucalyptus</string>
         <key>Description</key>
