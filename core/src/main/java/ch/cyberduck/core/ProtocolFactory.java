@@ -39,11 +39,19 @@ public final class ProtocolFactory {
     /**
      * Ordered list of supported protocols.
      */
-    private static final Set<Protocol> protocols
+    private static final Set<Protocol> registered
             = new LinkedHashSet<Protocol>();
 
-    private ProtocolFactory() {
-        //
+    public static final ProtocolFactory global = new ProtocolFactory(registered);
+
+    private final Set<Protocol> protocols;
+
+    public ProtocolFactory(final Set<Protocol> protocols) {
+        this.protocols = protocols;
+    }
+
+    public Protocol find(final String identifier) {
+        return ProtocolFactory.forName(protocols, identifier);
     }
 
     public static void register(Protocol... protocols) {
@@ -105,8 +113,8 @@ public final class ProtocolFactory {
     }
 
     public static void register(final Protocol p) {
-        protocols.remove(p);
-        protocols.add(p);
+        registered.remove(p);
+        registered.add(p);
     }
 
     /**
@@ -114,7 +122,7 @@ public final class ProtocolFactory {
      */
     public static List<Protocol> getEnabledProtocols() {
         final List<Protocol> enabled = new ArrayList<Protocol>();
-        for(Protocol protocol : protocols) {
+        for(Protocol protocol : registered) {
             if(protocol.isEnabled()) {
                 enabled.add(protocol);
             }
@@ -123,24 +131,14 @@ public final class ProtocolFactory {
     }
 
     /**
-     * @param port Default port
-     * @return The standard protocol for this port number
-     */
-    public static Protocol getDefaultProtocol(final int port) {
-        for(Protocol protocol : getEnabledProtocols()) {
-            if(protocol.getDefaultPort() == port) {
-                return protocol;
-            }
-        }
-        log.warn(String.format("Cannot find default protocol for port %d", port));
-        return forName(PreferencesFactory.get().getProperty("connection.protocol.default"));
-    }
-
-    /**
      * @param identifier Provider name or hash code of protocol
      * @return Matching protocol or null if no match
      */
     public static Protocol forName(final String identifier) {
+        return ProtocolFactory.forName(registered, identifier);
+    }
+
+    public static Protocol forName(final Set<Protocol> protocols, final String identifier) {
         for(Protocol protocol : protocols) {
             if(protocol.getProvider().equals(identifier)) {
                 return protocol;
@@ -167,7 +165,11 @@ public final class ProtocolFactory {
      * @return Standard protocol for this scheme. This is ambigous
      */
     public static Protocol forScheme(final String scheme) {
-        for(Protocol protocol : getEnabledProtocols()) {
+        return ProtocolFactory.forScheme(registered, scheme);
+    }
+
+    public static Protocol forScheme(final Set<Protocol> protocols, final String scheme) {
+        for(Protocol protocol : protocols) {
             for(int k = 0; k < protocol.getSchemes().length; k++) {
                 if(protocol.getSchemes()[k].equals(scheme)) {
                     return protocol;

@@ -20,6 +20,7 @@ package ch.cyberduck.core.serializer.impl.dd;
 
 import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.serializer.ProfileDictionary;
 
 import com.dd.plist.NSDictionary;
@@ -29,18 +30,28 @@ import com.dd.plist.NSDictionary;
  */
 public class ProfilePlistReader extends PlistReader<Profile> {
 
-    private DeserializerFactory deserializer;
+    private final DeserializerFactory deserializer;
+    private final ProtocolFactory protocols;
 
     public ProfilePlistReader() {
-        this.deserializer = new DeserializerFactory();
+        this(new DeserializerFactory());
     }
 
     public ProfilePlistReader(final DeserializerFactory deserializer) {
+        this(ProtocolFactory.global, deserializer);
+    }
+
+    public ProfilePlistReader(final ProtocolFactory protocols) {
+        this(protocols, new DeserializerFactory());
+    }
+
+    public ProfilePlistReader(final ProtocolFactory protocols, final DeserializerFactory deserializer) {
         this.deserializer = deserializer;
+        this.protocols = protocols;
     }
 
     @Override
     public Profile deserialize(final NSDictionary dict) {
-        return new ProfileDictionary(deserializer).deserialize(dict);
+        return new ProfileDictionary(protocols, deserializer).deserialize(dict);
     }
 }
