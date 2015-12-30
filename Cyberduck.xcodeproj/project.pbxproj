@@ -282,7 +282,7 @@
 /* Begin PBXFileReference section */
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
-		470168150EED9EA8005E2CCF /* zh_CN */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = zh_CN; path = i18n/src/main/resources/i18n/src/main/resources/zh_CN.lproj/Archive.strings; sourceTree = "<group>"; };
+		470168150EED9EA8005E2CCF /* zh_CN */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = zh_CN; path = i18n/src/main/resources/zh_CN.lproj/Archive.strings; sourceTree = "<group>"; };
 		470168160EED9EA8005E2CCF /* sv */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sv; path = i18n/src/main/resources/sv.lproj/Archive.strings; sourceTree = "<group>"; };
 		470168170EED9EA8005E2CCF /* es */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = es; path = i18n/src/main/resources/es.lproj/Archive.strings; sourceTree = "<group>"; };
 		4701681A0EED9EA8005E2CCF /* pt_PT */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = pt_PT; path = i18n/src/main/resources/pt_PT.lproj/Archive.strings; sourceTree = "<group>"; };
