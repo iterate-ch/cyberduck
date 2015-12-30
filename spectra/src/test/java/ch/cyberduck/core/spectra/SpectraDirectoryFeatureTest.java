@@ -31,7 +31,6 @@ package ch.cyberduck.core.spectra;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -64,12 +63,12 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class SpectraDirectoryFeatureTest extends AbstractTestCase {
+public class SpectraDirectoryFeatureTest {
 
     @Test
     public void testCreateBucket() throws Exception {
-        final Host host = new Host(new SpectraProtocol(), properties.getProperty("spectra.hostname"), 8080, new Credentials(
-                properties.getProperty("spectra.user"), properties.getProperty("spectra.key")
+        final Host host = new Host(new SpectraProtocol(), System.getProperties().getProperty("spectra.hostname"), 8080, new Credentials(
+                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
@@ -92,8 +91,8 @@ public class SpectraDirectoryFeatureTest extends AbstractTestCase {
 
     @Test
     public void testCreatePlaceholder() throws Exception {
-        final Host host = new Host(new SpectraProtocol(), properties.getProperty("spectra.hostname"), 8080, new Credentials(
-                properties.getProperty("spectra.user"), properties.getProperty("spectra.key")
+        final Host host = new Host(new SpectraProtocol(), System.getProperties().getProperty("spectra.hostname"), 8080, new Credentials(
+                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());

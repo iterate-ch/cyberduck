@@ -31,7 +31,6 @@ package ch.cyberduck.core.spectra;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -67,12 +66,12 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class SpectraMultipleDeleteFeatureTest extends AbstractTestCase {
+public class SpectraMultipleDeleteFeatureTest {
 
     @Test
     public void testDeleteFile() throws Exception {
-        final Host host = new Host(new SpectraProtocol(), properties.getProperty("spectra.hostname"), 8080, new Credentials(
-                properties.getProperty("spectra.user"), properties.getProperty("spectra.key")
+        final Host host = new Host(new SpectraProtocol(), System.getProperties().getProperty("spectra.hostname"), 8080, new Credentials(
+                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
@@ -96,8 +95,8 @@ public class SpectraMultipleDeleteFeatureTest extends AbstractTestCase {
 
     @Test
     public void testDeletePlaceholder() throws Exception {
-        final Host host = new Host(new SpectraProtocol(), properties.getProperty("spectra.hostname"), 8080, new Credentials(
-                properties.getProperty("spectra.user"), properties.getProperty("spectra.key")
+        final Host host = new Host(new SpectraProtocol(), System.getProperties().getProperty("spectra.hostname"), 8080, new Credentials(
+                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
@@ -120,8 +119,8 @@ public class SpectraMultipleDeleteFeatureTest extends AbstractTestCase {
 
     @Test(expected = NotfoundException.class)
     public void testDeleteNotFoundBucket() throws Exception {
-        final Host host = new Host(new SpectraProtocol(), properties.getProperty("spectra.hostname"), 8080, new Credentials(
-                properties.getProperty("spectra.user"), properties.getProperty("spectra.key")
+        final Host host = new Host(new SpectraProtocol(), System.getProperties().getProperty("spectra.hostname"), 8080, new Credentials(
+                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());

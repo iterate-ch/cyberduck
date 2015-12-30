@@ -14,7 +14,6 @@
 
 package ch.cyberduck.core.spectra;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -34,12 +33,12 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.assertFalse;
 
-public class SpectraSessionTest extends AbstractTestCase {
+public class SpectraSessionTest {
 
     @Test(expected = LoginFailureException.class)
     public void testLoginFailure() throws Exception {
-        final Host host = new Host(new SpectraProtocol(), properties.getProperty("spectra.hostname"), 8080, new Credentials(
-                properties.getProperty("spectra.user"), "s"
+        final Host host = new Host(new SpectraProtocol(), System.getProperties().getProperty("spectra.hostname"), 8080, new Credentials(
+                System.getProperties().getProperty("spectra.user"), "s"
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
@@ -49,8 +48,8 @@ public class SpectraSessionTest extends AbstractTestCase {
 
     @Test
     public void testLogin() throws Exception {
-        final Host host = new Host(new SpectraProtocol(), properties.getProperty("spectra.hostname"), 8080, new Credentials(
-                properties.getProperty("spectra.user"), properties.getProperty("spectra.key")
+        final Host host = new Host(new SpectraProtocol(), System.getProperties().getProperty("spectra.hostname"), 8080, new Credentials(
+                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());

@@ -14,7 +14,6 @@
 
 package ch.cyberduck.core.spectra;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -52,12 +51,12 @@ import static org.junit.Assert.assertNotNull;
 /**
  * @version $Id$
  */
-public class SpectraReadFeatureTest extends AbstractTestCase {
+public class SpectraReadFeatureTest {
 
     @Test(expected = NotfoundException.class)
     public void testReadNotFound() throws Exception {
-        final Host host = new Host(new SpectraProtocol(), properties.getProperty("spectra.hostname"), 8080, new Credentials(
-                properties.getProperty("spectra.user"), properties.getProperty("spectra.key")
+        final Host host = new Host(new SpectraProtocol(), System.getProperties().getProperty("spectra.hostname"), 8080, new Credentials(
+                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
@@ -70,8 +69,8 @@ public class SpectraReadFeatureTest extends AbstractTestCase {
 
     @Test
     public void testRead() throws Exception {
-        final Host host = new Host(new SpectraProtocol(), properties.getProperty("spectra.hostname"), 8080, new Credentials(
-                properties.getProperty("spectra.user"), properties.getProperty("spectra.key")
+        final Host host = new Host(new SpectraProtocol(), System.getProperties().getProperty("spectra.hostname"), 8080, new Credentials(
+                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
@@ -102,8 +101,8 @@ public class SpectraReadFeatureTest extends AbstractTestCase {
 
     @Test
     public void testReadRange() throws Exception {
-        final Host host = new Host(new SpectraProtocol(), properties.getProperty("spectra.hostname"), 8080, new Credentials(
-                properties.getProperty("spectra.user"), properties.getProperty("spectra.key")
+        final Host host = new Host(new SpectraProtocol(), System.getProperties().getProperty("spectra.hostname"), 8080, new Credentials(
+                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
@@ -138,8 +137,8 @@ public class SpectraReadFeatureTest extends AbstractTestCase {
 
     @Test
     public void testReadRangeUnknownLength() throws Exception {
-        final Host host = new Host(new SpectraProtocol(), properties.getProperty("spectra.hostname"), 8080, new Credentials(
-                properties.getProperty("spectra.user"), properties.getProperty("spectra.key")
+        final Host host = new Host(new SpectraProtocol(), System.getProperties().getProperty("spectra.hostname"), 8080, new Credentials(
+                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
