@@ -58,4 +58,9 @@ public class SpectraProtocol extends AbstractProtocol {
     public String getPasswordPlaceholder() {
         return LocaleFactory.localizedString("Secret Access Key", "S3");
     }
+
+    @Override
+    public String disk() {
+        return String.format("%s.tiff", "ftp");
+    }
 }
