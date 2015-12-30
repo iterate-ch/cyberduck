@@ -28,7 +28,7 @@ public class RegexLocaleTest {
 
     @Test
     public void testLocalize() throws Exception {
-        final RegexLocale locale = new RegexLocale(new Local(new WorkdirPrefixer().normalize("..")));
+        final RegexLocale locale = new RegexLocale(new Local(new WorkdirPrefixer().normalize("../i18n/src/main/resources")));
         assertEquals("Download failed", locale.localize("Download failed", "Status"));
         locale.setDefault("fr");
         assertEquals("Échec du téléchargement", locale.localize("Download failed", "Status"));
