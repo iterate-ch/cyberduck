@@ -18,7 +18,6 @@ package ch.cyberduck.core.serializer.impl.dd;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.Protocol;
@@ -36,7 +35,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class ProfilePlistReaderTest extends AbstractTestCase {
+public class ProfilePlistReaderTest {
 
     @Test
     public void testDeserializeDropbox() throws Exception {

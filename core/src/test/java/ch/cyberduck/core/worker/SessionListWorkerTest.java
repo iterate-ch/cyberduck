@@ -1,7 +1,6 @@
 package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.AbstractController;
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -29,7 +28,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class SessionListWorkerTest extends AbstractTestCase {
+public class SessionListWorkerTest {
 
     @Test
     public void testRun() throws Exception {

@@ -18,9 +18,7 @@ package ch.cyberduck.core.serializer.impl.dd;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.UploadTransfer;
@@ -33,7 +31,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class TransferPlistReaderTest extends AbstractTestCase {
+public class TransferPlistReaderTest {
 
     @Test
     public void testDeserializeUpload() throws Exception {

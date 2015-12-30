@@ -18,7 +18,6 @@ package ch.cyberduck.core.transfer;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
@@ -42,7 +41,7 @@ import static org.junit.Assert.assertNotSame;
 /**
  * @version $Id$
  */
-public class CopyTransferTest extends AbstractTestCase {
+public class CopyTransferTest {
 
     @Test
     public void testSerialize() throws Exception {

@@ -32,7 +32,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class DownloadTransferTest extends AbstractTestCase {
+public class DownloadTransferTest {
 
     @Test
     public void testList() throws Exception {
@@ -340,7 +340,7 @@ public class DownloadTransferTest extends AbstractTestCase {
     @Test
     public void testStatus() throws Exception {
         final Path parent = new Path("t", EnumSet.of(Path.Type.file));
-            final Transfer t = new DownloadTransfer(new Host(new TestProtocol()), parent, new NullLocal(System.getProperty("java.io.tmpdir")));
+        final Transfer t = new DownloadTransfer(new Host(new TestProtocol()), parent, new NullLocal(System.getProperty("java.io.tmpdir")));
         assertFalse(t.isRunning());
         assertFalse(t.isReset());
         assertNull(t.getTimestamp());

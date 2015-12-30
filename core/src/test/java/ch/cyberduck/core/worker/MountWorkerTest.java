@@ -1,6 +1,5 @@
 package ch.cyberduck.core.worker;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -23,7 +22,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class MountWorkerTest extends AbstractTestCase {
+public class MountWorkerTest {
 
     @Test
     public void testRunInvalidDefaultPath() throws Exception {

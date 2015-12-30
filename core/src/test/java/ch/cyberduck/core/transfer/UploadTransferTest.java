@@ -35,7 +35,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class UploadTransferTest extends AbstractTestCase {
+public class UploadTransferTest {
 
     @Test
     public void testChildrenEmpty() throws Exception {
@@ -221,9 +221,7 @@ public class UploadTransferTest extends AbstractTestCase {
 
     @Test
     public void testPrepareUploadOverrideFilter() throws Exception {
-        final Host host = new Host(new TestProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
-        ));
+        final Host host = new Host(new TestProtocol());
         final Session<?> session = new NullSession(host) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
@@ -261,9 +259,7 @@ public class UploadTransferTest extends AbstractTestCase {
 
     @Test
     public void testPrepareUploadResumeFilter() throws Exception {
-        final Host host = new Host(new TestProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
-        ));
+        final Host host = new Host(new TestProtocol());
         final Session<?> session = new NullSession(host) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {

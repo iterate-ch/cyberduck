@@ -18,7 +18,6 @@ package ch.cyberduck.core.serializer.impl.dd;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
@@ -33,7 +32,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class HostPlistReaderTest extends AbstractTestCase {
+public class HostPlistReaderTest {
 
     @Test(expected = LocalAccessDeniedException.class)
     public void testDeserializeNoSuchFile() throws Exception {
