@@ -81,13 +81,14 @@ public class SpectraObjectListService implements ListService {
             String marker = null;
             do {
                 // Get the list of objects from the bucket that you want to perform the bulk get with.
-                final GetBucketResponse chunk = client.getBucket(
-                        new GetBucketRequest(PathNormalizer.name(URIEncoder.encode(bucket.getName())))
-                                .withDelimiter(String.valueOf(Path.DELIMITER))
-                                .withMaxKeys(preferences.getInteger("s3.listing.chunksize"))
-                                .withPrefix(prefix)
-                                .withNextMarker(marker)
-                );
+                final GetBucketRequest request = new GetBucketRequest(PathNormalizer.name(URIEncoder.encode(bucket.getName())))
+                        .withDelimiter(String.valueOf(Path.DELIMITER))
+                        .withMaxKeys(preferences.getInteger("s3.listing.chunksize"))
+                        .withPrefix(prefix);
+                if(marker != null) {
+                    request.withNextMarker(marker);
+                }
+                final GetBucketResponse chunk = client.getBucket(request);
                 final List<Contents> objects = chunk.getResult().getContentsList();
                 for(Contents object : objects) {
                     final String key = PathNormalizer.normalize(object.getKey());
@@ -99,17 +100,19 @@ public class SpectraObjectListService implements ListService {
                     children.add(file);
                 }
                 final List<CommonPrefixes> prefixes = chunk.getResult().getCommonPrefixes();
-                for(CommonPrefixes common : prefixes) {
-                    if(common.getPrefix().equals(String.valueOf(Path.DELIMITER))) {
-                        log.warn(String.format("Skipping prefix %s", common));
-                        continue;
+                if(null != prefixes) {
+                    for(CommonPrefixes common : prefixes) {
+                        if(common.getPrefix().equals(String.valueOf(Path.DELIMITER))) {
+                            log.warn(String.format("Skipping prefix %s", common));
+                            continue;
+                        }
+                        final String key = PathNormalizer.normalize(common.getPrefix());
+                        if(new Path(bucket, key, EnumSet.of(Path.Type.directory, Path.Type.placeholder)).equals(directory)) {
+                            continue;
+                        }
+                        final Path file = new Path(directory, PathNormalizer.name(key), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+                        children.add(file);
                     }
-                    final String key = PathNormalizer.normalize(common.getPrefix());
-                    if(new Path(bucket, key, EnumSet.of(Path.Type.directory, Path.Type.placeholder)).equals(directory)) {
-                        continue;
-                    }
-                    final Path file = new Path(directory, PathNormalizer.name(key), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
-                    children.add(file);
                 }
                 marker = chunk.getResult().getNextMarker();
                 listener.chunk(directory, children);
