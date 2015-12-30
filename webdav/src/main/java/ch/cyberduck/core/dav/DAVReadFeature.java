@@ -21,6 +21,7 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.Header;
@@ -51,12 +52,13 @@ public class DAVReadFeature implements Read {
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
         final List<Header> headers = new ArrayList<Header>();
         if(status.isAppend()) {
+            final HttpRange range = HttpRange.withStatus(status);
             final String header;
-            if(status.getLength() > 0) {
-                header = String.format("bytes=%d-%d", status.getOffset(), status.getOffset() + status.getLength());
+            if(-1 == range.getEnd()) {
+                header = String.format("bytes=%d-", range.getStart());
             }
             else {
-                header = String.format("bytes=%d-", status.getOffset());
+                header = String.format("bytes=%d-%d", range.getStart(), range.getEnd());
             }
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Add range header %s for file %s", header, file));
