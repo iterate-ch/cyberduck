@@ -9,7 +9,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class HostParserTest extends AbstractTestCase {
+public class HostParserTest {
 
     @Test
     public void testParseURLEmpty() {

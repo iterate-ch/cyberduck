@@ -10,7 +10,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class HostParserTest extends AbstractTestCase {
+public class HostParserTest {
 
     @Test
     public void testParseS3Scheme() throws Exception {
