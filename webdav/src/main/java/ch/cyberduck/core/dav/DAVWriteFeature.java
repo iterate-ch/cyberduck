@@ -77,7 +77,11 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
     public ResponseOutputStream<String> write(final Path file, final TransferStatus status) throws BackgroundException {
         final List<Header> headers = new ArrayList<Header>();
         if(status.isAppend()) {
-            final String header = HttpRange.withStatus(status).toHeader(HttpHeaders.CONTENT_RANGE);
+            final HttpRange range = HttpRange.withStatus(status);
+            // Content-Range entity-header is sent with a partial entity-body to specify where
+            // in the full entity-body the partial body should be applied.
+            final String header = String.format("bytes %d-%d/%d", range.getStart(), range.getEnd(),
+                    status.getOffset() + status.getLength());
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Add range header %s for file %s", header, file));
             }

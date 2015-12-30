@@ -16,8 +16,6 @@ package ch.cyberduck.core.http;
 
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.http.HttpHeaders;
-
 import java.util.Objects;
 
 public class HttpRange {
@@ -25,12 +23,12 @@ public class HttpRange {
     /**
      * Start byte offset
      */
-    private final long start;
+    private final Long start;
     /**
      * End byte inclusive
      */
-    private final long end;
-    private final long length;
+    private final Long end;
+    private final Long length;
 
     public static HttpRange withStatus(final TransferStatus status) {
         return byLength(status.getOffset(), status.getLength());
@@ -45,14 +43,13 @@ public class HttpRange {
     }
 
     public HttpRange(final long start, final long end) {
+        this(start, end, -1 == end ? -1 : end - start + 1);
+    }
+
+    public HttpRange(final Long start, final Long end, final Long length) {
         this.start = start;
         this.end = end;
-        if(-1 == end) {
-            this.length = -1;
-        }
-        else {
-            this.length = end - start + 1;
-        }
+        this.length = length;
     }
 
     public long getStart() {
@@ -67,27 +64,6 @@ public class HttpRange {
         return length;
     }
 
-    public String toHeader(final String header) {
-        switch(header) {
-            // Content-Range entity-header is sent with a partial entity-body to specify where
-            // in the full entity-body the partial body should be applied.
-            case HttpHeaders.CONTENT_RANGE:
-                if(-1 == length) {
-                    // Complete length unknown. An asterisk
-                    // character ("*") in place of the complete-length indicates that the
-                    // representation length was unknown when the header field was generated.
-                    return String.format("bytes %d-*/*", start);
-                }
-                return String.format("bytes %d-%d/%d", start, end, length);
-            case HttpHeaders.RANGE:
-                if(-1 == length) {
-                    return String.format("bytes=%d-%d", start, end);
-                }
-                return String.format("bytes=%d-", start);
-        }
-        return null;
-    }
-
     @Override
     public boolean equals(final Object o) {
         if(this == o) {
@@ -97,12 +73,13 @@ public class HttpRange {
             return false;
         }
         final HttpRange httpRange = (HttpRange) o;
-        return start == httpRange.start &&
-                end == httpRange.end;
+        return Objects.equals(start, httpRange.start) &&
+                Objects.equals(end, httpRange.end) &&
+                Objects.equals(length, httpRange.length);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(start, end);
+        return Objects.hash(start, end, length);
     }
 }

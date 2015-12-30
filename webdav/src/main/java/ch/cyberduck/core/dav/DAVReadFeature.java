@@ -52,7 +52,14 @@ public class DAVReadFeature implements Read {
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
         final List<Header> headers = new ArrayList<Header>();
         if(status.isAppend()) {
-            final String header = HttpRange.withStatus(status).toHeader(HttpHeaders.RANGE);
+            final HttpRange range = HttpRange.withStatus(status);
+            final String header;
+            if(-1 == range.getEnd()) {
+                header = String.format("bytes=%d-", range.getStart());
+            }
+            else {
+                header = String.format("bytes=%d-%d", range.getStart(), range.getEnd());
+            }
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Add range header %s for file %s", header, file));
             }
