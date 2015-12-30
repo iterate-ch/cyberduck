@@ -3,7 +3,7 @@
 <plist version="1.0">
     <dict>
         <key>Protocol</key>
-        <string>spectra-tls</string>
+        <string>spectra</string>
         <key>Vendor</key>
         <string>spectralogic</string>
         <key>Description</key>

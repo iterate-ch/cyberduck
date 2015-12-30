@@ -85,7 +85,7 @@ namespace Ch.Cyberduck.Ui.Controller
             StructureMapBootstrapper.Bootstrap();
             PreferencesFactory.set(new SettingsDictionaryPreferences());
             ProtocolFactory.register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(), new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(),
-                                             new GoogleStorageProtocol(), new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new SpectraTLSProtocol());
+                                             new GoogleStorageProtocol(), new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol());
 
             if (!Debugger.IsAttached)
             {

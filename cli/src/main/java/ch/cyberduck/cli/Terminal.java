@@ -42,7 +42,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.spectra.SpectraProtocol;
-import ch.cyberduck.core.spectra.SpectraTLSProtocol;
 import ch.cyberduck.core.ssl.CertificateStoreX509TrustManager;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.PreferencesX509KeyManager;
@@ -114,7 +113,7 @@ public class Terminal {
     public Terminal(final Preferences defaults, final Options options, final CommandLine input) {
         this.preferences = defaults;
         ProtocolFactory.register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(), new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(),
-                new GoogleStorageProtocol(), new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new SpectraTLSProtocol());
+                new GoogleStorageProtocol(), new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol());
         this.options = options;
         if(log.isInfoEnabled()) {
             log.info(String.format("Parsed options %s from input %s", options, input));
