@@ -17,7 +17,6 @@ package ch.cyberduck.core.shared;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
@@ -28,7 +27,6 @@ import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.ftp.FTPSession;
@@ -36,8 +34,6 @@ import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.sftp.SFTPProtocol;
-import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
@@ -57,27 +53,14 @@ import static org.junit.Assert.assertNotNull;
 /**
  * @version $Id$
  */
-public class DefaultDownloadFeatureTest extends AbstractTestCase {
+public class DefaultDownloadFeatureTest {
 
     @Test
     public void testTransferSegment() throws Exception {
-        {
-            final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                    properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
-            ));
-            final FTPSession session = new FTPSession(host);
-            this.run(session);
-        }
-        {
-            final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                    properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
-            ));
-            final SFTPSession session = new SFTPSession(host);
-            this.run(session);
-        }
-    }
-
-    private void run(final Session<?> session) throws Exception {
+        final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
+                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
+        ));
+        final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
 
