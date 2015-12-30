@@ -24,6 +24,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Delete;
@@ -57,7 +58,12 @@ public class SpectraWriteFeatureTest {
 
     @Test
     public void testOverwrite() throws Exception {
-        final Host host = new Host(new SpectraProtocol(), System.getProperties().getProperty("spectra.hostname"), 8080, new Credentials(
+        final Host host = new Host(new SpectraProtocol() {
+            @Override
+            public Scheme getScheme() {
+                return Scheme.http;
+            }
+        }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
                 System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
@@ -90,7 +96,12 @@ public class SpectraWriteFeatureTest {
 
     @Test
     public void testOverwriteZeroSized() throws Exception {
-        final Host host = new Host(new SpectraProtocol(), System.getProperties().getProperty("spectra.hostname"), 8080, new Credentials(
+        final Host host = new Host(new SpectraProtocol() {
+            @Override
+            public Scheme getScheme() {
+                return Scheme.http;
+            }
+        }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
                 System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
@@ -117,7 +128,12 @@ public class SpectraWriteFeatureTest {
 
     @Test
     public void testAppendBelowLimit() throws Exception {
-        final SpectraSession session = new SpectraSession(new Host(new SpectraProtocol()), new DisabledX509TrustManager(),
+        final SpectraSession session = new SpectraSession(new Host(new SpectraProtocol() {
+            @Override
+            public Scheme getScheme() {
+                return Scheme.http;
+            }
+        }), new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
         final S3WriteFeature feature = new S3WriteFeature(session, null, new Find() {
             @Override
@@ -146,7 +162,12 @@ public class SpectraWriteFeatureTest {
 
     @Test
     public void testSize() throws Exception {
-        final S3Session session = new SpectraSession(new Host(new SpectraProtocol()), new DisabledX509TrustManager(),
+        final S3Session session = new SpectraSession(new Host(new SpectraProtocol() {
+            @Override
+            public Scheme getScheme() {
+                return Scheme.http;
+            }
+        }), new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
         final S3WriteFeature feature = new S3WriteFeature(session, null, new Find() {
             @Override

@@ -22,6 +22,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Location;
@@ -50,7 +51,12 @@ public class SpectraDirectoryFeatureTest {
 
     @Test
     public void testCreateBucket() throws Exception {
-        final Host host = new Host(new SpectraProtocol(), System.getProperties().getProperty("spectra.hostname"), 8080, new Credentials(
+        final Host host = new Host(new SpectraProtocol() {
+            @Override
+            public Scheme getScheme() {
+                return Scheme.http;
+            }
+        }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
                 System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
@@ -74,7 +80,12 @@ public class SpectraDirectoryFeatureTest {
 
     @Test
     public void testCreatePlaceholder() throws Exception {
-        final Host host = new Host(new SpectraProtocol(), System.getProperties().getProperty("spectra.hostname"), 8080, new Credentials(
+        final Host host = new Host(new SpectraProtocol() {
+            @Override
+            public Scheme getScheme() {
+                return Scheme.http;
+            }
+        }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
                 System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),

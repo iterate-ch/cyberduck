@@ -23,11 +23,14 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -40,7 +43,12 @@ public class SpectraSessionTest {
 
     @Test(expected = LoginFailureException.class)
     public void testLoginFailure() throws Exception {
-        final Host host = new Host(new SpectraProtocol(), System.getProperties().getProperty("spectra.hostname"), 8080, new Credentials(
+        final Host host = new Host(new SpectraProtocol() {
+            @Override
+            public Scheme getScheme() {
+                return Scheme.http;
+            }
+        }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
                 System.getProperties().getProperty("spectra.user"), "s"
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
@@ -51,7 +59,13 @@ public class SpectraSessionTest {
 
     @Test
     public void testLogin() throws Exception {
-        final Host host = new Host(new SpectraProtocol(), System.getProperties().getProperty("spectra.hostname"), 8080, new Credentials(
+        Logger.getLogger("org.apache.http.wire").setLevel(Level.DEBUG);
+        final Host host = new Host(new SpectraProtocol() {
+            @Override
+            public Scheme getScheme() {
+                return Scheme.http;
+            }
+        }, System.getProperties().getProperty("spectra.hostname"), 8080, new Credentials(
                 System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
