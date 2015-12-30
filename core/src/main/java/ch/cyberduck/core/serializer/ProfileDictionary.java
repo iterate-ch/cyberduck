@@ -32,13 +32,23 @@ import org.apache.log4j.Logger;
 public class ProfileDictionary {
     private static final Logger log = Logger.getLogger(ProfileDictionary.class);
 
-    private DeserializerFactory deserializer;
+    private final DeserializerFactory deserializer;
+    private final ProtocolFactory protocols;
 
     public ProfileDictionary() {
-        this.deserializer = new DeserializerFactory();
+        this(ProtocolFactory.global);
+    }
+
+    public ProfileDictionary(final ProtocolFactory protocols) {
+        this(protocols, new DeserializerFactory());
     }
 
     public ProfileDictionary(final DeserializerFactory deserializer) {
+        this(ProtocolFactory.global, deserializer);
+    }
+
+    public ProfileDictionary(final ProtocolFactory protocols, final DeserializerFactory deserializer) {
+        this.protocols = protocols;
         this.deserializer = deserializer;
     }
 
@@ -46,7 +56,7 @@ public class ProfileDictionary {
         final Deserializer<String> dict = deserializer.create(serialized);
         final String protocol = dict.stringForKey("Protocol");
         if(StringUtils.isNotBlank(protocol)) {
-            final Protocol parent = ProtocolFactory.forName(protocol);
+            final Protocol parent = protocols.find(protocol);
             if(null == parent) {
                 log.error(String.format("Unknown protocol %s in profile", protocol));
                 return null;

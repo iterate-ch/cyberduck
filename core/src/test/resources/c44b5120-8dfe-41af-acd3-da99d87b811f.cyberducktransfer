@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<plist>
+  <dict>
+    <key>Kind</key>
+    <string>1</string>
+    <key>Host</key>
+    <dict>
+      <key>Protocol</key>
+      <string>test</string>
+      <key>Provider</key>
+      <string>rackspace</string>
+      <key>Nickname</key>
+      <string>Rackspace Cloudfiles</string>
+      <key>UUID</key>
+      <string>5bd92e36-8263-4138-a00b-242bb6bca8ba</string>
+      <key>Hostname</key>
+      <string>identity.api.rackspacecloud.com</string>
+      <key>Port</key>
+      <string>443</string>
+      <key>Username</key>
+      <string>rackcloud02</string>
+      <key>Path</key>
+      <string>/</string>
+      <key>Access Timestamp</key>
+      <string>1383924960218</string>
+    </dict>
+    <key>Roots</key>
+    <array>
+      <dict>
+        <key>Remote</key>
+        <string>/test.cyberduck.ch/bookmarks_en.png</string>
+        <key>Local</key>
+        <string>C:\Users\Yves Langisch\Pictures\bookmarks_en.png</string>
+        <key>Local Dictionary</key>
+        <dict>
+          <key>Path</key>
+          <string>C:\Users\Yves Langisch\Pictures\bookmarks_en.png</string>
+        </dict>
+        <key>Attributes</key>
+        <dict>
+          <key>Type</key>
+          <string>1</string>
+          <key>Duplicate</key>
+          <string>false</string>
+        </dict>
+      </dict>
+    </array>
+    <key>UUID</key>
+    <string>1c65e96c-b67b-490f-8476-f7c9a0afa907</string>
+    <key>Size</key>
+    <string>0</string>
+    <key>Current</key>
+    <string>0</string>
+    <key>Timestamp</key>
+    <string>1383924966131</string>
+    <key>Bandwidth</key>
+    <string>-1.0</string>
+  </dict>
+</plist>

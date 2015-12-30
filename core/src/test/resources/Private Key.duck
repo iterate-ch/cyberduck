@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>Access Timestamp</key>
+        <string>1381321675377</string>
+        <key>Hostname</key>
+        <string>h</string>
+        <key>Private Key File</key>
+        <string>~/.ssh/key.pem1</string>
+        <key>Private Key File Dictionary</key>
+        <dict>
+            <key>Path</key>
+            <string>~/.ssh/key.pem</string>
+        </dict>
+        <key>Protocol</key>
+        <string>test</string>
+        <key>UUID</key>
+        <string>301b0b07-09dd-4fad-ba3a-2cc17efe585e</string>
+        <key>Username</key>
+        <string>ec2-user</string>
+    </dict>
+</plist>
