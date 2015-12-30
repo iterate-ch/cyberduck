@@ -18,7 +18,6 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
@@ -31,16 +30,13 @@ import java.lang.reflect.InvocationTargetException;
  */
 public final class LocalFactory extends Factory<Local> {
 
-    private static final Preferences preferences
-            = PreferencesFactory.get();
-
     @Override
     protected Local create() {
-        return this.create(preferences.getProperty("local.user.home"));
+        return this.create(PreferencesFactory.get().getProperty("local.user.home"));
     }
 
     protected Local create(final String path) {
-        final String clazz = preferences.getProperty("factory.local.class");
+        final String clazz = PreferencesFactory.get().getProperty("factory.local.class");
         if(null == clazz) {
             throw new FactoryException(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
         }
@@ -55,7 +51,7 @@ public final class LocalFactory extends Factory<Local> {
     }
 
     protected Local create(final Local parent, final String path) {
-        final String clazz = preferences.getProperty("factory.local.class");
+        final String clazz = PreferencesFactory.get().getProperty("factory.local.class");
         if(null == clazz) {
             throw new FactoryException(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
         }
