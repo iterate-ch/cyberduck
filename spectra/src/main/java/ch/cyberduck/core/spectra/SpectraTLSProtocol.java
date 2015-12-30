@@ -26,7 +26,7 @@ public class SpectraTLSProtocol extends SpectraProtocol {
 
     @Override
     public String getDescription() {
-        return LocaleFactory.localizedString("Spectra S3 (TLS)", "S3");
+        return LocaleFactory.localizedString("Spectra BlackPearl Deep Storage Gateway (HTTPS)", "S3");
     }
 
     @Override

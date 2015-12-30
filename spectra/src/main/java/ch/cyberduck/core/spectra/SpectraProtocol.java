@@ -26,7 +26,7 @@ public class SpectraProtocol extends AbstractProtocol {
 
     @Override
     public String getDescription() {
-        return LocaleFactory.localizedString("Spectra S3", "S3");
+        return LocaleFactory.localizedString("Spectra BlackPearl Deep Storage Gateway (HTTP)", "S3");
     }
 
     @Override
