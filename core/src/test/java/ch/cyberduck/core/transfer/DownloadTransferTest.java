@@ -130,9 +130,7 @@ public class DownloadTransferTest {
 
     @Test
     public void testPrepareDownloadOverrideFilter() throws Exception {
-        final Host host = new Host(new TestProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
-        ));
+        final Host host = new Host(new TestProtocol());
         final Session<?> session = new NullSession(host) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
@@ -175,9 +173,7 @@ public class DownloadTransferTest {
 
     @Test
     public void testPrepareDownloadResumeFilter() throws Exception {
-        final Host host = new Host(new TestProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
-        ));
+        final Host host = new Host(new TestProtocol());
         final Session<?> session = new NullSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
