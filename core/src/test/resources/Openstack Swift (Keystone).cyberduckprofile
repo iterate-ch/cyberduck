@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>Protocol</key>
+        <string>test</string>
+        <key>Vendor</key>
+        <string>cyberduck</string>
+        <key>Context</key>
+        <string>/v2.0/tokens</string>
+        <key>Description</key>
+        <string>Openstack Swift (Keystone 2.0)</string>
+        <key>Username Placeholder</key>
+        <string>Tenant ID:Access Key</string>
+        <key>Password Placeholder</key>
+        <string>Secret Key</string>
+    </dict>
+</plist>

@@ -1,18 +1,12 @@
 package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.dav.DAVSSLProtocol;
-import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.filter.DownloadRegexFilter;
-import ch.cyberduck.core.ftp.FTPSession;
-import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultDownloadFeature;
-import ch.cyberduck.core.NullLocal;
-import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.transfer.download.AbstractDownloadFilter;
 import ch.cyberduck.core.transfer.download.DownloadFilterOptions;
 import ch.cyberduck.core.transfer.download.DownloadRegexPriorityComparator;
@@ -38,7 +32,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class DownloadTransferTest extends AbstractTestCase {
+public class DownloadTransferTest {
 
     @Test
     public void testList() throws Exception {
@@ -120,13 +114,10 @@ public class DownloadTransferTest extends AbstractTestCase {
 
     @Test
     public void testPrepareDownloadHttp() throws Exception {
-        final Host host = new Host(new DAVSSLProtocol(), "update.cyberduck.io", new Credentials(
+        final Host host = new Host(new TestProtocol(), "update.cyberduck.io", new Credentials(
                 PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
-        final DAVSession session = new DAVSession(host);
-        final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener());
-        service.connect(session, PathCache.empty());
+        final Session<?> session = new NullSession(host);
         final Path test = new Path("/Cyberduck-4.6.zip", EnumSet.of(Path.Type.file));
         final Transfer transfer = new DownloadTransfer(new Host(new TestProtocol()), test, new NullLocal(UUID.randomUUID().toString(), "transfer"));
         final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions(),
@@ -139,10 +130,18 @@ public class DownloadTransferTest extends AbstractTestCase {
 
     @Test
     public void testPrepareDownloadOverrideFilter() throws Exception {
-        final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
-        ));
-        final FTPSession session = new FTPSession(host);
+        final Host host = new Host(new TestProtocol());
+        final Session<?> session = new NullSession(host) {
+            @Override
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
+                if(file.equals(new Path("/", EnumSet.of(Path.Type.volume, Path.Type.directory)))) {
+                    return new AttributedList<>(Collections.singletonList(new Path("/transfer", EnumSet.of(Path.Type.directory))));
+                }
+                final Path f = new Path("/transfer/test", EnumSet.of(Path.Type.file));
+                f.attributes().setSize(5L);
+                return new AttributedList<>(Collections.singletonList(f));
+            }
+        };
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path("/transfer", EnumSet.of(Path.Type.directory));
@@ -174,10 +173,8 @@ public class DownloadTransferTest extends AbstractTestCase {
 
     @Test
     public void testPrepareDownloadResumeFilter() throws Exception {
-        final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
-        ));
-        final FTPSession session = new FTPSession(host);
+        final Host host = new Host(new TestProtocol());
+        final Session<?> session = new NullSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path("/transfer/test", EnumSet.of(Path.Type.file));
@@ -339,7 +336,7 @@ public class DownloadTransferTest extends AbstractTestCase {
     @Test
     public void testStatus() throws Exception {
         final Path parent = new Path("t", EnumSet.of(Path.Type.file));
-            final Transfer t = new DownloadTransfer(new Host(new TestProtocol()), parent, new NullLocal(System.getProperty("java.io.tmpdir")));
+        final Transfer t = new DownloadTransfer(new Host(new TestProtocol()), parent, new NullLocal(System.getProperty("java.io.tmpdir")));
         assertFalse(t.isRunning());
         assertFalse(t.isReset());
         assertNull(t.getTimestamp());

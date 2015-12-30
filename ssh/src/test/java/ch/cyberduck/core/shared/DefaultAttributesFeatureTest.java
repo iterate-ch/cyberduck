@@ -5,7 +5,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPSession;
-import ch.cyberduck.core.NullSession;
 
 import org.junit.Test;
 
@@ -19,12 +18,12 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class DefaultAttributesFeatureTest extends AbstractTestCase {
+public class DefaultAttributesFeatureTest {
 
     @Test(expected = NotfoundException.class)
     public void testNotFound() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
+                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -35,7 +34,7 @@ public class DefaultAttributesFeatureTest extends AbstractTestCase {
     @Test
     public void testAttributes() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
+                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final AtomicBoolean set = new AtomicBoolean();
         final SFTPSession session = new SFTPSession(host) {

@@ -6,7 +6,7 @@
     <key>Host</key>
     <dict>
       <key>Protocol</key>
-      <string>swift</string>
+      <string>test</string>
       <key>Provider</key>
       <string>rackspace</string>
       <key>Nickname</key>

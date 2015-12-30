@@ -34,8 +34,24 @@ import java.util.regex.Pattern;
 public final class HostParser {
     private static final Logger log = Logger.getLogger(HostParser.class);
 
-    private HostParser() {
-        //
+    private static final Preferences preferences = PreferencesFactory.get();
+
+    /**
+     * Default scheme if not in URI
+     */
+    private final Protocol scheme;
+
+    public HostParser() {
+        this(ProtocolFactory.forName(
+                preferences.getProperty("connection.protocol.default")));
+    }
+
+    public HostParser(final Protocol scheme) {
+        this.scheme = scheme;
+    }
+
+    public Host get(final String url) {
+        return HostParser.parse(scheme, url);
     }
 
     /**
@@ -45,6 +61,11 @@ public final class HostParser {
      * @return Bookmark
      */
     public static Host parse(final String url) {
+        return parse(ProtocolFactory.forName(
+                preferences.getProperty("connection.protocol.default")), url);
+    }
+
+    public static Host parse(final Protocol scheme, final String url) {
         final String input = url.trim();
         int begin = 0;
         int cut;
@@ -55,14 +76,10 @@ public final class HostParser {
             if(null == protocol) {
                 protocol = ProtocolFactory.forName(input.substring(begin, cut));
             }
-            if(null != protocol) {
-                begin += cut - begin + 3;
-            }
+            begin += cut - begin + 3;
         }
-        final Preferences preferences = PreferencesFactory.get();
         if(null == protocol) {
-            protocol = ProtocolFactory.forName(
-                    preferences.getProperty("connection.protocol.default"));
+            protocol = scheme;
         }
         String username;
         String password = null;

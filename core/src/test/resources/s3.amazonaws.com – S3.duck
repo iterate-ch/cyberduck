@@ -11,6 +11,6 @@
 	<key>Port</key>
 	<string>443</string>
 	<key>Protocol</key>
-	<string>s3</string>
+	<string>test</string>
 </dict>
 </plist>

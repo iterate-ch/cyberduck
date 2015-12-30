@@ -7,9 +7,14 @@
         <key>Hostname</key>
         <string>h</string>
         <key>Private Key File</key>
-        <string>~/.ssh/key.pem</string>
+        <string>~/.ssh/key.pem1</string>
+        <key>Private Key File Dictionary</key>
+        <dict>
+            <key>Path</key>
+            <string>~/.ssh/key.pem</string>
+        </dict>
         <key>Protocol</key>
-        <string>sftp</string>
+        <string>test</string>
         <key>UUID</key>
         <string>301b0b07-09dd-4fad-ba3a-2cc17efe585e</string>
         <key>Username</key>

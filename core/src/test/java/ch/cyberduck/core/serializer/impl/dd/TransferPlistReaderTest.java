@@ -18,14 +18,16 @@ package ch.cyberduck.core.serializer.impl.dd;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.UploadTransfer;
 
 import org.junit.Test;
+
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -33,28 +35,26 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class TransferPlistReaderTest extends AbstractTestCase {
+public class TransferPlistReaderTest {
 
     @Test
     public void testDeserializeUpload() throws Exception {
-        final Transfer t = new TransferPlistReader().read(
+        final Transfer t = new TransferPlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol()))).read(
                 new Local("src/test/resources/c44b5120-8dfe-41af-acd3-da99d87b811f.cyberducktransfer")
         );
         assertTrue(t instanceof UploadTransfer);
         assertEquals("identity.api.rackspacecloud.com", t.getHost().getHostname());
-        assertEquals(Protocol.Type.swift, t.getHost().getProtocol().getType());
         assertEquals("/test.cyberduck.ch/bookmarks_en.png", t.getRoot().remote.getAbsolute());
         assertEquals("C:\\Users\\Yves Langisch\\Pictures\\bookmarks_en.png", t.getRoot().local.getAbsolute());
     }
 
     @Test
     public void testDeserializeDownload() throws Exception {
-        final Transfer t = new TransferPlistReader().read(
+        final Transfer t = new TransferPlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol()))).read(
                 new Local("src/test/resources/fcea1809-1d75-42f1-92b5-99b38bc1d63e.cyberducktransfer")
         );
         assertTrue(t instanceof DownloadTransfer);
         assertEquals("s3.amazonaws.com", t.getHost().getHostname());
-        assertEquals(Protocol.Type.s3, t.getHost().getProtocol().getType());
         assertEquals("/cyberduck/Cyberduck-3.3.zip", t.getRoot().remote.getAbsolute());
         assertEquals("C:\\Users\\Yves Langisch\\Desktop\\Cyberduck-3.3.zip", t.getRoot().local.getAbsolute());
     }
