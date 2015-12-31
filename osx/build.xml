@@ -113,7 +113,7 @@
             <replacefilter token="${ARCHIVE}"
                            value="https://update.cyberduck.io/${sparkle.feed}/${app.name}-${revision}.tar.gz"/>
             <replacefilter token="${CHANGELOG}" value="https://version.cyberduck.io/${sparkle.feed}/changelog.html"/>
-            <replacefilter token="${REVISION}" value="${revision}"/>
+            <replacefilter token="${REVISION}" value="${git.revision}"/>
             <replacefilter token="${VERSION}" value="${version}"/>
             <replacefilter token="${DSASIGNATURE}" value="${signature.dsa}"/>
             <replacefilter token="${COPYRIGHT}" value="${copyright}"/>
