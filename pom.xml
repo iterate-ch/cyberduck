@@ -233,6 +233,7 @@
                                     <property name="home" value="${main.basedir}"/>
                                     <property name="version" value="${project.version}"/>
                                     <property name="revision" value="${git.commitsCount}"/>
+                                    <property name="git.revision" value="${git.revision}"/>
                                     <ant antfile="${project.basedir}/build.xml" target="build" dir="."/>
                                 </tasks>
                             </configuration>
@@ -253,6 +254,7 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.19</version>
                     <configuration>
+                        <systemPropertiesFile>${env.HOME}/test.properties</systemPropertiesFile>
                         <systemPropertyVariables>
                             <java.library.path>${project.build.directory}</java.library.path>
                             <jna.library.path>${project.build.directory}</jna.library.path>
@@ -265,6 +267,7 @@
                     <artifactId>maven-failsafe-plugin</artifactId>
                     <version>2.19</version>
                     <configuration>
+                        <systemPropertiesFile>${env.HOME}/test.properties</systemPropertiesFile>
                         <systemPropertyVariables>
                             <java.library.path>${project.build.directory}</java.library.path>
                             <jna.library.path>${project.build.directory}</jna.library.path>
@@ -378,9 +381,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <systemPropertiesFile>${env.HOME}/test.properties</systemPropertiesFile>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
