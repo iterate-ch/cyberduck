@@ -58,7 +58,7 @@
     </target>
 
     <target name="build" depends="version,spotlight">
-        <echo message="Building ${app.bundle}"/>
+        <echo message="Building ${app.bundle} with configuration ${xcode.configuration}"/>
         <local name="build.settings"/>
         <property name="build.settings"
                   value="${build.xcodeoptions} VERSION=${version} REVISION=${revision} SPARKLEFEED='https://version.cyberduck.io/${sparkle.feed}/changelog.rss' SPARKLE_KEY_PREFIX='${sparkle.key.prefix}' COPYRIGHT='${copyright}'"/>

@@ -39,7 +39,7 @@
     <import file="../../archive.xml"/>
 
     <target name="build" depends="version,source-tar" if="platform.mac">
-        <echo message="Building ${cli.bundle}"/>
+        <echo message="Building ${cli.bundle} with configuration ${xcode.configuration}"/>
         <local name="build.settings"/>
         <property name="build.settings"
                   value="${build.xcodeoptions} VERSION=${version} REVISION=${revision} COPYRIGHT='${copyright}'"/>

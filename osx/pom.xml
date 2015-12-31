@@ -186,20 +186,6 @@
                 </dependency>
             </dependencies>
         </profile>
-        <profile>
-            <id>sparkle</id>
-            <!-- activate profile for non-Jenkins builds -->
-            <activation>
-                <property>
-                    <name>!JENKINS_HOME</name>
-                </property>
-            </activation>
-            <properties>
-                <xcode.configuration>Release</xcode.configuration>
-                <sparkle.feed>/dev/null</sparkle.feed>
-                <sparkle.key.prefix>SU</sparkle.key.prefix>
-            </properties>
-        </profile>
     </profiles>
 
     <dependencies>
