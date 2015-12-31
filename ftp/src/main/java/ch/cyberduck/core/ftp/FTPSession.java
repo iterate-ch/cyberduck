@@ -122,12 +122,6 @@ public class FTPSession extends SSLSession<FTPClient> {
     @Override
     protected void logout() throws BackgroundException {
         try {
-            if(host.getProtocol().isSecure()) {
-                // The client and the server must share knowledge that the connection is ending in order to avoid a truncation attack.
-                // Either party may initiate the exchange of closing messages.
-                log.warn("Skip logout for SSL connection to workaround hang in closing socket");
-                return;
-            }
             client.logout();
         }
         catch(IOException e) {
