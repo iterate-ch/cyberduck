@@ -65,7 +65,7 @@
         <echo message="Building ${app.bundle}"/>
         <local name="build.settings"/>
         <property name="build.settings"
-                  value="${build.xcodeoptions} VERSION=${version} REVISION=${revision} SPARKLEFEED='${sparkle.feed}' SPARKLE_KEY_PREFIX='${sparkle.key.prefix}' COPYRIGHT='${copyright}'"/>
+                  value="${build.xcodeoptions} VERSION=${version} REVISION=${revision} SPARKLEFEED='https://version.cyberduck.io/${sparkle.feed}/changelog.rss' SPARKLE_KEY_PREFIX='${sparkle.key.prefix}' COPYRIGHT='${copyright}'"/>
         <echo message="Build settings ${build.settings}"/>
         <exec dir="${home}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
             <arg line="xcodebuild -project ${home}/'Cyberduck.xcodeproj' -configuration '${xcode.configuration}' -target '${xcode.target}' ${build.settings}"/>
