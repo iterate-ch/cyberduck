@@ -155,14 +155,21 @@ public class LoginConnectionService implements ConnectionService {
     }
 
     private void close(final Session session) {
-        try {
-            listener.message(MessageFormat.format(LocaleFactory.localizedString("Disconnecting {0}", "Status"),
-                    session.getHost().getHostname()));
-            // Close the underlying socket first
-            session.interrupt();
+        listener.message(MessageFormat.format(LocaleFactory.localizedString("Disconnecting {0}", "Status"),
+                session.getHost().getHostname()));
+        if(session.getHost().getProtocol().getType() == Protocol.Type.ftp) {
+            // The client and the server must share knowledge that the connection is ending in order to avoid a truncation attack.
+            // Either party may initiate the exchange of closing messages.
+            log.warn("Skip disconnect for SSL connection to workaround hang in closing socket");
         }
-        catch(BackgroundException e) {
-            log.warn(String.format("Ignore failure closing connection %s", e.getMessage()));
+        else {
+            // Close the underlying socket first
+            try {
+                session.interrupt();
+            }
+            catch(BackgroundException e) {
+                log.warn(String.format("Ignore failure closing connection %s", e.getMessage()));
+            }
         }
     }
 
