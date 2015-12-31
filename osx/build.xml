@@ -26,15 +26,11 @@
     <property name="app.name" value="Cyberduck"/>
     <property name="app.bundle" value="${build}/${app.name}.app"/>
 
-    <property name="sparkle.key.prefix" value="SU"/>
-    <property name="sparkle.feed" value="/dev/null"/>
-
     <property name="spotlight" value="${home}/Spotlight Importer"/>
 
-    <property name="app.runtime.system.min" value="10.7"/>
+    <property name="app.runtime.system.min" value="10.7.3"/>
     <property name="build.xcodeoptions" value="SYMROOT=${build} SDKROOT=macosx MACOSX_DEPLOYMENT_TARGET=${app.runtime.system.min}"/>
 
-    <property name="xcode.configuration" value="Release"/>
     <property name="xcode.target" value="app"/>
 
     <import file="../runtime.xml"/>

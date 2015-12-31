@@ -142,10 +142,9 @@
                                         <property name="version" value="${project.version}"/>
                                         <property name="revision" value="${git.commitsCount}"/>
                                         <property name="git.revision" value="${git.revision}"/>
-                                        <property name="xcode.target" value="app"/>
                                         <!-- 'Release' or 'Mac App Store' -->
                                         <property name="xcode.configuration" value="${xcode.configuration}"/>
-                                        <property name="app.runtime.system.min" value="${app.runtime.system.min}"/>
+                                        <property name="sparkle.feed" value="${sparkle.feed}"/>
                                         <property name="sparkle.key.prefix" value="${sparkle.key.prefix}"/>
                                         <ant antfile="${project.basedir}/build.xml" target="build" dir="."/>
                                     </tasks>
@@ -163,11 +162,10 @@
                                         <property name="version" value="${project.version}"/>
                                         <property name="revision" value="${git.commitsCount}"/>
                                         <property name="git.revision" value="${git.revision}"/>
-                                        <property name="xcode.target" value="app"/>
                                         <!-- 'Release' or 'Mac App Store' -->
                                         <property name="xcode.configuration" value="${xcode.configuration}"/>
-                                        <property name="app.runtime.system.min" value="${app.runtime.system.min}"/>
                                         <property name="sparkle.feed" value="${sparkle.feed}"/>
+                                        <property name="sparkle.key.prefix" value="${sparkle.key.prefix}"/>
                                         <property name="codesign.certificate" value="${codesign.certificate}"/>
                                         <property name="codesign.arg" value="${codesign.arg}"/>
                                         <ant antfile="${project.basedir}/build.xml" target="package" dir="."/>
@@ -197,9 +195,9 @@
                 </property>
             </activation>
             <properties>
-                <app.runtime.system.min>10.8.3</app.runtime.system.min>
                 <xcode.configuration>Release</xcode.configuration>
                 <sparkle.feed>/dev/null</sparkle.feed>
+                <sparkle.key.prefix>SU</sparkle.key.prefix>
             </properties>
         </profile>
     </profiles>
