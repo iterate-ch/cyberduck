@@ -101,6 +101,7 @@
                        select="\1.\2.\3"/>
         <echo message="Version ${version}"/>
         <echo message="Revision ${revision}"/>
+        <echo message="Hash ${git.revision}"/>
     </target>
 
     <target name="timestamp">

@@ -10,8 +10,10 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPSession;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
@@ -20,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
+@Category(IntegrationTest.class)
 public class DefaultHomeFinderServiceTest {
 
     @Test

@@ -26,15 +26,11 @@
     <property name="app.name" value="Cyberduck"/>
     <property name="app.bundle" value="${build}/${app.name}.app"/>
 
-    <property name="sparkle.key.prefix" value="SU"/>
-    <property name="sparkle.feed" value="/dev/null"/>
-
     <property name="spotlight" value="${home}/Spotlight Importer"/>
 
-    <property name="app.runtime.system.min" value="10.7"/>
+    <property name="app.runtime.system.min" value="10.7.3"/>
     <property name="build.xcodeoptions" value="SYMROOT=${build} SDKROOT=macosx MACOSX_DEPLOYMENT_TARGET=${app.runtime.system.min}"/>
 
-    <property name="xcode.configuration" value="Release"/>
     <property name="xcode.target" value="app"/>
 
     <import file="../runtime.xml"/>
@@ -62,10 +58,10 @@
     </target>
 
     <target name="build" depends="version,spotlight">
-        <echo message="Building ${app.bundle}"/>
+        <echo message="Building ${app.bundle} with configuration ${xcode.configuration}"/>
         <local name="build.settings"/>
         <property name="build.settings"
-                  value="${build.xcodeoptions} VERSION=${version} REVISION=${revision} SPARKLEFEED='${sparkle.feed}' SPARKLE_KEY_PREFIX='${sparkle.key.prefix}' COPYRIGHT='${copyright}'"/>
+                  value="${build.xcodeoptions} VERSION=${version} REVISION=${revision} SPARKLEFEED='https://version.cyberduck.io/${sparkle.feed}/changelog.rss' SPARKLE_KEY_PREFIX='${sparkle.key.prefix}' COPYRIGHT='${copyright}'"/>
         <echo message="Build settings ${build.settings}"/>
         <exec dir="${home}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
             <arg line="xcodebuild -project ${home}/'Cyberduck.xcodeproj' -configuration '${xcode.configuration}' -target '${xcode.target}' ${build.settings}"/>

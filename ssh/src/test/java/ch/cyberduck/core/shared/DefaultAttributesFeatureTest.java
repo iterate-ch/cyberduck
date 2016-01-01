@@ -5,8 +5,10 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPSession;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -18,6 +20,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
+@Category(IntegrationTest.class)
 public class DefaultAttributesFeatureTest {
 
     @Test(expected = NotfoundException.class)
