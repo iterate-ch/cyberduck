@@ -70,6 +70,7 @@ public interface Protocol extends Comparable<Protocol> {
                 return true;
             }
         },
+        googledrive,
         swift,
         dav,
         azure {
