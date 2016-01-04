@@ -68,15 +68,15 @@ public class FinderLocal extends Local {
     private FinderLocalAttributes attributes
             = new FinderLocalAttributes(this);
 
-    public FinderLocal(final Local parent, final String name) {
+    public FinderLocal(final Local parent, final String name) throws LocalAccessDeniedException {
         super(parent, name);
     }
 
-    public FinderLocal(final String parent, final String name) {
+    public FinderLocal(final String parent, final String name) throws LocalAccessDeniedException {
         super(parent, name);
     }
 
-    public FinderLocal(final String path) {
+    public FinderLocal(final String path) throws LocalAccessDeniedException {
         super(resolveAlias(new TildeExpander().expand(path)));
     }
 
@@ -256,7 +256,7 @@ public class FinderLocal extends Local {
     }
 
     @Override
-    public Local getSymlinkTarget() throws NotfoundException {
+    public Local getSymlinkTarget() throws NotfoundException, LocalAccessDeniedException {
         final ObjCObjectByReference error = new ObjCObjectByReference();
         final String destination = NSFileManager.defaultManager().destinationOfSymbolicLinkAtPath_error(
                 this.getAbsolute(), error);
@@ -278,8 +278,7 @@ public class FinderLocal extends Local {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("FinderLocal{");
-        sb.append("bookmark=").append(bookmark);
-        sb.append(", path='").append(path).append('\'');
+        sb.append("bookmark='").append(bookmark).append('\'');
         sb.append('}');
         return sb.toString();
     }

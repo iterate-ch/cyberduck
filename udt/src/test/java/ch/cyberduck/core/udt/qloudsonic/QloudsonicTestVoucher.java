@@ -20,6 +20,7 @@ package ch.cyberduck.core.udt.qloudsonic;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.aquaticprime.DonationKey;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 
 import java.util.UUID;
 
@@ -27,7 +28,7 @@ import java.util.UUID;
  * @version $Id$
  */
 public class QloudsonicTestVoucher extends DonationKey {
-    public QloudsonicTestVoucher() {
+    public QloudsonicTestVoucher() throws LocalAccessDeniedException {
         super(new Local(UUID.randomUUID().toString()));
     }
 

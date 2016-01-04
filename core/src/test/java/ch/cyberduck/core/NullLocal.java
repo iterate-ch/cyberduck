@@ -1,6 +1,7 @@
 package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 
 import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.io.output.NullOutputStream;
@@ -13,15 +14,15 @@ import java.io.OutputStream;
  */
 public class NullLocal extends Local {
 
-    public NullLocal(final String parent, final String name) {
+    public NullLocal(final String parent, final String name) throws LocalAccessDeniedException {
         super(parent, name);
     }
 
-    public NullLocal(final Local parent, final String name) {
+    public NullLocal(final Local parent, final String name) throws LocalAccessDeniedException {
         super(parent, name);
     }
 
-    public NullLocal(final String name) {
+    public NullLocal(final String name) throws LocalAccessDeniedException {
         super(PathNormalizer.normalize(name, false));
     }
 

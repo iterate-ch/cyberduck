@@ -29,6 +29,7 @@ import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.synchronization.Comparison;
 
 import org.junit.Test;
@@ -55,7 +56,7 @@ public class SyncTransferTest {
             }
 
             @Override
-            public AttributedList<Local> list() {
+            public AttributedList<Local> list() throws LocalAccessDeniedException {
                 return new AttributedList<Local>(Arrays.<Local>asList(new NullLocal("p", "a")));
             }
         }));
@@ -157,7 +158,7 @@ public class SyncTransferTest {
     public void testChildrenRemoteAndLocalExist() throws Exception {
         final NullLocal directory = new NullLocal(System.getProperty("java.io.tmpdir"), "t") {
             @Override
-            public AttributedList<Local> list() {
+            public AttributedList<Local> list() throws LocalAccessDeniedException {
                 final AttributedList<Local> list = new AttributedList<Local>();
                 list.add(new NullLocal(this, "a"));
                 return list;
@@ -195,7 +196,7 @@ public class SyncTransferTest {
         };
         final NullLocal directory = new NullLocal(System.getProperty("java.io.tmpdir"), "t") {
             @Override
-            public AttributedList<Local> list() {
+            public AttributedList<Local> list() throws LocalAccessDeniedException {
                 final AttributedList<Local> list = new AttributedList<Local>();
                 list.add(new NullLocal(System.getProperty("java.io.tmpdir") + "/t", "a") {
                     @Override

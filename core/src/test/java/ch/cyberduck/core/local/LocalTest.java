@@ -56,7 +56,7 @@ public class LocalTest {
     }
 
     @Test
-    public void testDelimiter() {
+    public void testDelimiter() throws Exception {
         PreferencesFactory.get().setProperty("local.delimiter", "\\");
         try {
             Local l = new WindowsLocal("G:\\");
@@ -103,15 +103,15 @@ public class LocalTest {
 
     private static class WindowsLocal extends Local {
 
-        public WindowsLocal(final String parent, final String name) {
+        public WindowsLocal(final String parent, final String name) throws LocalAccessDeniedException {
             super(parent, name);
         }
 
-        public WindowsLocal(final Local parent, final String name) {
+        public WindowsLocal(final Local parent, final String name) throws LocalAccessDeniedException {
             super(parent, name);
         }
 
-        public WindowsLocal(final String name) {
+        public WindowsLocal(final String name) throws LocalAccessDeniedException {
             super(name);
         }
 
@@ -122,7 +122,7 @@ public class LocalTest {
     }
 
     private final class TestLocal extends Local {
-        private TestLocal(final String name) {
+        private TestLocal(final String name) throws LocalAccessDeniedException {
             super(name);
         }
     }
