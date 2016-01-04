@@ -26,7 +26,6 @@ import java.util.Collections;
 
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
-import com.google.api.services.drive.model.ParentReference;
 
 /**
  * @version $Id:$
@@ -48,12 +47,10 @@ public class DriveDirectoryFeature implements Directory {
     public void mkdir(final Path file, final String region) throws BackgroundException {
         try {
             // Identified by the special folder MIME type application/vnd.google-apps.folder
-            final Drive.Files.Insert insert = session.getClient().files().insert(new File()
-                    .setTitle(file.getName())
+            final Drive.Files.Create insert = session.getClient().files().create(new File()
+                    .setName(file.getName())
                     .setMimeType("application/vnd.google-apps.folder")
-                    .setParents(Collections.singletonList(new ParentReference()
-                            .setIsRoot(file.getParent().isRoot())
-                            .setId(file.getParent().attributes().getVersionId()))));
+                    .setParents(Collections.singletonList(file.getParent().attributes().getVersionId())));
             file.attributes().setVersionId(insert.execute().getId());
         }
         catch(IOException e) {

@@ -31,6 +31,7 @@ import org.apache.http.entity.AbstractHttpEntity;
 import java.io.IOException;
 
 import com.google.api.client.http.InputStreamContent;
+import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 
 /**
@@ -63,14 +64,15 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<File> {
     @Override
     public ResponseOutputStream<File> write(final Path file, final TransferStatus status) throws BackgroundException {
         final File body = new File();
-        body.setTitle(file.getName());
+        body.setName(file.getName());
         body.setMimeType(status.getMime());
         final DelayedHttpEntityCallable<File> command = new DelayedHttpEntityCallable<File>() {
             @Override
             public File call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
-                    return session.getClient().files().insert(body,
-                            new InputStreamContent(status.getMime(), entity.getContent())).execute();
+                    final Drive.Files.Create insert = session.getClient().files().create(body,
+                            new InputStreamContent(status.getMime(), entity.getContent()));
+                    return insert.execute();
                 }
                 catch(IOException e) {
                     throw new DriveExceptionMappingService().map("Upload failed", e, file);

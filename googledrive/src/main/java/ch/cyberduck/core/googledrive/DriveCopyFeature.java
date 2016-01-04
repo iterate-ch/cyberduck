@@ -19,43 +19,33 @@ package ch.cyberduck.core.googledrive;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Copy;
 
 import java.io.IOException;
 import java.util.Collections;
 
-import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
-import com.google.api.services.drive.model.ParentReference;
 
 /**
  * @version $Id:$
  */
-public class DriveTouchFeature implements Touch {
+public class DriveCopyFeature implements Copy {
 
     private DriveSession session;
 
-    public DriveTouchFeature(final DriveSession session) {
+    public DriveCopyFeature(DriveSession session) {
         this.session = session;
     }
 
     @Override
-    public boolean isSupported(final Path workdir) {
-        return true;
-    }
-
-    @Override
-    public void touch(final Path file) throws BackgroundException {
+    public void copy(final Path source, final Path copy) throws BackgroundException {
         try {
-            final Drive.Files.Insert insert = session.getClient().files().insert(new File()
-                    .setTitle(file.getName())
-                    .setParents(Collections.singletonList(new ParentReference()
-                            .setIsRoot(file.getParent().isRoot())
-                            .setId(file.getParent().attributes().getVersionId()))));
-            file.attributes().setVersionId(insert.execute().getId());
+            session.getClient().files().copy(source.attributes().getVersionId(), new File()
+                    .setParents(Collections.singletonList(copy.getParent().attributes().getVersionId()))
+                    .setName(copy.getName()));
         }
         catch(IOException e) {
-            throw new DriveExceptionMappingService().map("Cannot create file {0}", e, file);
+            throw new DriveExceptionMappingService().map("Cannot copy {0}", e, source);
         }
     }
 }

@@ -24,7 +24,6 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
-import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -43,7 +42,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id:$
  */
-public class DriveWriteFeatureTest extends AbstractTestCase {
+public class DriveWriteFeatureTest {
 
     @Test
     public void testWrite() throws Exception {
@@ -59,10 +58,10 @@ public class DriveWriteFeatureTest extends AbstractTestCase {
                     @Override
                     public String getPassword(Scheme scheme, int port, String hostname, String user) {
                         if(user.equals("Google Drive OAuth2 Access Token")) {
-                            return properties.getProperty("googledrive.accesstoken");
+                            return System.getProperties().getProperty("googledrive.accesstoken");
                         }
                         if(user.equals("Google Drive OAuth2 Refresh Token")) {
-                            return properties.getProperty("googledrive.refreshtoken");
+                            return System.getProperties().getProperty("googledrive.refreshtoken");
                         }
                         fail();
                         return null;
@@ -75,7 +74,7 @@ public class DriveWriteFeatureTest extends AbstractTestCase {
                 }, new DisabledProgressListener(),
                 new DisabledTranscriptListener()).connect(session, PathCache.empty());
         final TransferStatus status = new TransferStatus();
-        final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = "test".getBytes("UTF-8");
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);

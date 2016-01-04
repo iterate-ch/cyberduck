@@ -1,47 +1,55 @@
 package ch.cyberduck.core.googledrive;
 
-import ch.cyberduck.core.*;
+/*
+ * Copyright (c) 2002-2014 David Kocher. All rights reserved.
+ * http://cyberduck.ch/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
+ */
+
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.DisabledTranscriptListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginConnectionService;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 /**
  * @version $Id:$
  */
-public class DriveSessionTest extends AbstractTestCase {
-
-    @Test(expected = LoginCanceledException.class)
-    public void testConnectInvalidKey() throws Exception {
-        final Host host = new Host(new DriveProtocol(), "www.googleapis.com", new Credentials());
-        final DriveSession session = new DriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
-        new LoginConnectionService(new DisabledLoginCallback() {
-            @Override
-            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                if("https://accounts.google.com/o/oauth2/auth?client_id=996125414232.apps.googleusercontent.com&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&scope=https://www.googleapis.com/auth/drive".equals(reason)) {
-                    credentials.setPassword("t");
-                    return;
-                }
-                if("Invalid_grant. Please contact your web hosting service provider for assistance.".equals(reason)) {
-                    throw new LoginCanceledException();
-                }
-                fail();
-            }
-        }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener(),
-                new DisabledTranscriptListener()).connect(session, PathCache.empty());
-        assertTrue(session.isConnected());
-        session.close();
-        assertFalse(session.isConnected());
-    }
+public class DriveTouchFeatureTest {
 
     @Test
-    public void testConnect() throws Exception {
+    public void testTouch() throws Exception {
         final Host host = new Host(new DriveProtocol(), "www.googleapis.com", new Credentials());
         final DriveSession session = new DriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(new DisabledLoginCallback() {
@@ -54,10 +62,10 @@ public class DriveSessionTest extends AbstractTestCase {
                     @Override
                     public String getPassword(Scheme scheme, int port, String hostname, String user) {
                         if(user.equals("Google Drive OAuth2 Access Token")) {
-                            return properties.getProperty("googledrive.accesstoken");
+                            return System.getProperties().getProperty("googledrive.accesstoken");
                         }
                         if(user.equals("Google Drive OAuth2 Refresh Token")) {
-                            return properties.getProperty("googledrive.refreshtoken");
+                            return System.getProperties().getProperty("googledrive.refreshtoken");
                         }
                         fail();
                         return null;
@@ -69,13 +77,19 @@ public class DriveSessionTest extends AbstractTestCase {
                     }
                 }, new DisabledProgressListener(),
                 new DisabledTranscriptListener()).connect(session, PathCache.empty());
-        assertTrue(session.isConnected());
+        final Path test = new Path(new DriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        new DriveTouchFeature(session).touch(test);
+        new DriveDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+                //
+            }
+        });
         session.close();
-        assertFalse(session.isConnected());
     }
 
-    @Test
-    public void testList() throws Exception {
+    @Test(expected = NotfoundException.class)
+    public void testNotFound() throws Exception {
         final Host host = new Host(new DriveProtocol(), "www.googleapis.com", new Credentials());
         final DriveSession session = new DriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(new DisabledLoginCallback() {
@@ -88,10 +102,10 @@ public class DriveSessionTest extends AbstractTestCase {
                     @Override
                     public String getPassword(Scheme scheme, int port, String hostname, String user) {
                         if(user.equals("Google Drive OAuth2 Access Token")) {
-                            return properties.getProperty("googledrive.accesstoken");
+                            return System.getProperties().getProperty("googledrive.accesstoken");
                         }
                         if(user.equals("Google Drive OAuth2 Refresh Token")) {
-                            return properties.getProperty("googledrive.refreshtoken");
+                            return System.getProperties().getProperty("googledrive.refreshtoken");
                         }
                         fail();
                         return null;
@@ -103,11 +117,7 @@ public class DriveSessionTest extends AbstractTestCase {
                     }
                 }, new DisabledProgressListener(),
                 new DisabledTranscriptListener()).connect(session, PathCache.empty());
-        final AttributedList<Path> list = session.list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
-        assertFalse(list.isEmpty());
-        for(Path f : list) {
-            assertEquals(new Path("/", EnumSet.of(Path.Type.directory)), f.getParent());
-            assertNotNull(f.attributes().getVersionId());
-        }
+        final Path test = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        new DriveTouchFeature(session).touch(test);
     }
 }

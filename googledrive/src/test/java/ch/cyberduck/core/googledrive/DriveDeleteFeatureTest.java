@@ -17,7 +17,6 @@ package ch.cyberduck.core.googledrive;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -31,8 +30,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 
@@ -42,15 +41,12 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
-/**
- * @version $Id:$
- */
-public class DriveDirectoryFeatureTest extends AbstractTestCase {
+public class DriveDeleteFeatureTest {
 
-    @Test
-    public void testMkdir() throws Exception {
+    @Test(expected = NotfoundException.class)
+    public void testDeleteNotFound() throws Exception {
         final Host host = new Host(new DriveProtocol(), "www.googleapis.com", new Credentials());
         final DriveSession session = new DriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(new DisabledLoginCallback() {
@@ -63,10 +59,10 @@ public class DriveDirectoryFeatureTest extends AbstractTestCase {
                     @Override
                     public String getPassword(Scheme scheme, int port, String hostname, String user) {
                         if(user.equals("Google Drive OAuth2 Access Token")) {
-                            return properties.getProperty("googledrive.accesstoken");
+                            return System.getProperties().getProperty("googledrive.accesstoken");
                         }
                         if(user.equals("Google Drive OAuth2 Refresh Token")) {
-                            return properties.getProperty("googledrive.refreshtoken");
+                            return System.getProperties().getProperty("googledrive.refreshtoken");
                         }
                         fail();
                         return null;
@@ -78,17 +74,13 @@ public class DriveDirectoryFeatureTest extends AbstractTestCase {
                     }
                 }, new DisabledProgressListener(),
                 new DisabledTranscriptListener()).connect(session, PathCache.empty());
-        final Path test = new Path(new DriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new DriveDirectoryFeature(session).mkdir(test, null);
-        assertTrue(new DefaultFindFeature(session).find(test));
-        new DriveDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(),
-                new Delete.Callback() {
-                    @Override
-                    public void delete(final Path file) {
-                        //
-                    }
-                });
-        assertFalse(new DefaultFindFeature(session).find(test));
-        session.close();
+        final Path test = new Path(new DriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        test.attributes().setVersionId("n");
+        new DriveDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+                //
+            }
+        });
     }
 }

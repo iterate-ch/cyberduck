@@ -17,14 +17,12 @@ package ch.cyberduck.core.googledrive;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.junit.Test;
 
 /**
  * @version $Id:$
  */
-public class DriveMoveFeatureTest extends AbstractTestCase {
+public class DriveMoveFeatureTest {
 
     @Test
     public void testMove() {

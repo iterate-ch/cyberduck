@@ -17,17 +17,26 @@ package ch.cyberduck.core.googledrive;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Path;
 
 import org.junit.Test;
+
+import java.util.EnumSet;
+
+import static org.junit.Assert.assertFalse;
 
 /**
  * @version $Id:$
  */
-public class DriveUrlProviderTest extends AbstractTestCase {
+public class DriveReadFeatureTest {
 
     @Test
-    public void testToUrl() throws Exception {
-        new DriveUrlProvider(null);
+    public void testAppend() throws Exception {
+        assertFalse(new DriveReadFeature(null).offset(new Path("/", EnumSet.of(Path.Type.file))));
+    }
+
+    @Test
+    public void testRead() throws Exception {
+
     }
 }

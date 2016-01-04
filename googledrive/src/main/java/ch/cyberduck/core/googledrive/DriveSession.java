@@ -196,23 +196,22 @@ public class DriveSession extends HttpSession<Drive> {
                         .setQ(String.format("'%s' in parents", directory.isRoot() ? "root" : directory.attributes().getVersionId()))
                         .setOauthToken(tokens.getAccessToken())
                         .setPageToken(page)
-                        .setMaxResults(preferences.getInteger("google.drive.list.limit"));
-                for(File f : list.execute().getItems()) {
+                        .setPageSize(preferences.getInteger("google.drive.list.limit"));
+                for(File f : list.execute().getFiles()) {
                     final PathAttributes attributes = new PathAttributes();
                     if(null != f.getQuotaBytesUsed()) {
                         attributes.setSize(f.getQuotaBytesUsed());
                     }
-                    if(null != f.getFileSize()) {
-                        attributes.setSize(f.getFileSize());
+                    if(null != f.getSize()) {
+                        attributes.setSize(f.getSize());
                     }
                     attributes.setVersionId(f.getId());
-                    attributes.setModificationDate(f.getModifiedDate().getValue());
-                    attributes.setCreationDate(f.getCreatedDate().getValue());
-                    attributes.setETag(f.getEtag());
+                    attributes.setModificationDate(f.getModifiedTime().getValue());
+                    attributes.setCreationDate(f.getCreatedTime().getValue());
                     attributes.setChecksum(Checksum.parse(f.getMd5Checksum()));
                     final EnumSet<AbstractPath.Type> type = "application/vnd.google-apps.folder".equals(
                             f.getMimeType()) ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
-                    final Path child = new Path(directory, PathNormalizer.name(f.getTitle()), type, attributes);
+                    final Path child = new Path(directory, PathNormalizer.name(f.getName()), type, attributes);
                     children.add(child);
                 }
                 listener.chunk(directory, children);

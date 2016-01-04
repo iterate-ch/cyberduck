@@ -46,14 +46,12 @@ public class DriveUrlProvider implements UrlProvider {
         if(file.isFile()) {
             try {
                 final File f = session.getClient().files().get(file.attributes().getVersionId()).execute();
-                list.add(new DescriptiveUrl(URI.create(f.getAlternateLink()),
+                list.add(new DescriptiveUrl(URI.create(f.getWebContentLink()),
                         DescriptiveUrl.Type.http,
                         MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "HTTP")));
-                if(f.getDownloadUrl() != null) {
-                    list.add(new DescriptiveUrl(URI.create(f.getDownloadUrl()),
-                            DescriptiveUrl.Type.http,
-                            MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "Download")));
-                }
+                list.add(new DescriptiveUrl(URI.create(f.getWebViewLink()),
+                        DescriptiveUrl.Type.http,
+                        MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "Download")));
             }
             catch(IOException e) {
                 new DriveExceptionMappingService().map(e);
