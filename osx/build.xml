@@ -69,6 +69,11 @@
         <antcall target="runtime">
             <param name="bundle" value="${app.bundle}"/>
         </antcall>
+        <antcall target="shared-library-install-name">
+            <param name="oldname" value="/System/Library/Frameworks/JavaVM.framework/Versions/A/JavaVM"/>
+            <param name="newname" value="${bundle.runtime.lib}"/>
+            <param name="directory" value="${app.bundle}/${bundle.frameworks}"/>
+        </antcall>
     </target>
 
     <target name="package" depends="build">
