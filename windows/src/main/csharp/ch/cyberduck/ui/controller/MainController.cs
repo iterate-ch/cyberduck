@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2015 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -40,9 +40,9 @@ using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.s3;
 using ch.cyberduck.core.serializer;
 using ch.cyberduck.core.sftp;
+using Ch.Cyberduck.Core.Urlhandler;
 using Ch.Cyberduck.Ui.Core;
 using Ch.Cyberduck.Ui.Core.Preferences;
-using Ch.Cyberduck.Core.Urlhandler;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using java.util;
 using Microsoft.VisualBasic.ApplicationServices;
@@ -83,8 +83,9 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             StructureMapBootstrapper.Bootstrap();
             PreferencesFactory.set(new SettingsDictionaryPreferences());
-            ProtocolFactory.register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(), new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(),
-                                             new GoogleStorageProtocol(), new AzureProtocol(), new IRODSProtocol());
+            ProtocolFactory.register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(),
+                new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(), new GoogleStorageProtocol(),
+                new AzureProtocol(), new IRODSProtocol());
 
             if (!Debugger.IsAttached)
             {
@@ -173,9 +174,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void StartupNextInstanceHandler(object sender, StartupNextInstanceEventArgs e)
         {
             NewBrowser();
-            IList<String> stripped = new List<string>(e.CommandLine);
-            stripped.RemoveAt(0); // remove executable
-            CommandsAfterLaunch(stripped);
+            CommandsAfterLaunch(e.CommandLine);
         }
 
         /// <summary>
