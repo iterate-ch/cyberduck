@@ -18,14 +18,15 @@ package ch.cyberduck.core.sftp.putty;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Factory;
+
 import org.junit.Test;
 
 import java.util.Collection;
 
 import com.jcraft.jsch.agentproxy.Identity;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -36,7 +37,14 @@ public class PageantAuthenticatorTest {
     public void testGetIdentities() throws Exception {
         final PageantAuthenticator authenticator = new PageantAuthenticator();
         final Collection<Identity> identities = authenticator.getIdentities();
-        assertNull(authenticator.getProxy());
-        assertTrue(identities.isEmpty());
+        switch(Factory.Platform.getDefault()) {
+            case windows:
+                assertNotNull(authenticator.getProxy());
+                break;
+            default:
+                assertNull(authenticator.getProxy());
+                assertTrue(identities.isEmpty());
+                break;
+        }
     }
 }
