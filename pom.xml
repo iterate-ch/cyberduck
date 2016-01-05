@@ -16,6 +16,7 @@
         <module>core/dylib</module>
         <module>core/dll</module>
         <module>core/native</module>
+        <module>i18n</module>
         <!-- Native components -->
         <module>bonjour</module>
         <module>bonjour/dll</module>
