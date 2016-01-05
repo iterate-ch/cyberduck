@@ -152,7 +152,7 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             Assembly asm = Cyberduck.Core.Utils.Me();
             string[] names = asm.GetManifestResourceNames();
             // the dots apparently come from the relative path in the msbuild file
-            Regex regex = new Regex("Core\\.\\.\\.\\.\\.\\.\\.\\.\\.\\.([^\\..]*).lproj\\.Localizable\\.strings");
+            Regex regex = new Regex("Core.*\\.([^\\..]+).lproj\\.Localizable\\.strings");
             List<string> distinctNames = new List<string>();
             foreach (var name in names)
             {
