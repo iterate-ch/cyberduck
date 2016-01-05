@@ -56,14 +56,14 @@
       <HintPath>windows\target\Cyberduck.Core.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.Core">
-      <HintPath>lib\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Core.dll</HintPath>
+      <HintPath>core\native\target\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Core.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.Runtime">
-      <HintPath>lib\ikvm-8.1.5717.0\bin\IKVM.Runtime.dll</HintPath>
+      <HintPath>core\native\target\ikvm-8.1.5717.0\bin\IKVM.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework, Version=2.5.3.9345, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>lib\ext\nunit.framework.dll</HintPath>
+      <HintPath>core\native\target\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -76,7 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="core\src\test\csharp\ch\cyberduck\core\ssl\HostnameVerifierTest.cs" />
-    <Compile Include="core\src\main\csharp\ch\cyberduck\core\SystemCertificateStoreTest.cs" />
+    <Compile Include="core\src\test\csharp\ch\cyberduck\core\SystemCertificateStoreTest.cs" />
     <Compile Include="windows\src\test\csharp\ch\cyberduck\ui\controller\PersistentFormHandlerTest.cs" />
   </ItemGroup>
   <ItemGroup>
