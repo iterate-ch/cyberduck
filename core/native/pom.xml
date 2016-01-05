@@ -121,5 +121,13 @@
             <version>12.0.21005.1</version>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>nunit</groupId>
+            <artifactId>nunit.framework</artifactId>
+            <classifier>native</classifier>
+            <type>dll</type>
+            <version>2.6.4.14350</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>
