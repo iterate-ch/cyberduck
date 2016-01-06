@@ -22,10 +22,12 @@ import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.transfer.TransferItem;
 
 import org.apache.commons.cli.CommandLine;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -49,9 +51,9 @@ public class GlobTransferItemFinder implements TransferItemFinder {
             final String path = input.getOptionValues(action.name())[1];
             // This only applies to a shell where the glob is not already expanded into multiple arguments
             if(StringUtils.containsAny(path, '*', '?')) {
-                final Local directory = LocalFactory.get(path).getParent();
+                final Local directory = LocalFactory.get(PathNormalizer.normalize(FilenameUtils.getPath(path)));
                 if(directory.isDirectory()) {
-                    final PathMatcher matcher = FileSystems.getDefault().getPathMatcher(String.format("glob:%s", LocalFactory.get(path).getName()));
+                    final PathMatcher matcher = FileSystems.getDefault().getPathMatcher(String.format("glob:%s", FilenameUtils.getName(path)));
                     final Set<TransferItem> items = new HashSet<TransferItem>();
                     for(Local file : directory.list(new Filter<String>() {
                         @Override
