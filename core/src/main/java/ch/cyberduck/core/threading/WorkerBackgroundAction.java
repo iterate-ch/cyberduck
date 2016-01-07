@@ -117,7 +117,7 @@ public class WorkerBackgroundAction<T> extends BrowserBackgroundAction<T> {
     }
 
     @Override
-    public T call() {
+    public T call() throws BackgroundException {
         final T result = super.call();
         if(null == result) {
             return worker.initialize();

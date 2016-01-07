@@ -174,7 +174,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     }
 
     @Override
-    public T call() {
+    public T call() throws BackgroundException {
         try {
             // Reset status
             this.reset();
@@ -182,10 +182,6 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
             this.connect(session);
             // Run action
             return super.call();
-        }
-        catch(ConnectionCanceledException failure) {
-            // Do not report as failed if instanceof ConnectionCanceledException
-            log.warn(String.format("Connection canceled %s", failure.getMessage()));
         }
         catch(BackgroundException failure) {
             log.warn(String.format("Failure executing background action: %s", failure));
@@ -201,12 +197,12 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
                     if(!this.isCanceled()) {
                         repeat++;
                         // Re-run the action with the previous lock used
-                        this.call();
+                        return this.call();
                     }
                 }
             }
+            throw failure;
         }
-        return null;
     }
 
     protected boolean connect(final Session session) throws BackgroundException {
