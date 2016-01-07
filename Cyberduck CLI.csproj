@@ -132,7 +132,7 @@
     <CallTarget Targets="AssemblyInfo" />
     <ItemGroup>
       <AdditionalResources Include="Acknowledgments.rtf" />
-      <AdditionalResources Include="en.lproj\License.txt" />
+      <AdditionalResources Include="i18n\src\main\resources\en.lproj\License.txt" />
     </ItemGroup>
     <ItemGroup>
       <DefaultProfiles Include="profiles\Rackspace US.cyberduckprofile" />

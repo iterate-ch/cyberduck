@@ -44,8 +44,13 @@ public class DAVMoveFeature implements Move {
     @Override
     public void move(final Path file, final Path renamed, boolean exists, final Delete.Callback callback) throws BackgroundException {
         try {
-            session.getClient().move(new DAVPathEncoder().encode(file),
-                    new DefaultUrlProvider(session.getHost()).toUrl(renamed).find(DescriptiveUrl.Type.provider).getUrl(), true);
+            final String target = new DefaultUrlProvider(session.getHost()).toUrl(renamed).find(DescriptiveUrl.Type.provider).getUrl();
+            if(file.isDirectory()) {
+                session.getClient().move(new DAVPathEncoder().encode(file), String.format("%s/", target), exists);
+            }
+            else {
+                session.getClient().move(new DAVPathEncoder().encode(file), target, exists);
+            }
         }
         catch(SardineException e) {
             throw new DAVExceptionMappingService().map("Cannot rename {0}", e, file);

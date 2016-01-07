@@ -126,7 +126,6 @@
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\preferences\RoamingSupportDirectoryFinder.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\preferences\AssemblyApplicationResourcesFinder.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\preferences\SettingsDictionary.cs" />
-<!--    <Compile Include="bonjour\src\main\csharp\ch\cyberduck\core\bonjour\Rendezvous.cs" />-->
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\RFC2253.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\SerializableDictionary.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\Shell32.cs" />
@@ -138,10 +137,10 @@
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\urlhandler\URLSchemeHandlerConfiguration.cs" />
     <Compile Include="core\target\AssemblyInfo.cs" />
     <!-- add localizations -->
-    <EmbeddedResource Include="*.lproj/*.strings" />
-    <EmbeddedResource Include="*.lproj/*.strings.1" />
-    <EmbeddedResource Include="*.lproj/*.txt" />
-    <EmbeddedResource Include="lib/Sparkle.framework/Versions/A/Resources/*.lproj/Sparkle.strings" />
+    <EmbeddedResource Include="i18n\src\main\resources\*.lproj\*.strings" />
+    <EmbeddedResource Include="i18n\src\main\resources\*.lproj\*.strings.1" />
+    <EmbeddedResource Include="i18n\src\main\resources\*.lproj\*.txt" />
+    <!-- <EmbeddedResource Include="lib\Sparkle.framework\Versions\A\Resources\*.lproj\Sparkle.strings" /> -->
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

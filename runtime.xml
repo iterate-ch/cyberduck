@@ -20,11 +20,6 @@
         <copy todir="${bundle}/${bundle.runtime}" preservelastmodified="true">
             <fileset followsymlinks="false" dir="${jvm.runtime.home}" excludesfile="${home}/runtime-excludes.properties"/>
         </copy>
-        <antcall target="shared-library-install-name">
-            <param name="oldname" value="/System/Library/Frameworks/JavaVM.framework/Versions/A/JavaVM"/>
-            <param name="newname" value="${bundle.runtime.lib}"/>
-            <param name="directory" value="${bundle}/${bundle.frameworks}"/>
-        </antcall>
         <!-- Remove architectures -->
         <foreach target="lipo" param="arch" list="${build.lipo.arch.remove}">
             <param name="directory" value="${bundle}"/>

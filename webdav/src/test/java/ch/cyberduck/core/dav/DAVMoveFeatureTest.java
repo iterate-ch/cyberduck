@@ -25,6 +25,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
@@ -32,6 +33,8 @@ import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -75,6 +78,33 @@ public class DAVMoveFeatureTest {
     }
 
     @Test
+    public void testMoveDirectory() throws Exception {
+        Logger.getLogger(Session.class.getName()).setLevel(Level.DEBUG);
+        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
+                System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
+        ));
+        host.setDefaultPath("/dav/basic");
+        final DAVSession session = new DAVSession(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        new DAVDirectoryFeature(session).mkdir(test);
+        final Path target = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        new DAVMoveFeature(session).move(test, target, false, new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
+        assertFalse(session.getFeature(Find.class).find(test));
+        assertTrue(session.getFeature(Find.class).find(target));
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
+    }
+
+    @Test
     public void testMoveOverride() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
                 System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
@@ -87,7 +117,7 @@ public class DAVMoveFeatureTest {
         new DefaultTouchFeature(session).touch(test);
         final Path target = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature(session).touch(target);
-        new DAVMoveFeature(session).move(test, target, false, new Delete.Callback() {
+        new DAVMoveFeature(session).move(test, target, true, new Delete.Callback() {
             @Override
             public void delete(final Path file) {
             }

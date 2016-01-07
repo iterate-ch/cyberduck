@@ -1,8 +1,13 @@
 Cyberduck for mounting volumes in the file explorer is now available from https://mountainduck.io/ for Mac & Windows. A command line interface (CLI) version is now available from https://duck.sh/ for Windows, Linux & Mac.
 
-4.8 [https://trac.cyberduck.io/milestone/4.8]
+4.7.4 [https://trac.cyberduck.io/milestone/4.7.4]
 - [Feature] Support for key exchange algorithm diffie-hellman-group-exchange-sha256 (SFTP) (#8488)
 - [Feature] Support for key exchange algorithm curve25519-sha256@libssh.org (SFTP) (#8528)
+- [Feature] Support ssh-ed25519 host keys (SFTP) (#8553)
+- [Feature] Support for authentication with Keystone v3 API (OpenStack Swift) (#8813)
+- [Bugfix] Files greater than 100GB fail to upload (OpenStack Swift) (#9131)
+- [Bugfix] Changed fingerprint prompt and duplicate ECDSA host key entries in ~/.ssh/known_hosts (SFTP) (#8867)
+- [Bugfix] Certificate trust errors for DNS-named buckets (S3) (#3813)
 
 4.7.3 [https://trac.cyberduck.io/milestone/4.7.3]
 - [Feature] Allow to select PuTTY install location

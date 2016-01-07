@@ -1173,7 +1173,8 @@ public abstract class Preferences {
         defaults.put("factory.reader.host.class", HostPlistReader.class.getName());
         defaults.put("factory.writer.host.class", PlistWriter.class.getName());
 
-
+        defaults.put("factory.locale.class", DisabledLocale.class.getName());
+        defaults.put("factory.local.class", Local.class.getName());
         defaults.put("factory.certificatestore.class", DisabledCertificateStore.class.getName());
         defaults.put("factory.logincallback.class", DisabledLoginCallback.class.getName());
         defaults.put("factory.hostkeycallback.class", DisabledHostKeyCallback.class.getName());
@@ -1193,8 +1194,6 @@ public abstract class Preferences {
         defaults.put("factory.supportdirectoryfinder.class", TemporarySupportDirectoryFinder.class.getName());
         defaults.put("factory.applicationresourcesfinder.class", TemporaryApplicationResourcesFinder.class.getName());
         defaults.put("factory.workingdirectory.class", DefaultWorkingDirectoryFinder.class.getName());
-        defaults.put("factory.locale.class", DisabledLocale.class.getName());
-        defaults.put("factory.local.class", Local.class.getName());
         defaults.put("factory.watchservice.class", NIOEventWatchService.class.getName());
         defaults.put("factory.proxy.class", DisabledProxyFinder.class.getName());
         defaults.put("factory.passwordstore.class", DisabledPasswordStore.class.getName());

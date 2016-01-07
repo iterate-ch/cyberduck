@@ -66,7 +66,7 @@ public class SwiftLargeUploadWriteFeature implements Write {
     }
 
     public SwiftLargeUploadWriteFeature(final SwiftSession session, final SwiftRegionService regionService) {
-        this(session, regionService, new SwiftSegmentService(session), new DefaultFindFeature(session), new DefaultAttributesFeature(session));
+        this(session, regionService, new SwiftSegmentService(session, regionService), new DefaultFindFeature(session), new DefaultAttributesFeature(session));
     }
 
     public SwiftLargeUploadWriteFeature(final SwiftSession session, final SwiftRegionService regionService, final SwiftSegmentService segmentService) {
