@@ -53,6 +53,8 @@ public class AttributedListAttributes<E> {
     private AtomicBoolean invalid
             = new AtomicBoolean();
 
+    private Long timestamp;
+
     /**
      * Initialize with default values
      *
@@ -109,6 +111,19 @@ public class AttributedListAttributes<E> {
      */
     public void setInvalid(final boolean invalid) {
         this.invalid.set(true);
+    }
+
+    public Long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(final Long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public AttributedListAttributes<E> withTimestamp(final Long timestamp) {
+        this.timestamp = timestamp;
+        return this;
     }
 
     /**
