@@ -71,6 +71,7 @@ public class SessionBackgroundActionTest {
         };
         try {
             a.call();
+            fail();
         }
         catch(BackgroundException e) {
             // Ignore
@@ -114,6 +115,7 @@ public class SessionBackgroundActionTest {
         };
         try {
             a.call();
+            fail();
         }
         catch(BackgroundException e) {
             // Ignore
@@ -157,6 +159,7 @@ public class SessionBackgroundActionTest {
         };
         try {
             a.call();
+            fail();
         }
         catch(BackgroundException e) {
             // Ignore
