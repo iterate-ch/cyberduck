@@ -32,13 +32,15 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Category(IntegrationTest.class)
 public class SpectraBulkServiceTest {
 
     @Test
-    public void testPreUpload() throws Exception {
+    public void testPreUploadSingleFile() throws Exception {
         final Host host = new Host(new SpectraProtocol() {
             @Override
             public Scheme getScheme() {
@@ -50,9 +52,35 @@ public class SpectraBulkServiceTest {
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        new SpectraBulkService(session).pre(Transfer.Type.upload, Collections.singletonMap(
-                new Path(String.format("/cyberduck/%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus().length(1L)
+        final Map<Path, TransferStatus> files = new HashMap<>();
+        files.put(
+                new Path(String.format("/cyberduck/%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file)),
+                new TransferStatus().length(1L)
+        );
+        new SpectraBulkService(session).pre(Transfer.Type.upload, files);
+        session.close();
+    }
+
+    @Test
+    public void testPreUploadDirectoryFile() throws Exception {
+        final Host host = new Host(new SpectraProtocol() {
+            @Override
+            public Scheme getScheme() {
+                return Scheme.http;
+            }
+        }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
+                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
         ));
+        final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
+                new DefaultX509KeyManager());
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        final Map<Path, TransferStatus> files = new HashMap<>();
+        final Path directory = new Path(String.format("/cyberduck/%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory));
+        files.put(directory, new TransferStatus().length(0L));
+        files.put(new Path(directory, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)),
+                new TransferStatus().length(1L)
+        );
+        new SpectraBulkService(session).pre(Transfer.Type.upload, files);
         session.close();
     }
 

@@ -56,8 +56,10 @@ public class SpectraBulkService implements Bulk<UUID> {
             if(!jobs.containsKey(container)) {
                 jobs.put(container, new ArrayList<Ds3Object>());
             }
-            jobs.get(container).add(
-                    new Ds3Object(containerService.getKey(item.getKey()), item.getValue().getLength()));
+            if(item.getKey().isFile()) {
+                jobs.get(container).add(
+                        new Ds3Object(containerService.getKey(item.getKey()), item.getValue().getLength()));
+            }
         }
         try {
             for(Map.Entry<Path, List<Ds3Object>> container : jobs.entrySet()) {
