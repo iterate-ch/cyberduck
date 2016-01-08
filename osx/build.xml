@@ -81,24 +81,19 @@
             <param name="bundle" value="${app.bundle}"/>
         </antcall>
         <mkdir dir="${build.deploy}"/>
-        <antcall target="tar">
-            <param name="directory" value="${build}"/>
-            <param name="target" value="${app.name}-${revision}.tar.gz"/>
-            <param name="source" value="${app.name}.app"/>
-        </antcall>
         <antcall target="zip">
             <param name="directory" value="${build}"/>
             <param name="target" value="${app.name}-${version}.${revision}.zip"/>
             <param name="source" value="${app.name}.app"/>
         </antcall>
-        <checksum file="${build.deploy}/${app.name}-${revision}.tar.gz"
+        <checksum file="${build.deploy}/${app.name}-${version}.${revision}.zip"
                   algorithm="md5" property="md5sum"/>
         <echo message="Calculating DSA signature..."/>
         <exec dir="${home}" executable="sh" outputproperty="signature.dsa" failonerror="true">
             <arg value="-o"/>
             <arg value="pipefail"/>
             <arg value="-c"/>
-            <arg value="openssl dgst -sha1 -binary '${build.deploy}/${app.name}-${revision}.tar.gz' | openssl dgst -dss1 -sign ${www.update}/private.pem | openssl enc -base64"/>
+            <arg value="openssl dgst -sha1 -binary '${build.deploy}/${app.name}-${version}.${revision}.zip' | openssl dgst -dss1 -sign ${www.update}/private.pem | openssl enc -base64"/>
         </exec>
         <echo message="DSASIGNATURE=${signature.dsa}"/>
         <echo message="MD5SUM=${md5sum}"/>
@@ -112,7 +107,7 @@
             <include name="changelog.rss"/>
             <replacefilter token="${TIMESTAMP}" value="${touch.time}"/>
             <replacefilter token="${ARCHIVE}"
-                           value="https://update.cyberduck.io/${sparkle.feed}/${app.name}-${revision}.tar.gz"/>
+                           value="https://update.cyberduck.io/${sparkle.feed}/${app.name}-${version}.${revision}.zip"/>
             <replacefilter token="${CHANGELOG}" value="https://version.cyberduck.io/${sparkle.feed}/changelog.html"/>
             <replacefilter token="${REVISION}" value="${revision}"/>
             <replacefilter token="${VERSION}" value="${version}"/>
