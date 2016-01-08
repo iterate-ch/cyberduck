@@ -183,6 +183,9 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
             // Run action
             return super.call();
         }
+        catch(ConnectionCanceledException e) {
+            throw e;
+        }
         catch(BackgroundException failure) {
             log.warn(String.format("Failure executing background action: %s", failure));
             exception = failure;

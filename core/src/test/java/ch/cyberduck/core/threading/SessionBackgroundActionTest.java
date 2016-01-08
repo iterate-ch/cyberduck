@@ -44,14 +44,8 @@ import static org.junit.Assert.*;
 public class SessionBackgroundActionTest {
 
     @Test
-    public void testGetExceptionCanceled() throws Exception {
-        final BackgroundException failure = new BackgroundException(new RuntimeException());
-        SessionBackgroundAction a = new SessionBackgroundAction(null, PathCache.empty(), new AlertCallback() {
-            @Override
-            public boolean alert(final Host repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
-                assertEquals(failure, f);
-                return false;
-            }
+    public void testGetExceptionConnectionCanceledException() throws Exception {
+        SessionBackgroundAction a = new SessionBackgroundAction(null, PathCache.empty(), new DisabledAlertCallback() {
         }, new ProgressListener() {
             @Override
             public void message(final String message) {
@@ -75,7 +69,13 @@ public class SessionBackgroundActionTest {
                 throw new ConnectionCanceledException();
             }
         };
-        a.call();
+        try {
+            a.call();
+            fail();
+        }
+        catch(BackgroundException e) {
+            // Ignore
+        }
         assertFalse(a.hasFailed());
         assertNull(a.getException());
         assertEquals(PreferencesFactory.get().getInteger("connection.retry"), a.retry());
@@ -113,14 +113,20 @@ public class SessionBackgroundActionTest {
                 throw failure;
             }
         };
-        a.call();
+        try {
+            a.call();
+            fail();
+        }
+        catch(BackgroundException e) {
+            // Ignore
+        }
         assertTrue(a.hasFailed());
         assertNotNull(a.getException());
         assertEquals(PreferencesFactory.get().getInteger("connection.retry"), a.retry());
     }
 
     @Test
-    public void testGetExceptionCancel() throws Exception {
+    public void testGetExceptionLoginCanceledException() throws Exception {
         final BackgroundException failure = new LoginCanceledException();
         SessionBackgroundAction a = new SessionBackgroundAction(new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty(), new AlertCallback() {
             @Override
@@ -151,7 +157,13 @@ public class SessionBackgroundActionTest {
                 throw failure;
             }
         };
-        a.call();
+        try {
+            a.call();
+            fail();
+        }
+        catch(BackgroundException e) {
+            // Ignore
+        }
         assertFalse(a.hasFailed());
         assertNull(a.getException());
         assertEquals(PreferencesFactory.get().getInteger("connection.retry"), a.retry());

@@ -30,8 +30,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -69,7 +68,13 @@ public class BackgroundActionPauserTest {
                 throw new BackgroundException(new RuntimeException("f"));
             }
         };
-        action.call();
+        try {
+            action.call();
+            fail();
+        }
+        catch(BackgroundException e) {
+            //
+        }
         new BackgroundActionPauser(action).await(new ProgressListener() {
             String previous;
 
