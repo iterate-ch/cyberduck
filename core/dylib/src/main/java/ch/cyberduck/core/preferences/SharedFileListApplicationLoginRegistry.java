@@ -22,6 +22,8 @@ import ch.cyberduck.binding.application.NSWorkspace;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.local.ApplicationFinder;
+import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.FinderSidebarService;
 import ch.cyberduck.core.local.SidebarService;
 
@@ -32,11 +34,16 @@ public class SharedFileListApplicationLoginRegistry implements ApplicationLoginR
 
     private final FinderSidebarService service = new FinderSidebarService(SidebarService.List.login);
 
+    private final ApplicationFinder finder = ApplicationFinderFactory.get();
+
     @Override
     public boolean register(final Application application) {
         try {
-            service.add(LocalFactory.get(NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(application.getIdentifier())));
-            return true;
+            if(finder.isInstalled(application)) {
+                service.add(LocalFactory.get(NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(application.getIdentifier())));
+                return true;
+            }
+            return false;
         }
         catch(LocalAccessDeniedException e) {
             return false;
@@ -46,8 +53,11 @@ public class SharedFileListApplicationLoginRegistry implements ApplicationLoginR
     @Override
     public boolean unregister(final Application application) {
         try {
-            service.remove(LocalFactory.get(NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(application.getIdentifier())));
-            return true;
+            if(finder.isInstalled(application)) {
+                service.remove(LocalFactory.get(NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(application.getIdentifier())));
+                return true;
+            }
+            return false;
         }
         catch(LocalAccessDeniedException e) {
             return false;
