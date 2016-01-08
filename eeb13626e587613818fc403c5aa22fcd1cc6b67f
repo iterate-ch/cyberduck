@@ -11,3 +11,7 @@ To translate this unsynced commit to Subversion and restore synchronized state d
 
 3. Push merged commit back to the Git repository
     $ git push origin refs/heads/master
+
+Automatic recovery from the out of sync state has failed:
+
+svn: E170001: Authentication required for '<https://svn.cyberduck.io:443> Subversion Repository'
