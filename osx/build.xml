@@ -88,7 +88,7 @@
         </antcall>
         <antcall target="zip">
             <param name="directory" value="${build}"/>
-            <param name="target" value="${app.name}-${version}.zip"/>
+            <param name="target" value="${app.name}-${version}.${revision}.zip"/>
             <param name="source" value="${app.name}.app"/>
         </antcall>
         <checksum file="${build.deploy}/${app.name}-${revision}.tar.gz"
