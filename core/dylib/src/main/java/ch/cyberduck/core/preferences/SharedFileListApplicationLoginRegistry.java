@@ -34,7 +34,15 @@ public class SharedFileListApplicationLoginRegistry implements ApplicationLoginR
 
     private final FinderSidebarService service = new FinderSidebarService(SidebarService.List.login);
 
-    private final ApplicationFinder finder = ApplicationFinderFactory.get();
+    private final ApplicationFinder finder;
+
+    public SharedFileListApplicationLoginRegistry() {
+        this(ApplicationFinderFactory.get());
+    }
+
+    public SharedFileListApplicationLoginRegistry(final ApplicationFinder finder) {
+        this.finder = finder;
+    }
 
     @Override
     public boolean register(final Application application) {
