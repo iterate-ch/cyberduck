@@ -52,7 +52,7 @@ public class SessionListWorkerTest {
 
     @Test
     public void testCacheNotFoundWithController() throws Exception {
-        final Host host = new Host(new TestProtocol());
+        final Host host = new Host(new TestProtocol(), "localhost");
         final Session<?> session = new NullSession(host);
         final PathCache cache = new PathCache(1);
         final SessionListWorker worker = new SessionListWorker(cache,
@@ -71,7 +71,7 @@ public class SessionListWorkerTest {
 
     @Test
     public void testCacheListCanceledWithController() throws Exception {
-        final Host host = new Host(new TestProtocol());
+        final Host host = new Host(new TestProtocol(), "localhost");
         final Session<?> session = new NullSession(host) {
             @Override
             public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
