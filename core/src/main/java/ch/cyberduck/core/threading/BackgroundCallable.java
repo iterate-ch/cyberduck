@@ -53,6 +53,8 @@ public final class BackgroundCallable<T> implements Callable<T> {
         catch(ConnectionCanceledException e) {
             // Do not report as failed
             log.warn(String.format("Connection canceled for background task %s", action));
+            // Canceled action yields no result
+            return null;
         }
         catch(Exception e) {
             controller.failure(client, e);
@@ -64,6 +66,8 @@ public final class BackgroundCallable<T> implements Callable<T> {
                 // Retry
                 return this.call();
             }
+            // Failed action yields no result
+            return null;
         }
         finally {
             try {
@@ -91,7 +95,5 @@ public final class BackgroundCallable<T> implements Callable<T> {
                 log.debug(String.format("Releasing lock for background runnable %s", action));
             }
         }
-        // Canceled action yields no result
-        return null;
     }
 }
