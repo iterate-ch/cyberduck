@@ -1,6 +1,8 @@
 package ch.cyberduck.core.preferences;
 
 import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.local.DisabledApplicationFinder;
+import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
 
 import org.junit.Test;
 
@@ -14,11 +16,11 @@ public class SharedFileListApplicationLoginRegistryTest {
 
     @Test
     public void testRegister() throws Exception {
-        assertTrue(new SharedFileListApplicationLoginRegistry().register(new Application("ch.sudo.cyberduck")));
+        assertTrue(new SharedFileListApplicationLoginRegistry(new LaunchServicesApplicationFinder()).register(new Application("ch.sudo.cyberduck")));
     }
 
     @Test
     public void testRegisterInvalidBundle() throws Exception {
-        assertFalse(new SharedFileListApplicationLoginRegistry().register(new Application("_ch.sudo.cyberduck")));
+        assertFalse(new SharedFileListApplicationLoginRegistry(new DisabledApplicationFinder()).register(new Application("ch.sudo.cyberduck")));
     }
 }
