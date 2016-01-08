@@ -141,8 +141,6 @@ public abstract class Cache<T extends Referenceable> {
         for(T f : children) {
             reverse.put(this.key(f), reference);
         }
-        // Update modification date
-        children.attributes().setTimestamp(System.currentTimeMillis());
         return impl.put(reference, children);
     }
 
