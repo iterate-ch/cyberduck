@@ -70,7 +70,7 @@ public class DAVMetadataFeatureTest {
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Map<String, String> metadata = new DAVMetadataFeature(session).getMetadata(new Path("/trunk/README.txt", EnumSet.of(Path.Type.file)));
+        final Map<String, String> metadata = new DAVMetadataFeature(session).getMetadata(new Path("/trunk/README.md", EnumSet.of(Path.Type.file)));
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("repository-uuid"));
         assertEquals("9e2dff1d-8f06-0410-b5b1-4d70b6340adc", metadata.get("repository-uuid"));
