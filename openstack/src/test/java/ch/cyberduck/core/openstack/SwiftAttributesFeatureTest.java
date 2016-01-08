@@ -22,8 +22,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -58,14 +57,23 @@ public class SwiftAttributesFeatureTest {
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
-        final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
+        final String name = UUID.randomUUID().toString() + ".txt";
+        final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
         new SwiftTouchFeature(session).touch(test);
-        final String v = UUID.randomUUID().toString();
-        final PathAttributes attributes = new SwiftAttributesFeature(session).find(test);
+        final SwiftAttributesFeature f = new SwiftAttributesFeature(session);
+        final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
         assertEquals(EnumSet.of(Path.Type.file), test.getType());
         assertEquals("d41d8cd98f00b204e9800998ecf8427e", attributes.getChecksum().hash);
         assertNotNull(attributes.getModificationDate());
+        // Test wrong type
+        try {
+            f.find(new Path(container, name, EnumSet.of(Path.Type.directory, Path.Type.placeholder)));
+            fail();
+        }
+        catch(NotfoundException e) {
+            // Expected
+        }
         new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {
