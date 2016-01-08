@@ -36,7 +36,7 @@ public class SpectraProtocol extends AbstractProtocol {
 
     @Override
     public boolean isPortConfigurable() {
-        return false;
+        return true;
     }
 
     @Override
