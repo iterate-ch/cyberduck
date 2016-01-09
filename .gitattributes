@@ -2203,6 +2203,8 @@ profiles/Softlayer[!!-~](Dallas[!!-~]Private[!!-~]Network).cyberduckprofile -tex
 profiles/Softlayer[!!-~](Dallas).cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Softlayer[!!-~](Singapore[!!-~]Private[!!-~]Network).cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Softlayer[!!-~](Singapore).cyberduckprofile -text svneol=unset#application/octet-stream
+profiles/Spectra[!!-~]S3[!!-~](HTTP).cyberduckprofile -text svneol=native#application/octet-stream
+profiles/Spectra[!!-~]S3[!!-~](HTTPS).cyberduckprofile -text svneol=native#application/octet-stream
 profiles/Verizon[!!-~]Cloud[!!-~]Storage[!!-~](AMS1A).cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Verizon[!!-~]Cloud[!!-~]Storage[!!-~](IAD3A).cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Verizon[!!-~]Cloud[!!-~]Storage[!!-~](USHAA).cyberduckprofile -text svneol=unset#application/octet-stream
