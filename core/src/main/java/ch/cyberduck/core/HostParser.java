@@ -53,6 +53,11 @@ public final class HostParser {
                 preferences.getProperty("connection.protocol.default"));
     }
 
+    public HostParser(final ProtocolFactory factory, final Protocol scheme) {
+        this.factory = factory;
+        this.scheme = scheme;
+    }
+
     public Host get(final String url) {
         return HostParser.parse(factory, scheme, url);
     }
