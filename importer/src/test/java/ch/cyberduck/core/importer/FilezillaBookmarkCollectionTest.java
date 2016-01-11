@@ -1,6 +1,5 @@
 package ch.cyberduck.core.importer;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.PasswordStore;
