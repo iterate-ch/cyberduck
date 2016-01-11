@@ -281,9 +281,9 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.19</version>
                     <configuration>
+                        <argLine>-Djava.library.path=${project.build.directory}</argLine>
                         <systemPropertiesFile>${env.HOME}/test.properties</systemPropertiesFile>
                         <systemPropertyVariables>
-                            <java.library.path>${project.build.directory}</java.library.path>
                             <jna.library.path>${project.build.directory}</jna.library.path>
                         </systemPropertyVariables>
                         <excludedGroups>ch.cyberduck.test.IntegrationTest</excludedGroups>
@@ -294,9 +294,9 @@
                     <artifactId>maven-failsafe-plugin</artifactId>
                     <version>2.19</version>
                     <configuration>
+                        <argLine>-Djava.library.path=${project.build.directory}</argLine>
                         <systemPropertiesFile>${env.HOME}/test.properties</systemPropertiesFile>
                         <systemPropertyVariables>
-                            <java.library.path>${project.build.directory}</java.library.path>
                             <jna.library.path>${project.build.directory}</jna.library.path>
                         </systemPropertyVariables>
                         <includes>

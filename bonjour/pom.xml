@@ -44,13 +44,6 @@
             <artifactId>dnssd</artifactId>
             <version>1.0</version>
         </dependency>
-        <dependency>
-            <groupId>com.apple</groupId>
-            <artifactId>libjdns_sd</artifactId>
-            <type>dylib</type>
-            <scope>runtime</scope>
-            <version>1.0</version>
-        </dependency>
     </dependencies>
 
     <profiles>
@@ -98,6 +91,30 @@
             <properties>
                 <maven.test.skip>true</maven.test.skip>
             </properties>
+        </profile>
+        <profile>
+            <id>mac</id>
+            <activation>
+                <os>
+                    <family>Mac</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+            <dependencies>
+                <dependency>
+                    <groupId>com.apple</groupId>
+                    <artifactId>libjdns_sd</artifactId>
+                    <type>dylib</type>
+                    <scope>runtime</scope>
+                    <version>1.0</version>
+                </dependency>
+            </dependencies>
         </profile>
     </profiles>
 </project>

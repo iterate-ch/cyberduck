@@ -47,10 +47,17 @@
         <exec dir="${home}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
             <arg line="xcodebuild -project ${home}/'Cyberduck.xcodeproj' -configuration '${xcode.configuration}' -target '${xcode.target}' ${build.settings}"/>
         </exec>
-        <!-- Copy runtime -->
         <antcall target="runtime">
             <param name="bundle" value="${cli.bundle}"/>
         </antcall>
+        <antcall target="shared-library-install-name">
+            <param name="oldname" value="/System/Library/Frameworks/JavaVM.framework/Versions/A/JavaVM"/>
+            <param name="newname" value="${bundle.runtime.lib}"/>
+            <param name="directory" value="${cli.bundle}/${bundle.frameworks}"/>
+        </antcall>
+    </target>
+
+    <target name="package" depends="build">
         <antcall target="codesign">
             <param name="bundle" value="${cli.bundle}"/>
             <param name="codesign.options" value="--force"/>

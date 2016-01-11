@@ -1,7 +1,9 @@
 package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.ResolveFailedException;
+import ch.cyberduck.test.IntegrationTest;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -10,6 +12,7 @@ import static org.junit.Assert.assertNull;
 /**
  * @version $Id$
  */
+@IntegrationTest
 public class ResolverTest {
 
     @Test
@@ -29,6 +32,7 @@ public class ResolverTest {
     }
 
     @Test
+    @Ignore
     public void testResolveLinkLocalZoneIndexInterfaceName() throws Exception {
         assertEquals("andaman.local", new Resolver().resolve("andaman.local").getHostName());
         assertEquals("fe80:0:0:0:c62c:3ff:fe0b:8670%en0", new Resolver().resolve("fe80::c62c:3ff:fe0b:8670%en0").getHostAddress());
