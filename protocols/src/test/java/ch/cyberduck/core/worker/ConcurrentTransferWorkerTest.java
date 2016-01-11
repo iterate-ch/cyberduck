@@ -27,7 +27,6 @@ import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.ssl.CertificateStoreX509KeyManager;
 import ch.cyberduck.core.ssl.CertificateStoreX509TrustManager;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
-import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferItemCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
@@ -57,7 +56,7 @@ import java.util.concurrent.TimeoutException;
 
 import static org.junit.Assert.*;
 
-public class ConcurrentTransferWorkerTest extends AbstractTestCase {
+public class ConcurrentTransferWorkerTest {
 
     @Test(expected = BackgroundException.class)
     public void testBorrowDnsFailure() throws Exception {

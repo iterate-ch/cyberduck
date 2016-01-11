@@ -18,28 +18,62 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.ftp.FTPProtocol;
+import ch.cyberduck.core.openstack.SwiftProtocol;
+import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
+
 import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class TerminalOptionsInputValidatorTest  {
+public class TerminalOptionsInputValidatorTest {
 
     @Test
     public void testValidate() throws Exception {
-        assertFalse(new TerminalOptionsInputValidator().validate("ftp://cdn.duck.sh/%%~nc"));
-        assertTrue(new TerminalOptionsInputValidator().validate("rackspace://cdn.duck.sh/%%~nc"));
+        assertTrue(new TerminalOptionsInputValidator(new ProtocolFactory(Collections.singleton(new FTPProtocol())))
+                .validate("ftp://cdn.duck.sh/"));
+        assertFalse(new TerminalOptionsInputValidator(new ProtocolFactory(Collections.singleton(new FTPProtocol())))
+                .validate("ftp://cdn.duck.sh/%%~nc"));
+    }
+
+    @Test
+    public void testValidateProfile() throws Exception {
+        final Set<Protocol> list = new HashSet<>(Arrays.asList(
+                new SwiftProtocol(),
+                new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new SwiftProtocol())))
+                        .read(new Local("../profiles/Rackspace US.cyberduckprofile"))
+        ));
+        assertTrue(new TerminalOptionsInputValidator(new ProtocolFactory(list)).validate("rackspace://cdn.duck.sh/%%~nc"));
     }
 
     @Test
     public void testColonInPath() throws Exception {
         final String uri = "rackspace://cdn.duck.sh/duck-4.6.2.16174:16179M.pkg";
-        assertTrue(new TerminalOptionsInputValidator().validate(uri));
+        final Set<Protocol> list = new HashSet<>(Arrays.asList(
+                new SwiftProtocol(),
+                new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new SwiftProtocol())))
+                        .read(new Local("../profiles/Rackspace US.cyberduckprofile"))
+        ));
+        assertTrue(new TerminalOptionsInputValidator(new ProtocolFactory(list)).validate(uri));
     }
 
     @Test
     public void testListContainers() throws Exception {
-        assertTrue(new TerminalOptionsInputValidator().validate("rackspace:///"));
-        assertFalse(new TerminalOptionsInputValidator().validate("rackspace://"));
+        final Set<Protocol> list = new HashSet<>(Arrays.asList(
+                new SwiftProtocol(),
+                new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new SwiftProtocol())))
+                        .read(new Local("../profiles/Rackspace US.cyberduckprofile"))
+        ));
+        assertTrue(new TerminalOptionsInputValidator(new ProtocolFactory(list)).validate("rackspace:///"));
+        assertFalse(new TerminalOptionsInputValidator(new ProtocolFactory(list)).validate("rackspace://"));
     }
 }

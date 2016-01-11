@@ -17,7 +17,6 @@ package ch.cyberduck.core.shared;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
@@ -57,7 +56,7 @@ import static org.junit.Assert.assertNotNull;
  * @version $Id$
  */
 @Category(IntegrationTest.class)
-public class DefaultDownloadFeatureTest extends AbstractTestCase {
+public class DefaultDownloadFeatureTest {
 
     @Test
     public void testTransferSegment() throws Exception {

@@ -41,6 +41,16 @@ public class TerminalOptionsInputValidator {
 
     private Console console = new Console();
 
+    private final ProtocolFactory factory;
+
+    public TerminalOptionsInputValidator() {
+        this(ProtocolFactory.global);
+    }
+
+    public TerminalOptionsInputValidator(final ProtocolFactory factory) {
+        this.factory = factory;
+    }
+
     public boolean validate(final CommandLine input) {
         for(Option o : input.getOptions()) {
             if(Option.UNINITIALIZED == o.getArgs()) {
@@ -125,13 +135,13 @@ public class TerminalOptionsInputValidator {
      */
     protected boolean validate(final String uri) {
         if(uri.indexOf("://", 0) != -1) {
-            final Protocol protocol = ProtocolFactory.forName(uri.substring(0, uri.indexOf("://", 0)));
+            final Protocol protocol = factory.find(uri.substring(0, uri.indexOf("://", 0)));
             if(null == protocol) {
                 console.printf("Missing protocol in URI %s%n", uri);
                 return false;
             }
         }
-        final Host host = HostParser.parse(uri);
+        final Host host = new HostParser(factory).get(uri);
         switch(host.getProtocol().getType()) {
             case s3:
             case googlestorage:
