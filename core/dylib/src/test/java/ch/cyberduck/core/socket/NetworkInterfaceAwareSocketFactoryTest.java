@@ -17,6 +17,8 @@ package ch.cyberduck.core.socket;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.test.IntegrationTest;
+
 import org.junit.Test;
 
 import java.net.Inet6Address;
@@ -31,6 +33,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
+@IntegrationTest
 public class NetworkInterfaceAwareSocketFactoryTest {
 
     @Test

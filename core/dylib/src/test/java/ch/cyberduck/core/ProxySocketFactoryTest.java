@@ -24,6 +24,7 @@ import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.socket.DefaultSocketConfigurator;
 import ch.cyberduck.core.socket.SocketConfigurator;
 import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 
@@ -40,6 +41,7 @@ import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
+@IntegrationTest
 public class ProxySocketFactoryTest {
 
     @Test

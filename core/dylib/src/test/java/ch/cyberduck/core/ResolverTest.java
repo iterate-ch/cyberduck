@@ -1,6 +1,7 @@
 package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.ResolveFailedException;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 
@@ -10,6 +11,7 @@ import static org.junit.Assert.assertNull;
 /**
  * @version $Id$
  */
+@IntegrationTest
 public class ResolverTest {
 
     @Test
