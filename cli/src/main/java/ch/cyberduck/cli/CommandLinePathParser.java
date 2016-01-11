@@ -24,6 +24,7 @@ import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathKindDetector;
+import ch.cyberduck.core.ProtocolFactory;
 
 import org.apache.commons.cli.CommandLine;
 
@@ -39,12 +40,19 @@ public class CommandLinePathParser {
 
     private final CommandLine input;
 
+    private final ProtocolFactory factory;
+
     public CommandLinePathParser(final CommandLine input) {
+        this(input, ProtocolFactory.global);
+    }
+
+    public CommandLinePathParser(final CommandLine input, final ProtocolFactory factory) {
         this.input = input;
+        this.factory = factory;
     }
 
     public Path parse(final String uri) {
-        final Host host = HostParser.parse(uri);
+        final Host host = new HostParser(factory).get(uri);
         switch(host.getProtocol().getType()) {
             case s3:
             case googlestorage:

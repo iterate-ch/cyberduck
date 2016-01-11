@@ -35,58 +35,52 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class CommandLinePathParserTest  {
+public class CommandLinePathParserTest {
 
     @Test
     public void testParse() throws Exception {
         final CommandLineParser parser = new PosixParser();
         final CommandLine input = parser.parse(new Options(), new String[]{});
 
-        ProtocolFactory.register(new FTPTLSProtocol());
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Arrays.asList(new FTPTLSProtocol(), new S3Protocol())));
         assertEquals(new Path("/", EnumSet.of(Path.Type.directory)),
-                new CommandLinePathParser(input).parse("ftps://u@test.cyberduck.ch/"));
+                new CommandLinePathParser(input, factory).parse("ftps://u@test.cyberduck.ch/"));
         assertEquals(new Path("/d", EnumSet.of(Path.Type.directory)),
-                new CommandLinePathParser(input).parse("ftps://u@test.cyberduck.ch/d/"));
+                new CommandLinePathParser(input, factory).parse("ftps://u@test.cyberduck.ch/d/"));
         assertEquals(new Path("/d", EnumSet.of(Path.Type.file)),
-                new CommandLinePathParser(input).parse("ftps://u@test.cyberduck.ch/d"));
+                new CommandLinePathParser(input, factory).parse("ftps://u@test.cyberduck.ch/d"));
 
-        ProtocolFactory.register(new S3Protocol());
         assertEquals(new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.directory)),
-                new CommandLinePathParser(input).parse("s3://u@test.cyberduck.ch/"));
+                new CommandLinePathParser(input, factory).parse("s3://u@test.cyberduck.ch/"));
         assertEquals(new Path("/test.cyberduck.ch/d", EnumSet.of(Path.Type.directory)),
-                new CommandLinePathParser(input).parse("s3://u@test.cyberduck.ch/d/"));
+                new CommandLinePathParser(input, factory).parse("s3://u@test.cyberduck.ch/d/"));
         assertEquals(new Path("/test.cyberduck.ch/d", EnumSet.of(Path.Type.file)),
-                new CommandLinePathParser(input).parse("s3://u@test.cyberduck.ch/d"));
+                new CommandLinePathParser(input, factory).parse("s3://u@test.cyberduck.ch/d"));
     }
 
     @Test
     public void testParseProfile() throws Exception {
-        ProtocolFactory.register(new SwiftProtocol());
-        final ProfilePlistReader reader = new ProfilePlistReader(new DeserializerFactory(PlistDeserializer.class.getName()));
-        ProtocolFactory.register(new SwiftProtocol());
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singletonList(new SwiftProtocol())));
+        final ProfilePlistReader reader = new ProfilePlistReader(factory, new DeserializerFactory(PlistDeserializer.class.getName()));
         final Profile profile = reader.read(
                 new Local("../profiles/Rackspace US.cyberduckprofile")
         );
         assertNotNull(profile);
-        ProtocolFactory.register(profile);
 
         final CommandLineParser parser = new PosixParser();
         final CommandLine input = parser.parse(new Options(), new String[]{});
 
         assertEquals(new Path("/cdn.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume)),
-                new CommandLinePathParser(input).parse("rackspace://u@cdn.cyberduck.ch/"));
-    }
-
-    @Test
-    public void testParseRackspaceRoot() throws Exception {
-        final CommandLineParser parser = new PosixParser();
-        final CommandLine input = parser.parse(new Options(), new String[]{});
+                new CommandLinePathParser(input, new ProtocolFactory(new HashSet<>(Arrays.asList(new SwiftProtocol(), profile)))).parse("rackspace://u@cdn.cyberduck.ch/"));
         assertEquals(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)),
-                new CommandLinePathParser(input).parse("rackspace:///"));
+                new CommandLinePathParser(input, new ProtocolFactory(new HashSet<>(Arrays.asList(new SwiftProtocol(), profile)))).parse("rackspace:///"));
     }
 }

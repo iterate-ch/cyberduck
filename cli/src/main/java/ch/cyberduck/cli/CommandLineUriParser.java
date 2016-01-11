@@ -21,6 +21,7 @@ package ch.cyberduck.cli;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProtocolFactory;
 
 import org.apache.commons.cli.CommandLine;
 
@@ -31,12 +32,19 @@ public class CommandLineUriParser {
 
     private final CommandLine input;
 
+    private final ProtocolFactory factory;
+
     public CommandLineUriParser(final CommandLine input) {
+        this(input, ProtocolFactory.global);
+    }
+
+    public CommandLineUriParser(final CommandLine input, final ProtocolFactory factory) {
         this.input = input;
+        this.factory = factory;
     }
 
     public Host parse(final String uri) {
-        final Host host = HostParser.parse(uri);
+        final Host host = new HostParser(factory).get(uri);
         switch(host.getProtocol().getType()) {
             case s3:
             case googlestorage:
@@ -45,7 +53,7 @@ public class CommandLineUriParser {
                     host.setRegion(input.getOptionValue(TerminalOptionsBuilder.Params.region.name()));
                 }
         }
-        final Path directory = new CommandLinePathParser(input).parse(uri);
+        final Path directory = new CommandLinePathParser(input, factory).parse(uri);
         if(directory.isDirectory()) {
             host.setDefaultPath(directory.getAbsolute());
         }
