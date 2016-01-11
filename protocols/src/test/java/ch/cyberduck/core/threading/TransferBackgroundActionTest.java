@@ -19,10 +19,10 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.AbstractController;
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
@@ -37,7 +37,6 @@ import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.sftp.SFTPDeleteFeature;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPSession;
-import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
@@ -63,7 +62,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class TransferBackgroundActionTest extends AbstractTestCase {
+public class TransferBackgroundActionTest {
 
     @Test
     public void testWorkerImplementationDefaultSingle() throws Exception {
@@ -114,7 +113,7 @@ public class TransferBackgroundActionTest extends AbstractTestCase {
             @Override
             public Credentials getCredentials() {
                 return new Credentials(
-                        properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
+                        System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
                 ) {
                     @Override
                     public void setPassword(final String pass) {
@@ -177,11 +176,11 @@ public class TransferBackgroundActionTest extends AbstractTestCase {
     @Test
     public void testCopyBetweenHosts() throws Exception {
         final SFTPSession session = new SFTPSession(new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
+                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         )));
 
         final FTPSession destination = new FTPSession(new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         )));
 
         final Path directory = new Path("/home/jenkins/transfer", EnumSet.of(Path.Type.directory));
@@ -297,7 +296,12 @@ public class TransferBackgroundActionTest extends AbstractTestCase {
             }
         };
         // Connect, prepare and run
-        action.call();
+        try {
+            action.call();
+        }
+        catch(BackgroundException e) {
+            //
+        }
         assertFalse(alert.get());
         assertNotNull(action.getException());
         assertTrue(paused.get());
