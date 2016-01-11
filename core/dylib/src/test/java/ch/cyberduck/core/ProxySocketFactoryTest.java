@@ -26,6 +26,7 @@ import ch.cyberduck.core.socket.SocketConfigurator;
 import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -84,7 +85,9 @@ public class ProxySocketFactoryTest {
         assertTrue(socket.getInetAddress() instanceof Inet6Address);
     }
 
+    // IPv6 in the test environment
     @Test
+    @Ignore
     public void testConnectIPv6LocalAddress() throws Exception {
         for(String address : Arrays.asList("fe80::c62c:3ff:fe0b:8670")) {
             final Socket socket = new ProxySocketFactory(new TestProtocol(), new TrustManagerHostnameCallback() {
@@ -125,6 +128,7 @@ public class ProxySocketFactoryTest {
 
     // IPv6 in the test environment
     @Test
+    @Ignore
     public void testCreateSocketIPv6OnlyWithInetAddress() throws Exception {
         for(String address : Arrays.asList("ftp6.netbsd.org")) {
             final Socket socket = new ProxySocketFactory(new TestProtocol(), new TrustManagerHostnameCallback() {
@@ -147,6 +151,7 @@ public class ProxySocketFactoryTest {
 
     // IPv6 in the test environment
     @Test
+    @Ignore
     public void testCreateSocketIPv6OnlyUnknownDestination() throws Exception {
         for(String address : Arrays.asList("ftp6.netbsd.org")) {
             final Socket socket = new ProxySocketFactory(new TestProtocol(), new TrustManagerHostnameCallback() {
@@ -181,7 +186,9 @@ public class ProxySocketFactoryTest {
                 ((Inet6Address) loopback).getScopedInterface().getIndex());
     }
 
+    // IPv6 in the test environment
     @Test
+    @Ignore
     public void testDefaultNetworkInterfaceForIP6Address() throws Exception {
         assertEquals(InetAddress.getByName("::1"), InetAddress.getByName("::1%en0"));
         // Bug. Defaults to awdl0 on OS X
