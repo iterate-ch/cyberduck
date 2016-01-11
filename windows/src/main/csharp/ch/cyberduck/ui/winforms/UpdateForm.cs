@@ -1,6 +1,6 @@
 // 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -11,22 +11,22 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-// 
+//  
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+using ch.cyberduck.core;
+using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller;
-using ch.cyberduck.core;
-using ch.cyberduck.core.i18n;
 using org.apache.log4j;
 using wyDay.Controls;
-using PreferencesFactory = ch.cyberduck.core.preferences.PreferencesFactory;
+using Path = System.IO.Path;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -41,23 +41,21 @@ namespace Ch.Cyberduck.Ui.Winforms
             InitializeComponent();
 
             Closing += delegate
+            {
+                if (updater.UpdateStepOn == UpdateStepOn.DownloadingUpdate ||
+                    updater.UpdateStepOn == UpdateStepOn.ExtractingUpdate ||
+                    updater.UpdateStepOn == UpdateStepOn.Checking)
                 {
-                    if (updater.UpdateStepOn == UpdateStepOn.DownloadingUpdate ||
-                        updater.UpdateStepOn == UpdateStepOn.ExtractingUpdate ||
-                        updater.UpdateStepOn == UpdateStepOn.Checking)
-                    {
-                        updater.Cancel();
-                    }
-                };
+                    updater.Cancel();
+                }
+            };
 
             ConfigureUpdater();
 
             pictureBox.Image = IconCache.Instance.IconForName("cyberduck", 64);
             newVersionAvailableLabel.Text =
-                LocaleFactory.localizedString("A new version of %@ is available!", "Sparkle").Replace("%@",
-                                                                                               PreferencesFactory.get().
-                                                                                                           getProperty(
-                                                                                                               "application.name"));
+                LocaleFactory.localizedString("A new version of %@ is available!", "Sparkle")
+                    .Replace("%@", PreferencesFactory.get().getProperty("application.name"));
             //force handle creation to make the updater work
             IntPtr intPtr = Handle;
             OnLoad(new EventArgs());
@@ -126,7 +124,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         private void ConfigureUpdater()
         {
-            if (!File.Exists("Updater.exe"))
+            if (!File.Exists(Path.Combine(Application.ExecutablePath, "Updater.exe")))
             {
                 //as of Beta7 the updater filename is Updater.exe. wyUpdate.exe is not automatically renamed.
                 updater.wyUpdateLocation = "wyUpdate.exe";
@@ -137,90 +135,88 @@ namespace Ch.Cyberduck.Ui.Winforms
             updater.Visible = false;
             updater.UpdateType = UpdateType.DoNothing;
             updater.UpdateAvailable += delegate
+            {
+                string newVersion = updater.Version;
+                if (newVersion == null)
                 {
-                    string newVersion = updater.Version;
-                    if (newVersion == null)
-                    {
-                        //could not sort out why this event is triggered in some cases altough there is no new version available
-                        return;
-                    }
+                    //could not sort out why this event is triggered in some cases altough there is no new version available
+                    return;
+                }
 
-                    laterButton.Visible = true;
-                    installButton.Text = LocaleFactory.localizedString("Install and Relaunch", "Sparkle");
-                    if (Utils.IsVistaOrLater)
-                    {
-                        SetButtonShield(installButton, true);
-                    }
+                laterButton.Visible = true;
+                installButton.Text = LocaleFactory.localizedString("Install and Relaunch", "Sparkle");
+                if (Utils.IsVistaOrLater)
+                {
+                    SetButtonShield(installButton, true);
+                }
 
-                    tableLayoutPanel.RowStyles[7].SizeType = SizeType.Percent;
-                    tableLayoutPanel.RowStyles[7].Height = 100;
+                tableLayoutPanel.RowStyles[7].SizeType = SizeType.Percent;
+                tableLayoutPanel.RowStyles[7].Height = 100;
 
-                    string currentVersion =
-                        PreferencesFactory.get().getProperty("application.version");
+                string currentVersion = PreferencesFactory.get().getProperty("application.version");
 
-                    versionLabel.Text = LocaleFactory.localizedString(
-                        "%1$@ %2$@ is now available (you have %3$@). Would you like to download it now?",
-                        "Sparkle")
-                                              .Replace("%1$@", PreferencesFactory.get().getProperty("application.name"))
-                                              .Replace("%2$@", newVersion).Replace("%3$@", currentVersion);
+                versionLabel.Text =
+                    LocaleFactory.localizedString(
+                        "%1$@ %2$@ is now available (you have %3$@). Would you like to download it now?", "Sparkle")
+                        .Replace("%1$@", PreferencesFactory.get().getProperty("application.name"))
+                        .Replace("%2$@", newVersion)
+                        .Replace("%3$@", currentVersion);
 
-                    SetStatusChecking(false);
-                    statusLabel.Text = "Update available";
-                    changesTextBox.Text = updater.Changes.Replace("\n", "\r\n");
-                    //installButton.Enabled = true;
-                    Show();
-                };
+                SetStatusChecking(false);
+                statusLabel.Text = "Update available";
+                changesTextBox.Text = updater.Changes.Replace("\n", "\r\n");
+                //installButton.Enabled = true;
+                Show();
+            };
 
             // error cases
             updater.CheckingFailed +=
                 delegate(object sender, FailArgs args)
-                    { UpdateStatusLabel(args.ErrorTitle + Environment.NewLine + args.ErrorMessage, true); };
+                {
+                    UpdateStatusLabel(args.ErrorTitle + Environment.NewLine + args.ErrorMessage, true);
+                };
 
             updater.UpdateFailed +=
-                (sender, args) =>
-                UpdateStatusLabel(args.ErrorTitle + Environment.NewLine + args.ErrorMessage, true);
+                (sender, args) => UpdateStatusLabel(args.ErrorTitle + Environment.NewLine + args.ErrorMessage, true);
 
             updater.DownloadingOrExtractingFailed +=
-                (sender, args) =>
-                UpdateStatusLabel(args.ErrorTitle + Environment.NewLine + args.ErrorMessage, true);
+                (sender, args) => UpdateStatusLabel(args.ErrorTitle + Environment.NewLine + args.ErrorMessage, true);
             // end error cases
 
             updater.ProgressChanged += delegate(object sender, int progress) { progressBar.Value = progress; };
 
             updater.BeforeDownloading += (sender, args) =>
-                {
-                    UpdateStatusLabel(
-                        LocaleFactory.localizedString("Downloading update...", "Sparkle"), false);
-                    progressBar.Style = ProgressBarStyle.Continuous;
-                    progressBar.Value = 0;
-                    progressBar.Visible = true;
-                };
+            {
+                UpdateStatusLabel(LocaleFactory.localizedString("Downloading update...", "Sparkle"), false);
+                progressBar.Style = ProgressBarStyle.Continuous;
+                progressBar.Value = 0;
+                progressBar.Visible = true;
+            };
 
             updater.UpToDate += delegate
-                {
-                    progressBar.Visible = false;
-                    UpdateStatusLabel(LocaleFactory.localizedString("You're up to date!", "Sparkle"), false);
-                };
+            {
+                progressBar.Visible = false;
+                UpdateStatusLabel(LocaleFactory.localizedString("You're up to date!", "Sparkle"), false);
+            };
 
             updater.ReadyToBeInstalled += delegate
-                {
-                    progressBar.Visible = false;
-                    statusLabel.Text = LocaleFactory.localizedString("Installing update...",
-                                                              "Sparkle");
-                    updater.InstallNow();
-                };
+            {
+                progressBar.Visible = false;
+                statusLabel.Text = LocaleFactory.localizedString("Installing update...", "Sparkle");
+                updater.InstallNow();
+            };
 
             updater.BeforeChecking += delegate
+            {
+                if (Utils.IsVistaOrLater)
                 {
-                    if (Utils.IsVistaOrLater)
-                    {
-                        SetButtonShield(installButton, false);
-                    }
-                    laterButton.Visible = false;
-                    installButton.Text = LocaleFactory.localizedString("OK", "Sparkle");
-                    progressBar.Style = ProgressBarStyle.Marquee;
-                    progressBar.Visible = true;
-                };
+                    SetButtonShield(installButton, false);
+                }
+                laterButton.Visible = false;
+                installButton.Text = LocaleFactory.localizedString("OK", "Sparkle");
+                progressBar.Style = ProgressBarStyle.Marquee;
+                progressBar.Visible = true;
+            };
         }
 
         private void UpdateStatusLabel(String status, bool error)
@@ -234,10 +230,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             statusLabel.Visible = true;
             statusLabel.ForeColor = error ? Color.Red : Color.FromKnownColor(KnownColor.ControlText);
             statusLabel.Text = error
-                                   ? LocaleFactory.localizedString(
-                                       "An error occurred during installation. Please try again later." + " ", "Sparkle")
-                                     + status
-                                   : status;
+                ? LocaleFactory.localizedString("An error occurred during installation. Please try again later." + " ",
+                    "Sparkle") + status
+                : status;
         }
 
         public void SetStatusChecking(bool checking)
