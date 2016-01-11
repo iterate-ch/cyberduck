@@ -433,20 +433,20 @@
 
     <distributionManagement>
         <repository>
-            <id>maven.iterate.ch-release</id>
-            <url>s3://repo.maven.iterate.ch/releases/</url>
+            <id>maven.cyberduck.io-release</id>
+            <url>s3://repo.maven.cyberduck.io/releases/</url>
             <layout>default</layout>
         </repository>
         <snapshotRepository>
-            <id>maven.iterate.ch-snapshot</id>
-            <url>s3://repo.maven.iterate.ch/snapshots/</url>
+            <id>maven.cyberduck.io-snapshot</id>
+            <url>s3://repo.maven.cyberduck.io/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 
     <repositories>
         <repository>
-            <id>maven.iterate.ch-release</id>
-            <url>s3://repo.maven.iterate.ch/releases/</url>
+            <id>maven.cyberduck.io-release</id>
+            <url>s3://repo.maven.cyberduck.io/releases/</url>
             <layout>default</layout>
             <releases>
                 <enabled>true</enabled>
@@ -456,8 +456,8 @@
             </snapshots>
         </repository>
         <repository>
-            <id>maven.iterate.ch-snapshot</id>
-            <url>s3://repo.maven.iterate.ch/snapshots/</url>
+            <id>maven.cyberduck.io-snapshot</id>
+            <url>s3://repo.maven.cyberduck.io/snapshots/</url>
             <layout>default</layout>
             <releases>
                 <enabled>false</enabled>
