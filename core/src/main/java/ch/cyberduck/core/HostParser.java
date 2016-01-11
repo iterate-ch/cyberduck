@@ -41,17 +41,20 @@ public final class HostParser {
      */
     private final Protocol scheme;
 
+    private final ProtocolFactory factory;
+
     public HostParser() {
-        this(ProtocolFactory.forName(
-                preferences.getProperty("connection.protocol.default")));
+        this(ProtocolFactory.global);
     }
 
-    public HostParser(final Protocol scheme) {
-        this.scheme = scheme;
+    public HostParser(final ProtocolFactory factory) {
+        this.factory = factory;
+        this.scheme = factory.find(
+                preferences.getProperty("connection.protocol.default"));
     }
 
     public Host get(final String url) {
-        return HostParser.parse(scheme, url);
+        return HostParser.parse(factory, scheme, url);
     }
 
     /**
@@ -61,21 +64,18 @@ public final class HostParser {
      * @return Bookmark
      */
     public static Host parse(final String url) {
-        return parse(ProtocolFactory.forName(
+        return parse(ProtocolFactory.global, ProtocolFactory.global.find(
                 preferences.getProperty("connection.protocol.default")), url);
     }
 
-    public static Host parse(final Protocol scheme, final String url) {
+    public static Host parse(final ProtocolFactory factory, final Protocol scheme, final String url) {
         final String input = url.trim();
         int begin = 0;
         int cut;
         Protocol protocol = null;
         if(input.indexOf("://", begin) != -1) {
             cut = input.indexOf("://", begin);
-            protocol = ProtocolFactory.forScheme(input.substring(begin, cut));
-            if(null == protocol) {
-                protocol = ProtocolFactory.forName(input.substring(begin, cut));
-            }
+            protocol = factory.find(input.substring(begin, cut));
             begin += cut - begin + 3;
         }
         if(null == protocol) {
