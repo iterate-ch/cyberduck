@@ -246,7 +246,9 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         if(type == Write.class) {
             if(preferences.getBoolean("s3.write.multipart")) {
-                return (T) new S3MultipartWriteFeature(this);
+                if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
+                    return (T) new S3MultipartWriteFeature(this);
+                }
             }
             return (T) new S3WriteFeature(this);
         }
