@@ -21,6 +21,7 @@ package ch.cyberduck.core.ssl;
 import org.apache.log4j.Logger;
 
 import java.security.cert.X509Certificate;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -38,7 +39,7 @@ public abstract class AbstractX509TrustManager implements X509TrustManager {
      * no duplicate elements
      */
     private Set<X509Certificate> accepted
-            = new LinkedHashSet<X509Certificate>();
+            = Collections.synchronizedSet(new LinkedHashSet<X509Certificate>());
 
     protected void accept(final List<X509Certificate> certs) {
         if(log.isTraceEnabled()) {
