@@ -27,7 +27,7 @@ import ch.cyberduck.core.library.Native;
 /**
  * @version $Id$
  */
-public final class SystemConfigurationReachability implements Reachability {
+public final class SystemConfigurationReachability extends DefaultInetAddressReachability {
 
     static {
         Native.load("core");
@@ -39,7 +39,10 @@ public final class SystemConfigurationReachability implements Reachability {
 
     @Override
     public boolean isReachable(final Host host) {
-        return this.isReachable(this.toURL(host));
+        if(super.isReachable(host)) {
+            return this.isReachable(this.toURL(host));
+        }
+        return false;
     }
 
     private String toURL(final Host host) {

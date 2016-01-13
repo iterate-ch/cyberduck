@@ -20,7 +20,6 @@ package ch.cyberduck.core.diagnostics;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.TestProtocol;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
@@ -29,7 +28,6 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-@Ignore
 public class DefaultInetAddressReachabilityTest {
 
     @Test
@@ -53,6 +51,14 @@ public class DefaultInetAddressReachabilityTest {
         final Reachability r = new DefaultInetAddressReachability();
         assertFalse(r.isReachable(
                 new Host(new TestProtocol(), "a.cyberduck.ch", 22)
+        ));
+    }
+
+    @Test
+    public void testNotReachableWrongHostname() throws Exception {
+        final Reachability r = new DefaultInetAddressReachability();
+        assertFalse(r.isReachable(
+                new Host(new TestProtocol(), "iterate.ch.f", 22)
         ));
     }
 }

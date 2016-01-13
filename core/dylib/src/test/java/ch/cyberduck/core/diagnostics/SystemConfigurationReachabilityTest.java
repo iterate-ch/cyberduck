@@ -12,7 +12,6 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-@Ignore
 public class SystemConfigurationReachabilityTest {
 
     @Test
@@ -32,10 +31,27 @@ public class SystemConfigurationReachabilityTest {
     }
 
     @Test
-    public void testNotReachablePort22() throws Exception {
+    public void testNotReachablePortSubdomain() throws Exception {
         final Reachability r = new SystemConfigurationReachability();
         assertFalse(r.isReachable(
                 new Host(new TestProtocol(), "a.cyberduck.ch", 22)
+        ));
+    }
+
+    @Test
+    public void testNotReachableWrongHostname() throws Exception {
+        final Reachability r = new SystemConfigurationReachability();
+        assertFalse(r.isReachable(
+                new Host(new TestProtocol(), "cyberduck.ch.f", 80)
+        ));
+    }
+
+    @Test
+    @Ignore
+    public void testNotReachableWrongPort() throws Exception {
+        final Reachability r = new SystemConfigurationReachability();
+        assertFalse(r.isReachable(
+                new Host(new TestProtocol(), "cyberduck.ch", 23)
         ));
     }
 }
