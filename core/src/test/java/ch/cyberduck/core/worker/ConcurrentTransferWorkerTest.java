@@ -1,8 +1,6 @@
-package ch.cyberduck.core.worker;
-
 /*
- * Copyright (c) 2002-2014 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,17 +11,15 @@ package ch.cyberduck.core.worker;
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
+
+package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.ssl.CertificateStoreX509KeyManager;
 import ch.cyberduck.core.ssl.CertificateStoreX509TrustManager;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
@@ -58,9 +54,10 @@ import static org.junit.Assert.*;
 
 public class ConcurrentTransferWorkerTest {
 
+    @Ignore
     @Test(expected = BackgroundException.class)
     public void testBorrowDnsFailure() throws Exception {
-        final Host host = new Host(new FTPProtocol(), "unknownhostname", new Credentials("u", "p"));
+        final Host host = new Host(new TestProtocol(), "unknownhostname", new Credentials("u", "p"));
         final Transfer t = new UploadTransfer(host,
                 new Path("/t", EnumSet.of(Path.Type.directory)),
                 new NullLocal("l"));
@@ -83,7 +80,7 @@ public class ConcurrentTransferWorkerTest {
 
     @Test
     public void testDoubleRelease() throws Exception {
-        final Host host = new Host(new FTPProtocol(), "test.cyberduck.ch");
+        final Host host = new Host(new TestProtocol(), "test.cyberduck.ch");
         final Transfer t = new UploadTransfer(host,
                 new Path("/t", EnumSet.of(Path.Type.directory)),
                 new NullLocal("l"));
@@ -110,9 +107,10 @@ public class ConcurrentTransferWorkerTest {
         worker.release(session);
     }
 
+    @Ignore
     @Test(expected = LoginCanceledException.class)
     public void testBorrowMissingLoginCredentials() throws Exception {
-        final Host host = new Host(new FTPProtocol(), "test.cyberduck.ch");
+        final Host host = new Host(new TestProtocol(), "test.cyberduck.ch");
         final Transfer t = new UploadTransfer(host,
                 new Path("/t", EnumSet.of(Path.Type.directory)),
                 new NullLocal("l"));
@@ -128,7 +126,7 @@ public class ConcurrentTransferWorkerTest {
 
     @Test
     public void testBorrow() throws Exception {
-        final Host host = new Host(new FTPProtocol(), "test.cyberduck.ch");
+        final Host host = new Host(new TestProtocol(), "test.cyberduck.ch");
         final Transfer t = new UploadTransfer(host,
                 new Path("/t", EnumSet.of(Path.Type.directory)),
                 new NullLocal("l"));
@@ -155,7 +153,7 @@ public class ConcurrentTransferWorkerTest {
 
     @Test
     public void testSessionReuse() throws Exception {
-        final Host host = new Host(new FTPProtocol(), "test.cyberduck.ch");
+        final Host host = new Host(new TestProtocol(), "test.cyberduck.ch");
         final Transfer t = new UploadTransfer(host,
                 new Path("/t", EnumSet.of(Path.Type.directory)),
                 new NullLocal("l"));
@@ -216,7 +214,7 @@ public class ConcurrentTransferWorkerTest {
         for(int i = 1; i <= files; i++) {
             list.add(new TransferItem(new Path("/t" + i, EnumSet.of(Path.Type.file)), new NullLocal("/t" + i)));
         }
-        final Host host = new Host(new FTPProtocol(), "test.cyberduck.ch");
+        final Host host = new Host(new TestProtocol(), "test.cyberduck.ch");
         final Transfer t = new DownloadTransfer(host, list
         ) {
 
@@ -297,7 +295,7 @@ public class ConcurrentTransferWorkerTest {
 
     @Test
     public void testBorrowTimeoutNoSessionAvailable() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "localhost", new Credentials("u", "p"));
+        final Host host = new Host(new TestProtocol(), "localhost", new Credentials("u", "p"));
         final Transfer t = new UploadTransfer(host,
                 new Path("/t", EnumSet.of(Path.Type.directory)),
                 new NullLocal("l"));
@@ -339,7 +337,7 @@ public class ConcurrentTransferWorkerTest {
 
     @Test
     public void testAwait() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "localhost", new Credentials("u", "p"));
+        final Host host = new Host(new TestProtocol(), "localhost", new Credentials("u", "p"));
         final Transfer t = new UploadTransfer(host,
                 new Path("/t", EnumSet.of(Path.Type.directory)),
                 new NullLocal("l"));
