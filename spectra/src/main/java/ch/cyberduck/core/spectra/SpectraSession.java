@@ -29,10 +29,7 @@ import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
-import org.apache.log4j.Logger;
-
 public class SpectraSession extends S3Session {
-    private static final Logger log = Logger.getLogger(SpectraSession.class);
 
     public SpectraSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);

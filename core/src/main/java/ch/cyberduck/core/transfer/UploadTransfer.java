@@ -208,7 +208,10 @@ public class UploadTransfer extends Transfer {
     public void pre(final Session<?> session, final Map<Path, TransferStatus> files) throws BackgroundException {
         final Bulk feature = session.getFeature(Bulk.class);
         if(null != feature) {
-            feature.pre(Type.upload, files);
+            final Object id = feature.pre(Type.upload, files);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Obtained bulk id %s for transfer %s", id, this));
+            }
         }
     }
 

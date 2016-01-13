@@ -96,14 +96,14 @@ public class SpectraDirectoryFeatureTest {
             @Override
             public void log(final boolean request, final String message) {
                 if(request) {
-                    if(("PUT /cyberduck/" + name + "/ HTTP/1.1").equals(message)) {
+                    if(("PUT /test.cyberduck.ch/" + name + "/ HTTP/1.1").equals(message)) {
                         b.set(true);
                     }
                 }
             }
         });
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, name, EnumSet.of(Path.Type.directory));
         new S3DirectoryFeature(session).mkdir(test, null);
         assertTrue(b.get());
