@@ -63,6 +63,9 @@ public class SpectraBulkService implements Bulk<UUID> {
         }
         try {
             for(Map.Entry<Path, List<Ds3Object>> container : jobs.entrySet()) {
+                if(container.getValue().isEmpty()) {
+                    continue;
+                }
                 switch(type) {
                     case download:
                         final Ds3ClientHelpers.Job read = helper.startReadJob(

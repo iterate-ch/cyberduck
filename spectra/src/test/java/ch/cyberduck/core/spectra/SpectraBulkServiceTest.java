@@ -98,7 +98,26 @@ public class SpectraBulkServiceTest {
                 new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         new SpectraBulkService(session).pre(Transfer.Type.download, Collections.singletonMap(
-                new Path(String.format("/test.cyberduck.ch/%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus().length(1L)
+                new Path(String.format("/test.cyberduck.ch/%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file)), new TransferStatus().length(1L)
+        ));
+        session.close();
+    }
+
+    @Test
+    public void testPreDownloadFolderOnly() throws Exception {
+        final Host host = new Host(new SpectraProtocol() {
+            @Override
+            public Scheme getScheme() {
+                return Scheme.http;
+            }
+        }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
+                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
+        ));
+        final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
+                new DefaultX509KeyManager());
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        new SpectraBulkService(session).pre(Transfer.Type.download, Collections.singletonMap(
+                new Path(String.format("/test.cyberduck.ch/%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory)), new TransferStatus()
         ));
         session.close();
     }
