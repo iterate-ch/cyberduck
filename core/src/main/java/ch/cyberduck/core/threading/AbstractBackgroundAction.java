@@ -158,4 +158,12 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
         // No synchronization with other tasks by default
         return null;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("AbstractBackgroundAction{");
+        sb.append("state=").append(state);
+        sb.append('}');
+        return sb.toString();
+    }
 }

@@ -183,7 +183,6 @@ public class WorkerBackgroundAction<T> extends BrowserBackgroundAction<T> {
     public String toString() {
         final StringBuilder sb = new StringBuilder("WorkerBackgroundAction{");
         sb.append("worker=").append(worker);
-        sb.append(", result=").append(result);
         sb.append('}');
         return sb.toString();
     }
