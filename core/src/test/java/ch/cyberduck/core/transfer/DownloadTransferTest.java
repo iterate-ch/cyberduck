@@ -1,6 +1,19 @@
 package ch.cyberduck.core.transfer;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.NullLocal;
+import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.filter.DownloadRegexFilter;
 import ch.cyberduck.core.io.DisabledStreamListener;
@@ -142,8 +155,6 @@ public class DownloadTransferTest {
                 return new AttributedList<>(Collections.singletonList(f));
             }
         };
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path("/transfer", EnumSet.of(Path.Type.directory));
         final Transfer transfer = new DownloadTransfer(new Host(new TestProtocol()), test, new NullLocal(UUID.randomUUID().toString(), UUID.randomUUID().toString()));
         final Map<Path, TransferStatus> table
@@ -175,8 +186,6 @@ public class DownloadTransferTest {
     public void testPrepareDownloadResumeFilter() throws Exception {
         final Host host = new Host(new TestProtocol());
         final Session<?> session = new NullSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path("/transfer/test", EnumSet.of(Path.Type.file));
         test.attributes().setSize(5L);
         final Local local = new Local(System.getProperty("java.io.tmpdir") + "/transfer/" + UUID.randomUUID().toString());
