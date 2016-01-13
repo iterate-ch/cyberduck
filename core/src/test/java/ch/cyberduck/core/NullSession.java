@@ -1,6 +1,7 @@
 package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.shared.AppendWriteFeature;
@@ -36,12 +37,12 @@ public class NullSession extends Session<Void> {
 
     @Override
     public void login(final HostPasswordStore keychain, final LoginCallback prompt, CancelCallback cancel) throws BackgroundException {
-        //
+        throw new LoginCanceledException();
     }
 
     @Override
     public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel, final Cache<Path> cache) throws BackgroundException {
-        throw new UnsupportedOperationException();
+        throw new LoginCanceledException();
     }
 
     @Override

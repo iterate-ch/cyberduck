@@ -43,4 +43,9 @@ public class TestProtocol extends AbstractProtocol {
     public Scheme getScheme() {
         return scheme;
     }
+
+    @Override
+    public String getPrefix() {
+        return "ch.cyberduck.core.Null";
+    }
 }
