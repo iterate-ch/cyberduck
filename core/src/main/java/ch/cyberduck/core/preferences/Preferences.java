@@ -968,7 +968,7 @@ public abstract class Preferences {
         defaults.put("ssh.authentication.agent.enable", String.valueOf(true));
 
         defaults.put("ssh.heartbeat.provider", "keep-alive");
-        defaults.put("ssh.heartbeat.seconds", String.valueOf(0));
+        defaults.put("ssh.heartbeat.seconds", String.valueOf(60));
 
         /**
          * Enable ZLIB compression
