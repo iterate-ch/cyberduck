@@ -8,6 +8,9 @@ import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.io.input.NullInputStream;
+import org.apache.commons.io.output.NullOutputStream;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -75,7 +78,7 @@ public class NullSession extends Session<Void> {
             return (T) new AppendWriteFeature(this) {
                 @Override
                 public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
-                    throw new BackgroundException();
+                    return new NullOutputStream();
                 }
 
                 @Override
@@ -93,7 +96,7 @@ public class NullSession extends Session<Void> {
             return (T) new Read() {
                 @Override
                 public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
-                    throw new UnsupportedOperationException();
+                    return new NullInputStream(0L);
                 }
 
                 @Override

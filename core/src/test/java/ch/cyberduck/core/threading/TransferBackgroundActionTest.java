@@ -1,8 +1,6 @@
-package ch.cyberduck.core.threading;
-
 /*
- * Copyright (c) 2013 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,38 +11,39 @@ package ch.cyberduck.core.threading;
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to:
- * feedback@cyberduck.ch
  */
 
+package ch.cyberduck.core.threading;
+
 import ch.cyberduck.core.AbstractController;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullLocal;
+import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.ftp.FTPProtocol;
-import ch.cyberduck.core.ftp.FTPSession;
-import ch.cyberduck.core.ftp.FTPTLSProtocol;
-import ch.cyberduck.core.openstack.SwiftSession;
-import ch.cyberduck.core.s3.S3Session;
-import ch.cyberduck.core.sftp.SFTPDeleteFeature;
-import ch.cyberduck.core.sftp.SFTPProtocol;
-import ch.cyberduck.core.sftp.SFTPSession;
+import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferAdapter;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferListener;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferProgress;
+import ch.cyberduck.core.transfer.TransferPrompt;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.worker.ConcurrentTransferWorker;
 import ch.cyberduck.core.worker.SingleTransferWorker;
@@ -72,14 +71,14 @@ public class TransferBackgroundActionTest {
                 runnable.run();
             }
         };
-        final Host host = new Host(new FTPProtocol(), "l");
+        final Host host = new Host(new TestProtocol(), "l");
         host.setTransfer(Host.TransferType.newconnection);
-        assertEquals(SingleTransferWorker.class, new TransferBackgroundAction(controller, new SFTPSession(host), PathCache.empty(),
+        assertEquals(SingleTransferWorker.class, new TransferBackgroundAction(controller, new NullSession(host), PathCache.empty(),
                 new TransferAdapter(), new UploadTransfer(host, Collections.<TransferItem>emptyList()), new TransferOptions()).worker.getClass());
 
-        assertEquals(SingleTransferWorker.class, new TransferBackgroundAction(controller, new S3Session(host), PathCache.empty(),
+        assertEquals(SingleTransferWorker.class, new TransferBackgroundAction(controller, new NullSession(host), PathCache.empty(),
                 new TransferAdapter(), new UploadTransfer(host, Collections.<TransferItem>emptyList()), new TransferOptions()).worker.getClass());
-        assertEquals(SingleTransferWorker.class, new TransferBackgroundAction(controller, new S3Session(host), PathCache.empty(),
+        assertEquals(SingleTransferWorker.class, new TransferBackgroundAction(controller, new NullSession(host), PathCache.empty(),
                 new TransferAdapter(), new DownloadTransfer(host, Collections.<TransferItem>emptyList()), new TransferOptions()).worker.getClass());
     }
 
@@ -91,25 +90,49 @@ public class TransferBackgroundActionTest {
                 runnable.run();
             }
         };
-        final Host host = new Host(new FTPProtocol(), "l");
+        final Host host = new Host(new TestProtocol(), "l");
         host.setTransfer(Host.TransferType.concurrent);
-        assertEquals(ConcurrentTransferWorker.class, new TransferBackgroundAction(controller, new SFTPSession(host), PathCache.empty(),
+        assertEquals(ConcurrentTransferWorker.class, new TransferBackgroundAction(controller, new NullSession(host), PathCache.empty(),
                 new TransferAdapter(), new UploadTransfer(host, Collections.<TransferItem>emptyList()), new TransferOptions()).worker.getClass());
 
-        assertEquals(SingleTransferWorker.class, new TransferBackgroundAction(controller, new S3Session(host), PathCache.empty(),
+        final NullSession pooled = new NullSession(host) {
+            @Override
+            public <T> T getFeature(final Class<T> type) {
+                if(type == Upload.class) {
+                    return (T) new Upload<T>() {
+                        @Override
+                        public T upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                            return null;
+                        }
+
+                        @Override
+                        public boolean pooled() {
+                            return true;
+                        }
+
+                        @Override
+                        public Write.Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
+                            return Write.notfound;
+                        }
+                    };
+                }
+                return super.getFeature(type);
+            }
+        };
+        assertEquals(SingleTransferWorker.class, new TransferBackgroundAction(controller, pooled, PathCache.empty(),
                 new TransferAdapter(), new UploadTransfer(host, Collections.<TransferItem>emptyList()), new TransferOptions()).worker.getClass());
-        assertEquals(ConcurrentTransferWorker.class, new TransferBackgroundAction(controller, new S3Session(host), PathCache.empty(),
+        assertEquals(ConcurrentTransferWorker.class, new TransferBackgroundAction(controller, new NullSession(host), PathCache.empty(),
                 new TransferAdapter(), new DownloadTransfer(host, Collections.<TransferItem>emptyList()), new TransferOptions()).worker.getClass());
 
-        assertEquals(SingleTransferWorker.class, new TransferBackgroundAction(controller, new SwiftSession(host), PathCache.empty(),
+        assertEquals(SingleTransferWorker.class, new TransferBackgroundAction(controller, pooled, PathCache.empty(),
                 new TransferAdapter(), new UploadTransfer(host, Collections.<TransferItem>emptyList()), new TransferOptions()).worker.getClass());
-        assertEquals(ConcurrentTransferWorker.class, new TransferBackgroundAction(controller, new SwiftSession(host), PathCache.empty(),
+        assertEquals(ConcurrentTransferWorker.class, new TransferBackgroundAction(controller, new NullSession(host), PathCache.empty(),
                 new TransferAdapter(), new DownloadTransfer(host, Collections.<TransferItem>emptyList()), new TransferOptions()).worker.getClass());
     }
 
     @Test
     public void testDuplicate() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch") {
+        final Host host = new Host(new TestProtocol(), "test.cyberduck.ch") {
             @Override
             public Credentials getCredentials() {
                 return new Credentials(
@@ -124,10 +147,15 @@ public class TransferBackgroundActionTest {
         };
         final Path directory = new Path("/home/jenkins/transfer", EnumSet.of(Path.Type.directory));
         final Path test = new Path(directory, "test", EnumSet.of(Path.Type.file));
-        test.attributes().setSize(5L);
+        test.attributes().setSize(0L);
 
         final Path copy = new Path(directory, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final CopyTransfer t = new CopyTransfer(host, new SFTPSession(host), Collections.singletonMap(test, copy));
+        final CopyTransfer t = new CopyTransfer(host, new NullSession(host), Collections.singletonMap(test, copy)) {
+            @Override
+            public TransferAction action(final Session<?> session, final boolean resumeRequested, final boolean reloadRequested, final TransferPrompt prompt, final ListProgressListener listener) throws BackgroundException {
+                return TransferAction.overwrite;
+            }
+        };
 
         final AbstractController controller = new AbstractController() {
             @Override
@@ -137,7 +165,7 @@ public class TransferBackgroundActionTest {
         };
         final AtomicBoolean start = new AtomicBoolean();
         final AtomicBoolean stop = new AtomicBoolean();
-        final SFTPSession session = new SFTPSession(host);
+        final Session session = new NullSession(host);
         final TransferBackgroundAction action = new TransferBackgroundAction(controller, session, PathCache.empty(), new TransferListener() {
             @Override
             public void start(final Transfer transfer) {
@@ -165,30 +193,25 @@ public class TransferBackgroundActionTest {
         assertTrue(stop.get());
         assertTrue(t.isComplete());
         assertNotNull(t.getTimestamp());
-
-        new SFTPDeleteFeature(session).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
     }
 
     @Test
     public void testCopyBetweenHosts() throws Exception {
-        final SFTPSession session = new SFTPSession(new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
-        )));
+        final Session session = new NullSession(new Host(new TestProtocol(), "test.cyberduck.ch"));
 
-        final FTPSession destination = new FTPSession(new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
-        )));
+        final Session destination = new NullSession(new Host(new TestProtocol(), "test.cyberduck.ch"));
 
         final Path directory = new Path("/home/jenkins/transfer", EnumSet.of(Path.Type.directory));
         final Path test = new Path(directory, "test", EnumSet.of(Path.Type.file));
-        test.attributes().setSize(5L);
+        test.attributes().setSize(0L);
 
         final Path copy = new Path(new Path("/transfer", EnumSet.of(Path.Type.directory)), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final Transfer t = new CopyTransfer(session.getHost(), new FTPSession(destination.getHost()), Collections.singletonMap(test, copy));
+        final Transfer t = new CopyTransfer(session.getHost(), new NullSession(destination.getHost()), Collections.singletonMap(test, copy)) {
+            @Override
+            public TransferAction action(final Session<?> session, final boolean resumeRequested, final boolean reloadRequested, final TransferPrompt prompt, final ListProgressListener listener) throws BackgroundException {
+                return TransferAction.overwrite;
+            }
+        };
 
         final AbstractController controller = new AbstractController() {
             @Override
@@ -234,10 +257,8 @@ public class TransferBackgroundActionTest {
                 runnable.run();
             }
         };
-        final AtomicBoolean start = new AtomicBoolean();
-        final AtomicBoolean stop = new AtomicBoolean();
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch");
-        final SFTPSession session = new SFTPSession(host);
+        final Host host = new Host(new TestProtocol(), "test.cyberduck.ch");
+        final Session session = new NullSession(host);
         final TransferOptions options = new TransferOptions();
         final TransferBackgroundAction action = new TransferBackgroundAction(controller, session, PathCache.empty(), new TransferAdapter(),
                 new DownloadTransfer(host, Collections.singletonList(new TransferItem(new Path("/home/test", EnumSet.of(Path.Type.file)), new NullLocal("/t")))),
@@ -267,8 +288,8 @@ public class TransferBackgroundActionTest {
                 return false;
             }
         };
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch");
-        final SFTPSession session = new SFTPSession(host);
+        final Host host = new Host(new TestProtocol(), "test.cyberduck.ch");
+        final Session session = new NullSession(host);
         final TransferOptions options = new TransferOptions();
         final AtomicBoolean paused = new AtomicBoolean();
         final AtomicBoolean retry = new AtomicBoolean();
