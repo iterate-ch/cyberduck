@@ -36,7 +36,6 @@
             <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
         </taskdef>
         <msbuild buildfile="../../Cyberduck CLI-WiX-Bootstrapper.wixproj">
-            <target name="Clean"/>
             <target name="Build"/>
 
             <property name="Version" value="${version}.${revision}"/>

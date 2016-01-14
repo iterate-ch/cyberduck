@@ -32,7 +32,6 @@
         </taskdef>
         <!-- Create DLL Cyberduck.Core.Native -->
         <msbuild buildfile="../../Cyberduck Core.csproj">
-            <target name="Clean"/>
             <target name="Build"/>
 
             <property name="Version" value="${version}.${revision}"/>
