@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2015 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -102,7 +102,11 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
 
         private static string ApplicationVersion
         {
-            get { return Application.ProductVersion; }
+            get
+            {
+                Match match = Regex.Match(Application.ProductVersion, @"((\d+)\.(\d+)\.(\d+)).*?");
+                return match.Groups[1].Value;
+            }
         }
 
         public override void setProperty(string property, string value)
@@ -344,16 +348,26 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             defaults.put("connection.ssl.keystore.type", "Windows-MY");
             defaults.put("connection.ssl.keystore.provider", "SunMSCAPI");
 
-            defaults.put(String.Format("connection.protocol.{0}.enable", new FTPProtocol().getIdentifier()), true.ToString());
-            defaults.put(String.Format("connection.protocol.{0}.enable", new FTPTLSProtocol().getIdentifier()), true.ToString());
-            defaults.put(String.Format("connection.protocol.{0}.enable", new SFTPProtocol().getIdentifier()), true.ToString());
-            defaults.put(String.Format("connection.protocol.{0}.enable", new DAVProtocol().getIdentifier()), true.ToString());
-            defaults.put(String.Format("connection.protocol.{0}.enable", new DAVSSLProtocol().getIdentifier()), true.ToString());
-            defaults.put(String.Format("connection.protocol.{0}.enable", new SwiftProtocol().getIdentifier()), true.ToString());
-            defaults.put(String.Format("connection.protocol.{0}.enable", new S3Protocol().getIdentifier()), true.ToString());
-            defaults.put(String.Format("connection.protocol.{0}.enable", new GoogleStorageProtocol().getIdentifier()), true.ToString());
-            defaults.put(String.Format("connection.protocol.{0}.enable", new AzureProtocol().getIdentifier()), true.ToString());
-            defaults.put(String.Format("connection.protocol.{0}.enable", new IRODSProtocol().getIdentifier()), false.ToString());
+            defaults.put(String.Format("connection.protocol.{0}.enable", new FTPProtocol().getIdentifier()),
+                true.ToString());
+            defaults.put(String.Format("connection.protocol.{0}.enable", new FTPTLSProtocol().getIdentifier()),
+                true.ToString());
+            defaults.put(String.Format("connection.protocol.{0}.enable", new SFTPProtocol().getIdentifier()),
+                true.ToString());
+            defaults.put(String.Format("connection.protocol.{0}.enable", new DAVProtocol().getIdentifier()),
+                true.ToString());
+            defaults.put(String.Format("connection.protocol.{0}.enable", new DAVSSLProtocol().getIdentifier()),
+                true.ToString());
+            defaults.put(String.Format("connection.protocol.{0}.enable", new SwiftProtocol().getIdentifier()),
+                true.ToString());
+            defaults.put(String.Format("connection.protocol.{0}.enable", new S3Protocol().getIdentifier()),
+                true.ToString());
+            defaults.put(String.Format("connection.protocol.{0}.enable", new GoogleStorageProtocol().getIdentifier()),
+                true.ToString());
+            defaults.put(String.Format("connection.protocol.{0}.enable", new AzureProtocol().getIdentifier()),
+                true.ToString());
+            defaults.put(String.Format("connection.protocol.{0}.enable", new IRODSProtocol().getIdentifier()),
+                false.ToString());
         }
 
         protected override void post()
