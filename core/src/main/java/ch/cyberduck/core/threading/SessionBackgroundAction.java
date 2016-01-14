@@ -206,6 +206,10 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
             }
             throw failure;
         }
+        catch(Exception e){
+            log.fatal(String.format("Failure running background task. %s", e.getMessage()), e);
+            throw e;
+        }
     }
 
     protected boolean connect(final Session session) throws BackgroundException {
