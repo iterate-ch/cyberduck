@@ -97,7 +97,7 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
 
         private static string ApplicationRevision
         {
-            get { return Assembly.GetExecutingAssembly().GetName().Version.Revision.ToString(); }
+            get { return Assembly.GetEntryAssembly().GetName().Version.Revision.ToString(); }
         }
 
         private static string ApplicationVersion
