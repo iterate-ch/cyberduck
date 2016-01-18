@@ -20,10 +20,11 @@ using System;
 using System.Windows.Forms;
 using Microsoft.Win32;
 using org.apache.log4j;
+using ch.cyberduck.core.urlhandler;
 
 namespace Ch.Cyberduck.Core.Urlhandler
 {
-    public class URLSchemeHandlerConfiguration
+    public class URLSchemeHandlerConfiguration : SchemeHandler
     {
         private static readonly Logger Logger = Logger.getLogger(typeof (URLSchemeHandlerConfiguration).FullName);
         private static readonly URLSchemeHandlerConfiguration instance = new URLSchemeHandlerConfiguration();
