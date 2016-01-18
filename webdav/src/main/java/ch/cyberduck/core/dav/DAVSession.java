@@ -19,20 +19,9 @@ package ch.cyberduck.core.dav;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.HostPasswordStore;
-import ch.cyberduck.core.HostUrlProvider;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.Path;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
@@ -55,11 +44,16 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.Header;
 import org.apache.http.HttpEntityEnclosingRequest;
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.ProtocolException;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPut;
@@ -70,9 +64,12 @@ import org.apache.log4j.Logger;
 
 import javax.net.SocketFactory;
 import java.io.IOException;
+import java.net.URL;
+import java.text.MessageFormat;
 
 import com.github.sardine.impl.SardineException;
 import com.github.sardine.impl.SardineRedirectStrategy;
+import com.github.sardine.impl.handler.ValidatingResponseHandler;
 import com.github.sardine.impl.handler.VoidResponseHandler;
 
 /**
@@ -218,6 +215,53 @@ public class DAVSession extends HttpSession<DAVClient> {
     @Override
     public boolean alert(final ConnectionCallback callback) throws BackgroundException {
         if(super.alert(callback)) {
+            // Propose protocol change if HEAD request redirects to HTTPS
+            final Path home = new DefaultHomeFinderService(this).find();
+            try {
+                final RequestConfig context = client.context().getRequestConfig();
+                final HttpHead request = new HttpHead(new DAVPathEncoder().encode(home));
+                request.setConfig(RequestConfig.copy(context).setRedirectsEnabled(false).build());
+                final Header location = client.execute(request, new ValidatingResponseHandler<Header>() {
+                    @Override
+                    public Header handleResponse(final HttpResponse response) throws ClientProtocolException, IOException {
+                        if(response.getStatusLine().getStatusCode() == HttpStatus.SC_MOVED_PERMANENTLY) {
+                            return response.getFirstHeader(HttpHeaders.LOCATION);
+                        }
+                        return null;
+                    }
+                });
+                // Reset default redirect configuration in context
+                client.context().setRequestConfig(RequestConfig.copy(context).setRedirectsEnabled(true).build());
+                if(null != location) {
+                    final URL url = new URL(location.getValue());
+                    if(StringUtils.equals(Scheme.https.name(), url.getProtocol())) {
+                        try {
+                            callback.warn(host.getProtocol(),
+                                    MessageFormat.format(LocaleFactory.localizedString("Unsecured {0} connection", "Credentials"), host.getProtocol().getName()),
+                                    MessageFormat.format("{0} {1}.", MessageFormat.format(LocaleFactory.localizedString("The server supports encrypted connections. Do you want to switch to {0}?", "Credentials"),
+                                            new DAVSSLProtocol().getName()), LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support")),
+                                    LocaleFactory.localizedString("Continue", "Credentials"),
+                                    LocaleFactory.localizedString("Change", "Credentials"),
+                                    String.format("connection.unsecure.%s", host.getHostname()));
+                            // Continue chosen. Login using plain FTP.
+                        }
+                        catch(LoginCanceledException e) {
+                            // Protocol switch
+                            host.setHostname(url.getHost());
+                            host.setProtocol(new DAVSSLProtocol());
+                            return false;
+                        }
+                    }
+                }
+                // Continue with default alert
+            }
+            catch(SardineException e) {
+                // Ignore failure
+                log.warn(String.format("Ignore failed HEAD request to %s with %s.", host, e.getResponsePhrase()));
+            }
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map(e);
+            }
             return preferences.getBoolean("webdav.basic.preemptive");
         }
         return false;

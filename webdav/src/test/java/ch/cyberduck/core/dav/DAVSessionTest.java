@@ -57,9 +57,7 @@ public class DAVSessionTest {
 
     @Test
     public void testConnect() throws Exception {
-        final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io", new Credentials(
-                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
-        ));
+        final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io");
         final DAVSession session = new DAVSession(host,
                 new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DefaultCertificateStore()),
                 new CertificateStoreX509KeyManager(new DefaultCertificateStore()));
@@ -95,9 +93,7 @@ public class DAVSessionTest {
 
     @Test(expected = ConnectionRefusedException.class)
     public void testConnectHttpProxyFailure() throws Exception {
-        final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io", new Credentials(
-                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
-        ));
+        final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io");
         final DAVSession session = new DAVSession(host,
                 new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DefaultCertificateStore()),
                 new CertificateStoreX509KeyManager(new DefaultCertificateStore()),
@@ -121,9 +117,7 @@ public class DAVSessionTest {
     @Test
     @Ignore
     public void testConnectHttpProxy() throws Exception {
-        final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io", new Credentials(
-                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
-        ));
+        final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io");
         final DAVSession session = new DAVSession(host,
                 new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DefaultCertificateStore()),
                 new CertificateStoreX509KeyManager(new DefaultCertificateStore()),
@@ -157,9 +151,7 @@ public class DAVSessionTest {
 
     @Test(expected = ConnectionRefusedException.class)
     public void testConnectHttpProxyConnectionFailure() throws Exception {
-        final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io", new Credentials(
-                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
-        ));
+        final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io");
         final DAVSession session = new DAVSession(host,
                 new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DefaultCertificateStore()),
                 new CertificateStoreX509KeyManager(new DefaultCertificateStore()),
@@ -193,9 +185,7 @@ public class DAVSessionTest {
 
     @Test(expected = InteroperabilityException.class)
     public void testSsl() throws Exception {
-        final Host host = new Host(new DAVSSLProtocol(), "test.cyberduck.ch", new Credentials(
-                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
-        ));
+        final Host host = new Host(new DAVSSLProtocol(), "test.cyberduck.ch");
         final DAVSession session = new DAVSession(host);
         assertFalse(session.alert(new DisabledConnectionCallback()));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -211,9 +201,7 @@ public class DAVSessionTest {
 
     @Test(expected = InteroperabilityException.class)
     public void testHtmlResponse() throws Exception {
-        final Host host = new Host(new DAVProtocol(), "media.cyberduck.ch", new Credentials(
-                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
-        ));
+        final Host host = new Host(new DAVProtocol(), "media.cyberduck.ch");
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -228,9 +216,7 @@ public class DAVSessionTest {
 
     @Test(expected = LoginFailureException.class)
     public void testRedirect301() throws Exception {
-        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
-        ));
+        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch");
         host.setDefaultPath("/redir-perm");
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -240,9 +226,7 @@ public class DAVSessionTest {
 
     @Test(expected = LoginFailureException.class)
     public void testRedirect302() throws Exception {
-        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
-        ));
+        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch");
         host.setDefaultPath("/redir-tmp");
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -251,9 +235,7 @@ public class DAVSessionTest {
 
     @Test(expected = LoginFailureException.class)
     public void testRedirect303() throws Exception {
-        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
-        ));
+        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch");
         host.setDefaultPath("/redir-other");
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -264,9 +246,7 @@ public class DAVSessionTest {
 
     @Test(expected = BackgroundException.class)
     public void testRedirectGone() throws Exception {
-        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
-        ));
+        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch");
         host.setDefaultPath("/redir-gone");
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -309,9 +289,7 @@ public class DAVSessionTest {
 
     @Test
     public void testListAnonymous() throws Exception {
-        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
-        ));
+        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch");
         host.setDefaultPath("/dav/anon");
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -320,13 +298,30 @@ public class DAVSessionTest {
     }
 
     @Test
-    public void testAlert() throws Exception {
+    public void testAlertPreemptiveEnabled() throws Exception {
         PreferencesFactory.get().setProperty("webdav.basic.preemptive", true);
-        assertTrue(new DAVSession(new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials("u", "p"))).alert(new DisabledConnectionCallback()));
-        assertFalse(new DAVSession(new Host(new DAVSSLProtocol(), "test.cyberduck.ch", new Credentials("u", "p"))).alert(new DisabledConnectionCallback()));
+        final DAVSession session = new DAVSession(new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials("u", "p")));
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        assertTrue(session.alert(new DisabledConnectionCallback()));
+        session.close();
+    }
+
+    @Test
+    public void testAlertPreemptiveEnabledSSL() throws Exception {
+        final Host host = new Host(new DAVSSLProtocol(), "test.cyberduck.ch", new Credentials("u", "p"));
+        PreferencesFactory.get().setProperty("webdav.basic.preemptive", true);
+        final DAVSession session = new DAVSession(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        assertFalse(session.alert(new DisabledConnectionCallback()));
+        session.close();
+    }
+
+    @Test
+    public void testAlertPreemptiveDisabled() throws Exception {
         PreferencesFactory.get().setProperty("webdav.basic.preemptive", false);
-        assertFalse(new DAVSession(new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials("u", "p"))).alert(new DisabledConnectionCallback()));
-        assertFalse(new DAVSession(new Host(new DAVSSLProtocol(), "test.cyberduck.ch", new Credentials("u", "p"))).alert(new DisabledConnectionCallback()));
+        final DAVSession session = new DAVSession(new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials("u", "p")));
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        assertFalse(session.alert(new DisabledConnectionCallback()));
     }
 
     @Test(expected = LoginFailureException.class)
@@ -524,10 +519,7 @@ public class DAVSessionTest {
 
     @Test
     public void testLoginChangeUsername() throws Exception {
-        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                PreferencesFactory.get().getProperty("connection.login.anon.name"),
-                PreferencesFactory.get().getProperty("connection.login.anon.pass"))
-        );
+        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch");
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
         final AtomicBoolean prompt = new AtomicBoolean();
@@ -602,10 +594,7 @@ public class DAVSessionTest {
 
     @Test(expected = InteroperabilityException.class)
     public void testConnectMutualTlsNoCertificate() throws Exception {
-        final Host host = new Host(new DAVSSLProtocol(), "test.cyberduck.ch", new Credentials(
-                PreferencesFactory.get().getProperty("connection.login.anon.name"),
-                PreferencesFactory.get().getProperty("connection.login.anon.pass"))
-        );
+        final Host host = new Host(new DAVSSLProtocol(), "test.cyberduck.ch");
         host.setDefaultPath("/dav");
         final DAVSession session = new DAVSession(host, new DefaultX509TrustManager(),
                 new KeychainX509KeyManager(new DisabledCertificateStore() {
@@ -635,10 +624,7 @@ public class DAVSessionTest {
 
     @Test(expected = InteroperabilityException.class)
     public void testConnectMutualTls() throws Exception {
-        final Host host = new Host(new DAVSSLProtocol(), "test.cyberduck.ch", new Credentials(
-                PreferencesFactory.get().getProperty("connection.login.anon.name"),
-                PreferencesFactory.get().getProperty("connection.login.anon.pass"))
-        );
+        final Host host = new Host(new DAVSSLProtocol(), "test.cyberduck.ch");
         host.setDefaultPath("/dav");
         final DAVSession session = new DAVSession(host, new DefaultX509TrustManager() {
             @Override
@@ -674,10 +660,7 @@ public class DAVSessionTest {
 
     @Test(expected = LoginCanceledException.class)
     public void testTrustChain1() throws Exception {
-        final Host host = new Host(new DAVSSLProtocol(), "dav.pixi.me", new Credentials(
-                PreferencesFactory.get().getProperty("connection.login.anon.name"),
-                PreferencesFactory.get().getProperty("connection.login.anon.pass"))
-        );
+        final Host host = new Host(new DAVSSLProtocol(), "dav.pixi.me");
         final AtomicBoolean verified = new AtomicBoolean();
         final DAVSession session = new DAVSession(host, new DefaultX509TrustManager() {
             @Override
@@ -705,10 +688,7 @@ public class DAVSessionTest {
 
     @Test
     public void testTrustChain2() throws Exception {
-        final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io", new Credentials(
-                PreferencesFactory.get().getProperty("connection.login.anon.name"),
-                PreferencesFactory.get().getProperty("connection.login.anon.pass"))
-        );
+        final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io");
         final AtomicBoolean verified = new AtomicBoolean();
         final DAVSession session = new DAVSession(host, new DefaultX509TrustManager() {
             @Override
@@ -753,5 +733,30 @@ public class DAVSessionTest {
         final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(),
                 new DisabledProgressListener(), new DisabledTranscriptListener());
         s.check(session, PathCache.empty());
+    }
+
+    @Test
+    public void testRedirectHttpsAlert() throws Exception {
+        final Host host = new Host(new DAVProtocol(), "svn.cyberduck.io");
+        final AtomicBoolean warning = new AtomicBoolean();
+        final DAVSession session = new DAVSession(host, new DefaultX509TrustManager(),
+                new KeychainX509KeyManager(new DisabledCertificateStore())) {
+        };
+        final LoginConnectionService c = new LoginConnectionService(
+                new DisabledLoginCallback() {
+                    @Override
+                    public void warn(final Protocol protocol, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
+                        assertEquals("Unsecured WebDAV (HTTP) connection", title);
+                        assertEquals("connection.unsecure.svn.cyberduck.io", preference);
+                        warning.set(true);
+                    }
+                },
+                new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(),
+                new DisabledProgressListener(),
+                new DisabledTranscriptListener());
+        c.connect(session, PathCache.empty());
+        assertTrue(warning.get());
+        session.close();
     }
 }

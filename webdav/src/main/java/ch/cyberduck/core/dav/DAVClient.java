@@ -21,6 +21,7 @@ package ch.cyberduck.core.dav;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.IOException;
@@ -50,5 +51,9 @@ public class DAVClient extends SardineImpl {
     protected HttpResponse execute(final HttpRequestBase request) throws IOException {
         request.setURI(URI.create(uri + request.getURI().getRawPath()));
         return super.execute(request);
+    }
+
+    public HttpClientContext context() {
+        return context;
     }
 }
