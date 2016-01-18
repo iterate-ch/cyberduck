@@ -26,7 +26,7 @@ import java.util.Map;
 
 public interface Versioning {
 
-    public Versioning withCache(Map<Path, VersioningConfiguration> cache);
+    Versioning withCache(Map<Path, VersioningConfiguration> cache);
 
     VersioningConfiguration getConfiguration(Path container) throws BackgroundException;
 

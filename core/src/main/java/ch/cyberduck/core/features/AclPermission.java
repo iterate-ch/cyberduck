@@ -23,7 +23,7 @@ import java.util.List;
 
 public interface AclPermission {
 
-    public Acl getPermission(Path file) throws BackgroundException;
+    Acl getPermission(Path file) throws BackgroundException;
 
     void setPermission(Path file, Acl acl) throws BackgroundException;
 
