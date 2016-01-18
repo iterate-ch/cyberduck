@@ -44,10 +44,8 @@ import ch.cyberduck.core.local.ApplicationLauncher;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.IconService;
 import ch.cyberduck.core.local.IconServiceFactory;
-import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.local.QuarantineService;
 import ch.cyberduck.core.local.QuarantineServiceFactory;
-import ch.cyberduck.core.local.features.Touch;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFeature;
@@ -76,9 +74,6 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
 
     private final ApplicationLauncher launcher
             = ApplicationLauncherFactory.get();
-
-    private final Touch touch
-            = LocalTouchFactory.get();
 
     private Preferences preferences
             = PreferencesFactory.get();
