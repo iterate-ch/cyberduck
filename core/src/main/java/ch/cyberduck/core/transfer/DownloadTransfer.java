@@ -245,7 +245,10 @@ public class DownloadTransfer extends Transfer {
         if(file.isFile()) {
             listener.message(MessageFormat.format(LocaleFactory.localizedString("Downloading {0}", "Status"),
                     file.getName()));
-            local.getParent().mkdir();
+            final Local folder = local.getParent();
+            if(!folder.exists()) {
+                folder.mkdir();
+            }
             // Transfer
             final Download download = session.getFeature(Download.class);
             download.download(file, local, bandwidth, new IconUpdateSreamListener(status, local) {
