@@ -25,7 +25,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HTTP;
@@ -56,9 +55,9 @@ import java.util.Map;
 public class RequestEntityRestStorageService extends RestS3Service {
     private static final Logger log = Logger.getLogger(RequestEntityRestStorageService.class);
 
-    private S3Session session;
+    private final S3Session session;
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
     public RequestEntityRestStorageService(final S3Session session,
@@ -87,8 +86,19 @@ public class RequestEntityRestStorageService extends RestS3Service {
     }
 
     @Override
-    protected HttpClient initHttpConnection() {
+    protected void initializeDefaults() {
+        //
+    }
+
+    @Override
+    protected HttpClientBuilder initHttpClientBuilder() {
         return null;
+    }
+
+
+    @Override
+    protected void initializeProxy(final HttpClientBuilder httpClientBuilder) {
+        //
     }
 
     @Override
@@ -115,11 +125,6 @@ public class RequestEntityRestStorageService extends RestS3Service {
     @Override
     protected boolean isTargettingGoogleStorageService() {
         return session.getHost().getHostname().equals(Constants.GS_DEFAULT_HOSTNAME);
-    }
-
-    @Override
-    protected void initializeProxy() {
-        // Client already configured
     }
 
     @Override
@@ -198,7 +203,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
                 && !StringUtils.equals(session.getSignatureVersion().toString(), forceRequestSignatureVersion)) {
             log.warn(String.format("Switched authentication signature version to %s", forceRequestSignatureVersion));
             session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.valueOf(
-                            StringUtils.remove(forceRequestSignatureVersion, "-"))
+                    StringUtils.remove(forceRequestSignatureVersion, "-"))
             );
         }
         if(session.authorize(httpMethod, this.getProviderCredentials())) {

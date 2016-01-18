@@ -54,7 +54,7 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
 import org.jets3t.service.CloudFrontService;
 import org.jets3t.service.CloudFrontServiceException;
@@ -113,8 +113,8 @@ public class CloudFrontDistributionConfiguration
             }
 
             @Override
-            protected HttpClient initHttpConnection() {
-                return new HttpConnectionPoolBuilder(session.getHost(), trust, key, ProxyFactory.get()).build(session).build();
+            protected HttpClientBuilder initHttpClientBuilder() {
+                return new HttpConnectionPoolBuilder(session.getHost(), trust, key, ProxyFactory.get()).build(session);
             }
         };
     }
