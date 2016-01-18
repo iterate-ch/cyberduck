@@ -75,12 +75,10 @@ public class WriteAclWorker extends Worker<Boolean> {
         if(this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
-        if(!acl.equals(file.attributes().getAcl())) {
-            listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
-                    file.getName(), acl));
-            feature.setPermission(file, acl);
-            file.attributes().setAcl(acl);
-        }
+        listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
+                file.getName(), acl));
+        feature.setPermission(file, acl);
+        file.attributes().setAcl(acl);
         if(recursive) {
             if(file.isVolume()) {
                 // No recursion when changing container ACL

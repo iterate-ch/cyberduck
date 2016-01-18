@@ -87,7 +87,7 @@ public class WriteAclWorkerTest {
 
                         @Override
                         public void setPermission(final Path file, final Acl acl) throws BackgroundException {
-                            fail();
+                            assertEquals(Acl.EMPTY, acl);
                         }
 
                         @Override
