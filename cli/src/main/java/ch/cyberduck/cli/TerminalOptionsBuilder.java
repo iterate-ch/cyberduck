@@ -145,6 +145,11 @@ public final class TerminalOptionsBuilder {
                 .hasArg(true).withArgName("bytes per second")
                 .isRequired(false)
                 .create());
+        options.addOption(OptionBuilder
+                .withDescription("Do not save passwords in keychain")
+                .withLongOpt(Params.nokeychain.name())
+                .isRequired(false)
+                .create());
         final StringBuilder b = new StringBuilder().append(StringUtils.LF);
         b.append("Options for downloads and uploads:").append(StringUtils.LF);
         for(TransferAction a : TransferAction.forTransfer(Transfer.Type.download)) {
@@ -207,6 +212,7 @@ public final class TerminalOptionsBuilder {
         udt,
         parallel,
         throttle,
+        nokeychain,
         existing,
         verbose,
         quiet,
