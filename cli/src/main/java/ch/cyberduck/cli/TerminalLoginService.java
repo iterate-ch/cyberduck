@@ -19,6 +19,7 @@ package ch.cyberduck.cli;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.KeychainLoginService;
 import ch.cyberduck.core.LocalFactory;
@@ -38,7 +39,8 @@ public class TerminalLoginService extends KeychainLoginService {
     private CommandLine input;
 
     public TerminalLoginService(final CommandLine input, final LoginCallback prompt) {
-        super(prompt, PasswordStoreFactory.get());
+        super(prompt, input.hasOption(TerminalOptionsBuilder.Params.nokeychain.name())
+                ? new DisabledPasswordStore() : PasswordStoreFactory.get());
         this.input = input;
     }
 
