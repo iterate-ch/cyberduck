@@ -71,7 +71,7 @@ public abstract class Cache<T extends Referenceable> {
             log.warn(String.format("Lookup failed for %s in reverse cache", reference));
             return null;
         }
-        final T[] entries = (T[]) list.toArray();
+        final T[] entries = (T[]) list.toArray(new Referenceable[list.size()]);
         for(T entry : entries) {
             if(this.key(entry).equals(reference)) {
                 return entry;
