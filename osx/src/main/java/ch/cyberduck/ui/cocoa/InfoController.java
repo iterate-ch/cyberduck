@@ -61,8 +61,9 @@ import ch.cyberduck.core.logging.LoggingConfiguration;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
-import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.s3.S3Protocol;
+import ch.cyberduck.core.threading.BrowserControllerBackgroundAction;
+import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.worker.CalculateSizeWorker;
 import ch.cyberduck.core.worker.ReadAclWorker;
@@ -74,8 +75,6 @@ import ch.cyberduck.core.worker.WriteEncryptionWorker;
 import ch.cyberduck.core.worker.WriteMetadataWorker;
 import ch.cyberduck.core.worker.WritePermissionWorker;
 import ch.cyberduck.core.worker.WriteRedundancyWorker;
-import ch.cyberduck.core.threading.BrowserControllerBackgroundAction;
-import ch.cyberduck.core.threading.WindowMainAction;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -1336,6 +1335,8 @@ public class InfoController extends ToolbarWindowController {
 
     @Override
     public void windowWillClose(final NSNotification notification) {
+        cascade = new NSPoint(this.window().frame().origin.x.doubleValue(),
+                this.window().frame().origin.y.doubleValue() + this.window().frame().size.height.doubleValue());
         this.window().endEditingFor(null);
         super.windowWillClose(notification);
     }

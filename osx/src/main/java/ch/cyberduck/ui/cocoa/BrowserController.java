@@ -59,6 +59,7 @@ import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.threading.TransferBackgroundAction;
+import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DownloadTransfer;
@@ -91,7 +92,6 @@ import ch.cyberduck.ui.cocoa.quicklook.QLPreviewPanel;
 import ch.cyberduck.ui.cocoa.quicklook.QLPreviewPanelController;
 import ch.cyberduck.ui.cocoa.quicklook.QuickLook;
 import ch.cyberduck.ui.cocoa.quicklook.QuickLookFactory;
-import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.view.BookmarkCell;
 import ch.cyberduck.ui.cocoa.view.OutlineCell;
 
@@ -585,19 +585,33 @@ public class BrowserController extends WindowController
         window.setMovableByWindowBackground(true);
         window.setCollectionBehavior(window.collectionBehavior() | NSWindow.NSWindowCollectionBehavior.NSWindowCollectionBehaviorFullScreenPrimary);
         window.setContentMinSize(new NSSize(400d, 200d));
-        // Accept file promises made myself
-        window.registerForDraggedTypes(NSArray.arrayWithObject(NSPasteboard.FilesPromisePboardType));
         super.setWindow(window);
+        // Accept file promises from history tab
+        window.registerForDraggedTypes(NSArray.arrayWithObject(NSPasteboard.FilesPromisePboardType));
         cascade = this.cascade(cascade);
     }
 
+    @Override
+    public void windowWillClose(final NSNotification notification) {
+        // Convert from lower left to top left coordinates
+        cascade = new NSPoint(this.window().frame().origin.x.doubleValue(),
+                this.window().frame().origin.y.doubleValue() + this.window().frame().size.height.doubleValue());
+        super.windowWillClose(notification);
+    }
+
     /**
+     * NSDraggingDestination protocol implementation
      * @return NSDragOperation
      */
+    @Action
     public NSUInteger draggingEntered(final NSDraggingInfo sender) {
         return this.draggingUpdated(sender);
     }
 
+    /**
+     * NSDraggingDestination protocol implementation
+     */
+    @Action
     public NSUInteger draggingUpdated(final NSDraggingInfo sender) {
         final NSPasteboard pasteboard = sender.draggingPasteboard();
         if(pasteboard.types().indexOfObject(NSString.stringWithString(NSPasteboard.FilesPromisePboardType)) != null) {
@@ -614,11 +628,19 @@ public class BrowserController extends WindowController
         return NSDraggingInfo.NSDragOperationNone;
     }
 
+    /**
+     * NSDraggingDestination protocol implementation
+     */
+    @Action
     public boolean prepareForDragOperation(final NSDraggingInfo sender) {
         // Continue to performDragOperation
         return true;
     }
 
+    /**
+     * NSDraggingDestination protocol implementation
+     */
+    @Action
     public boolean performDragOperation(final NSDraggingInfo sender) {
         for(Host bookmark : HostPasteboard.getPasteboard()) {
             final Host duplicate = new HostDictionary().deserialize(bookmark.serialize(SerializerFactory.get()));

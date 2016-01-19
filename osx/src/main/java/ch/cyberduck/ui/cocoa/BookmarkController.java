@@ -575,6 +575,13 @@ public class BookmarkController extends WindowController {
         cascade = this.cascade(cascade);
     }
 
+    @Override
+    public void windowWillClose(final NSNotification notification) {
+        cascade = new NSPoint(this.window().frame().origin.x.doubleValue(),
+                this.window().frame().origin.y.doubleValue() + this.window().frame().size.height.doubleValue());
+        super.windowWillClose(notification);
+    }
+
     @Outlet
     private NSTextField pkLabel;
 
