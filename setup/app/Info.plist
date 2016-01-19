@@ -201,6 +201,16 @@
                 <key>CFBundleTypeRole</key>
                 <string>Viewer</string>
                 <key>CFBundleURLName</key>
+                <string>WebDAV URL</string>
+                <key>CFBundleURLSchemes</key>
+                <array>
+                    <string>dav</string>
+                </array>
+            </dict>
+            <dict>
+                <key>CFBundleTypeRole</key>
+                <string>Viewer</string>
+                <key>CFBundleURLName</key>
                 <string>S3 URL</string>
                 <key>CFBundleURLSchemes</key>
                 <array>
