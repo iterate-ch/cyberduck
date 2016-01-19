@@ -68,6 +68,7 @@ public class UnixFTPEntryParserTest {
         assertEquals(23, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
     }
 
+    @Test
     public void testParseFTPEntryExpected() {
         FTPFileEntryParser parser = new FTPParserSelector().getParser("UNIX");
 
