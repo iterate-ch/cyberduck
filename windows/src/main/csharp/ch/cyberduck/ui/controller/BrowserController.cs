@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2015 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -50,6 +50,7 @@ using java.util;
 using org.apache.log4j;
 using StructureMap;
 using Application = ch.cyberduck.core.local.Application;
+using Boolean = java.lang.Boolean;
 using Exception = System.Exception;
 using Path = ch.cyberduck.core.Path;
 using String = System.String;
@@ -2868,8 +2869,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (CheckOverwrite(selected.Values))
             {
-                CopyTransfer copy = new CopyTransfer(Session.getHost(), Session,
-                    Utils.ConvertToJavaMap(selected));
+                CopyTransfer copy = new CopyTransfer(Session.getHost(), Session, Utils.ConvertToJavaMap(selected));
                 List<Path> changed = new List<Path>();
                 changed.AddRange(selected.Values);
                 transfer(copy, changed, true);
@@ -3054,7 +3054,11 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override void cleanup(object result)
                 {
-                    _controller.RefreshParentPaths((IList<Path>) Utils.ConvertFromJavaList<Path>((List) result));
+                    Boolean done = (Boolean) result;
+                    if (done.booleanValue())
+                    {
+                        _controller.RefreshParentPaths((IList<Path>) Utils.ConvertFromJavaList<Path>(_files));
+                    }
                 }
             }
         }
