@@ -1007,6 +1007,8 @@ public abstract class Preferences {
         defaults.put("update.check", String.valueOf(true));
         final int day = 60 * 60 * 24;
         defaults.put("update.check.interval", String.valueOf(day)); // periodic update check in seconds
+        // Last update check in milliseconds
+        defaults.put("update.check.timestamp", String.valueOf(0));
 
         defaults.put("terminal.bundle.identifier", "com.apple.Terminal");
         defaults.put("terminal.command", "do script \"{0}\"");

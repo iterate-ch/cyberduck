@@ -254,7 +254,7 @@
         <key>${SPARKLE_KEY_PREFIX}EnableSystemProfiling</key>
         <false/>
         <key>${SPARKLE_KEY_PREFIX}EnableAutomaticChecks</key>
-        <true/>
+        <false/>
         <key>${SPARKLE_KEY_PREFIX}AllowsAutomaticUpdates</key>
         <false/>
         <key>${SPARKLE_KEY_PREFIX}PublicDSAKeyFile</key>
