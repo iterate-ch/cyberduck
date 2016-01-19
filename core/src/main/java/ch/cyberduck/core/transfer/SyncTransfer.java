@@ -71,7 +71,7 @@ public class SyncTransfer extends Transfer {
 
     private TransferItem item;
 
-    private PathCache listCache
+    private PathCache cache
             = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
     private Map<TransferItem, Comparison> compareCache = Collections.<TransferItem, Comparison>synchronizedMap(new LRUMap(
@@ -90,16 +90,18 @@ public class SyncTransfer extends Transfer {
     }
 
     private void init() {
-        upload = new UploadTransfer(host, roots).withCache(listCache);
-        download = new DownloadTransfer(host, roots).withCache(listCache);
+        upload = new UploadTransfer(host, roots).withCache(cache);
+        download = new DownloadTransfer(host, roots).withCache(cache);
     }
 
     @Override
     public Transfer withCache(final PathCache cache) {
-        this.listCache = cache;
+        this.cache = cache;
         // Populate cache for root items. See #8712
         for(TransferItem root : roots) {
-            this.listCache.put(root.remote.getParent(), new AttributedList<Path>(Collections.singletonList(root.remote)));
+            if(!root.remote.isRoot()) {
+                cache.put(root.remote.getParent(), new AttributedList<Path>(Collections.singletonList(root.remote)));
+            }
         }
         upload.withCache(cache);
         download.withCache(cache);
@@ -157,12 +159,12 @@ public class SyncTransfer extends Transfer {
         // Set chosen action (upload, download, mirror) from prompt
         return new SynchronizationPathFilter(
                 comparison = new CachingComparisonServiceFilter(
-                        new ComparisonServiceFilter(session, session.getHost().getTimezone(), listener).withCache(listCache)
+                        new ComparisonServiceFilter(session, session.getHost().getTimezone(), listener).withCache(cache)
                 ).withCache(compareCache),
                 download.filter(session, TransferAction.overwrite, listener),
                 upload.filter(session, TransferAction.overwrite, listener),
                 action
-        ).withCache(listCache);
+        ).withCache(cache);
     }
 
     @Override
@@ -172,7 +174,7 @@ public class SyncTransfer extends Transfer {
             log.debug(String.format("Children for %s", directory));
         }
         final Set<TransferItem> children = new HashSet<TransferItem>();
-        final Find finder = new DefaultFindFeature(session).withCache(listCache);
+        final Find finder = new DefaultFindFeature(session).withCache(cache);
         if(finder.find(directory)) {
             children.addAll(download.list(session, directory, local, listener));
         }
