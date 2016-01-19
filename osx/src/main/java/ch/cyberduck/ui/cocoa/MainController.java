@@ -55,11 +55,13 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.serializer.HostDictionary;
+import ch.cyberduck.core.sparkle.SparklePeriodicUpdateChecker;
 import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.UploadTransfer;
+import ch.cyberduck.core.updater.PeriodicUpdateChecker;
 import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
 import ch.cyberduck.ui.browser.Column;
 import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
@@ -123,6 +125,8 @@ public class MainController extends BundleController implements NSApplication.De
 
     private final Preferences preferences = PreferencesFactory.get();
 
+    private PeriodicUpdateChecker updater;
+
     public MainController() {
         this.loadBundle();
     }
@@ -179,14 +183,11 @@ public class MainController extends BundleController implements NSApplication.De
         }
     }
 
-    private Updater updater;
-
     @Action
     public void updateMenuClicked(ID sender) {
-        if(null == updater) {
-            updater = Updater.create();
+        if(updater != null) {
+            updater.check(false);
         }
-        updater.checkForUpdates(null);
     }
 
     @Outlet
@@ -1108,6 +1109,16 @@ public class MainController extends BundleController implements NSApplication.De
                         new FlowBookmarkCollection(), new InterarchyBookmarkCollection(), new CrossFtpBookmarkCollection(), new FireFtpBookmarkCollection());
             }
         });
+        if(Updater.getFeed() != null) {
+            updater = new SparklePeriodicUpdateChecker();
+            if(preferences.getBoolean("update.check")) {
+                final long next = preferences.getLong("update.check.timestamp") + preferences.getLong("update.check.interval") * 1000;
+                if(next < System.currentTimeMillis()) {
+                    updater.check(true);
+                }
+                updater.register();
+            }
+        }
     }
 
     /**
@@ -1145,7 +1156,6 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Outlet
     private WindowController donationController;
-
 
     /**
      * Invoked from within the terminate method immediately before the
@@ -1322,6 +1332,11 @@ public class MainController extends BundleController implements NSApplication.De
 
         //Terminating rendezvous discovery
         RendezvousFactory.instance().quit();
+
+        // Disable update
+        if(updater != null) {
+            updater.unregister();
+        }
 
         //Writing usage info
         preferences.setProperty("uses", preferences.getInteger("uses") + 1);

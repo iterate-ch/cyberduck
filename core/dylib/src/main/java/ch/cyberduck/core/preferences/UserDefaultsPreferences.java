@@ -139,12 +139,6 @@ public class UserDefaultsPreferences extends Preferences {
 
         _init("bookmark.icon.size");
 
-        if(this.getBoolean("update.check")) {
-            // Will override SUCheckAtStartup
-            store.setInteger_forKey(new NSInteger(Long.parseLong(this.getProperty("update.check.interval"))),
-                    "SUScheduledCheckInterval");
-        }
-
         super.post();
     }
 

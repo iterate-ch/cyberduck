@@ -1849,13 +1849,6 @@ public class PreferencesController extends ToolbarWindowController {
     public void updateCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
         preferences.setProperty("update.check", enabled);
-        // Update the Sparkle property. Default is in Info.plist
-        if(enabled) {
-            preferences.setProperty("SUScheduledCheckInterval", preferences.getProperty("update.check.interval"));
-        }
-        else {
-            preferences.deleteProperty("SUScheduledCheckInterval");
-        }
     }
 
     @Outlet
