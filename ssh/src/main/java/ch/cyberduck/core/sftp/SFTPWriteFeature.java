@@ -53,28 +53,34 @@ public class SFTPWriteFeature extends AppendWriteFeature {
     @Override
     public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            final RemoteFile handle;
+            final EnumSet<OpenMode> flags;
             if(status.isAppend()) {
                 if(status.isExists()) {
                     // No append flag. Otherwise the offset field of SSH_FXP_WRITE requests is ignored.
-                    handle = session.sftp().open(file.getAbsolute(), EnumSet.of(OpenMode.WRITE));
+                    flags = EnumSet.of(OpenMode.WRITE);
                 }
                 else {
                     // Allocate offset
-                    handle = session.sftp().open(file.getAbsolute(), EnumSet.of(OpenMode.CREAT, OpenMode.WRITE));
+                    flags = EnumSet.of(OpenMode.CREAT, OpenMode.WRITE);
                 }
             }
             else {
+                // A new file is created; if the file already exists, it is opened and truncated.
                 if(status.isExists() && !status.isRename()) {
                     if(file.isSymbolicLink()) {
                         // Workaround for #7327
                         session.sftp().remove(file.getAbsolute());
+                        flags = EnumSet.of(OpenMode.CREAT, OpenMode.TRUNC, OpenMode.WRITE);
+                    }
+                    else {
+                        flags = EnumSet.of(OpenMode.TRUNC, OpenMode.WRITE);
                     }
                 }
-                // A new file is created; if the file already exists, it is opened and truncated.
-                handle = session.sftp().open(file.getAbsolute(),
-                        EnumSet.of(OpenMode.CREAT, OpenMode.TRUNC, OpenMode.WRITE));
+                else {
+                    flags = EnumSet.of(OpenMode.CREAT, OpenMode.TRUNC, OpenMode.WRITE);
+                }
             }
+            final RemoteFile handle = session.sftp().open(file.getAbsolute(), flags);
             final int maxUnconfirmedWrites
                     = (int) (status.getLength() / preferences.getInteger("connection.chunksize")) + 1;
             if(log.isInfoEnabled()) {
