@@ -144,12 +144,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
      * @return true if the file is a symbolic link.
      */
     public boolean isSymbolicLink() {
-        try {
-            return !this.equals(this.getSymlinkTarget());
-        }
-        catch(NotfoundException e) {
-            return false;
-        }
+        return Files.isSymbolicLink(Paths.get(path));
     }
 
     public Local getSymlinkTarget() throws NotfoundException {
@@ -157,7 +152,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
             // For a link that actually points to something (either a file or a directory),
             // the absolute path is the path through the link, whereas the canonical path
             // is the path the link references.
-            return LocalFactory.get(Paths.get(this.getAbsolute()).toRealPath().toString());
+            return LocalFactory.get(Files.readSymbolicLink(Paths.get(path)).toAbsolutePath().toString());
         }
         catch(InvalidPathException | IOException e) {
             throw new LocalNotfoundException(String.format("Resolving symlink target for %s failed", path), e);
