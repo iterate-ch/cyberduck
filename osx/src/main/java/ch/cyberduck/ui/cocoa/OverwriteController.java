@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.SheetCallback;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.threading.MainAction;
@@ -32,10 +33,18 @@ import java.util.List;
  */
 public class OverwriteController extends ProxyController {
 
-    private BrowserController parent;
+    private final BrowserController parent;
+
+    private final Cache<Path> cache;
 
     public OverwriteController(final BrowserController parent) {
         this.parent = parent;
+        this.cache = parent.getCache();
+    }
+
+    public OverwriteController(final BrowserController parent, final Cache<Path> cache) {
+        this.parent = parent;
+        this.cache = cache;
     }
 
     /**
@@ -51,7 +60,7 @@ public class OverwriteController extends ProxyController {
         boolean shouldWarn = false;
         for(iter = selected.iterator(); iter.hasNext(); ) {
             final Path item = iter.next();
-            if(parent.getCache().get(item.getParent()).contains(item)) {
+            if(cache.get(item.getParent()).contains(item)) {
                 if(i < 10) {
                     alertText.append("\n").append(Character.toString('\u2022')).append(" ").append(item.getName());
                 }

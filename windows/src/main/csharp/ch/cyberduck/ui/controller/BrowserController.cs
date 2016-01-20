@@ -2674,7 +2674,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 List<Path> changed = new List<Path>();
                 changed.AddRange(selected.Keys);
                 changed.AddRange(selected.Values);
-                MoveAction move = new MoveAction(this, Utils.ConvertToJavaMap(selected), changed);
+                MoveAction move = new MoveAction(this, Utils.ConvertToJavaMap(selected), changed, _cache);
                 Background(move);
             }
         }
@@ -3160,8 +3160,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private class MoveAction : WorkerBackgroundAction
         {
-            public MoveAction(BrowserController controller, Map selected, IList<Path> changed)
-                : base(controller, controller.Session, new InnerMoveWorker(controller, selected, changed))
+            public MoveAction(BrowserController controller, Map selected, IList<Path> changed, PathCache cache)
+                : base(controller, controller.Session, new InnerMoveWorker(controller, selected, changed, cache))
             {
             }
 
@@ -3171,8 +3171,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly BrowserController _controller;
                 private readonly Map _files;
 
-                public InnerMoveWorker(BrowserController controller, Map files, IList<Path> changed)
-                    : base(files, controller)
+                public InnerMoveWorker(BrowserController controller, Map files, IList<Path> changed, PathCache cache)
+                    : base(files, controller, cache)
                 {
                     _controller = controller;
                     _files = files;
