@@ -16,6 +16,7 @@
 // yves@cyberduck.ch
 // 
 
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 using ch.cyberduck.core;
@@ -61,7 +62,11 @@ namespace Ch.Cyberduck.Ui.Growl
             rightMenu.Items.AddRange(new ToolStripItem[]
             {itemUpdate, new ToolStripSeparator(), itemDonate, itemKey, new ToolStripSeparator(), itemExit});
 
-            _icon.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
+            try {
+                _icon.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
+            }
+            catch (ArgumentException)
+            {}
             _icon.Visible = true;
             _icon.ContextMenuStrip = rightMenu;
 
