@@ -46,10 +46,10 @@ public class DAVMoveFeature implements Move {
         try {
             final String target = new DefaultUrlProvider(session.getHost()).toUrl(renamed).find(DescriptiveUrl.Type.provider).getUrl();
             if(file.isDirectory()) {
-                session.getClient().move(new DAVPathEncoder().encode(file), String.format("%s/", target), exists);
+                session.getClient().move(new DAVPathEncoder().encode(file), String.format("%s/", target), true);
             }
             else {
-                session.getClient().move(new DAVPathEncoder().encode(file), target, exists);
+                session.getClient().move(new DAVPathEncoder().encode(file), target, true);
             }
         }
         catch(SardineException e) {

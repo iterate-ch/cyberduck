@@ -17,6 +17,7 @@ package ch.cyberduck.core.worker;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
@@ -37,13 +38,16 @@ import java.util.Map;
  */
 public class MoveWorker extends Worker<List<Path>> {
 
-    private Map<Path, Path> files;
+    private final Map<Path, Path> files;
 
-    private ProgressListener listener;
+    private final ProgressListener listener;
 
-    public MoveWorker(final Map<Path, Path> files, final ProgressListener listener) {
+    private final Cache<Path> cache;
+
+    public MoveWorker(final Map<Path, Path> files, final ProgressListener listener, final Cache<Path> cache) {
         this.files = files;
         this.listener = listener;
+        this.cache = cache;
     }
 
     @Override
@@ -56,7 +60,14 @@ public class MoveWorker extends Worker<List<Path>> {
             if(!feature.isSupported(entry.getKey())) {
                 continue;
             }
-            feature.move(entry.getKey(), entry.getValue(), false, new Delete.Callback() {
+            final boolean exists;
+            if(cache.containsKey(entry.getValue().getParent())) {
+                exists = cache.get(entry.getValue().getParent()).contains(entry.getValue());
+            }
+            else {
+                exists = false;
+            }
+            feature.move(entry.getKey(), entry.getValue(), exists, new Delete.Callback() {
                 @Override
                 public void delete(final Path file) {
                     listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),

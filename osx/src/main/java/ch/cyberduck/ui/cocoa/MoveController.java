@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.SheetCallback;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.preferences.Preferences;
@@ -40,13 +41,21 @@ import java.util.Map;
  */
 public class MoveController extends ProxyController {
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
-    private BrowserController parent;
+    private final BrowserController parent;
+
+    private final Cache<Path> cache;
 
     public MoveController(final BrowserController parent) {
         this.parent = parent;
+        this.cache = parent.getCache();
+    }
+
+    public MoveController(final BrowserController parent, final Cache<Path> cache) {
+        this.parent = parent;
+        this.cache = cache;
     }
 
     /**
@@ -65,8 +74,8 @@ public class MoveController extends ProxyController {
         final DefaultMainAction action = new DefaultMainAction() {
             @Override
             public void run() {
-                background(new WorkerBackgroundAction<List<Path>>(parent, parent.getSession(), parent.getCache(),
-                                new MoveWorker(selected, parent) {
+                background(new WorkerBackgroundAction<List<Path>>(parent, parent.getSession(), cache,
+                        new MoveWorker(selected, parent, cache) {
                                     @Override
                                     public void cleanup(final List<Path> moved) {
                                         parent.reload(parent.workdir(), moved, new ArrayList<Path>(selected.values()));
@@ -127,7 +136,7 @@ public class MoveController extends ProxyController {
             });
         }
         else {
-            new OverwriteController(parent).overwrite(new ArrayList<Path>(selected.values()), action);
+            new OverwriteController(parent, cache).overwrite(new ArrayList<Path>(selected.values()), action);
         }
     }
 }
