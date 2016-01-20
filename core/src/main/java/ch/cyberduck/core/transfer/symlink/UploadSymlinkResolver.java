@@ -18,6 +18,7 @@ package ch.cyberduck.core.transfer.symlink;
  */
 
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -43,7 +44,7 @@ public class UploadSymlinkResolver extends AbstractSymlinkResolver<Local> {
     }
 
     @Override
-    public boolean resolve(final Local file) throws NotfoundException {
+    public boolean resolve(final Local file) throws NotfoundException, LocalAccessDeniedException {
         if(PreferencesFactory.get().getBoolean("local.symboliclink.resolve")) {
             // Follow links instead
             return false;

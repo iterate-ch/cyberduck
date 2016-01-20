@@ -3,6 +3,7 @@ package ch.cyberduck.core.worker;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.io.DisabledStreamListener;
@@ -43,7 +44,7 @@ public class SingleTransferWorkerTest {
         };
         final NullLocal local = new NullLocal("l") {
             @Override
-            public AttributedList<Local> list() {
+            public AttributedList<Local> list() throws LocalAccessDeniedException {
                 AttributedList<Local> l = new AttributedList<Local>();
                 l.add(new NullLocal(this.getAbsolute(), "c") {
                     @Override
@@ -84,7 +85,7 @@ public class SingleTransferWorkerTest {
                 }
                 super.transfer(new TransferItem(item.remote, new NullLocal("l") {
                     @Override
-                    public AttributedList<Local> list() {
+                    public AttributedList<Local> list() throws LocalAccessDeniedException {
                         AttributedList<Local> l = new AttributedList<Local>();
                         l.add(new NullLocal(this.getAbsolute(), "c"));
                         return l;
@@ -102,7 +103,7 @@ public class SingleTransferWorkerTest {
         final Path root = new Path("/t", EnumSet.of(Path.Type.directory));
         final NullLocal local = new NullLocal("l") {
             @Override
-            public AttributedList<Local> list() {
+            public AttributedList<Local> list() throws LocalAccessDeniedException {
                 AttributedList<Local> l = new AttributedList<Local>();
                 l.add(new NullLocal(this.getAbsolute(), "c") {
                     @Override

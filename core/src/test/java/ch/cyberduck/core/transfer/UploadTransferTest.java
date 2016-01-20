@@ -3,6 +3,7 @@ package ch.cyberduck.core.transfer;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
@@ -55,7 +56,7 @@ public class UploadTransferTest {
     public void testList() throws Exception {
         final NullLocal local = new NullLocal("t") {
             @Override
-            public AttributedList<Local> list() {
+            public AttributedList<Local> list() throws LocalAccessDeniedException {
                 AttributedList<Local> l = new AttributedList<Local>();
                 l.add(new NullLocal(this.getAbsolute(), "c"));
                 return l;
@@ -71,7 +72,7 @@ public class UploadTransferTest {
     public void testListSorted() throws Exception {
         final NullLocal local = new NullLocal("t") {
             @Override
-            public AttributedList<Local> list() {
+            public AttributedList<Local> list() throws LocalAccessDeniedException {
                 AttributedList<Local> l = new AttributedList<Local>();
                 l.add(new NullLocal(this.getAbsolute(), "c"));
                 l.add(new NullLocal(this.getAbsolute(), "c.html"));
@@ -99,7 +100,7 @@ public class UploadTransferTest {
         final AtomicInteger c = new AtomicInteger();
         final NullLocal local = new NullLocal("t") {
             @Override
-            public AttributedList<Local> list() {
+            public AttributedList<Local> list() throws LocalAccessDeniedException {
                 AttributedList<Local> l = new AttributedList<Local>();
                 l.add(new NullLocal(this.getAbsolute(), "a") {
                     @Override
@@ -164,7 +165,7 @@ public class UploadTransferTest {
         final AtomicInteger c = new AtomicInteger();
         final NullLocal local = new NullLocal("t") {
             @Override
-            public AttributedList<Local> list() {
+            public AttributedList<Local> list() throws LocalAccessDeniedException {
                 AttributedList<Local> l = new AttributedList<Local>();
                 l.add(new NullLocal(this.getAbsolute(), "a") {
                     @Override

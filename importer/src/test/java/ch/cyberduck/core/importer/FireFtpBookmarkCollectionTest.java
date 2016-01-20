@@ -2,10 +2,12 @@ package ch.cyberduck.core.importer;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * @version $Id$
@@ -30,7 +32,13 @@ public class FireFtpBookmarkCollectionTest {
         FireFtpBookmarkCollection c = new FireFtpBookmarkCollection() {
             @Override
             public Local getFile() {
-                return new Local("src/test/resources/org.mozdev.fireftp");
+                try {
+                    return new Local("src/test/resources/org.mozdev.fireftp");
+                }
+                catch(LocalAccessDeniedException e) {
+                    fail();
+                    return null;
+                }
             }
         };
         assertEquals(0, c.size());

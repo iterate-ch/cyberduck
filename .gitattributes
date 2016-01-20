@@ -1,4 +1,3 @@
-* text=auto !eol
 .tx/config -text
 /Acknowledgments.rtf -text
 /Credits.rtf -text

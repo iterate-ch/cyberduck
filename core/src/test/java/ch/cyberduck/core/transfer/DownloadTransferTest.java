@@ -15,6 +15,7 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.filter.DownloadRegexFilter;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.local.LocalTouchFactory;
@@ -239,7 +240,7 @@ public class DownloadTransferTest {
             }
 
             @Override
-            public AttributedList<Local> list() {
+            public AttributedList<Local> list() throws LocalAccessDeniedException {
                 return new AttributedList<Local>(Arrays.<Local>asList(new NullLocal("p", "a")));
             }
         });
@@ -264,7 +265,7 @@ public class DownloadTransferTest {
             }
 
             @Override
-            public AttributedList<Local> list() {
+            public AttributedList<Local> list() throws LocalAccessDeniedException {
                 return new AttributedList<Local>(Arrays.<Local>asList(new NullLocal("p", "a")));
             }
         });
@@ -289,7 +290,7 @@ public class DownloadTransferTest {
             }
 
             @Override
-            public AttributedList<Local> list() {
+            public AttributedList<Local> list() throws LocalAccessDeniedException {
                 return new AttributedList<Local>(Arrays.<Local>asList(new NullLocal("p", "a")));
             }
         });
@@ -314,7 +315,7 @@ public class DownloadTransferTest {
             }
 
             @Override
-            public AttributedList<Local> list() {
+            public AttributedList<Local> list() throws LocalAccessDeniedException {
                 return new AttributedList<Local>(Arrays.<Local>asList(new NullLocal("p", "a")));
             }
         });
