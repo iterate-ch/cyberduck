@@ -32,13 +32,20 @@ import org.jets3t.service.model.StorageObject;
  */
 public class S3CopyFeature implements Copy {
 
-    private S3Session session;
+    private final S3Session session;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new S3PathContainerService();
 
+    private final S3AccessControlListFeature accessControlListFeature;
+
     public S3CopyFeature(final S3Session session) {
+        this(session, (S3AccessControlListFeature) session.getFeature(AclPermission.class));
+    }
+
+    public S3CopyFeature(final S3Session session, final S3AccessControlListFeature accessControlListFeature) {
         this.session = session;
+        this.accessControlListFeature = accessControlListFeature;
     }
 
     @Override
@@ -49,9 +56,13 @@ public class S3CopyFeature implements Copy {
             // Keep encryption setting
             final String encryptionAlgorithm = source.attributes().getEncryption();
             // Apply non standard ACL
-            final S3AccessControlListFeature accessControlListFeature = (S3AccessControlListFeature) session.getFeature(AclPermission.class);
-            final Acl acl = accessControlListFeature.getPermission(source);
-            this.copy(source, copy, storageClass, encryptionAlgorithm, acl);
+            if(null == accessControlListFeature) {
+                this.copy(source, copy, storageClass, encryptionAlgorithm, Acl.EMPTY);
+            }
+            else {
+                final Acl acl = accessControlListFeature.getPermission(source);
+                this.copy(source, copy, storageClass, encryptionAlgorithm, acl);
+            }
         }
     }
 
@@ -61,8 +72,12 @@ public class S3CopyFeature implements Copy {
             final StorageObject destination = new StorageObject(containerService.getKey(copy));
             destination.setStorageClass(storageClass);
             destination.setServerSideEncryptionAlgorithm(encryptionAlgorithm);
-            final S3AccessControlListFeature accessControlListFeature = (S3AccessControlListFeature) session.getFeature(AclPermission.class);
-            destination.setAcl(accessControlListFeature.convert(acl));
+            if(null == accessControlListFeature) {
+                destination.setAcl(null);
+            }
+            else {
+                destination.setAcl(accessControlListFeature.convert(acl));
+            }
             try {
                 // Copying object applying the metadata of the original
                 session.getClient().copyObject(containerService.getContainer(source).getName(),

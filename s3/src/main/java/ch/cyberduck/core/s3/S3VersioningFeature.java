@@ -47,16 +47,23 @@ import java.util.Map;
 public class S3VersioningFeature implements Versioning {
     private static final Logger log = Logger.getLogger(S3VersioningFeature.class);
 
-    private S3Session session;
+    private final S3Session session;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new S3PathContainerService();
+
+    private final S3AccessControlListFeature accessControlListFeature;
 
     private Map<Path, VersioningConfiguration> cache
             = Collections.synchronizedMap(new LRUMap(10));
 
     public S3VersioningFeature(final S3Session session) {
+        this(session, (S3AccessControlListFeature) session.getFeature(AclPermission.class));
+    }
+
+    public S3VersioningFeature(final S3Session session, final S3AccessControlListFeature accessControlListFeature) {
         this.session = session;
+        this.accessControlListFeature = accessControlListFeature;
     }
 
     @Override
@@ -168,8 +175,12 @@ public class S3VersioningFeature implements Versioning {
                 // Keep encryption setting
                 destination.setServerSideEncryptionAlgorithm(file.attributes().getEncryption());
                 // Apply non standard ACL
-                final S3AccessControlListFeature acl = (S3AccessControlListFeature) session.getFeature(AclPermission.class);
-                destination.setAcl(acl.convert(acl.getPermission(file)));
+                if(null == accessControlListFeature) {
+                    destination.setAcl(null);
+                }
+                else {
+                    destination.setAcl(accessControlListFeature.convert(accessControlListFeature.getPermission(file)));
+                }
                 session.getClient().copyVersionedObject(file.attributes().getVersionId(),
                         containerService.getContainer(file).getName(), containerService.getKey(file), containerService.getContainer(file).getName(), destination, false);
             }

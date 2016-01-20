@@ -41,13 +41,20 @@ import java.util.Map;
 public class S3MetadataFeature implements Headers {
     private static final Logger log = Logger.getLogger(S3MetadataFeature.class);
 
-    private S3Session session;
+    private final S3Session session;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new S3PathContainerService();
 
+    private final S3AccessControlListFeature accessControlListFeature;
+
     public S3MetadataFeature(final S3Session session) {
+        this(session, (S3AccessControlListFeature) session.getFeature(AclPermission.class));
+    }
+
+    public S3MetadataFeature(final S3Session session, final S3AccessControlListFeature accessControlListFeature) {
         this.session = session;
+        this.accessControlListFeature = accessControlListFeature;
     }
 
     @Override
@@ -69,7 +76,6 @@ public class S3MetadataFeature implements Headers {
                 final StorageObject target = new S3AttributesFeature(session).details(file);
                 target.replaceAllMetadata(new HashMap<String, Object>(metadata));
                 // Apply non standard ACL
-                final S3AccessControlListFeature accessControlListFeature = (S3AccessControlListFeature) session.getFeature(AclPermission.class);
                 if(accessControlListFeature != null) {
                     target.setAcl(accessControlListFeature.convert(accessControlListFeature.getPermission(file)));
                 }
