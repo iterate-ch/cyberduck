@@ -15,6 +15,7 @@
 package ch.cyberduck.core.spectra;
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DisabledUrlProvider;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListProgressListener;
@@ -66,7 +67,7 @@ public class SpectraSession extends S3Session {
             return (T) new SpectraTouchFeature(this);
         }
         if(type == UrlProvider.class) {
-            return (T) new SpectraUrlProvider(host);
+            return (T) new DisabledUrlProvider();
         }
         return super.getFeature(type);
     }
