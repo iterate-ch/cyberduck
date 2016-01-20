@@ -74,8 +74,6 @@ public class DAVMetadataFeatureTest {
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("repository-uuid"));
         assertEquals("9e2dff1d-8f06-0410-b5b1-4d70b6340adc", metadata.get("repository-uuid"));
-        assertTrue(metadata.containsKey("eol-style"));
-        assertEquals("native", metadata.get("eol-style"));
         session.close();
     }
 
