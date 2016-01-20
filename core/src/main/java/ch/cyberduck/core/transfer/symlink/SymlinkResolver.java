@@ -17,6 +17,7 @@ package ch.cyberduck.core.transfer.symlink;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 
 /**
@@ -28,7 +29,7 @@ public interface SymlinkResolver<T> {
      * @param file Symbolic link
      * @return True if the symbolic link target can be resolved to another transfer item
      */
-    boolean resolve(T file) throws NotfoundException;
+    boolean resolve(T file) throws NotfoundException, LocalAccessDeniedException;
 
     String relativize(String base, String name);
 }

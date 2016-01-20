@@ -4,6 +4,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.transfer.TransferItem;
 
@@ -60,7 +61,7 @@ public class UploadSymlinkResolverTest {
             }
 
             @Override
-            public Local getSymlinkTarget() {
+            public Local getSymlinkTarget() throws LocalAccessDeniedException {
                 return new NullLocal("/a/c");
             }
         }));
@@ -75,7 +76,7 @@ public class UploadSymlinkResolverTest {
             }
 
             @Override
-            public Local getSymlinkTarget() {
+            public Local getSymlinkTarget() throws LocalAccessDeniedException {
                 return new NullLocal("/b/c");
             }
         }));

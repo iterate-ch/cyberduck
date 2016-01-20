@@ -15,6 +15,7 @@
 package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.io.watchservice.DisabledWatchService;
 
 import org.junit.Test;
@@ -30,7 +31,7 @@ import static org.junit.Assert.assertTrue;
 public class FileWatcherTest {
 
     @Test
-    public void testMatchDefaultLocal() throws IOException {
+    public void testMatchDefaultLocal() throws IOException, LocalAccessDeniedException {
         assertTrue(
                 new FileWatcher(new DisabledWatchService()).matches(
                         new Local("/private/var/folders/cl/622z57616532npsw3xs1ndyc0000gp/T/1022b1a9-c21c-4a79-9162-59990c75aaa8/usr/home/dkocher/sandbox/edit.html"),
@@ -64,7 +65,7 @@ public class FileWatcherTest {
     }
 
     @Test
-    public void testMatchFinderLocal() throws IOException {
+    public void testMatchFinderLocal() throws IOException, LocalAccessDeniedException {
         assertTrue(
                 new FileWatcher(new DisabledWatchService()).matches(
                         new FinderLocal("/private/var/folders/cl/622z57616532npsw3xs1ndyc0000gp/T/1022b1a9-c21c-4a79-9162-59990c75aaa8/usr/home/dkocher/sandbox/edit.html"),
