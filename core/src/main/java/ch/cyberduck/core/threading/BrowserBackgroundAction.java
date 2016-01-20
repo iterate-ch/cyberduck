@@ -17,12 +17,9 @@ package ch.cyberduck.core.threading;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.BookmarkCollection;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Controller;
-import ch.cyberduck.core.HistoryCollection;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostKeyCallbackFactory;
 import ch.cyberduck.core.LoginService;
@@ -30,7 +27,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
-import ch.cyberduck.core.exception.BackgroundException;
 
 /**
  * @version $Id$
@@ -99,25 +95,5 @@ public abstract class BrowserBackgroundAction<T> extends ControllerBackgroundAct
     public void cleanup() {
         registry.remove(this);
         super.cleanup();
-    }
-
-    @Override
-    protected boolean connect(final Session session) throws BackgroundException {
-        final boolean opened = super.connect(session);
-        if(opened) {
-            final Host bookmark = session.getHost();
-            final HistoryCollection history = HistoryCollection.defaultCollection();
-            if(history.isLoaded()) {
-                history.add(bookmark);
-            }
-            // Notify changed bookmark
-            final BookmarkCollection bookmarks = BookmarkCollection.defaultCollection();
-            if(bookmarks.isLoaded()) {
-                if(bookmarks.contains(bookmark)) {
-                    bookmarks.collectionItemChanged(bookmark);
-                }
-            }
-        }
-        return opened;
     }
 }

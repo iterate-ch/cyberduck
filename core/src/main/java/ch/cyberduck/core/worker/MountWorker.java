@@ -18,7 +18,9 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.BookmarkCollection;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.HistoryCollection;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
@@ -77,6 +79,23 @@ public class MountWorker extends Worker<Path> {
         }
         cache.put(home, list);
         return home;
+    }
+
+    @Override
+    public void cleanup(final Path workdir) {
+        if(null != workdir) {
+            final HistoryCollection history = HistoryCollection.defaultCollection();
+            if(history.isLoaded()) {
+                history.add(bookmark);
+            }
+            // Notify changed bookmark
+            final BookmarkCollection bookmarks = BookmarkCollection.defaultCollection();
+            if(bookmarks.isLoaded()) {
+                if(bookmarks.contains(bookmark)) {
+                    bookmarks.collectionItemChanged(bookmark);
+                }
+            }
+        }
     }
 
     @Override
