@@ -1,20 +1,20 @@
-﻿//
-// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
-//
+﻿// 
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
+// 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
-//
+// 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-//
+//  
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
-//
+// feedback@cyberduck.io
+// 
 
 using System.Collections.Generic;
 using System.Media;
@@ -27,7 +27,6 @@ using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.sftp;
 using ch.cyberduck.core.threading;
 using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Core.Preferences;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using java.lang;
 using org.apache.log4j;
@@ -47,8 +46,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly Object _syncRootReachability = new Object();
         private readonly Timer _ticklerReachability;
 
-        private HostPasswordStore keychain
-                = PasswordStoreFactory.get();
+        private readonly HostPasswordStore keychain = PasswordStoreFactory.get();
 
         private ConnectionController(IConnectionView view)
         {
@@ -272,8 +270,10 @@ namespace Ch.Cyberduck.Ui.Controller
                     return;
                 }
                 Protocol protocol = View.SelectedProtocol;
-                string password = keychain.getPassword(protocol.getScheme(), Integer.parseInt(View.Port), View.Hostname, View.Username);
-                if (Utils.IsBlank(password)) {
+                string password = keychain.getPassword(protocol.getScheme(), Integer.parseInt(View.Port), View.Hostname,
+                    View.Username);
+                if (Utils.IsBlank(password))
+                {
                     View.Password = password;
                 }
             }
@@ -383,7 +383,8 @@ namespace Ch.Cyberduck.Ui.Controller
             if (Utils.IsNotBlank(View.Hostname))
             {
                 Credentials credentials =
-                    CredentialsConfiguratorFactory.get(View.SelectedProtocol).configure(new Host(new SFTPProtocol(), View.Hostname));
+                    CredentialsConfiguratorFactory.get(View.SelectedProtocol)
+                        .configure(new Host(new SFTPProtocol(), View.Hostname));
                 if (credentials.isPublicKeyAuthentication())
                 {
                     // No previously manually selected key
@@ -437,15 +438,15 @@ namespace Ch.Cyberduck.Ui.Controller
         }
 
         private void OnReachability(object state)
-        {            
-            background(new ReachabilityAction(this, View.SelectedProtocol, View.Hostname));
+        {
+            Invoke(delegate { background(new ReachabilityAction(this, View.SelectedProtocol, View.Hostname)); });
         }
 
         private class ReachabilityAction : AbstractBackgroundAction
         {
             private readonly ConnectionController _controller;
-            private readonly Protocol _protocol;
             private readonly string _hostname;
+            private readonly Protocol _protocol;
             private bool _reachable;
 
             public ReachabilityAction(ConnectionController controller, Protocol protocol, String hostname)
