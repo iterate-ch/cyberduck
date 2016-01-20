@@ -97,6 +97,8 @@ public class SpectraObjectListService implements ListService {
                     }
                     final EnumSet<AbstractPath.Type> types = EnumSet.of(Path.Type.file);
                     final Path file = new Path(directory, PathNormalizer.name(key), types);
+                    file.attributes().setSize(object.getSize());
+                    file.attributes().setETag(object.geteTag());
                     children.add(file);
                 }
                 final List<CommonPrefixes> prefixes = chunk.getResult().getCommonPrefixes();
