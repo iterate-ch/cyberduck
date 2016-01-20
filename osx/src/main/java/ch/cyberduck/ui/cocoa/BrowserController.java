@@ -2576,7 +2576,6 @@ public class BrowserController extends WindowController
 
     @Action
     public void editButtonClicked(final ID sender) {
-        final EditorFactory factory = EditorFactory.instance();
         for(Path selected : this.getSelectedPaths()) {
             this.edit(selected);
         }
