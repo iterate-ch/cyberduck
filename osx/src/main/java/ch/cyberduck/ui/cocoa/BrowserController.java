@@ -3252,6 +3252,7 @@ public class BrowserController extends WindowController
                         new MountWorker(host, cache, listener) {
                             @Override
                             public void cleanup(final Path workdir) {
+                                super.cleanup(workdir);
                                 if(null == workdir) {
                                     unmount();
                                 }
