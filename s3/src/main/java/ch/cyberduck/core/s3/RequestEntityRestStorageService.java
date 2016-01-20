@@ -248,4 +248,18 @@ public class RequestEntityRestStorageService extends RestS3Service {
         }
         return super.listAllBucketsImpl();
     }
+
+    @Override
+    protected boolean isXmlContentType(final String contentType) {
+        if(null == contentType) {
+            return false;
+        }
+        if(StringUtils.startsWithIgnoreCase(contentType, "application/xml")) {
+            return true;
+        }
+        if(StringUtils.startsWithIgnoreCase(contentType, "text/xml")) {
+            return true;
+        }
+        return false;
+    }
 }
