@@ -23,11 +23,13 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
+import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.s3.RequestEntityRestStorageService;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
+import ch.cyberduck.core.shared.DisabledMoveFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
@@ -65,6 +67,9 @@ public class SpectraSession extends S3Session {
         }
         if(type == Touch.class) {
             return (T) new SpectraTouchFeature(this);
+        }
+        if(type == Move.class) {
+            return (T) new DisabledMoveFeature();
         }
         if(type == UrlProvider.class) {
             return (T) new DisabledUrlProvider();
