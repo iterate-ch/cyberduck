@@ -23,7 +23,6 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.AclPermission;
-import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.ThreadPool;
 
@@ -46,41 +45,33 @@ import java.util.concurrent.Future;
 /**
  * @version $Id$
  */
-public class S3MultipartCopyFeature implements Copy {
+public class S3MultipartCopyFeature extends S3CopyFeature {
     private static final Logger log = Logger.getLogger(S3MultipartCopyFeature.class);
 
-    private S3Session session;
+    private final S3Session session;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new S3PathContainerService();
 
-    private ThreadPool pool
+    private final ThreadPool pool
             = new ThreadPool(PreferencesFactory.get().getInteger("s3.upload.multipart.concurrency"), "multipart");
 
     /**
      * A split smaller than 5M is not allowed
      */
-    private Long partsize
+    private final Long partsize
             = PreferencesFactory.get().getLong("s3.upload.multipart.size");
 
-    private S3AccessControlListFeature accessControlListFeature;
+    private final S3AccessControlListFeature accessControlListFeature;
 
     public S3MultipartCopyFeature(final S3Session session) {
-        this.session = session;
-        this.accessControlListFeature = (S3AccessControlListFeature) session.getFeature(AclPermission.class);
+        this(session, (S3AccessControlListFeature) session.getFeature(AclPermission.class));
     }
 
-    @Override
-    public void copy(final Path source, final Path copy) throws BackgroundException {
-        if(source.isFile()) {
-            // Keep same storage class
-            final String storageClass = source.attributes().getStorageClass();
-            // Keep encryption setting
-            final String encryptionAlgorithm = source.attributes().getEncryption();
-            // Apply non standard ACL
-            final Acl acl = accessControlListFeature.getPermission(source);
-            this.copy(source, copy, storageClass, encryptionAlgorithm, acl);
-        }
+    public S3MultipartCopyFeature(final S3Session session, final S3AccessControlListFeature accessControlListFeature) {
+        super(session, accessControlListFeature);
+        this.session = session;
+        this.accessControlListFeature = accessControlListFeature;
     }
 
     protected void copy(final Path source, final Path copy, final String storageClass,
