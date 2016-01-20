@@ -3138,6 +3138,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override void cleanup(object wd)
                 {
+                    base.cleanup(wd);
                     Path workdir = (Path) wd;
                     if (null == workdir)
                     {
