@@ -19,6 +19,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Touch;
@@ -63,6 +64,9 @@ public class SpectraSession extends S3Session {
         }
         if(type == Touch.class) {
             return (T) new SpectraTouchFeature(this);
+        }
+        if(type == UrlProvider.class) {
+            return (T) new SpectraUrlProvider(host);
         }
         return super.getFeature(type);
     }
