@@ -75,6 +75,8 @@ public class BookmarkController extends WindowController {
 
     private final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
 
+    private final BookmarkCollection collection = BookmarkCollection.defaultCollection();
+
     @Outlet
     private NSPopUpButton protocolPopup;
 
@@ -525,7 +527,7 @@ public class BookmarkController extends WindowController {
     public BookmarkController(final Host host) {
         this.host = host;
         // Register for bookmark delete event. Will close this window.
-        BookmarkCollection.defaultCollection().addListener(bookmarkCollectionListener);
+        collection.addListener(bookmarkCollectionListener);
         this.loadBundle();
     }
 
@@ -544,7 +546,7 @@ public class BookmarkController extends WindowController {
     @Override
     public void invalidate() {
         preferences.setProperty("bookmark.toggle.options", this.toggleOptionsButton.state());
-        BookmarkCollection.defaultCollection().removeListener(bookmarkCollectionListener);
+        collection.removeListener(bookmarkCollectionListener);
         notificationCenter.removeObserver(this.id());
         super.invalidate();
     }
@@ -743,7 +745,7 @@ public class BookmarkController extends WindowController {
      * Propagates all fields with the properties of this bookmark
      */
     private void itemChanged() {
-        BookmarkCollection.defaultCollection().collectionItemChanged(host);
+        collection.collectionItemChanged(host);
     }
 
     private void init() {
