@@ -26,10 +26,6 @@
     <artifactId>spectra</artifactId>
     <packaging>jar</packaging>
 
-    <properties>
-        <maven.test.skip>true</maven.test.skip>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>ch.cyberduck</groupId>
@@ -51,7 +47,7 @@
         <dependency>
             <groupId>com.spectralogic.ds3</groupId>
             <artifactId>ds3-sdk</artifactId>
-            <version>1.2.3</version>
+            <version>1.2.4</version>
         </dependency>
     </dependencies>
 
