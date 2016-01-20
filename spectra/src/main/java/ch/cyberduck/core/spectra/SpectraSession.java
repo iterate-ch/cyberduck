@@ -15,10 +15,12 @@
 package ch.cyberduck.core.spectra;
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DisabledUrlProvider;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Move;
@@ -68,6 +70,9 @@ public class SpectraSession extends S3Session {
         }
         if(type == Move.class) {
             return (T) new DisabledMoveFeature();
+        }
+        if(type == UrlProvider.class) {
+            return (T) new DisabledUrlProvider();
         }
         return super.getFeature(type);
     }

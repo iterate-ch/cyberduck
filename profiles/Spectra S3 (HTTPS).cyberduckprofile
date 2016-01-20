@@ -7,7 +7,7 @@
         <key>Vendor</key>
         <string>spectralogic</string>
         <key>Description</key>
-        <string>Spectra BlackPearl Deep Storage Gateway (HTTPS)</string>
+        <string>Spectra S3 (HTTPS)</string>
         <key>Scheme</key>
         <string>https</string>
         <key>Default Hostname</key>
