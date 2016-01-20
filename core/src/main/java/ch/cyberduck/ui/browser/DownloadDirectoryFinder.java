@@ -33,6 +33,8 @@ import org.apache.log4j.Logger;
 public class DownloadDirectoryFinder implements DirectoryFinder {
     private static final Logger log = Logger.getLogger(DownloadDirectoryFinder.class);
 
+    private final BookmarkCollection collection = BookmarkCollection.defaultCollection();
+
     private Preferences preferences
             = PreferencesFactory.get();
 
@@ -60,8 +62,8 @@ public class DownloadDirectoryFinder implements DirectoryFinder {
             log.info(String.format("Save default download folder %s for bookmark %s", directory, bookmark));
         }
         bookmark.setDownloadFolder(directory);
-        if(BookmarkCollection.defaultCollection().contains(bookmark)) {
-            BookmarkCollection.defaultCollection().collectionItemChanged(bookmark);
+        if(collection.contains(bookmark)) {
+            collection.collectionItemChanged(bookmark);
         }
     }
 }
