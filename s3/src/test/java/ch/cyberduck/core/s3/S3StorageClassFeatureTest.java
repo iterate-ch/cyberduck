@@ -51,7 +51,7 @@ public class S3StorageClassFeatureTest {
     @Test
     public void testGetClasses() throws Exception {
         assertEquals(Arrays.asList(S3Object.STORAGE_CLASS_STANDARD, "STANDARD_IA", S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, S3Object.STORAGE_CLASS_GLACIER),
-                new S3StorageClassFeature(null).getClasses());
+                new S3StorageClassFeature(new S3Session(new Host(new S3Protocol()))).getClasses());
     }
 
     @Test(expected = NotfoundException.class)
