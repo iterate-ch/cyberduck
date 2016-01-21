@@ -100,7 +100,7 @@ namespace Ch.Cyberduck.Core.Local
                     string cleanpart = part;
                     foreach (char c in Path.GetInvalidFileNameChars())
                     {
-                        cleanpart = cleanpart.Replace(c.ToString(), "_");
+                        cleanpart = cleanpart.Replace(c.ToString(), URIEncoder.encode(c).ToString());
                     }
                     sb.Append(cleanpart);
                     if (!parts[parts.Length - 1].Equals(part))
