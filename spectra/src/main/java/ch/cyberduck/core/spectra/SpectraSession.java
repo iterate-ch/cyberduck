@@ -24,10 +24,12 @@ import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Bulk;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.s3.RequestEntityRestStorageService;
+import ch.cyberduck.core.s3.S3MultipleDeleteFeature;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.shared.DisabledMoveFeature;
@@ -77,6 +79,9 @@ public class SpectraSession extends S3Session {
         }
         if(type == UrlProvider.class) {
             return (T) new DisabledUrlProvider();
+        }
+        if(type == Delete.class) {
+            return (T) new S3MultipleDeleteFeature(this);
         }
         return super.getFeature(type);
     }
