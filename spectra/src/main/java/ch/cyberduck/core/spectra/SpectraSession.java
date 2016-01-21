@@ -22,6 +22,7 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Touch;
@@ -70,6 +71,9 @@ public class SpectraSession extends S3Session {
         }
         if(type == Move.class) {
             return (T) new DisabledMoveFeature();
+        }
+        if(type == AclPermission.class) {
+            return null;
         }
         if(type == UrlProvider.class) {
             return (T) new DisabledUrlProvider();

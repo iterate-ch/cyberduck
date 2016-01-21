@@ -17,6 +17,7 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -34,10 +35,17 @@ import java.util.List;
  */
 public class S3StorageClassFeature implements Redundancy {
 
-    private S3Session session;
+    private final S3Session session;
+
+    private final S3AccessControlListFeature accessControlListFeature;
 
     public S3StorageClassFeature(final S3Session session) {
+        this(session, (S3AccessControlListFeature) session.getFeature(AclPermission.class));
+    }
+
+    public S3StorageClassFeature(final S3Session session, final S3AccessControlListFeature accessControlListFeature) {
         this.session = session;
+        this.accessControlListFeature = accessControlListFeature;
     }
 
     @Override
@@ -67,8 +75,14 @@ public class S3StorageClassFeature implements Redundancy {
     public void setClass(final Path file, final String redundancy) throws BackgroundException {
         if(file.isFile()) {
             final S3ThresholdCopyFeature copy = new S3ThresholdCopyFeature(session);
-            copy.copy(file, file, redundancy, new S3EncryptionFeature(session).getEncryption(file),
-                    session.getFeature(AclPermission.class).getPermission(file));
+            if(null == accessControlListFeature) {
+                copy.copy(file, file, redundancy, new S3EncryptionFeature(session).getEncryption(file),
+                        Acl.EMPTY);
+            }
+            else {
+                copy.copy(file, file, redundancy, new S3EncryptionFeature(session).getEncryption(file),
+                        accessControlListFeature.getPermission(file));
+            }
         }
     }
 }
