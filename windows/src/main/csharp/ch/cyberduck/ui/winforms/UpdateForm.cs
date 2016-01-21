@@ -124,7 +124,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         private void ConfigureUpdater()
         {
-            if (!File.Exists(Path.Combine(Application.ExecutablePath, "Updater.exe")))
+            if (!File.Exists(Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "Updater.exe")))
             {
                 //as of Beta7 the updater filename is Updater.exe. wyUpdate.exe is not automatically renamed.
                 updater.wyUpdateLocation = "wyUpdate.exe";
@@ -177,10 +177,16 @@ namespace Ch.Cyberduck.Ui.Winforms
                 };
 
             updater.UpdateFailed +=
-                (sender, args) => UpdateStatusLabel(args.ErrorTitle + Environment.NewLine + args.ErrorMessage, true);
+                delegate(object sender, FailArgs args)
+                {
+                    UpdateStatusLabel(args.ErrorTitle + Environment.NewLine + args.ErrorMessage, true);
+                };
 
             updater.DownloadingOrExtractingFailed +=
-                (sender, args) => UpdateStatusLabel(args.ErrorTitle + Environment.NewLine + args.ErrorMessage, true);
+                delegate(object sender, FailArgs args)
+                {
+                    UpdateStatusLabel(args.ErrorTitle + Environment.NewLine + args.ErrorMessage, true);
+                };
             // end error cases
 
             updater.ProgressChanged += delegate(object sender, int progress) { progressBar.Value = progress; };
