@@ -25,9 +25,6 @@ import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.MainAction;
 
-/**
- * @version $Id$
- */
 public class TerminalController extends AbstractController {
 
     private TranscriptListener transcript;

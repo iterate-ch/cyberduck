@@ -33,9 +33,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 
-/**
- * @version $Id$
- */
 public abstract class AbstractController implements Controller {
     private static final Logger log = Logger.getLogger(AbstractController.class);
 
@@ -144,7 +141,7 @@ public abstract class AbstractController implements Controller {
     @Override
     public void failure(final Exception trace, final Exception failure) {
         trace.initCause(failure);
-        log.error(String.format("Unhandled exception running background task %s", failure.getMessage()), trace);
+        log.warn(String.format("Failure running background task %s", failure.getMessage()), trace);
     }
 
     @Override
