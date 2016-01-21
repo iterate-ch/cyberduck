@@ -113,6 +113,7 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
         {
             Log.info("setProperty: " + property + "," + value);
             _settings[property] = value;
+            save();
         }
 
         public override string locale()
@@ -129,6 +130,7 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
         {
             Log.debug("deleteProperty: " + property);
             _settings.Remove(property);
+            save();
         }
 
         public override string getProperty(string property)
