@@ -11,7 +11,6 @@
     <modules>
         <!-- Core components -->
         <module>binding</module>
-        <module>config</module>
         <module>core</module>
         <module>core/dylib</module>
         <module>core/dll</module>
