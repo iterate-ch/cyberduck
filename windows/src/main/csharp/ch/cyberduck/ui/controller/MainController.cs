@@ -40,8 +40,8 @@ using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.s3;
 using ch.cyberduck.core.serializer;
 using ch.cyberduck.core.sftp;
-using Ch.Cyberduck.Core.Urlhandler;
 using ch.cyberduck.core.spectra;
+using Ch.Cyberduck.Core.Urlhandler;
 using Ch.Cyberduck.Ui.Core;
 using Ch.Cyberduck.Ui.Core.Preferences;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
@@ -430,8 +430,11 @@ namespace Ch.Cyberduck.Ui.Controller
                     c.load();
                     if (c.isEmpty())
                     {
-                        // Flag as imported
-                        PreferencesFactory.get().setProperty(c.getConfiguration(), true);
+                        if (!PreferencesFactory.get().getBoolean(c.getConfiguration()))
+                        {
+                            // Flag as imported
+                            PreferencesFactory.get().setProperty(c.getConfiguration(), true);
+                        }
                     }
                 }
                 bookmarksSemaphore.Wait();
