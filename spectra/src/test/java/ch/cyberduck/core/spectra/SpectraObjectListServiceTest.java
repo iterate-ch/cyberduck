@@ -29,10 +29,13 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3DirectoryFeature;
+import ch.cyberduck.core.s3.S3ObjectListService;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -48,6 +51,7 @@ public class SpectraObjectListServiceTest {
 
     @Test
     public void testList() throws Exception {
+        Logger.getLogger("org.apache.http.wire").setLevel(Level.DEBUG);
         final Host host = new Host(new SpectraProtocol() {
             @Override
             public Scheme getScheme() {
@@ -61,7 +65,7 @@ public class SpectraObjectListServiceTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
-        final List<Path> list = new SpectraObjectListService(session).list(container, new DisabledListProgressListener());
+        final List<Path> list = new S3ObjectListService(session).list(container, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path p : list) {
             assertEquals(container, p.getParent());
@@ -88,7 +92,7 @@ public class SpectraObjectListServiceTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
-        final List<Path> list = new SpectraObjectListService(session).list(new Path(container, "empty", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
+        final List<Path> list = new S3ObjectListService(session).list(new Path(container, "empty", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
                 new DisabledListProgressListener());
         assertTrue(list.isEmpty());
         session.close();
@@ -109,7 +113,7 @@ public class SpectraObjectListServiceTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("notfound.cyberduck.ch", EnumSet.of(Path.Type.volume));
-        new SpectraObjectListService(session).list(container, new DisabledListProgressListener());
+        new S3ObjectListService(session).list(container, new DisabledListProgressListener());
         session.close();
     }
 
@@ -131,7 +135,7 @@ public class SpectraObjectListServiceTest {
         final Path placeholder = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new S3DirectoryFeature(session).mkdir(placeholder);
         placeholder.setType(EnumSet.of(Path.Type.directory, Path.Type.placeholder));
-        final AttributedList<Path> list = new SpectraObjectListService(session).list(placeholder, new DisabledListProgressListener());
+        final AttributedList<Path> list = new S3ObjectListService(session).list(placeholder, new DisabledListProgressListener());
         assertTrue(list.isEmpty());
         new S3DefaultDeleteFeature(session).delete(Arrays.asList(placeholder), new DisabledLoginCallback(), new Delete.Callback() {
             @Override

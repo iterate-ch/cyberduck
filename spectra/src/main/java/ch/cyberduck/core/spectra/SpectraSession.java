@@ -14,12 +14,9 @@
 
 package ch.cyberduck.core.spectra;
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledUrlProvider;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
@@ -50,17 +47,6 @@ public class SpectraSession extends S3Session {
     public RequestEntityRestStorageService connect(final HostKeyCallback key) throws BackgroundException {
         this.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS2);
         return super.connect(key);
-    }
-
-    @Override
-    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        if(directory.isRoot()) {
-            // List all buckets
-            return new AttributedList<Path>(new SpectraBucketListService(this).list(listener));
-        }
-        else {
-            return new SpectraObjectListService(this).list(directory, listener);
-        }
     }
 
     @Override

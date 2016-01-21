@@ -7,6 +7,7 @@ import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.s3.S3BucketListService;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
@@ -39,7 +40,7 @@ public class SpectraBucketListServiceTest {
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        final List<Path> list = new SpectraBucketListService(session).list(new DisabledListProgressListener());
+        final List<Path> list = new S3BucketListService(session).list(new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         assertTrue(list.contains(new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume))));
         session.close();
@@ -58,7 +59,7 @@ public class SpectraBucketListServiceTest {
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        final List<Path> list = new SpectraBucketListService(session).list(new DisabledListProgressListener());
+        final List<Path> list = new S3BucketListService(session).list(new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         assertTrue(list.contains(new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume))));
         session.close();
