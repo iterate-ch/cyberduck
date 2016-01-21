@@ -17,8 +17,9 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.local.features.Trash;
+
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,6 +28,7 @@ import com.sun.jna.platform.FileUtils;
 
 
 public class NativeLocalTrashFeature implements Trash {
+    private static final Logger log = Logger.getLogger(NativeLocalTrashFeature.class);
 
     @Override
     public void trash(final Local file) throws AccessDeniedException {
@@ -34,7 +36,8 @@ public class NativeLocalTrashFeature implements Trash {
             FileUtils.getInstance().moveToTrash(new File[]{new File(file.getAbsolute())});
         }
         catch(IOException e) {
-            throw new LocalAccessDeniedException(String.format("Failed to move %s to Trash", file.getName()));
+            log.warn(String.format("Failed to move %s to Trash", file.getName()));
+            new DefaultLocalTrashFeature().trash(file);
         }
     }
 }
