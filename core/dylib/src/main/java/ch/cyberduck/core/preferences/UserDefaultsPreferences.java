@@ -33,7 +33,6 @@ import ch.cyberduck.core.LocalFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
-import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -140,16 +139,6 @@ public class UserDefaultsPreferences extends Preferences {
         _init("bookmark.icon.size");
 
         super.post();
-    }
-
-    @Override
-    protected void setLogging() {
-        /**
-         * The logging level (debug, info, warn, error)
-         */
-        defaults.put("logging.config", "log4j-cocoa.xml");
-
-        super.setLogging();
     }
 
     @Override
