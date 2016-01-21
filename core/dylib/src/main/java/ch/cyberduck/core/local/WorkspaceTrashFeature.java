@@ -43,7 +43,9 @@ public class WorkspaceTrashFeature implements Trash {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Move %s to Trash", file));
                 }
-                if(!NSWorkspace.sharedWorkspace().performFileOperation(
+                final NSWorkspace workspace = NSWorkspace.sharedWorkspace();
+                // Asynchronous operation
+                if(!workspace.performFileOperation(
                         NSWorkspace.RecycleOperation,
                         file.getParent().getAbsolute(), StringUtils.EMPTY,
                         NSArray.arrayWithObject(file.getName()))) {
