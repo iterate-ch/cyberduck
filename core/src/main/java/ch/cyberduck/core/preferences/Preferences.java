@@ -1032,10 +1032,15 @@ public abstract class Preferences {
         if(null != configuration) {
             DOMConfigurator.configure(configuration);
         }
+        else {
+            // Default if no logging configuration is found
+            final Logger root = Logger.getRootLogger();
+            root.setLevel(Level.ERROR);
+        }
         if(StringUtils.isNotBlank(this.getProperty("logging"))) {
             // Allow to override default logging level
             final Logger root = Logger.getRootLogger();
-            root.setLevel(Level.toLevel(this.getProperty("logging"), Level.INFO));
+            root.setLevel(Level.toLevel(this.getProperty("logging"), Level.ERROR));
         }
     }
 
