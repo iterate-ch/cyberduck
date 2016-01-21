@@ -135,7 +135,7 @@ public abstract class NSUserDefaults extends NSObject {
      * Original signature : <code>BOOL boolForKey(NSString*)</code><br>
      * <i>native declaration : :38</i>
      */
-    public abstract byte boolForKey(String defaultName);
+    public abstract boolean boolForKey(String defaultName);
 
     /**
      * Original signature : <code>void setInteger(NSInteger, NSString*)</code><br>
@@ -159,7 +159,7 @@ public abstract class NSUserDefaults extends NSObject {
      * Original signature : <code>void setBool(BOOL, NSString*)</code><br>
      * <i>native declaration : :43</i>
      */
-    public abstract void setBool_forKey(byte value, String defaultName);
+    public abstract void setBool_forKey(boolean value, String defaultName);
 
     /**
      * Original signature : <code>void registerDefaults(NSDictionary*)</code><br>
@@ -237,17 +237,17 @@ public abstract class NSUserDefaults extends NSObject {
      * Original signature : <code>BOOL synchronize()</code><br>
      * <i>native declaration : :62</i>
      */
-    public abstract byte synchronize();
+    public abstract boolean synchronize();
 
     /**
      * Original signature : <code>BOOL objectIsForcedForKey(NSString*)</code><br>
      * <i>native declaration : :65</i>
      */
-    public abstract byte objectIsForcedForKey(String key);
+    public abstract boolean objectIsForcedForKey(String key);
 
     /**
      * Original signature : <code>BOOL objectIsForcedForKey(NSString*, NSString*)</code><br>
      * <i>native declaration : :66</i>
      */
-    public abstract byte objectIsForcedForKey_inDomain(String key, String domain);
+    public abstract boolean objectIsForcedForKey_inDomain(String key, String domain);
 }
