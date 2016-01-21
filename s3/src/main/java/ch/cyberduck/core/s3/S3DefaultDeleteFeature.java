@@ -21,6 +21,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 
 import org.apache.log4j.Logger;
@@ -54,7 +55,12 @@ public class S3DefaultDeleteFeature implements Delete {
                 session.getClient().deleteObject(containerService.getContainer(file).getName(), containerService.getKey(file));
             }
             catch(ServiceException e) {
-                throw new ServiceExceptionMappingService().map("Cannot delete {0}", e, file);
+                try {
+                    throw new ServiceExceptionMappingService().map("Cannot delete {0}", e, file);
+                }
+                catch(NotfoundException n) {
+                    // Ignore
+                }
             }
         }
         for(Path file : files) {

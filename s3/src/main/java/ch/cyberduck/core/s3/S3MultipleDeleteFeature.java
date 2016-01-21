@@ -28,6 +28,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.MultipartUpload;
@@ -137,6 +138,10 @@ public class S3MultipleDeleteFeature implements Delete {
                         true);
                 if(result.hasErrors()) {
                     for(MultipleDeleteResult.ErrorResult error : result.getErrorResults()) {
+                        if(StringUtils.equals("ObjectNotFound", error.getErrorCode())) {
+                            // Ignore failure deleting placeholder
+                            continue;
+                        }
                         final ServiceException failure = new ServiceException();
                         failure.setErrorCode(error.getErrorCode());
                         failure.setErrorMessage(error.getMessage());
@@ -154,6 +159,10 @@ public class S3MultipleDeleteFeature implements Delete {
                             true);
                     if(result.hasErrors()) {
                         for(MultipleDeleteResult.ErrorResult error : result.getErrorResults()) {
+                            if(StringUtils.equals("ObjectNotFound", error.getErrorCode())) {
+                                // Ignore failure deleting placeholder
+                                continue;
+                            }
                             final ServiceException failure = new ServiceException();
                             failure.setErrorCode(error.getErrorCode());
                             failure.setErrorMessage(error.getMessage());
