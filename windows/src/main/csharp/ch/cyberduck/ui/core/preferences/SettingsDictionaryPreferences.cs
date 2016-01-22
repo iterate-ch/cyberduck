@@ -225,14 +225,10 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             _settings = Settings.Default.CdSettings ?? new SettingsDictionary();
         }
 
-        protected override void setLogging()
-        {
-            defaults.put("logging.config", "log4j-windows.xml");
-            base.setLogging();
-        }
-
         protected override void setDefaults()
         {
+            base.setDefaults();
+
             defaults.put("application.name", Application.ProductName);
             defaults.put("application.version", ApplicationVersion);
             defaults.put("application.revision", ApplicationRevision);
@@ -285,8 +281,6 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             defaults.put("bookmark.import.cloudberry.azure.location",
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                     "CloudBerry Explorer for Azure Blob Storage", "settings.list"));
-
-            base.setDefaults();
 
             //disable reminder for protocol handler registration
             defaults.put("defaulthandler.reminder", false.ToString());
