@@ -234,7 +234,7 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             defaults.put("application.revision", ApplicationRevision);
             defaults.put("application.language", GetDefaultLanguage());
             defaults.put("application.language.custom", false.ToString());
-            defaults.put("application.localization.enabled", true.ToString());
+            defaults.put("application.localization.enable", true.ToString());
 
             defaults.put("update.feed.release", "https://version.cyberduck.io/changelog.wys");
             defaults.put("update.feed.beta", "https://version.cyberduck.io/beta/changelog.wys");

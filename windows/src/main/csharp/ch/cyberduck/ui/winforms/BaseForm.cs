@@ -68,7 +68,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             {
                 if (!DesignMode)
                 {
-                    if (PreferencesFactory.get().getBoolean("application.localization.enabled"))
+                    if (PreferencesFactory.get().getBoolean("application.localization.enable"))
                     {
                         LocalizeTexts();
                         EventHandler localizationCompleted = LocalizationCompleted;
