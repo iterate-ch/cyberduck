@@ -109,9 +109,23 @@ public class SwiftAttributesFeatureTest {
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
-        final Path test = new Path(container, "placeholder", EnumSet.of(Path.Type.directory, Path.Type.placeholder));
-        final PathAttributes attributes = new SwiftAttributesFeature(session).find(test);
-        assertEquals(-1L, attributes.getSize());
+        final String name = UUID.randomUUID().toString();
+        final Path file = new Path(container, name, EnumSet.of(Path.Type.directory));
+        new SwiftDirectoryFeature(session).mkdir(file);
+        final PathAttributes attributes = new SwiftAttributesFeature(session).find(file);
+        // Test wrong type
+        try {
+            new SwiftAttributesFeature(session).find(new Path(container, name, EnumSet.of(Path.Type.file)));
+            fail();
+        }
+        catch(NotfoundException e) {
+            // Expected
+        }
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         session.close();
     }
 }

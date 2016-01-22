@@ -26,6 +26,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.io.Checksum;
 
@@ -80,6 +81,16 @@ public class SwiftAttributesFeature implements Attributes {
             final PathAttributes attributes = new PathAttributes();
             final ObjectMetadata metadata = session.getClient().getObjectMetaData(region,
                     containerService.getContainer(file).getName(), containerService.getKey(file));
+            if(file.isDirectory()) {
+                if(!StringUtils.equals("application/directory", metadata.getMimeType())) {
+                    throw new NotfoundException(String.format("Path %s is file", file.getAbsolute()));
+                }
+            }
+            if(file.isFile()) {
+                if(StringUtils.equals("application/directory", metadata.getMimeType())) {
+                    throw new NotfoundException(String.format("Path %s is directory", file.getAbsolute()));
+                }
+            }
             attributes.setSize(Long.valueOf(metadata.getContentLength()));
             try {
                 attributes.setModificationDate(dateParser.parse(metadata.getLastModified()).getTime());
