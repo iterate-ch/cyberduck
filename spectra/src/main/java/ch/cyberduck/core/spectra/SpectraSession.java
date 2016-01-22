@@ -24,6 +24,7 @@ import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.s3.RequestEntityRestStorageService;
 import ch.cyberduck.core.s3.S3MultipleDeleteFeature;
@@ -61,6 +62,9 @@ public class SpectraSession extends S3Session {
             return (T) new DisabledMoveFeature();
         }
         if(type == AclPermission.class) {
+            return null;
+        }
+        if(type == Versioning.class) {
             return null;
         }
         if(type == UrlProvider.class) {
