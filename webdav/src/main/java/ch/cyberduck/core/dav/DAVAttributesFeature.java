@@ -54,6 +54,11 @@ public class DAVAttributesFeature implements Attributes {
                         throw new NotfoundException(String.format("Path %s is directory", file.getAbsolute()));
                     }
                 }
+                else {
+                    if(!file.getType().contains(Path.Type.file)) {
+                        throw new NotfoundException(String.format("Path %s is file", file.getAbsolute()));
+                    }
+                }
                 final PathAttributes attributes = new PathAttributes();
                 if(resource.getModified() != null) {
                     attributes.setModificationDate(resource.getModified().getTime());
