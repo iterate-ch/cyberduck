@@ -4,6 +4,7 @@ import ch.cyberduck.core.local.LocalTouchFactory;
 
 import org.junit.Test;
 
+import java.io.OutputStream;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -39,7 +40,9 @@ public class FolderBookmarkCollectionTest {
                 "</dict>\n" +
                 "</plist>\n";
         LocalTouchFactory.get().touch(b);
-        b.getOutputStream(false).write(bookmark.getBytes("UTF-8"));
+        final OutputStream os = b.getOutputStream(false);
+        os.write(bookmark.getBytes("UTF-8"));
+        os.close();
         assertTrue(source.exists());
         final FolderBookmarkCollection collection = new FolderBookmarkCollection(source);
         collection.load();
