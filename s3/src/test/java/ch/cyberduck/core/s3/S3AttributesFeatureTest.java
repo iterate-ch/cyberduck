@@ -12,6 +12,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -116,10 +117,9 @@ public class S3AttributesFeatureTest {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, "test", EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         final PathAttributes attributes = new S3AttributesFeature(session).find(test);
-        assertEquals(new PathAttributes(), attributes);
-//        assertEquals(0L, attributes.getSize());
-//        assertEquals("d41d8cd98f00b204e9800998ecf8427e", attributes.getChecksum());
-//        assertNotNull(attributes.getModificationDate());
+        assertEquals(0L, attributes.getSize());
+        assertEquals(Checksum.parse("d41d8cd98f00b204e9800998ecf8427e"), attributes.getChecksum());
+        assertNotNull(attributes.getModificationDate());
         session.close();
     }
 
