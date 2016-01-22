@@ -49,7 +49,7 @@ public class ApplicationUserDefaultsPreferences extends ApplicationPreferences {
         super.post();
         Logger root = Logger.getRootLogger();
         final SystemLogAppender appender = new SystemLogAppender();
-        appender.setLayout(new PatternLayout("%d [%t] %-5p %c - %m%n"));
+        appender.setLayout(new PatternLayout("[%t] %-5p %c - %m%n"));
         root.addAppender(appender);
     }
 }
