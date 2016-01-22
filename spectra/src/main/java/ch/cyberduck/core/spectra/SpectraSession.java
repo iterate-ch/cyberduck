@@ -21,6 +21,7 @@ import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Bulk;
+import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Touch;
@@ -68,6 +69,10 @@ public class SpectraSession extends S3Session {
         }
         if(type == Delete.class) {
             return (T) new S3MultipleDeleteFeature(this);
+        }
+        if(type == Copy.class) {
+            // Disable copy operation not supported
+            return null;
         }
         return super.getFeature(type);
     }
