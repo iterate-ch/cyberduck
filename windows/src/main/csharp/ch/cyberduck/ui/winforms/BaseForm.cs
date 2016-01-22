@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -11,9 +11,9 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-// 
+//  
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System;
@@ -24,6 +24,7 @@ using System.Reflection;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
 using ch.cyberduck.core;
+using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Core;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
@@ -67,9 +68,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             {
                 if (!DesignMode)
                 {
-                    LocalizeTexts();
-                    EventHandler localizationCompleted = LocalizationCompleted;
-                    if (null != localizationCompleted) LocalizationCompleted(this, EventArgs.Empty);
+                    if (PreferencesFactory.get().getBoolean("application.localization.enabled"))
+                    {
+                        LocalizeTexts();
+                        EventHandler localizationCompleted = LocalizationCompleted;
+                        if (null != localizationCompleted) LocalizationCompleted(this, EventArgs.Empty);
+                    }
                 }
             };
 
@@ -446,14 +450,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             FieldInfo fieldInfo = GetType().GetField("components", BindingFlags.Instance | BindingFlags.NonPublic);
             if (null != fieldInfo)
             {
-                IContainer comp = (IContainer)fieldInfo.GetValue(this);
+                IContainer comp = (IContainer) fieldInfo.GetValue(this);
                 if (null != comp)
                 {
                     foreach (var o in RecurseObjects(comp.Components))
                     {
                         if (o is MenuItem)
                         {
-                            MenuItem m = (MenuItem)o;
+                            MenuItem m = (MenuItem) o;
                             m.Text = LookupInMultipleBundles(m.Text.Replace("&", String.Empty), BundleNames);
                         }
                     }
