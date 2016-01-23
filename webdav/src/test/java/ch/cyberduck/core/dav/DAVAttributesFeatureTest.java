@@ -19,8 +19,7 @@ import org.junit.experimental.categories.Category;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -55,5 +54,14 @@ public class DAVAttributesFeatureTest {
         assertEquals(923, attributes.getSize());
         assertNotNull(attributes.getModificationDate());
         assertNotNull(attributes.getETag());
+        // Test wrong type
+        try {
+            f.find(new Path("/trunk/LICENSE.txt", EnumSet.of(Path.Type.directory)));
+            fail();
+        }
+        catch(NotfoundException e) {
+            // Expected
+        }
+        session.close();
     }
 }

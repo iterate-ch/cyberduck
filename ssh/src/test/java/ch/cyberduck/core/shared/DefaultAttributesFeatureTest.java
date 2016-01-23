@@ -61,6 +61,15 @@ public class DefaultAttributesFeatureTest {
         // Test cache
         assertEquals(0L, f.find(file).getSize());
         assertTrue(cache.containsKey(file.getParent()));
+        // Test wrong type
+        try {
+            f.find(new Path(session.workdir(), "test", EnumSet.of(Path.Type.directory)));
+            fail();
+        }
+        catch(NotfoundException e) {
+            // Expected
+        }
+        session.close();
     }
 
     @Test

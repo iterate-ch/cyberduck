@@ -33,14 +33,17 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * @version $Id$
@@ -62,10 +65,38 @@ public class FTPAttributesFeatureTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final FTPAttributesFeature f = new FTPAttributesFeature(session);
+        f.find(new Path(session.workdir(), "test", EnumSet.of(Path.Type.file)));
+        session.close();
+    }
+
+    @Test
+    @Ignore
+    public void testAttributesWrongFiletype() throws Exception {
+        final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
+                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
+        ));
+        final FTPSession session = new FTPSession(host) {
+            @Override
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
+                throw new AccessDeniedException("f");
+            }
+        };
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final FTPAttributesFeature f = new FTPAttributesFeature(session);
         final Path file = new Path(session.workdir(), "test", EnumSet.of(Path.Type.file));
         final Attributes attributes = f.find(file);
         assertEquals(0L, attributes.getSize());
         assertEquals("1106", attributes.getOwner());
         assertEquals(new Permission("-rw-rw-rw-"), attributes.getPermission());
+        // Test wrong type
+        try {
+            f.find(new Path(session.workdir(), "test", EnumSet.of(Path.Type.directory)));
+            fail();
+        }
+        catch(NotfoundException e) {
+            // Expected
+        }
+        session.close();
     }
 }

@@ -26,6 +26,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.io.Checksum;
 
@@ -77,42 +78,39 @@ public class SwiftAttributesFeature implements Attributes {
                 attributes.setRegion(info.getRegion().getRegionId());
                 return attributes;
             }
+            final PathAttributes attributes = new PathAttributes();
+            final ObjectMetadata metadata = session.getClient().getObjectMetaData(region,
+                    containerService.getContainer(file).getName(), containerService.getKey(file));
+            if(file.isDirectory()) {
+                if(!StringUtils.equals("application/directory", metadata.getMimeType())) {
+                    throw new NotfoundException(String.format("Path %s is file", file.getAbsolute()));
+                }
+            }
             if(file.isFile()) {
-                final PathAttributes attributes = new PathAttributes();
-                if(file.isFile()) {
-                    final ObjectMetadata metadata = session.getClient().getObjectMetaData(region,
-                            containerService.getContainer(file).getName(), containerService.getKey(file));
-                    attributes.setSize(Long.valueOf(metadata.getContentLength()));
-                    try {
-                        attributes.setModificationDate(dateParser.parse(metadata.getLastModified()).getTime());
-                    }
-                    catch(InvalidDateException e) {
-                        log.warn(String.format("%s is not RFC 1123 format %s", metadata.getLastModified(), e.getMessage()));
-                    }
-                    if(StringUtils.isNotBlank(metadata.getETag())) {
-                        final String etag = StringUtils.removePattern(metadata.getETag(), "\"");
-                        attributes.setETag(etag);
-                        if(metadata.getMetaData().containsKey(Constants.X_STATIC_LARGE_OBJECT)) {
-                            // For manifest files, the ETag in the response for a GET or HEAD on the manifest file is the MD5 sum of
-                            // the concatenated string of ETags for each of the segments in the manifest.
-                            attributes.setChecksum(null);
-                        }
-                        else {
-                            attributes.setChecksum(Checksum.parse(etag));
-                        }
-                    }
+                if(StringUtils.equals("application/directory", metadata.getMimeType())) {
+                    throw new NotfoundException(String.format("Path %s is directory", file.getAbsolute()));
+                }
+            }
+            attributes.setSize(Long.valueOf(metadata.getContentLength()));
+            try {
+                attributes.setModificationDate(dateParser.parse(metadata.getLastModified()).getTime());
+            }
+            catch(InvalidDateException e) {
+                log.warn(String.format("%s is not RFC 1123 format %s", metadata.getLastModified(), e.getMessage()));
+            }
+            if(StringUtils.isNotBlank(metadata.getETag())) {
+                final String etag = StringUtils.removePattern(metadata.getETag(), "\"");
+                attributes.setETag(etag);
+                if(metadata.getMetaData().containsKey(Constants.X_STATIC_LARGE_OBJECT)) {
+                    // For manifest files, the ETag in the response for a GET or HEAD on the manifest file is the MD5 sum of
+                    // the concatenated string of ETags for each of the segments in the manifest.
+                    attributes.setChecksum(null);
                 }
                 else {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Return blank attributes for directory delimiter %s", file));
-                    }
+                    attributes.setChecksum(Checksum.parse(etag));
                 }
-                return attributes;
             }
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Return blank attributes for directory delimiter %s", file));
-            }
-            return new PathAttributes();
+            return attributes;
         }
         catch(GenericException e) {
             throw new SwiftExceptionMappingService().map("Failure to read attributes of {0}", e, file);

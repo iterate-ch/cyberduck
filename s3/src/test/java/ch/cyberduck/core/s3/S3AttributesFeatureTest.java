@@ -12,6 +12,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -21,8 +22,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -47,11 +47,19 @@ public class S3AttributesFeatureTest {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test);
-        final String v = UUID.randomUUID().toString();
-        final PathAttributes attributes = new S3AttributesFeature(session).find(test);
+        final S3AttributesFeature f = new S3AttributesFeature(session);
+        final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
         assertEquals("d41d8cd98f00b204e9800998ecf8427e", attributes.getChecksum().hash);
         assertNotNull(attributes.getModificationDate());
+        // Test wrong type
+        try {
+            f.find(new Path(test.getAbsolute(), EnumSet.of(Path.Type.directory, Path.Type.placeholder)));
+            fail();
+        }
+        catch(NotfoundException e) {
+            // Expected
+        }
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {
@@ -109,10 +117,9 @@ public class S3AttributesFeatureTest {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, "test", EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         final PathAttributes attributes = new S3AttributesFeature(session).find(test);
-        assertEquals(new PathAttributes(), attributes);
-//        assertEquals(0L, attributes.getSize());
-//        assertEquals("d41d8cd98f00b204e9800998ecf8427e", attributes.getChecksum());
-//        assertNotNull(attributes.getModificationDate());
+        assertEquals(0L, attributes.getSize());
+        assertEquals(Checksum.parse("d41d8cd98f00b204e9800998ecf8427e"), attributes.getChecksum());
+        assertNotNull(attributes.getModificationDate());
         session.close();
     }
 
