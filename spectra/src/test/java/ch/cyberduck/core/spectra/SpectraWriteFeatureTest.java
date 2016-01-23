@@ -33,8 +33,6 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
-import ch.cyberduck.core.s3.S3Session;
-import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -76,13 +74,13 @@ public class SpectraWriteFeatureTest {
         final TransferStatus status = new TransferStatus().length(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content)));
         {
-            final OutputStream out = new S3WriteFeature(session).write(test, status);
+            final OutputStream out = new SpectraWriteFeature(session).write(test, status);
             assertNotNull(out);
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             IOUtils.closeQuietly(out);
         }// Overwrite
         {
-            final OutputStream out = new S3WriteFeature(session).write(test, status);
+            final OutputStream out = new SpectraWriteFeature(session).write(test, status);
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             IOUtils.closeQuietly(out);
         }
@@ -114,7 +112,7 @@ public class SpectraWriteFeatureTest {
         final TransferStatus status = new TransferStatus().length(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content)));
         new SpectraTouchFeature(session).touch(test);
-        final OutputStream out = new S3WriteFeature(session).write(test, status);
+        final OutputStream out = new SpectraWriteFeature(session).write(test, status);
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         IOUtils.closeQuietly(out);
@@ -135,7 +133,7 @@ public class SpectraWriteFeatureTest {
             }
         }), new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
-        final S3WriteFeature feature = new S3WriteFeature(session, null, new Find() {
+        final SpectraWriteFeature feature = new SpectraWriteFeature(session, null, new Find() {
             @Override
             public boolean find(final Path file) throws BackgroundException {
                 return true;
@@ -162,14 +160,14 @@ public class SpectraWriteFeatureTest {
 
     @Test
     public void testSize() throws Exception {
-        final S3Session session = new SpectraSession(new Host(new SpectraProtocol() {
+        final SpectraSession session = new SpectraSession(new Host(new SpectraProtocol() {
             @Override
             public Scheme getScheme() {
                 return Scheme.http;
             }
         }), new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
-        final S3WriteFeature feature = new S3WriteFeature(session, null, new Find() {
+        final SpectraWriteFeature feature = new SpectraWriteFeature(session, null, new Find() {
             @Override
             public boolean find(final Path file) throws BackgroundException {
                 return true;

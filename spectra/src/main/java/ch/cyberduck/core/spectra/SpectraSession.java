@@ -27,11 +27,13 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Versioning;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.s3.RequestEntityRestStorageService;
 import ch.cyberduck.core.s3.S3MultipleDeleteFeature;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
+import ch.cyberduck.core.s3.S3SingleUploadService;
 import ch.cyberduck.core.shared.DisabledMoveFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -79,8 +81,11 @@ public class SpectraSession extends S3Session {
             // Disable copy operation not supported
             return null;
         }
+        if(type == Write.class) {
+            return (T) new SpectraWriteFeature(this);
+        }
         if(type == Upload.class) {
-            return (T) new SpectraUploadFeature(this);
+            return (T) new S3SingleUploadService(this);
         }
         return super.getFeature(type);
     }

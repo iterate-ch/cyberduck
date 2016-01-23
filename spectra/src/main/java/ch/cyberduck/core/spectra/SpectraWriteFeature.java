@@ -15,40 +15,47 @@
 package ch.cyberduck.core.spectra;
 
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.StreamCancelation;
-import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.io.StreamProgress;
+import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
-import ch.cyberduck.core.s3.S3SingleUploadService;
+import ch.cyberduck.core.s3.S3MultipartService;
+import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.jets3t.service.model.StorageObject;
 
 import java.util.Collections;
 
-public class SpectraUploadFeature extends S3SingleUploadService {
+public class SpectraWriteFeature extends S3WriteFeature {
 
     private final S3DefaultDeleteFeature delete;
 
-    public SpectraUploadFeature(final SpectraSession session) {
+    public SpectraWriteFeature(final SpectraSession session) {
         this(session, new S3DefaultDeleteFeature(session));
     }
 
-    public SpectraUploadFeature(final SpectraSession session, final S3DefaultDeleteFeature delete) {
+    public SpectraWriteFeature(final SpectraSession session, final S3MultipartService multipartService,
+                               final Find finder, final Attributes attributes) {
+        this(session, multipartService, finder, attributes, new S3DefaultDeleteFeature(session));
+    }
+
+    public SpectraWriteFeature(final SpectraSession session, final S3DefaultDeleteFeature delete) {
         super(session);
         this.delete = delete;
     }
 
+    public SpectraWriteFeature(final SpectraSession session, final S3MultipartService multipartService,
+                               final Find finder, final Attributes attributes, final S3DefaultDeleteFeature delete) {
+        super(session, multipartService, finder, attributes);
+        this.delete = delete;
+    }
+
     @Override
-    public StorageObject upload(final Path file, final Local local,
-                                final BandwidthThrottle throttle, final StreamListener listener,
-                                final TransferStatus status, final StreamCancelation cancel,
-                                final StreamProgress progress) throws BackgroundException {
+    public ResponseOutputStream<StorageObject> write(final Path file, final TransferStatus status) throws BackgroundException {
         if(status.isExists()) {
             delete.delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.Callback() {
                 @Override
@@ -57,6 +64,6 @@ public class SpectraUploadFeature extends S3SingleUploadService {
                 }
             });
         }
-        return super.upload(file, local, throttle, listener, status, cancel, progress);
+        return super.write(file, status);
     }
 }
