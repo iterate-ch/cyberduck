@@ -25,6 +25,7 @@ import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.s3.RequestEntityRestStorageService;
@@ -77,6 +78,9 @@ public class SpectraSession extends S3Session {
         if(type == Copy.class) {
             // Disable copy operation not supported
             return null;
+        }
+        if(type == Upload.class) {
+            return (T) new SpectraUploadFeature(this);
         }
         return super.getFeature(type);
     }
