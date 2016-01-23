@@ -51,7 +51,7 @@ public class GlobTransferItemFinder implements TransferItemFinder {
             final String path = input.getOptionValues(action.name())[1];
             // This only applies to a shell where the glob is not already expanded into multiple arguments
             if(StringUtils.containsAny(path, '*', '?')) {
-                final Local directory = LocalFactory.get(PathNormalizer.normalize(FilenameUtils.getPath(path)));
+                final Local directory = LocalFactory.get(FilenameUtils.getFullPath(path));
                 if(directory.isDirectory()) {
                     final PathMatcher matcher = FileSystems.getDefault().getPathMatcher(String.format("glob:%s", FilenameUtils.getName(path)));
                     final Set<TransferItem> items = new HashSet<TransferItem>();

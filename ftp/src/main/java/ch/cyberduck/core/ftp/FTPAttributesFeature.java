@@ -24,7 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Attributes;
 
 import org.apache.commons.net.ftp.FTPCmd;
@@ -33,9 +33,6 @@ import org.apache.commons.net.ftp.FTPReply;
 import java.io.IOException;
 import java.util.Arrays;
 
-/**
- * @version $Id$
- */
 public class FTPAttributesFeature implements Attributes {
 
     private FTPSession session;
@@ -47,16 +44,18 @@ public class FTPAttributesFeature implements Attributes {
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
         try {
-            if(!FTPReply.isPositiveCompletion(session.getClient().sendCommand(FTPCmd.MLST, file.getAbsolute()))) {
-                throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
+            if(session.getClient().hasFeature(FTPCmd.MLST.getCommand())) {
+                if(!FTPReply.isPositiveCompletion(session.getClient().sendCommand(FTPCmd.MLST, file.getAbsolute()))) {
+                    throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
+                }
+                final FTPDataResponseReader reader = new FTPMlsdListResponseReader();
+                final AttributedList<Path> attributes
+                        = reader.read(file.getParent(), Arrays.asList(session.getClient().getReplyStrings()), new DisabledListProgressListener());
+                if(attributes.contains(file)) {
+                    return attributes.iterator().next().attributes();
+                }
             }
-            final FTPDataResponseReader reader = new FTPMlsdListResponseReader();
-            final AttributedList<Path> attributes
-                    = reader.read(file.getParent(), Arrays.asList(session.getClient().getReplyStrings()), new DisabledListProgressListener());
-            if(attributes.size() == 1) {
-                return attributes.iterator().next().attributes();
-            }
-            throw new NotfoundException(file.getAbsolute());
+            throw new InteroperabilityException("No support for MLST in reply to FEAT");
         }
         catch(IOException e) {
             throw new FTPExceptionMappingService().map("Failure to read attributes of {0}", e, file);

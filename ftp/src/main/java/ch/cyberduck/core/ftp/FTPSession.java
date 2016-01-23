@@ -31,7 +31,6 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.CustomOriginCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
@@ -325,9 +324,6 @@ public class FTPSession extends SSLSession<FTPClient> {
 
     @Override
     public <T> T getFeature(final Class<T> type) {
-        if(type == Attributes.class) {
-            return (T) new FTPAttributesFeature(this);
-        }
         if(type == Directory.class) {
             return (T) new FTPDirectoryFeature(this);
         }
