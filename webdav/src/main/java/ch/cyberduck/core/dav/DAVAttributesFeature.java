@@ -21,33 +21,24 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.date.InvalidDateException;
-import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Attributes;
-import ch.cyberduck.core.io.Checksum;
 
-import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.http.HttpHeaders;
-import org.apache.http.client.methods.HttpHead;
-import org.apache.log4j.Logger;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.List;
 
+import com.github.sardine.DavResource;
 import com.github.sardine.impl.SardineException;
-import com.github.sardine.impl.handler.HeadersResponseHandler;
 
 /**
  * @version $Id$
  */
 public class DAVAttributesFeature implements Attributes {
-    private static final Logger log = Logger.getLogger(DAVAttributesFeature.class);
 
     private DAVSession session;
-
-    private RFC1123DateFormatter dateParser
-            = new RFC1123DateFormatter();
 
     public DAVAttributesFeature(DAVSession session) {
         this.session = session;
@@ -56,26 +47,34 @@ public class DAVAttributesFeature implements Attributes {
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
         try {
-            final Map<String, String> headers = session.getClient().execute(
-                    new HttpHead(new DAVPathEncoder().encode(file)), new HeadersResponseHandler());
-            final PathAttributes attributes = new PathAttributes();
-            try {
-                attributes.setModificationDate(dateParser.parse(headers.get(HttpHeaders.LAST_MODIFIED)).getTime());
+            final List<DavResource> status = session.getClient().list(new DAVPathEncoder().encode(file));
+            for(final DavResource resource : status) {
+                if(resource.isDirectory()) {
+                    if(!file.getType().contains(Path.Type.directory)) {
+                        throw new NotfoundException(String.format("Path %s is directory", file.getAbsolute()));
+                    }
+                }
+                else {
+                    if(!file.getType().contains(Path.Type.file)) {
+                        throw new NotfoundException(String.format("Path %s is file", file.getAbsolute()));
+                    }
+                }
+                final PathAttributes attributes = new PathAttributes();
+                if(resource.getModified() != null) {
+                    attributes.setModificationDate(resource.getModified().getTime());
+                }
+                if(resource.getCreation() != null) {
+                    attributes.setCreationDate(resource.getCreation().getTime());
+                }
+                if(resource.getContentLength() != null) {
+                    attributes.setSize(resource.getContentLength());
+                }
+                if(StringUtils.isNotBlank(resource.getEtag())) {
+                    attributes.setETag(resource.getEtag());
+                }
+                return attributes;
             }
-            catch(InvalidDateException p) {
-                log.warn(String.format("%s is not RFC 1123 format %s", headers.get(HttpHeaders.LAST_MODIFIED), p.getMessage()));
-            }
-            if(!headers.containsKey(HttpHeaders.CONTENT_ENCODING)) {
-                // Set size unless response is compressed
-                attributes.setSize(NumberUtils.toLong(headers.get(HttpHeaders.CONTENT_LENGTH), -1));
-            }
-            if(headers.containsKey(HttpHeaders.ETAG)) {
-                attributes.setETag(headers.get(HttpHeaders.ETAG));
-            }
-            if(headers.containsKey(HttpHeaders.CONTENT_MD5)) {
-                attributes.setChecksum(Checksum.parse(headers.get(HttpHeaders.CONTENT_MD5)));
-            }
-            return attributes;
+            throw new NotfoundException(file.getAbsolute());
         }
         catch(SardineException e) {
             throw new DAVExceptionMappingService().map("Failure to read attributes of {0}", e, file);

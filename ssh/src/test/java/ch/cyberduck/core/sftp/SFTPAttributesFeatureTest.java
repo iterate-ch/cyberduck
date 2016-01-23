@@ -23,8 +23,7 @@ import org.junit.experimental.categories.Category;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -51,8 +50,17 @@ public class SFTPAttributesFeatureTest {
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final PathAttributes attributes = new SFTPAttributesFeature(session).find(session.workdir());
+        final SFTPAttributesFeature f = new SFTPAttributesFeature(session);
+        final PathAttributes attributes = f.find(session.workdir());
         assertNotNull(attributes);
+        // Test wrong type
+        try {
+            f.find(new Path(session.workdir().getAbsolute(), EnumSet.of(Path.Type.file)));
+            fail();
+        }
+        catch(NotfoundException e) {
+            // Expected
+        }
         session.close();
     }
 

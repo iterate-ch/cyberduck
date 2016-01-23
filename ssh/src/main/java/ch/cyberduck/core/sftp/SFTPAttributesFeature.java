@@ -22,6 +22,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Attributes;
 
 import java.io.IOException;
@@ -43,7 +44,25 @@ public class SFTPAttributesFeature implements Attributes {
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
         try {
-            return this.convert(session.sftp().stat(file.getAbsolute()));
+            final FileAttributes stat = session.sftp().stat(file.getAbsolute());
+            switch(stat.getType()) {
+                case BLOCK_SPECIAL:
+                case CHAR_SPECIAL:
+                case FIFO_SPECIAL:
+                case SOCKET_SPECIAL:
+                case REGULAR:
+                case SYMKLINK:
+                    if(!file.getType().contains(Path.Type.file)) {
+                        throw new NotfoundException(String.format("Path %s is file", file.getAbsolute()));
+                    }
+                    break;
+                case DIRECTORY:
+                    if(!file.getType().contains(Path.Type.directory)) {
+                        throw new NotfoundException(String.format("Path %s is directory", file.getAbsolute()));
+                    }
+                    break;
+            }
+            return this.convert(stat);
         }
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map("Failure to read attributes of {0}", e, file);
