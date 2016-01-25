@@ -978,6 +978,7 @@ public abstract class Preferences {
         defaults.put("ssh.algorithm.signature.blacklist", StringUtils.EMPTY);
 
         defaults.put("sftp.symlink.absolute", String.valueOf(false));
+        defaults.put("sftp.write.maxunconfirmed.default", String.valueOf(10));
 
         defaults.put("archive.default", "tar.gz");
 
