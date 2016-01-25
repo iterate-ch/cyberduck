@@ -66,7 +66,7 @@ public class PanelSandboxBookmarkResolver implements SandboxBookmarkResolver<NSU
         }
         final NSURL resolved = NSURL.URLByResolvingBookmarkData(bookmark, null);
         if(null == resolved) {
-            log.error(String.format("Error resolving bookmark for %s to URL", file));
+            log.warn(String.format("Error resolving bookmark for %s to URL", file));
             throw new LocalAccessDeniedException(file.getAbsolute());
         }
         return resolved;
