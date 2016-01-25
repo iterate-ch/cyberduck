@@ -260,6 +260,7 @@
                                     <property name="version" value="${project.version}"/>
                                     <property name="revision" value="${git.commitsCount}"/>
                                     <property name="git.revision" value="${git.revision}"/>
+                                    <property name="sparkle.feed" value="${sparkle.feed}"/>
                                     <ant antfile="${project.basedir}/build.xml" target="build" dir="."/>
                                 </tasks>
                             </configuration>
