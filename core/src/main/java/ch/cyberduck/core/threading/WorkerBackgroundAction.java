@@ -117,15 +117,6 @@ public class WorkerBackgroundAction<T> extends BrowserBackgroundAction<T> {
     }
 
     @Override
-    public T call() throws BackgroundException {
-        final T result = super.call();
-        if(null == result) {
-            return worker.initialize();
-        }
-        return result;
-    }
-
-    @Override
     public void cleanup() {
         super.cleanup();
         if(null == result) {
