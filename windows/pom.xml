@@ -197,18 +197,6 @@
                 </dependency>
             </dependencies>
         </profile>
-        <profile>
-            <id>sparkle</id>
-            <!-- activate profile for non-Jenkins builds -->
-            <activation>
-                <property>
-                    <name>!JENKINS_HOME</name>
-                </property>
-            </activation>
-            <properties>
-                <sparkle.feed>nightly</sparkle.feed>
-            </properties>
-        </profile>
     </profiles>
 
     <dependencies>
