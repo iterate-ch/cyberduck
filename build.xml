@@ -61,10 +61,6 @@
     <property name="bundle.profiles" value="${bundle.resources}/Profiles"/>
     <property name="bundle.bookmarks" value="${bundle.resources}/Bookmarks"/>
 
-    <taskdef resource="net/sf/antcontrib/antcontrib.properties">
-        <classpath path="${lib.ext}/ant-contrib-1.0b3.jar"/>
-    </taskdef>
-
     <condition property="platform.mac">
         <os family="mac"/>
     </condition>
@@ -94,11 +90,14 @@
     </target>
 
     <target name="version" depends="init">
+        <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+            <classpath path="${lib.ext}/ant-contrib-1.0b3.jar"/>
+        </taskdef>
         <propertyregex property="version"
                        override="true"
                        input="${version}"
-                       regexp="(\d+)\.(\d+)\.(\d+)(-SNAPSHOT)?"
-                       select="\1.\2.\3"/>
+                       regexp="((\d+)\.(\d+)(\.(\d+))?)(-SNAPSHOT)?"
+                       select="\1"/>
         <echo message="Version ${version}"/>
         <echo message="Revision ${revision}"/>
         <echo message="Hash ${git.revision}"/>
