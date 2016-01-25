@@ -353,7 +353,7 @@ public class DAVWriteFeatureTest {
         assertEquals(content.length, status.getOffset());
         assertTrue(status.isComplete());
         assertEquals(content.length, new DefaultAttributesFeature(session).find(test).getSize());
-        assertEquals(-1, new DAVAttributesFeature(session).find(test).getSize());
+        assertEquals(content.length, new DAVAttributesFeature(session).find(test).getSize());
         assertTrue(redirected.get());
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
