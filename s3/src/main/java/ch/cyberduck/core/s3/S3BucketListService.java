@@ -80,17 +80,26 @@ public class S3BucketListService implements RootListService {
                         }
                     }
                     log.warn(String.format("No bucket name given in hostname %s", session.getHost().getHostname()));
-                    return Collections.singletonList(new Path(session.getHost().getHostname(), EnumSet.of(Path.Type.volume, Path.Type.directory)));
+                    final Path bucket = new Path(session.getHost().getHostname(), EnumSet.of(Path.Type.volume, Path.Type.directory));
+                    listener.chunk(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
+                            new AttributedList<>(Collections.singletonList(bucket)));
+                    return Collections.singletonList(bucket);
                 }
                 else {
-                    return Collections.singletonList(new Path(this.getContainer(session.getHost()), EnumSet.of(Path.Type.volume, Path.Type.directory)));
+                    final Path bucket = new Path(this.getContainer(session.getHost()), EnumSet.of(Path.Type.volume, Path.Type.directory));
+                    listener.chunk(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
+                            new AttributedList<>(Collections.singletonList(bucket)));
+                    return Collections.singletonList(bucket);
                 }
             }
             else {
                 // If bucket is specified in hostname, try to connect to this particular bucket only.
                 final String bucketname = this.getContainer(session.getHost());
                 if(StringUtils.isNotEmpty(bucketname)) {
-                    return Collections.singletonList(new Path(bucketname, EnumSet.of(Path.Type.volume, Path.Type.directory)));
+                    final Path bucket = new Path(bucketname, EnumSet.of(Path.Type.volume, Path.Type.directory));
+                    listener.chunk(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
+                            new AttributedList<>(Collections.singletonList(bucket)));
+                    return Collections.singletonList(bucket);
                 }
                 else {
                     final List<Path> buckets = new ArrayList<Path>();
