@@ -35,9 +35,11 @@ namespace Ch.Cyberduck.Core.I18n
         private readonly IDictionary<string, Dictionary<string, string>> _cache =
             new Dictionary<string, Dictionary<string, string>>();
 
+        private readonly bool _enabled = PreferencesFactory.get().getBoolean("application.localization.enable");
+
         public string localize(string key, string table)
         {
-            if (!PreferencesFactory.get().getBoolean("application.localization.enable"))
+            if (!_enabled)
             {
                 return key;
             }
