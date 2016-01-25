@@ -18,6 +18,9 @@ package ch.cyberduck.core.threading;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
+
 import org.apache.log4j.Logger;
 
 import java.util.concurrent.Callable;
@@ -34,6 +37,8 @@ public class ThreadPool {
 
     private final ExecutorService pool;
 
+    private final Preferences preferences = PreferencesFactory.get();
+
     /**
      * With FIFO (first-in-first-out) ordered wait queue.
      */
@@ -43,7 +48,7 @@ public class ThreadPool {
 
     public ThreadPool(final Thread.UncaughtExceptionHandler handler) {
         pool = new ThreadPoolExecutor(0, Integer.MAX_VALUE,
-                60L, TimeUnit.SECONDS,
+                preferences.getLong("threading.pool.keepalive.seconds"), TimeUnit.SECONDS,
                 new SynchronousQueue<Runnable>(),
                 new NamedThreadFactory("background", handler));
     }
@@ -59,7 +64,7 @@ public class ThreadPool {
 
     public ThreadPool(final String prefix) {
         pool = new ThreadPoolExecutor(0, Integer.MAX_VALUE,
-                60L, TimeUnit.SECONDS,
+                preferences.getLong("threading.pool.keepalive.seconds"), TimeUnit.SECONDS,
                 new SynchronousQueue<Runnable>(),
                 new NamedThreadFactory(prefix));
     }

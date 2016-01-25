@@ -1012,6 +1012,8 @@ public abstract class Preferences {
         defaults.put("terminal.command.ssh", "ssh -t {0} {1}@{2} -p {3} \"cd {4} && exec \\$SHELL\"");
 
         defaults.put("network.interface.blacklist", StringUtils.EMPTY);
+
+        defaults.put("threading.pool.keepalive.seconds", String.valueOf(60L));
     }
 
     protected void setLogging() {
