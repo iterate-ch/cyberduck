@@ -447,7 +447,7 @@ public class Terminal {
         }
     }
 
-    protected <T> boolean execute(SessionBackgroundAction<T> action) {
+    protected <T> boolean execute(final SessionBackgroundAction<T> action) {
         try {
             controller.background(action).get();
             if(action.hasFailed()) {
