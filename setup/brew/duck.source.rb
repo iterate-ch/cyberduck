@@ -9,12 +9,12 @@ class Duck < Formula
   depends_on :java => ["1.8+", :build]
   depends_on :xcode => :build
   depends_on "ant" => :build
-  depends_on "maven32" => :build
+  depends_on "maven" => :build
 
   def install
     revision = version.to_s.rpartition(".").last
-    system "mvn", "-Drevision=#{revision}", "package"
-    libexec.install Dir["cli/target/duck.bundle/*"]
+    system "mvn", "-DskipTests", "-Drevision=#{revision}", "--projects", "cli/osx", "--also-make", "verify"
+    libexec.install Dir["cli/osx/target/duck.bundle/*"]
     bin.install_symlink "#{libexec}/Contents/MacOS/duck" => "duck"
   end
 
