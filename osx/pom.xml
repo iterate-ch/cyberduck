@@ -72,7 +72,7 @@
                             </execution>
                             <execution>
                                 <id>copy-artfifact-bundle</id>
-                                <phase>install</phase>
+                                <phase>verify</phase>
                                 <goals>
                                     <goal>copy</goal>
                                 </goals>
@@ -151,7 +151,7 @@
                             </execution>
                             <execution>
                                 <id>run-ant-package-target</id>
-                                <phase>deploy</phase>
+                                <phase>install</phase>
                                 <goals>
                                     <goal>run</goal>
                                 </goals>
