@@ -102,6 +102,27 @@ public class DefaultAttributesFeatureTest {
     }
 
     @Test
+    public void testFindNoWebDAV() throws Exception {
+        final Host host = new Host(new DAVProtocol(), "ftpmirror.gnu.org");
+        final AtomicBoolean set = new AtomicBoolean();
+        final DAVSession session = new DAVSession(host) {
+            @Override
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
+                final AttributedList<Path> list = super.list(file, listener);
+                set.set(true);
+                return list;
+            }
+        };
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final DefaultAttributesFeature f = new DefaultAttributesFeature(session);
+        final Path file = new Path("/wget/wget-1.17.1.tar.xz", EnumSet.of(Path.Type.file));
+        final Attributes attributes = f.find(file);
+        assertNotNull(attributes);
+        session.close();
+    }
+
+    @Test
     public void testFindPlaceholder() throws Exception {
         assertNotNull(new DefaultAttributesFeature(new NullSession(new Host(new TestProtocol())) {
             @Override
