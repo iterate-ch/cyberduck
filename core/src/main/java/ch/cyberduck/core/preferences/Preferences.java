@@ -231,7 +231,7 @@ public abstract class Preferences {
 
         defaults.put("defaulthandler.reminder", String.valueOf(true));
 
-        defaults.put("mail.feedback", "mailto:feedback@cyberduck.io");
+        defaults.put("mail.feedback", "mailto:support@cyberduck.io");
 
         defaults.put("website.donate", "https://cyberduck.io/donate/");
         defaults.put("website.home", "http://cyberduck.io/");
