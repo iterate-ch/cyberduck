@@ -69,7 +69,6 @@ public class TerminalPreferences extends MemoryPreferences {
 
     @Override
     protected void setLogging() {
-        defaults.put("logging.config", "log4j-cli.xml");
         defaults.put("logging", "fatal");
 
         super.setLogging();
