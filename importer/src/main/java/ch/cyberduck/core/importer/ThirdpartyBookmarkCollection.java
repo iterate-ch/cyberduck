@@ -106,8 +106,7 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
                         if(log.isInfoEnabled()) {
                             log.info(String.format("Checksum changed for bookmarks file at %s", file));
                         }
-                        // Should filter existing bookmarks
-                        this.parse(file);
+                        // Should filter existing bookmarks. Skip import
                     }
                 }
                 else {
