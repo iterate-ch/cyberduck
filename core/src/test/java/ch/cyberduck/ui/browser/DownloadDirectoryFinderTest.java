@@ -24,6 +24,8 @@ import ch.cyberduck.core.TestProtocol;
 
 import org.junit.Test;
 
+import java.util.UUID;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -36,7 +38,7 @@ public class DownloadDirectoryFinderTest {
         final DownloadDirectoryFinder finder = new DownloadDirectoryFinder();
         assertEquals(System.getProperty("user.dir"), finder.find(host).getAbsolute());
         // Does not exist
-        host.setDownloadFolder(new Local("/t"));
+        host.setDownloadFolder(new Local(String.format("/%s", UUID.randomUUID())));
         assertEquals(System.getProperty("user.dir"), finder.find(host).getAbsolute());
         final Local folder = new Local("~/Documents");
         folder.mkdir();
