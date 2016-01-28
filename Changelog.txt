@@ -3,7 +3,7 @@ http://cyberduck.io/
 
 Changelog. Last modified: $Date$
 
-4.7.4 [https://trac.cyberduck.io/milestone/4.7.4]
+4.8 [https://trac.cyberduck.io/milestone/4.8]
 - [Feature] Support for key exchange algorithm diffie-hellman-group-exchange-sha256 (SFTP) (#8488)
 - [Feature] Support for key exchange algorithm curve25519-sha256@libssh.org (SFTP) (#8528)
 - [Feature] Support ssh-ed25519 host keys (SFTP) (#8553)
