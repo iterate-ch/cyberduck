@@ -21,10 +21,10 @@
  -->
 <project name="Codesign" basedir=".">
 
-    <property name="installer.certificate" value="3rd Party Mac Developer Installer: David Kocher (G69SCX94XU)"/>
+    <property name="installer.certificate" value=""/>
     <property name="installer.keychain" value="${user.home}/Library/Keychains/codesign.keychain"/>
 
-    <property name="codesign.certificate" value="Developer ID Application: David Kocher"/>
+    <property name="codesign.certificate" value=""/>
     <property name="codesign.keychain" value="${user.home}/Library/Keychains/codesign.keychain"/>
 
     <!-- Designated requirement -->
