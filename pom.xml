@@ -454,8 +454,8 @@
 
     <repositories>
         <repository>
-            <id>maven.iterate.ch-release</id>
-            <url>s3://repo.maven.iterate.ch/releases/</url>
+            <id>maven.cyberduck.io-release</id>
+            <url>http://repo.maven.cyberduck.io.s3.amazonaws.com/releases</url>
             <layout>default</layout>
             <releases>
                 <enabled>true</enabled>
@@ -466,7 +466,7 @@
         </repository>
         <repository>
             <id>maven.iterate.ch-snapshot</id>
-            <url>s3://repo.maven.iterate.ch/snapshots/</url>
+            <url>http://repo.maven.cyberduck.io.s3.amazonaws.com/snapshots</url>
             <layout>default</layout>
             <releases>
                 <enabled>false</enabled>
