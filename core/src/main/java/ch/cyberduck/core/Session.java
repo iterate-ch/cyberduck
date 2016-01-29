@@ -18,7 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.features.Find;
@@ -162,6 +161,7 @@ public abstract class Session<C> implements TranscriptListener {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Connection did close to %s", host));
             }
+            listener = null;
         }
     }
 
