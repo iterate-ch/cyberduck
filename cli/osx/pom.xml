@@ -122,6 +122,18 @@
                 </dependency>
             </dependencies>
         </profile>
+        <profile>
+            <id>sparkle</id>
+            <!-- activate profile for non-Jenkins builds -->
+            <activation>
+                <property>
+                    <name>!JENKINS_HOME</name>
+                </property>
+            </activation>
+            <properties>
+                <sparkle.feed>/dev/null</sparkle.feed>
+            </properties>
+        </profile>
     </profiles>
 
     <dependencies>

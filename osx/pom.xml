@@ -199,7 +199,7 @@
                 <sparkle.key.prefix>SU</sparkle.key.prefix>
                 <installer.certificate>3rd Party Mac Developer Installer: David Kocher (G69SCX94XU)</installer.certificate>
                 <codesign.certificate>Developer ID Application: David Kocher</codesign.certificate>
-                <codesign.arg>--entitlements ${project.basedir}/../setup/app/sandbox.entitlements</codesign.arg>
+                <codesign.arg>--entitlements ${main.basedir}/setup/app/sandbox.entitlements</codesign.arg>
             </properties>
         </profile>
     </profiles>
