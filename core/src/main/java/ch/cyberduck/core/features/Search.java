@@ -24,7 +24,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 
 public interface Search {
 
-    AttributedList<Path> search(Filter<Path> regex, ListProgressListener listener) throws BackgroundException;
+    AttributedList<Path> search(Path workdir, Filter<Path> regex, ListProgressListener listener) throws BackgroundException;
 
     /**
      * Decorate with cache

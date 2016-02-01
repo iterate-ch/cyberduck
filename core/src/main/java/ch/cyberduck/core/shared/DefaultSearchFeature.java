@@ -32,18 +32,15 @@ public class DefaultSearchFeature implements Search {
 
     private final Session<?> session;
 
-    private final Path workdir;
-
     private PathCache cache
             = PathCache.empty();
 
-    public DefaultSearchFeature(final Session<?> session, final Path workdir) {
+    public DefaultSearchFeature(final Session<?> session) {
         this.session = session;
-        this.workdir = workdir;
     }
 
     @Override
-    public AttributedList<Path> search(final Filter<Path> filter, final ListProgressListener listener) throws BackgroundException {
+    public AttributedList<Path> search(final Path workdir, final Filter<Path> filter, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> list;
         if(!cache.containsKey(workdir)) {
             list = session.list(workdir, new SearchListProgressListener(filter, listener));

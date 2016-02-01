@@ -32,7 +32,7 @@ public class SpectraSearchFeature implements Search {
     }
 
     @Override
-    public AttributedList<Path> search(final Filter<Path> regex, final ListProgressListener listener) {
+    public AttributedList<Path> search(final Path workdir, final Filter<Path> regex, final ListProgressListener listener) {
         final Ds3ClientHelpers helper = Ds3ClientHelpers.wrap(new SpectraClientBuilder().wrap(session));
         return AttributedList.emptyList();
     }
