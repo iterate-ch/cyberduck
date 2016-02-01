@@ -16,10 +16,20 @@ package ch.cyberduck.core.features;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.exception.BackgroundException;
 
 public interface Search {
 
-    AttributedList<Path> search(String regex, ListProgressListener listener);
+    AttributedList<Path> search(Filter<Path> regex, ListProgressListener listener) throws BackgroundException;
+
+    /**
+     * Decorate with cache
+     *
+     * @param cache Path cache
+     */
+    Search withCache(PathCache cache);
 }

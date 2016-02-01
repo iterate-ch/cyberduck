@@ -15,8 +15,10 @@
 package ch.cyberduck.core.spectra;
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Search;
 
 import com.spectralogic.ds3client.helpers.Ds3ClientHelpers;
@@ -30,8 +32,13 @@ public class SpectraSearchFeature implements Search {
     }
 
     @Override
-    public AttributedList<Path> search(final String regex, final ListProgressListener listener) {
+    public AttributedList<Path> search(final Filter<Path> regex, final ListProgressListener listener) {
         final Ds3ClientHelpers helper = Ds3ClientHelpers.wrap(new SpectraClientBuilder().wrap(session));
         return AttributedList.emptyList();
+    }
+
+    @Override
+    public Search withCache(final PathCache cache) {
+        return this;
     }
 }
