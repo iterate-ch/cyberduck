@@ -74,6 +74,7 @@ public class DefaultAttributesFeature implements Attributes {
         throw new NotfoundException(file.getAbsolute());
     }
 
+    @Override
     public DefaultAttributesFeature withCache(final PathCache cache) {
         this.cache = cache;
         return this;
