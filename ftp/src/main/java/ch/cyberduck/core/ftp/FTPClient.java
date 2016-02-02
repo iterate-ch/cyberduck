@@ -95,7 +95,7 @@ public class FTPClient extends FTPSClient {
             if(socket instanceof SSLSocket) {
                 // Control socket is SSL
                 final SSLSession session = ((SSLSocket) _socket_).getSession();
-                if (session.isValid()) {
+                if(session.isValid()) {
                     final SSLSessionContext context = session.getSessionContext();
                     context.setSessionCacheSize(preferences.getInteger("ftp.ssl.session.cache.size"));
                     try {
