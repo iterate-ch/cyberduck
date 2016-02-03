@@ -31,8 +31,10 @@ import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import com.spectralogic.ds3client.helpers.Ds3ClientHelpers;
@@ -40,7 +42,7 @@ import com.spectralogic.ds3client.models.bulk.Ds3Object;
 import com.spectralogic.ds3client.networking.FailedRequestException;
 import com.spectralogic.ds3client.serializer.XmlProcessingException;
 
-public class SpectraBulkService implements Bulk<UUID> {
+public class SpectraBulkService implements Bulk<Set<UUID>> {
 
     private final SpectraSession session;
 
@@ -59,14 +61,14 @@ public class SpectraBulkService implements Bulk<UUID> {
     }
 
     @Override
-    public UUID pre(final Transfer.Type type, final Map<Path, TransferStatus> files) throws BackgroundException {
+    public Set<UUID> pre(final Transfer.Type type, final Map<Path, TransferStatus> files) throws BackgroundException {
         final Ds3ClientHelpers helper = Ds3ClientHelpers.wrap(new SpectraClientBuilder().wrap(session));
-        final Map<Path, List<Ds3Object>> jobs = new HashMap<Path, List<Ds3Object>>();
+        final Map<Path, List<Ds3Object>> objects = new HashMap<Path, List<Ds3Object>>();
         for(Map.Entry<Path, TransferStatus> item : files.entrySet()) {
             final Path file = item.getKey();
             final Path container = containerService.getContainer(file);
-            if(!jobs.containsKey(container)) {
-                jobs.put(container, new ArrayList<Ds3Object>());
+            if(!objects.containsKey(container)) {
+                objects.put(container, new ArrayList<Ds3Object>());
             }
             if(file.isFile()) {
                 final TransferStatus status = item.getValue();
@@ -82,12 +84,13 @@ public class SpectraBulkService implements Bulk<UUID> {
                         }
                         break;
                 }
-                jobs.get(container).add(
+                objects.get(container).add(
                         new Ds3Object(containerService.getKey(file), status.getLength()));
             }
         }
         try {
-            for(Map.Entry<Path, List<Ds3Object>> container : jobs.entrySet()) {
+            final Set<UUID> jobs = new HashSet<UUID>();
+            for(Map.Entry<Path, List<Ds3Object>> container : objects.entrySet()) {
                 if(container.getValue().isEmpty()) {
                     continue;
                 }
@@ -95,16 +98,18 @@ public class SpectraBulkService implements Bulk<UUID> {
                     case download:
                         final Ds3ClientHelpers.Job read = helper.startReadJob(
                                 container.getKey().getName(), container.getValue());
-                        return read.getJobId();
+                        jobs.add(read.getJobId());
+                        break;
                     case upload:
                         final Ds3ClientHelpers.Job write = helper.startWriteJob(
                                 container.getKey().getName(), container.getValue());
-                        return write.getJobId();
+                        jobs.add(write.getJobId());
+                        break;
                     default:
                         throw new BackgroundException();
                 }
             }
-            return null;
+            return jobs;
         }
         catch(XmlProcessingException | SignatureException e) {
             throw new BackgroundException(e);
