@@ -15,10 +15,13 @@
 package ch.cyberduck.core.spectra;
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -26,6 +29,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import java.io.IOException;
 import java.security.SignatureException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,11 +44,18 @@ public class SpectraBulkService implements Bulk<UUID> {
 
     private final SpectraSession session;
 
+    private final Delete delete;
+
     private final PathContainerService containerService
             = new S3PathContainerService();
 
     public SpectraBulkService(final SpectraSession session) {
+        this(session, new S3DefaultDeleteFeature(session));
+    }
+
+    public SpectraBulkService(final SpectraSession session, final Delete delete) {
         this.session = session;
+        this.delete = delete;
     }
 
     @Override
@@ -52,13 +63,27 @@ public class SpectraBulkService implements Bulk<UUID> {
         final Ds3ClientHelpers helper = Ds3ClientHelpers.wrap(new SpectraClientBuilder().wrap(session));
         final Map<Path, List<Ds3Object>> jobs = new HashMap<Path, List<Ds3Object>>();
         for(Map.Entry<Path, TransferStatus> item : files.entrySet()) {
-            final Path container = containerService.getContainer(item.getKey());
+            final Path file = item.getKey();
+            final Path container = containerService.getContainer(file);
             if(!jobs.containsKey(container)) {
                 jobs.put(container, new ArrayList<Ds3Object>());
             }
-            if(item.getKey().isFile()) {
+            if(file.isFile()) {
+                final TransferStatus status = item.getValue();
+                switch(type) {
+                    case upload:
+                        if(status.isExists()) {
+                            delete.delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.Callback() {
+                                @Override
+                                public void delete(final Path file) {
+                                    //
+                                }
+                            });
+                        }
+                        break;
+                }
                 jobs.get(container).add(
-                        new Ds3Object(containerService.getKey(item.getKey()), item.getValue().getLength()));
+                        new Ds3Object(containerService.getKey(file), status.getLength()));
             }
         }
         try {
