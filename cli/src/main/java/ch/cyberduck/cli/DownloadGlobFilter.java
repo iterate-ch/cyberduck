@@ -78,4 +78,12 @@ public class DownloadGlobFilter extends DownloadDuplicateFilter {
         }
         return false;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("DownloadGlobFilter{");
+        sb.append("pattern=").append(pattern);
+        sb.append('}');
+        return sb.toString();
+    }
 }
