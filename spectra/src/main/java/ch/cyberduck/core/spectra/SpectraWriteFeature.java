@@ -32,7 +32,7 @@ import java.util.Collections;
 
 public class SpectraWriteFeature extends S3WriteFeature {
 
-    private final S3DefaultDeleteFeature delete;
+    private final Delete delete;
 
     public SpectraWriteFeature(final SpectraSession session) {
         this(session, new S3DefaultDeleteFeature(session));
@@ -43,7 +43,7 @@ public class SpectraWriteFeature extends S3WriteFeature {
         this(session, multipartService, finder, attributes, new S3DefaultDeleteFeature(session));
     }
 
-    public SpectraWriteFeature(final SpectraSession session, final S3DefaultDeleteFeature delete) {
+    public SpectraWriteFeature(final SpectraSession session, final Delete delete) {
         super(session);
         this.delete = delete;
     }
