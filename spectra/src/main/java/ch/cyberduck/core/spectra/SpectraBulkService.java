@@ -38,7 +38,10 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.spectralogic.ds3client.helpers.Ds3ClientHelpers;
+import com.spectralogic.ds3client.helpers.options.ReadJobOptions;
+import com.spectralogic.ds3client.helpers.options.WriteJobOptions;
 import com.spectralogic.ds3client.models.bulk.Ds3Object;
+import com.spectralogic.ds3client.models.bulk.Priority;
 import com.spectralogic.ds3client.networking.FailedRequestException;
 import com.spectralogic.ds3client.serializer.XmlProcessingException;
 
@@ -97,12 +100,14 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                 switch(type) {
                     case download:
                         final Ds3ClientHelpers.Job read = helper.startReadJob(
-                                container.getKey().getName(), container.getValue());
+                                container.getKey().getName(), container.getValue(),
+                                ReadJobOptions.create().withPriority(Priority.URGENT));
                         jobs.add(read.getJobId());
                         break;
                     case upload:
                         final Ds3ClientHelpers.Job write = helper.startWriteJob(
-                                container.getKey().getName(), container.getValue());
+                                container.getKey().getName(), container.getValue(),
+                                WriteJobOptions.create().withPriority(Priority.URGENT));
                         jobs.add(write.getJobId());
                         break;
                     default:
