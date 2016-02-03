@@ -1,6 +1,6 @@
 Cyberduck for mounting volumes in the file explorer is now available from https://mountainduck.io/ for Mac & Windows. A command line interface (CLI) version is now available from https://duck.sh/ for Windows, Linux & Mac.
 
-4.7.4 [https://trac.cyberduck.io/milestone/4.7.4]
+4.8 [https://trac.cyberduck.io/milestone/4.8]
 - [Feature] Support for key exchange algorithm diffie-hellman-group-exchange-sha256 (SFTP) (#8488)
 - [Feature] Support for key exchange algorithm curve25519-sha256@libssh.org (SFTP) (#8528)
 - [Feature] Support ssh-ed25519 host keys (SFTP) (#8553)

@@ -163,6 +163,7 @@ public abstract class Session<C> implements TranscriptListener {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Connection did close to %s", host));
             }
+            listener = null;
         }
     }
 

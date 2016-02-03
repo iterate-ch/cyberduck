@@ -104,6 +104,7 @@
                                         <property name="revision" value="${git.commitsCount}" />
                                         <property name="git.revision" value="${git.revision}" />
                                         <property name="sparkle.feed" value="${sparkle.feed}" />
+                                        <property name="installer.certificate" value="${installer.certificate}" />
                                         <ant antfile="${project.basedir}/build.xml" target="package" dir="." />
                                     </tasks>
                                 </configuration>
@@ -121,6 +122,20 @@
                     <version>${project.version}</version>
                 </dependency>
             </dependencies>
+        </profile>
+        <profile>
+            <id>sparkle</id>
+            <!-- activate profile for non-Jenkins builds -->
+            <activation>
+                <property>
+                    <name>!JENKINS_HOME</name>
+                </property>
+            </activation>
+            <properties>
+                <xcode.configuration>Release</xcode.configuration>
+                <sparkle.feed>/dev/null</sparkle.feed>
+                <installer.certificate>3rd Party Mac Developer Installer: David Kocher (G69SCX94XU)</installer.certificate>
+            </properties>
         </profile>
     </profiles>
 
