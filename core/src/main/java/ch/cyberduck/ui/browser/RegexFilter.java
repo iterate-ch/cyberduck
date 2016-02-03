@@ -24,9 +24,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import java.util.regex.Pattern;
 
-/**
- * @version $Id$
- */
 public class RegexFilter implements Filter<Path> {
 
     private Pattern pattern = Pattern.compile(
@@ -41,5 +38,13 @@ public class RegexFilter implements Filter<Path> {
             return false;
         }
         return !file.attributes().isDuplicate();
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("RegexFilter{");
+        sb.append("pattern=").append(pattern);
+        sb.append('}');
+        return sb.toString();
     }
 }

@@ -25,9 +25,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Locale;
 
-/**
- * @version $Id$
- */
 public class SearchFilter implements Filter<Path> {
 
     private String input;
@@ -56,5 +53,13 @@ public class SearchFilter implements Filter<Path> {
 
     public boolean isExpanded(final Path directory) {
         return true;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("SearchFilter{");
+        sb.append("input='").append(input).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 }
