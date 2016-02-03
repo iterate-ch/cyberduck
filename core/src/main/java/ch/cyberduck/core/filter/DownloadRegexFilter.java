@@ -54,4 +54,12 @@ public class DownloadRegexFilter extends DownloadDuplicateFilter {
         }
         return true;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("DownloadRegexFilter{");
+        sb.append("pattern=").append(pattern);
+        sb.append('}');
+        return sb.toString();
+    }
 }

@@ -52,4 +52,12 @@ public class UploadRegexFilter implements Filter<Local> {
         }
         return true;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("UploadRegexFilter{");
+        sb.append("pattern=").append(pattern);
+        sb.append('}');
+        return sb.toString();
+    }
 }
