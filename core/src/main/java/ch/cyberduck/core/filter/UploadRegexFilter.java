@@ -24,11 +24,9 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
 
+import java.util.Objects;
 import java.util.regex.Pattern;
 
-/**
- * @version $Id$
- */
 public class UploadRegexFilter implements Filter<Local> {
     private static final Logger log = Logger.getLogger(UploadRegexFilter.class);
 
@@ -59,5 +57,22 @@ public class UploadRegexFilter implements Filter<Local> {
         sb.append("pattern=").append(pattern);
         sb.append('}');
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(!(o instanceof UploadRegexFilter)) {
+            return false;
+        }
+        final UploadRegexFilter that = (UploadRegexFilter) o;
+        return Objects.equals(pattern, that.pattern);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pattern);
     }
 }

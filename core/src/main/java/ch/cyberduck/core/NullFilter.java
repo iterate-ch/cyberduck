@@ -18,9 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-/**
- * @version $Id$
- */
 public class NullFilter<E> implements Filter<E> {
 
     public boolean accept(final E file) {

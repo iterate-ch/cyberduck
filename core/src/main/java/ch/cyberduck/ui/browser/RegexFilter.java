@@ -22,6 +22,7 @@ import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class RegexFilter implements Filter<Path> {
@@ -46,5 +47,22 @@ public class RegexFilter implements Filter<Path> {
         sb.append("pattern=").append(pattern);
         sb.append('}');
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(!(o instanceof RegexFilter)) {
+            return false;
+        }
+        final RegexFilter that = (RegexFilter) o;
+        return Objects.equals(pattern, that.pattern);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pattern);
     }
 }

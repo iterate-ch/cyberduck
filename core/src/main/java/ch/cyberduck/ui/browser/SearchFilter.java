@@ -24,6 +24,7 @@ import ch.cyberduck.core.Path;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Locale;
+import java.util.Objects;
 
 public class SearchFilter implements Filter<Path> {
 
@@ -61,5 +62,22 @@ public class SearchFilter implements Filter<Path> {
         sb.append("input='").append(input).append('\'');
         sb.append('}');
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(!(o instanceof SearchFilter)) {
+            return false;
+        }
+        final SearchFilter that = (SearchFilter) o;
+        return Objects.equals(input, that.input);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(input);
     }
 }
