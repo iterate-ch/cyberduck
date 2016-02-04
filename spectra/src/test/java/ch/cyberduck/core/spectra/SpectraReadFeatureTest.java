@@ -28,7 +28,6 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
-import ch.cyberduck.core.s3.S3ReadFeature;
 import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -70,7 +69,7 @@ public class SpectraReadFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new S3ReadFeature(session).read(new Path(container, "nosuchname", EnumSet.of(Path.Type.file)), status);
+        new SpectraReadFeature(session).read(new Path(container, "nosuchname", EnumSet.of(Path.Type.file)), status);
     }
 
     @Test
@@ -96,7 +95,7 @@ public class SpectraReadFeatureTest {
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         IOUtils.closeQuietly(out);
-        final InputStream in = new S3ReadFeature(session).read(test, status);
+        final InputStream in = new SpectraReadFeature(session).read(test, status);
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -135,7 +134,7 @@ public class SpectraReadFeatureTest {
         IOUtils.closeQuietly(out);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new S3ReadFeature(session).read(test, status.length(content.length - 100));
+        final InputStream in = new SpectraReadFeature(session).read(test, status.length(content.length - 100));
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -177,7 +176,7 @@ public class SpectraReadFeatureTest {
         status.setAppend(true);
         status.setOffset(100L);
         status.setLength(-1L);
-        final InputStream in = new S3ReadFeature(session).read(test, status);
+        final InputStream in = new SpectraReadFeature(session).read(test, status);
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
