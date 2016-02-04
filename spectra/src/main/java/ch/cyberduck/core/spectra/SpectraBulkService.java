@@ -48,6 +48,8 @@ import com.spectralogic.ds3client.helpers.Ds3ClientHelpers;
 import com.spectralogic.ds3client.helpers.options.ReadJobOptions;
 import com.spectralogic.ds3client.helpers.options.WriteJobOptions;
 import com.spectralogic.ds3client.models.bulk.Ds3Object;
+import com.spectralogic.ds3client.models.bulk.MasterObjectList;
+import com.spectralogic.ds3client.models.bulk.Node;
 import com.spectralogic.ds3client.models.bulk.Priority;
 import com.spectralogic.ds3client.networking.FailedRequestException;
 import com.spectralogic.ds3client.serializer.XmlProcessingException;
@@ -62,7 +64,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
     private final PathContainerService containerService
             = new S3PathContainerService();
 
-    private static final String JOBID_IDENTIFIER = "jobid";
+    private static final String JOBID_IDENTIFIER = "job";
 
     public SpectraBulkService(final SpectraSession session) {
         this(session, new S3DefaultDeleteFeature(session));
@@ -155,13 +157,20 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
     }
 
     /**
-     * Query status of file in cache and set job id in status
+     * Get a list of all job chunks for a given job that are ready for client processing.
+     * <p>
+     * For PUT jobs, this will allocate a working window of job chunks, if possible, and return the job chunks that the client can upload.
+     * Any chunk returned is fully allocated, meaning that you do not have to handle HTTP 307 retries on subsequent PUTs for the chunks.
+     * Retries adversely impact BlackPearl gateway performance and require you to provide the object data stream for every PUT retry.
+     * <p>
+     * For GET jobs, this will respond with which job chunks have been loaded into cache and are ready for download.
      *
      * @param file   File
      * @param status Write job id into status parameters
+     * @return Node
      * @throws RetriableAccessDeniedException File is not yet in cache
      */
-    public void query(final Transfer.Type type, final Path file, final TransferStatus status) throws BackgroundException {
+    public Node query(final Transfer.Type type, final Path file, final TransferStatus status) throws BackgroundException {
         // This will respond with which job chunks have been loaded into cache and are ready for download.
         try {
             final String job;
@@ -188,6 +197,22 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                     throw new RetriableAccessDeniedException(String.format("Job %s not yet loaded into cache", job), delay);
                 }
             }
+            final MasterObjectList list = availableJobChunks.getMasterObjectList();
+            final UUID node = list.getObjects().iterator().next().getNodeId();
+            if(null == node) {
+                log.warn(String.format("No node returned in master object list for file %s", file));
+                return null;
+            }
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Determined node %s for %s", node, file));
+            }
+            for(Node n : list.getNodes()) {
+                if(n.getId().equals(node)) {
+                    return n;
+                }
+            }
+            log.warn(String.format("Failed to determine node for id %s", node));
+            return null;
         }
         catch(FailedRequestException e) {
             throw new SpectraExceptionMappingService().map(e);

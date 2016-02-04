@@ -57,13 +57,15 @@ public class SpectraBulkServiceTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         final Map<Path, TransferStatus> files = new HashMap<>();
         final TransferStatus status = new TransferStatus();
-        files.put(
-                new Path(String.format("/test.cyberduck.ch/%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file)),
+        final Path file = new Path(String.format("/test.cyberduck.ch/%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file));
+        files.put(file,
                 status.length(1L)
         );
-        new SpectraBulkService(session).pre(Transfer.Type.upload, files);
+        final SpectraBulkService service = new SpectraBulkService(session);
+        service.pre(Transfer.Type.upload, files);
         assertFalse(status.getParameters().isEmpty());
         assertNotNull(status.getParameters().get("jobid"));
+        service.query(Transfer.Type.upload, file, status);
         session.close();
     }
 
