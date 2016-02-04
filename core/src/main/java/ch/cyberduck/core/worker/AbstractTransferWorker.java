@@ -33,9 +33,11 @@ import ch.cyberduck.core.SleepPreventerFactory;
 import ch.cyberduck.core.TransferItemCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.notification.NotificationService;
 import ch.cyberduck.core.notification.NotificationServiceFactory;
+import ch.cyberduck.core.threading.BackgroundActionPauser;
 import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
 import ch.cyberduck.core.threading.FailureDiagnostics;
 import ch.cyberduck.core.transfer.Transfer;
@@ -388,9 +390,23 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                             catch(ConnectionCanceledException e) {
                                 throw e;
                             }
+                            catch(RetriableAccessDeniedException e) {
+                                new BackgroundActionPauser(new BackgroundActionPauser.Callback() {
+                                    @Override
+                                    public boolean isCanceled() {
+                                        return AbstractTransferWorker.this.isCanceled();
+                                    }
+
+                                    @Override
+                                    public void progress(final Integer delay) {
+                                        progress.message(MessageFormat.format(LocaleFactory.localizedString("Retry again in {0} seconds", "Status"), delay));
+                                    }
+                                });
+                                transfer(item, action);
+                            }
                             catch(BackgroundException e) {
                                 segment.setFailure();
-                                if(isCanceled()) {
+                                if(AbstractTransferWorker.this.isCanceled()) {
                                     throw new ConnectionCanceledException(e);
                                 }
                                 if(diagnostics.determine(e) == FailureDiagnostics.Type.network) {
