@@ -19,7 +19,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
@@ -170,7 +169,9 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                 job = status.getParameters().get(JOBID_IDENTIFIER);
             }
             else {
-                throw new NotfoundException(String.format("Missing job for %s", file.getAbsolute()));
+                log.warn(String.format("Missing job id parameter in status for %s", file.getAbsolute()));
+                final Set<UUID> id = this.pre(type, Collections.singletonMap(file, status));
+                job = id.iterator().next().toString();
             }
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Query job status %s of %s", job, file));
