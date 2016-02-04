@@ -52,7 +52,11 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
             = new SHA256ChecksumCompute();
 
     public S3SingleUploadService(final S3Session session) {
-        super(new S3WriteFeature(session));
+        this(session, new S3WriteFeature(session));
+    }
+
+    public S3SingleUploadService(final S3Session session, final S3WriteFeature writer) {
+        super(writer);
         this.session = session;
     }
 

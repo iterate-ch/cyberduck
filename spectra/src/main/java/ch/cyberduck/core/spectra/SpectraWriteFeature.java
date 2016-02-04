@@ -14,56 +14,18 @@
 
 package ch.cyberduck.core.spectra;
 
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
-import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.http.ResponseOutputStream;
-import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3MultipartService;
 import ch.cyberduck.core.s3.S3WriteFeature;
-import ch.cyberduck.core.transfer.TransferStatus;
-
-import org.jets3t.service.model.StorageObject;
-
-import java.util.Collections;
 
 public class SpectraWriteFeature extends S3WriteFeature {
 
-    private final S3DefaultDeleteFeature delete;
-
     public SpectraWriteFeature(final SpectraSession session) {
-        this(session, new S3DefaultDeleteFeature(session));
-    }
-
-    public SpectraWriteFeature(final SpectraSession session, final S3MultipartService multipartService,
-                               final Find finder, final Attributes attributes) {
-        this(session, multipartService, finder, attributes, new S3DefaultDeleteFeature(session));
-    }
-
-    public SpectraWriteFeature(final SpectraSession session, final S3DefaultDeleteFeature delete) {
         super(session);
-        this.delete = delete;
     }
 
-    public SpectraWriteFeature(final SpectraSession session, final S3MultipartService multipartService,
-                               final Find finder, final Attributes attributes, final S3DefaultDeleteFeature delete) {
+    public SpectraWriteFeature(final SpectraSession session, final S3MultipartService multipartService, final Find finder, final Attributes attributes) {
         super(session, multipartService, finder, attributes);
-        this.delete = delete;
-    }
-
-    @Override
-    public ResponseOutputStream<StorageObject> write(final Path file, final TransferStatus status) throws BackgroundException {
-        if(status.isExists()) {
-            delete.delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.Callback() {
-                @Override
-                public void delete(final Path file) {
-                    //
-                }
-            });
-        }
-        return super.write(file, status);
     }
 }

@@ -42,12 +42,12 @@ import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.date.AbstractUserDateFormatter;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.formatter.SizeFormatter;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
@@ -61,9 +61,6 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCache;
 import ch.cyberduck.core.resources.IconCacheFactory;
-import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
-import ch.cyberduck.core.ssl.KeychainX509KeyManager;
-import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.TransferItem;
@@ -500,6 +497,11 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
                         // Explicit copy requested if drag operation is already NSDragOperationCopy. User is pressing the option key.
                         return NSDraggingInfo.NSDragOperationCopy;
+                    }
+                    for(Path file : pasteboard) {
+                        if(!controller.getSession().getFeature(Move.class).isSupported(file)) {
+                            return NSDraggingInfo.NSDragOperationNone;
+                        }
                     }
                     // Defaulting to move for same session
                     return NSDraggingInfo.NSDragOperationMove;
