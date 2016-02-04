@@ -26,7 +26,6 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.features.Location;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -114,51 +113,6 @@ public class ProfilePlistReaderTest {
                 new Local("src/test/resources/Openstack Swift (Swauth).cyberduckprofile")
         );
         assertNotEquals(keystone, swauth);
-    }
-
-    @Test
-    public void testProviderProfileHPCloud() throws Exception {
-        final Profile profile = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol() {
-            @Override
-            public Type getType() {
-                return Type.swift;
-            }
-
-            @Override
-            public Scheme getScheme() {
-                return Scheme.https;
-            }
-        }))).read(
-                new Local("src/test/resources/HP Cloud Object Storage.cyberduckprofile")
-        );
-        assertEquals(profile, new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol() {
-            @Override
-            public Type getType() {
-                return Type.swift;
-            }
-
-            @Override
-            public Scheme getScheme() {
-                return Scheme.https;
-            }
-        }))).read(
-                new Local("src/test/resources/HP Cloud Object Storage.cyberduckprofile")
-        ));
-        assertEquals(Protocol.Type.swift, profile.getType());
-        assertFalse(profile.isHostnameConfigurable());
-        assertFalse(profile.isPortConfigurable());
-        assertNotSame("identity.api.rackspacecloud.com", profile.getDefaultHostname());
-        Assert.assertEquals(Scheme.https, profile.getScheme());
-        assertNotNull(profile.disk());
-        assertEquals(profile.disk(), profile.disk());
-        assertEquals(profile.icon(), profile.disk());
-        assertEquals("Tenant ID:Access Key", profile.getUsernamePlaceholder());
-        assertEquals("Secret Key", profile.getPasswordPlaceholder());
-        assertEquals(35357, profile.getDefaultPort());
-        assertEquals("region-a.geo-1.identity.hpcloudsvc.com", profile.getDefaultHostname());
-        assertEquals("/v2.0/tokens", profile.getContext());
-        assertFalse(profile.disk().equals(new TestProtocol().disk()));
-        assertNotNull(profile.getProvider());
     }
 
     @Test

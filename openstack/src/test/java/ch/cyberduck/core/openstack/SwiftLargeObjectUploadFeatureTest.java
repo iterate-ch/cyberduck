@@ -10,7 +10,6 @@ import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
@@ -21,7 +20,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -44,37 +42,6 @@ import static org.junit.Assert.*;
  */
 @Category(IntegrationTest.class)
 public class SwiftLargeObjectUploadFeatureTest {
-
-    @Test
-    @Ignore
-    public void testUploadHP() throws Exception {
-        final Host host = new Host(new SwiftProtocol() {
-            @Override
-            public String getContext() {
-                return "/v2.0/tokens";
-            }
-        }, "region-a.geo-1.identity.hpcloudsvc.com", 35357, new Credentials(
-                System.getProperties().getProperty("hpcloud.key"), System.getProperties().getProperty("hpcloud.secret")
-        ));
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("region-a.geo-1");
-        this.test(host, container);
-    }
-
-    @Test(expected = NotfoundException.class)
-    public void testUploadHPNotFound() throws Exception {
-        final Host host = new Host(new SwiftProtocol() {
-            @Override
-            public String getContext() {
-                return "/v2.0/tokens";
-            }
-        }, "region-a.geo-1.identity.hpcloudsvc.com", 35357, new Credentials(
-                System.getProperties().getProperty("hpcloud.key"), System.getProperties().getProperty("hpcloud.secret")
-        ));
-        final Path container = new Path("t.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("region-b.geo-1");
-        this.test(host, container);
-    }
 
     @Test
     public void testUploadRax() throws Exception {

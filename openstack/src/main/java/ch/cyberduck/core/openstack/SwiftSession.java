@@ -74,9 +74,6 @@ import ch.iterate.openstack.swift.method.AuthenticationRequest;
 import ch.iterate.openstack.swift.model.AccountInfo;
 import ch.iterate.openstack.swift.model.Region;
 
-/**
- * @version $Id$
- */
 public class SwiftSession extends HttpSession<Client> {
     private static final Logger log = Logger.getLogger(SwiftSession.class);
 
@@ -249,9 +246,6 @@ public class SwiftSession extends HttpSession<Client> {
             return (T) cdn;
         }
         if(type == UrlProvider.class) {
-            if(host.getHostname().endsWith("identity.hpcloudsvc.com")) {
-                return (T) new SwiftHpUrlProvider(this);
-            }
             return (T) new SwiftUrlProvider(this, accounts);
         }
         if(type == Attributes.class) {

@@ -30,20 +30,6 @@ import static org.junit.Assert.assertTrue;
 public class SwiftMultipleDeleteFeatureTest {
 
     @Test
-    public void testDeleteHP() throws Exception {
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
-        container.attributes().setRegion("region-a.geo-1");
-        this.delete(new Host(new SwiftProtocol() {
-            @Override
-            public String getContext() {
-                return "/v2.0/tokens";
-            }
-        }, "region-a.geo-1.identity.hpcloudsvc.com", 35357, new Credentials(
-                System.getProperties().getProperty("hpcloud.key"), System.getProperties().getProperty("hpcloud.secret")
-        )), container);
-    }
-
-    @Test
     public void testDeleteRAX() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
         container.attributes().setRegion("DFW");
