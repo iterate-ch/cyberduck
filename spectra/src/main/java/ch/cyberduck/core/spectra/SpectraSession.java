@@ -23,7 +23,9 @@ import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Versioning;
@@ -34,6 +36,7 @@ import ch.cyberduck.core.s3.S3MultipleDeleteFeature;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.s3.S3SingleUploadService;
+import ch.cyberduck.core.shared.DefaultDownloadFeature;
 import ch.cyberduck.core.shared.DisabledMoveFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -84,8 +87,14 @@ public class SpectraSession extends S3Session {
         if(type == Write.class) {
             return (T) new SpectraWriteFeature(this);
         }
+        if(type == Read.class) {
+            return (T) new SpectraReadFeature(this);
+        }
         if(type == Upload.class) {
-            return (T) new S3SingleUploadService(this);
+            return (T) new S3SingleUploadService(this, new SpectraWriteFeature(this));
+        }
+        if(type == Download.class) {
+            return (T) new DefaultDownloadFeature(new SpectraReadFeature(this));
         }
         return super.getFeature(type);
     }

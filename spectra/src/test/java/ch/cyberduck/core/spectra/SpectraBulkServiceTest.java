@@ -36,6 +36,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+
 @Category(IntegrationTest.class)
 public class SpectraBulkServiceTest {
 
@@ -53,11 +56,16 @@ public class SpectraBulkServiceTest {
                 new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         final Map<Path, TransferStatus> files = new HashMap<>();
-        files.put(
-                new Path(String.format("/test.cyberduck.ch/%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file)),
-                new TransferStatus().length(1L)
+        final TransferStatus status = new TransferStatus();
+        final Path file = new Path(String.format("/test.cyberduck.ch/%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file));
+        files.put(file,
+                status.length(1L)
         );
-        new SpectraBulkService(session).pre(Transfer.Type.upload, files);
+        final SpectraBulkService service = new SpectraBulkService(session);
+        service.pre(Transfer.Type.upload, files);
+        assertFalse(status.getParameters().isEmpty());
+        assertNotNull(status.getParameters().get("jobid"));
+        service.query(Transfer.Type.upload, file, status);
         session.close();
     }
 
