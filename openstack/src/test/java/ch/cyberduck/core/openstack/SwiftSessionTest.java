@@ -91,47 +91,6 @@ public class SwiftSessionTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
     }
 
-    @Test
-    public void testConnectHpv1() throws Exception {
-        final Host host = new Host(new SwiftProtocol() {
-            @Override
-            public String getContext() {
-                return "/v1.0";
-            }
-        }, "region-a.geo-1.identity.hpcloudsvc.com", 35357, new Credentials(
-                System.getProperties().getProperty("hpcloud.user"), System.getProperties().getProperty("hpcloud.password")
-        ));
-        final SwiftSession session = new SwiftSession(host);
-        new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
-        assertNotNull(session.workdir());
-        assertTrue(session.isConnected());
-        session.close();
-        assertFalse(session.isConnected());
-        assertEquals(Session.State.closed, session.getState());
-    }
-
-    @Test
-    public void testConnectHpv2() throws Exception {
-        final SwiftProtocol protocol = new SwiftProtocol() {
-            @Override
-            public String getContext() {
-                return "/v2.0/tokens";
-            }
-        };
-        final Host host = new Host(protocol, "region-a.geo-1.identity.hpcloudsvc.com", 35357, new Credentials(
-                System.getProperties().getProperty("hpcloud.key"), System.getProperties().getProperty("hpcloud.secret")
-        ));
-        final SwiftSession session = new SwiftSession(host);
-        new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
-        assertNotNull(session.workdir());
-        assertTrue(session.isConnected());
-        session.close();
-        assertFalse(session.isConnected());
-        assertEquals(Session.State.closed, session.getState());
-    }
-
     @Test(expected = LoginFailureException.class)
     public void testConnectOraclecloud() throws Exception {
         final SwiftProtocol protocol = new SwiftProtocol() {

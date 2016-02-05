@@ -19,7 +19,6 @@ import java.util.ArrayList;
 
 import ch.iterate.openstack.swift.Client;
 import ch.iterate.openstack.swift.method.Authentication10UsernameKeyRequest;
-import ch.iterate.openstack.swift.method.Authentication20AccessKeySecretKeyRequest;
 import ch.iterate.openstack.swift.method.Authentication20RAXUsernameKeyRequest;
 import ch.iterate.openstack.swift.method.Authentication20UsernamePasswordRequest;
 import ch.iterate.openstack.swift.method.AuthenticationRequest;
@@ -96,28 +95,6 @@ public class SwiftAuthenticationServiceTest {
                             }
                         }).iterator().next().getVersion());
         assertEquals(":u", host.getCredentials().getUsername());
-    }
-
-    @Test
-    public void testProfileHPCloud() throws Exception {
-        ProtocolFactory.register(new SwiftProtocol());
-        final SwiftAuthenticationService s = new SwiftAuthenticationService();
-        final Profile profile = ProfileReaderFactory.get().read(
-                new Local("../profiles/HP Cloud Object Storage.cyberduckprofile"));
-        final Host host = new Host(profile, profile.getDefaultHostname());
-        try {
-            s.getRequest(host, new DisabledLoginCallback());
-            fail();
-        }
-        catch(LoginCanceledException e) {
-            //
-        }
-        host.getCredentials().setUsername("tenant:key");
-        assertEquals(URI.create("https://region-a.geo-1.identity.hpcloudsvc.com:35357/v2.0/tokens"), s.getRequest(host,
-                new DisabledLoginCallback()).iterator().next().getURI());
-        assertEquals(Client.AuthVersion.v20, s.getRequest(host, new DisabledLoginCallback()).iterator().next().getVersion());
-        assertEquals(Authentication20AccessKeySecretKeyRequest.class,
-                new ArrayList<AuthenticationRequest>(s.getRequest(host, new DisabledLoginCallback())).get(2).getClass());
     }
 
     @Test
