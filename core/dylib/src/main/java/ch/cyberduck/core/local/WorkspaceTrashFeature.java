@@ -44,7 +44,8 @@ public class WorkspaceTrashFeature implements Trash {
                     log.debug(String.format("Move %s to Trash", file));
                 }
                 final NSWorkspace workspace = NSWorkspace.sharedWorkspace();
-                // Asynchronous operation
+                // Asynchronous operation. 0 if the operation is performed synchronously and succeeds, and a positive
+                // integer if the operation is performed asynchronously and succeeds
                 if(!workspace.performFileOperation(
                         NSWorkspace.RecycleOperation,
                         file.getParent().getAbsolute(), StringUtils.EMPTY,
