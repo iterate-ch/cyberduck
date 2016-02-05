@@ -64,7 +64,7 @@ public class SpectraBulkServiceTest {
         final SpectraBulkService service = new SpectraBulkService(session);
         service.pre(Transfer.Type.upload, files);
         assertFalse(status.getParameters().isEmpty());
-        assertNotNull(status.getParameters().get("jobid"));
+        assertNotNull(status.getParameters().get("job"));
         service.query(Transfer.Type.upload, file, status);
         session.close();
     }
