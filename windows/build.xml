@@ -110,7 +110,7 @@
             <arg value="${setup}/nsi/cyberduck.nsi"/>
         </exec>
         <exec executable="${winsdk.home}/signtool.exe" failonerror="true">
-            <arg line='sign /r "StartCom" /tr http://timestamp.globalsign.com/scripts/timestamp.dll "${setup.file}"'/>
+            <arg line='sign /r "StartCom" /fd sha256 /tr http://timestamp.globalsign.com/scripts/timestamp.dll /td sha256 "${setup.file}"'/>
         </exec>
         <checksum file="${setup.file}" algorithm="md5"/>
     </target>
