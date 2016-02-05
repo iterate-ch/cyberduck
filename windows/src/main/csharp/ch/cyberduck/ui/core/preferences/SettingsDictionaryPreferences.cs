@@ -365,6 +365,29 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
                 true.ToString());
             defaults.put(String.Format("connection.protocol.{0}.enable", new IRODSProtocol().getIdentifier()),
                 false.ToString());
+
+             // NTLM Windows Domain
+            try
+            {
+                 // Gets the network domain name associated with the current user
+                defaults.put("webdav.ntlm.domain", Environment.UserDomainName);
+            }
+            catch (PlatformNotSupportedException e)
+            {
+                // The operating system does not support retrieving the network domain name.
+            }
+            catch (InvalidOperationException e)
+            {
+                // The network domain name cannot be retrieved.
+            }
+            try
+            {
+                defaults.put("webdav.ntlm.workstation", Environment.MachineName);
+            }
+            catch (InvalidOperationException e)
+            {
+                // The name of this computer cannot be obtained.
+            }
         }
 
         protected override void post()
