@@ -38,6 +38,10 @@ public final class ChecksumComputeFactory {
                 return new SHA1ChecksumCompute();
             case sha256:
                 return new SHA256ChecksumCompute();
+            case sha512:
+                return new SHA512ChecksumCompute();
+            case crc32:
+                return new CRC32ChecksumCompute();
             default:
                 return new ChecksumCompute() {
                     @Override
