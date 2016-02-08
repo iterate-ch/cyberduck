@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Search;
 
 import java.text.MessageFormat;
@@ -52,6 +53,9 @@ public class SearchWorker extends Worker<AttributedList<Path>> {
     }
 
     private AttributedList<Path> search(final Search search, final Path workdir) throws BackgroundException {
+        if(this.isCanceled()) {
+            throw new ConnectionCanceledException();
+        }
         // Get filtered list from search
         final AttributedList<Path> list = search.search(workdir, filter, listener);
         for(Iterator<Path> iter = list.iterator(); iter.hasNext(); ) {
