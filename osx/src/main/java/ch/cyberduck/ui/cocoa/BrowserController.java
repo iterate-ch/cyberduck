@@ -421,11 +421,10 @@ public class BrowserController extends WindowController
                             new SessionListWorker(cache, folder, listener) {
                                 @Override
                                 public void cleanup(final AttributedList<Path> list) {
+                                    // Put into cache
                                     super.cleanup(list);
-                                    // Update the working directory if listing is successful
-                                    if(!(this.initialize() == list)) {
-                                        reload(browser, model, workdir, selected, folder);
-                                    }
+                                    // Reload browser
+                                    reload(browser, model, workdir, selected, folder);
                                 }
                             }
                     )
@@ -601,6 +600,7 @@ public class BrowserController extends WindowController
 
     /**
      * NSDraggingDestination protocol implementation
+     *
      * @return NSDragOperation
      */
     @Action
@@ -654,15 +654,18 @@ public class BrowserController extends WindowController
     @Outlet
     private NSDrawer logDrawer;
 
+    @Action
     public void drawerDidOpen(NSNotification notification) {
         preferences.setProperty("browser.transcript.open", true);
     }
 
+    @Action
     public void drawerDidClose(NSNotification notification) {
         preferences.setProperty("browser.transcript.open", false);
         transcript.clear();
     }
 
+    @Action
     public NSSize drawerWillResizeContents_toSize(final NSDrawer sender, final NSSize contentSize) {
         return contentSize;
     }
@@ -1102,12 +1105,14 @@ public class BrowserController extends WindowController
             super(selectedColumn);
         }
 
+        @Action
         public String outlineView_toolTipForCell_rect_tableColumn_item_mouseLocation(NSOutlineView t, NSCell cell,
                                                                                      ID rect, NSTableColumn c,
                                                                                      NSObject item, NSPoint mouseLocation) {
             return this.tooltip(cache.lookup(new NSObjectPathReference(item)));
         }
 
+        @Action
         public String outlineView_typeSelectStringForTableColumn_item(final NSOutlineView view,
                                                                       final NSTableColumn tableColumn,
                                                                       final NSObject item) {
@@ -1422,7 +1427,7 @@ public class BrowserController extends WindowController
                         final NSInteger draggingColumn = view.columnAtPoint(view.convertPoint_fromView(event.locationInWindow(), null));
                         if(draggingColumn.intValue() != 0) {
                             if(log.isDebugEnabled()) {
-                                log.debug("Returning false to #outlineViewShouldExpandItem for column:" + draggingColumn);
+                                log.debug(String.format("Returning false to #outlineViewShouldExpandItem for column %s", draggingColumn));
                             }
                             // See ticket #60
                             return false;
@@ -1793,6 +1798,7 @@ public class BrowserController extends WindowController
                 deleteBookmarkButton.setEnabled(bookmarkModel.getSource().allowsDelete() && selected > 0);
             }
 
+            @Action
             public CGFloat tableView_heightOfRow(NSTableView view, NSInteger row) {
                 final int size = preferences.getInteger("bookmark.icon.size");
                 if(BookmarkCell.SMALL_BOOKMARK_SIZE == size) {
@@ -1809,12 +1815,14 @@ public class BrowserController extends WindowController
                 return true;
             }
 
+            @Action
             public String tableView_typeSelectStringForTableColumn_row(NSTableView view,
                                                                        NSTableColumn tableColumn,
                                                                        NSInteger row) {
                 return BookmarkNameProvider.toString(bookmarkModel.getSource().get(row.intValue()));
             }
 
+            @Action
             public boolean tableView_isGroupRow(NSTableView view, NSInteger row) {
                 return false;
             }
@@ -1993,6 +2001,7 @@ public class BrowserController extends WindowController
         this.window().makeFirstResponder(searchField);
     }
 
+    @Action
     public void searchFieldTextDidChange(NSNotification notification) {
         if(this.getSelectedTabView() == TAB_BOOKMARKS) {
             this.setBookmarkFilter(searchField.stringValue());
@@ -2386,7 +2395,7 @@ public class BrowserController extends WindowController
             if(getSelectedTabView() == TAB_BOOKMARKS) {
                 statusLabel.setAttributedStringValue(
                         NSAttributedString.attributedStringWithAttributes(String.format("%s %s", bookmarkTable.numberOfRows(),
-                                        LocaleFactory.localizedString("Bookmarks")),
+                                LocaleFactory.localizedString("Bookmarks")),
                                 TRUNCATE_MIDDLE_ATTRIBUTES
                         )
                 );
@@ -2396,7 +2405,7 @@ public class BrowserController extends WindowController
                 if(isConnected()) {
                     statusLabel.setAttributedStringValue(
                             NSAttributedString.attributedStringWithAttributes(MessageFormat.format(LocaleFactory.localizedString("{0} Files"),
-                                            String.valueOf(getSelectedBrowserView().numberOfRows())),
+                                    String.valueOf(getSelectedBrowserView().numberOfRows())),
                                     TRUNCATE_MIDDLE_ATTRIBUTES
                             )
                     );
@@ -2920,9 +2929,7 @@ public class BrowserController extends WindowController
             this.setShowHiddenFiles(true);
             sender.setState(NSCell.NSOnState);
         }
-        if(this.isMounted()) {
-            this.reload();
-        }
+        this.reload();
     }
 
     /**
