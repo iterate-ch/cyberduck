@@ -24,6 +24,7 @@ import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Download;
+import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
@@ -95,6 +96,9 @@ public class SpectraSession extends S3Session {
         }
         if(type == Download.class) {
             return (T) new DefaultDownloadFeature(new SpectraReadFeature(this));
+        }
+        if(type == Headers.class) {
+            return null;
         }
         return super.getFeature(type);
     }
