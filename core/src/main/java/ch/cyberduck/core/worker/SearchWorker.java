@@ -26,6 +26,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Search;
 
 import java.text.MessageFormat;
+import java.util.Iterator;
 import java.util.Objects;
 
 public class SearchWorker extends Worker<AttributedList<Path>> {
@@ -45,33 +46,25 @@ public class SearchWorker extends Worker<AttributedList<Path>> {
     @Override
     public AttributedList<Path> run(final Session<?> session) throws BackgroundException {
         // Run recursively
-        final AttributedList<Path> result = new AttributedList<>();
         final Search search = session.getFeature(Search.class);
         search.withCache(cache);
-        this.search(search, directory, result);
-        return result.filter(filter);
+        return this.search(search, directory);
     }
 
-    private AttributedList<Path> search(final Search search, final Path workdir, final AttributedList<Path> result) throws BackgroundException {
+    private AttributedList<Path> search(final Search search, final Path workdir) throws BackgroundException {
         // Get filtered list from search
         final AttributedList<Path> list = search.search(workdir, filter, listener);
-        for(Path file : list) {
-            if(file.isFile()) {
-                result.add(file);
-            }
+        for(Iterator<Path> iter = list.iterator(); iter.hasNext(); ) {
+            final Path file = iter.next();
             if(file.isDirectory()) {
-                if(!this.search(search, file, result).isEmpty()) {
-                    result.add(file);
+                if(this.search(search, file).isEmpty()) {
+                    if(list.attributes().addHidden(file)) {
+                        iter.remove();
+                    }
                 }
             }
         }
         return list;
-    }
-
-    @Override
-    public void cleanup(final AttributedList<Path> result) {
-        // Cache directory listing
-        cache.put(directory, result);
     }
 
     @Override

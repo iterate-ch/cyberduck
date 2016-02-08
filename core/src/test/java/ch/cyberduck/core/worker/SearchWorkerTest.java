@@ -37,23 +37,26 @@ public class SearchWorkerTest {
     public void testRun() throws Exception {
         final PathCache cache = new PathCache(Integer.MAX_VALUE);
         final AttributedList<Path> root = new AttributedList<>();
-        root.add(new Path("/t.png", EnumSet.of(Path.Type.file)));
-        root.add(new Path("/t.gif", EnumSet.of(Path.Type.file)));
+        root.add(new Path("/t1.png", EnumSet.of(Path.Type.file)));
+        root.add(new Path("/t1.gif", EnumSet.of(Path.Type.file)));
         root.add(new Path("/folder", EnumSet.of(Path.Type.directory)));
         root.add(new Path("/folder2", EnumSet.of(Path.Type.directory)));
         cache.put(new Path("/", EnumSet.of(Path.Type.directory)), root);
         final AttributedList<Path> folder = new AttributedList<>();
-        folder.add(new Path(new Path("/folder", EnumSet.of(Path.Type.directory)), "/t.png", EnumSet.of(Path.Type.file)));
-        folder.add(new Path(new Path("/folder", EnumSet.of(Path.Type.directory)), "/t.gif", EnumSet.of(Path.Type.file)));
+        folder.add(new Path(new Path("/folder", EnumSet.of(Path.Type.directory)), "/t2.png", EnumSet.of(Path.Type.file)));
+        folder.add(new Path(new Path("/folder", EnumSet.of(Path.Type.directory)), "/t2.gif", EnumSet.of(Path.Type.file)));
         cache.put(new Path("/folder", EnumSet.of(Path.Type.directory)), folder);
         final SearchWorker search = new SearchWorker(new Path("/", EnumSet.of(Path.Type.directory)),
                 new SearchFilter(".png"), cache, new DisabledListProgressListener());
         final AttributedList<Path> found = search.run(new NullSession(new Host(new TestProtocol())));
-        assertTrue(found.contains(new Path("/t.png", EnumSet.of(Path.Type.file))));
-        assertFalse(found.contains(new Path("/t.gif", EnumSet.of(Path.Type.file))));
+        assertTrue(found.contains(new Path("/t1.png", EnumSet.of(Path.Type.file))));
+        assertFalse(found.contains(new Path("/t1.gif", EnumSet.of(Path.Type.file))));
+        assertFalse(found.contains(new Path("/t2.png", EnumSet.of(Path.Type.file))));
+        assertFalse(found.contains(new Path("/t2.gif", EnumSet.of(Path.Type.file))));
         assertTrue(found.contains(new Path("/folder", EnumSet.of(Path.Type.directory))));
         assertFalse(found.contains(new Path("/folder2", EnumSet.of(Path.Type.directory))));
-        assertTrue(found.contains(new Path(new Path("/folder", EnumSet.of(Path.Type.directory)), "/t.png", EnumSet.of(Path.Type.file))));
-        assertFalse(found.contains(new Path(new Path("/folder", EnumSet.of(Path.Type.directory)), "/t.gif", EnumSet.of(Path.Type.file))));
+        final AttributedList<Path> children = cache.get(new Path("/folder", EnumSet.of(Path.Type.directory)));
+        assertTrue(children.contains(new Path(new Path("/folder", EnumSet.of(Path.Type.directory)), "/t2.png", EnumSet.of(Path.Type.file))));
+        assertFalse(children.contains(new Path(new Path("/folder", EnumSet.of(Path.Type.directory)), "/t2.gif", EnumSet.of(Path.Type.file))));
     }
 }
