@@ -32,7 +32,7 @@ public interface TransferWorker {
 
     void submit(TransferCallable callable) throws BackgroundException;
 
-    public interface TransferCallable extends Callable<TransferStatus> {
+    interface TransferCallable extends Callable<TransferStatus> {
         TransferStatus call() throws BackgroundException;
     }
 }
