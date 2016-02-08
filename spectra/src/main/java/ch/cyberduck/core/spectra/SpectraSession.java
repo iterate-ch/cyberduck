@@ -18,6 +18,7 @@ import ch.cyberduck.core.DisabledUrlProvider;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Bulk;
@@ -98,6 +99,9 @@ public class SpectraSession extends S3Session {
             return (T) new DefaultDownloadFeature(new SpectraReadFeature(this));
         }
         if(type == Headers.class) {
+            return null;
+        }
+        if(type == DistributionConfiguration.class) {
             return null;
         }
         return super.getFeature(type);
