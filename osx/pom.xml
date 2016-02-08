@@ -186,6 +186,9 @@
                 <property>
                     <name>JENKINS_HOME</name>
                 </property>
+                <os>
+                    <family>Mac</family>
+                </os>
             </activation>
             <build>
                 <plugins>
