@@ -26,5 +26,7 @@ public class CRC32ChecksumComputeTest {
     public void testCompute() throws Exception {
         assertEquals("0",
                 new CRC32ChecksumCompute().compute(new NullInputStream(0)).hash);
+        assertEquals("d202ef8d",
+                new CRC32ChecksumCompute().compute(new NullInputStream(1L)).hash);
     }
 }
