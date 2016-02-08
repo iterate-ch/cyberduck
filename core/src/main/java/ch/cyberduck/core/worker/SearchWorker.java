@@ -30,13 +30,13 @@ import java.util.Objects;
 
 public class SearchWorker extends Worker<AttributedList<Path>> {
 
-    private final Path workdir;
+    private final Path directory;
     private final Filter<Path> filter;
     private final PathCache cache;
     private final ListProgressListener listener;
 
-    public SearchWorker(final Path workdir, final Filter<Path> filter, final PathCache cache, final ListProgressListener listener) {
-        this.workdir = workdir;
+    public SearchWorker(final Path directory, final Filter<Path> filter, final PathCache cache, final ListProgressListener listener) {
+        this.directory = directory;
         this.filter = filter;
         this.cache = cache;
         this.listener = listener;
@@ -48,7 +48,7 @@ public class SearchWorker extends Worker<AttributedList<Path>> {
         final AttributedList<Path> result = new AttributedList<>();
         final Search search = session.getFeature(Search.class);
         search.withCache(cache);
-        this.search(search, workdir, result);
+        this.search(search, directory, result);
         return result;
     }
 
@@ -64,8 +64,14 @@ public class SearchWorker extends Worker<AttributedList<Path>> {
     }
 
     @Override
+    public void cleanup(final AttributedList<Path> result) {
+        // Cache directory listing
+        cache.put(directory, result);
+    }
+
+    @Override
     public String getActivity() {
-        return MessageFormat.format(LocaleFactory.localizedString("Searching in {0}", "Status"), workdir.getName());
+        return MessageFormat.format(LocaleFactory.localizedString("Searching in {0}", "Status"), directory.getName());
     }
 
     @Override
