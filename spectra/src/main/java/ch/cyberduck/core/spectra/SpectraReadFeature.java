@@ -25,8 +25,6 @@ import org.apache.log4j.Logger;
 
 import java.io.InputStream;
 
-import com.spectralogic.ds3client.models.bulk.Node;
-
 public class SpectraReadFeature extends S3ReadFeature {
     private static final Logger log = Logger.getLogger(SpectraReadFeature.class);
 
@@ -40,13 +38,8 @@ public class SpectraReadFeature extends S3ReadFeature {
     @Override
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
         final SpectraBulkService bulk = new SpectraBulkService(session);
-        final Node node = bulk.query(Transfer.Type.download, file, status);
-        if(null == node) {
-            log.info(String.format("Failed to determine node for file %s", file));
-        }
-        else {
-            log.info(String.format("Determined node %s for file %s", node, file));
-        }
+        // Make sure file is available in cache
+        bulk.query(Transfer.Type.download, file, status);
         return super.read(file, status);
     }
 }

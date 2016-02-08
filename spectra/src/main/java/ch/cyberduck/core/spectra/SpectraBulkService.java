@@ -16,9 +16,11 @@ package ch.cyberduck.core.spectra;
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.RedirectException;
 import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
@@ -27,6 +29,7 @@ import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.codec.binary.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -167,10 +170,10 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
      *
      * @param file   File
      * @param status Write job id into status parameters
-     * @return Node
-     * @throws RetriableAccessDeniedException File is not yet in cache
+     * @throws RetriableAccessDeniedException                File is not yet in cache
+     * @throws ch.cyberduck.core.exception.RedirectException Should be accessed from different node
      */
-    public Node query(final Transfer.Type type, final Path file, final TransferStatus status) throws BackgroundException {
+    public void query(final Transfer.Type type, final Path file, final TransferStatus status) throws BackgroundException {
         // This will respond with which job chunks have been loaded into cache and are ready for download.
         try {
             final String job;
@@ -198,21 +201,25 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                 }
             }
             final MasterObjectList list = availableJobChunks.getMasterObjectList();
-            final UUID node = list.getObjects().iterator().next().getNodeId();
-            if(null == node) {
+            final UUID nodeId = list.getObjects().iterator().next().getNodeId();
+            if(null == nodeId) {
                 log.warn(String.format("No node returned in master object list for file %s", file));
-                return null;
             }
             if(log.isInfoEnabled()) {
-                log.info(String.format("Determined node %s for %s", node, file));
+                log.info(String.format("Determined node %s for %s", nodeId, file));
             }
-            for(Node n : list.getNodes()) {
-                if(n.getId().equals(node)) {
-                    return n;
+            for(Node node : list.getNodes()) {
+                if(node.getId().equals(nodeId)) {
+                    final Host host = session.getHost();
+                    if(!StringUtils.equals(node.getEndpoint(), host.getHostname())) {
+                        final Host target = new Host(host.getProtocol(), node.getEndpoint(),
+                                host.getProtocol().isSecure() ? node.getHttpsPort() : node.getHttpPort());
+                        log.warn(String.format("Redirect to %s for file %s", target, file));
+                        throw new RedirectException(target);
+                    }
                 }
             }
-            log.warn(String.format("Failed to determine node for id %s", node));
-            return null;
+            log.warn(String.format("Failed to determine node for id %s", nodeId));
         }
         catch(FailedRequestException e) {
             throw new SpectraExceptionMappingService().map(e);
