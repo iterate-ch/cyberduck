@@ -37,7 +37,7 @@ public class SearchFilter implements Filter<Path> {
     @Override
     public boolean accept(final Path file) {
         if(file.isDirectory()) {
-            return this.isExpanded(file);
+            return true;
         }
         if(file.getName().toLowerCase(Locale.ROOT).contains(input.toLowerCase(Locale.ROOT))) {
             // Matching filename
@@ -50,10 +50,6 @@ public class SearchFilter implements Filter<Path> {
             }
         }
         return false;
-    }
-
-    public boolean isExpanded(final Path directory) {
-        return true;
     }
 
     @Override
