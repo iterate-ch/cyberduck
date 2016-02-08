@@ -44,7 +44,6 @@ public class DefaultSearchFeature implements Search {
         final AttributedList<Path> list;
         if(!cache.containsKey(workdir)) {
             list = session.list(workdir, new SearchListProgressListener(filter, listener)).filter(filter);
-            cache.put(workdir, list);
         }
         else {
             list = cache.get(workdir).filter(filter);
