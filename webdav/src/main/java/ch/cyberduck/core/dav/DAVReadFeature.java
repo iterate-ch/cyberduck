@@ -19,6 +19,7 @@ package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.http.HttpRange;
@@ -33,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.github.sardine.impl.SardineException;
 
@@ -68,7 +70,20 @@ public class DAVReadFeature implements Read {
             headers.add(new BasicHeader(HttpHeaders.ACCEPT_ENCODING, "identity"));
         }
         try {
-            return session.getClient().get(new DAVPathEncoder().encode(file), headers);
+            final StringBuilder resource = new StringBuilder(new DAVPathEncoder().encode(file));
+            if(!status.getParameters().isEmpty()) {
+                resource.append("?");
+            }
+            for(Map.Entry<String, String> parameter : status.getParameters().entrySet()) {
+                if(!resource.toString().endsWith("?")) {
+                    resource.append("&");
+                }
+                resource.append(URIEncoder.encode(parameter.getKey()))
+                        .append("=")
+                        .append(URIEncoder.encode(parameter.getValue()));
+
+            }
+            return session.getClient().get(resource.toString(), headers);
         }
         catch(SardineException e) {
             throw new DAVExceptionMappingService().map("Download {0} failed", e, file);

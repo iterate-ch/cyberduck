@@ -18,6 +18,7 @@ import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -41,7 +42,7 @@ public class SpectraExceptionMappingService extends AbstractExceptionMappingServ
             return new NotfoundException(buffer.toString(), e);
         }
         if(HttpStatus.SC_CONFLICT == code) {
-            return new AccessDeniedException(buffer.toString(), e);
+            return new ConflictException(buffer.toString(), e);
         }
         if(HttpStatus.SC_FORBIDDEN == code) {
             if(StringUtils.isNotBlank(e.getError().getCode())) {
