@@ -75,6 +75,7 @@ import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.worker.DisconnectWorker;
 import ch.cyberduck.core.worker.MountWorker;
+import ch.cyberduck.core.worker.SearchWorker;
 import ch.cyberduck.core.worker.SessionListWorker;
 import ch.cyberduck.ui.browser.Column;
 import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
@@ -1994,6 +1995,10 @@ public class BrowserController extends WindowController
                 Foundation.selector("searchFieldTextDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
                 this.searchField);
+        notificationCenter.addObserver(this.id(),
+                Foundation.selector("searchFieldTextDidEndEditing:"),
+                NSControl.NSControlTextDidEndEditingNotification,
+                this.searchField);
     }
 
     @Action
@@ -2003,12 +2008,39 @@ public class BrowserController extends WindowController
 
     @Action
     public void searchFieldTextDidChange(NSNotification notification) {
-        if(this.getSelectedTabView() == TAB_BOOKMARKS) {
-            this.setBookmarkFilter(searchField.stringValue());
+        switch(this.getSelectedTabView()) {
+            case TAB_BOOKMARKS:
+                this.setBookmarkFilter(searchField.stringValue());
+                break;
+            case TAB_LIST_VIEW:
+            case TAB_OUTLINE_VIEW:
+                // Setup search filter
+                this.setPathFilter(searchField.stringValue());
+                // Reload with current cache
+                this.reload();
         }
-        else { // TAB_LIST_VIEW || TAB_OUTLINE_VIEW
-            this.setPathFilter(searchField.stringValue());
-            this.reload();
+    }
+
+    @Action
+    public void searchFieldTextDidEndEditing(NSNotification notification) {
+        switch(this.getSelectedTabView()) {
+            case TAB_LIST_VIEW:
+            case TAB_OUTLINE_VIEW:
+                // Setup search filter
+                this.setPathFilter(searchField.stringValue());
+                final NSTableView browser = this.getSelectedBrowserView();
+                final BrowserTableDataSource model = this.getSelectedBrowserModel();
+                final List<Path> selected = this.getSelectedPaths();
+                // Delay render until path is cached in the background
+                this.background(new WorkerBackgroundAction<AttributedList<Path>>(this, session, cache,
+                        new SearchWorker(workdir, filenameFilter, cache, listener) {
+                            @Override
+                            public void cleanup(final AttributedList<Path> list) {
+                                // Reload browser
+                                reload(browser, model, workdir, selected, workdir);
+                            }
+                        })
+                );
         }
     }
 
