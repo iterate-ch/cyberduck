@@ -93,8 +93,8 @@ public class AttributedListAttributes<E> {
     /**
      * @param child Hidden element
      */
-    public void addHidden(final E child) {
-        hidden.add(child);
+    public boolean addHidden(final E child) {
+        return hidden.add(child);
     }
 
     /**
