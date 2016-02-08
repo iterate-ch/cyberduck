@@ -49,18 +49,23 @@ public class SearchWorker extends Worker<AttributedList<Path>> {
         final Search search = session.getFeature(Search.class);
         search.withCache(cache);
         this.search(search, directory, result);
-        return result;
+        return result.filter(filter);
     }
 
-    private void search(final Search search, final Path workdir, final AttributedList<Path> result) throws BackgroundException {
-        for(Path file : search.search(workdir, filter, listener)) {
+    private AttributedList<Path> search(final Search search, final Path workdir, final AttributedList<Path> result) throws BackgroundException {
+        // Get filtered list from search
+        final AttributedList<Path> list = search.search(workdir, filter, listener);
+        for(Path file : list) {
             if(file.isFile()) {
                 result.add(file);
             }
             if(file.isDirectory()) {
-                this.search(search, file, result);
+                if(!this.search(search, file, result).isEmpty()) {
+                    result.add(file);
+                }
             }
         }
+        return list;
     }
 
     @Override
