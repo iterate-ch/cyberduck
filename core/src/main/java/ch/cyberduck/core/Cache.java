@@ -144,6 +144,9 @@ public abstract class Cache<T extends Referenceable> {
         for(T f : children) {
             reverse.put(this.key(f), reference);
         }
+        for(T f : children.attributes().getHidden()) {
+            reverse.put(this.key(f), reference);
+        }
         return impl.put(reference, children);
     }
 
