@@ -57,7 +57,7 @@ public class SearchWorker extends Worker<AttributedList<Path>> {
             throw new ConnectionCanceledException();
         }
         // Get filtered list from search
-        final AttributedList<Path> list = search.search(workdir, filter, listener);
+        final AttributedList<Path> list = search.search(workdir, new RecursiveSearchFilter(), listener);
         for(Iterator<Path> iter = list.iterator(); iter.hasNext(); ) {
             final Path file = iter.next();
             if(file.isDirectory()) {
@@ -99,5 +99,28 @@ public class SearchWorker extends Worker<AttributedList<Path>> {
         sb.append("filter='").append(filter).append('\'');
         sb.append('}');
         return sb.toString();
+    }
+
+    private final class RecursiveSearchFilter implements Filter<Path> {
+        @Override
+        public boolean accept(final Path file) {
+            if(file.isDirectory()) {
+                return true;
+            }
+            return filter.accept(file);
+        }
+
+        @Override
+        public int hashCode() {
+            return filter.hashCode();
+        }
+
+        @Override
+        public boolean equals(final Object obj) {
+            if(obj instanceof Filter) {
+                return filter.equals(obj);
+            }
+            return false;
+        }
     }
 }

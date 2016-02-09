@@ -36,9 +36,6 @@ public class SearchFilter implements Filter<Path> {
 
     @Override
     public boolean accept(final Path file) {
-        if(file.isDirectory()) {
-            return true;
-        }
         if(file.getName().toLowerCase(Locale.ROOT).contains(input.toLowerCase(Locale.ROOT))) {
             // Matching filename
             return true;
