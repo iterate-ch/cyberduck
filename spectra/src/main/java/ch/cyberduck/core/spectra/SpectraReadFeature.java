@@ -17,6 +17,7 @@ package ch.cyberduck.core.spectra;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.RedirectException;
 import ch.cyberduck.core.s3.S3ReadFeature;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -24,8 +25,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.log4j.Logger;
 
 import java.io.InputStream;
-
-import com.spectralogic.ds3client.models.bulk.Node;
 
 public class SpectraReadFeature extends S3ReadFeature {
     private static final Logger log = Logger.getLogger(SpectraReadFeature.class);
@@ -40,12 +39,12 @@ public class SpectraReadFeature extends S3ReadFeature {
     @Override
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
         final SpectraBulkService bulk = new SpectraBulkService(session);
-        final Node node = bulk.query(Transfer.Type.download, file, status);
-        if(null == node) {
-            log.info(String.format("Failed to determine node for file %s", file));
+        try {
+            // Make sure file is available in cache
+            bulk.query(Transfer.Type.download, file, status);
         }
-        else {
-            log.info(String.format("Determined node %s for file %s", node, file));
+        catch(RedirectException e) {
+            log.warn(String.format("Node returned for is not equal connected host. %s", e.getMessage()));
         }
         return super.read(file, status);
     }

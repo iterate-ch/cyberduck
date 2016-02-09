@@ -21,9 +21,6 @@ package ch.cyberduck.core.io;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id$
- */
 public final class Checksum {
     private static final Logger log = Logger.getLogger(Checksum.class);
 
@@ -52,6 +49,12 @@ public final class Checksum {
         }
         if(hash.matches("[A-Fa-f0-9]{64}")) {
             return new Checksum(HashAlgorithm.sha256, hash);
+        }
+        if(hash.matches("[A-Fa-f0-9]{128}")) {
+            return new Checksum(HashAlgorithm.sha512, hash);
+        }
+        if(hash.matches("[a-fA-F0-9]{8}")) {
+            return new Checksum(HashAlgorithm.crc32, hash);
         }
         log.warn(String.format("Failure to detect algorithm for checksum %s", hash));
         return null;
