@@ -30,8 +30,6 @@ import java.util.Map;
 /**
  * Mapper between path references returned from the outline view model and its internal
  * string representation.
- *
- * @version $Id$
  */
 public class NSObjectPathReference implements CacheReference<Path> {
 
