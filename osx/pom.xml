@@ -184,7 +184,7 @@
             <id>sign</id>
             <activation>
                 <property>
-                    <name>JENKINS_HOME</name>
+                    <name>env.JENKINS_HOME</name>
                 </property>
                 <os>
                     <family>Mac</family>
