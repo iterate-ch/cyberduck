@@ -11,7 +11,7 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-//  
+// 
 // Bug fixes, suggestions and comments should be sent to:
 // feedback@cyberduck.io
 // 
@@ -293,9 +293,11 @@ namespace Ch.Cyberduck.Ui.Controller
 
             View.ValidatePathsCombobox += View_ValidatePathsCombobox;
             View.ValidateSearchField += View_ValidateSearchField;
+            View.Expanding += View_Expanding;
 
             View.Exit += View_Exit;
             View.SetBookmarkModel(_bookmarkCollection, null);
+            SetNavigation(false);
         }
 
         public BrowserController() : this(ObjectFactory.GetInstance<IBrowserView>())
@@ -428,6 +430,11 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
+        private void View_Expanding(object sender, PathArgs e)
+        {
+            Reload(Workdir, new HashSet<Path>() {e.Path}, SelectedPaths, false);
+        }
+
         public void RemoveDonateButton()
         {
             View.RemoveDonateButton();
@@ -506,7 +513,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (!comparator.equals(_comparator))
             {
                 _comparator = comparator;
-                ReloadData(true);
+                Reload();
             }
         }
 
@@ -1036,6 +1043,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 _lastBookmarkView = View.CurrentView;
                 View.CurrentView = BrowserView.File;
             }
+            SetNavigation(View.CurrentView == BrowserView.File && IsMounted());
         }
 
         private bool View_ValidateSearchField()
@@ -1439,13 +1447,14 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (IsMounted())
             {
-                _cache.invalidate(Workdir);
+                ISet<Path> folders = new HashSet<Path>();
                 foreach (Path path in View.VisiblePaths)
                 {
-                    if (null == path) continue;
-                    _cache.invalidate(path);
+                    if (null == path || !View.IsExpanded(path)) continue;
+                    folders.Add(path);
                 }
-                ReloadData(true);
+                folders.Add(Workdir);
+                Reload(Workdir, folders, SelectedPaths, true);
             }
         }
 
@@ -1465,7 +1474,7 @@ namespace Ch.Cyberduck.Ui.Controller
             ShowHiddenFiles = !ShowHiddenFiles;
             if (IsMounted())
             {
-                ReloadData(true);
+                Reload();
             }
         }
 
@@ -2077,6 +2086,11 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
+        public void edit(Path file)
+        {
+            this.edit(EditorFactory.instance().create(this, Session, file));
+        }
+
         public void edit(Editor editor)
         {
             this.background(new WorkerBackgroundAction(this, Session,
@@ -2299,27 +2313,27 @@ namespace Ch.Cyberduck.Ui.Controller
         ///
         /// </summary>
         /// <param name="preserveSelection">All selected files should be reselected after reloading the view</param>
-        public void ReloadData(bool preserveSelection)
+        public void _ReloadData(bool preserveSelection)
         {
             if (preserveSelection)
             {
                 //Remember the previously selected paths
-                ReloadData(SelectedPaths);
+                //_ReloadData(SelectedPaths);
             }
             else
             {
-                ReloadData(new List<Path>());
+                //_ReloadData(new List<Path>());
             }
         }
 
-        public void RefreshParentPath(Path changed)
+        public void _RefreshParentPath(Path changed)
         {
-            RefreshParentPaths(new Collection<Path> {changed});
+            _RefreshParentPaths(new Collection<Path> {changed});
         }
 
-        public void RefreshParentPaths(IList<Path> changed)
+        public void _RefreshParentPaths(IList<Path> changed)
         {
-            RefreshParentPaths(changed, new List<Path>());
+            _RefreshParentPaths(changed, new List<Path>());
         }
 
         public override void start(BackgroundAction action)
@@ -2332,7 +2346,7 @@ namespace Ch.Cyberduck.Ui.Controller
             Invoke(delegate { View.StopActivityAnimation(); });
         }
 
-        public void RefreshParentPaths(IList<Path> changed, IList<Path> selected)
+        public void _RefreshParentPaths(IList<Path> changed, IList<Path> selected)
         {
             bool rootRefreshed = false; //prevent multiple root updates
             foreach (Path path in changed)
@@ -2355,47 +2369,126 @@ namespace Ch.Cyberduck.Ui.Controller
             SelectedPaths = selected;
         }
 
-        public void ReloadData(Path directory, bool preserveSelection)
+        /// <summary>
+        /// Make the browser reload its content. Will make use of the cache.
+        /// </summary>
+        protected void Reload()
         {
-            if (Workdir.equals(directory))
+            if (IsMounted())
             {
-                ReloadData(true);
+                Reload(Workdir, new HashSet<Path> {Workdir}, SelectedPaths, false);
             }
             else
             {
-                View.RefreshBrowserObject(directory);
+                View.SetBrowserModel(null);
+                SetStatus();
             }
         }
 
-        protected void ReloadData(IList<Path> selected)
+        /// <summary>
+        /// Make the browser reload its content. Invalidates the cache.
+        /// </summary>
+        /// <param name="workdir">Use working directory as the current root of the browser</param>
+        /// <param name="changed">The items that changed</param>
+        /// <param name="selected">The items to be selected</param>
+        public void Reload(Path workdir, IList<Path> changed, IList<Path> selected)
         {
-            if (null != Workdir)
+            PathReloadFinder finder = new PathReloadFinder();
+
+            Set set = finder.find(Utils.ConvertToJavaList(changed));
+            HashSet<Path> folders = new HashSet<Path>();
+            Iterator it = set.iterator();
+            while (it.hasNext())
             {
-                IEnumerable<Path> children = _browserModel.ChildrenGetter(Workdir);
-                //clear selection before resetting model. Otherwise we have weird selection effects.
-                SelectedPaths = new List<Path>();
-                int savedIndex = View.TopItemIndex;
-                View.BeginBrowserUpdate();
-                View.SetBrowserModel(null); // #7670
-                View.SetBrowserModel(children);
-                View.TopItemIndex = savedIndex;
-                SelectedPaths = selected;
-                List<Path> toUpdate = new List<Path>();
-                foreach (Path path in View.VisiblePaths)
+                folders.Add((Path) it.next());
+            }
+            Reload(workdir, folders, selected, true);
+        }
+
+        /// <summary>
+        /// Make the browser reload its content. Invalidates the cache.
+        /// </summary>
+        /// <param name="workdir">Use working directory as the current root of the browser</param>
+        /// <param name="selected">Folders to render</param>
+        /// <param name="folder">The items to be selected</param>
+        protected void Reload(Path workdir, ISet<Path> folders, IList<Path> selected)
+        {
+            Reload(workdir, folders, selected, true);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="workdir">Use working directory as the current root of the browser</param>
+        /// <param name="selected">Selected files in browser</param>
+        /// <param name="folder">Folder to render</param>
+        protected void Reload(Path workdir, IList<Path> selected, Path folder)
+        {
+            Workdir = workdir;
+            SetNavigation(workdir != null);
+            SetStatus();
+            if (Workdir != null)
+            {
+                if (Workdir.Equals(folder))
                 {
-                    if (path.isDirectory())
+                    IEnumerable<Path> children = _browserModel.ChildrenGetter(folder);
+                    //clear selection before resetting model. Otherwise we have weird selection effects.
+                    SelectedPaths = new List<Path>();
+                    int savedIndex = View.TopItemIndex;
+                    View.BeginBrowserUpdate();
+                    View.SetBrowserModel(null); // #7670
+                    View.SetBrowserModel(children);
+                    View.TopItemIndex = savedIndex;
+                    SelectedPaths = selected;
+                    List<Path> toUpdate = new List<Path>();
+                    foreach (Path path in View.VisiblePaths)
                     {
-                        toUpdate.Add(path);
+                        if (path.isDirectory())
+                        {
+                            toUpdate.Add(path);
+                        }
                     }
+                    View.RefreshBrowserObjects(toUpdate);
+                    View.EndBrowserUpdate();
                 }
-                View.RefreshBrowserObjects(toUpdate);
-                View.EndBrowserUpdate();
+                else
+                {
+                    View.RefreshBrowserObject(folder);
+                }
             }
             else
             {
                 View.SetBrowserModel(null);
             }
             SelectedPaths = selected;
+        }
+
+        /// <summary>
+        /// Make the browser reload its content. Invalidates the cache.
+        /// </summary>
+        /// <param name="workdir">Use working directory as the current root of the browser</param>
+        /// <param name="folders">Folders to render</param>
+        /// <param name="selected">The items to be selected</param>
+        /// <param name="invalidate">Invalidate the cache before rendering</param>
+        public void Reload(Path workdir, ISet<Path> folders, IList<Path> selected, bool invalidate)
+        {
+            foreach (Path folder in folders)
+            {
+                if (invalidate)
+                {
+                    // Invalidate cache
+                    _cache.invalidate(folder);
+                }
+                else
+                {
+                    if (_cache.isCached(folder))
+                    {
+                        Reload(workdir, selected, folder);
+                        return;
+                    }
+                }
+                this.background(new ListAction(this, workdir, folder, selected, _cache, _limitListener));
+            }
             SetStatus();
         }
 
@@ -2419,12 +2512,16 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="selected"></param>
         public void SetWorkdir(Path directory, List<Path> selected)
         {
-            Workdir = directory;
             // Remove any custom file filter
             SetPathFilter(null);
-            // Change to last selected browser view
-            ReloadData(Workdir != null ? selected : new List<Path>());
-            SetNavigation(IsMounted());
+            if (null == directory)
+            {
+                Reload(null, new HashSet<Path>(), selected, false);
+            }
+            else
+            {
+                Reload(directory, new HashSet<Path> {directory}, selected, false);
+            }
         }
 
         private void SetNavigation(bool enabled)
@@ -2445,6 +2542,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     paths.Add(p.getAbsolute());
                     p = p.getParent();
                 } while (!p.isRoot());
+                paths.Add(p.getAbsolute());
                 View.PopulatePaths(paths);
             }
             View.ComboboxPathEnabled = enabled;
@@ -2671,10 +2769,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (CheckMove(selected))
             {
-                List<Path> changed = new List<Path>();
-                changed.AddRange(selected.Keys);
-                changed.AddRange(selected.Values);
-                MoveAction move = new MoveAction(this, Utils.ConvertToJavaMap(selected), changed, _cache);
+                MoveAction move = new MoveAction(this, Utils.ConvertToJavaMap(selected), _cache);
                 Background(move);
             }
         }
@@ -2802,7 +2897,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 // Setting up a custom filter for the directory listing
                 FilenameFilter = new CustomPathFilter(searchString);
             }
-            ReloadData(true);
         }
 
         /// <summary>
@@ -2891,7 +2985,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 case BrowserView.File:
                     View.CurrentView = BrowserView.File;
                     SetPathFilter(null);
-                    ReloadData(true);
+                    Reload();
                     break;
                 case BrowserView.Bookmark:
                     View.CurrentView = BrowserView.Bookmark;
@@ -2938,6 +3032,42 @@ namespace Ch.Cyberduck.Ui.Controller
             //Note: expensive for a big bookmark list (might need a refactoring)
             View.SetBookmarkModel(_bookmarkModel.Source, selected);
             SetStatus();
+        }
+
+        private class ListAction : WorkerBackgroundAction
+        {
+            public ListAction(BrowserController controller, Path workdir, Path directory, IList<Path> selected,
+                PathCache cache, ListProgressListener listener)
+                : base(
+                    controller, controller.Session,
+                    new InnerListWorker(controller, workdir, directory, selected, cache, listener))
+            {
+            }
+
+            private class InnerListWorker : SessionListWorker
+            {
+                private readonly BrowserController _controller;
+                private readonly Path _folder;
+                private readonly IList<Path> _selected;
+                private readonly Path _workdir;
+
+                public InnerListWorker(BrowserController controller, Path workdir, Path folder, IList<Path> selected,
+                    PathCache cache, ListProgressListener listener) : base(cache, folder, listener)
+                {
+                    _controller = controller;
+                    _workdir = workdir;
+                    _folder = folder;
+                    _selected = selected;
+                }
+
+                public override void cleanup(object result)
+                {
+                    // Put into cache
+                    base.cleanup(result);
+                    // Reload browser
+                    _controller.Reload(_workdir, _selected, _folder);
+                }
+            }
         }
 
         private class BookmarkFilter : HostFilter
@@ -3017,7 +3147,8 @@ namespace Ch.Cyberduck.Ui.Controller
             public override void cleanup()
             {
                 base.cleanup();
-                BrowserController.RefreshParentPaths(_selected, new List<Path> {_archive.getArchive(_selectedJava)});
+                BrowserController.Reload(BrowserController.Workdir, _selected,
+                    new List<Path> {_archive.getArchive(_selectedJava)});
             }
         }
 
@@ -3057,7 +3188,8 @@ namespace Ch.Cyberduck.Ui.Controller
                     Boolean done = (Boolean) result;
                     if (done.booleanValue())
                     {
-                        _controller.RefreshParentPaths((IList<Path>) Utils.ConvertFromJavaList<Path>(_files));
+                        _controller.Reload(_controller.Workdir, (IList<Path>) Utils.ConvertFromJavaList<Path>(_files),
+                            new List<Path>());
                     }
                 }
             }
@@ -3160,28 +3292,27 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private class MoveAction : WorkerBackgroundAction
         {
-            public MoveAction(BrowserController controller, Map selected, IList<Path> changed, PathCache cache)
-                : base(controller, controller.Session, new InnerMoveWorker(controller, selected, changed, cache))
+            public MoveAction(BrowserController controller, Map selected, PathCache cache)
+                : base(controller, controller.Session, new InnerMoveWorker(controller, selected, cache))
             {
             }
 
             private class InnerMoveWorker : MoveWorker
             {
-                private readonly IList<Path> _changed;
                 private readonly BrowserController _controller;
                 private readonly Map _files;
 
-                public InnerMoveWorker(BrowserController controller, Map files, IList<Path> changed, PathCache cache)
+                public InnerMoveWorker(BrowserController controller, Map files, PathCache cache)
                     : base(files, controller, cache)
                 {
                     _controller = controller;
                     _files = files;
-                    _changed = changed;
                 }
 
                 public override void cleanup(object result)
                 {
-                    _controller.RefreshParentPaths(_changed,
+                    IList<Path> moved = (IList<Path>) Utils.ConvertFromJavaList<Path>((List) result);
+                    _controller.Reload(_controller.Workdir, moved,
                         (IList<Path>) Utils.ConvertFromJavaList<Path>(_files.values()));
                 }
             }
@@ -3234,7 +3365,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override void run()
                 {
-                    ((BrowserController) Controller).RefreshParentPaths(_changed, _changed);
+                    BrowserController c = (BrowserController) Controller;
+                    c.Reload(c.Workdir, _changed, _changed);
                 }
             }
         }
@@ -3260,7 +3392,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override void cleanup(object result)
                 {
-                    _controller.RefreshParentPaths((IList<Path>) Utils.ConvertFromJavaList<Path>((List) result));
+                    IList<Path> files = (IList<Path>) Utils.ConvertFromJavaList<Path>((List) result);
+                    _controller.Reload(_controller.Workdir, files, files);
                 }
             }
         }
@@ -3295,7 +3428,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 base.cleanup();
                 _expanded.AddRange(Utils.ConvertFromJavaList<Path>(_archive.getExpanded(new ArrayList {_selected})));
-                BrowserController.RefreshParentPaths(_expanded, _expanded);
+                BrowserController.Reload(BrowserController.Workdir, new List<Path> {_selected}, _expanded);
             }
         }
     }
