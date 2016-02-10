@@ -407,8 +407,11 @@ public class BrowserController extends WindowController
                                 public void cleanup(final AttributedList<Path> list) {
                                     // Put into cache
                                     super.cleanup(list);
-                                    // Reload browser
-                                    reload(browser, model, workdir, selected, folder);
+                                    // Update the working directory if listing is successful
+                                    if(!(AttributedList.<Path>emptyList() == list)) {
+                                        // Reload browser
+                                        reload(browser, model, workdir, selected, folder);
+                                    }
                                 }
                             }
                     )
