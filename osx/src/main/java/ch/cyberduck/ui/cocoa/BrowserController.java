@@ -2013,10 +2013,6 @@ public class BrowserController extends WindowController
                 final String input = searchField.stringValue();
                 // Setup search filter
                 final Filter<Path> filter = SearchFilterFactory.create(input, showHiddenFiles);
-                if(filter.equals(filenameFilter)) {
-                    // Skip if equals current filter
-                    return;
-                }
                 this.setFilter(filter);
                 if(StringUtils.isBlank(input)) {
                     // Reload with current cache
