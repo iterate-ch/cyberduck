@@ -2326,16 +2326,6 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        public void _RefreshParentPath(Path changed)
-        {
-            _RefreshParentPaths(new Collection<Path> {changed});
-        }
-
-        public void _RefreshParentPaths(IList<Path> changed)
-        {
-            _RefreshParentPaths(changed, new List<Path>());
-        }
-
         public override void start(BackgroundAction action)
         {
             Invoke(delegate { View.StartActivityAnimation(); });
@@ -2344,29 +2334,6 @@ namespace Ch.Cyberduck.Ui.Controller
         public override void stop(BackgroundAction action)
         {
             Invoke(delegate { View.StopActivityAnimation(); });
-        }
-
-        public void _RefreshParentPaths(IList<Path> changed, IList<Path> selected)
-        {
-            bool rootRefreshed = false; //prevent multiple root updates
-            foreach (Path path in changed)
-            {
-                _cache.invalidate(path.getParent());
-                if (Workdir.equals(path.getParent()))
-                {
-                    if (rootRefreshed)
-                    {
-                        continue;
-                    }
-                    View.SetBrowserModel(_browserModel.ChildrenGetter(Workdir));
-                    rootRefreshed = true;
-                }
-                else
-                {
-                    View.RefreshBrowserObject(path.getParent());
-                }
-            }
-            SelectedPaths = selected;
         }
 
         /// <summary>
