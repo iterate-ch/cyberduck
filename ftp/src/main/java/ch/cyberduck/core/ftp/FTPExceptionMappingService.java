@@ -33,9 +33,6 @@ import org.apache.commons.net.ftp.FTPReply;
 
 import java.io.IOException;
 
-/**
- * @version $Id$
- */
 public class FTPExceptionMappingService extends AbstractExceptionMappingService<IOException> {
 
     @Override
@@ -73,6 +70,8 @@ public class FTPExceptionMappingService extends AbstractExceptionMappingService<
             case FTPReply.FILE_UNAVAILABLE:
                 // Requested action not taken. File unavailable (e.g., file not found, no access)
                 return new NotfoundException(buffer.toString(), e);
+            case FTPReply.SERVICE_NOT_AVAILABLE:
+                return new ConnectionRefusedException(buffer.toString(), e);
         }
         return new InteroperabilityException(buffer.toString(), e);
     }
