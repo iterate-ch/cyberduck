@@ -48,8 +48,8 @@ public class DefaultSearchFeature implements Search {
         }
         else {
             list = cache.get(workdir).filter(filter);
-            listener.chunk(workdir, list);
         }
+        listener.chunk(workdir, list);
         return list;
     }
 
