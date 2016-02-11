@@ -401,7 +401,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                                     public void progress(final Integer delay) {
                                         progress.message(MessageFormat.format(LocaleFactory.localizedString("Retry again in {0} seconds", "Status"), delay));
                                     }
-                                });
+                                }, (int) e.getRetry().getSeconds());
                                 pause.await(progress);
                                 transfer(item, action);
                             }
