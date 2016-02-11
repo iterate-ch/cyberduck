@@ -18,7 +18,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.IO;
 using System.Windows.Forms;
@@ -65,9 +64,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public delegate bool DialogCallbackDelegate(DialogResult result);
 
-        internal static readonly Filter HiddenFilter = new RegexFilter();
         private static readonly Logger Log = Logger.getLogger(typeof (BrowserController).FullName);
-        private static readonly Filter NullFilter = new NullFilter();
         protected static string DEFAULT = LocaleFactory.localizedString("Default");
         private readonly BookmarkCollection _bookmarkCollection = BookmarkCollection.defaultCollection();
         private readonly BookmarkModel _bookmarkModel;
@@ -123,6 +120,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.BrowserEndDrag += View_BrowserEndDrag;
             View.HostEndDrag += View_HostEndDrag;
             View.SearchFieldChanged += View_SearchFieldChanged;
+            View.SearchFieldEnter += View_SearchFieldEnter;
 
 
             View.ContextMenuEnabled += View_ContextMenuEnabled;
@@ -346,7 +344,7 @@ namespace Ch.Cyberduck.Ui.Controller
             get { return _showHiddenFiles; }
             set
             {
-                FilenameFilter = value ? NullFilter : HiddenFilter;
+                FilenameFilter = value ? SearchFilterFactory.NULL_FILTER : SearchFilterFactory.HIDDEN_FILTER;
                 _showHiddenFiles = value;
                 View.HiddenFilesVisible = _showHiddenFiles;
             }
@@ -427,6 +425,34 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 AsyncDelegate mainAction = delegate { View.AddTranscriptEntry(request, transcript); };
                 Invoke(mainAction);
+            }
+        }
+
+        private void View_SearchFieldEnter()
+        {
+            if (View.CurrentView == BrowserView.File)
+            {
+                String input = View.SearchString;
+                // Setup search filter
+                Filter filter = SearchFilterFactory.create(input, ShowHiddenFiles);
+                SetFilter(filter);
+                if (Utils.IsBlank(input))
+                {
+                    // Reload with current cache
+                    Reload();
+                }
+                else
+                {
+                    DialogResult result =
+                        QuestionBox(String.Format(LocaleFactory.localizedString("Search for {0}"), input),
+                            String.Format(LocaleFactory.localizedString("Do you want to search in {0} recursively?"),
+                                Workdir.getName()), null, String.Format("{0}", LocaleFactory.localizedString("Search")),
+                            true);
+                    if (result == DialogResult.OK)
+                    {
+                        background(new SearchAction(this));
+                    }
+                }
             }
         }
 
@@ -1269,13 +1295,18 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_SearchFieldChanged()
         {
-            if (View.CurrentView == BrowserView.File)
+            switch (View.CurrentView)
             {
-                SetPathFilter(View.SearchString);
-            }
-            else
-            {
-                SetBookmarkFilter(View.SearchString);
+                case BrowserView.File:
+                    SetFilter(SearchFilterFactory.create(View.SearchString, ShowHiddenFiles));
+                    // Reload with current cache
+                    Reload();
+                    break;
+                case BrowserView.Bookmark:
+                case BrowserView.History:
+                case BrowserView.Bonjour:
+                    SetBookmarkFilter(View.SearchString);
+                    break;
             }
         }
 
@@ -2480,7 +2511,7 @@ namespace Ch.Cyberduck.Ui.Controller
         public void SetWorkdir(Path directory, List<Path> selected)
         {
             // Remove any custom file filter
-            SetPathFilter(null);
+            SetFilter(null);
             if (null == directory)
             {
                 Reload(null, new HashSet<Path>(), selected, false);
@@ -2844,25 +2875,16 @@ namespace Ch.Cyberduck.Ui.Controller
             background(new DeleteAction(this, LoginCallbackFactory.get(this), Utils.ConvertToJavaList(files)));
         }
 
-        public void SetPathFilter(string searchString)
+        public void SetFilter(Filter filter)
         {
-            if (Utils.IsBlank(searchString))
+            if (null == filter)
             {
                 View.SearchString = String.Empty;
-                // Revert to the last used default filter
-                if (ShowHiddenFiles)
-                {
-                    FilenameFilter = new NullFilter();
-                }
-                else
-                {
-                    FilenameFilter = new RegexFilter();
-                }
+                FilenameFilter = SearchFilterFactory.create(ShowHiddenFiles);
             }
             else
             {
-                // Setting up a custom filter for the directory listing
-                FilenameFilter = new CustomPathFilter(searchString);
+                FilenameFilter = filter;
             }
         }
 
@@ -2951,7 +2973,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 case BrowserView.File:
                     View.CurrentView = BrowserView.File;
-                    SetPathFilter(null);
+                    SetFilter(null);
                     Reload();
                     break;
                 case BrowserView.Bookmark:
@@ -3027,12 +3049,40 @@ namespace Ch.Cyberduck.Ui.Controller
                     _selected = selected;
                 }
 
-                public override void cleanup(object result)
+                public override void cleanup(object list)
                 {
                     // Put into cache
-                    base.cleanup(result);
-                    // Reload browser
-                    _controller.Reload(_workdir, _selected, _folder);
+                    base.cleanup(list);
+                    // Update the working directory if listing is successful
+                    if (!(AttributedList.emptyList() == list))
+                    {
+                        // Reload browser
+                        _controller.Reload(_workdir, _selected, _folder);
+                    }
+                }
+            }
+        }
+
+        private class SearchAction : WorkerBackgroundAction
+        {
+            public SearchAction(BrowserController controller)
+                : base(controller, controller.Session, controller.Cache, new InnerSearchWorker(controller))
+            {
+            }
+
+            private class InnerSearchWorker : SearchWorker
+            {
+                private readonly BrowserController _controller;
+
+                public InnerSearchWorker(BrowserController controller)
+                    : base(controller.Workdir, controller.FilenameFilter, controller.Cache, controller._limitListener)
+                {
+                    _controller = controller;
+                }
+
+                public override void cleanup(object result)
+                {
+                    _controller.Reload();
                 }
             }
         }

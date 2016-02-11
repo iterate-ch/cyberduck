@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Forms;
 using BrightIdeasSoftware;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 
@@ -2752,6 +2753,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.searchTextBox.Size = new System.Drawing.Size(114, 24);
             this.searchTextBox.TabIndex = 14;
             this.searchTextBox.TextChanged += new Ch.Cyberduck.ui.winforms.controls.SearchTextBox2.TextChange(this.searchTextBox_TextChanged);
+            this.searchTextBox.KeyUp += new KeyEventHandler(this.searchTextBox_KeyUp);
             // 
             // parentPathButton
             // 

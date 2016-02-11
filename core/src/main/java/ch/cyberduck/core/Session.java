@@ -23,6 +23,7 @@ import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Search;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.preferences.Preferences;
@@ -31,6 +32,7 @@ import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.shared.DefaultDownloadFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.shared.DefaultSearchFeature;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
@@ -314,6 +316,9 @@ public abstract class Session<C> implements TranscriptListener {
         }
         if(type == Home.class) {
             return (T) new DefaultHomeFinderService(this);
+        }
+        if(type == Search.class) {
+            return (T) new DefaultSearchFeature(this);
         }
         return null;
     }

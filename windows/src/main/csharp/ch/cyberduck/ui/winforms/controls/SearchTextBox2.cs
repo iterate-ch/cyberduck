@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,8 +13,9 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
+
 using System;
 using System.ComponentModel;
 using System.Drawing;
@@ -247,6 +248,12 @@ namespace Ch.Cyberduck.ui.winforms.controls
             }
         }
 
+        public event KeyEventHandler KeyUp
+        {
+            add { textBox.KeyUp += value; }
+            remove { textBox.KeyUp -= value; }
+        }
+
         protected override void OnEnabledChanged(EventArgs e)
         {
             base.OnEnabledChanged(e);
@@ -267,7 +274,7 @@ namespace Ch.Cyberduck.ui.winforms.controls
         {
             xPictureBox.Location = new Point(Width - 19, 1);
             e.Graphics.FillRectangle(new SolidBrush(textBox.BackColor), 1, 1, ClientRectangle.Width - 2,
-                                     ClientRectangle.Height - 2);
+                ClientRectangle.Height - 2);
             ControlPaint.DrawBorder(e.Graphics, ClientRectangle, Color.Gray, ButtonBorderStyle.Solid);
         }
 

@@ -191,6 +191,7 @@ namespace Ch.Cyberduck.Ui.Controller
         event EventHandler<ConnectBookmarkArgs> ConnectBookmark;
         event ValidateCommand ValidateConnectBookmark;
         event VoidHandler SearchFieldChanged;
+        event VoidHandler SearchFieldEnter;
         event VoidHandler QuickConnect;
         event VoidHandler BrowserDoubleClicked;
         event VoidHandler BrowserSelectionChanged;

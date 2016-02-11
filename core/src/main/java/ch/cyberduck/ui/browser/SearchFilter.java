@@ -24,10 +24,8 @@ import ch.cyberduck.core.Path;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Locale;
+import java.util.Objects;
 
-/**
- * @version $Id$
- */
 public class SearchFilter implements Filter<Path> {
 
     private String input;
@@ -38,9 +36,6 @@ public class SearchFilter implements Filter<Path> {
 
     @Override
     public boolean accept(final Path file) {
-        if(file.isDirectory()) {
-            return this.isExpanded(file);
-        }
         if(file.getName().toLowerCase(Locale.ROOT).contains(input.toLowerCase(Locale.ROOT))) {
             // Matching filename
             return true;
@@ -54,7 +49,28 @@ public class SearchFilter implements Filter<Path> {
         return false;
     }
 
-    public boolean isExpanded(final Path directory) {
-        return true;
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("SearchFilter{");
+        sb.append("input='").append(input).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(!(o instanceof SearchFilter)) {
+            return false;
+        }
+        final SearchFilter that = (SearchFilter) o;
+        return Objects.equals(input, that.input);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(input);
     }
 }

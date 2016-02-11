@@ -22,11 +22,9 @@ import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import java.util.Objects;
 import java.util.regex.Pattern;
 
-/**
- * @version $Id$
- */
 public class RegexFilter implements Filter<Path> {
 
     private Pattern pattern = Pattern.compile(
@@ -41,5 +39,30 @@ public class RegexFilter implements Filter<Path> {
             return false;
         }
         return !file.attributes().isDuplicate();
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("RegexFilter{");
+        sb.append("pattern=").append(pattern);
+        sb.append('}');
+        return sb.toString();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(!(o instanceof RegexFilter)) {
+            return false;
+        }
+        final RegexFilter that = (RegexFilter) o;
+        return Objects.equals(pattern, that.pattern);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pattern);
     }
 }

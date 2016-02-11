@@ -1,8 +1,8 @@
-package ch.cyberduck.core;
+package ch.cyberduck.binding.application;
 
 /*
- * Copyright (c) 2002-2013 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,12 +13,13 @@ package ch.cyberduck.core;
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.exception.ConnectionCanceledException;
+public abstract class NSSearchField extends NSTextField {
 
-public interface ListProgressListener extends ProgressListener {
-    void chunk(Path folder, AttributedList<Path> list) throws ConnectionCanceledException;
+    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSSearchField", _Class.class);
+
+    public abstract void setSendsSearchStringImmediately(boolean flag);
+
+    public abstract boolean sendsSearchStringImmediately();
 }

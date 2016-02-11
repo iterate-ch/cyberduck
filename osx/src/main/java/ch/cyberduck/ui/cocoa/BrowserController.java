@@ -75,12 +75,13 @@ import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.worker.DisconnectWorker;
 import ch.cyberduck.core.worker.MountWorker;
+import ch.cyberduck.core.worker.SearchWorker;
 import ch.cyberduck.core.worker.SessionListWorker;
 import ch.cyberduck.ui.browser.Column;
 import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
 import ch.cyberduck.ui.browser.PathReloadFinder;
 import ch.cyberduck.ui.browser.RegexFilter;
-import ch.cyberduck.ui.browser.SearchFilter;
+import ch.cyberduck.ui.browser.SearchFilterFactory;
 import ch.cyberduck.ui.browser.UploadDirectoryFinder;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
 import ch.cyberduck.ui.cocoa.delegate.ArchiveMenuDelegate;
@@ -130,16 +131,6 @@ import java.util.Set;
 public class BrowserController extends WindowController
         implements ProgressListener, TranscriptListener, NSToolbar.Delegate, NSMenu.Validation, QLPreviewPanelController {
     private static Logger log = Logger.getLogger(BrowserController.class);
-
-    /**
-     * No file filter.
-     */
-    private static final Filter<Path> NULL_FILTER = new NullFilter<Path>();
-
-    /**
-     * Filter hidden files.
-     */
-    private static final Filter<Path> HIDDEN_FILTER = new RegexFilter();
 
     private final BookmarkCollection bookmarks
             = BookmarkCollection.defaultCollection();
@@ -296,33 +287,26 @@ public class BrowserController extends WindowController
         return pasteboard;
     }
 
-    protected void setPathFilter(final String search) {
+    protected void setFilter(final Filter<Path> filter) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Set path filter to %s", search));
+            log.debug(String.format("Set path filter to %s", filter));
         }
-        if(StringUtils.isBlank(search)) {
+        if(null == filter) {
             this.searchField.setStringValue(StringUtils.EMPTY);
-            // Revert to the last used default filter
-            if(this.isShowHiddenFiles()) {
-                this.filenameFilter = NULL_FILTER;
-            }
-            else {
-                this.filenameFilter = HIDDEN_FILTER;
-            }
+            this.filenameFilter = SearchFilterFactory.create(this.showHiddenFiles);
         }
         else {
-            // Setting up a custom filter for the directory listing
-            this.filenameFilter = new SearchFilter(search);
+            this.filenameFilter = filter;
         }
     }
 
     public void setShowHiddenFiles(boolean showHidden) {
         if(showHidden) {
-            this.filenameFilter = NULL_FILTER;
+            this.filenameFilter = SearchFilterFactory.NULL_FILTER;
             this.showHiddenFiles = true;
         }
         else {
-            this.filenameFilter = HIDDEN_FILTER;
+            this.filenameFilter = SearchFilterFactory.HIDDEN_FILTER;
             this.showHiddenFiles = false;
         }
     }
@@ -423,8 +407,11 @@ public class BrowserController extends WindowController
                                 public void cleanup(final AttributedList<Path> list) {
                                     // Put into cache
                                     super.cleanup(list);
-                                    // Reload browser
-                                    reload(browser, model, workdir, selected, folder);
+                                    // Update the working directory if listing is successful
+                                    if(!(AttributedList.<Path>emptyList() == list)) {
+                                        // Reload browser
+                                        reload(browser, model, workdir, selected, folder);
+                                    }
                                 }
                             }
                     )
@@ -1033,7 +1020,7 @@ public class BrowserController extends WindowController
         // Save selected browser view
         preferences.setProperty("browser.view", selected);
         // Remove any custom file filter
-        this.setPathFilter(null);
+        this.setFilter(null);
         // Update from model
         this.reload();
         // Focus on browser view
@@ -1401,7 +1388,7 @@ public class BrowserController extends WindowController
                     cell.setEditable(session.getFeature(Move.class).isSupported(path));
                     (Rococoa.cast(cell, OutlineCell.class)).setIcon(browserOutlineModel.iconForPath(path));
                 }
-                if(!BrowserController.this.isConnected() || !HIDDEN_FILTER.accept(path)) {
+                if(!BrowserController.this.isConnected() || !SearchFilterFactory.HIDDEN_FILTER.accept(path)) {
                     cell.setTextColor(NSColor.disabledControlTextColor());
                 }
                 else {
@@ -1552,7 +1539,7 @@ public class BrowserController extends WindowController
                     cell.setEditable(session.getFeature(Move.class).isSupported(path));
                 }
                 if(cell.isKindOfClass(Foundation.getClass(NSTextFieldCell.class.getSimpleName()))) {
-                    if(!BrowserController.this.isConnected() || !HIDDEN_FILTER.accept(path)) {
+                    if(!BrowserController.this.isConnected() || !SearchFilterFactory.HIDDEN_FILTER.accept(path)) {
                         cell.setTextColor(NSColor.disabledControlTextColor());
                     }
                     else {
@@ -1986,13 +1973,18 @@ public class BrowserController extends WindowController
     }
 
     @Outlet
-    private NSTextField searchField;
+    private NSSearchField searchField;
 
-    public void setSearchField(NSTextField searchField) {
+    public void setSearchField(NSSearchField searchField) {
         this.searchField = searchField;
-        notificationCenter.addObserver(this.id(),
-                Foundation.selector("searchFieldTextDidChange:"),
-                NSControl.NSControlTextDidChangeNotification,
+        this.searchField.setSendsSearchStringImmediately(false);
+        this.searchField.setTarget(this.id());
+        this.searchField.setAction(Foundation.selector("searchFieldTextDidChange:"));
+        // Make sure action is not sent twice.
+        this.searchField.cell().setSendsActionOnEndEditing(false);
+        this.notificationCenter.addObserver(this.id(),
+                Foundation.selector("searchFieldTextDidEndEditing:"),
+                NSControl.NSControlTextDidEndEditingNotification,
                 this.searchField);
     }
 
@@ -2003,12 +1995,66 @@ public class BrowserController extends WindowController
 
     @Action
     public void searchFieldTextDidChange(NSNotification notification) {
-        if(this.getSelectedTabView() == TAB_BOOKMARKS) {
-            this.setBookmarkFilter(searchField.stringValue());
+        final String input = searchField.stringValue();
+        switch(this.getSelectedTabView()) {
+            case TAB_BOOKMARKS:
+                this.setBookmarkFilter(input);
+                break;
+            case TAB_LIST_VIEW:
+            case TAB_OUTLINE_VIEW:
+                // Setup search filter
+                this.setFilter(SearchFilterFactory.create(input, showHiddenFiles));
+                // Reload with current cache
+                this.reload();
         }
-        else { // TAB_LIST_VIEW || TAB_OUTLINE_VIEW
-            this.setPathFilter(searchField.stringValue());
-            this.reload();
+    }
+
+    @Action
+    public void searchFieldTextDidEndEditing(NSNotification notification) {
+        switch(this.getSelectedTabView()) {
+            case TAB_LIST_VIEW:
+            case TAB_OUTLINE_VIEW:
+                // Setup search filter
+                final String input = searchField.stringValue();
+                // Setup search filter
+                final Filter<Path> filter = SearchFilterFactory.create(input, showHiddenFiles);
+                this.setFilter(filter);
+                if(StringUtils.isBlank(input)) {
+                    // Reload with current cache
+                    this.reload();
+                }
+                else {
+                    final NSObject action = notification.userInfo().objectForKey("NSTextMovement");
+                    if(null == action) {
+                        return;
+                    }
+                    if(Integer.valueOf(action.toString()) == NSText.NSReturnTextMovement) {
+                        final NSAlert alert = NSAlert.alert(
+                                MessageFormat.format(LocaleFactory.localizedString("Search for {0}"), input),
+                                MessageFormat.format(LocaleFactory.localizedString("Do you want to search in {0} recursively?"), workdir.getName()),
+                                LocaleFactory.localizedString("Search"),
+                                LocaleFactory.localizedString("Cancel"),
+                                null
+                        );
+                        this.alert(alert, new SheetCallback() {
+                            @Override
+                            public void callback(int returncode) {
+                                if(returncode == DEFAULT_OPTION) {
+                                    // Delay render until path is cached in the background
+                                    background(new WorkerBackgroundAction<AttributedList<Path>>(BrowserController.this, session, cache,
+                                            new SearchWorker(workdir, filenameFilter, cache, listener) {
+                                                @Override
+                                                public void cleanup(final AttributedList<Path> list) {
+                                                    // Reload browser
+                                                    reload();
+                                                }
+                                            })
+                                    );
+                                }
+                            }
+                        });
+                    }
+                }
         }
     }
 
@@ -3178,7 +3224,7 @@ public class BrowserController extends WindowController
             log.debug(String.format("Set working directory to %s", directory));
         }
         // Remove any custom file filter
-        this.setPathFilter(null);
+        this.setFilter(null);
         final NSTableView browser = this.getSelectedBrowserView();
         window.endEditingFor(browser);
         if(null == directory) {
