@@ -1980,6 +1980,8 @@ public class BrowserController extends WindowController
         this.searchField.setSendsSearchStringImmediately(false);
         this.searchField.setTarget(this.id());
         this.searchField.setAction(Foundation.selector("searchFieldTextDidChange:"));
+        // Make sure action is not sent twice.
+        this.searchField.cell().setSendsActionOnEndEditing(false);
         this.notificationCenter.addObserver(this.id(),
                 Foundation.selector("searchFieldTextDidEndEditing:"),
                 NSControl.NSControlTextDidEndEditingNotification,
@@ -2022,30 +2024,36 @@ public class BrowserController extends WindowController
                     this.reload();
                 }
                 else {
-                    final NSAlert alert = NSAlert.alert(
-                            MessageFormat.format(LocaleFactory.localizedString("Search for {0}"), input),
-                            MessageFormat.format(LocaleFactory.localizedString("Do you want to search in {0} recursively?"), workdir.getName()),
-                            LocaleFactory.localizedString("Search"),
-                            LocaleFactory.localizedString("Cancel"),
-                            null
-                    );
-                    this.alert(alert, new SheetCallback() {
-                        @Override
-                        public void callback(int returncode) {
-                            if(returncode == DEFAULT_OPTION) {
-                                // Delay render until path is cached in the background
-                                background(new WorkerBackgroundAction<AttributedList<Path>>(BrowserController.this, session, cache,
-                                        new SearchWorker(workdir, filenameFilter, cache, listener) {
-                                            @Override
-                                            public void cleanup(final AttributedList<Path> list) {
-                                                // Reload browser
-                                                reload();
-                                            }
-                                        })
-                                );
+                    final NSObject action = notification.userInfo().objectForKey("NSTextMovement");
+                    if(null == action) {
+                        return;
+                    }
+                    if(Integer.valueOf(action.toString()) == NSText.NSReturnTextMovement) {
+                        final NSAlert alert = NSAlert.alert(
+                                MessageFormat.format(LocaleFactory.localizedString("Search for {0}"), input),
+                                MessageFormat.format(LocaleFactory.localizedString("Do you want to search in {0} recursively?"), workdir.getName()),
+                                LocaleFactory.localizedString("Search"),
+                                LocaleFactory.localizedString("Cancel"),
+                                null
+                        );
+                        this.alert(alert, new SheetCallback() {
+                            @Override
+                            public void callback(int returncode) {
+                                if(returncode == DEFAULT_OPTION) {
+                                    // Delay render until path is cached in the background
+                                    background(new WorkerBackgroundAction<AttributedList<Path>>(BrowserController.this, session, cache,
+                                            new SearchWorker(workdir, filenameFilter, cache, listener) {
+                                                @Override
+                                                public void cleanup(final AttributedList<Path> list) {
+                                                    // Reload browser
+                                                    reload();
+                                                }
+                                            })
+                                    );
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
                 }
         }
     }
