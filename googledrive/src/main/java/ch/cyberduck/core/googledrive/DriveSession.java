@@ -50,6 +50,7 @@ import com.google.api.client.auth.oauth2.ClientParametersAuthentication;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.googleapis.auth.oauth2.GoogleOAuthConstants;
+import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.HttpTransport;
@@ -104,13 +105,13 @@ public class DriveSession extends HttpSession<Drive> {
             final AuthorizationCodeFlow flow = new AuthorizationCodeFlow.Builder(
                     BearerToken.authorizationHeaderAccessMethod(),
                     transport, json,
-                    null,
+                    new GenericUrl(GoogleOAuthConstants.TOKEN_SERVER_URL),
                     new ClientParametersAuthentication(
                             preferences.getProperty("google.drive.client.id"),
                             preferences.getProperty("google.drive.client.secret")
                     ),
                     preferences.getProperty("google.drive.client.id"),
-                    null)
+                    GoogleOAuthConstants.AUTHORIZATION_SERVER_URL)
                     .setScopes(Collections.singletonList(DriveScopes.DRIVE))
                     .build();
             // Direct the user to an authorization page to grant access to their protected data.
