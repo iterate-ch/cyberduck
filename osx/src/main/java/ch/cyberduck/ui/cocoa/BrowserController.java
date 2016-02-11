@@ -1979,10 +1979,10 @@ public class BrowserController extends WindowController
         this.searchField = searchField;
         this.searchField.setSendsSearchStringImmediately(false);
         this.searchField.setTarget(this.id());
-        this.searchField.setAction(Foundation.selector("searchFieldTextDidEndEditing:"));
-        notificationCenter.addObserver(this.id(),
-                Foundation.selector("searchFieldTextDidChange:"),
-                NSControl.NSControlTextDidChangeNotification,
+        this.searchField.setAction(Foundation.selector("searchFieldTextDidChange:"));
+        this.notificationCenter.addObserver(this.id(),
+                Foundation.selector("searchFieldTextDidEndEditing:"),
+                NSControl.NSControlTextDidEndEditingNotification,
                 this.searchField);
     }
 
