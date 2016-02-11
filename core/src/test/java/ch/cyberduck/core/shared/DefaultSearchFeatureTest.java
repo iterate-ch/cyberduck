@@ -20,8 +20,10 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ListCanceledException;
@@ -48,13 +50,16 @@ public class DefaultSearchFeatureTest {
                 return list;
             }
         });
+        final PathCache cache = new PathCache(Integer.MAX_VALUE);
+        feature.withCache(cache);
+        final Filter<Path> filter = new Filter<Path>() {
+            @Override
+            public boolean accept(final Path file) {
+                return file.equals(f1);
+            }
+        };
         final AttributedList<Path> search = feature.search(
-                workdir, new Filter<Path>() {
-                    @Override
-                    public boolean accept(final Path file) {
-                        return file.equals(f1);
-                    }
-                }, new DisabledListProgressListener() {
+                workdir, filter, new DisabledListProgressListener() {
                     @Override
                     public void chunk(final Path parent, final AttributedList<Path> list) throws ListCanceledException {
                         assertTrue(list.contains(f1));
@@ -66,5 +71,10 @@ public class DefaultSearchFeatureTest {
         assertTrue(search.contains(f1));
         assertFalse(search.contains(f2));
         assertEquals(1, search.size());
+        assertTrue(cache.containsKey(workdir));
+        assertTrue(cache.get(workdir).filter(filter).contains(f1));
+        assertFalse(cache.get(workdir).filter(filter).contains(f2));
+        assertTrue(cache.get(workdir).filter(new NullFilter<Path>()).contains(f1));
+        assertTrue(cache.get(workdir).filter(new NullFilter<Path>()).contains(f2));
     }
 }
