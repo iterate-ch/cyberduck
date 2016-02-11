@@ -44,7 +44,7 @@ public class SpectraReadFeature extends S3ReadFeature {
             bulk.query(Transfer.Type.download, file, status);
         }
         catch(RedirectException e) {
-            log.warn(String.format("Node returned for is not equal connected host. %s", e.getMessage()));
+            log.warn(String.format("Node %s returned for is not equal connected host %s.", e.getTarget(), session.getHost()));
         }
         return super.read(file, status);
     }
