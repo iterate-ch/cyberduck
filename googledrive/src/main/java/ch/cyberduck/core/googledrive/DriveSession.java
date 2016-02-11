@@ -116,7 +116,7 @@ public class DriveSession extends HttpSession<Drive> {
                     .build();
             // Direct the user to an authorization page to grant access to their protected data.
             final String url = flow.newAuthorizationUrl()
-                    .setRedirectUri("urn:ietf:wg:oauth:2.0:oob").build();
+                    .setRedirectUri(GoogleOAuthConstants.OOB_REDIRECT_URI).build();
 
             final LoginOptions options = new LoginOptions();
             options.user = false;
@@ -127,7 +127,7 @@ public class DriveSession extends HttpSession<Drive> {
             try {
                 // Swap the given authorization token for access/refresh tokens
                 final TokenResponse response = flow.newTokenRequest(host.getCredentials().getPassword())
-                        .setRedirectUri("urn:ietf:wg:oauth:2.0:oob").execute();
+                        .setRedirectUri(GoogleOAuthConstants.OOB_REDIRECT_URI).execute();
                 tokens = new Credential.Builder(BearerToken.authorizationHeaderAccessMethod())
                         .setTransport(transport)
                         .setClientAuthentication(new ClientParametersAuthentication(
