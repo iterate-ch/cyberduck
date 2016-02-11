@@ -4,6 +4,7 @@ http://cyberduck.io/
 Changelog. Last modified: $Date$
 
 4.8 [https://trac.cyberduck.io/milestone/4.8]
+- [Feature] Multiple connections for transfers enabled by default
 - [Feature] Recursively search for files (#8345)
 - [Feature] Support for key exchange algorithm diffie-hellman-group-exchange-sha256 (SFTP) (#8488)
 - [Feature] Support for key exchange algorithm curve25519-sha256@libssh.org (SFTP) (#8528)
