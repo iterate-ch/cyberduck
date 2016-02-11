@@ -418,7 +418,7 @@ public abstract class Preferences {
                 String.valueOf(Host.TransferType.browser.name()),
                 String.valueOf(Host.TransferType.concurrent.name())
         ));
-        defaults.put("queue.transfer.type", String.valueOf(Host.TransferType.newconnection.name()));
+        defaults.put("queue.transfer.type", String.valueOf(Host.TransferType.concurrent.name()));
         /**
          * Warning when number of transfers in queue exceeds limit
          */
