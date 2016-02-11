@@ -207,8 +207,12 @@ public class DriveSession extends HttpSession<Drive> {
                         attributes.setSize(f.getSize());
                     }
                     attributes.setVersionId(f.getId());
-                    attributes.setModificationDate(f.getModifiedTime().getValue());
-                    attributes.setCreationDate(f.getCreatedTime().getValue());
+                    if(f.getModifiedTime() != null) {
+                        attributes.setModificationDate(f.getModifiedTime().getValue());
+                    }
+                    if(f.getCreatedTime() != null) {
+                        attributes.setCreationDate(f.getCreatedTime().getValue());
+                    }
                     attributes.setChecksum(Checksum.parse(f.getMd5Checksum()));
                     final EnumSet<AbstractPath.Type> type = "application/vnd.google-apps.folder".equals(
                             f.getMimeType()) ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
