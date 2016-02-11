@@ -41,7 +41,7 @@ public class DriveDeleteFeature implements Delete {
         for(Path f : files) {
             callback.delete(f);
             try {
-                session.getClient().files().delete(f.attributes().getVersionId());
+                session.getClient().files().delete(f.attributes().getVersionId()).execute();
             }
             catch(IOException e) {
                 throw new DriveExceptionMappingService().map("Cannot delete {0}", e, f);
