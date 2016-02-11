@@ -19,6 +19,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.Resolver;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.RedirectException;
 import ch.cyberduck.core.exception.RetriableAccessDeniedException;
@@ -211,7 +212,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
             for(Node node : list.getNodes()) {
                 if(node.getId().equals(nodeId)) {
                     final Host host = session.getHost();
-                    if(!StringUtils.equals(node.getEndpoint(), host.getHostname())) {
+                    if(!StringUtils.equals(node.getEndpoint(), new Resolver().resolve(host.getHostname()).getHostAddress())) {
                         final Host target = new Host(host.getProtocol(), node.getEndpoint(),
                                 host.getProtocol().isSecure() ? node.getHttpsPort() : node.getHttpPort());
                         log.warn(String.format("Redirect to %s for file %s", target, file));
