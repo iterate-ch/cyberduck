@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,18 +13,20 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using Ch.Cyberduck.Ui.Controller.Threading;
 using ch.cyberduck.core;
 using ch.cyberduck.core.features;
+using ch.cyberduck.core.threading;
+using ch.cyberduck.core.worker;
 using ch.cyberduck.ui.browser;
 using java.util;
+using Boolean = java.lang.Boolean;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -34,7 +36,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly INewFolderPromptView _view;
 
         public FolderController(INewFolderPromptView view, BrowserController browserController,
-                                IList<Location.Name> regions) : base(view, browserController)
+            IList<Location.Name> regions) : base(view, browserController)
         {
             _view = view;
             _regions = regions;
@@ -65,49 +67,50 @@ namespace Ch.Cyberduck.Ui.Controller
             if (DialogResult.OK == result && !String.IsNullOrEmpty(View.InputText) &&
                 !View.InputText.Trim().Equals(String.Empty))
             {
-                BrowserController.background(new CreateFolderAction(BrowserController,
-                                                                    new UploadTargetFinder(Workdir).find(
-                                                                        BrowserController.SelectedPath), View.InputText,
-                                                                    HasLocation() ? _view.Region : null));
+                BrowserController.background(new CreateDirectoryAction(BrowserController,
+                    new UploadTargetFinder(Workdir).find(BrowserController.SelectedPath), View.InputText,
+                    HasLocation() ? _view.Region : null));
             }
         }
 
-        private class CreateFolderAction : BrowserControllerBackgroundAction
+        private class CreateDirectoryAction : WorkerBackgroundAction
         {
-            private readonly string _filename;
-            private readonly Path _folder;
-            private readonly string _region;
-            private readonly Path _workdir;
-
-            public CreateFolderAction(BrowserController controller, Path workdir, string filename, string region)
-                : base(controller)
+            public CreateDirectoryAction(BrowserController controller, Path directory, string filename, string region)
+                : base(
+                    controller, controller.Session,
+                    new InnerCreateDirectoryWorker(controller,
+                        new Path(directory, filename, EnumSet.of(AbstractPath.Type.directory)), filename, region))
             {
-                _workdir = workdir;
-                _filename = filename;
-                _region = region;
-                _folder = new Path(_workdir, _filename, EnumSet.of(AbstractPath.Type.directory));
             }
 
-            public override object run()
+            private class InnerCreateDirectoryWorker : CreateDirectoryWorker
             {
-                Directory feature = (Directory) BrowserController.Session.getFeature(typeof (Directory));
-                feature.mkdir(_folder, _region);
-                return true;
-            }
+                private readonly BrowserController _controller;
+                private readonly string _filename;
+                private readonly IList<Path> _files;
+                private readonly Path _folder;
 
-            public override void cleanup()
-            {
-                base.cleanup();
-                if (_filename.StartsWith("."))
+                public InnerCreateDirectoryWorker(BrowserController controller, Path folder, String filename,
+                    String region) : base(folder, region)
                 {
-                    BrowserController.ShowHiddenFiles = true;
+                    _controller = controller;
+                    _folder = folder;
+                    _filename = filename;
                 }
-                BrowserController.RefreshParentPath(_folder);
-            }
 
-            public override string getActivity()
-            {
-                return String.Format(LocaleFactory.localizedString("Making directory {0}", "Status"), _folder.getName());
+                public override void cleanup(object result)
+                {
+                    Boolean done = (Boolean) result;
+                    if (done.booleanValue())
+                    {
+                        if (_filename.StartsWith("."))
+                        {
+                            _controller.ShowHiddenFiles = true;
+                        }
+                        List<Path> folders = new List<Path>() {_folder};
+                        _controller.Reload(_controller.Workdir, folders, folders);
+                    }
+                }
             }
         }
     }

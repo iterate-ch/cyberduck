@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System.Collections.Generic;
@@ -64,6 +64,16 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
         {
             get { return _inactiveForegroudColor; }
             set { _inactiveForegroudColor = value; }
+        }
+
+        /// <summary>
+        /// Make OnExpanding accessible for non subclasses
+        /// </summary>
+        /// <param name="model"></param>
+        public void OnExpanding(object model)
+        {
+            TreeBranchExpandingEventArgs args = new TreeBranchExpandingEventArgs(model, null);
+            base.OnExpanding(args);
         }
 
         protected override void OnDrawSubItem(DrawListViewSubItemEventArgs e)
@@ -164,7 +174,10 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
                         else
                         {
                             if (br.CanExpand)
+                            {
+                                OnExpanding(new TreeBranchExpandingEventArgs(o, null));
                                 Expand(o);
+                            }
                         }
                     }
                     e.Handled = true;
