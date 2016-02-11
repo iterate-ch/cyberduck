@@ -23,6 +23,7 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
+using ch.cyberduck.ui.browser;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Winforms;
 using java.util;
@@ -168,7 +169,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public bool GetActive(Path path)
         {
-            return _controller.IsConnected() && BrowserController.HiddenFilter.accept(path);
+            return _controller.IsConnected() && SearchFilterFactory.HIDDEN_FILTER.accept(path);
         }
     }
 }
