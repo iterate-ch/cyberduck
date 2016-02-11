@@ -55,7 +55,7 @@ public class DriveTouchFeatureTest {
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                fail();
+                fail(reason);
             }
         }, new DisabledHostKeyCallback(),
                 new DisabledPasswordStore() {
@@ -95,7 +95,7 @@ public class DriveTouchFeatureTest {
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                fail();
+                fail(reason);
             }
         }, new DisabledHostKeyCallback(),
                 new DisabledPasswordStore() {
