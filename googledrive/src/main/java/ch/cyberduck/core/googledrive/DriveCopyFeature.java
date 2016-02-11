@@ -42,7 +42,7 @@ public class DriveCopyFeature implements Copy {
         try {
             session.getClient().files().copy(source.attributes().getVersionId(), new File()
                     .setParents(Collections.singletonList(copy.getParent().attributes().getVersionId()))
-                    .setName(copy.getName()));
+                    .setName(copy.getName())).execute();
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Cannot copy {0}", e, source);
