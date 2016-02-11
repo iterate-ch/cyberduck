@@ -120,6 +120,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.BrowserEndDrag += View_BrowserEndDrag;
             View.HostEndDrag += View_HostEndDrag;
             View.SearchFieldChanged += View_SearchFieldChanged;
+            View.SearchFieldEnter += View_SearchFieldEnter;
 
 
             View.ContextMenuEnabled += View_ContextMenuEnabled;
@@ -424,6 +425,34 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 AsyncDelegate mainAction = delegate { View.AddTranscriptEntry(request, transcript); };
                 Invoke(mainAction);
+            }
+        }
+
+        private void View_SearchFieldEnter()
+        {
+            if (View.CurrentView == BrowserView.File)
+            {
+                String input = View.SearchString;
+                // Setup search filter
+                Filter filter = SearchFilterFactory.create(input, ShowHiddenFiles);
+                SetFilter(filter);
+                if (Utils.IsBlank(input))
+                {
+                    // Reload with current cache
+                    Reload();
+                }
+                else
+                {
+                    DialogResult result =
+                        QuestionBox(String.Format(LocaleFactory.localizedString("Search for {0}"), input),
+                            String.Format(LocaleFactory.localizedString("Do you want to search in {0} recursively?"),
+                                Workdir.getName()), null, String.Format("{0}", LocaleFactory.localizedString("Search")),
+                            true);
+                    if (result == DialogResult.OK)
+                    {
+                        background(new SearchAction(this));
+                    }
+                }
             }
         }
 
@@ -1268,13 +1297,15 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             switch (View.CurrentView)
             {
-                case BrowserView.Bookmark:
-                    SetBookmarkFilter(View.SearchString);
-                    break;
                 case BrowserView.File:
                     SetFilter(SearchFilterFactory.create(View.SearchString, ShowHiddenFiles));
                     // Reload with current cache
                     Reload();
+                    break;
+                case BrowserView.Bookmark:
+                case BrowserView.History:
+                case BrowserView.Bonjour:
+                    SetBookmarkFilter(View.SearchString);
                     break;
             }
         }
@@ -3028,6 +3059,30 @@ namespace Ch.Cyberduck.Ui.Controller
                         // Reload browser
                         _controller.Reload(_workdir, _selected, _folder);
                     }
+                }
+            }
+        }
+
+        private class SearchAction : WorkerBackgroundAction
+        {
+            public SearchAction(BrowserController controller)
+                : base(controller, controller.Session, controller.Cache, new InnerSearchWorker(controller))
+            {
+            }
+
+            private class InnerSearchWorker : SearchWorker
+            {
+                private readonly BrowserController _controller;
+
+                public InnerSearchWorker(BrowserController controller)
+                    : base(controller.Workdir, controller.FilenameFilter, controller.Cache, controller._limitListener)
+                {
+                    _controller = controller;
+                }
+
+                public override void cleanup(object result)
+                {
+                    _controller.Reload();
                 }
             }
         }

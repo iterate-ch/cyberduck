@@ -283,6 +283,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler ExpandArchive;
         public event ValidateCommand ValidateExpandArchive;
         public event VoidHandler Exit;
+        public event VoidHandler SearchFieldEnter;
         public event VoidHandler QuickConnect;
         public event VoidHandler OpenConnection;
         public event ValidateCommand ValidateOpenConnection;
@@ -2288,6 +2289,14 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void searchTextBox_TextChanged(object sender, EventArgs e)
         {
             SearchFieldChanged();
+        }
+
+        private void searchTextBox_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                SearchFieldEnter();
+            }
         }
 
         private void customizeToolbarMenuItem_Popup(object sender, EventArgs e)
