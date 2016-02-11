@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2015 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -11,7 +11,7 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-//  
+// 
 // Bug fixes, suggestions and comments should be sent to:
 // feedback@cyberduck.io
 // 
@@ -311,6 +311,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event ModelDropHandler HostModelDropped;
         public event DragHandler HostDrag;
         public event EndDragHandler HostEndDrag;
+        public event EventHandler<PathArgs> Expanding;
         public event VoidHandler NewFolder;
         public event ValidateCommand ValidateNewFolder;
         public event EditorsHandler GetEditorsForSelection;
@@ -592,6 +593,11 @@ namespace Ch.Cyberduck.Ui.Winforms
                 if (null != state)
                 {
                     browser.RestoreState(state);
+                    if (browser.AllColumns.IndexOf(browser.PrimarySortColumn) == -1)
+                    {
+                        //by default we sort ascending by filename
+                        browser.Sort(0);
+                    }
                 }
                 else
                 {
@@ -726,6 +732,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             IActiveMenu menu = ActiveMenu.GetInstance(this);
             menu.Items.Clear();
+        }
+
+        public bool IsExpanded(Path path)
+        {
+            return browser.IsExpanded(path);
         }
 
         public ObjectListView Browser
@@ -2054,6 +2065,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             BrowserDoubleClicked();
         }
 
+        private void browser_Expanding(object sender, TreeBranchExpandingEventArgs e)
+        {
+            Expanding(sender, new PathArgs((Path) e.Model));
+        }
+
         private void toolStripQuickConnect_SelectionChangeCommited(object sender, EventArgs e)
         {
             QuickConnect();
@@ -2494,6 +2510,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 {
                     if (null != _currentDropTarget)
                     {
+                        form.browser.OnExpanding(_currentDropTarget);
                         ((TreeListView) ListView).Expand(_currentDropTarget);
                     }
                     _timer.Stop();

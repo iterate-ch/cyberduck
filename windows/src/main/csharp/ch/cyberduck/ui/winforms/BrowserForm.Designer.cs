@@ -1,4 +1,6 @@
-﻿using Ch.Cyberduck.Ui.Winforms.Controls;
+﻿using System;
+using BrightIdeasSoftware;
+using Ch.Cyberduck.Ui.Winforms.Controls;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -2422,6 +2424,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.browser.SelectionChanged += new System.EventHandler(this.browser_SelectionChanged);
             this.browser.BeforeLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.browser_BeforeLabelEdit);
             this.browser.DoubleClick += new System.EventHandler(this.browser_DoubleClick);
+            this.browser.Expanding += new System.EventHandler<TreeBranchExpandingEventArgs>(this.browser_Expanding);
             this.browser.KeyDown += new System.Windows.Forms.KeyEventHandler(this.browser_KeyDown);
             this.browser.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.browser_KeyPress);
             // 
