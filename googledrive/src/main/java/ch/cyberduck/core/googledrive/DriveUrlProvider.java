@@ -23,15 +23,14 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.IOException;
 import java.net.URI;
 import java.text.MessageFormat;
 
 import com.google.api.services.drive.model.File;
 
-/**
- * @version $Id:$
- */
 public class DriveUrlProvider implements UrlProvider {
 
     private DriveSession session;
@@ -45,13 +44,20 @@ public class DriveUrlProvider implements UrlProvider {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
         if(file.isFile()) {
             try {
+                if(StringUtils.isBlank(file.attributes().getVersionId())) {
+                    return DescriptiveUrlBag.empty();
+                }
                 final File f = session.getClient().files().get(file.attributes().getVersionId()).execute();
-                list.add(new DescriptiveUrl(URI.create(f.getWebContentLink()),
-                        DescriptiveUrl.Type.http,
-                        MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "HTTP")));
-                list.add(new DescriptiveUrl(URI.create(f.getWebViewLink()),
-                        DescriptiveUrl.Type.http,
-                        MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "Download")));
+                if(StringUtils.isNotBlank(f.getWebContentLink())) {
+                    list.add(new DescriptiveUrl(URI.create(f.getWebContentLink()),
+                            DescriptiveUrl.Type.http,
+                            MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "HTTP")));
+                }
+                if(StringUtils.isNotBlank(f.getWebViewLink())) {
+                    list.add(new DescriptiveUrl(URI.create(f.getWebViewLink()),
+                            DescriptiveUrl.Type.http,
+                            MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "Download")));
+                }
             }
             catch(IOException e) {
                 new DriveExceptionMappingService().map(e);
