@@ -27,6 +27,7 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -39,9 +40,7 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id:$
- */
+@IntegrationTest
 public class DriveWriteFeatureTest {
 
     @Test

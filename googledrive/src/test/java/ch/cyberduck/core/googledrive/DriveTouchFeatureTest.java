@@ -33,6 +33,7 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 
@@ -42,9 +43,7 @@ import java.util.UUID;
 
 import static org.junit.Assert.fail;
 
-/**
- * @version $Id:$
- */
+@IntegrationTest
 public class DriveTouchFeatureTest {
 
     @Test
@@ -76,7 +75,7 @@ public class DriveTouchFeatureTest {
                     }
                 }, new DisabledProgressListener(),
                 new DisabledTranscriptListener()).connect(session, PathCache.empty());
-        final Path test = new Path(new DriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final Path test = new Path(new DriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DriveTouchFeature(session).touch(test);
         new DriveDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
             @Override

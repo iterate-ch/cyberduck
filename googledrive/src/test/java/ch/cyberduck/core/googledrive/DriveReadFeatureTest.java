@@ -18,6 +18,7 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 
@@ -25,9 +26,7 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.assertFalse;
 
-/**
- * @version $Id:$
- */
+@IntegrationTest
 public class DriveReadFeatureTest {
 
     @Test

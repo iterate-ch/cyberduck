@@ -34,6 +34,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 
@@ -43,9 +44,7 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id:$
- */
+@IntegrationTest
 public class DriveDirectoryFeatureTest {
 
     @Test
