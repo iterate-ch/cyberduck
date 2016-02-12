@@ -24,9 +24,6 @@ import java.util.Collections;
 
 import com.google.api.services.drive.model.File;
 
-/**
- * @version $Id:$
- */
 public class DriveCopyFeature implements Copy {
 
     private DriveSession session;

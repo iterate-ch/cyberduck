@@ -23,9 +23,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import java.io.IOException;
 import java.io.InputStream;
 
-/**
- * @version $Id:$
- */
 public class DriveReadFeature implements Read {
 
     private DriveSession session;

@@ -25,9 +25,6 @@ import java.util.Collections;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 
-/**
- * @version $Id:$
- */
 public class DriveDirectoryFeature implements Directory {
 
     private DriveSession session;

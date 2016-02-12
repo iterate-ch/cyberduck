@@ -32,9 +32,6 @@ import java.security.NoSuchAlgorithmException;
 
 import com.google.api.services.drive.model.File;
 
-/**
- * @version $Id:$
- */
 public class DriveUploadFeature extends HttpUploadFeature<File, MessageDigest> {
     private static final Logger log = Logger.getLogger(DriveUploadFeature.class);
 

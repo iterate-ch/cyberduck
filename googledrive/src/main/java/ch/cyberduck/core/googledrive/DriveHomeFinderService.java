@@ -19,9 +19,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
-/**
- * @version $Id:$
- */
 public class DriveHomeFinderService extends DefaultHomeFinderService {
 
     public DriveHomeFinderService(DriveSession session) {

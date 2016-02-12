@@ -32,9 +32,6 @@ import com.google.api.client.http.InputStreamContent;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 
-/**
- * @version $Id:$
- */
 public class DriveWriteFeature extends AbstractHttpWriteFeature<File> {
 
     private DriveSession session;

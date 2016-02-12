@@ -27,9 +27,6 @@ import com.google.api.client.auth.oauth2.TokenErrorResponse;
 import com.google.api.client.auth.oauth2.TokenResponseException;
 import com.google.api.client.http.HttpResponseException;
 
-/**
- * @version $Id:$
- */
 public class DriveExceptionMappingService extends DefaultIOExceptionMappingService {
 
     @Override

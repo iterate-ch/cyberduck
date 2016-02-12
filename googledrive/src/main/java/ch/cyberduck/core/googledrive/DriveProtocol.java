@@ -18,11 +18,6 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Scheme;
 
-/**
- * Google Drive
- *
- * @version $Id:$
- */
 public class DriveProtocol extends AbstractProtocol {
 
     @Override

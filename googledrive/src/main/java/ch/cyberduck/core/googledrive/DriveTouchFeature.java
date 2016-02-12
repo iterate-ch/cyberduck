@@ -25,9 +25,6 @@ import java.util.Collections;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 
-/**
- * @version $Id:$
- */
 public class DriveTouchFeature implements Touch {
 
     private DriveSession session;

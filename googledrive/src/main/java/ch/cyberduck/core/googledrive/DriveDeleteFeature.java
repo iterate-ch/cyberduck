@@ -23,9 +23,6 @@ import ch.cyberduck.core.features.Delete;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * @version $Id:$
- */
 public class DriveDeleteFeature implements Delete {
 
     private DriveSession session;

@@ -24,9 +24,6 @@ import ch.cyberduck.core.features.Move;
 
 import java.util.Collections;
 
-/**
- * @version $Id:$
- */
 public class DriveMoveFeature implements Move {
 
     private DriveSession session;

@@ -59,9 +59,6 @@ import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 
-/**
- * @version $Id:$
- */
 public class DriveSession extends HttpSession<Drive> {
     private static final Logger log = Logger.getLogger(DriveSession.class);
 
