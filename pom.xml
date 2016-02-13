@@ -303,6 +303,7 @@
                     <artifactId>maven-failsafe-plugin</artifactId>
                     <version>2.19</version>
                     <configuration>
+                        <encoding>UTF-8</encoding>
                         <argLine>-Djava.library.path=${project.build.directory}</argLine>
                         <systemPropertiesFile>${env.HOME}/test.properties</systemPropertiesFile>
                         <systemPropertyVariables>
