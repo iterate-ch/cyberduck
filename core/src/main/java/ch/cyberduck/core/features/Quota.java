@@ -15,8 +15,10 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.exception.BackgroundException;
+
 public interface Quota {
-    Space get();
+    Space get() throws BackgroundException;
 
     final class Space {
         public Space(final Long used, final Long available) {
