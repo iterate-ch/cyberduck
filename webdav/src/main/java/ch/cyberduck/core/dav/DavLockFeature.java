@@ -23,6 +23,7 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,19 +39,23 @@ public class DavLockFeature<R> implements Bulk<Map<Path, String>> {
 
     @Override
     public Map<Path, String> pre(final Transfer.Type type, final Map<Path, TransferStatus> files) throws BackgroundException {
-        final Map<Path, String> locks = new HashMap<Path, String>();
-        for(Map.Entry<Path, TransferStatus> entry : files.entrySet()) {
-            final Path file = entry.getKey();
-            try {
-                locks.put(file, session.getClient().lock(new DAVPathEncoder().encode(file)));
-            }
-            catch(SardineException e) {
-                throw new DAVExceptionMappingService().map("Failure to write attributes of {0}", e, file);
-            }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map(e, file);
-            }
+        switch(type) {
+            case download:
+                final Map<Path, String> locks = new HashMap<Path, String>();
+                for(Map.Entry<Path, TransferStatus> entry : files.entrySet()) {
+                    final Path file = entry.getKey();
+                    try {
+                        locks.put(file, session.getClient().lock(new DAVPathEncoder().encode(file)));
+                    }
+                    catch(SardineException e) {
+                        throw new DAVExceptionMappingService().map("Failure to write attributes of {0}", e, file);
+                    }
+                    catch(IOException e) {
+                        throw new DefaultIOExceptionMappingService().map(e, file);
+                    }
+                }
+                return locks;
         }
-        return locks;
+        return Collections.emptyMap();
     }
 }
