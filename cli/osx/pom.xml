@@ -117,9 +117,6 @@
         <profile>
             <id>sign</id>
             <activation>
-                <property>
-                    <name>env.JENKINS_HOME</name>
-                </property>
                 <os>
                     <family>Mac</family>
                 </os>
