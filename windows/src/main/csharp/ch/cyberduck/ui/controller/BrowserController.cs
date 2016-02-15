@@ -937,6 +937,13 @@ namespace Ch.Cyberduck.Ui.Controller
                         args.DropTargetLocation = DropTargetLocation.None;
                         return;
                     }
+                    Move move = (Move)Session.getFeature(typeof(Move));
+                    if (!move.isSupported(sourcePath))
+                    {
+                        args.Effect = DragDropEffects.None;
+                        args.DropTargetLocation = DropTargetLocation.None;
+                        return;
+                    }
                 }
                 if (Workdir == destination)
                 {
