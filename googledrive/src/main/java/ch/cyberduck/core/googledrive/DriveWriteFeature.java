@@ -24,15 +24,20 @@ import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.io.input.NullInputStream;
 import org.apache.http.entity.AbstractHttpEntity;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
-import com.google.api.client.http.InputStreamContent;
+import com.google.api.client.http.AbstractInputStreamContent;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 
 public class DriveWriteFeature extends AbstractHttpWriteFeature<File> {
+    private static final Logger log = Logger.getLogger(DriveWriteFeature.class);
 
     private DriveSession session;
 
@@ -66,7 +71,27 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<File> {
             public File call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
                     final Drive.Files.Create insert = session.getClient().files().create(body,
-                            new InputStreamContent(status.getMime(), entity.getContent()));
+                            new AbstractInputStreamContent(status.getMime()) {
+                                @Override
+                                public long getLength() throws IOException {
+                                    return status.getLength();
+                                }
+
+                                @Override
+                                public boolean retrySupported() {
+                                    return false;
+                                }
+
+                                @Override
+                                public InputStream getInputStream() throws IOException {
+                                    return new NullInputStream(status.getLength());
+                                }
+
+                                @Override
+                                public void writeTo(final OutputStream out) throws IOException {
+                                    entity.writeTo(out);
+                                }
+                            });
                     return insert.execute();
                 }
                 catch(IOException e) {
