@@ -34,6 +34,7 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.log4j.Logger;
 import org.jets3t.service.utils.oauth.OAuthConstants;
 
@@ -71,21 +72,26 @@ public class DriveSession extends HttpSession<Drive> {
     private Preferences preferences
             = PreferencesFactory.get();
 
+    private final PreferencesUseragentProvider useragentProvider
+            = new PreferencesUseragentProvider();
+
     public DriveSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
     }
 
     @Override
     protected Drive connect(final HostKeyCallback callback) throws BackgroundException {
-        transport = new ApacheHttpTransport(builder.build(this).build());
+        final CloseableHttpClient client = builder.build(this).build();
+        transport = new ApacheHttpTransport(client);
         json = new GsonFactory();
         return new Drive.Builder(this.transport, json, new HttpRequestInitializer() {
             @Override
             public void initialize(HttpRequest httpRequest) throws IOException {
+                httpRequest.setSuppressUserAgentSuffix(true);
                 tokens.initialize(httpRequest);
             }
         })
-                .setApplicationName(preferences.getProperty("application.name"))
+                .setApplicationName(useragentProvider.get())
                 .build();
     }
 
