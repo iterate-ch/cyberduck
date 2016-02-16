@@ -6,6 +6,6 @@
         <version>4.8-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
     <artifactId>i18n</artifactId>
 </project>
