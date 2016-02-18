@@ -26,7 +26,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="cyberduck.csproj">
-      <Name>mountainduck</Name>
+      <Name>cyberduck</Name>
       <Project>{04AFCFBB-97D5-44EA-B087-F0CFAEB51E30}</Project>
       <Private>True</Private>
       <DoNotHarvest>True</DoNotHarvest>
