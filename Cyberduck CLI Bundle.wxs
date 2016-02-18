@@ -5,7 +5,7 @@
           UpgradeCode="46C3FB4E-2B23-4728-8196-BEA25ADE868A" IconSourceFile="cyberduck-application.ico">
     <BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.HyperlinkSidebarLicense">
       <bal:WixStandardBootstrapperApplication LicenseUrl=""      
-        LogoFile="setup\banner.png" LogoSideFile="setup\nsi\welcome.bmp" />
+        LogoFile="setup\wix\banner.png" LogoSideFile="setup\wix\welcome.bmp" />
     </BootstrapperApplicationRef>
     <Variable Name="InstallFolder" Type="string" Value="[ProgramFilesFolder]Cyberduck CLI" />
     <Chain>
