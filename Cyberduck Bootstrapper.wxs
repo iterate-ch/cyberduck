@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:bal="http://schemas.microsoft.com/wix/BalExtension">
+    <Bundle Name="Cyberduck" Version="!(bind.packageVersion.Setup)" Manufacturer="iterate GmbH"
+            UpgradeCode="69C1D059-4B45-4220-A82C-DAE80C9CD8E0" IconSourceFile="cyberduck-application.ico">
+        <BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.HyperlinkSidebarLicense">
+            <bal:WixStandardBootstrapperApplication LicenseUrl=""
+                                                    LogoFile="setup\wix\banner.png"
+                                                    LogoSideFile="setup\wix\welcome.bmp"/>
+        </BootstrapperApplicationRef>
+        <Variable Name="InstallFolder" Type="string" Value="[ProgramFilesFolder]Cyberduck"/>
+        <Chain>
+            <!-- Avoid .NET setup as of Windows 8 which comes with .NET 4.5 by default -->
+            <PackageGroupRef Id="NetFx45Redist"/>
+            <RollbackBoundary/>
+            <MsiPackage
+                    Id="Setup"
+                    Compressed="yes"
+                    SourceFile="$(var.cyberduck-installer-msi.TargetPath)"
+                    Vital="yes">
+                <MsiProperty Name="INSTALLLOCATION" Value="[InstallFolder]"/>
+            </MsiPackage>
+            <MsiPackage SourceFile="setup\wix\Bonjour.msi" Compressed="yes" InstallCondition="NOT VersionNT64"/>
+            <MsiPackage SourceFile="setup\wix\Bonjour64.msi" Compressed="yes" InstallCondition="VersionNT64"/>
+        </Chain>
+    </Bundle>
+</Wix>
