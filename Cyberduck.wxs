@@ -121,16 +121,16 @@
           <netfx:NativeImage Id="ngen_Cyberduck.Importer" Platform="32bit" Priority="3" />
         </File>
       </Component>
-      <Component Id="msvcr120" Guid="1258FA16-8181-41B2-8920-20EB586B9A7F">
+      <Component Id="msvcr120">
         <File Source="$(var.cyberduck.TargetDir)/msvcr120.dll" KeyPath="yes" Checksum="yes" />
       </Component>
-      <Component Id="msvcp120" Guid="08095EAA-E2E8-4053-A22B-A5CEFB69E15C">
+      <Component Id="msvcp120">
         <File Source="$(var.cyberduck.TargetDir)/msvcp120.dll" KeyPath="yes" Checksum="yes" />
       </Component>
-      <Component Id="vccorlib120" Guid="D31CE6F6-560E-45C3-A3C5-3A0C4B60D272">
+      <Component Id="vccorlib120">
         <File Source="$(var.cyberduck.TargetDir)/vccorlib120.dll" KeyPath="yes" Checksum="yes" />
       </Component>
-      <Component Id="msvcr100" Guid="2203003A-94C3-4A15-99D1-CF2DDA64BD27">
+      <Component Id="msvcr100">
         <File Source="$(var.cyberduck.TargetDir)/msvcr100.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="ikvm.beans">
@@ -138,72 +138,72 @@
           <netfx:NativeImage Id="ngen_ikvm.beans" Platform="32bit" Priority="3" />
         </File>
       </Component>
-      <Component Id="ikvm.core" Guid="5F3B0202-28BE-4942-BEF0-C929B5D248AB">
+      <Component Id="ikvm.core">
         <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Core.dll" KeyPath="yes" Checksum="yes">
            <netfx:NativeImage Id="ngen_ikvm.core" Platform="32bit" Priority="3" />
         </File>
       </Component>
-      <Component Id="ikvm.charsets" Guid="700C1DBC-EADB-4FF0-B315-3119F1066219">
+      <Component Id="ikvm.charsets">
         <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Charsets.dll" KeyPath="yes" Checksum="yes">
           <netfx:NativeImage Id="ngen_ikvm.charsets" Platform="32bit" Priority="3" />
         </File>
       </Component>
-      <Component Id="ikvm.localedata" Guid="968E70A5-1C73-4778-BC21-B2D048B44F18">
+      <Component Id="ikvm.localedata">
         <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Localedata.dll" KeyPath="yes" Checksum="yes">
           <netfx:NativeImage Id="ngen_ikvm.localedata" Platform="32bit" Priority="3" />
         </File>
       </Component>
-      <Component Id="ikvm.security" Guid="1B1BE55B-387C-4559-8A23-C6CB24CA7BDB">
+      <Component Id="ikvm.security">
         <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Security.dll" KeyPath="yes" Checksum="yes">
           <netfx:NativeImage Id="ngen_ikvm.security" Platform="32bit" Priority="3" />
         </File>
       </Component>
-      <Component Id="ikvm.text" Guid="5ED02B77-D4DA-460C-B94E-38694B253DE5">
+      <Component Id="ikvm.text">
         <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Text.dll" KeyPath="yes" Checksum="yes">
           <netfx:NativeImage Id="ngen_ikvm.text" Platform="32bit" Priority="3" />
         </File>
       </Component>
-      <Component Id="ikvm.util" Guid="846EF773-9449-4A87-9D93-5E82DE274BF4">
+      <Component Id="ikvm.util">
         <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Util.dll" KeyPath="yes" Checksum="yes">
           <netfx:NativeImage Id="ngen_ikvm.util" Platform="32bit" Priority="3" />
         </File>
       </Component>
-      <Component Id="ikvm.management" Guid="898A68A4-7883-4EBF-94A4-BE3D127D6D38">
+      <Component Id="ikvm.management">
         <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Management.dll" KeyPath="yes" Checksum="yes">
           <netfx:NativeImage Id="ngen_ikvm.management" Platform="32bit" Priority="3" />
         </File>
       </Component>
-      <Component Id="ikvm.xml.api" Guid="F8C5B769-FABF-4D33-B005-EB6BBF8591B8">
+      <Component Id="ikvm.xml.api">
         <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.XML.API.dll" KeyPath="yes" Checksum="yes">
           <netfx:NativeImage Id="ngen_ikvm.xml.api" Platform="32bit" Priority="3" />
         </File>
       </Component>
-      <Component Id="ikvm.xml.bind" Guid="5CF8B0D1-AAE1-4EC2-BF2A-C7F20D18D3CF">
+      <Component Id="ikvm.xml.bind">
         <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.XML.Bind.dll" KeyPath="yes" Checksum="yes">
           <netfx:NativeImage Id="ngen_ikvm.xml.bind" Platform="32bit" Priority="3" />
         </File>
       </Component>
-      <Component Id="ikvm.xml.parse" Guid="630403AD-B691-4215-9D06-5729CFDF1506">
+      <Component Id="ikvm.xml.parse">
         <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.XML.Parse.dll" KeyPath="yes" Checksum="yes">
           <netfx:NativeImage Id="ngen_ikvm.xml.parse" Platform="32bit" Priority="3" />
         </File>
       </Component>
-      <Component Id="ikvm.xml.transform" Guid="A41849C5-E22A-40C3-B62B-8FC8B7F5C4F9">
+      <Component Id="ikvm.xml.transform">
         <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.XML.Transform.dll" KeyPath="yes" Checksum="yes">
           <netfx:NativeImage Id="ngen_ikvm.xml.transform" Platform="32bit" Priority="3" />
         </File>
       </Component>
-      <Component Id="ikvm.xml.xpath" Guid="BC007679-0E64-4D96-94AA-A88CE7302E32">
+      <Component Id="ikvm.xml.xpath">
         <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.XML.XPath.dll" KeyPath="yes" Checksum="yes">
           <netfx:NativeImage Id="ngen_ikvm.xml.path" Platform="32bit" Priority="3" />
         </File>
       </Component>
-      <Component Id="ikvm.swingawt" Guid="7BC8B02E-D6A9-4FBD-83D6-01F60B916CF1">
+      <Component Id="ikvm.swingawt">
         <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.SwingAWT.dll" KeyPath="yes" Checksum="yes">
           <netfx:NativeImage Id="ngen_ikvm.swingawt" Platform="32bit" Priority="3" />
         </File>
       </Component>
-      <Component Id="ikvm.naming" Guid="F99DD3CA-1E4E-4F17-9F94-52A3E93BDAD5">
+      <Component Id="ikvm.naming">
         <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Naming.dll" KeyPath="yes" Checksum="yes">
           <netfx:NativeImage Id="ngen_ikvm.naming" Platform="32bit" Priority="3" />
         </File>
@@ -213,17 +213,17 @@
           <netfx:NativeImage Id="ngen_ikvm.remoting" Platform="32bit" Priority="3" />
         </File>
       </Component>
-      <Component Id="ikvm.runtime" Guid="CBF03DF9-ADB2-4B77-BA28-E5C5BC0D10BE">
+      <Component Id="ikvm.runtime">
         <File Source="$(var.cyberduck.TargetDir)/IKVM.Runtime.dll" KeyPath="yes" Checksum="yes">
           <netfx:NativeImage Id="ngen_ikvm.runtime" Platform="32bit" Priority="3" />
         </File>
       </Component>
-      <Component Id="ikvm.runtime.jni" Guid="FF7FDFAA-9930-48F6-9AEF-96B5182263AA">
+      <Component Id="ikvm.runtime.jni">
         <File Source="$(var.cyberduck.TargetDir)/IKVM.Runtime.JNI.dll" KeyPath="yes" Checksum="yes">
            <netfx:NativeImage Id="ngen_ikvm.runtime.jni" Platform="32bit" Priority="3" />
         </File>
       </Component>
-      <Component Id="ikvm.jdbc" Guid="8BA96855-9779-4BD2-B356-896EC4641A17">
+      <Component Id="ikvm.jdbc">
         <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Jdbc.dll" KeyPath="yes" Checksum="yes">
            <netfx:NativeImage Id="ngen_ikvm.jdbc" Platform="32bit" Priority="3" />
         </File>
@@ -233,61 +233,61 @@
            <netfx:NativeImage Id="ngen_Interop.Bonjour" Platform="32bit" Priority="3" />
         </File>
       </Component>
-      <Component Id="objectlistview" Guid="CC4118AA-746E-4C13-9111-95D4C9D7440E">
+      <Component Id="objectlistview">
         <File Source="$(var.cyberduck.TargetDir)/ObjectListView.dll" KeyPath="yes" Checksum="yes">
           <netfx:NativeImage Id="ngen_objectlistview" Platform="32bit" Priority="3" />
         </File>
       </Component>
-      <Component Id="structuremap" Guid="93DA6642-E54B-4E8F-96B6-AA40CA4AA1F2">
+      <Component Id="structuremap">
         <File Source="$(var.cyberduck.TargetDir)/StructureMap.dll" KeyPath="yes" Checksum="yes">
           <netfx:NativeImage Id="ngen_structuremap" Platform="32bit" Priority="3" />
         </File>
       </Component>
-      <Component Id="VistaBridgeLibrary" Guid="93DA6642-E54B-4E8F-96B6-AA40CA4AA1F2">
+      <Component Id="VistaBridgeLibrary">
         <File Source="$(var.cyberduck.TargetDir)/VistaBridgeLibrary.dll" KeyPath="yes" Checksum="yes">
           <netfx:NativeImage Id="ngen_VistaBridgeLibrary" Platform="32bit" Priority="3" />
         </File>
       </Component>
-      <Component Id="Windows7.DesktopIntegration" Guid="93DA6642-E54B-4E8F-96B6-AA40CA4AA1F2">
+      <Component Id="Windows7.DesktopIntegration">
         <File Source="$(var.cyberduck.TargetDir)/Windows7.DesktopIntegration.dll" KeyPath="yes" Checksum="yes">
           <netfx:NativeImage Id="ngen_Windows7.DesktopIntegration" Platform="32bit" Priority="3" />
         </File>
       </Component>
-      <Component Id="ikvm.native" Guid="975906E0-033F-4B86-84B7-5B969278EC55">
+      <Component Id="ikvm.native">
         <File Source="$(var.cyberduck.TargetDir)/ikvm-native-win32-x86.dll" KeyPath="yes" Checksum="yes">
           <netfx:NativeImage Id="ngen_ikvm.native" Platform="32bit" Priority="3" />
         </File>
       </Component>
-      <Component Id="jnidispatch" Guid="B6621775-1A9A-461E-83B8-BB1EE34B5965">
+      <Component Id="jnidispatch">
         <File Source="$(var.cyberduck.TargetDir)/jnidispatch.dll" KeyPath="yes" Checksum="yes">
           <netfx:NativeImage Id="ngen_jnidispatch" Platform="32bit" Priority="3" />
         </File>
       </Component>
-      <Component Id="sunmscapi" Guid="1E4C2512-F9C0-40FB-88E2-B16BA572040D">
+      <Component Id="sunmscapi">
         <File Source="$(var.cyberduck.TargetDir)/sunmscapi.dll" KeyPath="yes" Checksum="yes" />
       </Component>
-      <Component Id="sunec" Guid="1E4C2512-F9C0-40FB-88E2-B16BA572040D">
+      <Component Id="sunec">
         <File Source="$(var.cyberduck.TargetDir)/sunec.dll" KeyPath="yes" Checksum="yes" />
       </Component>
-      <Component Id="updater" Guid="3ECA27F3-C01E-455B-A39F-05D16B0C43D2">
+      <Component Id="updater">
         <File Source="$(var.cyberduck.TargetDir)/update/Updater.exe" KeyPath="yes" Checksum="yes" />
       </Component>
-      <Component Id="updater.meta" Guid="192C298E-1903-453F-8661-B3C7F9C9F6A2">
+      <Component Id="updater.meta">
         <File Source="$(var.cyberduck.TargetDir)/update/client.wyc" KeyPath="yes" Checksum="yes" />
       </Component>
-      <Component Id="additional" Guid="28C8FE7B-76A9-409D-BD10-CD0F743CCEB5">
+      <Component Id="additional" Guid="c0733025-a4ec-4437-8617-0ace7d29318a">
         <File Source="$(var.cyberduck.TargetDir)/Acknowledgments.rtf" Checksum="yes" />
         <File Source="$(var.cyberduck.TargetDir)/License.txt" Checksum="yes" />
       </Component>
     </ComponentGroup>
     <ComponentGroup Id="Profiles" Directory="PROFILES">
-      <Component Id="rackspace" Guid="23B4C8D9-0E58-43D9-A8CE-85A069E6FDC8">
+      <Component Id="rackspace">
         <File Source="$(var.cyberduck.TargetDir)/profiles/Rackspace US.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
     </ComponentGroup>
 
     <DirectoryRef Id="ApplicationProgramsFolder">
-      <Component Id="ApplicationShortcut" Guid="6D803AF8-A470-42B2-9196-94FF9CFEE580">
+      <Component Id="ApplicationShortcut">
         <Shortcut Id="ApplicationStartMenuShortcut"
              Name="Cyberduck"
              Description="Libre FTP, SFTP, WebDAV, S3 and OpenStack Swift browser"
