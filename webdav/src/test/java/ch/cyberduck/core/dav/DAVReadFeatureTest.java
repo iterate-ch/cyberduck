@@ -84,6 +84,32 @@ public class DAVReadFeatureTest {
     }
 
     @Test
+    public void testReadInterrupt() throws Exception {
+        final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.ch", new Credentials(
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
+        ));
+        final DAVSession session = new DAVSession(host);
+        final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener());
+        service.connect(session, PathCache.empty());
+        final Path test = new Path("/trunk/LICENSE.txt", EnumSet.of(Path.Type.file));
+        // Unknown length in status
+        final TransferStatus status = new TransferStatus();
+        // Read a single byte
+        {
+            final InputStream in = new DAVReadFeature(session).read(test, status);
+            assertNotNull(in.read());
+            in.close();
+        }
+        {
+            final InputStream in = new DAVReadFeature(session).read(test, status);
+            assertNotNull(in);
+            in.close();
+        }
+        session.close();
+    }
+
+    @Test
     public void testReadRange() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
                 System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
