@@ -342,7 +342,8 @@ public class DAVWriteFeatureTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final DAVWriteFeature feature = new DAVWriteFeature(session);
-        final Path test = new Path("/redir-tmp/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final String name = UUID.randomUUID().toString();
+        final Path test = new Path(String.format("/redir-tmp/%s", name), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
         final byte[] content = RandomUtils.nextBytes(1024);
         status.setLength(content.length);
@@ -355,7 +356,9 @@ public class DAVWriteFeatureTest {
         assertEquals(content.length, new DefaultAttributesFeature(session).find(test).getSize());
         assertEquals(content.length, new DAVAttributesFeature(session).find(test).getSize());
         assertTrue(redirected.get());
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+        new DAVDeleteFeature(session).delete(Collections.singletonList(
+                new Path(new DefaultHomeFinderService(session).find(), name, EnumSet.of(Path.Type.file))
+        ), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {
             }
