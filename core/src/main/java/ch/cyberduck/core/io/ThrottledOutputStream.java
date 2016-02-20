@@ -17,14 +17,12 @@ package ch.cyberduck.core.io;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import java.io.FilterOutputStream;
+import org.apache.commons.io.output.ProxyOutputStream;
+
 import java.io.IOException;
 import java.io.OutputStream;
 
-/**
- * @version $Id$
- */
-public class ThrottledOutputStream extends FilterOutputStream {
+public class ThrottledOutputStream extends ProxyOutputStream {
 
     /**
      * The delegate.
