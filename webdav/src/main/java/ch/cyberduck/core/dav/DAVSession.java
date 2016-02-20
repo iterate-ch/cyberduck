@@ -19,7 +19,20 @@ package ch.cyberduck.core.dav;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.HostPasswordStore;
+import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Attributes;
@@ -31,6 +44,7 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.PreferencesRedirectCallback;
 import ch.cyberduck.core.http.RedirectCallback;
@@ -151,7 +165,7 @@ public class DAVSession extends HttpSession<DAVClient> {
             client.shutdown();
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+            throw new HttpExceptionMappingService().map(e);
         }
     }
 
@@ -208,7 +222,7 @@ public class DAVSession extends HttpSession<DAVClient> {
             throw new DAVExceptionMappingService().map(e);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+            throw new HttpExceptionMappingService().map(e);
         }
     }
 
@@ -260,7 +274,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                 log.warn(String.format("Ignore failed HEAD request to %s with %s.", host, e.getResponsePhrase()));
             }
             catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map(e);
+                throw new HttpExceptionMappingService().map(e);
             }
             return preferences.getBoolean("webdav.basic.preemptive");
         }

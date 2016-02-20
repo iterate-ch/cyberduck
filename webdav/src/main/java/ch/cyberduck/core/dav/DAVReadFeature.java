@@ -17,11 +17,11 @@ package ch.cyberduck.core.dav;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -89,7 +89,7 @@ public class DAVReadFeature implements Read {
             throw new DAVExceptionMappingService().map("Download {0} failed", e, file);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Download {0} failed", e, file);
+            throw new HttpExceptionMappingService().map("Download {0} failed", e, file);
         }
     }
 

@@ -17,7 +17,6 @@ package ch.cyberduck.core.dav;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
@@ -25,6 +24,7 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
+import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -112,7 +112,7 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
                     throw new DAVExceptionMappingService().map("Upload {0} failed", e, file);
                 }
                 catch(IOException e) {
-                    throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
+                    throw new HttpExceptionMappingService().map("Upload {0} failed", e, file);
                 }
             }
 

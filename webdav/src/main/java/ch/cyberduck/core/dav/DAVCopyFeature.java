@@ -17,12 +17,12 @@ package ch.cyberduck.core.dav;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.http.HttpExceptionMappingService;
 
 import java.io.IOException;
 
@@ -51,7 +51,7 @@ public class DAVCopyFeature implements Copy {
             throw new DAVExceptionMappingService().map("Cannot copy {0}", e, source);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e, source);
+            throw new HttpExceptionMappingService().map(e, source);
         }
     }
 }
