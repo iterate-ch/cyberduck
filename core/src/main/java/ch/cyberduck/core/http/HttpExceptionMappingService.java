@@ -17,7 +17,7 @@ package ch.cyberduck.core.http;
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.ConnectionRefusedException;
 
 import org.apache.http.ConnectionClosedException;
 
@@ -30,7 +30,7 @@ public class HttpExceptionMappingService extends DefaultIOExceptionMappingServic
         if(failure instanceof ConnectionClosedException) {
             final StringBuilder buffer = new StringBuilder();
             this.append(buffer, failure.getMessage());
-            return new ConnectionCanceledException(buffer.toString(), failure);
+            return new ConnectionRefusedException(buffer.toString(), failure);
         }
         return super.map(failure);
     }
