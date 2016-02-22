@@ -22,15 +22,15 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Copy;
+
+import org.apache.commons.codec.binary.StringUtils;
 
 import java.io.IOException;
 
 import ch.iterate.openstack.swift.exception.GenericException;
 
-/**
- * @version $Id$
- */
 public class SwiftCopyFeature implements Copy {
 
     private SwiftSession session;
@@ -52,6 +52,15 @@ public class SwiftCopyFeature implements Copy {
     @Override
     public void copy(final Path source, final Path copy) throws BackgroundException {
         try {
+            if(StringUtils.equals(
+                    containerService.getContainer(source).getName(),
+                    containerService.getContainer(copy).getName())) {
+                if(!StringUtils.equals(
+                        containerService.getContainer(source).attributes().getRegion(),
+                        containerService.getContainer(copy).attributes().getRegion())) {
+                    throw new InteroperabilityException("Copy between regions is not supported for containers with the same name");
+                }
+            }
             if(source.isFile()) {
                 session.getClient().copyObject(regionService.lookup(source),
                         containerService.getContainer(source).getName(), containerService.getKey(source),

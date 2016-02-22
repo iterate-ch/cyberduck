@@ -111,7 +111,7 @@ public class MoveController extends ProxyController {
                 i++;
             }
             if(iter.hasNext()) {
-                alertText.append(String.format("\n%s ...)", Character.toString('\u2022')));
+                alertText.append(String.format("\n%s …)", Character.toString('\u2022')));
             }
             final NSAlert alert = NSAlert.alert(
                     rename ? LocaleFactory.localizedString("Rename", "Transfer") : LocaleFactory.localizedString("Move", "Transfer"), //title
