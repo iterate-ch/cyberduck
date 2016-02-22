@@ -60,17 +60,6 @@ public class TransferMenuDelegate extends AbstractMenuDelegate {
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean cancel) {
         final List<TransferItem> items = transfer.getRoots();
         final TransferItem entry = new ArrayList<TransferItem>(items).get(index.intValue());
-        if(index.intValue() == 0) {
-            if(items.size() > 1) {
-                item.setTitle(String.format("%s (%d more)", entry.remote.getName(), items.size() - 1));
-            }
-            else {
-                item.setTitle(entry.remote.getName());
-            }
-        }
-        else {
-            item.setTitle(entry.remote.getName());
-        }
         if(entry.local != null) {
             item.setRepresentedObject(entry.local.getAbsolute());
             if(entry.local.exists()) {
