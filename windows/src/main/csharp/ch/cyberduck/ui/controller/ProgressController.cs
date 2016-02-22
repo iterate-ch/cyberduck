@@ -177,12 +177,22 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void SetRootPaths()
         {
-            List srcRoots = _transfer.getRoots();
+            List items = _transfer.getRoots();
             IList<string> roots = new List<string>();
-            for (int i = 0; i < srcRoots.size(); i++)
+            for (int i = 0; i < items.size(); i++)
             {
-                TransferItem item = (TransferItem) srcRoots.get(i);
-                roots.Add(item.remote.getName());
+                TransferItem item = (TransferItem) items.get(i);
+                if(i == 0) {
+                    if(items.size() > 1) {
+                        roots.Add(String.Format("{0} ({1} more)", item.remote.getName(), items.size() - 1));
+                    }
+                    else {
+                        roots.Add(item.remote.getName());
+                    }
+                }
+                else {
+                    roots.Add(item.remote.getName());
+                }
             }
             View.PopulateRoots(roots);
         }

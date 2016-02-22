@@ -34,10 +34,8 @@ import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.util.ArrayList;
+import java.util.List;
 
-/**
- * @version $Id$
- */
 public class TransferMenuDelegate extends AbstractMenuDelegate {
 
     private Transfer transfer;
@@ -60,9 +58,8 @@ public class TransferMenuDelegate extends AbstractMenuDelegate {
 
     @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean cancel) {
-        final TransferItem entry
-                = new ArrayList<TransferItem>(transfer.getRoots()).get(index.intValue());
-        item.setTitle(entry.remote.getName());
+        final List<TransferItem> items = transfer.getRoots();
+        final TransferItem entry = new ArrayList<TransferItem>(items).get(index.intValue());
         if(entry.local != null) {
             item.setRepresentedObject(entry.local.getAbsolute());
             if(entry.local.exists()) {
