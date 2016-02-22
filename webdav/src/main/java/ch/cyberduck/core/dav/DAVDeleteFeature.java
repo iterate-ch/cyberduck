@@ -18,11 +18,11 @@ package ch.cyberduck.core.dav;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.http.HttpExceptionMappingService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -63,7 +63,7 @@ public class DAVDeleteFeature implements Delete {
                 throw new DAVExceptionMappingService().map("Cannot delete {0}", e, file);
             }
             catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map(e, file);
+                throw new HttpExceptionMappingService().map(e, file);
             }
             deleted.add(file);
         }

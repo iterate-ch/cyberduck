@@ -19,7 +19,6 @@ package ch.cyberduck.core.dav;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -27,6 +26,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.http.HttpExceptionMappingService;
 
 import java.io.IOException;
 
@@ -82,7 +82,7 @@ public class DAVFindFeature implements Find {
                 throw new DAVExceptionMappingService().map("Failure to read attributes of {0}", e, file);
             }
             catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map(e, file);
+                throw new HttpExceptionMappingService().map(e, file);
             }
         }
         catch(AccessDeniedException e) {
