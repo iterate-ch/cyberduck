@@ -29,14 +29,18 @@ import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import org.junit.Test;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
+import static org.junit.Assert.assertEquals;
+
 public class DAVTimestampFeatureTest {
 
     @Test
-    public void testSetTimestamp() throws Exception {
+    public void testSetTimestampNoSupport() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
                 System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
         ));
@@ -48,6 +52,28 @@ public class DAVTimestampFeatureTest {
         session.getFeature(Touch.class).touch(file);
         new DAVTimestampFeature(session).setTimestamp(file, 500L);
         // assertEquals(500L, new DAVAttributesFeature(session).find(file).getModificationDate());
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(file), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
+        session.close();
+    }
+
+    @Test
+    public void testSetTimestampOwncloud() throws Exception {
+        final Host host = new Host(new DAVProtocol(), "192.168.0.23", new Credentials(
+                "owncloud", "owncloud"
+        ));
+        host.setDefaultPath("/owncloud/remote.php/webdav");
+        final DAVSession session = new DAVSession(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path file = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        session.getFeature(Touch.class).touch(file);
+        final long millis = LocalDateTime.of(2015, 1, 1, 1, 1).toInstant(ZoneOffset.UTC).toEpochMilli();
+        new DAVTimestampFeature(session).setTimestamp(file, millis);
+        assertEquals(millis, new DAVAttributesFeature(session).find(file).getModificationDate());
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(file), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {
