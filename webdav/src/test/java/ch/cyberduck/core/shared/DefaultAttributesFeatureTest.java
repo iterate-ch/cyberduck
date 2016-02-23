@@ -31,6 +31,7 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.dav.DAVProtocol;
+import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -110,7 +111,7 @@ public class DefaultAttributesFeatureTest {
 
     @Test
     public void testFindNoWebDAV() throws Exception {
-        final Host host = new Host(new DAVProtocol(), "ftpmirror.gnu.org");
+        final Host host = new Host(new DAVSSLProtocol(), "update.cyberduck.io");
         final AtomicBoolean set = new AtomicBoolean();
         final DAVSession session = new DAVSession(host) {
             @Override
@@ -123,7 +124,7 @@ public class DefaultAttributesFeatureTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final DefaultAttributesFeature f = new DefaultAttributesFeature(session);
-        final Path file = new Path("/wget/wget-1.17.1.tar.xz", EnumSet.of(Path.Type.file));
+        final Path file = new Path("/robots.txt", EnumSet.of(Path.Type.file));
         final Attributes attributes = f.find(file);
         assertNotNull(attributes);
         session.close();
