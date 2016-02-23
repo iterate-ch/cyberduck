@@ -41,7 +41,7 @@
         <dependency>
             <groupId>com.github.lookfirst</groupId>
             <artifactId>sardine</artifactId>
-            <version>5.6.1</version>
+            <version>5.7</version>
         </dependency>
     </dependencies>
 </project>
