@@ -27,6 +27,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.time.LocalDateTime;
@@ -61,6 +62,7 @@ public class DAVTimestampFeatureTest {
     }
 
     @Test
+    @Ignore
     public void testSetTimestampOwncloud() throws Exception {
         final Host host = new Host(new DAVProtocol(), "192.168.0.23", new Credentials(
                 "owncloud", "owncloud"
