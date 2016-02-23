@@ -20,6 +20,7 @@ package ch.cyberduck.core.http;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.shared.AppendWriteFeature;
@@ -123,6 +124,9 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature {
                 @Override
                 public T getResponse() throws BackgroundException {
                     try {
+                        if(status.isCanceled()) {
+                            throw new ConnectionCanceledException();
+                        }
                         // Block the calling thread until after the full response from the server
                         // has been consumed.
                         exit.await();
