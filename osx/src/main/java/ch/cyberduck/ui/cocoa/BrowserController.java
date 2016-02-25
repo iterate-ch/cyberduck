@@ -1977,7 +1977,13 @@ public class BrowserController extends WindowController
 
     public void setSearchField(NSSearchField searchField) {
         this.searchField = searchField;
-        this.searchField.setSendsSearchStringImmediately(false);
+        if(this.searchField.respondsToSelector(Foundation.selector("setSendsWholeSearchString:"))) {
+            // calls its search action method when the user clicks the search button (or presses Return)
+            this.searchField.setSendsWholeSearchString(false);
+        }
+        if(this.searchField.respondsToSelector(Foundation.selector("setSendsSearchStringImmediately:"))) {
+            this.searchField.setSendsSearchStringImmediately(false);
+        }
         this.searchField.setTarget(this.id());
         this.searchField.setAction(Foundation.selector("searchFieldTextDidChange:"));
         // Make sure action is not sent twice.
