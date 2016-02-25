@@ -6,7 +6,7 @@
     <ProductVersion>3.9</ProductVersion>
     <ProjectGuid>00858CE5-437F-46BE-8A2E-519B552DBF7D</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
-    <OutputName>Cyberduck Installer-$(Version)</OutputName>
+    <OutputName>Cyberduck-Installer-$(Version)</OutputName>
     <OutputType>Bundle</OutputType>
     <SignOutput>true</SignOutput>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>

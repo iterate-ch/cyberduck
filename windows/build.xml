@@ -102,7 +102,7 @@
         <mkdir dir="${build.deploy}"/>
 
         <property name="setup.file"
-                  location="${build.deploy}/${app.name} Installer-${version}.${revision}"/>
+                  location="${build.deploy}/${app.name}-Installer-${version}.${revision}"/>
         <msbuild buildfile="${home}/Cyberduck Bootstrapper.wixproj">
             <target name="Build"/>
             <property name="Version" value="${version}.${revision}"/>
