@@ -15,11 +15,26 @@ package ch.cyberduck.binding.application;
  * GNU General Public License for more details.
  */
 
-public abstract class NSSearchField extends NSTextField {
+import org.rococoa.ObjCClass;
 
+public abstract class NSSearchField extends NSTextField {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSSearchField", _Class.class);
+
+    public static NSSearchField searchField() {
+        return CLASS.alloc().init();
+    }
+
+    public interface _Class extends ObjCClass {
+        NSSearchField alloc();
+    }
+
+    public abstract NSSearchField init();
 
     public abstract void setSendsSearchStringImmediately(boolean flag);
 
     public abstract boolean sendsSearchStringImmediately();
+
+    public abstract void setSendsWholeSearchString(final boolean sendsWholeSearchString);
+
+    public abstract boolean sendsWholeSearchString();
 }
