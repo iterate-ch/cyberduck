@@ -31,9 +31,6 @@ import org.apache.commons.net.ftp.FTPReply;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class FTPDefaultListService implements ListService {
 
     private final FTPSession session;

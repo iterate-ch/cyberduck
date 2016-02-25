@@ -153,7 +153,7 @@ public class FTPListServiceTest {
         l.setSymlinkTarget(new Path("/test.s", EnumSet.of(Path.Type.file)));
         list.add(l);
         assertTrue(list.contains(new Path("/test.d", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink))));
-        service.post(new Path("/", EnumSet.of(Path.Type.directory)), list);
+        service.post(new Path("/", EnumSet.of(Path.Type.directory)), list, new DisabledListProgressListener());
         assertFalse(list.contains(new Path("/test.d", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink))));
         assertTrue(list.contains(new Path("/test.d", EnumSet.of(Path.Type.directory, AbstractPath.Type.symboliclink))));
         session.close();
