@@ -17,6 +17,7 @@ package ch.cyberduck.binding.application;
 
 import org.junit.Test;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class NSSearchFieldTest {
@@ -26,6 +27,8 @@ public class NSSearchFieldTest {
         final NSSearchField f = NSSearchField.searchField();
         f.setSendsSearchStringImmediately(true);
         assertTrue(f.sendsSearchStringImmediately());
+        f.setSendsSearchStringImmediately(false);
+        assertFalse(f.sendsSearchStringImmediately());
 
     }
 
@@ -34,5 +37,7 @@ public class NSSearchFieldTest {
         final NSSearchField f = NSSearchField.searchField();
         f.setSendsWholeSearchString(true);
         assertTrue(f.sendsWholeSearchString());
+        f.setSendsWholeSearchString(false);
+        assertFalse(f.sendsWholeSearchString());
     }
 }
