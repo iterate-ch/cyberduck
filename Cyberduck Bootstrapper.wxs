@@ -20,8 +20,8 @@
                     Vital="yes">
                 <MsiProperty Name="INSTALLLOCATION" Value="[InstallFolder]"/>
             </MsiPackage>
-            <MsiPackage SourceFile="setup\wix\Bonjour.msi" Compressed="yes" InstallCondition="NOT VersionNT64"/>
-            <MsiPackage SourceFile="setup\wix\Bonjour64.msi" Compressed="yes" InstallCondition="VersionNT64"/>
+            <MsiPackage SourceFile="setup\wix\Bonjour.msi" Compressed="yes" Vital="no" InstallCondition="NOT VersionNT64"/>
+            <MsiPackage SourceFile="setup\wix\Bonjour64.msi" Compressed="yes" Vital="no" InstallCondition="VersionNT64"/>
         </Chain>
     </Bundle>
 </Wix>
