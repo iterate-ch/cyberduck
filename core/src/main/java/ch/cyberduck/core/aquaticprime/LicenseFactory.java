@@ -139,7 +139,7 @@ public abstract class LicenseFactory extends Factory<License> {
             }
             try {
                 final Class<LicenseFactory> name = (Class<LicenseFactory>) Class.forName(clazz);
-                final List<License> list = name.newInstance().open();
+                final List<License> list = new ArrayList<License>(name.newInstance().open());
                 for(Iterator<License> iter = list.iterator(); iter.hasNext(); ) {
                     final License key = iter.next();
                     if(!key.verify()) {
