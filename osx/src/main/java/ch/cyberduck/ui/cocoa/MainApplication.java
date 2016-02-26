@@ -33,6 +33,7 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.sftp.SFTPProtocol;
+import ch.cyberduck.core.spectra.SpectraProtocol;
 import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.core.threading.LoggingUncaughtExceptionHandler;
@@ -67,7 +68,7 @@ public final class MainApplication {
             final Preferences preferences = new ApplicationUserDefaultsPreferences();
             PreferencesFactory.set(preferences);
             ProtocolFactory.register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(), new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(),
-                    new GoogleStorageProtocol(), new AzureProtocol(), new IRODSProtocol());
+                    new GoogleStorageProtocol(), new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol());
 
             if(log.isInfoEnabled()) {
                 log.info(String.format("Running version %s", NSBundle.mainBundle()
