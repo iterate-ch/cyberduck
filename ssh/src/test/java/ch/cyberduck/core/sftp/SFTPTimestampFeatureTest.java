@@ -58,8 +58,6 @@ public class SFTPTimestampFeatureTest {
         final long modified = System.currentTimeMillis();
         new SFTPTimestampFeature(session).setTimestamp(test, modified);
         assertEquals(modified / 1000 * 1000, session.list(home, new DisabledListProgressListener()).get(test).attributes().getModificationDate(), 0L);
-        assertEquals(-1L, session.list(home, new DisabledListProgressListener()).get(test).attributes().getCreationDate(), 0L);
-        assertEquals(-1L, session.list(home, new DisabledListProgressListener()).get(test).attributes().getAccessedDate(), 0L);
         new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {
