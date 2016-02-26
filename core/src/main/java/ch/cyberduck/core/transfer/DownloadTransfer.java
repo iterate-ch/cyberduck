@@ -210,12 +210,7 @@ public class DownloadTransfer extends Transfer {
                         }
                     }
                     // Prompt user to choose a filter
-                    final TransferAction selected = prompt.prompt(download);
-                    if(selected.equals(TransferAction.overwrite)) {
-                        // Move files to trash instead to delete
-                        return TransferAction.trash;
-                    }
-                    return selected;
+                    return prompt.prompt(download);
                 }
             }
             // No files exist yet therefore it is most straightforward to use the overwrite action
