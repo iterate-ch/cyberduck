@@ -47,9 +47,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class FTPListServiceTest {
 
@@ -64,12 +61,9 @@ public class FTPListServiceTest {
         final ListService service = new FTPListService(session, null, TimeZone.getDefault());
         final Path directory = session.workdir();
         final AttributedList<Path> list = service.list(directory, new DisabledListProgressListener() {
-            int size = 0;
-
             @Override
             public void chunk(final Path parent, AttributedList<Path> list) throws ListCanceledException {
-                assertEquals(++size, list.size());
-                assertNotNull(list.get(list.size() - 1));
+                assertFalse(list.isEmpty());
             }
         });
         assertTrue(list.contains(
@@ -93,11 +87,9 @@ public class FTPListServiceTest {
         service.remove(FTPListService.Command.mlsd);
         final Path directory = session.workdir();
         final AttributedList<Path> list = service.list(directory, new DisabledListProgressListener() {
-            int size = 0;
-
             @Override
             public void chunk(final Path parent, AttributedList<Path> list) throws ListCanceledException {
-                assertEquals(++size, list.size());
+                assertFalse(list.isEmpty());
             }
         });
         assertTrue(list.contains(
