@@ -3,6 +3,13 @@ http://cyberduck.io/
 
 Changelog. Last modified: $Date$
 
+4.8.2 [https://trac.cyberduck.io/milestone/4.8.2]
+- [Bugfix] Installer may fail if newer Bonjour Zeroconf dependency is installed (Windows)
+- [Bugfix] Disable trashing file on overwrite download (#9298)
+
+4.8.1 [https://trac.cyberduck.io/milestone/4.8.1]
+- [Bugfix] Restore compatibility with OS X 10.7 - 10.9 (Mac)
+
 4.8 [https://trac.cyberduck.io/milestone/4.8]
 - [Feature] Multiple connections for transfers enabled by default
 - [Feature] Recursively search for files (#8345)
