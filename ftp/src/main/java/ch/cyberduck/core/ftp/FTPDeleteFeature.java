@@ -25,9 +25,6 @@ import ch.cyberduck.core.features.Delete;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class FTPDeleteFeature implements Delete {
 
     private FTPSession session;
@@ -47,6 +44,10 @@ public class FTPDeleteFeature implements Delete {
                     }
                 }
                 else if(file.isDirectory()) {
+                    // Change working directory to parent
+                    if(!session.getClient().changeWorkingDirectory(file.getParent().getAbsolute())) {
+                        throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
+                    }
                     if(!session.getClient().removeDirectory(file.getAbsolute())) {
                         throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
                     }
