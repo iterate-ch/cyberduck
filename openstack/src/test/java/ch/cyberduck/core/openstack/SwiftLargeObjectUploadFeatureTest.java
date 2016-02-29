@@ -37,9 +37,6 @@ import ch.iterate.openstack.swift.model.StorageObject;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class SwiftLargeObjectUploadFeatureTest {
 
@@ -77,7 +74,8 @@ public class SwiftLargeObjectUploadFeatureTest {
         final SwiftLargeObjectUploadFeature upload = new SwiftLargeObjectUploadFeature(session,
                 regionService,
                 new SwiftObjectListService(session, regionService),
-                new SwiftSegmentService(session, ".segments-test/"), new SwiftWriteFeature(session, regionService), (long) (content.length / 2), 4);
+                new SwiftSegmentService(session, ".segments-test/"),
+                new SwiftWriteFeature(session, regionService), (long) (content.length / 2), 4);
 
         final StorageObject object = upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status, new DisabledConnectionCallback());
