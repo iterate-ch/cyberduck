@@ -182,60 +182,62 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             status.setPermission(permission);
         }
         status.setAcl(attributes.getAcl());
-        if(file.isFile()) {
-            if(session.getTransferType() == Host.TransferType.concurrent) {
-                // Make segments
-                if(status.getLength() >= preferences.getLong("queue.download.segments.threshold")
-                        && status.getLength() > preferences.getLong("queue.download.segments.size")) {
-                    final Download read = session.getFeature(Download.class);
-                    if(read.offset(file)) {
-                        if(log.isInfoEnabled()) {
-                            log.info(String.format("Split download %s into segments", local));
-                        }
-                        long remaining = status.getLength();
-                        long offset = 0;
-                        // Part size from default setting of size divided by maximum number of connections
-                        long partsize = Math.max(
-                                preferences.getLong("queue.download.segments.size"),
-                                status.getLength() / preferences.getInteger("queue.maxtransfers"));
-                        // Sorted list
-                        final List<TransferStatus> segments = new ArrayList<TransferStatus>();
-                        for(int segmentNumber = 1; remaining > 0; segmentNumber++) {
-                            final Local renamed = LocalFactory.get(
-                                    LocalFactory.get(local.getParent(), String.format("%s.cyberducksegment", local.getName())),
-                                    String.format("%s-%d.cyberducksegment", local.getName(), segmentNumber));
-                            boolean skip = false;
-                            // Last part can be less than 5 MB. Adjust part size.
-                            final Long length = Math.min(partsize, remaining);
-                            if(status.isAppend()) {
-                                if(log.isInfoEnabled()) {
-                                    log.info(String.format("Determine if part number %d can be skipped", segmentNumber));
-                                }
-                                if(renamed.exists()) {
-                                    if(renamed.attributes().getSize() == length) {
-                                        if(log.isInfoEnabled()) {
-                                            log.info(String.format("Skip completed segment number %d", segmentNumber));
+        if(options.segments) {
+            if(file.isFile()) {
+                if(session.getTransferType() == Host.TransferType.concurrent) {
+                    // Make segments
+                    if(status.getLength() >= preferences.getLong("queue.download.segments.threshold")
+                            && status.getLength() > preferences.getLong("queue.download.segments.size")) {
+                        final Download read = session.getFeature(Download.class);
+                        if(read.offset(file)) {
+                            if(log.isInfoEnabled()) {
+                                log.info(String.format("Split download %s into segments", local));
+                            }
+                            long remaining = status.getLength();
+                            long offset = 0;
+                            // Part size from default setting of size divided by maximum number of connections
+                            long partsize = Math.max(
+                                    preferences.getLong("queue.download.segments.size"),
+                                    status.getLength() / preferences.getInteger("queue.maxtransfers"));
+                            // Sorted list
+                            final List<TransferStatus> segments = new ArrayList<TransferStatus>();
+                            for(int segmentNumber = 1; remaining > 0; segmentNumber++) {
+                                final Local renamed = LocalFactory.get(
+                                        LocalFactory.get(local.getParent(), String.format("%s.cyberducksegment", local.getName())),
+                                        String.format("%s-%d.cyberducksegment", local.getName(), segmentNumber));
+                                boolean skip = false;
+                                // Last part can be less than 5 MB. Adjust part size.
+                                final Long length = Math.min(partsize, remaining);
+                                if(status.isAppend()) {
+                                    if(log.isInfoEnabled()) {
+                                        log.info(String.format("Determine if part number %d can be skipped", segmentNumber));
+                                    }
+                                    if(renamed.exists()) {
+                                        if(renamed.attributes().getSize() == length) {
+                                            if(log.isInfoEnabled()) {
+                                                log.info(String.format("Skip completed segment number %d", segmentNumber));
+                                            }
+                                            skip = true;
                                         }
-                                        skip = true;
                                     }
                                 }
-                            }
-                            if(!skip) {
-                                final TransferStatus segment = new TransferStatus()
-                                        .segment(true)
-                                        .append(true)
-                                        .skip(offset)
-                                        .length(length)
-                                        .rename(renamed);
-                                if(log.isDebugEnabled()) {
-                                    log.debug(String.format("Adding segment %s", segment));
+                                if(!skip) {
+                                    final TransferStatus segment = new TransferStatus()
+                                            .segment(true)
+                                            .append(true)
+                                            .skip(offset)
+                                            .length(length)
+                                            .rename(renamed);
+                                    if(log.isDebugEnabled()) {
+                                        log.debug(String.format("Adding segment %s", segment));
+                                    }
+                                    segments.add(segment);
                                 }
-                                segments.add(segment);
+                                remaining -= length;
+                                offset += length;
                             }
-                            remaining -= length;
-                            offset += length;
+                            status.withSegments(segments);
                         }
-                        status.withSegments(segments);
                     }
                 }
             }
