@@ -27,7 +27,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3DirectoryFeature;
 import ch.cyberduck.core.s3.S3ObjectListService;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -137,7 +136,7 @@ public class SpectraObjectListServiceTest {
         placeholder.setType(EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         final AttributedList<Path> list = new S3ObjectListService(session).list(placeholder, new DisabledListProgressListener());
         assertTrue(list.isEmpty());
-        new S3DefaultDeleteFeature(session).delete(Arrays.asList(placeholder), new DisabledLoginCallback(), new Delete.Callback() {
+        new SpectraDeleteFeature(session).delete(Arrays.asList(placeholder), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {
             }
