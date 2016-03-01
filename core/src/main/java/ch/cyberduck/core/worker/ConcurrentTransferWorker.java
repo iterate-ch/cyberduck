@@ -51,9 +51,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * @version $Id$
- */
 public class ConcurrentTransferWorker extends AbstractTransferWorker {
     private static final Logger log = Logger.getLogger(ConcurrentTransferWorker.class);
 
