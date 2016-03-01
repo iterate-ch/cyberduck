@@ -127,7 +127,10 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                         jobs.add(read.getJobId());
                         for(Map.Entry<Path, TransferStatus> item : files.entrySet()) {
                             if(container.getKey().equals(containerService.getContainer(item.getKey()))) {
-                                item.getValue().parameters(Collections.singletonMap(JOBID_IDENTIFIER, read.getJobId().toString()));
+                                final TransferStatus status = item.getValue();
+                                final Map<String, String> parameters = new HashMap<>(status.getParameters());
+                                parameters.put(JOBID_IDENTIFIER, read.getJobId().toString());
+                                status.parameters(parameters);
                             }
                         }
                         break;
@@ -141,7 +144,9 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                                 if(!status.isExists()) {
                                     this.allocate(item.getKey(), write.getJobId().toString());
                                 }
-                                status.parameters(Collections.singletonMap(JOBID_IDENTIFIER, write.getJobId().toString()));
+                                final Map<String, String> parameters = new HashMap<>(status.getParameters());
+                                parameters.put(JOBID_IDENTIFIER, write.getJobId().toString());
+                                status.parameters(parameters);
                             }
                         }
                         break;
