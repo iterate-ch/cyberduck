@@ -34,7 +34,6 @@ import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.s3.RequestEntityRestStorageService;
-import ch.cyberduck.core.s3.S3MultipleDeleteFeature;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.s3.S3SingleUploadService;
@@ -80,7 +79,7 @@ public class SpectraSession extends S3Session {
             return (T) new DisabledUrlProvider();
         }
         if(type == Delete.class) {
-            return (T) new S3MultipleDeleteFeature(this);
+            return (T) new SpectraDeleteFeature(this);
         }
         if(type == Copy.class) {
             // Disable copy operation not supported
