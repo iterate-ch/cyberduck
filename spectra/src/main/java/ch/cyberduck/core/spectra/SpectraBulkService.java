@@ -26,7 +26,6 @@ import ch.cyberduck.core.exception.RedirectException;
 import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -71,7 +70,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
     private static final String JOBID_IDENTIFIER = "job";
 
     public SpectraBulkService(final SpectraSession session) {
-        this(session, new S3DefaultDeleteFeature(session));
+        this(session, session.getFeature(Delete.class));
     }
 
     public SpectraBulkService(final SpectraSession session, final Delete delete) {
@@ -80,7 +79,8 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
     }
 
     /**
-     * Deletes the file if it already exists for upload type
+     * Deletes the file if it already exists for upload type. Create a job to stream PUT object requests. Clients should use this before
+     * putting objects to physical data stores.
      *
      * @param type  Transfer type
      * @param files Files and status
@@ -257,6 +257,10 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
         }
     }
 
+    /**
+     * Allocate a specific job chunk that is part of a PUT job before beginning the PUT operation. This avoids the HTTP 307 retries on the
+     * object PUTs and increases performance.
+     */
     private boolean tryAllocateChunk(final String job) throws BackgroundException {
         final Ds3Client client = new SpectraClientBuilder().wrap(session);
         try {
