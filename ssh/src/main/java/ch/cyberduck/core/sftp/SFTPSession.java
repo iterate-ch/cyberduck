@@ -180,6 +180,7 @@ public class SFTPSession extends Session<SSHClient> {
         connection.addAlgorithmsVerifier(new AlgorithmsVerifier() {
             @Override
             public boolean verify(final NegotiatedAlgorithms negotiatedAlgorithms) {
+                log.info(String.format("Negotiated algorithms %s", negotiatedAlgorithms));
                 algorithms = negotiatedAlgorithms;
                 return true;
             }
