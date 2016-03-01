@@ -56,14 +56,8 @@ public class SpectraWriteFeature extends S3WriteFeature {
         // when doing a PUT object as part of a bulk PUT job
         final Map<String, String> parameters = new HashMap<>(status.getParameters());
         // Job parameter already present from bulk service
-        if(status.isAppend()) {
-            parameters.put("offset", Long.toString(status.getOffset()));
-            status.parameters(parameters);
-        }
-        else {
-            parameters.put("offset", Long.toString(status.getOffset()));
-            status.parameters(parameters);
-        }
+        parameters.put("offset", Long.toString(status.getOffset()));
+        status.parameters(parameters);
         return super.write(file, status);
     }
 
