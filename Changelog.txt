@@ -3,6 +3,9 @@ http://cyberduck.io/
 
 Changelog. Last modified: $Date$
 
+4.8.3 [https://trac.cyberduck.io/milestone/4.8.3]
+- [Bugfix] Fix use of unlimited strength cryptography for strong ciphers (SFTP) (#9325)
+
 4.8.2 [https://trac.cyberduck.io/milestone/4.8.2]
 - [Bugfix] Installer may fail if newer Bonjour Zeroconf dependency is installed (Windows)
 - [Bugfix] Disable trashing file on overwrite download (#9298)
