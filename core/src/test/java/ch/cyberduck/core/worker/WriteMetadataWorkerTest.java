@@ -19,15 +19,13 @@ import java.util.Map;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 public class WriteMetadataWorkerTest {
 
     @Test
     public void testEmpty() throws Exception {
         final List<Path> files = new ArrayList<Path>();
-        WriteMetadataWorker worker = new WriteMetadataWorker(files, Collections.<String, String>emptyMap(), new DisabledProgressListener()) {
+        WriteMetadataWorker worker = new WriteMetadataWorker(files,
+                Collections.<String, String>emptyMap(), false, new DisabledProgressListener()) {
             @Override
             public void cleanup(final Boolean result) {
                 fail();
@@ -65,7 +63,7 @@ public class WriteMetadataWorkerTest {
         files.add(p);
         final Map<String, String> updated = new HashMap<String, String>();
         updated.put("key", "v1");
-        WriteMetadataWorker worker = new WriteMetadataWorker(files, updated, new DisabledProgressListener()) {
+        WriteMetadataWorker worker = new WriteMetadataWorker(files, updated, false, new DisabledProgressListener()) {
             @Override
             public void cleanup(final Boolean map) {
                 fail();
@@ -104,7 +102,7 @@ public class WriteMetadataWorkerTest {
         final Map<String, String> updated = new HashMap<String, String>();
         updated.put("nullified", null);
         updated.put("key", "v2");
-        WriteMetadataWorker worker = new WriteMetadataWorker(files, updated, new DisabledProgressListener()) {
+        WriteMetadataWorker worker = new WriteMetadataWorker(files, updated, false, new DisabledProgressListener()) {
             @Override
             public void cleanup(final Boolean map) {
                 fail();

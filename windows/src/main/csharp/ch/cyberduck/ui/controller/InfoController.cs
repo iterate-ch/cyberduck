@@ -2606,7 +2606,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly InfoController _infoController;
 
                 public InnerWriteMetadataWorker(InfoController infoController, List files, Map metadata)
-                    : base(files, metadata, infoController._controller)
+                    : base(files, metadata, true, infoController._controller)
                 {
                     _infoController = infoController;
                 }
