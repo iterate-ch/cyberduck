@@ -14,18 +14,42 @@
 
 package ch.cyberduck.core.spectra;
 
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.s3.S3MultipartService;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.s3.S3WriteFeature;
+import ch.cyberduck.core.shared.DefaultAttributesFeature;
+import ch.cyberduck.core.shared.DefaultFindFeature;
+
+import org.apache.log4j.Logger;
 
 public class SpectraWriteFeature extends S3WriteFeature {
+    private static final Logger log = Logger.getLogger(SpectraWriteFeature.class);
+
+    private final Find finder;
+
+    private final Attributes attributes;
 
     public SpectraWriteFeature(final SpectraSession session) {
-        super(session);
+        this(session, new DefaultFindFeature(session), new DefaultAttributesFeature(session));
     }
 
-    public SpectraWriteFeature(final SpectraSession session, final S3MultipartService multipartService, final Find finder, final Attributes attributes) {
-        super(session, multipartService, finder, attributes);
+    public SpectraWriteFeature(final SpectraSession session, final Find finder, final Attributes attributes) {
+        super(session);
+        this.finder = finder;
+        this.attributes = attributes;
+    }
+
+    @Override
+    public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
+        if(finder.withCache(cache).find(file)) {
+            final PathAttributes attributes = this.attributes.withCache(cache).find(file);
+            return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());
+        }
+        return Write.notfound;
     }
 }

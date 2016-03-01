@@ -35,6 +35,7 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -55,7 +56,7 @@ import static org.junit.Assert.*;
 public class SpectraWriteFeatureTest {
 
     @Test
-    public void testOverwrite() throws Exception {
+    public void testWriteOverwrite() throws Exception {
         final Host host = new Host(new SpectraProtocol() {
             @Override
             public Scheme getScheme() {
@@ -73,14 +74,18 @@ public class SpectraWriteFeatureTest {
         final byte[] content = RandomStringUtils.random(1000).getBytes();
         final TransferStatus status = new TransferStatus().length(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content)));
+        // Allocate
+        final SpectraBulkService bulk = new SpectraBulkService(session);
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, status));
         {
             final OutputStream out = new SpectraWriteFeature(session).write(test, status);
             assertNotNull(out);
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             IOUtils.closeQuietly(out);
-        }// Overwrite
+        }
+        // Overwrite
         {
-            final OutputStream out = new SpectraWriteFeature(session).write(test, status);
+            final OutputStream out = new SpectraWriteFeature(session).write(test, status.exists(true));
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             IOUtils.closeQuietly(out);
         }
@@ -111,6 +116,7 @@ public class SpectraWriteFeatureTest {
         final byte[] content = RandomStringUtils.random(1000).getBytes();
         final TransferStatus status = new TransferStatus().length(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content)));
+        // Make 0-byte file
         new SpectraTouchFeature(session).touch(test);
         final OutputStream out = new SpectraWriteFeature(session).write(test, status);
         assertNotNull(out);
@@ -133,7 +139,7 @@ public class SpectraWriteFeatureTest {
             }
         }), new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
-        final SpectraWriteFeature feature = new SpectraWriteFeature(session, null, new Find() {
+        final SpectraWriteFeature feature = new SpectraWriteFeature(session, new Find() {
             @Override
             public boolean find(final Path file) throws BackgroundException {
                 return true;
@@ -167,7 +173,7 @@ public class SpectraWriteFeatureTest {
             }
         }), new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
-        final SpectraWriteFeature feature = new SpectraWriteFeature(session, null, new Find() {
+        final SpectraWriteFeature feature = new SpectraWriteFeature(session, new Find() {
             @Override
             public boolean find(final Path file) throws BackgroundException {
                 return true;
