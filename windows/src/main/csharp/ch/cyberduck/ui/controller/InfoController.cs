@@ -2596,7 +2596,7 @@ namespace Ch.Cyberduck.Ui.Controller
             public WriteMetadataBackgroundAction(BrowserController controller, InfoController infoController)
                 : base(
                     controller, controller.Session,
-                    new InnerWriteMetadataWorker(infoController, Utils.ConvertToJavaList(infoController._files), true,
+                    new InnerWriteMetadataWorker(infoController, Utils.ConvertToJavaList(infoController._files),
                         infoController.ConvertMetadataToMap()))
             {
             }
@@ -2606,7 +2606,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly InfoController _infoController;
 
                 public InnerWriteMetadataWorker(InfoController infoController, List files, Map metadata)
-                    : base(files, metadata, infoController._controller)
+                    : base(files, metadata, true, infoController._controller)
                 {
                     _infoController = infoController;
                 }
