@@ -132,7 +132,8 @@ public abstract class Session<C> implements TranscriptListener {
 
     /**
      * Send the authentication credentials to the server. The connection must be opened first.
-     *  @param keychain Password store
+     *
+     * @param keychain Password store
      * @param prompt   Prompt
      * @param cancel   Cancel callback
      * @param cache    Directory listing cache
@@ -283,7 +284,13 @@ public abstract class Session<C> implements TranscriptListener {
         if(log.isInfoEnabled()) {
             log.info(message);
         }
-        listener.log(request, message);
+        switch(state) {
+            case opening:
+            case open:
+            case closing:
+                listener.log(request, message);
+                break;
+        }
     }
 
     /**
