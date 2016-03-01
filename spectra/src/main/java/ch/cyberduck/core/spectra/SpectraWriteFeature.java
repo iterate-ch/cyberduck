@@ -21,11 +21,17 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
+import org.jets3t.service.model.StorageObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class SpectraWriteFeature extends S3WriteFeature {
     private static final Logger log = Logger.getLogger(SpectraWriteFeature.class);
@@ -45,10 +51,27 @@ public class SpectraWriteFeature extends S3WriteFeature {
     }
 
     @Override
+    public ResponseOutputStream<StorageObject> write(final Path file, final TransferStatus status) throws BackgroundException {
+        // This is an Amazon S3 compatible operation with additional request parameters. The job and offset parameters should always be used
+        // when doing a PUT object as part of a bulk PUT job
+        final Map<String, String> parameters = new HashMap<>(status.getParameters());
+        // Job parameter already present from bulk service
+        if(status.isAppend()) {
+            parameters.put("offset", Long.toString(status.getOffset()));
+            status.parameters(parameters);
+        }
+        else {
+            parameters.put("offset", Long.toString(status.getOffset()));
+            status.parameters(parameters);
+        }
+        return super.write(file, status);
+    }
+
+    @Override
     public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
         if(finder.withCache(cache).find(file)) {
             final PathAttributes attributes = this.attributes.withCache(cache).find(file);
-            return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());
+            return new Append(attributes.getSize()).withChecksum(attributes.getChecksum());
         }
         return Write.notfound;
     }
