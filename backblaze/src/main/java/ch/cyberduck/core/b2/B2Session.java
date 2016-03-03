@@ -1,0 +1,139 @@
+package ch.cyberduck.core.b2;
+
+/*
+ * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.HostPasswordStore;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.proxy.ProxyFinder;
+import ch.cyberduck.core.shared.DisabledMoveFeature;
+import ch.cyberduck.core.ssl.X509KeyManager;
+import ch.cyberduck.core.ssl.X509TrustManager;
+import ch.cyberduck.core.threading.CancelCallback;
+
+import org.apache.log4j.Logger;
+
+import javax.net.SocketFactory;
+import java.io.IOException;
+
+import synapticloop.b2.B2Client;
+import synapticloop.b2.exception.B2Exception;
+
+public class B2Session extends HttpSession<B2Client> {
+    private static final Logger log = Logger.getLogger(B2Session.class);
+
+    public B2Session(final Host host, final X509TrustManager trust, final X509KeyManager key) {
+        super(host, trust, key);
+    }
+
+    public B2Session(final Host host, final X509TrustManager trust, final X509KeyManager key, final ProxyFinder proxyFinder) {
+        super(host, trust, key, proxyFinder);
+    }
+
+    public B2Session(final Host host, final X509TrustManager trust, final X509KeyManager key, final SocketFactory socketFactory) {
+        super(host, trust, key, socketFactory);
+    }
+
+    @Override
+    public B2Client connect(final HostKeyCallback key) throws BackgroundException {
+        return new B2Client(builder.build(this).build());
+    }
+
+    @Override
+    public void logout() throws BackgroundException {
+        try {
+            client.close();
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
+    }
+
+    @Override
+    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
+        if(directory.isRoot()) {
+            return new B2BucketListService(this).list(directory, listener);
+        }
+        else {
+            return new B2ObjectListService(this).list(directory, listener);
+        }
+    }
+
+    @Override
+    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
+                      final Cache cache) throws BackgroundException {
+        try {
+            client.authenticate(host.getCredentials().getUsername(), host.getCredentials().getPassword());
+        }
+        catch(B2Exception e) {
+            throw new B2ExceptionMappingService().map(e);
+        }
+    }
+
+    @Override
+    public <T> T getFeature(final Class<T> type) {
+        if(type == Read.class) {
+            return (T) new B2ReadFeature(this);
+        }
+        if(type == Upload.class) {
+            return (T) new B2SingleUploadService(this);
+        }
+        if(type == Write.class) {
+            return (T) new B2WriteFeature(this);
+        }
+        if(type == Directory.class) {
+            return (T) new B2DirectoryFeature(this);
+        }
+        if(type == Delete.class) {
+            return (T) new B2DeleteFeature(this);
+        }
+        if(type == Headers.class) {
+            return (T) new B2MetadataFeature(this);
+        }
+        if(type == Move.class) {
+            return (T) new DisabledMoveFeature();
+        }
+        if(type == UrlProvider.class) {
+            return (T) new B2UrlProvider(this);
+        }
+        if(type == Attributes.class) {
+            return (T) new B2AttributesFeature(this);
+        }
+        if(type == Home.class) {
+            return (T) new B2HomeFinderService(this);
+        }
+        return super.getFeature(type);
+
+    }
+}
