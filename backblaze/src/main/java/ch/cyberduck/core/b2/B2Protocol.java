@@ -43,4 +43,19 @@ public class B2Protocol extends AbstractProtocol {
     public String getPasswordPlaceholder() {
         return "Application Key";
     }
+
+    @Override
+    public String getDefaultHostname() {
+        return super.getDefaultHostname();
+    }
+
+    @Override
+    public boolean isHostnameConfigurable() {
+        return false;
+    }
+
+    @Override
+    public boolean isPortConfigurable() {
+        return false;
+    }
 }
