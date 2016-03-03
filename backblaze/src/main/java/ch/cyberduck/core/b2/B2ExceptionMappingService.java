@@ -22,12 +22,16 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.QuotaException;
+import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 
 import org.apache.http.HttpStatus;
+
+import java.time.Duration;
 
 import synapticloop.b2.exception.B2Exception;
 
 public class B2ExceptionMappingService extends AbstractExceptionMappingService<B2Exception> {
+
     @Override
     public BackgroundException map(final B2Exception e) {
         final StringBuilder buffer = new StringBuilder();
@@ -62,6 +66,10 @@ public class B2ExceptionMappingService extends AbstractExceptionMappingService<B
             case HttpStatus.SC_NOT_IMPLEMENTED:
                 return new InteroperabilityException(buffer.toString(), e);
             case HttpStatus.SC_INTERNAL_SERVER_ERROR:
+                switch(e.getMessage()) {
+                    case "no_uploads_avaliable":
+                        return new RetriableAccessDeniedException(buffer.toString(), Duration.ofSeconds(1));
+                }
                 return new InteroperabilityException(buffer.toString(), e);
         }
         return new BackgroundException(buffer.toString(), e);
