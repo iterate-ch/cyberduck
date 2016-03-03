@@ -58,4 +58,9 @@ public class B2Protocol extends AbstractProtocol {
     public boolean isPortConfigurable() {
         return false;
     }
+
+    @Override
+    public String disk() {
+        return String.format("%s.tiff", "ftp");
+    }
 }
