@@ -59,7 +59,7 @@ public final class URIEncoder {
             if(StringUtils.endsWith(p, String.valueOf(Path.DELIMITER))) {
                 b.append(Path.DELIMITER);
             }
-            // Becuase URLEncoder uses <code>application/x-www-form-urlencoded</code> we have to replace these
+            // Because URLEncoder uses <code>application/x-www-form-urlencoded</code> we have to replace these
             // for proper URI percented encoding.
             return b.toString().replace("+", "%20").replace("*", "%2A").replace("%7E", "~");
         }
