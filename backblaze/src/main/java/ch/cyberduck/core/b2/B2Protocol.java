@@ -60,6 +60,11 @@ public class B2Protocol extends AbstractProtocol {
     }
 
     @Override
+    public String[] getSchemes() {
+        return new String[]{this.getScheme().name(), "b2"};
+    }
+
+    @Override
     public String disk() {
         return String.format("%s.tiff", "ftp");
     }
