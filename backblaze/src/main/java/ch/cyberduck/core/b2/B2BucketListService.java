@@ -15,6 +15,7 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
@@ -49,6 +50,11 @@ public class B2BucketListService implements ListService {
             for(B2BucketResponse bucket : session.getClient().listBuckets()) {
                 final PathAttributes attributes = new PathAttributes();
                 attributes.setVersionId(bucket.getBucketId());
+                switch(bucket.getBucketType()) {
+                    case allPublic:
+                        attributes.setAcl(new Acl(new Acl.GroupUser(Acl.GroupUser.EVERYONE, false), new Acl.Role(Acl.Role.READ)));
+                        break;
+                }
                 buckets.add(new Path(bucket.getBucketName(), EnumSet.of(Path.Type.directory, Path.Type.volume), attributes));
             }
             listener.chunk(directory, buckets);
