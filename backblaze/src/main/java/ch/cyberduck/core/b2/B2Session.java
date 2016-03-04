@@ -31,13 +31,11 @@ import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Home;
-import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.proxy.ProxyFinder;
-import ch.cyberduck.core.shared.DisabledMoveFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -123,9 +121,6 @@ public class B2Session extends HttpSession<B2Client> {
         }
         if(type == Delete.class) {
             return (T) new B2DeleteFeature(this);
-        }
-        if(type == Move.class) {
-            return (T) new DisabledMoveFeature();
         }
         if(type == UrlProvider.class) {
             return (T) new B2UrlProvider(this);
