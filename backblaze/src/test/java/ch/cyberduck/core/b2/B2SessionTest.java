@@ -15,8 +15,15 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
@@ -34,5 +41,15 @@ public class B2SessionTest {
         assertNotNull(session.getFeature(AclPermission.class));
         assertNotNull(session.getFeature(Directory.class));
         assertNotNull(session.getFeature(Delete.class));
+    }
+
+    @Test(expected = LoginFailureException.class)
+    public void testLoginFailure() throws Exception {
+        final Host host = new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(), new Credentials(
+                System.getProperties().getProperty("b2.user"), "s"
+        ));
+        final B2Session session = new B2Session(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
     }
 }
