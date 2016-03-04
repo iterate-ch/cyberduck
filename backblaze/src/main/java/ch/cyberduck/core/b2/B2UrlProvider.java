@@ -39,10 +39,12 @@ public class B2UrlProvider extends DefaultUrlProvider {
     @Override
     public DescriptiveUrlBag toUrl(final Path file) {
         final DescriptiveUrlBag urls = super.toUrl(file);
-        final String download = String.format("%s/file/%s/%s", session.getClient().getDownloadUrl(),
-                URIEncoder.encode(containerService.getContainer(file).getName()),
-                URIEncoder.encode(containerService.getKey(file)));
-        urls.add(new DescriptiveUrl(URI.create(download), DescriptiveUrl.Type.http));
+        if(file.isFile()) {
+            final String download = String.format("%s/file/%s/%s", session.getClient().getDownloadUrl(),
+                    URIEncoder.encode(containerService.getContainer(file).getName()),
+                    URIEncoder.encode(containerService.getKey(file)));
+            urls.add(new DescriptiveUrl(URI.create(download), DescriptiveUrl.Type.http));
+        }
         return urls;
     }
 }
