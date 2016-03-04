@@ -18,20 +18,21 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.RootListService;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.log4j.Logger;
 
 import java.util.EnumSet;
+import java.util.List;
 
 import synapticloop.b2.exception.B2Exception;
 import synapticloop.b2.response.B2BucketResponse;
 
-public class B2BucketListService implements ListService {
+public class B2BucketListService implements RootListService {
     private static final Logger log = Logger.getLogger(B2BucketListService.class);
 
     private final PathContainerService containerService
@@ -44,7 +45,7 @@ public class B2BucketListService implements ListService {
     }
 
     @Override
-    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
+    public List<Path> list(final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> buckets = new AttributedList<Path>();
             for(B2BucketResponse bucket : session.getClient().listBuckets()) {
@@ -57,11 +58,12 @@ public class B2BucketListService implements ListService {
                 }
                 buckets.add(new Path(bucket.getBucketName(), EnumSet.of(Path.Type.directory, Path.Type.volume), attributes));
             }
-            listener.chunk(directory, buckets);
+            listener.chunk(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), buckets);
             return buckets;
         }
         catch(B2Exception e) {
-            throw new B2ExceptionMappingService().map("Listing directory {0} failed", e, directory);
+            throw new B2ExceptionMappingService().map("Listing directory {0} failed", e,
+                    new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)));
         }
     }
 }

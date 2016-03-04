@@ -26,10 +26,10 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
@@ -83,7 +83,7 @@ public class B2Session extends HttpSession<B2Client> {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         if(directory.isRoot()) {
-            return new B2BucketListService(this).list(directory, listener);
+            return new AttributedList<Path>(new B2BucketListService(this).list(listener));
         }
         else {
             return new B2ObjectListService(this).list(directory, listener);
@@ -118,9 +118,6 @@ public class B2Session extends HttpSession<B2Client> {
         if(type == Delete.class) {
             return (T) new B2DeleteFeature(this);
         }
-        if(type == Headers.class) {
-            return (T) new B2MetadataFeature(this);
-        }
         if(type == Move.class) {
             return (T) new DisabledMoveFeature();
         }
@@ -133,7 +130,9 @@ public class B2Session extends HttpSession<B2Client> {
         if(type == Home.class) {
             return (T) new B2HomeFinderService(this);
         }
+        if(type == AclPermission.class) {
+            return (T) new B2BucketTypeFeature(this);
+        }
         return super.getFeature(type);
-
     }
 }
