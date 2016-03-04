@@ -22,6 +22,7 @@ import ch.cyberduck.binding.application.NSApplication;
 import ch.cyberduck.binding.foundation.NSBundle;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.azure.AzureProtocol;
+import ch.cyberduck.core.b2.B2Protocol;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.ftp.FTPProtocol;
@@ -68,7 +69,7 @@ public final class MainApplication {
             final Preferences preferences = new ApplicationUserDefaultsPreferences();
             PreferencesFactory.set(preferences);
             ProtocolFactory.register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(), new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(),
-                    new GoogleStorageProtocol(), new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol());
+                    new GoogleStorageProtocol(), new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new B2Protocol());
 
             if(log.isInfoEnabled()) {
                 log.info(String.format("Running version %s", NSBundle.mainBundle()
