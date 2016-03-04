@@ -81,7 +81,17 @@ public class S3UrlProvider implements UrlProvider {
                 // Default signed URL expiring in 24 hours.
                 list.add(this.sign(file, (int) TimeUnit.SECONDS.toSeconds(PreferencesFactory.get().getInteger("s3.url.expire.seconds"))));
                 // 1 Week
-                list.add(this.sign(file, (int) TimeUnit.DAYS.toSeconds(6)));
+                list.add(this.sign(file, (int) TimeUnit.DAYS.toSeconds(7)));
+                switch(session.getSignatureVersion()) {
+                    case AWS2:
+                        // 1 Month
+                        list.add(this.sign(file, (int) TimeUnit.DAYS.toSeconds(30)));
+                        // 1 Year
+                        list.add(this.sign(file, (int) TimeUnit.DAYS.toSeconds(365)));
+                        break;
+                    case AWS4HMACSHA256:
+                        break;
+                }
             }
             // Torrent
             list.add(new DescriptiveUrl(URI.create(new S3TorrentUrlProvider(session.getHost()).create(
