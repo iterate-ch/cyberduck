@@ -24,6 +24,7 @@ import org.apache.http.entity.ByteArrayEntity;
 
 import java.util.Collections;
 
+import synapticloop.b2.BucketType;
 import synapticloop.b2.exception.B2Exception;
 
 public class B2DirectoryFeature implements Directory {
@@ -45,11 +46,16 @@ public class B2DirectoryFeature implements Directory {
     @Override
     public void mkdir(final Path file, final String region) throws BackgroundException {
         try {
-            session.getClient().uploadFile(
-                    new B2FileidProvider(session).getFileid(containerService.getContainer(file)),
-                    String.format("%s/.bzEmpty", containerService.getKey(file)),
-                    new ByteArrayEntity(new byte[0]), "adc83b19e793491b1c6ea0fd8b46cd9f32e592fc",
-                    null, Collections.emptyMap());
+            if(containerService.isContainer(file)) {
+                session.getClient().createBucket(containerService.getContainer(file).getName(), BucketType.allPrivate);
+            }
+            else {
+                session.getClient().uploadFile(
+                        new B2FileidProvider(session).getFileid(containerService.getContainer(file)),
+                        String.format("%s/.bzEmpty", containerService.getKey(file)),
+                        new ByteArrayEntity(new byte[0]), "adc83b19e793491b1c6ea0fd8b46cd9f32e592fc",
+                        null, Collections.emptyMap());
+            }
         }
         catch(B2Exception e) {
             throw new B2ExceptionMappingService().map("Cannot create folder {0}", e, file);

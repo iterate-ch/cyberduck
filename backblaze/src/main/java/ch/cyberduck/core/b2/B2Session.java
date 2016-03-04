@@ -38,6 +38,8 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.shared.DisabledMoveFeature;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -52,6 +54,10 @@ import synapticloop.b2.exception.B2Exception;
 
 public class B2Session extends HttpSession<B2Client> {
     private static final Logger log = Logger.getLogger(B2Session.class);
+
+    public B2Session(final Host h) {
+        super(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+    }
 
     public B2Session(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
