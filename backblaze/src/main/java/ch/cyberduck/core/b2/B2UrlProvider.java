@@ -20,11 +20,11 @@ import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.URIEncoder;
-import ch.cyberduck.core.shared.DefaultUrlProvider;
+import ch.cyberduck.core.UrlProvider;
 
 import java.net.URI;
 
-public class B2UrlProvider extends DefaultUrlProvider {
+public class B2UrlProvider implements UrlProvider {
 
     private final PathContainerService containerService
             = new B2PathContainerService();
@@ -32,19 +32,21 @@ public class B2UrlProvider extends DefaultUrlProvider {
     private final B2Session session;
 
     public B2UrlProvider(final B2Session session) {
-        super(session.getHost());
         this.session = session;
     }
 
     @Override
     public DescriptiveUrlBag toUrl(final Path file) {
-        final DescriptiveUrlBag urls = super.toUrl(file);
+        if(file.isVolume()) {
+            return DescriptiveUrlBag.empty();
+        }
+        final DescriptiveUrlBag list = new DescriptiveUrlBag();
         if(file.isFile()) {
             final String download = String.format("%s/file/%s/%s", session.getClient().getDownloadUrl(),
                     URIEncoder.encode(containerService.getContainer(file).getName()),
                     URIEncoder.encode(containerService.getKey(file)));
-            urls.add(new DescriptiveUrl(URI.create(download), DescriptiveUrl.Type.http));
+            list.add(new DescriptiveUrl(URI.create(download), DescriptiveUrl.Type.http));
         }
-        return urls;
+        return list;
     }
 }
