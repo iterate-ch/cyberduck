@@ -6,6 +6,7 @@ import ch.cyberduck.core.IOKitSleepPreventer;
 import ch.cyberduck.core.Keychain;
 import ch.cyberduck.core.aquaticprime.ReceiptFactory;
 import ch.cyberduck.core.azure.AzureProtocol;
+import ch.cyberduck.core.b2.B2Protocol;
 import ch.cyberduck.core.bonjour.RendezvousResponder;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
@@ -126,6 +127,7 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
         defaults.put(String.format("connection.protocol.%s.enable", new GoogleStorageProtocol().getIdentifier()), String.valueOf(true));
         defaults.put(String.format("connection.protocol.%s.enable", new AzureProtocol().getIdentifier()), String.valueOf(true));
         defaults.put(String.format("connection.protocol.%s.enable", new IRODSProtocol().getIdentifier()), String.valueOf(false));
+        defaults.put(String.format("connection.protocol.%s.enable", new B2Protocol().getIdentifier()), String.valueOf(false));
 
     }
 }

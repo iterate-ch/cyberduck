@@ -32,6 +32,7 @@ using ch.cyberduck.core.local;
 using ch.cyberduck.core.openstack;
 using ch.cyberduck.core.s3;
 using ch.cyberduck.core.sftp;
+using ch.cyberduck.core.b2;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Bonjour;
 using Ch.Cyberduck.Core.Diagnostics;
@@ -364,6 +365,8 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             defaults.put(String.Format("connection.protocol.{0}.enable", new AzureProtocol().getIdentifier()),
                 true.ToString());
             defaults.put(String.Format("connection.protocol.{0}.enable", new IRODSProtocol().getIdentifier()),
+                false.ToString());
+            defaults.put(String.Format("connection.protocol.{0}.enable", new B2Protocol().getIdentifier()),
                 false.ToString());
 
              // NTLM Windows Domain
