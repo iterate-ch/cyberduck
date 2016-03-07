@@ -45,7 +45,7 @@ public class B2DeleteFeature implements Delete {
                 }
                 callback.delete(file);
                 session.getClient().deleteFileVersion(containerService.getKey(file),
-                        new B2FileidProvider(session).getFileid(containerService.getContainer(file)));
+                        new B2FileidProvider(session).getFileid(file));
             }
             catch(B2Exception e) {
                 throw new B2ExceptionMappingService().map("Cannot delete {0}", e, file);
