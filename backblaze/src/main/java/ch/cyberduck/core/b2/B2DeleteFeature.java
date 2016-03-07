@@ -23,7 +23,7 @@ import ch.cyberduck.core.features.Delete;
 
 import java.util.List;
 
-import synapticloop.b2.exception.B2Exception;
+import synapticloop.b2.exception.B2ApiException;
 
 public class B2DeleteFeature implements Delete {
 
@@ -47,7 +47,7 @@ public class B2DeleteFeature implements Delete {
                 session.getClient().deleteFileVersion(containerService.getKey(file),
                         new B2FileidProvider(session).getFileid(file));
             }
-            catch(B2Exception e) {
+            catch(B2ApiException e) {
                 throw new B2ExceptionMappingService().map("Cannot delete {0}", e, file);
             }
         }
@@ -59,7 +59,7 @@ public class B2DeleteFeature implements Delete {
                     session.getClient().deleteBucket(new B2FileidProvider(session).getFileid(file));
                 }
             }
-            catch(B2Exception e) {
+            catch(B2ApiException e) {
                 throw new B2ExceptionMappingService().map("Cannot delete {0}", e, file);
             }
         }

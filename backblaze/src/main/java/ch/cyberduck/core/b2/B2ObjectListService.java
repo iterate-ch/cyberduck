@@ -33,7 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import synapticloop.b2.exception.B2Exception;
+import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2FileInfoResponse;
 import synapticloop.b2.response.B2ListFilesResponse;
 
@@ -79,7 +79,7 @@ public class B2ObjectListService implements ListService {
                         }
                     }
                     final PathAttributes attributes = new PathAttributes();
-                    attributes.setSize(file.getSize());
+                    attributes.setSize(file.getContentLength());
                     final long timestamp = file.getUploadTimestamp();
                     attributes.setCreationDate(timestamp);
                     attributes.setModificationDate(timestamp);
@@ -115,7 +115,7 @@ public class B2ObjectListService implements ListService {
             while(nextFileid != null);
             return objects;
         }
-        catch(B2Exception e) {
+        catch(B2ApiException e) {
             throw new B2ExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
     }

@@ -29,12 +29,12 @@ import org.apache.http.HttpStatus;
 
 import java.time.Duration;
 
-import synapticloop.b2.exception.B2Exception;
+import synapticloop.b2.exception.B2ApiException;
 
-public class B2ExceptionMappingService extends AbstractExceptionMappingService<B2Exception> {
+public class B2ExceptionMappingService extends AbstractExceptionMappingService<B2ApiException> {
 
     @Override
-    public BackgroundException map(final B2Exception e) {
+    public BackgroundException map(final B2ApiException e) {
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, e.getMessage());
         switch(e.getStatus()) {

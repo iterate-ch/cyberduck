@@ -24,7 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
-import synapticloop.b2.exception.B2Exception;
+import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2BucketResponse;
 import synapticloop.b2.response.B2ListFilesResponse;
 
@@ -62,7 +62,7 @@ public class B2FileidProvider {
                 throw new NotfoundException(file.getAbsolute());
             }
         }
-        catch(B2Exception e) {
+        catch(B2ApiException e) {
             throw new B2ExceptionMappingService().map(e);
         }
     }

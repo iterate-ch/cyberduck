@@ -32,7 +32,7 @@ import org.apache.log4j.Logger;
 
 import java.util.Collections;
 
-import synapticloop.b2.exception.B2Exception;
+import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2FileResponse;
 
 public class B2WriteFeature extends AbstractHttpWriteFeature<B2FileResponse> implements Write {
@@ -69,7 +69,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<B2FileResponse> imp
                             entity, status.getChecksum().toString(),
                             new MappingMimeTypeService().getMime(file.getName()), Collections.emptyMap());
                 }
-                catch(B2Exception e) {
+                catch(B2ApiException e) {
                     throw new B2ExceptionMappingService().map("Upload {0} failed", e, file);
                 }
             }

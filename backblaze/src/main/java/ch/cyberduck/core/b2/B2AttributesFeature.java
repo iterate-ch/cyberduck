@@ -26,7 +26,7 @@ import ch.cyberduck.core.io.Checksum;
 import java.util.HashMap;
 import java.util.Map;
 
-import synapticloop.b2.exception.B2Exception;
+import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2FileResponse;
 
 public class B2AttributesFeature implements Attributes {
@@ -46,7 +46,7 @@ public class B2AttributesFeature implements Attributes {
             final B2FileResponse info = session.getClient().getFileInfo(new B2FileidProvider(session).getFileid(file));
             return this.toAttributes(info);
         }
-        catch(B2Exception e) {
+        catch(B2ApiException e) {
             throw new B2ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
     }
@@ -56,8 +56,8 @@ public class B2AttributesFeature implements Attributes {
         attributes.setSize(info.getContentLength());
         attributes.setChecksum(Checksum.parse(info.getContentSha1()));
         final Map<String, String> metadata = new HashMap<>();
-        for(Map.Entry<String, Object> entry : info.getFileInfo().entrySet()) {
-            metadata.put(entry.getKey(), entry.getValue().toString());
+        for(Map.Entry<String, String> entry : info.getFileInfo().entrySet()) {
+            metadata.put(entry.getKey(), entry.getValue());
         }
         attributes.setMetadata(metadata);
         attributes.setVersionId(info.getFileId());

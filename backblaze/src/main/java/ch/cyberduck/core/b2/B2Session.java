@@ -47,10 +47,10 @@ import org.apache.log4j.Logger;
 import javax.net.SocketFactory;
 import java.io.IOException;
 
-import synapticloop.b2.B2Client;
-import synapticloop.b2.exception.B2Exception;
+import synapticloop.b2.B2ApiClient;
+import synapticloop.b2.exception.B2ApiException;
 
-public class B2Session extends HttpSession<B2Client> {
+public class B2Session extends HttpSession<B2ApiClient> {
     private static final Logger log = Logger.getLogger(B2Session.class);
 
     public B2Session(final Host h) {
@@ -70,8 +70,8 @@ public class B2Session extends HttpSession<B2Client> {
     }
 
     @Override
-    public B2Client connect(final HostKeyCallback key) throws BackgroundException {
-        return new B2Client(builder.build(this).build());
+    public B2ApiClient connect(final HostKeyCallback key) throws BackgroundException {
+        return new B2ApiClient(builder.build(this).build());
     }
 
     @Override
@@ -100,7 +100,7 @@ public class B2Session extends HttpSession<B2Client> {
         try {
             client.authenticate(host.getCredentials().getUsername(), host.getCredentials().getPassword());
         }
-        catch(B2Exception e) {
+        catch(B2ApiException e) {
             throw new B2ExceptionMappingService().map(e);
         }
     }
