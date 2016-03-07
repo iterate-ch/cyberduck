@@ -55,7 +55,7 @@ public class B2FileidProvider {
             }
             else {
                 final B2ListFilesResponse response = session.getClient().listFileNames(
-                        containerService.getContainer(file).getName(), containerService.getKey(file), 1);
+                        new B2FileidProvider(session).getFileid(containerService.getContainer(file)), containerService.getKey(file), 1);
                 if(1 == response.getFiles().size()) {
                     return response.getFiles().iterator().next().getFileId();
                 }
