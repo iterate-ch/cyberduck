@@ -1,0 +1,107 @@
+package ch.cyberduck.core.b2;
+
+/*
+ * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.PathNormalizer;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+
+import java.util.EnumSet;
+import java.util.List;
+
+import synapticloop.b2.exception.B2Exception;
+import synapticloop.b2.response.B2FileInfoResponse;
+import synapticloop.b2.response.B2ListFilesResponse;
+
+public class B2ObjectListService implements ListService {
+    private static final Logger log = Logger.getLogger(B2ObjectListService.class);
+
+    private final PathContainerService containerService
+            = new B2PathContainerService();
+
+    private final B2Session session;
+
+    public B2ObjectListService(final B2Session session) {
+        this.session = session;
+    }
+
+    @Override
+    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
+        try {
+            final AttributedList<Path> objects = new AttributedList<Path>();
+            String nextFileid = null;
+            String nextFilename = containerService.getKey(directory);
+            do {
+                final B2ListFilesResponse response = session.getClient().listFileVersions(
+                        new B2FileidProvider(session).getFileid(containerService.getContainer(directory)),
+                        nextFilename, nextFileid, PreferencesFactory.get().getInteger("b2.listing.chunksize"));
+                final List<B2FileInfoResponse> files = response.getFiles();
+                for(B2FileInfoResponse file : files) {
+                    if(containerService.isContainer(directory)) {
+                        if(!StringUtils.equals(PathNormalizer.parent(
+                                StringUtils.removeEnd(file.getFileName(), ".bzEmpty"), Path.DELIMITER), String.valueOf(Path.DELIMITER))) {
+                            log.warn(String.format("Skip file %s", file));
+                            continue;
+                        }
+                    }
+                    else {
+                        if(!StringUtils.equals(PathNormalizer.parent(
+                                StringUtils.removeEnd(file.getFileName(), ".bzEmpty"), Path.DELIMITER), containerService.getKey(directory))) {
+                            log.warn(String.format("Skip file %s", file));
+                            continue;
+                        }
+                    }
+                    final PathAttributes attributes = new PathAttributes();
+                    attributes.setSize(file.getSize());
+                    attributes.setCreationDate(file.getUploadTimestamp());
+                    attributes.setModificationDate(file.getUploadTimestamp());
+                    attributes.setVersionId(file.getFileId());
+                    switch(file.getAction()) {
+                        case hide:
+                            attributes.setDuplicate(true);
+                            break;
+                        case upload:
+                            break;
+                    }
+                    if(StringUtils.endsWith(file.getFileName(), "/.bzEmpty")) {
+                        objects.add(new Path(directory, StringUtils.removeEnd(file.getFileName(), "/.bzEmpty"),
+                                EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes));
+                    }
+                    else {
+                        objects.add(new Path(directory, file.getFileName(), EnumSet.of(Path.Type.file), attributes));
+                    }
+                }
+                nextFilename = response.getNextFileName();
+                nextFileid = response.getNextFileId();
+                listener.chunk(directory, objects);
+            }
+            while(nextFileid != null);
+            return objects;
+        }
+        catch(B2Exception e) {
+            throw new B2ExceptionMappingService().map("Listing directory {0} failed", e, directory);
+        }
+    }
+}

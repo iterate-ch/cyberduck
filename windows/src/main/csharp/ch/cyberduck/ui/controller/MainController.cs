@@ -41,6 +41,7 @@ using ch.cyberduck.core.s3;
 using ch.cyberduck.core.serializer;
 using ch.cyberduck.core.sftp;
 using ch.cyberduck.core.spectra;
+using ch.cyberduck.core.b2;
 using Ch.Cyberduck.Core.Urlhandler;
 using Ch.Cyberduck.Ui.Core;
 using Ch.Cyberduck.Ui.Core.Preferences;
@@ -86,7 +87,7 @@ namespace Ch.Cyberduck.Ui.Controller
             PreferencesFactory.set(new SettingsDictionaryPreferences());
             ProtocolFactory.register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(),
                 new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(), new GoogleStorageProtocol(),
-                new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol());
+                new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new B2Protocol());
 
             if (!Debugger.IsAttached)
             {
