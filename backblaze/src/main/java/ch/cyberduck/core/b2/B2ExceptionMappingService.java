@@ -18,6 +18,7 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -40,7 +41,7 @@ public class B2ExceptionMappingService extends AbstractExceptionMappingService<B
             case HttpStatus.SC_UNAUTHORIZED:
                 return new LoginFailureException(buffer.toString(), e);
             case HttpStatus.SC_FORBIDDEN:
-                switch(e.getMessage()) {
+                switch(e.getCode()) {
                     case "cap_exceeded":
                         // Reached the storage cap that you set
                         return new QuotaException(buffer.toString(), e);
@@ -55,10 +56,15 @@ public class B2ExceptionMappingService extends AbstractExceptionMappingService<B
             case HttpStatus.SC_PAYMENT_REQUIRED:
                 return new QuotaException(buffer.toString(), e);
             case HttpStatus.SC_BAD_REQUEST:
-                switch(e.getMessage()) {
+                switch(e.getCode()) {
                     case "cap_exceeded":
                         // Reached the storage cap that you set
                         return new QuotaException(buffer.toString(), e);
+                    case "bad_request":
+                        switch(e.getMessage()) {
+                            case "sha1 did not match data received":
+                                return new ChecksumException(buffer.toString(), e);
+                        }
                 }
                 return new InteroperabilityException(buffer.toString(), e);
             case HttpStatus.SC_METHOD_NOT_ALLOWED:
@@ -66,7 +72,7 @@ public class B2ExceptionMappingService extends AbstractExceptionMappingService<B
             case HttpStatus.SC_NOT_IMPLEMENTED:
                 return new InteroperabilityException(buffer.toString(), e);
             case HttpStatus.SC_INTERNAL_SERVER_ERROR:
-                switch(e.getMessage()) {
+                switch(e.getCode()) {
                     case "no_uploads_avaliable":
                         return new RetriableAccessDeniedException(buffer.toString(), Duration.ofSeconds(1));
                 }
