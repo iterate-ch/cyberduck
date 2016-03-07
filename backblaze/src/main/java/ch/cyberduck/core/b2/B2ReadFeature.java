@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
 
 import java.io.InputStream;
 
-import synapticloop.b2.exception.B2Exception;
+import synapticloop.b2.exception.B2ApiException;
 
 public class B2ReadFeature implements Read {
     private static final Logger log = Logger.getLogger(B2ReadFeature.class);
@@ -48,7 +48,7 @@ public class B2ReadFeature implements Read {
             }
             return session.getClient().downloadFileByIdToStream(new B2FileidProvider(session).getFileid(file));
         }
-        catch(B2Exception e) {
+        catch(B2ApiException e) {
             throw new B2ExceptionMappingService().map("Download {0} failed", e, file);
         }
     }

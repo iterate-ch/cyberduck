@@ -25,7 +25,7 @@ import org.apache.http.entity.ByteArrayEntity;
 import java.util.Collections;
 
 import synapticloop.b2.BucketType;
-import synapticloop.b2.exception.B2Exception;
+import synapticloop.b2.exception.B2ApiException;
 
 public class B2DirectoryFeature implements Directory {
 
@@ -57,7 +57,7 @@ public class B2DirectoryFeature implements Directory {
                         null, Collections.emptyMap());
             }
         }
-        catch(B2Exception e) {
+        catch(B2ApiException e) {
             throw new B2ExceptionMappingService().map("Cannot create folder {0}", e, file);
         }
     }

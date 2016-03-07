@@ -24,7 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
-import synapticloop.b2.exception.B2Exception;
+import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2BucketResponse;
 import synapticloop.b2.response.B2ListFilesResponse;
 
@@ -55,14 +55,14 @@ public class B2FileidProvider {
             }
             else {
                 final B2ListFilesResponse response = session.getClient().listFileNames(
-                        containerService.getContainer(file).getName(), containerService.getKey(file), 1);
+                        new B2FileidProvider(session).getFileid(containerService.getContainer(file)), containerService.getKey(file), 1);
                 if(1 == response.getFiles().size()) {
                     return response.getFiles().iterator().next().getFileId();
                 }
                 throw new NotfoundException(file.getAbsolute());
             }
         }
-        catch(B2Exception e) {
+        catch(B2ApiException e) {
             throw new B2ExceptionMappingService().map(e);
         }
     }
