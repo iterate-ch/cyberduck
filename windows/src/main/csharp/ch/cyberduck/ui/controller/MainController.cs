@@ -75,13 +75,13 @@ namespace Ch.Cyberduck.Ui.Controller
                 LocalFactory.get(PreferencesFactory.get().getProperty("application.support.path"), "Sessions"),
                 "session");
 
-        private readonly PeriodicUpdateChecker _updater = new WindowsPeriodicUpdateChecker();
-
         /// <summary>
         /// Helper controller to ensure STA when running threads while launching
         /// </summary>
         /// <see cref="http://msdn.microsoft.com/en-us/library/system.stathreadattribute.aspx"/>
         private BrowserController _bc;
+
+        private PeriodicUpdateChecker _updater;
 
         static MainController()
         {
@@ -137,6 +137,10 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 PreferencesFactory.get().setProperty("uses", PreferencesFactory.get().getInteger("uses") + 1);
                 PreferencesFactory.get().save();
+                if (_updater != null)
+                {
+                    _updater.unregister();
+                }
             };
         }
 
@@ -483,6 +487,7 @@ namespace Ch.Cyberduck.Ui.Controller
             });
             if (PreferencesFactory.get().getBoolean("update.check"))
             {
+                _updater = new WindowsPeriodicUpdateChecker();
                 DateTime lastCheck = new DateTime(PreferencesFactory.get().getLong("update.check.last"));
                 TimeSpan span = DateTime.Now.Subtract(lastCheck);
                 if (span.TotalSeconds >= PreferencesFactory.get().getLong("update.check.interval"))
