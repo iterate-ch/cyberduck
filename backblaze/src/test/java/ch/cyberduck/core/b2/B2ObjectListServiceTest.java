@@ -15,6 +15,7 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -27,11 +28,15 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.SHA1ChecksumCompute;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -73,5 +78,66 @@ public class B2ObjectListServiceTest {
                 //
             }
         });
+        assertFalse(new B2ObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(file));
+    }
+
+    @Test
+    public void testListRevisions() throws Exception {
+        final B2Session session = new B2Session(
+                new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
+                        new Credentials(
+                                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
+                        )));
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final String name = UUID.randomUUID().toString();
+        final Path file1 = new Path(bucket, name, EnumSet.of(Path.Type.file));
+        final Path file2 = new Path(bucket, name, EnumSet.of(Path.Type.file));
+        {
+            final byte[] content = RandomUtils.nextBytes(1);
+            final TransferStatus status = new TransferStatus();
+            status.setLength(content.length);
+            status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content)));
+            final ResponseOutputStream<B2FileResponse> out = new B2WriteFeature(session).write(file1, status);
+            IOUtils.write(content, out);
+            out.close();
+            final B2FileResponse resopnse = out.getResponse();
+            final List<Path> list = new B2ObjectListService(session).list(bucket, new DisabledListProgressListener());
+            file1.attributes().setVersionId(resopnse.getFileId());
+            assertTrue(list.contains(file1));
+            assertEquals("1", list.get(list.indexOf(file1)).attributes().getRevision());
+        }
+        // Replace
+        {
+            final byte[] content = RandomUtils.nextBytes(1);
+            final TransferStatus status = new TransferStatus();
+            status.setLength(content.length);
+            status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content)));
+            final ResponseOutputStream<B2FileResponse> out = new B2WriteFeature(session).write(file2, status);
+            IOUtils.write(content, out);
+            out.close();
+            final B2FileResponse resopnse = out.getResponse();
+            final List<Path> list = new B2ObjectListService(session).list(bucket, new DisabledListProgressListener());
+            file2.attributes().setVersionId(resopnse.getFileId());
+            assertTrue(list.contains(file2));
+//            assertEquals("2", list.get(list.indexOf(file2)).attributes().getRevision());
+            assertFalse(list.get(list.indexOf(file2)).attributes().isDuplicate());
+            assertTrue(list.contains(file1));
+//            assertEquals("1", list.get(list.indexOf(file1)).attributes().getRevision());
+            assertTrue(list.get(list.indexOf(file1)).attributes().isDuplicate());
+        }
+
+        new B2DeleteFeature(session).delete(Arrays.asList(file1, file2), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+                //
+            }
+        });
+        {
+            final AttributedList<Path> list = new B2ObjectListService(session).list(bucket, new DisabledListProgressListener());
+            assertFalse(list.contains(file1));
+            assertFalse(list.contains(file2));
+        }
     }
 }
