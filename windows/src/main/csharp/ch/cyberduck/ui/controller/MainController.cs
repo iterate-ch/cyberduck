@@ -11,7 +11,7 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-//  
+// 
 // Bug fixes, suggestions and comments should be sent to:
 // feedback@cyberduck.io
 // 
@@ -41,7 +41,7 @@ using ch.cyberduck.core.s3;
 using ch.cyberduck.core.serializer;
 using ch.cyberduck.core.sftp;
 using ch.cyberduck.core.spectra;
-using ch.cyberduck.core.b2;
+using ch.cyberduck.core.updater;
 using Ch.Cyberduck.Core.Urlhandler;
 using Ch.Cyberduck.Ui.Core;
 using Ch.Cyberduck.Ui.Core.Preferences;
@@ -74,6 +74,8 @@ namespace Ch.Cyberduck.Ui.Controller
             new FolderBookmarkCollection(
                 LocalFactory.get(PreferencesFactory.get().getProperty("application.support.path"), "Sessions"),
                 "session");
+
+        private readonly PeriodicUpdateChecker _updater = new WindowsPeriodicUpdateChecker();
 
         /// <summary>
         /// Helper controller to ensure STA when running threads while launching
@@ -311,8 +313,6 @@ namespace Ch.Cyberduck.Ui.Controller
             Logger.debug("ApplicationDidFinishLaunching");
             CommandsAfterLaunch(CommandLineArgs);
             HistoryCollection.defaultCollection().addListener(this);
-            UpdateController.Instance.CheckForUpdatesIfNecessary();
-
             if (PreferencesFactory.get().getBoolean("browser.serialize"))
             {
                 _controller.Background(delegate { _sessions.load(); }, delegate
@@ -481,6 +481,16 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 thirdpartySemaphore.Signal();
             });
+            if (PreferencesFactory.get().getBoolean("update.check"))
+            {
+                DateTime lastCheck = new DateTime(PreferencesFactory.get().getLong("update.check.last"));
+                TimeSpan span = DateTime.Now.Subtract(lastCheck);
+                if (span.TotalSeconds >= PreferencesFactory.get().getLong("update.check.interval"))
+                {
+                    _updater.check(true);
+                }
+                _updater.register();
+            }
         }
 
         private IList<ThirdpartyBookmarkCollection> GetThirdpartyBookmarks()
