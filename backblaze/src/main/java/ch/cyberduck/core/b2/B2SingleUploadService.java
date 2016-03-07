@@ -40,7 +40,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 
-public class B2SingleUploadService extends HttpUploadFeature<String, MessageDigest> {
+import synapticloop.b2.response.B2FileResponse;
+
+public class B2SingleUploadService extends HttpUploadFeature<B2FileResponse, MessageDigest> {
 
     private final B2Session session;
 
@@ -57,9 +59,9 @@ public class B2SingleUploadService extends HttpUploadFeature<String, MessageDige
     }
 
     @Override
-    public String upload(final Path file, final Local local, final BandwidthThrottle throttle,
-                         final StreamListener listener, final TransferStatus status,
-                         final StreamCancelation cancel, final StreamProgress progress) throws BackgroundException {
+    public B2FileResponse upload(final Path file, final Local local, final BandwidthThrottle throttle,
+                                 final StreamListener listener, final TransferStatus status,
+                                 final StreamCancelation cancel, final StreamProgress progress) throws BackgroundException {
         status.setChecksum(checksum.compute(local.getInputStream()));
         return super.upload(file, local, throttle, listener, status, cancel, progress);
     }
@@ -89,8 +91,8 @@ public class B2SingleUploadService extends HttpUploadFeature<String, MessageDige
     }
 
     @Override
-    protected void post(final Path file, final MessageDigest digest, final String checksum) throws BackgroundException {
-        this.verify(file, digest, Checksum.parse(checksum));
+    protected void post(final Path file, final MessageDigest digest, final B2FileResponse response) throws BackgroundException {
+        this.verify(file, digest, Checksum.parse(response.getContentSha1()));
     }
 
     protected void verify(final Path file, final MessageDigest digest, final Checksum checksum) throws ChecksumException {
