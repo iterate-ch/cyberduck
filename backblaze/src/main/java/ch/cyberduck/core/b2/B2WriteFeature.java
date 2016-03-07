@@ -35,7 +35,7 @@ import java.util.Collections;
 import synapticloop.b2.exception.B2Exception;
 import synapticloop.b2.response.B2FileResponse;
 
-public class B2WriteFeature extends AbstractHttpWriteFeature<String> implements Write {
+public class B2WriteFeature extends AbstractHttpWriteFeature<B2FileResponse> implements Write {
     private static final Logger log = Logger.getLogger(B2WriteFeature.class);
 
     private final PathContainerService containerService
@@ -54,21 +54,20 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<String> implements 
     }
 
     @Override
-    public ResponseOutputStream<String> write(final Path file, final TransferStatus status) throws BackgroundException {
+    public ResponseOutputStream<B2FileResponse> write(final Path file, final TransferStatus status) throws BackgroundException {
         // Submit store call to background thread
-        final DelayedHttpEntityCallable<String> command = new DelayedHttpEntityCallable<String>() {
+        final DelayedHttpEntityCallable<B2FileResponse> command = new DelayedHttpEntityCallable<B2FileResponse>() {
             /**
              * @return The SHA-1 returned by the server for the uploaded object
              */
             @Override
-            public String call(final AbstractHttpEntity entity) throws BackgroundException {
+            public B2FileResponse call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
-                    final B2FileResponse response = session.getClient().uploadFile(
+                    return session.getClient().uploadFile(
                             new B2FileidProvider(session).getFileid(containerService.getContainer(file)),
                             containerService.getKey(file),
                             entity, status.getChecksum().toString(),
                             new MappingMimeTypeService().getMime(file.getName()), Collections.emptyMap());
-                    return response.getContentSha1();
                 }
                 catch(B2Exception e) {
                     throw new B2ExceptionMappingService().map("Upload {0} failed", e, file);

@@ -29,7 +29,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import synapticloop.b2.exception.B2Exception;
 import synapticloop.b2.response.B2FileInfoResponse;
@@ -54,10 +56,13 @@ public class B2ObjectListService implements ListService {
             String nextFileid = null;
             String nextFilename = containerService.getKey(directory);
             do {
+                // In alphabetical order by file name, and by reverse of date/time uploaded for
+                // versions of files with the same name.
                 final B2ListFilesResponse response = session.getClient().listFileVersions(
                         new B2FileidProvider(session).getFileid(containerService.getContainer(directory)),
                         nextFilename, nextFileid, PreferencesFactory.get().getInteger("b2.listing.chunksize"));
                 final List<B2FileInfoResponse> files = response.getFiles();
+                final Map<String, Integer> revisions = new HashMap<String, Integer>();
                 for(B2FileInfoResponse file : files) {
                     if(containerService.isContainer(directory)) {
                         if(!StringUtils.equals(PathNormalizer.parent(
@@ -75,14 +80,13 @@ public class B2ObjectListService implements ListService {
                     }
                     final PathAttributes attributes = new PathAttributes();
                     attributes.setSize(file.getSize());
-                    attributes.setCreationDate(file.getUploadTimestamp());
-                    attributes.setModificationDate(file.getUploadTimestamp());
+                    final long timestamp = file.getUploadTimestamp();
+                    attributes.setCreationDate(timestamp);
+                    attributes.setModificationDate(timestamp);
                     attributes.setVersionId(file.getFileId());
                     switch(file.getAction()) {
                         case hide:
                             attributes.setDuplicate(true);
-                            break;
-                        case upload:
                             break;
                     }
                     if(StringUtils.endsWith(file.getFileName(), "/.bzEmpty")) {
@@ -92,6 +96,17 @@ public class B2ObjectListService implements ListService {
                     else {
                         objects.add(new Path(directory, file.getFileName(), EnumSet.of(Path.Type.file), attributes));
                     }
+                    final Integer revision;
+                    if(revisions.keySet().contains(file.getFileName())) {
+                        // Later version already found
+                        attributes.setDuplicate(true);
+                        revision = revisions.get(file.getFileName()) + 1;
+                    }
+                    else {
+                        revision = 1;
+                    }
+                    revisions.put(file.getFileName(), revision);
+                    attributes.setRevision(revision);
                 }
                 nextFilename = response.getNextFileName();
                 nextFileid = response.getNextFileId();
