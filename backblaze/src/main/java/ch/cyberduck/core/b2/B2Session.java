@@ -103,6 +103,9 @@ public class B2Session extends HttpSession<B2ApiClient> {
         catch(B2ApiException e) {
             throw new B2ExceptionMappingService().map(e);
         }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
     }
 
     @Override

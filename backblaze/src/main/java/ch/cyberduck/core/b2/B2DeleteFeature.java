@@ -15,12 +15,14 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 
+import java.io.IOException;
 import java.util.List;
 
 import synapticloop.b2.exception.B2ApiException;
@@ -58,6 +60,9 @@ public class B2DeleteFeature implements Delete {
             }
             catch(B2ApiException e) {
                 throw new B2ExceptionMappingService().map("Cannot delete {0}", e, file);
+            }
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map(e);
             }
         }
     }

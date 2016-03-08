@@ -15,6 +15,7 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -23,6 +24,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.http.entity.ByteArrayEntity;
 
+import java.io.IOException;
 import java.util.Collections;
 
 import synapticloop.b2.BucketType;
@@ -61,6 +63,9 @@ public class B2DirectoryFeature implements Directory {
         }
         catch(B2ApiException e) {
             throw new B2ExceptionMappingService().map("Cannot create folder {0}", e, file);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
         }
     }
 }
