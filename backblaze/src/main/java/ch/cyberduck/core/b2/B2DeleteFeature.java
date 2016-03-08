@@ -40,20 +40,29 @@ public class B2DeleteFeature implements Delete {
     public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
         for(Path file : files) {
             try {
-                callback.delete(file);
                 if(containerService.isContainer(file)) {
-                    // Finally delete bucket itself
-                    session.getClient().deleteBucket(new B2FileidProvider(session).getFileid(file));
+                    continue;
+                }
+                callback.delete(file);
+                if(file.isPlaceholder()) {
+                    session.getClient().deleteFileVersion(String.format("%s/.bzEmpty", containerService.getKey(file)),
+                            new B2FileidProvider(session).getFileid(file));
                 }
                 else {
-                    if(file.isPlaceholder()) {
-                        session.getClient().deleteFileVersion(String.format("%s/.bzEmpty", containerService.getKey(file)),
-                                new B2FileidProvider(session).getFileid(file));
-                    }
-                    else {
-                        session.getClient().deleteFileVersion(containerService.getKey(file),
-                                new B2FileidProvider(session).getFileid(file));
-                    }
+                    session.getClient().deleteFileVersion(containerService.getKey(file),
+                            new B2FileidProvider(session).getFileid(file));
+                }
+            }
+            catch(B2ApiException e) {
+                throw new B2ExceptionMappingService().map("Cannot delete {0}", e, file);
+            }
+        }
+        for(Path file : files) {
+            try {
+                if(containerService.isContainer(file)) {
+                    callback.delete(file);
+                    // Finally delete bucket itself
+                    session.getClient().deleteBucket(new B2FileidProvider(session).getFileid(file));
                 }
             }
             catch(B2ApiException e) {
