@@ -19,6 +19,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.http.entity.ByteArrayEntity;
 
@@ -47,7 +48,8 @@ public class B2DirectoryFeature implements Directory {
     public void mkdir(final Path file, final String region) throws BackgroundException {
         try {
             if(containerService.isContainer(file)) {
-                session.getClient().createBucket(containerService.getContainer(file).getName(), BucketType.allPrivate);
+                session.getClient().createBucket(containerService.getContainer(file).getName(),
+                        BucketType.valueOf(PreferencesFactory.get().getProperty("b2.bucket.acl.default")));
             }
             else {
                 session.getClient().uploadFile(
