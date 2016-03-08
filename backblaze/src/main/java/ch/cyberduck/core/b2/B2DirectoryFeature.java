@@ -53,7 +53,7 @@ public class B2DirectoryFeature implements Directory {
                 session.getClient().uploadFile(
                         new B2FileidProvider(session).getFileid(containerService.getContainer(file)),
                         String.format("%s/.bzEmpty", containerService.getKey(file)),
-                        new ByteArrayEntity(new byte[0]), "adc83b19e793491b1c6ea0fd8b46cd9f32e592fc",
+                        new ByteArrayEntity(new byte[0]), "da39a3ee5e6b4b0d3255bfef95601890afd80709",
                         "application/octet-stream", Collections.emptyMap());
             }
         }
