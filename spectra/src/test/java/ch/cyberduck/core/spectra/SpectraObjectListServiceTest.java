@@ -33,8 +33,6 @@ import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -50,7 +48,6 @@ public class SpectraObjectListServiceTest {
 
     @Test
     public void testList() throws Exception {
-        Logger.getLogger("org.apache.http.wire").setLevel(Level.DEBUG);
         final Host host = new Host(new SpectraProtocol() {
             @Override
             public Scheme getScheme() {
