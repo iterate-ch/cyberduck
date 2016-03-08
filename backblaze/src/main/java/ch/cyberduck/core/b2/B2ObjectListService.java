@@ -66,19 +66,11 @@ public class B2ObjectListService implements ListService {
                 final List<B2FileInfoResponse> files = response.getFiles();
                 final Map<String, Integer> revisions = new HashMap<String, Integer>();
                 for(B2FileInfoResponse file : files) {
-                    if(containerService.isContainer(directory)) {
-                        if(!StringUtils.equals(PathNormalizer.parent(
-                                StringUtils.removeEnd(file.getFileName(), ".bzEmpty"), Path.DELIMITER), String.valueOf(Path.DELIMITER))) {
-                            log.warn(String.format("Skip file %s", file));
-                            continue;
-                        }
-                    }
-                    else {
-                        if(!StringUtils.equals(PathNormalizer.parent(
-                                StringUtils.removeEnd(file.getFileName(), ".bzEmpty"), Path.DELIMITER), containerService.getKey(directory))) {
-                            log.warn(String.format("Skip file %s", file));
-                            continue;
-                        }
+                    if(!StringUtils.equals(PathNormalizer.parent(
+                            StringUtils.removeEnd(file.getFileName(), ".bzEmpty"), Path.DELIMITER),
+                            containerService.isContainer(directory) ? String.valueOf(Path.DELIMITER) : containerService.getKey(directory))) {
+                        log.warn(String.format("Skip file %s", file));
+                        continue;
                     }
                     final PathAttributes attributes = new PathAttributes();
                     attributes.setSize(file.getSize());
@@ -92,11 +84,11 @@ public class B2ObjectListService implements ListService {
                             break;
                     }
                     if(StringUtils.endsWith(file.getFileName(), "/.bzEmpty")) {
-                        objects.add(new Path(directory, StringUtils.removeEnd(file.getFileName(), "/.bzEmpty"),
+                        objects.add(new Path(containerService.getContainer(directory), StringUtils.removeEnd(file.getFileName(), "/.bzEmpty"),
                                 EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes));
                     }
                     else {
-                        objects.add(new Path(directory, file.getFileName(), EnumSet.of(Path.Type.file), attributes));
+                        objects.add(new Path(containerService.getContainer(directory), file.getFileName(), EnumSet.of(Path.Type.file), attributes));
                     }
                     final Integer revision;
                     if(revisions.keySet().contains(file.getFileName())) {
