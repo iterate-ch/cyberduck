@@ -43,6 +43,8 @@ public class B2ExceptionMappingService extends AbstractExceptionMappingService<B
             case HttpStatus.SC_FORBIDDEN:
                 switch(e.getCode()) {
                     case "cap_exceeded":
+                    case "storage_cap_exceeded":
+                    case "transaction_cap_exceeded":
                         // Reached the storage cap that you set
                         return new QuotaException(buffer.toString(), e);
                 }
