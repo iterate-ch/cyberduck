@@ -58,7 +58,6 @@ public class B2DeleteFeatureTest {
     }
 
     @Test
-    @Ignore
     public void testDelete() throws Exception {
         final B2Session session = new B2Session(
                 new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
