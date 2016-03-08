@@ -10,8 +10,6 @@
         <string>Spectra S3 (HTTP)</string>
         <key>Scheme</key>
         <string>http</string>
-        <key>Default Hostname</key>
-        <string>blackpearl.hostname</string>
         <key>Default Port</key>
         <string>80</string>
         <key>Username Placeholder</key>
