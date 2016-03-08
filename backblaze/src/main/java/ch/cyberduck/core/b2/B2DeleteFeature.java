@@ -50,7 +50,7 @@ public class B2DeleteFeature implements Delete {
                         session.getClient().deleteFileVersion(String.format("%s/.bzEmpty", containerService.getKey(file)),
                                 new B2FileidProvider(session).getFileid(file));
                     }
-                    else {
+                    else if(file.isFile()) {
                         session.getClient().deleteFileVersion(containerService.getKey(file),
                                 new B2FileidProvider(session).getFileid(file));
                     }
