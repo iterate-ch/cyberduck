@@ -39,6 +39,7 @@ import ch.cyberduck.core.resources.NSImageIconCache;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sparkle.Updater;
+import ch.cyberduck.core.spectra.SpectraProtocol;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.core.urlhandler.LaunchServicesSchemeHandler;
 import ch.cyberduck.ui.browser.Column;
@@ -128,6 +129,7 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
         defaults.put(String.format("connection.protocol.%s.enable", new AzureProtocol().getIdentifier()), String.valueOf(true));
         defaults.put(String.format("connection.protocol.%s.enable", new IRODSProtocol().getIdentifier()), String.valueOf(false));
         defaults.put(String.format("connection.protocol.%s.enable", new B2Protocol().getIdentifier()), String.valueOf(false));
+        defaults.put(String.format("connection.protocol.%s.enable", new SpectraProtocol().getIdentifier()), String.valueOf(false));
 
     }
 }
