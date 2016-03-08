@@ -16,6 +16,7 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -25,6 +26,7 @@ import ch.cyberduck.core.features.AclPermission;
 
 import org.jets3t.service.acl.Permission;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -70,6 +72,9 @@ public class B2BucketTypeFeature implements AclPermission {
         }
         catch(B2ApiException e) {
             throw new B2ExceptionMappingService().map("Cannot change permissions of {0}", e, file);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
         }
     }
 

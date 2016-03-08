@@ -15,6 +15,7 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
@@ -23,6 +24,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import synapticloop.b2.exception.B2ApiException;
@@ -50,6 +52,9 @@ public class B2ReadFeature implements Read {
         }
         catch(B2ApiException e) {
             throw new B2ExceptionMappingService().map("Download {0} failed", e, file);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Download {0} failed", e, file);
         }
     }
 

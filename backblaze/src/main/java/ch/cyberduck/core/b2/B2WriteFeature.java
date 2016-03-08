@@ -15,6 +15,7 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -30,6 +31,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.util.Collections;
 
 import synapticloop.b2.exception.B2ApiException;
@@ -71,6 +73,9 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<B2FileResponse> imp
                 }
                 catch(B2ApiException e) {
                     throw new B2ExceptionMappingService().map("Upload {0} failed", e, file);
+                }
+                catch(IOException e) {
+                    throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
                 }
             }
 
