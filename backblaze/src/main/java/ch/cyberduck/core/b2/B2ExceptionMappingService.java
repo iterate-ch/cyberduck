@@ -59,6 +59,8 @@ public class B2ExceptionMappingService extends AbstractExceptionMappingService<B
                 return new QuotaException(buffer.toString(), e);
             case HttpStatus.SC_BAD_REQUEST:
                 switch(e.getCode()) {
+                    case "file_not_present":
+                        return new NotfoundException(buffer.toString(), e);
                     case "cap_exceeded":
                         // Reached the storage cap that you set
                         return new QuotaException(buffer.toString(), e);
