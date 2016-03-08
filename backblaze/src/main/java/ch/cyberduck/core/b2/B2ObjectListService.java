@@ -79,7 +79,7 @@ public class B2ObjectListService implements ListService {
                         }
                     }
                     final PathAttributes attributes = new PathAttributes();
-                    attributes.setSize(file.getContentLength());
+                    attributes.setSize(file.getSize());
                     final long timestamp = file.getUploadTimestamp();
                     attributes.setCreationDate(timestamp);
                     attributes.setModificationDate(timestamp);
