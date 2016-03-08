@@ -71,6 +71,7 @@ public class B2ObjectListServiceTest {
         file.attributes().setVersionId(resopnse.getFileId());
         assertTrue(list.contains(file));
         assertEquals("1", list.get(list.indexOf(file)).attributes().getRevision());
+        assertEquals(0L, list.get(list.indexOf(file)).attributes().getSize());
 
         new B2DeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
@@ -107,6 +108,7 @@ public class B2ObjectListServiceTest {
             file1.attributes().setVersionId(resopnse.getFileId());
             assertTrue(list.contains(file1));
             assertEquals("1", list.get(list.indexOf(file1)).attributes().getRevision());
+            assertEquals(content.length, list.get(list.indexOf(file1)).attributes().getSize());
         }
         // Replace
         {
