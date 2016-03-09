@@ -489,13 +489,16 @@ namespace Ch.Cyberduck.Ui.Controller
             if (PreferencesFactory.get().getBoolean("update.check"))
             {
                 _updater = new WindowsPeriodicUpdateChecker();
-                DateTime lastCheck = new DateTime(PreferencesFactory.get().getLong("update.check.last"));
-                TimeSpan span = DateTime.Now.Subtract(lastCheck);
-                if (span.TotalSeconds >= PreferencesFactory.get().getLong("update.check.interval"))
+                if (_updater.hasUpdatePrivileges())
                 {
-                    _updater.check(true);
+                    DateTime lastCheck = new DateTime(PreferencesFactory.get().getLong("update.check.last"));
+                    TimeSpan span = DateTime.Now.Subtract(lastCheck);
+                    if (span.TotalSeconds >= PreferencesFactory.get().getLong("update.check.interval"))
+                    {
+                        _updater.check(true);
+                    }
+                    _updater.register();
                 }
-                _updater.register();
             }
         }
 
