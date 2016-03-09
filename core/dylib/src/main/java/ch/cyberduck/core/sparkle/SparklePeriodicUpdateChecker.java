@@ -33,4 +33,9 @@ public class SparklePeriodicUpdateChecker extends AbstractPeriodicUpdateChecker 
             updater.checkForUpdates(null);
         }
     }
+
+    @Override
+    public boolean hasUpdatePrivileges() {
+        return null != Updater.getFeed();
+    }
 }
