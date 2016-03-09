@@ -56,7 +56,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.serializer.HostDictionary;
 import ch.cyberduck.core.sparkle.SparklePeriodicUpdateChecker;
-import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.TransferItem;
@@ -204,7 +203,7 @@ public class MainController extends BundleController implements NSApplication.De
      */
     private void updateLicenseMenu() {
         final License key = LicenseFactory.find();
-        if(null == Updater.getFeed() && key.isReceipt()) {
+        if(key.isReceipt()) {
             this.applicationMenu.removeItemAtIndex(new NSInteger(5));
             this.applicationMenu.removeItemAtIndex(new NSInteger(4));
         }
@@ -223,7 +222,7 @@ public class MainController extends BundleController implements NSApplication.De
      * Remove software update menu item if no update feed available
      */
     private void updateUpdateMenu() {
-        if(null == Updater.getFeed()) {
+        if(!updater.hasUpdatePrivileges()) {
             this.applicationMenu.removeItemAtIndex(new NSInteger(1));
         }
     }
@@ -1109,15 +1108,13 @@ public class MainController extends BundleController implements NSApplication.De
                         new FlowBookmarkCollection(), new InterarchyBookmarkCollection(), new CrossFtpBookmarkCollection(), new FireFtpBookmarkCollection());
             }
         });
-        if(Updater.getFeed() != null) {
-            updater = new SparklePeriodicUpdateChecker();
-            if(preferences.getBoolean("update.check")) {
-                final long next = preferences.getLong("update.check.timestamp") + preferences.getLong("update.check.interval") * 1000;
-                if(next < System.currentTimeMillis()) {
-                    updater.check(true);
-                }
-                updater.register();
+        updater = new SparklePeriodicUpdateChecker();
+        if(updater.hasUpdatePrivileges()) {
+            final long next = preferences.getLong("update.check.timestamp") + preferences.getLong("update.check.interval") * 1000;
+            if(next < System.currentTimeMillis()) {
+                updater.check(true);
             }
+            updater.register();
         }
     }
 
@@ -1334,9 +1331,7 @@ public class MainController extends BundleController implements NSApplication.De
         RendezvousFactory.instance().quit();
 
         // Disable update
-        if(updater != null) {
-            updater.unregister();
-        }
+        updater.unregister();
 
         //Writing usage info
         preferences.setProperty("uses", preferences.getInteger("uses") + 1);
