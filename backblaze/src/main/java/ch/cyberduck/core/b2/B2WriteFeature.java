@@ -89,11 +89,11 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<B2FileResponse> imp
 
     @Override
     public boolean temporary() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean random() {
-        return true;
+        return false;
     }
 }
