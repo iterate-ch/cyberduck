@@ -49,6 +49,9 @@ public class SpectraDeleteFeature extends S3MultipleDeleteFeature {
         try {
             for(Iterator<Path> iter = files.iterator(); iter.hasNext(); ) {
                 final Path file = iter.next();
+                if(file.isVolume()) {
+                    continue;
+                }
                 if(file.isDirectory()) {
                     final Ds3Client client = new SpectraClientBuilder().wrap(session);
                     client.deleteFolder(new DeleteFolderRequest(containerService.getContainer(file).getName(), containerService.getKey(file)));
