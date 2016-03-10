@@ -41,7 +41,11 @@ namespace Ch.Cyberduck.Ui.Core
         public override bool hasUpdatePrivileges()
         {
             var identity = WindowsIdentity.GetCurrent();
-            if (identity == null) throw new InvalidOperationException("Couldn't get the current user identity");
+            if (identity == null)
+            {
+                Log.warn("Couldn't get the current user identity");
+                return false;
+            }
             var principal = new WindowsPrincipal(identity);
 
             // Check if this user has the Administrator role. If they do, return immediately.
