@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2015 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -11,7 +11,7 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-//  
+// 
 // Bug fixes, suggestions and comments should be sent to:
 // feedback@cyberduck.io
 // 
@@ -23,9 +23,11 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
-using Ch.Cyberduck.Core;
+using ch.cyberduck.core.updater;
 using Ch.Cyberduck.Ui.Controller;
+using Ch.Cyberduck.Ui.Core;
 using Path = System.IO.Path;
+using Utils = Ch.Cyberduck.Core.Utils;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -54,8 +56,9 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             ackButton.Click +=
                 delegate { ApplicationLauncherFactory.get().open(LocalFactory.get("Acknowledgments.rtf")); };
-            updateButton.Click +=
-                delegate { UpdateController.Instance.ForceCheckForUpdates(false); };
+            PeriodicUpdateChecker updater = new WindowsPeriodicUpdateChecker();
+            updateButton.Enabled = updater.hasUpdatePrivileges();
+            updateButton.Click += delegate { updater.check(false); };
         }
 
         public string AssemblyTitle
