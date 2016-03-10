@@ -43,7 +43,7 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class S3MultipartServiceTest {
+public class S3DefaultMultipartServiceTest {
 
     @Test
     public void testFindNotFound() throws Exception {
@@ -56,7 +56,7 @@ public class S3MultipartServiceTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final List<MultipartUpload> list = new S3MultipartService(session).find(test);
+        final List<MultipartUpload> list = new S3DefaultMultipartService(session).find(test);
         assertTrue(list.isEmpty());
     }
 
@@ -72,7 +72,7 @@ public class S3MultipartServiceTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final S3MultipartService service = new S3MultipartService(session);
+        final S3DefaultMultipartService service = new S3DefaultMultipartService(session);
         for(MultipartUpload multipart : service.find(container)) {
             service.delete(multipart);
         }
@@ -98,7 +98,7 @@ public class S3MultipartServiceTest {
         Thread.sleep(2000L);
         final MultipartUpload second = session.getClient().multipartStartUpload(container.getName(), object);
         assertNotNull(second);
-        final S3MultipartService service = new S3MultipartService(session);
+        final S3DefaultMultipartService service = new S3DefaultMultipartService(session);
         final MultipartUpload multipart = service.find(file).iterator().next();
         assertNotNull(multipart);
         assertEquals(second.getUploadId(), multipart.getUploadId());
@@ -118,7 +118,7 @@ public class S3MultipartServiceTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, "t f", EnumSet.of(Path.Type.file));
-        final List<MultipartUpload> list = new S3MultipartService(session).find(test);
+        final List<MultipartUpload> list = new S3DefaultMultipartService(session).find(test);
         assertTrue(list.isEmpty());
     }
 
@@ -134,7 +134,7 @@ public class S3MultipartServiceTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         for(Path container : new S3BucketListService(session).list(new DisabledListProgressListener())) {
             final Path key = new Path(container, "/", EnumSet.of(Path.Type.file));
-            final S3MultipartService service = new S3MultipartService(session);
+            final S3DefaultMultipartService service = new S3DefaultMultipartService(session);
             for(MultipartUpload part : service.find(key)) {
                 service.delete(part);
             }

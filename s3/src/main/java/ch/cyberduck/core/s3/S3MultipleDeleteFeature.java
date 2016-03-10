@@ -52,14 +52,14 @@ public class S3MultipleDeleteFeature implements Delete {
     private PathContainerService containerService
             = new S3PathContainerService();
 
-    private S3MultipartService multipartService;
+    private S3DefaultMultipartService multipartService;
 
     private Versioning versioningService;
 
     public S3MultipleDeleteFeature(final S3Session session) {
         this.session = session;
         this.versioningService = session.getFeature(Versioning.class);
-        this.multipartService = new S3MultipartService(session);
+        this.multipartService = new S3DefaultMultipartService(session);
     }
 
     public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {

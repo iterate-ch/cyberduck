@@ -87,7 +87,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
             = preferences.getMap("s3.metadata.default");
 
     public S3WriteFeature(final S3Session session) {
-        this(session, new S3MultipartService(session), new DefaultFindFeature(session), new DefaultAttributesFeature(session));
+        this(session, new S3DefaultMultipartService(session), new DefaultFindFeature(session), new DefaultAttributesFeature(session));
     }
 
     public S3WriteFeature(final S3Session session, final S3MultipartService multipartService,

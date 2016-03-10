@@ -17,16 +17,29 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 
 import org.jets3t.service.model.MultipartPart;
 import org.jets3t.service.model.MultipartUpload;
 
+import java.util.Collections;
 import java.util.List;
 
-public interface S3MultipartService {
-    List<MultipartUpload> find(Path file) throws BackgroundException;
+public class S3DisabledMultipartService implements S3MultipartService {
 
-    List<MultipartPart> list(MultipartUpload multipart) throws BackgroundException;
+    @Override
+    public List<MultipartUpload> find(final Path file) throws BackgroundException {
+        return Collections.emptyList();
+    }
 
-    void delete(MultipartUpload upload) throws BackgroundException;
+    @Override
+    public List<MultipartPart> list(final MultipartUpload multipart) throws BackgroundException {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public void delete(final MultipartUpload upload) throws BackgroundException {
+        throw new NotfoundException(upload.getUploadId());
+    }
 }
+

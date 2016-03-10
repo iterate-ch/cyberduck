@@ -15,13 +15,11 @@
 package ch.cyberduck.core.spectra;
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.ResponseOutputStream;
+import ch.cyberduck.core.s3.S3DisabledMultipartService;
 import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -45,7 +43,7 @@ public class SpectraWriteFeature extends S3WriteFeature {
     }
 
     public SpectraWriteFeature(final SpectraSession session, final Find finder, final Attributes attributes) {
-        super(session);
+        super(session, new S3DisabledMultipartService(), finder, attributes);
         this.finder = finder;
         this.attributes = attributes;
     }
@@ -59,14 +57,5 @@ public class SpectraWriteFeature extends S3WriteFeature {
         parameters.put("offset", Long.toString(status.getOffset()));
         status.parameters(parameters);
         return super.write(file, status);
-    }
-
-    @Override
-    public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
-        if(finder.withCache(cache).find(file)) {
-            final PathAttributes attributes = this.attributes.withCache(cache).find(file);
-            return new Append(attributes.getSize()).withChecksum(attributes.getChecksum());
-        }
-        return Write.notfound;
     }
 }

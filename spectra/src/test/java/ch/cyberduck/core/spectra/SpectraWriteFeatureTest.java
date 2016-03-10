@@ -27,7 +27,6 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
@@ -109,50 +108,6 @@ public class SpectraWriteFeatureTest {
         session.close();
     }
 
-    @Test(expected = InteroperabilityException.class)
-    public void testWriteAppend() throws Exception {
-        final Host host = new Host(new SpectraProtocol() {
-            @Override
-            public Scheme getScheme() {
-                return Scheme.http;
-            }
-        }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
-                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
-        ));
-        final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
-                new DefaultX509KeyManager());
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final byte[] content = RandomStringUtils.random(1000).getBytes();
-        final TransferStatus status = new TransferStatus().length(content.length);
-        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content)));
-        // Allocate
-        final SpectraBulkService bulk = new SpectraBulkService(session);
-        bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, status));
-        {
-            final OutputStream out = new SpectraWriteFeature(session).write(test, status);
-            assertNotNull(out);
-            new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-            out.close();
-        }
-        // Append
-        status.append(true).setOffset(content.length);
-        {
-            final OutputStream out = new SpectraWriteFeature(session).write(test, status.exists(true));
-            new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-            out.close();
-        }
-        assertEquals(content.length * 2, new S3AttributesFeature(session).find(test).getSize());
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
-        session.close();
-    }
-
     @Test
     public void testOverwriteZeroSized() throws Exception {
         final Host host = new Host(new SpectraProtocol() {
@@ -222,8 +177,8 @@ public class SpectraWriteFeatureTest {
             }
         });
         final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), 0L, PathCache.empty());
-        assertTrue(append.append);
-        assertFalse(append.override);
+        assertFalse(append.append);
+        assertTrue(append.override);
         assertEquals(3L, append.size, 0L);
     }
 }
