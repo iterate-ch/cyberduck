@@ -22,9 +22,6 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 
-/**
- * @version $Id$
- */
 public class DisabledX509TrustManager extends AbstractX509TrustManager {
     @Override
     public void checkClientTrusted(final X509Certificate[] certs, final String cipher) throws CertificateException {
