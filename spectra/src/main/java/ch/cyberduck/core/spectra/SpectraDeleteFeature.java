@@ -25,6 +25,7 @@ import ch.cyberduck.core.s3.S3PathContainerService;
 
 import java.io.IOException;
 import java.security.SignatureException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -47,7 +48,8 @@ public class SpectraDeleteFeature extends S3MultipleDeleteFeature {
     @Override
     public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
         try {
-            for(Iterator<Path> iter = files.iterator(); iter.hasNext(); ) {
+            final ArrayList<Path> filtered = new ArrayList<Path>(files);
+            for(Iterator<Path> iter = filtered.iterator(); iter.hasNext(); ) {
                 final Path file = iter.next();
                 if(file.isVolume()) {
                     continue;
@@ -58,7 +60,7 @@ public class SpectraDeleteFeature extends S3MultipleDeleteFeature {
                     iter.remove();
                 }
             }
-            super.delete(files, prompt, callback);
+            super.delete(filtered, prompt, callback);
         }
         catch(FailedRequestException e) {
             throw new SpectraExceptionMappingService().map(e);
