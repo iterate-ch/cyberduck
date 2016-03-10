@@ -87,9 +87,6 @@ import com.github.sardine.impl.SardineRedirectStrategy;
 import com.github.sardine.impl.handler.ValidatingResponseHandler;
 import com.github.sardine.impl.handler.VoidResponseHandler;
 
-/**
- * @version $Id$
- */
 public class DAVSession extends HttpSession<DAVClient> {
     private static final Logger log = Logger.getLogger(DAVSession.class);
 
