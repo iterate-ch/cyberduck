@@ -782,6 +782,11 @@ public abstract class Preferences {
         defaults.put("b2.bucket.acl.default", "allPrivate");
         defaults.put("b2.listing.chunksize", String.valueOf(1000));
         defaults.put("b2.upload.checksum", String.valueOf(true));
+        defaults.put("b2.upload.multipart.concurrency", String.valueOf(10));
+        /**
+         * The minimum size for each part of a large file (except the last one). This will always be 100,000,000.
+         */
+        defaults.put("b2.upload.multipart.size", String.valueOf(100L * 1024L * 1024L));
 
         /**
          * NTLM Windows Domain
