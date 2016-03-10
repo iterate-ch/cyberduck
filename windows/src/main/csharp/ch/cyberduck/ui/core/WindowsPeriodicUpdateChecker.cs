@@ -21,11 +21,14 @@ using System.Runtime.InteropServices;
 using System.Security.Principal;
 using ch.cyberduck.core.updater;
 using Ch.Cyberduck.Ui.Controller;
+using org.apache.log4j;
 
 namespace Ch.Cyberduck.Ui.Core
 {
     public class WindowsPeriodicUpdateChecker : AbstractPeriodicUpdateChecker
     {
+        private static readonly Logger Log = Logger.getLogger(typeof (WindowsPeriodicUpdateChecker).Name);
+
         [DllImport("advapi32.dll", SetLastError = true)]
         private static extern bool GetTokenInformation(IntPtr tokenHandle, TokenInformationClass tokenInformationClass,
             IntPtr tokenInformation, int tokenInformationLength, out int returnLength);
@@ -57,14 +60,14 @@ namespace Ch.Cyberduck.Ui.Core
 
             try
             {
-                var token = identity.Token;
-                var result = GetTokenInformation(token, TokenInformationClass.TokenElevationType, tokenInformation,
-                    tokenInfLength, out tokenInfLength);
+                var result = GetTokenInformation(identity.Token, TokenInformationClass.TokenElevationType,
+                    tokenInformation, tokenInfLength, out tokenInfLength);
 
                 if (!result)
                 {
                     var exception = Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error());
-                    throw new InvalidOperationException("Couldn't get token information", exception);
+                    Log.warn("Exception while retrieving token information", exception);
+                    return false;
                 }
 
                 var elevationType = (TokenElevationType) Marshal.ReadInt32(tokenInformation);
@@ -81,7 +84,7 @@ namespace Ch.Cyberduck.Ui.Core
                         // TokenElevationTypeLimited - User has a split token, but the process is not running elevated. Assuming they're an administrator.
                         return true;
                     default:
-                        // Unknown token elevation type.
+                        Log.warn($"Unknown token elevation type: {elevationType}");
                         return false;
                 }
             }
