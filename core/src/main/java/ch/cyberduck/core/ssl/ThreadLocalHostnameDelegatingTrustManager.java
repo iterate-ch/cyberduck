@@ -26,9 +26,6 @@ import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
-/**
- * @version $Id$
- */
 public final class ThreadLocalHostnameDelegatingTrustManager implements X509TrustManager, TrustManagerHostnameCallback {
     private static final Logger log = Logger.getLogger(ThreadLocalHostnameDelegatingTrustManager.class);
 
@@ -87,11 +84,11 @@ public final class ThreadLocalHostnameDelegatingTrustManager implements X509Trus
     }
 
     public void setTarget(final String hostname) {
-        final String simple;
         if(strict) {
-            simple = hostname;
+            this.target.set(hostname);
         }
         else {
+            final String simple;
             final String[] parts = StringUtils.split(hostname, '.');
             if(parts.length > 4) {
                 ArrayUtils.reverse(parts);
@@ -102,7 +99,7 @@ public final class ThreadLocalHostnameDelegatingTrustManager implements X509Trus
             else {
                 simple = hostname;
             }
+            this.target.set(simple);
         }
-        this.target.set(simple);
     }
 }

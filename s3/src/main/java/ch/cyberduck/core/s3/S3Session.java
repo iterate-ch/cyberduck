@@ -67,9 +67,6 @@ import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
 import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.security.ProviderCredentials;
 
-/**
- * @version $Id$
- */
 public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     private static final Logger log = Logger.getLogger(S3Session.class);
 
