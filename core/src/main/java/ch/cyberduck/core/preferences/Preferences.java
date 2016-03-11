@@ -783,6 +783,9 @@ public abstract class Preferences {
         defaults.put("b2.listing.chunksize", String.valueOf(1000));
         defaults.put("b2.upload.checksum", String.valueOf(true));
 
+        defaults.put("spectra.upload.md5", String.valueOf(false));
+        defaults.put("spectra.upload.crc32", String.valueOf(false));
+
         /**
          * NTLM Windows Domain
          */
