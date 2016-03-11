@@ -20,11 +20,12 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.CRC32ChecksumCompute;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.jets3t.service.model.StorageObject;
@@ -33,9 +34,6 @@ import java.security.MessageDigest;
 
 public class SpectraUploadFeature extends HttpUploadFeature<StorageObject, MessageDigest> {
 
-    private final ChecksumCompute checksum
-            = new MD5ChecksumCompute();
-
     public SpectraUploadFeature(final SpectraWriteFeature writer) {
         super(writer);
     }
@@ -43,7 +41,18 @@ public class SpectraUploadFeature extends HttpUploadFeature<StorageObject, Messa
     @Override
     public StorageObject upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
                                 final TransferStatus status, final StreamCancelation cancel, final StreamProgress progress) throws BackgroundException {
-        status.setChecksum(checksum.compute(local.getInputStream()));
+        // The client-side checksum is passed to the BlackPearl gateway by supplying the applicable CRC HTTP header.
+        // If this is done, the BlackPearl gateway verifies that the data received matches the checksum provided.
+        // End-to-end data protection requires that the client provide the CRC when uploading the object and then
+        // verify the CRC after downloading the object at a later time (see Get Object). The BlackPearl gateway also
+        // verifies the CRC when reading from physical data stores so the gateway can identify problems before
+        // transmitting data to the client.
+        if(PreferencesFactory.get().getBoolean("spectra.upload.crc32")) {
+            status.setChecksum(new CRC32ChecksumCompute().compute(local.getInputStream()));
+        }
+        if(PreferencesFactory.get().getBoolean("spectra.upload.md5")) {
+            status.setChecksum(new MD5ChecksumCompute().compute(local.getInputStream()));
+        }
         return super.upload(file, local, throttle, listener, status, cancel, progress);
     }
 }
