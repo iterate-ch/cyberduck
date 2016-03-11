@@ -2,6 +2,7 @@ Cyberduck for mounting volumes in the file explorer is now available from https:
 
 5.0
 - [Feature] Support for B2 Cloud Storage (Backblaze) (#9162)
+- [Feature] Support for Spectra BlackPearl Deep Storage Gateway (Spectra S3)
 
 4.8.4 [https://trac.cyberduck.io/milestone/4.8.4]
 - [Bugfix] Disable updater when missing admin privilege (#9155)
