@@ -158,6 +158,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
                     break;
                 case crc32:
                     object.addMetadata("Content-CRC32", checksum.hash);
+                    break;
                 case sha256:
                     object.addMetadata("x-amz-content-sha256", checksum.hash);
                     break;
