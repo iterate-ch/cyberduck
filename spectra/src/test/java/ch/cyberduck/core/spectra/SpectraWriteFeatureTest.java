@@ -31,7 +31,7 @@ import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.SHA256ChecksumCompute;
+import ch.cyberduck.core.io.CRC32ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.s3.S3AttributesFeature;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
@@ -74,7 +74,7 @@ public class SpectraWriteFeatureTest {
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomStringUtils.random(1000).getBytes();
         final TransferStatus status = new TransferStatus().length(content.length);
-        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content)));
+        status.setChecksum(new CRC32ChecksumCompute().compute(new ByteArrayInputStream(content)));
         // Allocate
         final SpectraBulkService bulk = new SpectraBulkService(session);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, status));
@@ -129,7 +129,7 @@ public class SpectraWriteFeatureTest {
         // Replace content
         final byte[] content = RandomStringUtils.random(1000).getBytes();
         final TransferStatus status = new TransferStatus().length(content.length);
-        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content)));
+        status.setChecksum(new CRC32ChecksumCompute().compute(new ByteArrayInputStream(content)));
         final SpectraBulkService bulk = new SpectraBulkService(session);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, status.exists(true)));
         final OutputStream out = new SpectraWriteFeature(session).write(test, status);
