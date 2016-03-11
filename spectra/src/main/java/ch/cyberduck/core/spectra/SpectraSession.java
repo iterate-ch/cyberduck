@@ -36,7 +36,6 @@ import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.s3.RequestEntityRestStorageService;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
-import ch.cyberduck.core.s3.S3SingleUploadService;
 import ch.cyberduck.core.shared.DefaultDownloadFeature;
 import ch.cyberduck.core.shared.DisabledMoveFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -92,7 +91,7 @@ public class SpectraSession extends S3Session {
             return (T) new SpectraReadFeature(this);
         }
         if(type == Upload.class) {
-            return (T) new S3SingleUploadService(this, new SpectraWriteFeature(this));
+            return (T) new SpectraUploadFeature(new SpectraWriteFeature(this));
         }
         if(type == Download.class) {
             return (T) new DefaultDownloadFeature(new SpectraReadFeature(this));
