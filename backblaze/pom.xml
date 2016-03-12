@@ -38,7 +38,7 @@
         <dependency>
             <groupId>synapticloop</groupId>
             <artifactId>backblaze-b2-java-api</artifactId>
-            <version>1.3.0</version>
+            <version>1.3.1</version>
             <type>jar</type>
         </dependency>
     </dependencies>
