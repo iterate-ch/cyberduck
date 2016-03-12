@@ -79,9 +79,9 @@ public class SwiftLargeObjectUploadFeatureTest {
         assertNull(new SwiftAttributesFeature(session).find(test).getChecksum());
         assertNotNull(new DefaultAttributesFeature(session).find(test).getChecksum());
 
-        assertEquals(content.length, status.getOffset());
         assertTrue(status.isComplete());
         assertFalse(status.isCanceled());
+        assertEquals(content.length, status.getOffset());
 
         assertTrue(new SwiftFindFeature(session).find(test));
         final InputStream in = new SwiftReadFeature(session, regionService).read(test, new TransferStatus());
