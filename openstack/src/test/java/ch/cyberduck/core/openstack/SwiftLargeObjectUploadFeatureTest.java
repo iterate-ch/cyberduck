@@ -47,10 +47,6 @@ public class SwiftLargeObjectUploadFeatureTest {
                         System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")));
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
-        this.test(host, container);
-    }
-
-    private void test(final Host host, final Path container) throws Exception {
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -66,7 +62,7 @@ public class SwiftLargeObjectUploadFeatureTest {
 
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
-        IOUtils.closeQuietly(out);
+        out.close();
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
 

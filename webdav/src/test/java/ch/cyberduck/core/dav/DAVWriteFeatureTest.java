@@ -64,7 +64,7 @@ public class DAVWriteFeatureTest {
         final byte[] content = "test".getBytes("UTF-8");
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
-        IOUtils.closeQuietly(out);
+        out.close();
         status.setLength(content.length);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final HttpUploadFeature upload = new DAVUploadFeature(session);
@@ -82,7 +82,7 @@ public class DAVWriteFeatureTest {
             final byte[] buffer = new byte[content.length - 1];
             final InputStream in = new DAVReadFeature(session).read(test, new TransferStatus().length(content.length).append(true).skip(1L));
             IOUtils.readFully(in, buffer);
-            IOUtils.closeQuietly(in);
+            in.close();
             final byte[] reference = new byte[content.length - 1];
             System.arraycopy(content, 1, reference, 0, content.length - 1);
             assertArrayEquals(reference, buffer);
@@ -180,7 +180,7 @@ public class DAVWriteFeatureTest {
         final byte[] buffer = new byte[content.length];
         final InputStream in = new DAVReadFeature(session).read(test, new TransferStatus().length(content.length));
         IOUtils.readFully(in, buffer);
-        IOUtils.closeQuietly(in);
+        in.close();
         assertArrayEquals(content, buffer);
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
@@ -350,7 +350,7 @@ public class DAVWriteFeatureTest {
         final ResponseOutputStream<String> out = feature.write(test, status);
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
-        IOUtils.closeQuietly(out);
+        out.close();
         assertEquals(content.length, status.getOffset());
         assertTrue(status.isComplete());
         assertEquals(content.length, new DefaultAttributesFeature(session).find(test).getSize());

@@ -58,7 +58,7 @@ public class FTPWriteFeatureTest {
         final OutputStream out = new FTPWriteFeature(session).write(test, status);
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        IOUtils.closeQuietly(out);
+        out.close();
         assertTrue(session.getFeature(Find.class).find(test));
         assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
         assertEquals(content.length, new FTPWriteFeature(session).append(test, status.getLength(), PathCache.empty()).size, 0L);
@@ -66,14 +66,14 @@ public class FTPWriteFeatureTest {
             final InputStream in = new FTPReadFeature(session).read(test, new TransferStatus().length(content.length));
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
             new StreamCopier(status, status).transfer(in, buffer);
-            IOUtils.closeQuietly(in);
+            in.close();
             assertArrayEquals(content, buffer.toByteArray());
         }
         {
             final byte[] buffer = new byte[content.length - 1];
             final InputStream in = new FTPReadFeature(session).read(test, new TransferStatus().length(content.length).append(true).skip(1L));
             IOUtils.readFully(in, buffer);
-            IOUtils.closeQuietly(in);
+            in.close();
             final byte[] reference = new byte[content.length - 1];
             System.arraycopy(content, 1, reference, 0, content.length - 1);
             assertArrayEquals(reference, buffer);
