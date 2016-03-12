@@ -77,7 +77,7 @@ public class SwiftLargeObjectUploadFeatureTest {
                 status, new DisabledConnectionCallback());
         assertNull(Checksum.parse(object.getMd5sum()));
         assertNull(new SwiftAttributesFeature(session).find(test).getChecksum());
-        assertNull(new DefaultAttributesFeature(session).find(test).getChecksum());
+        assertNotNull(new DefaultAttributesFeature(session).find(test).getChecksum());
 
         assertEquals(content.length, status.getOffset());
         assertTrue(status.isComplete());
