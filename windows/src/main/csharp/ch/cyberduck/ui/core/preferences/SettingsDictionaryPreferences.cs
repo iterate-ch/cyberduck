@@ -246,7 +246,7 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
 
             // Importers
             defaults.put("bookmark.import.winscp.location",
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Programs), "WinSCP", "winscp.ini"));
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "WinSCP.ini"));
             defaults.put("bookmark.import.filezilla.location",
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FileZilla",
                     "sitemanager.xml"));
