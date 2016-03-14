@@ -22,6 +22,7 @@
 <project name="Cyberduck CLI Windows" basedir=".">
 
     <import file="../../build.xml"/>
+    <import file="../../archive.xml"/>
 
     <property name="msbuild.configuration" value="release"/>
     <property name="msbuild.architecture" value="x86"/>

@@ -22,6 +22,7 @@
 <project name="Cyberduck for Windows" basedir=".">
 
     <import file="../build.xml"/>
+    <import file="../archive.xml"/>
 
     <property name="app.name" value="Cyberduck"/>
 
