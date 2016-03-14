@@ -228,18 +228,20 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
             }
             final List<TransferStatus> chunks = new ArrayList<TransferStatus>(list.getObjects().size());
             for(BulkObject bulk : objects) {
-                final TransferStatus chunk = new TransferStatus()
-                        .exists(status.isExists())
-                        .metadata(status.getMetadata())
-                        .parameters(status.getParameters());
-                // Job parameter already present from #pre
-                final Map<String, String> parameters = new HashMap<>(chunk.getParameters());
-                // Set offset for chunk
-                parameters.put(REQUEST_PARAMETER_OFFSET, Long.toString(chunk.getOffset()));
-                chunk.parameters(parameters);
-                chunk.setLength(bulk.getLength());
-                chunk.setOffset(bulk.getOffset());
-                chunks.add(chunk);
+                if(bulk.getName().equals(containerService.getKey(file))) {
+                    final TransferStatus chunk = new TransferStatus()
+                            .exists(status.isExists())
+                            .metadata(status.getMetadata())
+                            .parameters(status.getParameters());
+                    // Job parameter already present from #pre
+                    final Map<String, String> parameters = new HashMap<>(chunk.getParameters());
+                    // Set offset for chunk
+                    parameters.put(REQUEST_PARAMETER_OFFSET, Long.toString(chunk.getOffset()));
+                    chunk.parameters(parameters);
+                    chunk.setLength(bulk.getLength());
+                    chunk.setOffset(bulk.getOffset());
+                    chunks.add(chunk);
+                }
             }
             return chunks;
         }

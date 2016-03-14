@@ -41,8 +41,10 @@ import org.junit.experimental.categories.Category;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.Random;
 import java.util.UUID;
 
@@ -86,6 +88,61 @@ public class SpectraUploadFeatureTest {
         in.close();
         assertArrayEquals(content, buffer);
         new SpectraDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
+        session.close();
+    }
+
+    @Test
+    public void testUploadMultipleFiles() throws Exception {
+        final Host host = new Host(new SpectraProtocol() {
+            @Override
+            public Scheme getScheme() {
+                return Scheme.http;
+            }
+        }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
+                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
+        ));
+        final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
+                new DefaultX509KeyManager());
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Local local1 = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final TransferStatus status1;
+        {
+            final byte[] content = new byte[32770];
+            new Random().nextBytes(content);
+            final OutputStream out = local1.getOutputStream(false);
+            IOUtils.write(content, out);
+            out.close();
+            status1 = new TransferStatus().length(content.length);
+        }
+        final Local local2 = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final TransferStatus status2;
+        {
+            final byte[] content = new byte[32770];
+            new Random().nextBytes(content);
+            final OutputStream out = local2.getOutputStream(false);
+            IOUtils.write(content, out);
+            out.close();
+            status2 = new TransferStatus().length(content.length);
+        }
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test1 = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test2 = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final SpectraBulkService bulk = new SpectraBulkService(session);
+        final HashMap<Path, TransferStatus> files = new HashMap<>();
+        files.put(test1, status1);
+        files.put(test2, status2);
+        bulk.pre(Transfer.Type.upload, files);
+        final SpectraUploadFeature upload = new SpectraUploadFeature(session, new SpectraWriteFeature(session));
+        upload.upload(test1, local1, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                status1, new DisabledConnectionCallback());
+        upload.upload(test2, local2, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                status2, new DisabledConnectionCallback());
+        new SpectraDeleteFeature(session).delete(Arrays.asList(test1, test2), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {
             }
