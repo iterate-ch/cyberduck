@@ -18,12 +18,19 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.transfer.TransferStatus;
+
+import org.apache.http.HttpHeaders;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.google.api.services.drive.Drive;
+
 public class DriveReadFeature implements Read {
+    private static final Logger log = Logger.getLogger(DriveReadFeature.class);
 
     private DriveSession session;
 
@@ -33,13 +40,30 @@ public class DriveReadFeature implements Read {
 
     @Override
     public boolean offset(Path file) {
-        return false;
+        return true;
     }
 
     @Override
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            return session.getClient().files().get(file.attributes().getVersionId()).executeAsInputStream();
+            final Drive.Files.Get request = session.getClient().files().get(file.attributes().getVersionId());
+            if(status.isAppend()) {
+                final HttpRange range = HttpRange.withStatus(status);
+                final String header;
+                if(-1 == range.getEnd()) {
+                    header = String.format("bytes=%d-", range.getStart());
+                }
+                else {
+                    header = String.format("bytes=%d-%d", range.getStart(), range.getEnd());
+                }
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Add range header %s for file %s", header, file));
+                }
+                request.getRequestHeaders().put(HttpHeaders.RANGE, header);
+                // Disable compression
+                request.getRequestHeaders().put(HttpHeaders.ACCEPT_ENCODING, "identity");
+            }
+            return request.executeAsInputStream();
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Download failed", e, file);
