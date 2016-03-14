@@ -43,7 +43,12 @@
             <property name="Configuration" value="${msbuild.configuration}"/>
             <property name="Platform" value="${msbuild.architecture}"/>
         </msbuild>
-        <checksum file="${build.deploy}/duck-${version}.${revision}.exe" algorithm="md5"/>
+        <foreach target="md5" param="source">
+            <fileset dir="${build.deploy}">
+                <include name="*.msi"/>
+                <exclude name="*.exe"/>
+            </fileset>
+        </foreach>
 
         <copy todir="${chocolatey.target}">
             <fileset dir="${chocolatey.source}">

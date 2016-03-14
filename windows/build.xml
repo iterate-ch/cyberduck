@@ -101,8 +101,6 @@
 
         <mkdir dir="${build.deploy}"/>
 
-        <property name="setup.file"
-                  location="${build.deploy}/${app.name}-Installer-${version}.${revision}"/>
         <msbuild buildfile="${home}/Cyberduck Bootstrapper.wixproj">
             <target name="Build"/>
             <property name="Version" value="${normalized.version}.${revision}"/>
@@ -110,7 +108,11 @@
             <property name="Configuration" value="${msbuild.configuration}"/>
             <property name="Platform" value="${msbuild.architecture}"/>
         </msbuild>
-        <checksum file="${setup.file}.msi" algorithm="md5"/>
-        <checksum file="${setup.file}.exe" algorithm="md5"/>
+        <foreach target="md5" param="source">
+            <fileset dir="${build.deploy}">
+                <include name="*.msi"/>
+                <exclude name="*.exe"/>
+            </fileset>
+        </foreach>
     </target>
 </project>
