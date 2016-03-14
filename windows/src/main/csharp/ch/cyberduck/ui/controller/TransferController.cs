@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System;
@@ -28,6 +28,7 @@ using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.ssl;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.core.transfer;
+using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using org.apache.log4j;
 using StructureMap;
@@ -294,7 +295,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     remove.Add(t);
                 }
             }
-            TransferCollection.defaultCollection().removeAll(remove);
+            TransferCollection.defaultCollection().removeAll(Utils.ConvertToJavaList(remove));
             TransferCollection.defaultCollection().save();
         }
 
