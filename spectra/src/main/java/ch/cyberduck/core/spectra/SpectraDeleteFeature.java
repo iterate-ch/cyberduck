@@ -20,6 +20,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.s3.S3DisabledMultipartService;
 import ch.cyberduck.core.s3.S3MultipleDeleteFeature;
 import ch.cyberduck.core.s3.S3PathContainerService;
 
@@ -41,7 +42,7 @@ public class SpectraDeleteFeature extends S3MultipleDeleteFeature {
     private final SpectraSession session;
 
     public SpectraDeleteFeature(final SpectraSession session) {
-        super(session);
+        super(session, new S3DisabledMultipartService());
         this.session = session;
     }
 
