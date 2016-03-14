@@ -15,28 +15,34 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
+import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.io.input.NullInputStream;
+import org.apache.http.HttpHeaders;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpResponseException;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.AbstractHttpEntity;
+import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.util.Collections;
 
-import com.google.api.client.http.AbstractInputStreamContent;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 
-public class DriveWriteFeature extends AbstractHttpWriteFeature<File> {
+public class DriveWriteFeature extends AbstractHttpWriteFeature<String> {
     private static final Logger log = Logger.getLogger(DriveWriteFeature.class);
 
     private DriveSession session;
@@ -62,37 +68,40 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<File> {
     }
 
     @Override
-    public ResponseOutputStream<File> write(final Path file, final TransferStatus status) throws BackgroundException {
-        final File body = new File();
-        body.setName(file.getName());
-        body.setMimeType(status.getMime());
-        final DelayedHttpEntityCallable<File> command = new DelayedHttpEntityCallable<File>() {
+    public ResponseOutputStream<String> write(final Path file, final TransferStatus status) throws BackgroundException {
+        final DelayedHttpEntityCallable<String> command = new DelayedHttpEntityCallable<String>() {
             @Override
-            public File call(final AbstractHttpEntity entity) throws BackgroundException {
+            public String call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
-                    final Drive.Files.Create insert = session.getClient().files().create(body,
-                            new AbstractInputStreamContent(status.getMime()) {
-                                @Override
-                                public long getLength() throws IOException {
-                                    return status.getLength();
-                                }
+                    final Drive.Files.Create insert = session.getClient().files().create(new File()
+                            .setName(file.getName())
+                            .setParents(Collections.singletonList(file.getParent().attributes().getVersionId())));
+                    file.attributes().setVersionId(insert.execute().getId());
 
-                                @Override
-                                public boolean retrySupported() {
-                                    return false;
-                                }
-
-                                @Override
-                                public InputStream getInputStream() throws IOException {
-                                    return new NullInputStream(status.getLength());
-                                }
-
-                                @Override
-                                public void writeTo(final OutputStream out) throws IOException {
-                                    entity.writeTo(out);
-                                }
-                            });
-                    return insert.execute();
+                    final String base = session.getClient().getBaseUrl();
+                    // Upload the media only, without any metadata
+                    final HttpPost request = new HttpPost(String.format("%sfiles?uploadType=media", base));
+                    request.addHeader(HttpHeaders.CONTENT_TYPE, status.getMime());
+                    request.addHeader(HTTP.EXPECT_DIRECTIVE, HTTP.EXPECT_CONTINUE);
+                    request.addHeader(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", session.getAccessToken()));
+                    request.setEntity(entity);
+                    final CloseableHttpResponse response = session.getBuilder().build(new DisabledTranscriptListener()).build().execute(request);
+                    try {
+                        switch(response.getStatusLine().getStatusCode()) {
+                            case HttpStatus.SC_OK:
+                                break;
+                            default:
+                                throw new HttpExceptionMappingService().map(new HttpResponseException(
+                                        response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                        }
+                    }
+                    finally {
+                        EntityUtils.consume(response.getEntity());
+                    }
+                    if(response.containsHeader(HttpHeaders.ETAG)) {
+                        return response.getFirstHeader(HttpHeaders.ETAG).getValue();
+                    }
+                    return null;
                 }
                 catch(IOException e) {
                     throw new DriveExceptionMappingService().map("Upload failed", e, file);

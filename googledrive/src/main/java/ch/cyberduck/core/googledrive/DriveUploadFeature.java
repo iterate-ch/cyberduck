@@ -17,12 +17,10 @@ package ch.cyberduck.core.googledrive;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.http.HttpUploadFeature;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.InputStream;
@@ -30,9 +28,7 @@ import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import com.google.api.services.drive.model.File;
-
-public class DriveUploadFeature extends HttpUploadFeature<File, MessageDigest> {
+public class DriveUploadFeature extends HttpUploadFeature<String, MessageDigest> {
     private static final Logger log = Logger.getLogger(DriveUploadFeature.class);
 
     public DriveUploadFeature(final DriveSession session) {
@@ -65,25 +61,7 @@ public class DriveUploadFeature extends HttpUploadFeature<File, MessageDigest> {
     }
 
     @Override
-    protected void post(final Path file, final MessageDigest digest, final File response) throws BackgroundException {
-        if(StringUtils.isBlank(response.getMd5Checksum())) {
-            log.warn("No ETag returned by server to verify checksum");
-            return;
-        }
-        if(response.getMd5Checksum().matches("[a-fA-F0-9]{32}")) {
-            log.warn(String.format("ETag %s returned by server does not match MD5 pattern", response.getMd5Checksum()));
-            return;
-        }
-        if(null != digest) {
-            // Obtain locally-calculated MD5 hash.
-            final String expected = Hex.encodeHexString(digest.digest());
-            // Compare our locally-calculated hash with the ETag returned by S3.
-            if(!expected.equals(response.getMd5Checksum())) {
-                throw new ChecksumException("Upload failed",
-                        String.format("Mismatch between MD5 hash of uploaded data (%s) and ETag returned by the server (%s)",
-                                expected, response.getMd5Checksum())
-                );
-            }
-        }
+    protected void post(final Path file, final MessageDigest digest, final String etag) throws BackgroundException {
+        this.verify(file, digest, Checksum.parse(etag));
     }
 }

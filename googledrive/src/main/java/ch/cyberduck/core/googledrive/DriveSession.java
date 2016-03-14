@@ -29,6 +29,7 @@ import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -72,11 +73,11 @@ public class DriveSession extends HttpSession<Drive> {
     private Preferences preferences
             = PreferencesFactory.get();
 
-    private final PreferencesUseragentProvider useragentProvider
+    private final PreferencesUseragentProvider useragent
             = new PreferencesUseragentProvider();
 
     public DriveSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
-        super(host, trust, key);
+        super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
 
     @Override
@@ -91,7 +92,7 @@ public class DriveSession extends HttpSession<Drive> {
                 tokens.initialize(httpRequest);
             }
         })
-                .setApplicationName(useragentProvider.get())
+                .setApplicationName(useragent.get())
                 .build();
     }
 
@@ -261,5 +262,9 @@ public class DriveSession extends HttpSession<Drive> {
             return (T) new DriveUrlProvider(this);
         }
         return super.getFeature(type);
+    }
+
+    public String getAccessToken() {
+        return tokens.getAccessToken();
     }
 }

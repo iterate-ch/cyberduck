@@ -19,11 +19,15 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.http.HttpConnectionPoolBuilder;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -78,6 +82,9 @@ public class DriveWriteFeatureTest {
         IOUtils.closeQuietly(out);
         status.setLength(content.length);
         final Path test = new Path(new DriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final HttpConnectionPoolBuilder builder = new HttpConnectionPoolBuilder(host, new ThreadLocalHostnameDelegatingTrustManager(
+                new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager(), new DisabledProxyFinder()
+        );
         final HttpUploadFeature upload = new DriveUploadFeature(session);
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status, new DisabledConnectionCallback());
