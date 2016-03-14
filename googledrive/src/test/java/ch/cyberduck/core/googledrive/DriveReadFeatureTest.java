@@ -58,7 +58,7 @@ public class DriveReadFeatureTest {
 
     @Test
     public void testAppend() throws Exception {
-        assertFalse(new DriveReadFeature(null).offset(new Path("/", EnumSet.of(Path.Type.file))));
+        assertTrue(new DriveReadFeature(null).offset(new Path("/", EnumSet.of(Path.Type.file))));
     }
 
     @Test
