@@ -21,7 +21,6 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.http.HttpHeaders;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -59,11 +58,11 @@ public class DriveReadFeature implements Read {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Add range header %s for file %s", header, file));
                 }
-                request.getRequestHeaders().put(HttpHeaders.RANGE, header);
+                request.getRequestHeaders().setRange(header);
                 // Disable compression
-                request.getRequestHeaders().put(HttpHeaders.ACCEPT_ENCODING, "identity");
+                request.getRequestHeaders().setAcceptEncoding("identity");
             }
-            return request.executeAsInputStream();
+            return request.executeMediaAsInputStream();
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Download failed", e, file);
