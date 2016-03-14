@@ -1,8 +1,5 @@
-package ch.cyberduck.core.spectra;
-
 /*
- * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
- * https://cyberduck.io/
+ * Copyright (c) 2015-2016 Spectra Logic Corporation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,9 +12,10 @@ package ch.cyberduck.core.spectra;
  * GNU General Public License for more details.
  */
 
+package ch.cyberduck.core.spectra;
+
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.RedirectException;
 import ch.cyberduck.core.s3.S3ReadFeature;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -25,6 +23,10 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.log4j.Logger;
 
 import java.io.InputStream;
+import java.io.SequenceInputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class SpectraReadFeature extends S3ReadFeature {
     private static final Logger log = Logger.getLogger(SpectraReadFeature.class);
@@ -39,13 +41,16 @@ public class SpectraReadFeature extends S3ReadFeature {
     @Override
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
         final SpectraBulkService bulk = new SpectraBulkService(session);
-        try {
-            // Make sure file is available in cache
-            bulk.query(Transfer.Type.download, file, status);
+        // Make sure file is available in cache
+        final List<TransferStatus> chunks = bulk.query(Transfer.Type.download, file, status);
+        if(chunks.isEmpty()) {
+            log.error(String.format("Empty chunk array for download %s", file));
         }
-        catch(RedirectException e) {
-            log.warn(String.format("Node %s returned for is not equal connected host %s.", e.getTarget(), session.getHost()));
+        final List<InputStream> streams = new ArrayList<InputStream>();
+        for(TransferStatus chunk : chunks) {
+            streams.add(super.read(file, chunk));
         }
-        return super.read(file, status);
+        // Concatenate streams
+        return new SequenceInputStream(Collections.enumeration(streams));
     }
 }
