@@ -81,7 +81,6 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<String> {
                     final String base = session.getClient().getBaseUrl();
                     // Upload the media only, without any metadata
                     final HttpPost request = new HttpPost(String.format("%sfiles?uploadType=media", base));
-                    request.addHeader(HttpHeaders.CONTENT_TYPE, status.getMime());
                     request.addHeader(HTTP.EXPECT_DIRECTIVE, HTTP.EXPECT_CONTINUE);
                     request.addHeader(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", session.getAccessToken()));
                     request.setEntity(entity);
