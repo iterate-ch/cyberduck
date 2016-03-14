@@ -91,7 +91,7 @@ public class SpectraSession extends S3Session {
             return (T) new SpectraReadFeature(this);
         }
         if(type == Upload.class) {
-            return (T) new SpectraUploadFeature(new SpectraWriteFeature(this));
+            return (T) new SpectraUploadFeature(this, new SpectraWriteFeature(this));
         }
         if(type == Download.class) {
             return (T) new DefaultDownloadFeature(new SpectraReadFeature(this));
