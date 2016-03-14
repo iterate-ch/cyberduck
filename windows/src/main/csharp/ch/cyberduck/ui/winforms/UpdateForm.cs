@@ -11,7 +11,7 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-//  
+// 
 // Bug fixes, suggestions and comments should be sent to:
 // feedback@cyberduck.io
 // 
@@ -153,7 +153,9 @@ namespace Ch.Cyberduck.Ui.Winforms
                 tableLayoutPanel.RowStyles[7].SizeType = SizeType.Percent;
                 tableLayoutPanel.RowStyles[7].Height = 100;
 
-                string currentVersion = PreferencesFactory.get().getProperty("application.version");
+                string currentVersion = string.Format("{0} ({1})",
+                    PreferencesFactory.get().getProperty("application.version"),
+                    PreferencesFactory.get().getProperty("application.revision"));
 
                 versionLabel.Text =
                     LocaleFactory.localizedString(

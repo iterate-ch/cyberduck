@@ -106,7 +106,7 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
         {
             get
             {
-                Match match = Regex.Match(Application.ProductVersion, @"((\d+)\.(\d+)\.(\d+)).*");
+                Match match = Regex.Match(Application.ProductVersion, @"((\d+)\.(\d+)(\.(\d+))?).*");
                 return match.Groups[1].Value;
             }
         }
