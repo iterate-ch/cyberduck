@@ -33,9 +33,11 @@ import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -46,6 +48,7 @@ import java.util.UUID;
 
 import static org.junit.Assert.assertArrayEquals;
 
+@Category(IntegrationTest.class)
 public class SpectraUploadFeatureTest {
 
     @Test
