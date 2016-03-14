@@ -17,36 +17,42 @@ package ch.cyberduck.core.spectra;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
-import ch.cyberduck.core.s3.S3DirectoryFeature;
-import ch.cyberduck.core.s3.S3FindFeature;
+import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Random;
 import java.util.UUID;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertArrayEquals;
 
 @Category(IntegrationTest.class)
-public class SpectraDeleteFeatureTest {
+public class SpectraUploadFeatureTest {
 
     @Test
-    public void testDeleteContainer() throws Exception {
+    public void testUpload() throws Exception {
         final Host host = new Host(new SpectraProtocol() {
             @Override
             public Scheme getScheme() {
@@ -59,16 +65,31 @@ public class SpectraDeleteFeatureTest {
                 new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume, Path.Type.directory));
-        container.attributes().setRegion("US");
-        new S3DirectoryFeature(session).mkdir(container, null);
-        assertTrue(new S3FindFeature(session).find(container));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.Callback() {
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final byte[] content = new byte[32770];
+        new Random().nextBytes(content);
+        final OutputStream out = local.getOutputStream(false);
+        IOUtils.write(content, out);
+        out.close();
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final TransferStatus status = new TransferStatus().length(content.length);
+        final SpectraBulkService bulk = new SpectraBulkService(session);
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, status));
+        final SpectraUploadFeature upload = new SpectraUploadFeature(session, new SpectraWriteFeature(session));
+        upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                status, new DisabledConnectionCallback());
+        final byte[] buffer = new byte[content.length];
+        bulk.pre(Transfer.Type.download, Collections.singletonMap(test, status));
+        final InputStream in = new SpectraReadFeature(session).read(test, new TransferStatus().length(content.length));
+        IOUtils.readFully(in, buffer);
+        in.close();
+        assertArrayEquals(content, buffer);
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {
             }
         });
-        assertFalse(new S3FindFeature(session).find(container));
         session.close();
     }
 }

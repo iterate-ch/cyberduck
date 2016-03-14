@@ -30,10 +30,12 @@ import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.SHA1ChecksumCompute;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
@@ -46,6 +48,7 @@ import synapticloop.b2.response.B2FileResponse;
 
 import static org.junit.Assert.*;
 
+@Category(IntegrationTest.class)
 public class B2ObjectListServiceTest {
 
     @Test

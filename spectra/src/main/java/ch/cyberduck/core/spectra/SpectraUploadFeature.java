@@ -26,16 +26,23 @@ import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.log4j.Logger;
 import org.jets3t.service.model.StorageObject;
 
 import java.security.MessageDigest;
+import java.util.List;
 
 public class SpectraUploadFeature extends HttpUploadFeature<StorageObject, MessageDigest> {
+    private static final Logger log = Logger.getLogger(SpectraWriteFeature.class);
 
-    public SpectraUploadFeature(final SpectraWriteFeature writer) {
-        super(writer);
+    private final SpectraSession session;
+
+    public SpectraUploadFeature(final SpectraSession session, final SpectraWriteFeature write) {
+        super(write);
+        this.session = session;
     }
 
     @Override
@@ -53,6 +60,18 @@ public class SpectraUploadFeature extends HttpUploadFeature<StorageObject, Messa
         if(PreferencesFactory.get().getBoolean("spectra.upload.md5")) {
             status.setChecksum(new MD5ChecksumCompute().compute(local.getInputStream()));
         }
-        return super.upload(file, local, throttle, listener, status, cancel, progress);
+        final SpectraBulkService bulk = new SpectraBulkService(session);
+        // Make sure file is available in cache
+        final List<TransferStatus> chunks = bulk.query(Transfer.Type.upload, file, status);
+        if(chunks.isEmpty()) {
+            log.error(String.format("Empty chunk array for upload %s", file));
+            return super.upload(file, local, throttle, listener, status, cancel, progress);
+        }
+        StorageObject stored = null;
+        for(TransferStatus chunk : chunks) {
+            stored = super.upload(file, local, throttle, listener, chunk, cancel, progress);
+
+        }
+        return stored;
     }
 }
