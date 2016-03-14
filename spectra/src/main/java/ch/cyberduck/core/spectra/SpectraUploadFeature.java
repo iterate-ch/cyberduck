@@ -70,7 +70,6 @@ public class SpectraUploadFeature extends HttpUploadFeature<StorageObject, Messa
         StorageObject stored = null;
         for(TransferStatus chunk : chunks) {
             stored = super.upload(file, local, throttle, listener, chunk, cancel, progress);
-
         }
         return stored;
     }

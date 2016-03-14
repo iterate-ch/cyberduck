@@ -244,7 +244,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                 final Map<String, String> parameters = new HashMap<>(chunk.getParameters());
                 // Set offset for chunk
                 parameters.put(REQUEST_PARAMETER_OFFSET, Long.toString(chunk.getOffset()));
-                status.parameters(parameters);
+                chunk.parameters(parameters);
                 chunk.setLength(bulk.getLength());
                 chunk.setOffset(bulk.getOffset());
                 chunks.add(chunk);
