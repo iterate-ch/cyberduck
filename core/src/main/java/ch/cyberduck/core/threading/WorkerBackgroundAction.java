@@ -32,9 +32,6 @@ import ch.cyberduck.core.worker.Worker;
 
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id$
- */
 public class WorkerBackgroundAction<T> extends BrowserBackgroundAction<T> {
     private static final Logger log = Logger.getLogger(WorkerBackgroundAction.class);
 
@@ -118,7 +115,6 @@ public class WorkerBackgroundAction<T> extends BrowserBackgroundAction<T> {
 
     @Override
     public void cleanup() {
-        super.cleanup();
         if(null == result) {
             log.warn(String.format("Missing result for worker %s. Use default value.", worker));
             worker.cleanup(worker.initialize());
@@ -129,6 +125,7 @@ public class WorkerBackgroundAction<T> extends BrowserBackgroundAction<T> {
             }
             worker.cleanup(result);
         }
+        super.cleanup();
     }
 
     @Override

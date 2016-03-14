@@ -2162,6 +2162,7 @@ pl.lproj/Status.strings -text svneol=unset#text/utf-16
 pl.lproj/Support.strings -text svneol=unset#text/utf-16
 pl.lproj/Transfer.strings -text svneol=unset#text/utf-16
 pom/bundle/pom.xml -text
+profiles/B2.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Box.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Cloud.ca[!!-~]Object[!!-~]Store[!!-~]East-1[!!-~]Region.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/DreamObjects.cyberduckprofile -text
@@ -2207,6 +2208,7 @@ profiles/Spectra[!!-~]S3[!!-~](HTTPS).cyberduckprofile -text svneol=native#appli
 profiles/Verizon[!!-~]Cloud[!!-~]Storage[!!-~](AMS1A).cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Verizon[!!-~]Cloud[!!-~]Storage[!!-~](IAD3A).cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Verizon[!!-~]Cloud[!!-~]Storage[!!-~](USHAA).cyberduckprofile -text svneol=unset#application/octet-stream
+profiles/Zetta.IO.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/assets/Dream Objects.tiff -text svneol=unset#image/tiff
 profiles/assets/Dump[!!-~]Truck.png -text svneol=unset#image/png
 profiles/assets/GreenQloud.tiff -text svneol=unset#image/tiff

@@ -29,6 +29,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.ThreadPool;
@@ -137,7 +138,11 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                     log.debug(String.format("Skip segment %s", existingSegment));
                 }
                 final StorageObject stored = new StorageObject(containerService.getKey(segment));
-                stored.setMd5sum(existingSegment.attributes().getChecksum().hash);
+                if(existingSegment.attributes().getChecksum() != null) {
+                    if(HashAlgorithm.md5.equals(existingSegment.attributes().getChecksum().algorithm)) {
+                        stored.setMd5sum(existingSegment.attributes().getChecksum().hash);
+                    }
+                }
                 stored.setSize(existingSegment.attributes().getSize());
                 completed.add(stored);
             }

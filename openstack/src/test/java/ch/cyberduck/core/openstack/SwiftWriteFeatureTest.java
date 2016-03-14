@@ -63,7 +63,7 @@ public class SwiftWriteFeatureTest {
         final OutputStream out = new SwiftWriteFeature(session, regionService).withMetadata(Collections.singletonMap("C", "duck")).write(test, status);
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        IOUtils.closeQuietly(out);
+        out.close();
         Thread.sleep(1000L);
         assertTrue(new SwiftFindFeature(session).find(test));
         final PathAttributes attributes = session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
@@ -74,7 +74,7 @@ public class SwiftWriteFeatureTest {
         final byte[] buffer = new byte[content.length];
         final InputStream in = new SwiftReadFeature(session, regionService).read(test, new TransferStatus());
         IOUtils.readFully(in, buffer);
-        IOUtils.closeQuietly(in);
+        in.close();
         assertArrayEquals(content, buffer);
         final Map<String, String> metadata = new SwiftMetadataFeature(session).getMetadata(test);
         assertFalse(metadata.isEmpty());

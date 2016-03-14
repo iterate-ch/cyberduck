@@ -389,35 +389,42 @@ public class BrowserController extends WindowController
             // Render empty browser
             model.render(browser, Collections.<Path>emptyList());
         }
-        for(final Path folder : folders) {
-            if(invalidate) {
-                // Invalidate cache
-                cache.invalidate(folder);
-            }
-            else {
-                if(cache.isCached(folder)) {
-                    reload(browser, model, workdir, selected, folder);
-                    return;
+        if(null == workdir) {
+            this.setNavigation(false);
+            // Render empty browser
+            model.render(browser, Collections.<Path>emptyList());
+        }
+        else {
+            for(final Path folder : folders) {
+                if(invalidate) {
+                    // Invalidate cache
+                    cache.invalidate(folder);
                 }
-            }
-            // Delay render until path is cached in the background
-            this.background(new WorkerBackgroundAction<AttributedList<Path>>(this, session, cache,
-                            new SessionListWorker(cache, folder, listener) {
-                                @Override
-                                public void cleanup(final AttributedList<Path> list) {
-                                    // Put into cache
-                                    super.cleanup(list);
-                                    // Update the working directory if listing is successful
-                                    if(!(AttributedList.<Path>emptyList() == list)) {
-                                        // Reload browser
-                                        reload(browser, model, workdir, selected, folder);
+                else {
+                    if(cache.isCached(folder)) {
+                        reload(browser, model, workdir, selected, folder);
+                        return;
+                    }
+                }
+                // Delay render until path is cached in the background
+                this.background(new WorkerBackgroundAction<AttributedList<Path>>(this, session, cache,
+                                new SessionListWorker(cache, folder, listener) {
+                                    @Override
+                                    public void cleanup(final AttributedList<Path> list) {
+                                        // Put into cache
+                                        super.cleanup(list);
+                                        // Update the working directory if listing is successful
+                                        if(!(AttributedList.<Path>emptyList() == list)) {
+                                            // Reload browser
+                                            reload(browser, model, workdir, selected, folder);
+                                        }
                                     }
                                 }
-                            }
-                    )
-            );
+                        )
+                );
+            }
+            this.setStatus();
         }
-        this.setStatus();
     }
 
     /**
@@ -1977,7 +1984,13 @@ public class BrowserController extends WindowController
 
     public void setSearchField(NSSearchField searchField) {
         this.searchField = searchField;
-        this.searchField.setSendsSearchStringImmediately(false);
+        if(this.searchField.respondsToSelector(Foundation.selector("setSendsWholeSearchString:"))) {
+            // calls its search action method when the user clicks the search button (or presses Return)
+            this.searchField.setSendsWholeSearchString(false);
+        }
+        if(this.searchField.respondsToSelector(Foundation.selector("setSendsSearchStringImmediately:"))) {
+            this.searchField.setSendsSearchStringImmediately(false);
+        }
         this.searchField.setTarget(this.id());
         this.searchField.setAction(Foundation.selector("searchFieldTextDidChange:"));
         // Make sure action is not sent twice.
@@ -3306,7 +3319,12 @@ public class BrowserController extends WindowController
                             public void cleanup(final Path workdir) {
                                 super.cleanup(workdir);
                                 if(null == workdir) {
-                                    unmount();
+                                    doUnmount(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            //
+                                        }
+                                    });
                                 }
                                 else {
                                     // Update status icon
@@ -3341,20 +3359,6 @@ public class BrowserController extends WindowController
     }
 
     /**
-     * Close connection
-     *
-     * @return True if succeeded
-     */
-    public boolean unmount() {
-        return this.unmount(new Runnable() {
-            @Override
-            public void run() {
-                //
-            }
-        });
-    }
-
-    /**
      * @param disconnected Callback after the session has been disconnected
      * @return True if the unmount process has finished, false if the user has to agree first
      * to close the connection
@@ -3364,7 +3368,7 @@ public class BrowserController extends WindowController
             @Override
             public void callback(int returncode) {
                 if(returncode == DEFAULT_OPTION) {
-                    unmountImpl(disconnected);
+                    doUnmount(disconnected);
                 }
             }
         }, disconnected);
@@ -3405,7 +3409,7 @@ public class BrowserController extends WindowController
                 return false;
             }
         }
-        this.unmountImpl(disconnected);
+        this.doUnmount(disconnected);
         // Unmount succeeded
         return true;
     }
@@ -3413,20 +3417,20 @@ public class BrowserController extends WindowController
     /**
      * @param disconnected Action to run after disconnected
      */
-    private void unmountImpl(final Runnable disconnected) {
-        final List<Editor> list = editors;
+    private void doUnmount(final Runnable disconnected) {
         this.disconnect(new Runnable() {
             @Override
             public void run() {
                 session = null;
-                for(Editor e : list) {
+                editors.clear();
+                cache.clear();
+                setWorkdir(null);
+                for(Editor e : editors) {
                     e.delete();
                 }
                 window.setTitle(preferences.getProperty("application.name"));
                 window.setRepresentedFilename(StringUtils.EMPTY);
                 disconnected.run();
-                list.clear();
-                cache.clear();
             }
         });
     }

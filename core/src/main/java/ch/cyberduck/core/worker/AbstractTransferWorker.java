@@ -60,9 +60,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public abstract class AbstractTransferWorker extends Worker<Boolean> implements TransferWorker {
     private static final Logger log = Logger.getLogger(AbstractTransferWorker.class);
 

@@ -15,7 +15,6 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
@@ -67,7 +66,7 @@ public class S3ReadFeatureTest {
         final OutputStream out = new S3WriteFeature(session).write(test, status);
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        IOUtils.closeQuietly(out);
+        out.close();
         status.setAppend(true);
         status.setOffset(100L);
         final InputStream in = new S3ReadFeature(session).read(test, status.length(content.length - 100));
@@ -103,7 +102,7 @@ public class S3ReadFeatureTest {
         final OutputStream out = new S3WriteFeature(session).write(test, status);
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        IOUtils.closeQuietly(out);
+        out.close();
         status.setAppend(true);
         status.setOffset(100L);
         status.setLength(-1L);

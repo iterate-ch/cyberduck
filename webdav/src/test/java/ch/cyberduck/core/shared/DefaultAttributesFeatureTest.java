@@ -29,10 +29,13 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.dav.DAVProtocol;
+import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -98,12 +101,17 @@ public class DefaultAttributesFeatureTest {
         catch(NotfoundException e) {
             // Expected
         }
+        new DAVDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         session.close();
     }
 
     @Test
     public void testFindNoWebDAV() throws Exception {
-        final Host host = new Host(new DAVProtocol(), "ftpmirror.gnu.org");
+        final Host host = new Host(new DAVSSLProtocol(), "update.cyberduck.io");
         final AtomicBoolean set = new AtomicBoolean();
         final DAVSession session = new DAVSession(host) {
             @Override
@@ -116,7 +124,7 @@ public class DefaultAttributesFeatureTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final DefaultAttributesFeature f = new DefaultAttributesFeature(session);
-        final Path file = new Path("/wget/wget-1.17.1.tar.xz", EnumSet.of(Path.Type.file));
+        final Path file = new Path("/robots.txt", EnumSet.of(Path.Type.file));
         final Attributes attributes = f.find(file);
         assertNotNull(attributes);
         session.close();

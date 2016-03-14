@@ -93,12 +93,12 @@ public class IRODSReadFeatureTest {
         assertNotNull(out);
 
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
-        IOUtils.closeQuietly(out);
+        out.close();
         assertTrue(session.getFeature(Find.class).find(test));
 
         final InputStream in = new IRODSReadFeature(session).read(test, status);
         assertNotNull(in);
-        IOUtils.closeQuietly(in);
+        in.close();
 
         session.getFeature(Delete.class).delete(Arrays.asList(test), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
@@ -146,7 +146,7 @@ public class IRODSReadFeatureTest {
         final OutputStream out = local.getOutputStream(false);
         assertNotNull(out);
         IOUtils.write(content, out);
-        IOUtils.closeQuietly(out);
+        out.close();
         new DefaultUploadFeature(session).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 new TransferStatus().length(content.length),

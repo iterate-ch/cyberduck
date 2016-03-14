@@ -33,9 +33,6 @@ import java.io.IOException;
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.exception.NotFoundException;
 
-/**
- * @version $Id$
- */
 public class SwiftMoveFeature implements Move {
     private static final Logger log = Logger.getLogger(SwiftMoveFeature.class);
 

@@ -96,7 +96,7 @@ public class DefaultDownloadFeatureTest {
         final byte[] buffer = new byte[39864];
         final InputStream in = local.getInputStream();
         IOUtils.readFully(in, buffer);
-        IOUtils.closeQuietly(in);
+        in.close();
         assertArrayEquals(content, buffer);
         final Delete delete = session.getFeature(Delete.class);
         delete.delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {

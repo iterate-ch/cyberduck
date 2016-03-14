@@ -5,7 +5,7 @@
     <groupId>ch.cyberduck</groupId>
     <artifactId>parent</artifactId>
     <packaging>pom</packaging>
-    <version>4.8-SNAPSHOT</version>
+    <version>5.0-SNAPSHOT</version>
 
     <modules>
         <!-- Core components -->
@@ -32,6 +32,7 @@
         <module>ssh</module>
         <module>ftp</module>
         <module>googledrive</module>
+        <module>backblaze</module>
         <module>protocols</module>
         <module>protocols/dll</module>
         <!-- Test -->
@@ -66,7 +67,7 @@
             <dependency>
                 <groupId>net.java.dev.jna</groupId>
                 <artifactId>jna-platform</artifactId>
-                <version>4.2.0</version>
+                <version>4.2.1</version>
             </dependency>
             <dependency>
                 <groupId>cglib</groupId>
@@ -86,12 +87,12 @@
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
-                <version>4.5.1</version>
+                <version>4.5.2</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpmime</artifactId>
-                <version>4.5.1</version>
+                <version>4.5.2</version>
             </dependency>
             <dependency>
                 <groupId>org.bouncycastle</groupId>
@@ -146,42 +147,42 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>1.7.12</version>
+                <version>1.7.18</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-log4j12</artifactId>
-                <version>1.7.12</version>
+                <version>1.7.18</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>jul-to-slf4j</artifactId>
-                <version>1.7.12</version>
+                <version>1.7.18</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.dataformat</groupId>
                 <artifactId>jackson-dataformat-xml</artifactId>
-                <version>2.6.4</version>
+                <version>2.7.2</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-core</artifactId>
-                <version>2.6.4</version>
+                <version>2.7.2</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
-                <version>2.6.4</version>
+                <version>2.7.2</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>2.6.4</version>
+                <version>2.7.2</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-module-jaxb-annotations</artifactId>
-                <version>2.6.4</version>
+                <version>2.7.2</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -304,6 +305,7 @@
                     <artifactId>maven-failsafe-plugin</artifactId>
                     <version>2.19</version>
                     <configuration>
+                        <encoding>UTF-8</encoding>
                         <argLine>-Djava.library.path=${project.build.directory}</argLine>
                         <systemPropertiesFile>${env.HOME}/test.properties</systemPropertiesFile>
                         <systemPropertyVariables>

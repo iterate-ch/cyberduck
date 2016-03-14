@@ -122,7 +122,7 @@ public class SFTPWriteFeatureTest {
             final byte[] buffer = new byte[0];
             final InputStream in = new SFTPReadFeature(session).read(target, new TransferStatus());
             IOUtils.readFully(in, buffer);
-            IOUtils.closeQuietly(in);
+            in.close();
             assertArrayEquals(new byte[0], buffer);
         }
         final AttributedList<Path> list = new SFTPListService(session).list(session.workdir(), new DisabledListProgressListener());

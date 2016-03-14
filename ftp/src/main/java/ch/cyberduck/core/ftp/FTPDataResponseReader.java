@@ -8,9 +8,6 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * @version $Id:$
- */
 public interface FTPDataResponseReader {
 
     AttributedList<Path> read(Path parent, List<String> replies, ListProgressListener listener)

@@ -25,9 +25,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Set;
 
-/**
- * @version $Id$
- */
 public interface Protocol extends Comparable<Protocol> {
 
     boolean validate(Credentials credentials, LoginOptions options);
@@ -86,7 +83,8 @@ public interface Protocol extends Comparable<Protocol> {
             }
         },
         irods,
-        spectra;
+        spectra,
+        b2;
 
         /**
          * Check login credentials for validity for this protocol.

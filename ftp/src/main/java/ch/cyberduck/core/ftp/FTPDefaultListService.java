@@ -26,14 +26,9 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 
-import org.apache.commons.net.ftp.FTPReply;
-
 import java.io.IOException;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class FTPDefaultListService implements ListService {
 
     private final FTPSession session;
@@ -58,7 +53,7 @@ public class FTPDefaultListService implements ListService {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
-            if(!(FTPReply.isPositiveCompletion(session.getClient().cwd(directory.getAbsolute())))) {
+            if(!session.getClient().changeWorkingDirectory(directory.getAbsolute())) {
                 throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
             }
             if(!session.getClient().setFileType(FTPClient.ASCII_FILE_TYPE)) {

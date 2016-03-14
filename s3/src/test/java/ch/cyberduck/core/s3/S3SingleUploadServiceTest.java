@@ -70,7 +70,7 @@ public class S3SingleUploadServiceTest {
         final String random = RandomStringUtils.random(1000);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(random, out);
-        IOUtils.closeQuietly(out);
+        out.close();
         final TransferStatus status = new TransferStatus();
         status.setLength(random.getBytes().length);
         status.setMime("text/plain");
@@ -109,7 +109,7 @@ public class S3SingleUploadServiceTest {
         final String random = RandomStringUtils.random(1000);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(random, out);
-        IOUtils.closeQuietly(out);
+        out.close();
         final TransferStatus status = new TransferStatus();
         status.setLength(random.getBytes().length);
         status.setMime("text/plain");
@@ -155,7 +155,7 @@ public class S3SingleUploadServiceTest {
         final String random = RandomStringUtils.random(1000);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(random, out);
-        IOUtils.closeQuietly(out);
+        out.close();
         final TransferStatus status = new TransferStatus();
         status.setLength(random.getBytes().length);
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),

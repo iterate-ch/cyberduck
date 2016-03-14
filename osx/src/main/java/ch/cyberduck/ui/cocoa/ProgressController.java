@@ -56,6 +56,7 @@ import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.text.MessageFormat;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @version $Id$
@@ -248,10 +249,21 @@ public class ProgressController extends BundleController implements TransferList
         this.filesPopup = p;
         this.filesPopup.setTarget(this.id());
         this.filesPopup.removeAllItems();
-        for(TransferItem i : transfer.getRoots()) {
-            NSMenuItem item = this.filesPopup.menu().addItemWithTitle_action_keyEquivalent(i.remote.getName(), Foundation.selector("reveal:"), StringUtils.EMPTY);
-            item.setRepresentedObject(i.remote.getAbsolute());
-            item.setImage(IconCacheFactory.<NSImage>get().fileIcon(i.remote, 16));
+        final List<TransferItem> items = transfer.getRoots();
+        for(int i = 0; i < items.size(); i++) {
+            final TransferItem entry = items.get(i);
+            final NSMenuItem item = this.filesPopup.menu().addItemWithTitle_action_keyEquivalent(entry.remote.getName(), null, StringUtils.EMPTY);
+            if(i == 0) {
+                if(items.size() > 1) {
+                    item.setTitle(String.format("%s (%d more)", entry.remote.getName(), items.size() - 1));
+                }
+                else {
+                    item.setTitle(entry.remote.getName());
+                }
+            }
+            else {
+                item.setTitle(entry.remote.getName());
+            }
         }
         this.filesPopupMenuDelegate = new TransferMenuDelegate(transfer);
         this.filesPopup.menu().setDelegate(this.filesPopupMenuDelegate.id());

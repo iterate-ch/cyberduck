@@ -498,6 +498,7 @@ public abstract class Preferences {
         defaults.put("queue.download.wherefrom", String.valueOf(true));
 
         // Segmented concurrent downloads
+        defaults.put("queue.download.segments", String.valueOf(false));
         defaults.put("queue.download.segments.threshold", String.valueOf(Long.MAX_VALUE));
         defaults.put("queue.download.segments.size", String.valueOf(100L * 1024L * 1024L));
 
@@ -664,7 +665,7 @@ public abstract class Preferences {
          */
         defaults.put("s3.upload.multipart.threshold", String.valueOf(100L * 1024L * 1024L));
         defaults.put("s3.upload.multipart.required.threshold", String.valueOf(5L * 1024L * 1024L * 1024L));
-        // Maximum number of parts is 10'000. With 5MB segements this gives a maximum object size of 50GB
+        // Maximum number of parts is 10'000. With 10MB segements this gives a maximum object size of 100GB
         defaults.put("s3.upload.multipart.size", String.valueOf(10L * 1024L * 1024L)); // 10MB
 
         defaults.put("s3.upload.expect-continue", String.valueOf(true));
@@ -777,6 +778,13 @@ public abstract class Preferences {
          * If set to true will only trash documents
          */
         defaults.put("google.docs.delete.trash", String.valueOf(false));
+
+        defaults.put("b2.bucket.acl.default", "allPrivate");
+        defaults.put("b2.listing.chunksize", String.valueOf(1000));
+        defaults.put("b2.upload.checksum", String.valueOf(true));
+
+        defaults.put("spectra.upload.md5", String.valueOf(false));
+        defaults.put("spectra.upload.crc32", String.valueOf(false));
 
         /**
          * NTLM Windows Domain

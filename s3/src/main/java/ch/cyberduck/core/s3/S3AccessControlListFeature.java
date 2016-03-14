@@ -27,7 +27,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Versioning;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.acl.AccessControlList;
@@ -42,9 +41,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class S3AccessControlListFeature implements AclPermission {
     private static final Logger log = Logger.getLogger(S3AccessControlListFeature.class);
 
@@ -77,7 +73,8 @@ public class S3AccessControlListFeature implements AclPermission {
                 else {
                     // This method can be performed by anonymous services, but can only succeed if the
                     // object's existing ACL already allows read access by the anonymous user.
-                    return this.convert(session.getClient().getObjectAcl(containerService.getContainer(file).getName(), containerService.getKey(file)));
+                    return this.convert(session.getClient().getObjectAcl(
+                            containerService.getContainer(file).getName(), containerService.getKey(file)));
                 }
             }
             return Acl.EMPTY;
@@ -97,10 +94,11 @@ public class S3AccessControlListFeature implements AclPermission {
     public void setPermission(final Path file, final Acl acl) throws BackgroundException {
         try {
             final Path container = containerService.getContainer(file);
-            if(StringUtils.isNotBlank(container.attributes().getOwner())) {
-                acl.setOwner(new Acl.CanonicalUser(container.attributes().getOwner()));
+            if(null == acl.getOwner()) {
+                // Read owner from cache
+                acl.setOwner(file.attributes().getAcl().getOwner());
             }
-            else {
+            if(null == acl.getOwner()) {
                 // Read owner from bucket
                 acl.setOwner(this.getPermission(container).getOwner());
             }

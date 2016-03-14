@@ -671,6 +671,7 @@ public class Host implements Serializable, Comparable<Host> {
         final StringBuilder sb = new StringBuilder("Host{");
         sb.append("credentials=").append(credentials);
         sb.append(", hostname='").append(hostname).append('\'');
+        sb.append(", defaultpath='").append(defaultpath).append('\'');
         sb.append(", port=").append(port);
         sb.append(", protocol=").append(protocol);
         sb.append('}');

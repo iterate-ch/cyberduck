@@ -128,14 +128,14 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
         @Override
         public boolean equals(Object obj) {
             if(obj instanceof UserAndRole) {
-                return this.getUser().equals(((UserAndRole) obj).getUser())
-                        && this.getRole().equals(((UserAndRole) obj).getRole());
+                return user.equals(((UserAndRole) obj).user)
+                        && role.equals(((UserAndRole) obj).role);
             }
             return false;
         }
 
         public boolean isValid() {
-            return this.getUser().isValid() && this.getRole().isValid();
+            return user.isValid() && role.isValid();
         }
 
         @Override
@@ -145,7 +145,7 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
 
         @Override
         public String toString() {
-            return String.format("%s:%s", this.getUser().toString(), this.getRole().toString());
+            return String.format("%s:%s", user.toString(), role.toString());
         }
 
         @Override

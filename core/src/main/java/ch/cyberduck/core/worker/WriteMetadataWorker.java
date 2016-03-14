@@ -48,12 +48,19 @@ public class WriteMetadataWorker extends Worker<Boolean> {
      */
     private Map<String, String> metadata;
 
+    /**
+     * Descend into directories
+     */
+    private boolean recursive;
+
     private ProgressListener listener;
 
     protected WriteMetadataWorker(final List<Path> files, final Map<String, String> metadata,
+                                  final boolean recursive,
                                   final ProgressListener listener) {
         this.files = files;
         this.metadata = metadata;
+        this.recursive = recursive;
         this.listener = listener;
     }
 
@@ -61,24 +68,38 @@ public class WriteMetadataWorker extends Worker<Boolean> {
     public Boolean run(final Session<?> session) throws BackgroundException {
         final Headers feature = session.getFeature(Headers.class);
         for(Path file : files) {
-            if(this.isCanceled()) {
-                throw new ConnectionCanceledException();
-            }
-            if(!metadata.equals(file.attributes().getMetadata())) {
-                for(Map.Entry<String, String> entry : metadata.entrySet()) {
-                    // Prune metadata from entries which are unique to a single file. For example md5-hash.
-                    if(StringUtils.isBlank(entry.getValue())) {
-                        // Reset with previous value
-                        metadata.put(entry.getKey(), file.attributes().getMetadata().get(entry.getKey()));
-                    }
-                }
-                listener.message(MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
-                        file.getName()));
-                feature.setMetadata(file, metadata);
-                file.attributes().setMetadata(metadata);
-            }
+            this.write(session, feature, file);
         }
         return true;
+    }
+
+    protected void write(final Session<?> session, final Headers feature, final Path file) throws BackgroundException {
+        if(this.isCanceled()) {
+            throw new ConnectionCanceledException();
+        }
+        if(!metadata.equals(file.attributes().getMetadata())) {
+            for(Map.Entry<String, String> entry : metadata.entrySet()) {
+                // Prune metadata from entries which are unique to a single file. For example md5-hash.
+                if(StringUtils.isBlank(entry.getValue())) {
+                    // Reset with previous value
+                    metadata.put(entry.getKey(), file.attributes().getMetadata().get(entry.getKey()));
+                }
+            }
+            listener.message(MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
+                    file.getName()));
+            feature.setMetadata(file, metadata);
+            file.attributes().setMetadata(metadata);
+            if(recursive) {
+                if(file.isVolume()) {
+                    // No recursion when changing container ACL
+                }
+                else if(file.isDirectory()) {
+                    for(Path child : session.list(file, new ActionListProgressListener(this, listener))) {
+                        this.write(session, feature, child);
+                    }
+                }
+            }
+        }
     }
 
     @Override

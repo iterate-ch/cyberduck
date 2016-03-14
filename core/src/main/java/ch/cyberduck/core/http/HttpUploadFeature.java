@@ -18,7 +18,6 @@ package ch.cyberduck.core.http;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -47,9 +46,6 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.text.MessageFormat;
 
-/**
- * @version $Id$
- */
 public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
     private static final Logger log = Logger.getLogger(HttpUploadFeature.class);
 
@@ -122,7 +118,7 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
             }
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
+            throw new HttpExceptionMappingService().map("Upload {0} failed", e, file);
         }
     }
 

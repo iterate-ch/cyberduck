@@ -37,9 +37,6 @@ import ch.iterate.openstack.swift.model.StorageObject;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class SwiftLargeObjectUploadFeatureTest {
 
@@ -50,10 +47,6 @@ public class SwiftLargeObjectUploadFeatureTest {
                         System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")));
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
-        this.test(host, container);
-    }
-
-    private void test(final Host host, final Path container) throws Exception {
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -69,7 +62,7 @@ public class SwiftLargeObjectUploadFeatureTest {
 
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
-        IOUtils.closeQuietly(out);
+        out.close();
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
 
@@ -77,17 +70,18 @@ public class SwiftLargeObjectUploadFeatureTest {
         final SwiftLargeObjectUploadFeature upload = new SwiftLargeObjectUploadFeature(session,
                 regionService,
                 new SwiftObjectListService(session, regionService),
-                new SwiftSegmentService(session, ".segments-test/"), new SwiftWriteFeature(session, regionService), (long) (content.length / 2), 4);
+                new SwiftSegmentService(session, ".segments-test/"),
+                new SwiftWriteFeature(session, regionService), (long) (content.length / 2), 4);
 
         final StorageObject object = upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status, new DisabledConnectionCallback());
         assertNull(Checksum.parse(object.getMd5sum()));
         assertNull(new SwiftAttributesFeature(session).find(test).getChecksum());
-        assertNull(new DefaultAttributesFeature(session).find(test).getChecksum());
+        assertNotNull(new DefaultAttributesFeature(session).find(test).getChecksum());
 
-        assertEquals(content.length, status.getOffset());
         assertTrue(status.isComplete());
         assertFalse(status.isCanceled());
+        assertEquals(content.length, status.getOffset());
 
         assertTrue(new SwiftFindFeature(session).find(test));
         final InputStream in = new SwiftReadFeature(session, regionService).read(test, new TransferStatus());
