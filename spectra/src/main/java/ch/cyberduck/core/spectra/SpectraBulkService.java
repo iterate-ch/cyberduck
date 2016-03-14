@@ -21,7 +21,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Resolver;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import ch.cyberduck.core.features.Bulk;
@@ -46,8 +45,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.spectralogic.ds3client.Ds3Client;
-import com.spectralogic.ds3client.commands.AllocateJobChunkRequest;
-import com.spectralogic.ds3client.commands.AllocateJobChunkResponse;
 import com.spectralogic.ds3client.commands.GetAvailableJobChunksRequest;
 import com.spectralogic.ds3client.commands.GetAvailableJobChunksResponse;
 import com.spectralogic.ds3client.helpers.Ds3ClientHelpers;
@@ -209,11 +206,6 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
             }
             final MasterObjectList list = response.getMasterObjectList();
             final Objects objects = list.getObjects().iterator().next();
-            switch(type) {
-                case upload:
-                    this.allocate(file, objects.getChunkId().toString());
-                    break;
-            }
             final UUID nodeId = objects.getNodeId();
             if(null == nodeId) {
                 log.warn(String.format("No node returned in master object list for file %s", file));
@@ -250,52 +242,6 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                 chunks.add(chunk);
             }
             return chunks;
-        }
-        catch(FailedRequestException e) {
-            throw new SpectraExceptionMappingService().map(e);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
-        }
-        catch(SignatureException e) {
-            throw new BackgroundException(e);
-        }
-    }
-
-    public void allocate(final Path file, final String chunkId) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Allocate job %s for file %s", chunkId, file));
-        }
-        try {
-            boolean allocated = false;
-            while(!allocated) {
-                allocated = this.tryAllocateChunk(chunkId);
-            }
-        }
-        catch(ConflictException e) {
-            // Already allocated
-            log.warn(String.format("Failed to allocate file %s. %s", file, e.getMessage()));
-            throw e;
-        }
-    }
-
-    /**
-     * Allocate a specific job chunk that is part of a PUT job before beginning the PUT operation. This avoids the HTTP 307 retries on the
-     * object PUTs and increases performance.
-     */
-    private boolean tryAllocateChunk(final String chunkId) throws BackgroundException {
-        final Ds3Client client = new SpectraClientBuilder().wrap(session);
-        try {
-            final AllocateJobChunkResponse response = client.allocateJobChunk(new AllocateJobChunkRequest(UUID.fromString(chunkId)));
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Status %s for allocate job chunk request status", response.getStatus().toString()));
-            }
-            switch(response.getStatus()) {
-                case RETRYLATER:
-                    final Duration delay = Duration.ofSeconds((response.getRetryAfterSeconds()));
-                    throw new RetriableAccessDeniedException(String.format("Allocate job failed for job %s", chunkId), delay);
-            }
-            return !response.getObjects().getObjects().isEmpty();
         }
         catch(FailedRequestException e) {
             throw new SpectraExceptionMappingService().map(e);
