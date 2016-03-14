@@ -285,20 +285,16 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_CleanEvent()
         {
-            IList<Transfer> toRemove = new List<Transfer>();
+            IList<Transfer> remove = new List<Transfer>();
             foreach (KeyValuePair<Transfer, ProgressController> pair in _transferMap)
             {
                 Transfer t = pair.Key;
-                if (!t.isRunning() && t.isReset() && t.isComplete())
+                if (!t.isRunning())
                 {
-                    TransferCollection.defaultCollection().remove(t);
-                    toRemove.Add(t);
+                    remove.Add(t);
                 }
             }
-            foreach (Transfer t in toRemove)
-            {
-                _transferMap.Remove(t);
-            }
+            TransferCollection.defaultCollection().removeAll(remove);
             TransferCollection.defaultCollection().save();
         }
 
