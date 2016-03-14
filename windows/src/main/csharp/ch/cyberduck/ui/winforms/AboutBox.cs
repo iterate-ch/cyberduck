@@ -40,7 +40,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             Text = String.Format("About {0}", AssemblyTitle);
             logoPictureBox.Image = ApplicationIcon();
             labelProductName.Text = AssemblyProduct;
-            labelVersion.Text = String.Format("Version {0}", PreferencesFactory.get().getProperty("application.version"));
+            labelVersion.Text = String.Format("Version {0} ({1})",
+                PreferencesFactory.get().getProperty("application.version"),
+                PreferencesFactory.get().getProperty("application.revision"));
             labelCopyright.Text = Copyright();
 
             Font bigBoldFont = new Font(Font.FontFamily, Font.Size + 4, FontStyle.Bold);
