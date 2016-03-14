@@ -886,14 +886,12 @@ public final class TransferController extends WindowController implements NSTool
         int i = 0;
         final List<Transfer> remove = new ArrayList<Transfer>();
         for(NSUInteger index = selected.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = selected.indexGreaterThanIndex(index)) {
-            final Transfer transfer = transfers.get(index.intValue() - i);
-            if(!transfer.isRunning()) {
-                remove.add(transfer);
+            final Transfer t = transfers.get(index.intValue() - i);
+            if(!t.isRunning()) {
+                remove.add(t);
             }
         }
-        for(Transfer t : remove) {
-            collection.remove(t);
-        }
+        collection.removeAll(remove);
         collection.save();
     }
 
