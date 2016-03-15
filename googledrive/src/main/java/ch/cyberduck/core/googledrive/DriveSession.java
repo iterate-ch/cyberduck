@@ -200,9 +200,13 @@ public class DriveSession extends HttpSession<Drive> {
                         .setQ(String.format("'%s' in parents", directory.isRoot() ? "root" : new DriveFileidProvider().getFileid(directory)))
                         .setOauthToken(tokens.getAccessToken())
                         .setPageToken(page)
+                        .setFields("files")
                         .setPageSize(preferences.getInteger("google.drive.list.limit"));
                 for(File f : list.execute().getFiles()) {
                     final PathAttributes attributes = new PathAttributes();
+                    if(f.getExplicitlyTrashed()) {
+                        continue;
+                    }
                     if(null != f.getQuotaBytesUsed()) {
                         attributes.setSize(f.getQuotaBytesUsed());
                     }
