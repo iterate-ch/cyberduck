@@ -6,7 +6,6 @@ import ch.cyberduck.core.IOKitSleepPreventer;
 import ch.cyberduck.core.Keychain;
 import ch.cyberduck.core.aquaticprime.ReceiptFactory;
 import ch.cyberduck.core.azure.AzureProtocol;
-import ch.cyberduck.core.b2.B2Protocol;
 import ch.cyberduck.core.bonjour.RendezvousResponder;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
@@ -16,7 +15,6 @@ import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.gstorage.GoogleStorageProtocol;
 import ch.cyberduck.core.i18n.BundleLocale;
-import ch.cyberduck.core.irods.IRODSProtocol;
 import ch.cyberduck.core.local.FileManagerWorkingDirectoryFinder;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
@@ -39,7 +37,6 @@ import ch.cyberduck.core.resources.NSImageIconCache;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sparkle.Updater;
-import ch.cyberduck.core.spectra.SpectraProtocol;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.core.urlhandler.LaunchServicesSchemeHandler;
 import ch.cyberduck.ui.browser.Column;
@@ -127,9 +124,5 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
         defaults.put(String.format("connection.protocol.%s.enable", new S3Protocol().getIdentifier()), String.valueOf(true));
         defaults.put(String.format("connection.protocol.%s.enable", new GoogleStorageProtocol().getIdentifier()), String.valueOf(true));
         defaults.put(String.format("connection.protocol.%s.enable", new AzureProtocol().getIdentifier()), String.valueOf(true));
-        defaults.put(String.format("connection.protocol.%s.enable", new IRODSProtocol().getIdentifier()), String.valueOf(false));
-        defaults.put(String.format("connection.protocol.%s.enable", new B2Protocol().getIdentifier()), String.valueOf(false));
-        defaults.put(String.format("connection.protocol.%s.enable", new SpectraProtocol().getIdentifier()), String.valueOf(false));
-
     }
 }

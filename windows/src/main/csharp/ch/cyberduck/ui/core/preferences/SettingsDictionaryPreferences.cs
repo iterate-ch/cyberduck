@@ -365,12 +365,6 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
                 true.ToString());
             defaults.put(String.Format("connection.protocol.{0}.enable", new AzureProtocol().getIdentifier()),
                 true.ToString());
-            defaults.put(String.Format("connection.protocol.{0}.enable", new IRODSProtocol().getIdentifier()),
-                false.ToString());
-            defaults.put(String.Format("connection.protocol.{0}.enable", new B2Protocol().getIdentifier()),
-                false.ToString());
-            defaults.put(String.Format("connection.protocol.{0}.enable", new SpectraProtocol().getIdentifier()),
-                false.ToString());
 
              // NTLM Windows Domain
             try
