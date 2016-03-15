@@ -15,7 +15,19 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.HostPasswordStore;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PreferencesUseragentProvider;
+import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
@@ -26,7 +38,6 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
-import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -43,7 +54,6 @@ import org.jets3t.service.utils.oauth.OAuthConstants;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
-import java.util.EnumSet;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import com.google.api.client.auth.oauth2.BearerToken;
@@ -60,7 +70,6 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
-import com.google.api.services.drive.model.File;
 
 public class DriveSession extends HttpSession<Drive> {
     private static final Logger log = Logger.getLogger(DriveSession.class);
@@ -190,51 +199,8 @@ public class DriveSession extends HttpSession<Drive> {
     }
 
     @Override
-    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws
-            BackgroundException {
-        try {
-            final AttributedList<Path> children = new AttributedList<Path>();
-            String page = null;
-            do {
-                final Drive.Files.List list = this.getClient().files().list()
-                        .setQ(String.format("'%s' in parents", directory.isRoot() ? "root" : new DriveFileidProvider().getFileid(directory)))
-                        .setOauthToken(tokens.getAccessToken())
-                        .setPageToken(page)
-                        .setFields("files")
-                        .setPageSize(preferences.getInteger("google.drive.list.limit"));
-                for(File f : list.execute().getFiles()) {
-                    final PathAttributes attributes = new PathAttributes();
-                    if(f.getExplicitlyTrashed()) {
-                        continue;
-                    }
-                    if(null != f.getQuotaBytesUsed()) {
-                        attributes.setSize(f.getQuotaBytesUsed());
-                    }
-                    if(null != f.getSize()) {
-                        attributes.setSize(f.getSize());
-                    }
-                    attributes.setVersionId(f.getId());
-                    if(f.getModifiedTime() != null) {
-                        attributes.setModificationDate(f.getModifiedTime().getValue());
-                    }
-                    if(f.getCreatedTime() != null) {
-                        attributes.setCreationDate(f.getCreatedTime().getValue());
-                    }
-                    attributes.setChecksum(Checksum.parse(f.getMd5Checksum()));
-                    final EnumSet<AbstractPath.Type> type = "application/vnd.google-apps.folder".equals(
-                            f.getMimeType()) ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
-                    final Path child = new Path(directory, PathNormalizer.name(f.getName()), type, attributes);
-                    children.add(child);
-                }
-                listener.chunk(directory, children);
-                page = list.getPageToken();
-            }
-            while(page != null);
-            return children;
-        }
-        catch(IOException e) {
-            throw new DriveExceptionMappingService().map("Listing directory failed", e, directory);
-        }
+    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
+        return new DriveListService(this).list(directory, listener);
     }
 
     @Override
