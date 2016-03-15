@@ -65,6 +65,10 @@ public class RenameFilter extends AbstractDownloadFilter {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Changed local name from %s to %s", filename, status.getRename().local.getName()));
             }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Clear exist flag for file %s", local));
+            }
+            status.setExists(false);
         }
         return status;
     }
