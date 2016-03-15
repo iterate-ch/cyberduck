@@ -898,8 +898,8 @@ public final class TransferController extends WindowController implements NSTool
     @Action
     public void clearButtonClicked(final ID sender) {
         for(Iterator<Transfer> iter = collection.iterator(); iter.hasNext(); ) {
-            Transfer transfer = iter.next();
-            if(!transfer.isRunning() && transfer.isReset() && transfer.isComplete()) {
+            final Transfer t = iter.next();
+            if(t.isComplete()) {
                 iter.remove();
             }
         }

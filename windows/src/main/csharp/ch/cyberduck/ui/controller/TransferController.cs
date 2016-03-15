@@ -279,31 +279,6 @@ namespace Ch.Cyberduck.Ui.Controller
             });
         }
 
-        private bool View_ValidateCleanEvent()
-        {
-            return _transferMap.Count > 0;
-        }
-
-        private void View_CleanEvent()
-        {
-            IList<Transfer> remove = new List<Transfer>();
-            foreach (KeyValuePair<Transfer, ProgressController> pair in _transferMap)
-            {
-                Transfer t = pair.Key;
-                if (!t.isRunning())
-                {
-                    remove.Add(t);
-                }
-            }
-            TransferCollection.defaultCollection().removeAll(Utils.ConvertToJavaList(remove));
-            TransferCollection.defaultCollection().save();
-        }
-
-        private bool View_ValidateRemoveEvent()
-        {
-            return View.SelectedTransfers.Count > 0;
-        }
-
         private bool View_ValidateStopEvent()
         {
             return ValidateToolbarItem(transfer => transfer.isRunning());
@@ -506,6 +481,31 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                 }
             }
+        }
+
+        private bool View_ValidateCleanEvent()
+        {
+            return _transferMap.Count > 0;
+        }
+
+        private void View_CleanEvent()
+        {
+            IList<Transfer> remove = new List<Transfer>();
+            foreach (KeyValuePair<Transfer, ProgressController> pair in _transferMap)
+            {
+                Transfer t = pair.Key;
+                if (t.isComplete())
+                {
+                    remove.Add(t);
+                }
+            }
+            TransferCollection.defaultCollection().removeAll(Utils.ConvertToJavaList(remove));
+            TransferCollection.defaultCollection().save();
+        }
+
+        private bool View_ValidateRemoveEvent()
+        {
+            return View.SelectedTransfers.Count > 0;
         }
 
         private void View_RemoveEvent()
