@@ -30,6 +30,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
@@ -59,6 +60,39 @@ public class DriveReadFeatureTest {
     @Test
     public void testAppend() throws Exception {
         assertTrue(new DriveReadFeature(null).offset(new Path("/", EnumSet.of(Path.Type.file))));
+    }
+
+    @Test(expected = NotfoundException.class)
+    public void testReadNotFound() throws Exception {
+        final Host host = new Host(new DriveProtocol(), "www.googleapis.com", new Credentials());
+        final DriveSession session = new DriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
+        new LoginConnectionService(new DisabledLoginCallback() {
+            @Override
+            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                fail(reason);
+            }
+        }, new DisabledHostKeyCallback(),
+                new DisabledPasswordStore() {
+                    @Override
+                    public String getPassword(Scheme scheme, int port, String hostname, String user) {
+                        if(user.equals("Google Drive OAuth2 Access Token")) {
+                            return System.getProperties().getProperty("googledrive.accesstoken");
+                        }
+                        if(user.equals("Google Drive OAuth2 Refresh Token")) {
+                            return System.getProperties().getProperty("googledrive.refreshtoken");
+                        }
+                        fail();
+                        return null;
+                    }
+
+                    @Override
+                    public String getPassword(String hostname, String user) {
+                        return super.getPassword(hostname, user);
+                    }
+                }, new DisabledProgressListener(),
+                new DisabledTranscriptListener()).connect(session, PathCache.empty());
+        final TransferStatus status = new TransferStatus();
+        new DriveReadFeature(session).read(new Path(session.workdir(), "nosuchname", EnumSet.of(Path.Type.file)), status);
     }
 
     @Test
