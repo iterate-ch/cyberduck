@@ -25,7 +25,6 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
-import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -123,7 +122,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> {
                             case HttpStatus.SC_OK:
                                 break;
                             default:
-                                throw new HttpExceptionMappingService().map(new HttpResponseException(
+                                throw new DriveExceptionMappingService().map(new HttpResponseException(
                                         response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
                         }
                     }
@@ -156,7 +155,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> {
                                     reader.endObject();
                                     break;
                                 default:
-                                    throw new HttpExceptionMappingService().map(new HttpResponseException(
+                                    throw new DriveExceptionMappingService().map(new HttpResponseException(
                                             putResponse.getStatusLine().getStatusCode(), putResponse.getStatusLine().getReasonPhrase()));
                             }
                         }
@@ -165,7 +164,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> {
                         }
                     }
                     else {
-                        throw new HttpExceptionMappingService().map(new HttpResponseException(
+                        throw new DriveExceptionMappingService().map(new HttpResponseException(
                                 response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
                     }
                     return null;
