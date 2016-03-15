@@ -35,9 +35,10 @@ public class DriveCopyFeature implements Copy {
     @Override
     public void copy(final Path source, final Path copy) throws BackgroundException {
         try {
-            session.getClient().files().copy(source.attributes().getVersionId(), new File()
-                    .setParents(Collections.singletonList(copy.getParent().attributes().getVersionId()))
+            final File result = session.getClient().files().copy(new DriveFileidProvider().getFileid(source), new File()
+                    .setParents(Collections.singletonList(new DriveFileidProvider().getFileid(copy.getParent())))
                     .setName(copy.getName())).execute();
+            copy.attributes().setVersionId(result.getId());
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Cannot copy {0}", e, source);
