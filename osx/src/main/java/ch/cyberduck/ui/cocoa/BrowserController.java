@@ -1931,6 +1931,7 @@ public class BrowserController extends WindowController
         this.quickConnectPopup.cell().setSendsActionOnEndEditing(false);
         this.quickConnectPopup.setUsesDataSource(true);
         this.quickConnectPopup.setDataSource(quickConnectPopupModel.id());
+        this.quickConnectPopup.setFocusRingType(NSView.NSFocusRingType.NSFocusRingTypeNone.ordinal());
         notificationCenter.addObserver(this.id(),
                 Foundation.selector("quickConnectWillPopUp:"),
                 NSComboBox.ComboBoxWillPopUpNotification,
