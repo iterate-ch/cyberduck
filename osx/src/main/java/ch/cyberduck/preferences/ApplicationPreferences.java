@@ -13,6 +13,7 @@ import ch.cyberduck.core.diagnostics.SystemConfigurationReachability;
 import ch.cyberduck.core.editor.FSEventWatchEditorFactory;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
+import ch.cyberduck.core.googledrive.DriveProtocol;
 import ch.cyberduck.core.googlestorage.GoogleStorageProtocol;
 import ch.cyberduck.core.i18n.BundleLocale;
 import ch.cyberduck.core.local.FileManagerWorkingDirectoryFinder;
@@ -41,9 +42,6 @@ import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.core.urlhandler.LaunchServicesSchemeHandler;
 import ch.cyberduck.ui.browser.Column;
 
-/**
- * @version $Id:$
- */
 public class ApplicationPreferences extends UserDefaultsPreferences {
 
     @Override
@@ -124,5 +122,6 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
         defaults.put(String.format("connection.protocol.%s.enable", new S3Protocol().getIdentifier()), String.valueOf(true));
         defaults.put(String.format("connection.protocol.%s.enable", new GoogleStorageProtocol().getIdentifier()), String.valueOf(true));
         defaults.put(String.format("connection.protocol.%s.enable", new AzureProtocol().getIdentifier()), String.valueOf(true));
+        defaults.put(String.format("connection.protocol.%s.enable", new DriveProtocol().getIdentifier()), String.valueOf(true));
     }
 }

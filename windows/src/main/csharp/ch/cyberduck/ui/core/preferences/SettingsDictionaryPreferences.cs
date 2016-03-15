@@ -27,6 +27,7 @@ using ch.cyberduck.core.azure;
 using ch.cyberduck.core.dav;
 using ch.cyberduck.core.ftp;
 using ch.cyberduck.core.googlestorage;
+using ch.cyberduck.core.googledrive;
 using ch.cyberduck.core.irods;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.openstack;
@@ -364,6 +365,8 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             defaults.put(String.Format("connection.protocol.{0}.enable", new GoogleStorageProtocol().getIdentifier()),
                 true.ToString());
             defaults.put(String.Format("connection.protocol.{0}.enable", new AzureProtocol().getIdentifier()),
+                true.ToString());
+            defaults.put(String.Format("connection.protocol.{0}.enable", new DriveProtocol().getIdentifier()),
                 true.ToString());
 
              // NTLM Windows Domain
