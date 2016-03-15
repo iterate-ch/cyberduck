@@ -31,6 +31,11 @@ public class DriveProtocol extends AbstractProtocol {
     }
 
     @Override
+    public String getPrefix() {
+        return String.format("%s.%s", this.getClass().getPackage().getName(), "Drive");
+    }
+
+    @Override
     public String getDefaultHostname() {
         return "www.googleapis.com";
     }
