@@ -27,6 +27,9 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.util.EnumSet;
 
@@ -34,6 +37,10 @@ import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 
 public class DriveListService implements ListService {
+    private static final Logger log = Logger.getLogger(DriveListService.class);
+
+    private static final String GOOGLE_APPS_PREFIX = "application/vnd.google-apps";
+    private static final String DRIVE_FOLDER = String.format("%s.folder", GOOGLE_APPS_PREFIX);
 
     private Preferences preferences
             = PreferencesFactory.get();
@@ -60,7 +67,14 @@ public class DriveListService implements ListService {
                 for(File f : list.execute().getFiles()) {
                     final PathAttributes attributes = new PathAttributes();
                     if(f.getExplicitlyTrashed()) {
+                        log.warn(String.format("Skip file %s", f));
                         continue;
+                    }
+                    if(!DRIVE_FOLDER.equals(f.getMimeType())) {
+                        if(StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)) {
+                            log.warn(String.format("Skip file %s", f));
+                            continue;
+                        }
                     }
                     if(null != f.getSize()) {
                         attributes.setSize(f.getSize());
@@ -73,7 +87,7 @@ public class DriveListService implements ListService {
                         attributes.setCreationDate(f.getCreatedTime().getValue());
                     }
                     attributes.setChecksum(Checksum.parse(f.getMd5Checksum()));
-                    final EnumSet<AbstractPath.Type> type = "application/vnd.google-apps.folder".equals(
+                    final EnumSet<AbstractPath.Type> type = DRIVE_FOLDER.equals(
                             f.getMimeType()) ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
                     final Path child = new Path(directory, PathNormalizer.name(f.getName()), type, attributes);
                     children.add(child);
