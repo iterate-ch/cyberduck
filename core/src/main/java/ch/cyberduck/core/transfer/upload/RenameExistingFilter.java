@@ -35,9 +35,6 @@ import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 
-/**
- * @version $Id$
- */
 public class RenameExistingFilter extends AbstractUploadFilter {
     private static final Logger log = Logger.getLogger(RenameExistingFilter.class);
 
@@ -65,7 +62,7 @@ public class RenameExistingFilter extends AbstractUploadFilter {
             do {
                 final String proposal = MessageFormat.format(PreferencesFactory.get().getProperty("queue.upload.file.rename.format"),
                         FilenameUtils.getBaseName(file.getName()),
-                        UserDateFormatterFactory.get().getLongFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
+                        UserDateFormatterFactory.get().getMediumFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
                         StringUtils.isNotEmpty(file.getExtension()) ? "." + file.getExtension() : StringUtils.EMPTY);
                 rename = new Path(file.getParent(), proposal, file.getType());
             }
