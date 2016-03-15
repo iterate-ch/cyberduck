@@ -1,6 +1,6 @@
 package ch.cyberduck.core;
 
-import ch.cyberduck.core.gstorage.GoogleStorageProtocol;
+import ch.cyberduck.core.googlestorage.GoogleStorageProtocol;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;

@@ -1,4 +1,4 @@
-package ch.cyberduck.core.gstorage;
+package ch.cyberduck.core.googlestorage;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;

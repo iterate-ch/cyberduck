@@ -1,4 +1,4 @@
-package ch.cyberduck.core.gstorage;
+package ch.cyberduck.core.googlestorage;
 
 /*
  * Copyright (c) 2002-2010 David Kocher. All rights reserved.

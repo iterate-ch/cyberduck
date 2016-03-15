@@ -1,4 +1,4 @@
-package ch.cyberduck.core.gstorage;
+package ch.cyberduck.core.googlestorage;
 
 /*
  * Copyright (c) 2002-2013 David Kocher. All rights reserved.
@@ -42,7 +42,7 @@ public class GoogleStorageUrlProvider implements UrlProvider {
     /**
      * This creates an URL that uses Cookie-based Authentication. The ACLs for the given Google user account
      * has to be setup first.
-     * <p/>
+     * <p>
      * Google Storage lets you provide browser-based authenticated downloads to users who do not have
      * Google Storage accounts. To do this, you apply Google account-based ACLs to the object and then
      * you provide users with a URL that is scoped to the object.

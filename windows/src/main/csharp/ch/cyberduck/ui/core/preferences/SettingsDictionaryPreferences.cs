@@ -26,7 +26,7 @@ using System.Text.RegularExpressions;
 using ch.cyberduck.core.azure;
 using ch.cyberduck.core.dav;
 using ch.cyberduck.core.ftp;
-using ch.cyberduck.core.gstorage;
+using ch.cyberduck.core.googlestorage;
 using ch.cyberduck.core.irods;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.openstack;
