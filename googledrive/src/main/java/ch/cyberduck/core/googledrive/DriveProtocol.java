@@ -16,6 +16,7 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.AbstractProtocol;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
 
 public class DriveProtocol extends AbstractProtocol {
@@ -46,6 +47,12 @@ public class DriveProtocol extends AbstractProtocol {
     }
 
     @Override
+    public boolean isPasswordConfigurable() {
+        // Only provide account email
+        return false;
+    }
+
+    @Override
     public boolean isPortConfigurable() {
         return false;
     }
@@ -62,7 +69,7 @@ public class DriveProtocol extends AbstractProtocol {
 
     @Override
     public String getPasswordPlaceholder() {
-        return "Token";
+        return LocaleFactory.localizedString("Authorization code", "Credentials");
     }
 
     @Override

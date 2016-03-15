@@ -18,11 +18,17 @@ package ch.cyberduck.core.googledrive;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 public class DriveProtocolTest {
 
     @Test
     public void testPrefix() {
         assertEquals("ch.cyberduck.core.googledrive.Drive", new DriveProtocol().getPrefix());
+    }
+
+    @Test
+    public void testPassword() {
+        assertFalse(new DriveProtocol().isPasswordConfigurable());
     }
 }

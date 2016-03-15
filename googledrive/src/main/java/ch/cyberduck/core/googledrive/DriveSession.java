@@ -27,6 +27,7 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
@@ -119,13 +120,13 @@ public class DriveSession extends HttpSession<Drive> {
             // Direct the user to an authorization page to grant access to their protected data.
             final String url = flow.newAuthorizationUrl()
                     .setRedirectUri(GoogleOAuthConstants.OOB_REDIRECT_URI).build();
-
-            final LoginOptions options = new LoginOptions();
-            options.user = false;
-            options.keychain = false;
+            if(preferences.getBoolean("google.drive.oauth.openbrowser")) {
+                BrowserLauncherFactory.get().open(url);
+            }
             prompt.prompt(host, host.getCredentials(),
-                    LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"), url, options);
-
+                    LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"), url,
+                    new LoginOptions().keychain(false).user(false)
+            );
             try {
                 // Swap the given authorization token for access/refresh tokens
                 final TokenResponse response = flow.newTokenRequest(host.getCredentials().getPassword())
