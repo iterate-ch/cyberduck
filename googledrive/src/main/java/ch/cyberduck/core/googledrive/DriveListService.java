@@ -62,9 +62,6 @@ public class DriveListService implements ListService {
                     if(f.getExplicitlyTrashed()) {
                         continue;
                     }
-                    if(null != f.getQuotaBytesUsed()) {
-                        attributes.setSize(f.getQuotaBytesUsed());
-                    }
                     if(null != f.getSize()) {
                         attributes.setSize(f.getSize());
                     }
