@@ -16,15 +16,16 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.NotfoundException;
 
 import org.apache.commons.lang3.StringUtils;
 
 public class DriveFileidProvider {
 
-    public String getFileid(final Path file) {
+    public String getFileid(final Path file) throws NotfoundException {
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
             return file.attributes().getVersionId();
         }
-        return null;
+        throw new NotfoundException("Missing id for file " + file.getName());
     }
 }
