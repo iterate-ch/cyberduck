@@ -43,7 +43,7 @@ public class DriveTouchFeature implements Touch {
         try {
             final Drive.Files.Create insert = session.getClient().files().create(new File()
                     .setName(file.getName())
-                    .setParents(Collections.singletonList(file.getParent().attributes().getVersionId())));
+                    .setParents(Collections.singletonList(new DriveFileidProvider().getFileid(file.getParent()))));
             file.attributes().setVersionId(insert.execute().getId());
         }
         catch(IOException e) {

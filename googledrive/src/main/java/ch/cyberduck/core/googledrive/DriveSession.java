@@ -196,7 +196,7 @@ public class DriveSession extends HttpSession<Drive> {
             String page = null;
             do {
                 final Drive.Files.List list = this.getClient().files().list()
-                        .setQ(String.format("'%s' in parents", directory.isRoot() ? "root" : directory.attributes().getVersionId()))
+                        .setQ(String.format("'%s' in parents", directory.isRoot() ? "root" : new DriveFileidProvider().getFileid(directory)))
                         .setOauthToken(tokens.getAccessToken())
                         .setPageToken(page)
                         .setPageSize(preferences.getInteger("google.drive.list.limit"));

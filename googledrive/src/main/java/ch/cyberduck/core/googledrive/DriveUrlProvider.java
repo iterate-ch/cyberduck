@@ -42,10 +42,10 @@ public class DriveUrlProvider implements UrlProvider {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
         if(file.isFile()) {
             try {
-                if(StringUtils.isBlank(file.attributes().getVersionId())) {
+                if(null == new DriveFileidProvider().getFileid(file)) {
                     return DescriptiveUrlBag.empty();
                 }
-                final File f = session.getClient().files().get(file.attributes().getVersionId()).execute();
+                final File f = session.getClient().files().get(new DriveFileidProvider().getFileid(file)).execute();
                 if(StringUtils.isNotBlank(f.getWebContentLink())) {
                     list.add(new DescriptiveUrl(URI.create(f.getWebContentLink()),
                             DescriptiveUrl.Type.http,

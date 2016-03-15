@@ -115,7 +115,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> {
                     request.addHeader(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", session.getAccessToken()));
                     request.setEntity(new StringEntity("{\"name\": \""
                             + file.getName() + "\", \"parents\": [\""
-                            + file.getParent().attributes().getVersionId() + "\"]}"));
+                            + new DriveFileidProvider().getFileid(file.getParent()) + "\"]}"));
                     final CloseableHttpClient client = session.getBuilder().build(new DisabledTranscriptListener()).build();
                     final CloseableHttpResponse response = client.execute(request);
                     try {

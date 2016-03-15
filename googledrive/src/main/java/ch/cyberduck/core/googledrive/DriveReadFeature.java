@@ -45,7 +45,7 @@ public class DriveReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            final Drive.Files.Get request = session.getClient().files().get(file.attributes().getVersionId());
+            final Drive.Files.Get request = session.getClient().files().get(new DriveFileidProvider().getFileid(file));
             if(status.isAppend()) {
                 final HttpRange range = HttpRange.withStatus(status);
                 final String header;
