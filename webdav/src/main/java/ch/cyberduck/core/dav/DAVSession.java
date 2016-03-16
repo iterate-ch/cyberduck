@@ -30,7 +30,6 @@ import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -175,14 +174,16 @@ public class DAVSession extends HttpSession<DAVClient> {
                 // Windows credentials. Provide empty string for NTLM domain by default.
                 preferences.getProperty("webdav.ntlm.workstation"),
                 preferences.getProperty("webdav.ntlm.domain"));
-        if(host.getCredentials().validate(host.getProtocol(), new LoginOptions())) {
-            if(preferences.getBoolean("webdav.basic.preemptive")) {
-                // Enable preemptive authentication. See HttpState#setAuthenticationPreemptive
-                client.enablePreemptiveAuthentication(this.getHost().getHostname());
-            }
-            else {
-                client.disablePreemptiveAuthentication();
-            }
+        if(preferences.getBoolean("webdav.basic.preemptive")) {
+            // Enable preemptive authentication. See HttpState#setAuthenticationPreemptive
+            client.enablePreemptiveAuthentication(this.getHost().getHostname());
+        }
+        else {
+            client.disablePreemptiveAuthentication();
+        }
+        if(host.getCredentials().isPassed()) {
+            log.warn(String.format("Skip verifying credentials with previous successful authentication event for %s", this));
+            return;
         }
         try {
             final Path home = new DefaultHomeFinderService(this).find();
