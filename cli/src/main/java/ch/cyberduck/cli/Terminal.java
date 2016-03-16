@@ -30,6 +30,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
+import ch.cyberduck.core.googledrive.DriveProtocol;
 import ch.cyberduck.core.googlestorage.GoogleStorageProtocol;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.irods.IRODSProtocol;
@@ -114,7 +115,7 @@ public class Terminal {
     public Terminal(final Preferences defaults, final Options options, final CommandLine input) {
         this.preferences = defaults;
         ProtocolFactory.register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(), new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(),
-                new GoogleStorageProtocol(), new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new B2Protocol());
+                new GoogleStorageProtocol(), new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new B2Protocol(), new DriveProtocol());
         this.options = options;
         if(log.isInfoEnabled()) {
             log.info(String.format("Parsed options %s from input %s", options, input));
