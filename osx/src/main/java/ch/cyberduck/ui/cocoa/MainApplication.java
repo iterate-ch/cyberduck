@@ -22,12 +22,10 @@ import ch.cyberduck.binding.application.NSApplication;
 import ch.cyberduck.binding.foundation.NSBundle;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.azure.AzureProtocol;
-import ch.cyberduck.core.b2.B2Protocol;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
-import ch.cyberduck.core.googledrive.DriveProtocol;
 import ch.cyberduck.core.googlestorage.GoogleStorageProtocol;
 import ch.cyberduck.core.irods.IRODSProtocol;
 import ch.cyberduck.core.openstack.SwiftProtocol;
@@ -35,7 +33,6 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.sftp.SFTPProtocol;
-import ch.cyberduck.core.spectra.SpectraProtocol;
 import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.core.threading.LoggingUncaughtExceptionHandler;
@@ -67,7 +64,7 @@ public final class MainApplication {
             final Preferences preferences = new ApplicationUserDefaultsPreferences();
             PreferencesFactory.set(preferences);
             ProtocolFactory.register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(), new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(),
-                    new GoogleStorageProtocol(), new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new B2Protocol(), new DriveProtocol());
+                    new GoogleStorageProtocol(), new AzureProtocol(), new IRODSProtocol());
 
             if(log.isInfoEnabled()) {
                 log.info(String.format("Running version %s", NSBundle.mainBundle()

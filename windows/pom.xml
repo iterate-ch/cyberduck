@@ -203,6 +203,20 @@
             <artifactId>protocols</artifactId>
             <type>pom</type>
             <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>ch.cyberduck</groupId>
+                    <artifactId>spectra</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ch.cyberduck</groupId>
+                    <artifactId>backblaze</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ch.cyberduck</groupId>
+                    <artifactId>googledrive</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>

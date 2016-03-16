@@ -28,12 +28,10 @@ using Windows7.DesktopIntegration;
 using ch.cyberduck.core;
 using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.azure;
-using ch.cyberduck.core.b2;
 using ch.cyberduck.core.bonjour;
 using ch.cyberduck.core.dav;
 using ch.cyberduck.core.ftp;
 using ch.cyberduck.core.googlestorage;
-using ch.cyberduck.core.googledrive;
 using ch.cyberduck.core.importer;
 using ch.cyberduck.core.irods;
 using ch.cyberduck.core.notification;
@@ -42,7 +40,6 @@ using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.s3;
 using ch.cyberduck.core.serializer;
 using ch.cyberduck.core.sftp;
-using ch.cyberduck.core.spectra;
 using ch.cyberduck.core.updater;
 using Ch.Cyberduck.Core.Urlhandler;
 using Ch.Cyberduck.Ui.Core;
@@ -91,7 +88,7 @@ namespace Ch.Cyberduck.Ui.Controller
             PreferencesFactory.set(new SettingsDictionaryPreferences());
             ProtocolFactory.register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(),
                 new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(), new GoogleStorageProtocol(),
-                new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new B2Protocol(), new DriveProtocol());
+                new AzureProtocol(), new IRODSProtocol());
 
             if (!Debugger.IsAttached)
             {
