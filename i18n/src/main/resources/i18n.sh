@@ -16,11 +16,12 @@
 
 #!/bin/bash
 
+workdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 nibtool="ibtool"
 convertstrings="ruby convertstrings.rb"
 base_language="en.lproj"
 arch="x86_64"
-tx="/usr/local/bin/tx"
+tx="/usr/local/bin/tx -d"
 extension=".xib"
 
 usage() {
@@ -63,7 +64,8 @@ test() {
 
 run() {
 	echo "Running app using `basename $language .lproj`...";
-	arch -arch $arch ./osx/target/Cyberduck.app/Contents/MacOS/Cyberduck -AppleLanguages "(`basename $language .lproj`)"
+    basedir="$( cd "$workdir/../../../.." && pwd )"
+	arch -arch $arch $basedir/osx/target/Cyberduck.app/Contents/MacOS/Cyberduck -AppleLanguages "(`basename $language .lproj`)"
 }
 
 nib() {
