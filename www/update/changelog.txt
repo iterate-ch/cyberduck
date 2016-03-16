@@ -6,7 +6,9 @@ Cyberduck for mounting volumes in the file explorer is now available from https:
 - [Feature] Support for Spectra BlackPearl Deep Storage Gateway (Spectra S3)
 
 4.8.4 [https://trac.cyberduck.io/milestone/4.8.4]
+- [Bugfix] No such file error when choosing Rename Existing in transfer overwrite prompt (#9342)
 - [Bugfix] Disable updater when missing admin privilege (#9155)
+- [Bugfix] Browser tries to expand files as directories (#9340) (Windows)
 
 4.8.2 [https://trac.cyberduck.io/milestone/4.8.2]
 - [Bugfix] Installer may fail if newer Bonjour Zeroconf dependency is installed (Windows)
