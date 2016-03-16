@@ -52,6 +52,10 @@ public abstract class HttpSession<C> extends SSLSession<C> {
         this.builder = builder;
     }
 
+    public HttpConnectionPoolBuilder getBuilder() {
+        return builder;
+    }
+
     @Override
     public <T> T getFeature(Class<T> type) {
         if(type == Upload.class) {

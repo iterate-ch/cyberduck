@@ -4,6 +4,7 @@ http://cyberduck.io/
 Changelog. Last modified: $Date$
 
 5.0
+- [Feature] Support for Google Drive (#6976)
 - [Feature] Support for B2 Cloud Storage (Backblaze) (#9162)
 - [Feature] Support for Spectra BlackPearl Deep Storage Gateway (Spectra S3)
 

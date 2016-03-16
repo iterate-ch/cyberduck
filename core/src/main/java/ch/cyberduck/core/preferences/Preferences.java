@@ -735,9 +735,10 @@ public abstract class Preferences {
 
         defaults.put("openstack.delete.multiple.partition", String.valueOf(10000));
 
+        defaults.put("google.drive.oauth.openbrowser", String.valueOf(true));
         defaults.put("google.drive.client.id", "996125414232.apps.googleusercontent.com");
         defaults.put("google.drive.client.secret", "YdaFjo2t74-Q0sThsXgeTv3l");
-        defaults.put("google.drive.list.limit", String.valueOf(10000));
+        defaults.put("google.drive.list.limit", String.valueOf(100));
 
         defaults.put("google.drive.upload.checksum", String.valueOf(false));
 
