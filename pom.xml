@@ -31,6 +31,7 @@
         <module>azure</module>
         <module>ssh</module>
         <module>ftp</module>
+        <module>googledrive</module>
         <module>backblaze</module>
         <module>protocols</module>
         <module>protocols/dll</module>
