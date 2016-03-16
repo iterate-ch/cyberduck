@@ -212,6 +212,10 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             client.setProviderCredentials(host.getCredentials().isAnonymousLogin() ? null :
                     new AWSCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
         }
+        if(host.getCredentials().isPassed()) {
+            log.warn(String.format("Skip verifying credentials with previous successful authentication event for %s", this));
+            return;
+        }
         final Path home = new S3HomeFinderService(this).find();
         cache.put(home, this.list(home, new DisabledListProgressListener() {
             @Override
