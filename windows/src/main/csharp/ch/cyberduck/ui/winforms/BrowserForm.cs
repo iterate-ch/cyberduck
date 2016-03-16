@@ -2646,8 +2646,12 @@ namespace Ch.Cyberduck.Ui.Winforms
                         {
                             _timer.Stop();
                             _currentDropTarget = DropTargetItem.RowObject;
-                            _timer.Interval = useDelay ? delay*1000 : 0;
-                            _timer.Start();
+                            Path row = (Path) _currentDropTarget;
+                            if (row.isDirectory())
+                            {
+                                _timer.Interval = useDelay ? delay*1000 : 0;
+                                _timer.Start();
+                            }
                         }
                     }
                     else
