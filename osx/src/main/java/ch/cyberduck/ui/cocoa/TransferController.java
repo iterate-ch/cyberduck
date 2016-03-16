@@ -148,11 +148,10 @@ public final class TransferController extends WindowController implements NSTool
         this.toolbar.setDisplayMode(NSToolbar.NSToolbarDisplayModeLabelOnly);
         this.window.setToolbar(toolbar);
 
-        TransferCollection source = TransferCollection.defaultCollection();
-        if(!source.isLoaded()) {
+        if(!collection.isLoaded()) {
             transferSpinner.startAnimation(null);
         }
-        source.addListener(new AbstractCollectionListener<Transfer>() {
+        collection.addListener(new AbstractCollectionListener<Transfer>() {
             @Override
             public void collectionLoaded() {
                 invoke(new WindowMainAction(TransferController.this) {
@@ -164,7 +163,7 @@ public final class TransferController extends WindowController implements NSTool
                 });
             }
         });
-        if(source.isLoaded()) {
+        if(collection.isLoaded()) {
             transferSpinner.stopAnimation(null);
             transferTable.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
         }
@@ -898,8 +897,8 @@ public final class TransferController extends WindowController implements NSTool
     @Action
     public void clearButtonClicked(final ID sender) {
         for(Iterator<Transfer> iter = collection.iterator(); iter.hasNext(); ) {
-            Transfer transfer = iter.next();
-            if(!transfer.isRunning() && transfer.isReset() && transfer.isComplete()) {
+            final Transfer t = iter.next();
+            if(t.isComplete()) {
                 iter.remove();
             }
         }
