@@ -21,7 +21,7 @@ nibtool="ibtool"
 convertstrings="ruby convertstrings.rb"
 base_language="en.lproj"
 arch="x86_64"
-tx="/usr/local/bin/tx -d"
+tx="/usr/local/bin/tx"
 extension=".xib"
 
 usage() {
@@ -196,14 +196,14 @@ tx_pull() {
                     strings=`basename $stringsfile .strings`
                     lang=`basename $language .lproj`
                     echo "*** Updating $strings.strings...";
-                    $tx --traceback pull --source -l $lang --resource=cyberduck.$strings --force
+                    $tx --traceback pull -l $lang --resource=cyberduck.$strings --force
                 done;
             fi;
             if [ "$stringsfile" != "all" ] ; then
                 strings=`basename $stringsfile .strings`
                 lang=`basename $language .lproj`
                 echo "*** Updating $strings.strings...";
-                $tx --traceback pull --source -l $lang --resource=cyberduck.$strings --force
+                $tx --traceback pull -l $lang --resource=cyberduck.$strings --force
             fi;
 		done;
 	}
