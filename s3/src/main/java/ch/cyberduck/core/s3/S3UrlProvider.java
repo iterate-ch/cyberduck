@@ -34,7 +34,6 @@ import ch.cyberduck.core.shared.DefaultUrlProvider;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.utils.ServiceUtils;
 
 import java.net.URI;
@@ -161,10 +160,10 @@ public class S3UrlProvider implements UrlProvider {
             region = session.getClient().getRegionEndpointCache()
                     .getRegionForBucketName(containerService.getContainer(file).getName());
         }
-        return new DescriptiveUrl(URI.create(new S3PresignedUrlProvider(session.getHost()).create(
-                new AWSCredentials(session.getHost().getCredentials().getUsername(), secret), "GET",
+        return new DescriptiveUrl(URI.create(new S3PresignedUrlProvider().create(
+                session.getHost().getCredentials().getUsername(), secret,
                 containerService.getContainer(file).getName(), region, containerService.getKey(file),
-                expiry.getTimeInMillis() / 1000, false)), DescriptiveUrl.Type.signed,
+                expiry.getTimeInMillis())), DescriptiveUrl.Type.signed,
                 MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Signed", "S3"))
                         + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
                         UserDateFormatterFactory.get().getMediumFormat(expiry.getTimeInMillis()))
