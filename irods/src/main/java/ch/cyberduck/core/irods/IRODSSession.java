@@ -33,6 +33,7 @@ import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
@@ -56,7 +57,6 @@ import org.irods.jargon.core.pub.IRODSFileSystem;
 import org.irods.jargon.core.pub.IRODSFileSystemAO;
 
 import java.text.MessageFormat;
-import java.util.EnumSet;
 
 /**
  * @version $Id$
@@ -193,19 +193,13 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
         if(type == Copy.class) {
             return (T) new IRODSCopyFeature(this);
         }
+        if(type == Home.class) {
+            return (T) new IRODSHomeFinderService(this);
+        }
         return super.getFeature(type);
     }
 
     public final IRODSFileSystemAO filesystem() {
         return filesystem;
-    }
-
-    @Override
-    public Path workdir() {
-        return new Path(new StringBuilder()
-                .append(Path.DELIMITER).append(this.getRegion())
-                .append(Path.DELIMITER).append("home")
-                .append(Path.DELIMITER).append(host.getCredentials().getUsername())
-                .toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
     }
 }
