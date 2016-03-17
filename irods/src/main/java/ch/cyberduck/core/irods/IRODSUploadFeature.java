@@ -99,8 +99,8 @@ public class IRODSUploadFeature implements Upload<Checksum> {
                     final Checksum expected = ChecksumComputeFactory.get(fingerprint.algorithm).compute(local.getInputStream());
                     if(!expected.equals(fingerprint)) {
                         throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                                MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
-                                        expected, fingerprint.hash));
+                                MessageFormat.format("Mismatch between {0} hash {1} of uploaded data and ETag {2} returned by the server",
+                                        fingerprint.algorithm.toString(), expected, fingerprint.hash));
                     }
                 }
                 return fingerprint;
