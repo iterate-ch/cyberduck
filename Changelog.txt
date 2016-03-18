@@ -13,6 +13,8 @@ Changelog. Last modified: $Date$
 - [Bugfix] No such file error when choosing Rename Existing in transfer overwrite prompt (#9342)
 - [Bugfix] Disable updater when missing admin privilege (#9155) (Windows)
 - [Bugfix] Browser tries to expand files as directories (#9340) (Windows)
+- [Bugfix] Authentication always takes a long time (S3) (#9348)
+- [Bugfix] Certificate trust verification failure for four level domains (WebDAV) (#9358)
 
 4.8.3 [https://trac.cyberduck.io/milestone/4.8.3]
 - [Bugfix] Fix use of unlimited strength cryptography for strong ciphers (SFTP) (#9325)
