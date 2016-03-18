@@ -32,9 +32,6 @@ import org.jets3t.service.model.S3Object;
 
 import java.io.InputStream;
 
-/**
- * @version $Id$
- */
 public class S3ReadFeature implements Read {
     private static final Logger log = Logger.getLogger(S3ReadFeature.class);
 
@@ -70,7 +67,6 @@ public class S3ReadFeature implements Read {
                         null, // ifNoneMatch
                         status.isAppend() ? range.getStart() : null,
                         status.isAppend() ? (range.getEnd() == -1 ? null : range.getEnd()) : null);
-                return object.getDataInputStream();
             }
             else {
                 object = client.getObject(
