@@ -189,6 +189,10 @@ public class GoogleStorageSession extends S3Session {
                     new Date(preferences.getLong("google.storage.oauth.expiry"))));
         }
         client.setProviderCredentials(oauth);
+        if(host.getCredentials().isPassed()) {
+            log.warn(String.format("Skip verifying credentials with previous successful authentication event for %s", this));
+            return;
+        }
         // List all buckets and cache
         try {
             // List all buckets and cache

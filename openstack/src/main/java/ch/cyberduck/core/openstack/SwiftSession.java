@@ -153,6 +153,10 @@ public class SwiftSession extends HttpSession<Client> {
                 }
                 cancel.verify();
             }
+            if(host.getCredentials().isPassed()) {
+                log.warn(String.format("Skip verifying credentials with previous successful authentication event for %s", this));
+                return;
+            }
             if(preferences.getBoolean("openstack.account.preload")) {
                 final ThreadPool pool = new ThreadPool("accounts");
                 try {

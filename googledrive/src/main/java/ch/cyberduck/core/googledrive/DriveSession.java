@@ -179,13 +179,17 @@ public class DriveSession extends HttpSession<Drive> {
                     .setAccessToken(accesstoken)
                     .setRefreshToken(refreshtoken)
                     .setExpirationTimeMilliseconds(preferences.getLong("google.drive.oauth.expiry"));
-            try {
-                this.getClient().files().list()
-                        .setOauthToken(this.tokens.getAccessToken()).executeUsingHead();
-            }
-            catch(IOException e) {
-                throw new DriveExceptionMappingService().map(e);
-            }
+        }
+        if(host.getCredentials().isPassed()) {
+            log.warn(String.format("Skip verifying credentials with previous successful authentication event for %s", this));
+            return;
+        }
+        try {
+            this.getClient().files().list()
+                    .setOauthToken(this.tokens.getAccessToken()).executeUsingHead();
+        }
+        catch(IOException e) {
+            throw new DriveExceptionMappingService().map(e);
         }
     }
 
