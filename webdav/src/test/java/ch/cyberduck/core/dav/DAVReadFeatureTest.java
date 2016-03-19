@@ -26,6 +26,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.CountingInputStream;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -39,9 +40,6 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class DAVReadFeatureTest {
 
@@ -190,6 +188,22 @@ public class DAVReadFeatureTest {
             public void delete(final Path file) {
             }
         });
+        session.close();
+    }
+
+    @Test
+    public void testReadCloseReleaseEntity() throws Exception {
+        final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.ch", new Credentials(
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
+        ));
+        final DAVSession session = new DAVSession(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final TransferStatus status = new TransferStatus();
+        final Path test = new Path("/trunk/LICENSE.txt", EnumSet.of(Path.Type.file));
+        final CountingInputStream in = new CountingInputStream(new DAVReadFeature(session).read(test, status));
+        in.close();
+        assertEquals(0L, in.getByteCount(), 0L);
         session.close();
     }
 }

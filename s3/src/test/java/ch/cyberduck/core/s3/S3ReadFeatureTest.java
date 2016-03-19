@@ -15,6 +15,7 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.io.input.CountingInputStream;
 import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
@@ -30,9 +31,6 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class S3ReadFeatureTest {
 
@@ -141,6 +139,24 @@ public class S3ReadFeatureTest {
         assertEquals(1457L, status.getOffset());
         assertEquals(1457L, status.getLength());
         in.close();
+        session.close();
+    }
+
+    @Test
+    public void testReadCloseReleaseEntity() throws Exception {
+        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
+                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+        ));
+        final S3Session session = new S3Session(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final TransferStatus status = new TransferStatus();
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final CountingInputStream in = new CountingInputStream(new S3ReadFeature(session).read(new Path(container,
+                "189584543480_CloudTrail_us-east-1_20141017T0910Z_CoraJxmlIWYQI2wc.json.gz",
+                EnumSet.of(Path.Type.file)), status));
+        in.close();
+        assertEquals(0L, in.getByteCount(), 0L);
         session.close();
     }
 }

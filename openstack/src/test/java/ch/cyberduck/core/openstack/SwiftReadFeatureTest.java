@@ -16,6 +16,7 @@ import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.io.input.CountingInputStream;
 import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
@@ -33,9 +34,6 @@ import ch.iterate.openstack.swift.model.StorageObject;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class SwiftReadFeatureTest {
 
@@ -163,6 +161,27 @@ public class SwiftReadFeatureTest {
         assertEquals(182L, status.getOffset());
         assertEquals(182L, status.getLength());
         in.close();
+        session.close();
+    }
+
+    @Test
+    public void testReadCloseReleaseEntity() throws Exception {
+        final SwiftSession session = new SwiftSession(
+                new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
+                        new Credentials(
+                                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
+                        )));
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final TransferStatus status = new TransferStatus();
+        final Path container = new Path(".ACCESS_LOGS", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("DFW");
+        final SwiftRegionService regionService = new SwiftRegionService(session);
+        final CountingInputStream in = new CountingInputStream(new SwiftReadFeature(session, regionService).read(new Path(container,
+                "/cdn.cyberduck.ch/2015/03/01/10/3b1d6998c430d58dace0c16e58aaf925.log.gz",
+                EnumSet.of(Path.Type.file)), status));
+        in.close();
+        assertEquals(0L, in.getByteCount(), 0L);
         session.close();
     }
 }
