@@ -48,6 +48,7 @@ import com.spectralogic.ds3client.Ds3Client;
 import com.spectralogic.ds3client.commands.GetAvailableJobChunksRequest;
 import com.spectralogic.ds3client.commands.GetAvailableJobChunksResponse;
 import com.spectralogic.ds3client.helpers.Ds3ClientHelpers;
+import com.spectralogic.ds3client.helpers.options.ReadJobOptions;
 import com.spectralogic.ds3client.helpers.options.WriteJobOptions;
 import com.spectralogic.ds3client.models.Checksum;
 import com.spectralogic.ds3client.models.bulk.BulkObject;
@@ -127,7 +128,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                 switch(type) {
                     case download:
                         job = helper.startReadJob(
-                                container.getKey().getName(), container.getValue());
+                                container.getKey().getName(), container.getValue(), ReadJobOptions.create());
                         break;
                     case upload:
                         job = helper.startWriteJob(
@@ -178,8 +179,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
         // This will respond with which job chunks have been loaded into cache and are ready for download.
         try {
             if(!status.getParameters().containsKey(REQUEST_PARAMETER_JOBID_IDENTIFIER)) {
-                log.error(String.format("Missing job id parameter in status for %s", file.getAbsolute()));
-                return Collections.singletonList(status);
+                throw new NotfoundException(String.format("Missing job id parameter in status for %s", file.getName()));
             }
             final String job = status.getParameters().get(REQUEST_PARAMETER_JOBID_IDENTIFIER);
             if(log.isDebugEnabled()) {
