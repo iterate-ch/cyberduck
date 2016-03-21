@@ -33,11 +33,11 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class SpectraBulkServiceTest {
@@ -127,6 +127,35 @@ public class SpectraBulkServiceTest {
         new SpectraBulkService(session).pre(Transfer.Type.download, Collections.singletonMap(
                 new Path(String.format("/test.cyberduck.ch/%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory)), new TransferStatus()
         ));
+        session.close();
+    }
+
+    @Test
+    public void testPreUploadLargeFile() throws Exception {
+        final Host host = new Host(new SpectraProtocol() {
+            @Override
+            public Scheme getScheme() {
+                return Scheme.http;
+            }
+        }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
+                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
+        ));
+        final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
+                new DefaultX509KeyManager());
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        final Map<Path, TransferStatus> files = new HashMap<>();
+        final TransferStatus status = new TransferStatus();
+        final Path file = new Path(String.format("/test.cyberduck.ch/%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file));
+        files.put(file,
+                // 11GB
+                status.length(11264000000L)
+        );
+        final SpectraBulkService service = new SpectraBulkService(session);
+        service.pre(Transfer.Type.upload, files);
+        assertFalse(status.getParameters().isEmpty());
+        assertNotNull(status.getParameters().get("job"));
+        final List<TransferStatus> list = service.query(Transfer.Type.upload, file, status);
+        assertEquals(1, list.size());
         session.close();
     }
 }
