@@ -11,7 +11,6 @@ import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -37,13 +36,14 @@ public class SFTPSymlinkFeatureTest {
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path target = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final SFTPHomeDirectoryService workdir = new SFTPHomeDirectoryService(session);
+        final Path target = new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SFTPTouchFeature(session).touch(target);
-        final Path link = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
+        final Path link = new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
         new SFTPSymlinkFeature(session).symlink(link, target.getName());
         assertTrue(new SFTPFindFeature(session).find(link));
         assertEquals(EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink),
-                session.list(new DefaultHomeFinderService(session).find(), new DisabledListProgressListener()).get(link).getType());
+                session.list(workdir.find(), new DisabledListProgressListener()).get(link).getType());
         new SFTPDeleteFeature(session).delete(Collections.singletonList(link), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {

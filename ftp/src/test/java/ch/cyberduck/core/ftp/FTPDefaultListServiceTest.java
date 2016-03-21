@@ -56,7 +56,7 @@ public class FTPDefaultListServiceTest {
         final ListService list = new FTPDefaultListService(session, new DisabledPasswordStore(), new DisabledLoginCallback(),
                 new CompositeFileEntryParser(Arrays.asList(new UnixFTPEntryParser())),
                 FTPListService.Command.list);
-        final Path directory = session.workdir();
+        final Path directory = new FTPWorkdirService(session).find();
         assertTrue(list.list(directory, new DisabledListProgressListener()).contains(new Path(directory, "test", EnumSet.of(Path.Type.file))));
         session.close();
     }
@@ -72,7 +72,7 @@ public class FTPDefaultListServiceTest {
         final ListService list = new FTPDefaultListService(session, new DisabledPasswordStore(), new DisabledLoginCallback(),
                 new CompositeFileEntryParser(Arrays.asList(new UnixFTPEntryParser())),
                 FTPListService.Command.lista);
-        final Path directory = session.workdir();
+        final Path directory = new FTPWorkdirService(session).find();
         assertTrue(list.list(directory, new DisabledListProgressListener()).contains(new Path(directory, "test", EnumSet.of(Path.Type.file))));
         session.close();
     }

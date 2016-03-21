@@ -27,6 +27,7 @@ import org.junit.experimental.categories.Category;
 
 import java.security.PublicKey;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -58,7 +59,6 @@ public class SFTPSessionTest {
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertTrue(session.isSecured());
-        assertNotNull(session.workdir());
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
@@ -70,7 +70,7 @@ public class SFTPSessionTest {
         final SFTPSession session = new SFTPSession(host);
         for(net.schmizz.sshj.common.Factory.Named<MAC> mac : new DefaultConfig().getMACFactories()) {
             final DefaultConfig configuration = new DefaultConfig();
-            configuration.setMACFactories(Arrays.asList(mac));
+            configuration.setMACFactories(Collections.singletonList(mac));
             final SSHClient client = session.connect(new DisabledHostKeyCallback(), configuration);
             assertTrue(client.isConnected());
             client.close();
@@ -138,7 +138,7 @@ public class SFTPSessionTest {
         ));
         final SFTPSession session = new SFTPSession(host);
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
-        session.workdir();
+        new SFTPHomeDirectoryService(session).find();
     }
 
     @Test

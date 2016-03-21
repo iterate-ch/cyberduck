@@ -53,7 +53,7 @@ public class DAVReadFeatureTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
-        new DAVReadFeature(session).read(new Path(session.workdir(), "nosuchname", EnumSet.of(Path.Type.file)), status);
+        new DAVReadFeature(session).read(new Path(new DefaultHomeFinderService(session).find(), "nosuchname", EnumSet.of(Path.Type.file)), status);
     }
 
     @Test

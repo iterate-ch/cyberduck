@@ -11,7 +11,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -40,9 +39,10 @@ public class FTPUnixPermissionFeatureTest {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path home = new DefaultHomeFinderService(session).find();
+        final FTPWorkdirService workdir = new FTPWorkdirService(session);
+        final Path home = workdir.find();
         final long modified = System.currentTimeMillis();
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature(session).touch(test);
         new FTPUnixPermissionFeature(session).setUnixPermission(test, new Permission(666));
         assertEquals("666", session.list(home, new DisabledListProgressListener()).get(test).attributes().getPermission().getMode());

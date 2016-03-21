@@ -36,7 +36,7 @@ import java.security.MessageDigest;
 import java.util.List;
 
 public class SpectraUploadFeature extends HttpUploadFeature<StorageObject, MessageDigest> {
-    private static final Logger log = Logger.getLogger(SpectraWriteFeature.class);
+    private static final Logger log = Logger.getLogger(SpectraUploadFeature.class);
 
     private final SpectraSession session;
 

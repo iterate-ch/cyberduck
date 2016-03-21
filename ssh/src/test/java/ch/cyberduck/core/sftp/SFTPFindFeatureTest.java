@@ -46,8 +46,8 @@ public class SFTPFindFeatureTest {
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertTrue(new SFTPFindFeature(session).find(session.workdir()));
-        assertTrue(new SFTPFindFeature(session).find(new Path(session.workdir(), ".ssh", EnumSet.of(AbstractPath.Type.directory))));
+        assertTrue(new SFTPFindFeature(session).find(new SFTPHomeDirectoryService(session).find()));
+        assertTrue(new SFTPFindFeature(session).find(new Path(new SFTPHomeDirectoryService(session).find(), ".ssh", EnumSet.of(AbstractPath.Type.directory))));
         session.close();
     }
 
@@ -59,7 +59,7 @@ public class SFTPFindFeatureTest {
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertTrue(new SFTPFindFeature(session).find(new Path(session.workdir(), ".bash_profile", EnumSet.of(AbstractPath.Type.file))));
+        assertTrue(new SFTPFindFeature(session).find(new Path(new SFTPHomeDirectoryService(session).find(), ".bash_profile", EnumSet.of(AbstractPath.Type.file))));
         session.close();
     }
 
