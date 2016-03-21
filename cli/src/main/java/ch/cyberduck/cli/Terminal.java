@@ -28,6 +28,7 @@ import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.googledrive.DriveProtocol;
@@ -213,7 +214,8 @@ public class Terminal {
             if(new CommandLinePathParser(input).parse(uri).getAbsolute().startsWith(TildePathExpander.PREFIX)) {
                 // Already connect here because the tilde expander may need to use the current working directory
                 this.connect(session);
-                remote = new TildePathExpander(session.workdir()).expand(new CommandLinePathParser(input).parse(uri));
+                final Home home = session.<Home>getFeature(Home.class);
+                remote = new TildePathExpander(home.find()).expand(new CommandLinePathParser(input).parse(uri));
             }
             else {
                 remote = new CommandLinePathParser(input).parse(uri);
