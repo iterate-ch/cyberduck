@@ -708,13 +708,14 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public static void Exit(bool updateInProgress)
         {
-            if (PrepareExit())
+            if (updateInProgress)
             {
                 NotificationServiceFactory.get().unregister();
-                if (!updateInProgress)
-                {
-                    ApplicationShouldTerminateAfterDonationPrompt();
-                }
+                System.Windows.Forms.Application.Exit();
+            }
+            else if (PrepareExit())
+            {
+                ApplicationShouldTerminateAfterDonationPrompt();
                 System.Windows.Forms.Application.Exit();
             }
         }

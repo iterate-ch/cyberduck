@@ -51,7 +51,7 @@ namespace Ch.Cyberduck.Ui.Core
             WinSparkle.SetShutdownRequestCallback(delegate
             {
                 Log.info("About to exit in order to install update");
-                Application.Exit();
+                MainController.Exit(true);
             });
             return base.register();
         }
