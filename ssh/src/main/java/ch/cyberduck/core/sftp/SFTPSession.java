@@ -56,7 +56,6 @@ import java.security.PublicKey;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.EnumSet;
 import java.util.List;
 
 import net.schmizz.concurrent.Promise;
@@ -368,22 +367,6 @@ public class SFTPSession extends Session<SSHClient> {
             log.warn(String.format("Ignore disconnect failure %s", e.getMessage()));
         }
         super.disconnect();
-    }
-
-    @Override
-    public Path workdir() throws BackgroundException {
-        // "." as referring to the current directory
-        final String directory;
-        try {
-            directory = this.sftp().canonicalize(".");
-        }
-        catch(IOException e) {
-            throw new SFTPExceptionMappingService().map(e);
-        }
-        return new Path(directory,
-                directory.equals(String.valueOf(Path.DELIMITER)) ?
-                        EnumSet.of(Path.Type.volume, Path.Type.directory) : EnumSet.of(Path.Type.directory)
-        );
     }
 
     @Override
