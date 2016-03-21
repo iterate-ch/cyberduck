@@ -46,6 +46,7 @@ import org.jets3t.service.security.OAuth2Credentials;
 import org.jets3t.service.security.OAuth2Tokens;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Map;
 
@@ -128,9 +129,20 @@ public class RequestEntityRestStorageService extends RestS3Service {
     }
 
     @Override
-    protected void putObjectWithRequestEntityImpl(String bucketName, StorageObject object,
-                                                  HttpEntity requestEntity, Map<String, String> requestParams) throws ServiceException {
+    public void putObjectWithRequestEntityImpl(String bucketName, StorageObject object,
+                                               HttpEntity requestEntity, Map<String, String> requestParams) throws ServiceException {
         super.putObjectWithRequestEntityImpl(bucketName, object, requestEntity, requestParams);
+    }
+
+    @Override
+    public StorageObject getObjectImpl(boolean headOnly, String bucketName, String objectKey,
+                                       Calendar ifModifiedSince, Calendar ifUnmodifiedSince,
+                                       String[] ifMatchTags, String[] ifNoneMatchTags,
+                                       Long byteRangeStart, Long byteRangeEnd, String versionId,
+                                       Map<String, Object> requestHeaders,
+                                       Map<String, String> requestParameters) throws ServiceException {
+        return super.getObjectImpl(headOnly, bucketName, objectKey, ifModifiedSince, ifUnmodifiedSince, ifMatchTags, ifNoneMatchTags, byteRangeStart, byteRangeEnd,
+                versionId, requestHeaders, requestParameters);
     }
 
     @Override
