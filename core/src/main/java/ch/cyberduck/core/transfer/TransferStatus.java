@@ -373,6 +373,10 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         return parameters;
     }
 
+    public void setParameters(final Map<String, String> parameters) {
+        this.parameters = parameters;
+    }
+
     public TransferStatus parameters(final Map<String, String> parameters) {
         this.parameters = parameters;
         return this;
