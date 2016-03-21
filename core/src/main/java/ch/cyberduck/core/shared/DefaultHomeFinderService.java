@@ -49,11 +49,11 @@ public class DefaultHomeFinderService implements Home {
         else {
             final String path = host.getDefaultPath();
             if(StringUtils.isNotBlank(path)) {
-                return this.find(session.workdir(), path);
+                return this.find(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), path);
             }
             else {
                 // No default path configured
-                return session.workdir();
+                return new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory));
             }
         }
     }
