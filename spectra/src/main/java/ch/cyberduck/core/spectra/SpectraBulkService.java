@@ -236,13 +236,26 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                                 .exists(status.isExists())
                                 .metadata(status.getMetadata())
                                 .parameters(status.getParameters());
-                        // Job parameter already present from #pre
-                        final Map<String, String> parameters = new HashMap<>(chunk.getParameters());
-                        // Set offset for chunk
-                        parameters.put(REQUEST_PARAMETER_OFFSET, Long.toString(chunk.getOffset()));
-                        chunk.parameters(parameters);
-                        chunk.setLength(bulk.getLength());
-                        chunk.setOffset(bulk.getOffset());
+                        if(bulk.getOffset() == 0L) {
+                            // Set our own offsets
+                            chunk.setLength(status.getLength());
+                            chunk.setOffset(status.getOffset());
+                            chunk.setAppend(status.isAppend());
+                        }
+                        else {
+                            // Server sends multiple chunks with offsets
+                            chunk.setLength(bulk.getLength());
+                            chunk.setOffset(bulk.getOffset());
+                            switch(type) {
+                                case download:
+                                    // Job parameter already present from #pre
+                                    final Map<String, String> parameters = new HashMap<>(chunk.getParameters());
+                                    // Set offset for chunk
+                                    parameters.put(REQUEST_PARAMETER_OFFSET, Long.toString(chunk.getOffset()));
+                                    chunk.setParameters(parameters);
+                                    break;
+                            }
+                        }
                         chunks.add(chunk);
                     }
                 }
