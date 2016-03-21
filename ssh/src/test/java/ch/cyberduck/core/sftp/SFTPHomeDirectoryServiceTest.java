@@ -23,7 +23,6 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -50,8 +49,8 @@ public class SFTPHomeDirectoryServiceTest {
     @Test
     public void testFindWithWorkdir() throws Exception {
         assertEquals(new Path("/sandbox", EnumSet.of(Path.Type.directory)),
-                new DefaultHomeFinderService(null).find(new Path("/", EnumSet.of(Path.Type.directory)), "sandbox"));
+                new SFTPHomeDirectoryService(null).find(new Path("/", EnumSet.of(Path.Type.directory)), "sandbox"));
         assertEquals(new Path("/sandbox", EnumSet.of(Path.Type.directory)),
-                new DefaultHomeFinderService(null).find(new Path("/", EnumSet.of(Path.Type.directory)), "/sandbox"));
+                new SFTPHomeDirectoryService(null).find(new Path("/", EnumSet.of(Path.Type.directory)), "/sandbox"));
     }
 }
