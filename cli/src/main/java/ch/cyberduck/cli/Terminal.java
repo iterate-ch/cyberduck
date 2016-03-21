@@ -196,7 +196,7 @@ public class Terminal {
             return Exit.failure;
         }
         this.configure(input);
-        Session session = null;
+        Session<?> session = null;
         try {
             final TerminalAction action = TerminalActionFinder.get(input);
             if(null == action) {
@@ -214,7 +214,7 @@ public class Terminal {
             if(new CommandLinePathParser(input).parse(uri).getAbsolute().startsWith(TildePathExpander.PREFIX)) {
                 // Already connect here because the tilde expander may need to use the current working directory
                 this.connect(session);
-                final Home home = session.<Home>getFeature(Home.class);
+                final Home home = session.getFeature(Home.class);
                 remote = new TildePathExpander(home.find()).expand(new CommandLinePathParser(input).parse(uri));
             }
             else {
