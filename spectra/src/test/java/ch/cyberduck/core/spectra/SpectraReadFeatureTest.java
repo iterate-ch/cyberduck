@@ -46,8 +46,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class SpectraReadFeatureTest {
@@ -195,5 +194,10 @@ public class SpectraReadFeatureTest {
             }
         });
         session.close();
+    }
+
+    @Test
+    public void testOffsetSupport() throws Exception {
+        assertTrue(new SpectraReadFeature(null).offset(null));
     }
 }
