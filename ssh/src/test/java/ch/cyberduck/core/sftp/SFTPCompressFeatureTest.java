@@ -42,9 +42,10 @@ public class SFTPCompressFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final SFTPCompressFeature feature = new SFTPCompressFeature(session);
         for(Archive archive : Archive.getKnownArchives()) {
-            final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+            final DefaultHomeFinderService home = new SFTPHomeDirectoryService(session);
+            final Path test = new Path(home.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
             session.getFeature(Touch.class).touch(test);
-            feature.archive(archive, new DefaultHomeFinderService(session).find(), Collections.<Path>singletonList(test), new ProgressListener() {
+            feature.archive(archive, home.find(), Collections.<Path>singletonList(test), new ProgressListener() {
                 @Override
                 public void message(final String message) {
                     //
