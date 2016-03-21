@@ -20,7 +20,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Resolver;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.RetriableAccessDeniedException;
@@ -249,14 +248,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                 }
             }
             if(chunks.isEmpty()) {
-                switch(list.getStatus()) {
-                    case IN_PROGRESS:
-                        throw new RetriableAccessDeniedException(String.format("Job %s not yet fully loaded into cache", job), Duration.ofSeconds(5));
-                    case CANCELED:
-                        throw new AccessDeniedException(String.format("Job %s is canceled", job));
-                    default:
-                        throw new NotfoundException(String.format("File %s not found in job %s", file.getName(), job));
-                }
+                throw new NotfoundException(String.format("File %s not found in job %s", file.getName(), job));
             }
             return chunks;
         }

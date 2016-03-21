@@ -63,10 +63,6 @@ public class SpectraUploadFeature extends HttpUploadFeature<StorageObject, Messa
         final SpectraBulkService bulk = new SpectraBulkService(session);
         // Make sure file is available in cache
         final List<TransferStatus> chunks = bulk.query(Transfer.Type.upload, file, status);
-        if(chunks.isEmpty()) {
-            log.error(String.format("Empty chunk array for upload %s", file));
-            return super.upload(file, local, throttle, listener, status, cancel, progress);
-        }
         StorageObject stored = null;
         for(TransferStatus chunk : chunks) {
             stored = super.upload(file, local, throttle, listener, chunk, cancel, progress);

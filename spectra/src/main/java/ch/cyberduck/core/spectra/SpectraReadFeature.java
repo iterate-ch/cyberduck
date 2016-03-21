@@ -43,9 +43,6 @@ public class SpectraReadFeature extends S3ReadFeature {
         final SpectraBulkService bulk = new SpectraBulkService(session);
         // Make sure file is available in cache
         final List<TransferStatus> chunks = bulk.query(Transfer.Type.download, file, status);
-        if(chunks.isEmpty()) {
-            log.error(String.format("Empty chunk array for download %s", file));
-        }
         final List<InputStream> streams = new ArrayList<InputStream>();
         for(TransferStatus chunk : chunks) {
             streams.add(super.read(file, chunk));
