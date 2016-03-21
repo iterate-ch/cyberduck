@@ -61,7 +61,7 @@ public class FTPSessionTest {
         assertTrue(session.isConnected());
         assertFalse(session.isSecured());
         assertNotNull(session.getClient());
-        assertNotNull(session.workdir());
+        assertNotNull(new FTPWorkdirService(session).find());
         session.close();
         assertEquals(Session.State.closed, session.getState());
         assertFalse(session.isConnected());
@@ -119,9 +119,9 @@ public class FTPSessionTest {
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertTrue(session.isSecured());
-        final Path path = session.workdir();
+        final Path path = new FTPWorkdirService(session).find();
         assertNotNull(path);
-        assertEquals(path, session.workdir());
+        assertEquals(path, new FTPWorkdirService(session).find());
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
@@ -134,7 +134,7 @@ public class FTPSessionTest {
         ));
         final FTPSession session = new FTPSession(host);
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
-        session.workdir();
+        new FTPWorkdirService(session).find();
     }
 
     @Test
@@ -196,7 +196,7 @@ public class FTPSessionTest {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertEquals("/", session.workdir().getAbsolute());
+        assertEquals("/", new FTPWorkdirService(session).find().getAbsolute());
     }
 
     @Test

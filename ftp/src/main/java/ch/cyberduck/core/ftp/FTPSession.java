@@ -62,7 +62,6 @@ import org.apache.log4j.Logger;
 import javax.net.SocketFactory;
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.EnumSet;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -312,22 +311,6 @@ public class FTPSession extends SSLSession<FTPClient> {
         catch(IOException e) {
             throw new FTPExceptionMappingService().map(e);
         }
-    }
-
-    @Override
-    public Path workdir() throws BackgroundException {
-        final String directory;
-        try {
-            directory = client.printWorkingDirectory();
-            if(null == directory) {
-                throw new FTPException(this.getClient().getReplyCode(), this.getClient().getReplyString());
-            }
-        }
-        catch(IOException e) {
-            throw new FTPExceptionMappingService().map(e);
-        }
-        return new Path(directory,
-                directory.equals(String.valueOf(Path.DELIMITER)) ? EnumSet.of(Path.Type.volume, Path.Type.directory) : EnumSet.of(Path.Type.directory));
     }
 
     @Override
