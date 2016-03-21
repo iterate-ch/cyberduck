@@ -267,12 +267,6 @@
       <Component Id="sunec">
         <File Source="$(var.cyberduck.TargetDir)/sunec.dll" KeyPath="yes" Checksum="yes" />
       </Component>
-      <Component Id="updater">
-        <File Source="$(var.cyberduck.TargetDir)/update/Updater.exe" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="updater.meta">
-        <File Source="$(var.cyberduck.TargetDir)/update/client.wyc" KeyPath="yes" Checksum="yes" />
-      </Component>
       <Component Id="additional" Guid="c0733025-a4ec-4437-8617-0ace7d29318a">
         <File Source="$(var.cyberduck.TargetDir)/Acknowledgments.rtf" Checksum="yes" />
         <File Source="$(var.cyberduck.TargetDir)/License.txt" Checksum="yes" />
