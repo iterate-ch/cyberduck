@@ -783,9 +783,15 @@ public abstract class Preferences {
         defaults.put("b2.bucket.acl.default", "allPrivate");
         defaults.put("b2.listing.chunksize", String.valueOf(1000));
         defaults.put("b2.upload.checksum", String.valueOf(true));
+
+        defaults.put("b2.upload.largeobject", String.valueOf(true));
         defaults.put("b2.upload.largeobject.concurrency", String.valueOf(5));
+        defaults.put("openstack.upload.largeobject.required.threshold", String.valueOf(5L * 1024L * 1024L * 1024L)); // 5GB
+        defaults.put("b2.upload.largeobject.threshold", String.valueOf(100 * 1024L * 1024L)); // 100MB
         // Each part can be anywhere from 100MB to 5GB in size
         defaults.put("b2.upload.largeobject.size", String.valueOf(100 * 1024L * 1024L));
+        // Cleanup
+        defaults.put("b2.upload.largeobject.cleanup", String.valueOf(true));
 
         defaults.put("spectra.upload.md5", String.valueOf(false));
         defaults.put("spectra.upload.crc32", String.valueOf(false));
