@@ -107,18 +107,18 @@ public class B2LargeUploadPartService {
         }
     }
 
-    public void delete(final Path file) throws BackgroundException {
+    public void delete(final String id) throws BackgroundException {
         if(log.isInfoEnabled()) {
-            log.info(String.format("Delete multipart upload %s", file));
+            log.info(String.format("Delete multipart upload %s", id));
         }
         try {
-            session.getClient().cancelLargeFileUpload(file.attributes().getVersionId());
+            session.getClient().cancelLargeFileUpload(id);
         }
         catch(B2ApiException e) {
-            throw new B2ExceptionMappingService().map("Cannot delete {0}", e, file);
+            throw new B2ExceptionMappingService().map(e);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, file);
+            throw new DefaultIOExceptionMappingService().map(e);
         }
     }
 }
