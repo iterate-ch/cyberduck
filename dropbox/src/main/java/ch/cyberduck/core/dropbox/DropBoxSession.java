@@ -34,22 +34,22 @@ import org.apache.log4j.Logger;
 import java.util.Locale;
 
 
-public class DropBoxSession extends HttpSession<DropBoxClient> {
+public class DropboxSession extends HttpSession<DropboxClient> {
 
-    private static final Logger log = Logger.getLogger(DropBoxSession.class);
+    private static final Logger log = Logger.getLogger(DropboxSession.class);
 
     private String token;
-    private DropBoxClient client;
+    private DropboxClient client;
 
     private Preferences preferences = PreferencesFactory.get();
 
-    public DropBoxSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
+    public DropboxSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
 
     @Override
-    protected DropBoxClient connect(HostKeyCallback key) throws BackgroundException {
-        client = new DropBoxClient();
+    protected DropboxClient connect(HostKeyCallback key) throws BackgroundException {
+        client = new DropboxClient();
         return client;
     }
 
@@ -57,10 +57,10 @@ public class DropBoxSession extends HttpSession<DropBoxClient> {
     public void login(HostPasswordStore keychain, LoginCallback prompt, CancelCallback cancel, Cache<Path> cache) throws BackgroundException {
 
         String accessToken = keychain.getPassword(host.getProtocol().getScheme(),
-                host.getPort(), "www.dropbox.com", "Drop Box OAuth2 Access Token");
+                host.getPort(), "www.dropbox.com", "Dropbox OAuth2 Access Token");
 
         DbxRequestConfig config = new DbxRequestConfig(
-                "Drop Box Test", Locale.getDefault().toString());
+                "Dropbox Test", Locale.getDefault().toString());
 
         if(StringUtils.isEmpty(accessToken)) {
 
@@ -80,7 +80,7 @@ public class DropBoxSession extends HttpSession<DropBoxClient> {
 
                 // Save for future use
                 keychain.addPassword(host.getProtocol().getScheme(),
-                        host.getPort(), "www.dropbox.com", "Drop Box OAuth2 Access Token",
+                        host.getPort(), "www.dropbox.com", "Dropbox OAuth2 Access Token",
                         token);
 
             } catch(DbxException ex) {
@@ -100,32 +100,41 @@ public class DropBoxSession extends HttpSession<DropBoxClient> {
 
     @Override
     public AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException {
-        return new DropBoxListService(this).list(directory, listener);
+        return new DropboxListService(this).list(directory, listener);
     }
 
     public <T> T getFeature(Class<T> type) {
-        /*if (type == Read.class){
+        if (type == Read.class){
+            return (T) new DropboxReadFeature(this);
+        }
+        if (type == Write.class){
 
-        } else if (type == Write.class){
+        }
+        if (type == Upload.class){
 
-        } else if (type == Upload.class){
+        }
+        if (type == Directory.class){
+            return (T) new DropboxDirectoryFeature(this);
 
-        } else if (type == Directory.class){
+        }
+        if (type == Delete.class){
 
-        } else if (type == Delete.class){
+        }
+        if (type == Move.class){
 
-        } else if (type == Move.class){
+        }
+        if (type == Copy.class){
 
-        } else if (type == Copy.class){
+        }
+        if (type == Touch.class){
 
-        } else if (type == Touch.class){
+        }
+        if (type == UrlProvider.class){
 
-        } else if (type == UrlProvider.class){
+        }
+        if (type == Home.class){
 
-        } else if (type == Home.class){
-
-        } else {*/
-            return super.getFeature(type);
-        //}
+        }
+        return super.getFeature(type);
     }
 }

@@ -17,23 +17,21 @@ package ch.cyberduck.core.dropbox;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.io.Checksum;
 import com.dropbox.core.DbxException;
+import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.ListFolderResult;
 import com.dropbox.core.v2.files.Metadata;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.EnumSet;
-import java.util.List;
 
-public class DropBoxListService implements ListService {
+public class DropboxListService implements ListService {
+    private static final Logger log = Logger.getLogger(DropboxListService.class);
 
-    private static final Logger log = Logger.getLogger(DropBoxListService.class);
+    private final DropboxSession session;
 
-    private final DropBoxSession session;
-
-    public DropBoxListService(DropBoxSession session) {
+    public DropboxListService(DropboxSession session) {
         this.session = session;
     }
 
@@ -41,22 +39,24 @@ public class DropBoxListService implements ListService {
     public AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> children = new AttributedList<>();
-            String path = directory.isRoot() ? "" : directory.getAbsolute();
+            final String path = directory.isRoot() ? StringUtils.EMPTY : directory.getAbsolute();
             ListFolderResult result = session.getClient().getDbxClient().files().listFolder(path);
-
-            List<Metadata> q = result.getEntries();
             for (Metadata md : result.getEntries()) {
                 final PathAttributes attributes = new PathAttributes();
-                //attributes.setSize(md. f.getSize());
-                //attributes.setVersionId(f.getId());
-                //attributes.setModificationDate(f.getModifiedTime().getValue());
-                //attributes.setCreationDate(f.getCreatedTime().getValue());
-                //attributes.setChecksum(Checksum.parse(f.getMd5Checksum()));
+                if (md instanceof FileMetadata) {
+                    FileMetadata fmd = (FileMetadata)md;
+                    attributes.setSize(fmd.getSize());
+                    attributes.setVersionId(fmd.getId());
+                    attributes.setModificationDate(fmd.getClientModified().getTime());
+                    //attributes.setCreationDate();
+                    //attributes.setChecksum();
+                }
+
                 final Path child = new Path(directory, PathNormalizer.name(md.getName()), EnumSet.of(Path.Type.file), attributes);
                 children.add(child);
             }
             return children;
-        } catch(DbxException e){
+        } catch (DbxException e) {
             e.printStackTrace();
             return null;
         }

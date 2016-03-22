@@ -55,7 +55,7 @@ public class DriveListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws
             BackgroundException {
         try {
-            final AttributedList<Path> children = new AttributedList<Path>();
+            final AttributedList<Path> children = new AttributedList<>();
             String page = null;
             do {
                 final Drive.Files.List list = session.getClient().files().list()

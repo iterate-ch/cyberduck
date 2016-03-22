@@ -15,17 +15,25 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
-import com.dropbox.core.v2.DbxClientV2;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Directory;
 
-public class DropboxClient {
+public class DropboxDirectoryFeature implements Directory {
 
-    private DbxClientV2 dbxClient;
+    private DropboxSession session;
 
-    public void setDbxClient(DbxClientV2 dbxClient) {
-        this.dbxClient = dbxClient;
+    public DropboxDirectoryFeature(DropboxSession session) {
+        this.session = session;
     }
 
-    public DbxClientV2 getDbxClient () {
-        return dbxClient;
+    @Override
+    public void mkdir(Path file) throws BackgroundException {
+
+    }
+
+    @Override
+    public void mkdir(Path file, String region) throws BackgroundException {
+
     }
 }

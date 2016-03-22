@@ -19,7 +19,7 @@ import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
 
-public class DropBoxProtocol extends AbstractProtocol {
+public class DropboxProtocol extends AbstractProtocol {
 
     @Override
     public String getIdentifier() {
@@ -28,12 +28,12 @@ public class DropBoxProtocol extends AbstractProtocol {
 
     @Override
     public String getDescription() {
-        return "Drop Box";
+        return "Dropbox";
     }
 
     @Override
     public String getPrefix() {
-        return String.format("%s.%s", this.getClass().getPackage().getName(), "DropBox");
+        return String.format("%s.%s", this.getClass().getPackage().getName(), "Dropbox");
     }
 
     @Override
