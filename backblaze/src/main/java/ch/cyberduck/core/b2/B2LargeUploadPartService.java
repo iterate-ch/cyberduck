@@ -20,6 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 
+import org.apache.commons.codec.binary.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -58,7 +59,11 @@ public class B2LargeUploadPartService {
             do {
                 final B2ListFilesResponse chunk;
                 chunk = session.getClient().listUnfinishedLargeFiles(new B2FileidProvider(session).getFileid(containerService.getContainer(file)), startFileId, null);
-                uploads.addAll(chunk.getFiles());
+                for(B2FileInfoResponse upload : chunk.getFiles()) {
+                    if(StringUtils.equals(upload.getFileName(), containerService.getKey(file))) {
+                        uploads.add(upload);
+                    }
+                }
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Found %d previous multipart uploads for %s", uploads.size(), file));
                 }
