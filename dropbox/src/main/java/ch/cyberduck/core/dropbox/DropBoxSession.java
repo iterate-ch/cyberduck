@@ -17,6 +17,7 @@ package ch.cyberduck.core.dropbox;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
@@ -83,7 +84,7 @@ public class DropBoxSession extends HttpSession<DropBoxClient> {
                         token);
 
             } catch(DbxException ex) {
-                ex.printStackTrace();
+                throw new LoginFailureException(ex.getLocalizedMessage());
             }
         }
         token = accessToken;
