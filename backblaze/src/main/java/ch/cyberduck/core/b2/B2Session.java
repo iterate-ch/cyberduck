@@ -31,6 +31,7 @@ import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
@@ -140,6 +141,9 @@ public class B2Session extends HttpSession<B2ApiClient> {
             return (T) new B2HomeFinderService(this);
         }
         if(type == AclPermission.class) {
+            return (T) new B2BucketTypeFeature(this);
+        }
+        if(type == Location.class) {
             return (T) new B2BucketTypeFeature(this);
         }
         return super.getFeature(type);
