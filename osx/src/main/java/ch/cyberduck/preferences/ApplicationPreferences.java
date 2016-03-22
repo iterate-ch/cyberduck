@@ -15,6 +15,7 @@ import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.googledrive.DriveProtocol;
 import ch.cyberduck.core.googlestorage.GoogleStorageProtocol;
+import ch.cyberduck.core.dropbox.DropBoxProtocol;
 import ch.cyberduck.core.i18n.BundleLocale;
 import ch.cyberduck.core.local.FileManagerWorkingDirectoryFinder;
 import ch.cyberduck.core.local.FinderLocal;
@@ -123,5 +124,6 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
         defaults.put(String.format("connection.protocol.%s.enable", new GoogleStorageProtocol().getIdentifier()), String.valueOf(true));
         defaults.put(String.format("connection.protocol.%s.enable", new AzureProtocol().getIdentifier()), String.valueOf(true));
         defaults.put(String.format("connection.protocol.%s.enable", new DriveProtocol().getIdentifier()), String.valueOf(true));
+        defaults.put(String.format("connection.protocol.%s.enable", new DropBoxProtocol().getIdentifier()), String.valueOf(true));
     }
 }

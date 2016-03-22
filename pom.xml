@@ -35,6 +35,7 @@
         <module>backblaze</module>
         <module>protocols</module>
         <module>protocols/dll</module>
+        <module>dropbox</module>
         <!-- Test -->
         <module>test</module>
         <!-- Platforms -->

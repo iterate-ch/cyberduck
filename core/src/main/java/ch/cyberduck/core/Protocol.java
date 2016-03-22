@@ -68,6 +68,7 @@ public interface Protocol extends Comparable<Protocol> {
             }
         },
         googledrive,
+        dropbox,
         swift,
         dav,
         azure {
