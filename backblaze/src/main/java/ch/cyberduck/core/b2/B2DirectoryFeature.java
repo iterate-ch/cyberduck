@@ -29,6 +29,7 @@ import java.util.Collections;
 
 import synapticloop.b2.BucketType;
 import synapticloop.b2.exception.B2ApiException;
+import synapticloop.b2.response.B2FileResponse;
 
 public class B2DirectoryFeature implements Directory {
 
@@ -54,11 +55,12 @@ public class B2DirectoryFeature implements Directory {
                         BucketType.valueOf(PreferencesFactory.get().getProperty("b2.bucket.acl.default")));
             }
             else {
-                session.getClient().uploadFile(
+                final B2FileResponse response = session.getClient().uploadFile(
                         new B2FileidProvider(session).getFileid(containerService.getContainer(file)),
                         String.format("%s/.bzEmpty", containerService.getKey(file)),
                         new ByteArrayEntity(new byte[0]), "da39a3ee5e6b4b0d3255bfef95601890afd80709",
                         "application/octet-stream", Collections.emptyMap());
+                file.attributes().setVersionId(response.getFileId());
             }
         }
         catch(B2ApiException e) {
