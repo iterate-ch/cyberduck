@@ -33,8 +33,6 @@ import synapticloop.b2.response.B2FileResponse;
 
 public class B2SingleUploadService extends HttpUploadFeature<B2FileResponse, MessageDigest> {
 
-    private final B2Session session;
-
     private final ChecksumCompute checksum
             = new SHA1ChecksumCompute();
 
@@ -44,7 +42,6 @@ public class B2SingleUploadService extends HttpUploadFeature<B2FileResponse, Mes
 
     public B2SingleUploadService(final B2Session session, final B2WriteFeature writer) {
         super(writer);
-        this.session = session;
     }
 
     @Override
