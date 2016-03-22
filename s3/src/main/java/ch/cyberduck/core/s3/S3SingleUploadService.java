@@ -40,9 +40,6 @@ import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-/**
- * @version $Id$
- */
 public class S3SingleUploadService extends HttpUploadFeature<StorageObject, MessageDigest> {
     private static final Logger log = Logger.getLogger(S3SingleUploadService.class);
 

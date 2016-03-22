@@ -18,14 +18,9 @@ package ch.cyberduck.core.preferences;
  *  dkocher@cyberduck.ch
  */
 
-import org.apache.log4j.Logger;
+import org.apache.log4j.BasicConfigurator;
 
-/**
- * @version $Id$
- */
 public final class PreferencesFactory {
-    private static final Logger log = Logger.getLogger(PreferencesFactory.class);
-
     private PreferencesFactory() {
         //
     }
@@ -43,9 +38,15 @@ public final class PreferencesFactory {
 
     public static synchronized Preferences get() {
         if(null == preferences) {
-            log.warn("No preferences registered");
-            set(new MemoryPreferences());
+            set(new DefaultLoggingMemoryPreferenes());
         }
         return preferences;
+    }
+
+    private static final class DefaultLoggingMemoryPreferenes extends MemoryPreferences {
+        @Override
+        protected void setLogging() {
+            BasicConfigurator.configure();
+        }
     }
 }

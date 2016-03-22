@@ -30,10 +30,12 @@ import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.SHA1ChecksumCompute;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
@@ -46,6 +48,7 @@ import synapticloop.b2.response.B2FileResponse;
 
 import static org.junit.Assert.*;
 
+@Category(IntegrationTest.class)
 public class B2ObjectListServiceTest {
 
     @Test
@@ -109,6 +112,7 @@ public class B2ObjectListServiceTest {
             assertTrue(list.contains(file1));
             assertEquals("1", list.get(list.indexOf(file1)).attributes().getRevision());
             assertEquals(content.length, list.get(list.indexOf(file1)).attributes().getSize());
+            assertEquals(bucket, list.get(list.indexOf(file1)).getParent());
         }
         // Replace
         {
@@ -128,6 +132,7 @@ public class B2ObjectListServiceTest {
             assertTrue(list.contains(file1));
 //            assertEquals("1", list.get(list.indexOf(file1)).attributes().getRevision());
             assertTrue(list.get(list.indexOf(file1)).attributes().isDuplicate());
+            assertEquals(bucket, list.get(list.indexOf(file1)).getParent());
         }
 
         new B2DeleteFeature(session).delete(Arrays.asList(file1, file2), new DisabledLoginCallback(), new Delete.Callback() {
@@ -141,5 +146,39 @@ public class B2ObjectListServiceTest {
             assertFalse(list.contains(file1));
             assertFalse(list.contains(file2));
         }
+    }
+
+    @Test
+    public void testListFolder() throws Exception {
+        final B2Session session = new B2Session(
+                new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
+                        new Credentials(
+                                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
+                        )));
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path folder1 = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final Path folder2 = new Path(folder1, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final Path file1 = new Path(folder1, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path file2 = new Path(folder2, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        new B2DirectoryFeature(session).mkdir(folder1);
+        new B2TouchFeature(session).touch(file1);
+        new B2DirectoryFeature(session).mkdir(folder2);
+        new B2TouchFeature(session).touch(file2);
+        final AttributedList<Path> list = new B2ObjectListService(session).list(folder1, new DisabledListProgressListener());
+        assertEquals(2, list.size());
+        assertTrue(list.contains(file1));
+        assertTrue(list.contains(folder2));
+        assertFalse(list.contains(file2));
+        assertFalse(list.contains(folder1));
+        assertEquals(folder1, list.get(file1).getParent());
+        assertEquals(folder1, list.get(folder2).getParent());
+        new B2DeleteFeature(session).delete(Arrays.asList(folder1, file1, folder2, file2), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+                //
+            }
+        });
     }
 }

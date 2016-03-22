@@ -30,7 +30,6 @@ import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -55,6 +54,7 @@ import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -96,34 +96,34 @@ public class DAVSession extends HttpSession<DAVClient> {
     private Preferences preferences
             = PreferencesFactory.get();
 
-    public DAVSession(final Host h) {
-        super(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+    public DAVSession(final Host host) {
+        super(host, new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
     }
 
     public DAVSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
-        super(host, trust, key);
+        super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
 
     public DAVSession(final Host host, final RedirectCallback redirect) {
-        super(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        super(host, new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
         this.redirect = redirect;
     }
 
     public DAVSession(final Host host, final X509TrustManager trust, final X509KeyManager key, final RedirectCallback redirect) {
-        super(host, trust, key);
+        super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
         this.redirect = redirect;
     }
 
     public DAVSession(final Host host, final X509TrustManager trust, final X509KeyManager key, final SocketFactory socketFactory) {
-        super(host, trust, key, socketFactory);
+        super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, socketFactory);
     }
 
     public DAVSession(final Host host, final X509TrustManager trust, final X509KeyManager key, final ProxyFinder proxy) {
-        super(host, trust, key, proxy);
+        super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, proxy);
     }
 
     public DAVSession(final Host host, final X509TrustManager trust, final X509KeyManager key, final SocketFactory socketFactory, final RedirectCallback redirect) {
-        super(host, trust, key, socketFactory);
+        super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, socketFactory);
         this.redirect = redirect;
     }
 
@@ -174,14 +174,16 @@ public class DAVSession extends HttpSession<DAVClient> {
                 // Windows credentials. Provide empty string for NTLM domain by default.
                 preferences.getProperty("webdav.ntlm.workstation"),
                 preferences.getProperty("webdav.ntlm.domain"));
-        if(host.getCredentials().validate(host.getProtocol(), new LoginOptions())) {
-            if(preferences.getBoolean("webdav.basic.preemptive")) {
-                // Enable preemptive authentication. See HttpState#setAuthenticationPreemptive
-                client.enablePreemptiveAuthentication(this.getHost().getHostname());
-            }
-            else {
-                client.disablePreemptiveAuthentication();
-            }
+        if(preferences.getBoolean("webdav.basic.preemptive")) {
+            // Enable preemptive authentication. See HttpState#setAuthenticationPreemptive
+            client.enablePreemptiveAuthentication(this.getHost().getHostname());
+        }
+        else {
+            client.disablePreemptiveAuthentication();
+        }
+        if(host.getCredentials().isPassed()) {
+            log.warn(String.format("Skip verifying credentials with previous successful authentication event for %s", this));
+            return;
         }
         try {
             final Path home = new DefaultHomeFinderService(this).find();

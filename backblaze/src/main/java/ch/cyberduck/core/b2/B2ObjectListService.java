@@ -24,6 +24,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -73,6 +74,7 @@ public class B2ObjectListService implements ListService {
                         continue;
                     }
                     final PathAttributes attributes = new PathAttributes();
+                    attributes.setChecksum(Checksum.parse(file.getContentSha1()));
                     attributes.setSize(file.getSize());
                     final long timestamp = file.getUploadTimestamp();
                     attributes.setCreationDate(timestamp);
@@ -85,11 +87,11 @@ public class B2ObjectListService implements ListService {
                             break;
                     }
                     if(StringUtils.endsWith(file.getFileName(), "/.bzEmpty")) {
-                        objects.add(new Path(containerService.getContainer(directory), StringUtils.removeEnd(file.getFileName(), "/.bzEmpty"),
+                        objects.add(new Path(directory, PathNormalizer.name(StringUtils.removeEnd(file.getFileName(), "/.bzEmpty")),
                                 EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes));
                     }
                     else {
-                        objects.add(new Path(containerService.getContainer(directory), file.getFileName(), EnumSet.of(Path.Type.file), attributes));
+                        objects.add(new Path(directory, PathNormalizer.name(file.getFileName()), EnumSet.of(Path.Type.file), attributes));
                     }
                     final Integer revision;
                     if(revisions.keySet().contains(file.getFileName())) {

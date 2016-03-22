@@ -32,7 +32,8 @@ using ch.cyberduck.core.b2;
 using ch.cyberduck.core.bonjour;
 using ch.cyberduck.core.dav;
 using ch.cyberduck.core.ftp;
-using ch.cyberduck.core.gstorage;
+using ch.cyberduck.core.googlestorage;
+using ch.cyberduck.core.googledrive;
 using ch.cyberduck.core.importer;
 using ch.cyberduck.core.irods;
 using ch.cyberduck.core.notification;
@@ -90,7 +91,7 @@ namespace Ch.Cyberduck.Ui.Controller
             PreferencesFactory.set(new SettingsDictionaryPreferences());
             ProtocolFactory.register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(),
                 new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(), new GoogleStorageProtocol(),
-                new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new B2Protocol());
+                new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new B2Protocol(), new DriveProtocol());
 
             if (!Debugger.IsAttached)
             {
@@ -489,13 +490,16 @@ namespace Ch.Cyberduck.Ui.Controller
             if (PreferencesFactory.get().getBoolean("update.check"))
             {
                 _updater = new WindowsPeriodicUpdateChecker();
-                DateTime lastCheck = new DateTime(PreferencesFactory.get().getLong("update.check.last"));
-                TimeSpan span = DateTime.Now.Subtract(lastCheck);
-                if (span.TotalSeconds >= PreferencesFactory.get().getLong("update.check.interval"))
+                if (_updater.hasUpdatePrivileges())
                 {
-                    _updater.check(true);
+                    DateTime lastCheck = new DateTime(PreferencesFactory.get().getLong("update.check.last"));
+                    TimeSpan span = DateTime.Now.Subtract(lastCheck);
+                    if (span.TotalSeconds >= PreferencesFactory.get().getLong("update.check.interval"))
+                    {
+                        _updater.check(true);
+                    }
+                    _updater.register();
                 }
-                _updater.register();
             }
         }
 

@@ -35,7 +35,6 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -83,10 +82,10 @@ public class IRODSUploadFeatureTest {
         new Random().nextBytes(content);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
-        IOUtils.closeQuietly(out);
+        out.close();
         final Checksum checksumPart1;
         final Checksum checksumPart2;
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         {
             final TransferStatus status = new TransferStatus().length(content.length / 2);
             checksumPart1 = new IRODSUploadFeature(session).upload(
@@ -107,7 +106,7 @@ public class IRODSUploadFeatureTest {
         final byte[] buffer = new byte[content.length];
         final InputStream in = new IRODSReadFeature(session).read(test, new TransferStatus().length(content.length));
         IOUtils.readFully(in, buffer);
-        IOUtils.closeQuietly(in);
+        in.close();
         assertArrayEquals(content, buffer);
         new IRODSDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
@@ -133,9 +132,9 @@ public class IRODSUploadFeatureTest {
         new Random().nextBytes(content);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
-        IOUtils.closeQuietly(out);
+        out.close();
         final Checksum checksum;
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus().length(content.length);
         checksum = new IRODSUploadFeature(session).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
@@ -147,7 +146,7 @@ public class IRODSUploadFeatureTest {
         final byte[] buffer = new byte[content.length];
         final InputStream in = new IRODSReadFeature(session).read(test, new TransferStatus().length(content.length));
         IOUtils.readFully(in, buffer);
-        IOUtils.closeQuietly(in);
+        in.close();
         assertArrayEquals(content, buffer);
         new IRODSDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
@@ -173,8 +172,8 @@ public class IRODSUploadFeatureTest {
         new Random().nextBytes(content);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
-        IOUtils.closeQuietly(out);
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        out.close();
+        final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus().length(content.length);
         final Checksum checksum = new IRODSUploadFeature(session).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener() {

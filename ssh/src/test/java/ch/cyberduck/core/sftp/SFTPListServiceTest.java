@@ -19,7 +19,6 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -46,7 +45,7 @@ public class SFTPListServiceTest {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new SFTPHomeDirectoryService(session).find();
         final AttributedList<Path> list = new SFTPListService(session).list(home, new DisabledListProgressListener());
         assertTrue(list.contains(new Path(home, "test", EnumSet.of(Path.Type.file))));
         assertEquals(new Permission(Permission.Action.read_write, Permission.Action.read_write, Permission.Action.read_write),
@@ -67,7 +66,7 @@ public class SFTPListServiceTest {
         final SFTPSession session = new SFTPSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new SFTPHomeDirectoryService(session).find();
         final AttributedList<Path> list = new SFTPListService(session).list(home, new DisabledListProgressListener());
         assertTrue(list.contains(new Path(home, "notfound", EnumSet.of(Path.Type.file, Path.Type.symboliclink))));
         assertEquals(new Path(home, "test.symlink-invalid", EnumSet.of(Path.Type.file)),

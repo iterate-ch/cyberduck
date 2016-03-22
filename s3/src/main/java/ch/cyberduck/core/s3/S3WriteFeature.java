@@ -87,7 +87,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
             = preferences.getMap("s3.metadata.default");
 
     public S3WriteFeature(final S3Session session) {
-        this(session, new S3MultipartService(session), new DefaultFindFeature(session), new DefaultAttributesFeature(session));
+        this(session, new S3DefaultMultipartService(session), new DefaultFindFeature(session), new DefaultAttributesFeature(session));
     }
 
     public S3WriteFeature(final S3Session session, final S3MultipartService multipartService,
@@ -155,6 +155,9 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
             switch(checksum.algorithm) {
                 case md5:
                     object.setMd5Hash(ServiceUtils.fromHex(checksum.hash));
+                    break;
+                case crc32:
+                    object.addMetadata("Content-CRC32", checksum.hash);
                     break;
                 case sha256:
                     object.addMetadata("x-amz-content-sha256", checksum.hash);

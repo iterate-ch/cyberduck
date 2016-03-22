@@ -31,13 +31,16 @@ import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -53,20 +56,20 @@ import synapticloop.b2.exception.B2ApiException;
 public class B2Session extends HttpSession<B2ApiClient> {
     private static final Logger log = Logger.getLogger(B2Session.class);
 
-    public B2Session(final Host h) {
-        super(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+    public B2Session(final Host host) {
+        super(host, new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
     }
 
     public B2Session(final Host host, final X509TrustManager trust, final X509KeyManager key) {
-        super(host, trust, key);
+        super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
 
     public B2Session(final Host host, final X509TrustManager trust, final X509KeyManager key, final ProxyFinder proxyFinder) {
-        super(host, trust, key, proxyFinder);
+        super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, proxyFinder);
     }
 
     public B2Session(final Host host, final X509TrustManager trust, final X509KeyManager key, final SocketFactory socketFactory) {
-        super(host, trust, key, socketFactory);
+        super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, socketFactory);
     }
 
     @Override
@@ -110,6 +113,9 @@ public class B2Session extends HttpSession<B2ApiClient> {
 
     @Override
     public <T> T getFeature(final Class<T> type) {
+        if(type == Touch.class) {
+            return (T) new B2TouchFeature(this);
+        }
         if(type == Read.class) {
             return (T) new B2ReadFeature(this);
         }
@@ -135,6 +141,9 @@ public class B2Session extends HttpSession<B2ApiClient> {
             return (T) new B2HomeFinderService(this);
         }
         if(type == AclPermission.class) {
+            return (T) new B2BucketTypeFeature(this);
+        }
+        if(type == Location.class) {
             return (T) new B2BucketTypeFeature(this);
         }
         return super.getFeature(type);

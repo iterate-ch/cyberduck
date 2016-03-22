@@ -20,9 +20,8 @@ package ch.cyberduck.core.importer;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.gstorage.GoogleStorageProtocol;
+import ch.cyberduck.core.googlestorage.GoogleStorageProtocol;
 import ch.cyberduck.core.s3.S3Protocol;
 
 import org.apache.log4j.Logger;

@@ -32,6 +32,7 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.sftp.SFTPHomeDirectoryService;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -67,7 +68,7 @@ public class DefaultDownloadFeatureTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
 
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new SFTPHomeDirectoryService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature(session).touch(test);
         final byte[] content = new byte[39864];
         new Random().nextBytes(content);
@@ -96,7 +97,7 @@ public class DefaultDownloadFeatureTest {
         final byte[] buffer = new byte[39864];
         final InputStream in = local.getInputStream();
         IOUtils.readFully(in, buffer);
-        IOUtils.closeQuietly(in);
+        in.close();
         assertArrayEquals(content, buffer);
         final Delete delete = session.getFeature(Delete.class);
         delete.delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {

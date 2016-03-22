@@ -193,7 +193,7 @@ public class DownloadTransferTest {
         LocalTouchFactory.get().touch(local);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write("test", out);
-        IOUtils.closeQuietly(out);
+        out.close();
         final Transfer transfer = new DownloadTransfer(host, test, local) {
             @Override
             public AbstractDownloadFilter filter(final Session<?> session, final TransferAction action, final ProgressListener listener) {

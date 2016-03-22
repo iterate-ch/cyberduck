@@ -50,6 +50,11 @@ public class Credentials implements Comparable<Credentials> {
     private boolean keychained;
 
     /**
+     * Passed authentication successfully
+     */
+    private boolean passed;
+
+    /**
      * Default credentials
      */
     public Credentials() {
@@ -78,10 +83,12 @@ public class Credentials implements Comparable<Credentials> {
 
     public void setUsername(final String user) {
         this.user = user;
+        this.passed = false;
     }
 
     public Credentials withUsername(final String user) {
         this.user = user;
+        this.passed = false;
         return this;
     }
 
@@ -99,10 +106,12 @@ public class Credentials implements Comparable<Credentials> {
 
     public void setPassword(final String password) {
         this.password = password;
+        this.passed = false;
     }
 
     public Credentials withPassword(final String password) {
         this.password = password;
+        this.passed = false;
         return this;
     }
 
@@ -121,6 +130,14 @@ public class Credentials implements Comparable<Credentials> {
      */
     public boolean isSaved() {
         return this.keychained;
+    }
+
+    public boolean isPassed() {
+        return passed;
+    }
+
+    public void setPassed(final boolean passed) {
+        this.passed = passed;
     }
 
     /**
@@ -154,10 +171,12 @@ public class Credentials implements Comparable<Credentials> {
      */
     public void setIdentity(final Local file) {
         this.identity = file;
+        this.passed = false;
     }
 
     public Credentials withIdentity(final Local file) {
         this.identity = file;
+        this.passed = false;
         return this;
     }
 

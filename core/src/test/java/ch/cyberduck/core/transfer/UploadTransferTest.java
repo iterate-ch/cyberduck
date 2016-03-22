@@ -279,7 +279,7 @@ public class UploadTransferTest {
         final OutputStream out = local.getOutputStream(false);
         final byte[] bytes = RandomStringUtils.random(1000).getBytes();
         IOUtils.write(bytes, out);
-        IOUtils.closeQuietly(out);
+        out.close();
         final NullLocal directory = new NullLocal(System.getProperty("java.io.tmpdir"), "transfer") {
             @Override
             public AttributedList<Local> list() throws AccessDeniedException {

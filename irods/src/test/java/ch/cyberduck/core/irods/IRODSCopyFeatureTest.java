@@ -61,9 +61,9 @@ public class IRODSCopyFeatureTest {
         final IRODSSession session = new IRODSSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path test = new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new IRODSTouchFeature(session).touch(test);
-        final Path copy = new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path copy = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new IRODSCopyFeature(session).copy(test, copy);
         assertTrue(new IRODSFindFeature(session).find(test));
         assertTrue(new IRODSFindFeature(session).find(copy));

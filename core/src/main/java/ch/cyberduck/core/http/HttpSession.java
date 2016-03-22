@@ -20,7 +20,6 @@ package ch.cyberduck.core.http;
  */
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.proxy.ProxyFactory;
@@ -28,7 +27,6 @@ import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
-import ch.cyberduck.core.ssl.X509TrustManager;
 
 import javax.net.SocketFactory;
 
@@ -36,24 +34,26 @@ public abstract class HttpSession<C> extends SSLSession<C> {
 
     protected HttpConnectionPoolBuilder builder;
 
-    protected HttpSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
+    protected HttpSession(final Host host, final ThreadLocalHostnameDelegatingTrustManager trust, final X509KeyManager key) {
         this(host, trust, key, ProxyFactory.get());
     }
 
-    protected HttpSession(final Host host, final X509TrustManager trust, final X509KeyManager key, final ProxyFinder proxyFinder) {
+    protected HttpSession(final Host host, final ThreadLocalHostnameDelegatingTrustManager trust, final X509KeyManager key, final ProxyFinder proxyFinder) {
         super(host, trust, key);
-        this.builder = new HttpConnectionPoolBuilder(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname(),
-                !host.getProtocol().getType().equals(Protocol.Type.s3)), key, proxyFinder);
+        this.builder = new HttpConnectionPoolBuilder(host, trust, key, proxyFinder);
     }
 
-    protected HttpSession(final Host host, final X509TrustManager trust, final X509KeyManager key, final SocketFactory socketFactory) {
+    protected HttpSession(final Host host, final ThreadLocalHostnameDelegatingTrustManager trust, final X509KeyManager key, final SocketFactory socketFactory) {
         super(host, trust, key);
-        this.builder = new HttpConnectionPoolBuilder(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname(),
-                !host.getProtocol().getType().equals(Protocol.Type.s3)), key, ProxyFactory.get(), socketFactory);
+        this.builder = new HttpConnectionPoolBuilder(host, trust, key, ProxyFactory.get(), socketFactory);
     }
 
     public void setBuilder(final HttpConnectionPoolBuilder builder) {
         this.builder = builder;
+    }
+
+    public HttpConnectionPoolBuilder getBuilder() {
+        return builder;
     }
 
     @Override

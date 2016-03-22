@@ -49,7 +49,6 @@ public class SwiftSessionTest {
         final SwiftSession session = new SwiftSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
-        assertNotNull(session.workdir());
         assertTrue(session.isConnected());
         final Path container = new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("DFW");
@@ -72,7 +71,6 @@ public class SwiftSessionTest {
         final SwiftSession session = new SwiftSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
-        assertNotNull(session.workdir());
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
@@ -125,7 +123,6 @@ public class SwiftSessionTest {
                 //
             }
         }, new DisabledCancelCallback());
-        assertNotNull(session.workdir());
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());

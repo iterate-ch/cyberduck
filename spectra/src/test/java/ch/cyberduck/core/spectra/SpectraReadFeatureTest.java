@@ -30,10 +30,10 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -46,8 +46,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class SpectraReadFeatureTest {
@@ -68,7 +67,9 @@ public class SpectraReadFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new SpectraReadFeature(session).read(new Path(container, "nosuchname", EnumSet.of(Path.Type.file)), status);
+        final Path test = new Path(container, "nosuchname", EnumSet.of(Path.Type.file));
+        new SpectraBulkService(session).pre(Transfer.Type.download, Collections.singletonMap(test, status));
+        new SpectraReadFeature(session).read(test, status);
     }
 
     @Test
@@ -93,7 +94,8 @@ public class SpectraReadFeatureTest {
         final OutputStream out = new S3WriteFeature(session).write(test, status);
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        IOUtils.closeQuietly(out);
+        out.close();
+        new SpectraBulkService(session).pre(Transfer.Type.download, Collections.singletonMap(test, status));
         final InputStream in = new SpectraReadFeature(session).read(test, status);
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
@@ -125,18 +127,20 @@ public class SpectraReadFeatureTest {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomStringUtils.random(1000).getBytes();
-        final TransferStatus status = new TransferStatus().length(content.length);
-        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content)));
-        final OutputStream out = new S3WriteFeature(session).write(test, status);
+        final TransferStatus writeStatus = new TransferStatus().length(content.length);
+        writeStatus.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content)));
+        final OutputStream out = new S3WriteFeature(session).write(test, writeStatus);
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        IOUtils.closeQuietly(out);
-        status.setAppend(true);
-        status.setOffset(100L);
-        final InputStream in = new SpectraReadFeature(session).read(test, status.length(content.length - 100));
+        out.close();
+        writeStatus.setAppend(true);
+        writeStatus.setOffset(100L);
+        writeStatus.setLength(content.length - 100);
+        new SpectraBulkService(session).pre(Transfer.Type.download, Collections.singletonMap(test, writeStatus));
+        final InputStream in = new SpectraReadFeature(session).read(test, writeStatus);
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
-        new StreamCopier(status, status).transfer(in, buffer);
+        new StreamCopier(writeStatus, writeStatus).transfer(in, buffer);
         final byte[] reference = new byte[content.length - 100];
         System.arraycopy(content, 100, reference, 0, content.length - 100);
         assertArrayEquals(reference, buffer.toByteArray());
@@ -171,10 +175,11 @@ public class SpectraReadFeatureTest {
         final OutputStream out = new S3WriteFeature(session).write(test, status);
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        IOUtils.closeQuietly(out);
+        out.close();
         status.setAppend(true);
         status.setOffset(100L);
         status.setLength(-1L);
+        new SpectraBulkService(session).pre(Transfer.Type.download, Collections.singletonMap(test, status));
         final InputStream in = new SpectraReadFeature(session).read(test, status);
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
@@ -189,5 +194,10 @@ public class SpectraReadFeatureTest {
             }
         });
         session.close();
+    }
+
+    @Test
+    public void testOffsetSupport() throws Exception {
+        assertTrue(new SpectraReadFeature(null).offset(null));
     }
 }

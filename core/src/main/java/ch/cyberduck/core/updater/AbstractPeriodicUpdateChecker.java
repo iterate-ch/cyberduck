@@ -61,4 +61,9 @@ public abstract class AbstractPeriodicUpdateChecker implements PeriodicUpdateChe
         }, delay.toMillis());
         return delay;
     }
+
+    @Override
+    public boolean hasUpdatePrivileges() {
+        return true;
+    }
 }

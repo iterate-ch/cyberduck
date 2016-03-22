@@ -34,11 +34,10 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
-import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.jets3t.service.Jets3tProperties;
@@ -161,9 +160,9 @@ public class S3ObjectListServiceTest {
         host.setDefaultPath("/dist.springframework.org/release");
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        assertEquals(new Path("/dist.springframework.org/release", EnumSet.of(Path.Type.directory)), new DefaultHomeFinderService(session).find());
+        assertEquals(new Path("/dist.springframework.org/release", EnumSet.of(Path.Type.directory)), new S3HomeFinderService(session).find());
         final AttributedList<Path> list
-                = new S3ObjectListService(session).list(new DefaultHomeFinderService(session).find(), new DisabledListProgressListener());
+                = new S3ObjectListService(session).list(new S3HomeFinderService(session).find(), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         assertTrue(list.contains(new Path("/dist.springframework.org/release/SWF", EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
         session.close();
@@ -299,28 +298,7 @@ public class S3ObjectListServiceTest {
                         return true;
                     }
                 });
-        final S3Session session = new S3Session(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname(), false),
-                new KeychainX509KeyManager(new DisabledCertificateStore()), new DisabledProxyFinder());
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        new S3ObjectListService(session).list(
-                new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
-        session.close();
-    }
-
-    @Test
-    public void testStrictHostnameVerification() throws Exception {
-        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-        ));
-        final KeychainX509TrustManager trust = new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(host),
-                new DisabledCertificateStore() {
-                    @Override
-                    public boolean isTrusted(final String hostname, final List<X509Certificate> certificates) {
-                        assertEquals("test.cyberduck.ch.s3.amazonaws.com", hostname);
-                        return true;
-                    }
-                });
-        final S3Session session = new S3Session(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname(), true),
+        final S3Session session = new S3Session(host, new DisabledX509TrustManager(),
                 new KeychainX509KeyManager(new DisabledCertificateStore()), new DisabledProxyFinder());
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         new S3ObjectListService(session).list(

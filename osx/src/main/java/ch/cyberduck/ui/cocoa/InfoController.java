@@ -737,11 +737,11 @@ public class InfoController extends ToolbarWindowController {
     /**
      * Replace current metadata model. Will reload the table view.
      *
-     * @param acl The updated access control list
+     * @param permissions The updated access control list
      */
-    private void setAcl(List<Acl.UserAndRole> acl) {
+    private void setAcl(List<Acl.UserAndRole> permissions) {
         this.acl.clear();
-        this.acl.addAll(acl);
+        this.acl.addAll(permissions);
         this.aclTable.reloadData();
     }
 

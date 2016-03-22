@@ -28,15 +28,16 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
-import ch.cyberduck.core.shared.DefaultTouchFeature;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
+@Category(IntegrationTest.class)
 public class B2DeleteFeatureTest {
 
     @Test(expected = NotfoundException.class)
@@ -48,7 +49,7 @@ public class B2DeleteFeatureTest {
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new B2HomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new B2DeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {
@@ -68,7 +69,7 @@ public class B2DeleteFeatureTest {
         service.connect(session, PathCache.empty());
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, String.format("%s %s", UUID.randomUUID().toString(), "1"), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature(session).touch(file);
+        new B2TouchFeature(session).touch(file);
         new B2DeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {

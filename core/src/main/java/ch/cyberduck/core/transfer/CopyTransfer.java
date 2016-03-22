@@ -241,6 +241,7 @@ public class CopyTransfer extends Transfer {
         OutputStream out = null;
         try {
             if(file.isFile()) {
+                status.setChecksum(file.attributes().getChecksum());
                 in = new ThrottledInputStream(session.getFeature(Read.class).read(file, status), throttle);
                 out = new ThrottledOutputStream(target.getFeature(Write.class).write(copy, status), throttle);
                 new StreamCopier(status, status)

@@ -17,4 +17,5 @@ package ch.cyberduck.core.updater;
 
 public interface UpdateChecker {
     void check(boolean background);
+    boolean hasUpdatePrivileges();
 }

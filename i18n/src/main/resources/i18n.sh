@@ -16,6 +16,7 @@
 
 #!/bin/bash
 
+workdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 nibtool="ibtool"
 convertstrings="ruby convertstrings.rb"
 base_language="en.lproj"
@@ -63,7 +64,8 @@ test() {
 
 run() {
 	echo "Running app using `basename $language .lproj`...";
-	arch -arch $arch ./osx/target/Cyberduck.app/Contents/MacOS/Cyberduck -AppleLanguages "(`basename $language .lproj`)"
+    basedir="$( cd "$workdir/../../../.." && pwd )"
+	arch -arch $arch $basedir/osx/target/Cyberduck.app/Contents/MacOS/Cyberduck -AppleLanguages "(`basename $language .lproj`)"
 }
 
 nib() {
@@ -194,14 +196,14 @@ tx_pull() {
                     strings=`basename $stringsfile .strings`
                     lang=`basename $language .lproj`
                     echo "*** Updating $strings.strings...";
-                    $tx --traceback pull --source -l $lang --resource=cyberduck.$strings --force
+                    $tx --traceback pull -l $lang --resource=cyberduck.$strings --force
                 done;
             fi;
             if [ "$stringsfile" != "all" ] ; then
                 strings=`basename $stringsfile .strings`
                 lang=`basename $language .lproj`
                 echo "*** Updating $strings.strings...";
-                $tx --traceback pull --source -l $lang --resource=cyberduck.$strings --force
+                $tx --traceback pull -l $lang --resource=cyberduck.$strings --force
             fi;
 		done;
 	}

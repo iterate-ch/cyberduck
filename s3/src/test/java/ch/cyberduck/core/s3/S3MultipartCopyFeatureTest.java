@@ -31,7 +31,6 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -94,7 +93,7 @@ public class S3MultipartCopyFeatureTest {
         final OutputStream out = new S3WriteFeature(session).write(test, status);
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        IOUtils.closeQuietly(out);
+        out.close();
         test.attributes().setSize(content.length);
         final Path copy = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
 
@@ -134,7 +133,7 @@ public class S3MultipartCopyFeatureTest {
         final OutputStream out = new S3WriteFeature(session).write(test, status);
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        IOUtils.closeQuietly(out);
+        out.close();
         test.attributes().setSize(content.length);
         final Path copy = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
 
