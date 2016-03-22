@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.util.Collections;
 
 import synapticloop.b2.exception.B2ApiException;
-import synapticloop.b2.response.B2FileResponse;
 
 public class B2TouchFeature implements Touch {
 
@@ -44,12 +43,11 @@ public class B2TouchFeature implements Touch {
     @Override
     public void touch(final Path file) throws BackgroundException {
         try {
-            final B2FileResponse response = session.getClient().uploadFile(
+            session.getClient().uploadFile(
                     new B2FileidProvider(session).getFileid(containerService.getContainer(file)),
                     containerService.getKey(file),
                     new ByteArrayEntity(new byte[0]), "da39a3ee5e6b4b0d3255bfef95601890afd80709",
                     new MappingMimeTypeService().getMime(file.getName()), Collections.emptyMap());
-            file.attributes().setVersionId(response.getFileId());
         }
         catch(B2ApiException e) {
             throw new B2ExceptionMappingService().map("Cannot create folder {0}", e, file);

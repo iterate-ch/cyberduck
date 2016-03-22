@@ -59,7 +59,7 @@ public class DriveListService implements ListService {
             String page = null;
             do {
                 final Drive.Files.List list = session.getClient().files().list()
-                        .setQ(String.format("'%s' in parents", directory.isRoot() ? "root" : new DriveFileidProvider().getFileid(directory)))
+                        .setQ(String.format("'%s' in parents", directory.isRoot() ? "root" : new DriveFileidProvider(session).getFileid(directory)))
                         .setOauthToken(session.getAccessToken())
                         .setPageToken(page)
                         .setFields("files")
