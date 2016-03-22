@@ -48,6 +48,7 @@ import com.spectralogic.ds3client.Ds3Client;
 import com.spectralogic.ds3client.commands.GetAvailableJobChunksRequest;
 import com.spectralogic.ds3client.commands.GetAvailableJobChunksResponse;
 import com.spectralogic.ds3client.helpers.Ds3ClientHelpers;
+import com.spectralogic.ds3client.helpers.options.ReadJobOptions;
 import com.spectralogic.ds3client.helpers.options.WriteJobOptions;
 import com.spectralogic.ds3client.models.Checksum;
 import com.spectralogic.ds3client.models.bulk.BulkObject;
@@ -127,7 +128,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                 switch(type) {
                     case download:
                         job = helper.startReadJob(
-                                container.getKey().getName(), container.getValue());
+                                container.getKey().getName(), container.getValue(), ReadJobOptions.create());
                         break;
                     case upload:
                         job = helper.startWriteJob(
@@ -178,8 +179,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
         // This will respond with which job chunks have been loaded into cache and are ready for download.
         try {
             if(!status.getParameters().containsKey(REQUEST_PARAMETER_JOBID_IDENTIFIER)) {
-                log.error(String.format("Missing job id parameter in status for %s", file.getAbsolute()));
-                return Collections.singletonList(status);
+                throw new NotfoundException(String.format("Missing job id parameter in status for %s", file.getName()));
             }
             final String job = status.getParameters().get(REQUEST_PARAMETER_JOBID_IDENTIFIER);
             if(log.isDebugEnabled()) {
@@ -236,13 +236,26 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                                 .exists(status.isExists())
                                 .metadata(status.getMetadata())
                                 .parameters(status.getParameters());
-                        // Job parameter already present from #pre
-                        final Map<String, String> parameters = new HashMap<>(chunk.getParameters());
-                        // Set offset for chunk
-                        parameters.put(REQUEST_PARAMETER_OFFSET, Long.toString(chunk.getOffset()));
-                        chunk.parameters(parameters);
-                        chunk.setLength(bulk.getLength());
-                        chunk.setOffset(bulk.getOffset());
+                        if(bulk.getOffset() == 0L) {
+                            // Set our own offsets
+                            chunk.setLength(status.getLength());
+                            chunk.setOffset(status.getOffset());
+                            chunk.setAppend(status.isAppend());
+                        }
+                        else {
+                            // Server sends multiple chunks with offsets
+                            chunk.setLength(bulk.getLength());
+                            chunk.setOffset(bulk.getOffset());
+                            switch(type) {
+                                case download:
+                                    // Job parameter already present from #pre
+                                    final Map<String, String> parameters = new HashMap<>(chunk.getParameters());
+                                    // Set offset for chunk
+                                    parameters.put(REQUEST_PARAMETER_OFFSET, Long.toString(chunk.getOffset()));
+                                    chunk.setParameters(parameters);
+                                    break;
+                            }
+                        }
                         chunks.add(chunk);
                     }
                 }
