@@ -24,6 +24,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -73,6 +74,7 @@ public class B2ObjectListService implements ListService {
                         continue;
                     }
                     final PathAttributes attributes = new PathAttributes();
+                    attributes.setChecksum(Checksum.parse(file.getContentSha1()));
                     attributes.setSize(file.getSize());
                     final long timestamp = file.getUploadTimestamp();
                     attributes.setCreationDate(timestamp);
