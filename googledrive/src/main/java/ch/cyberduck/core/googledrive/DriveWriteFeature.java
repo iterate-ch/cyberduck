@@ -146,7 +146,6 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> {
                                         final String name = reader.nextName();
                                         if(StringUtils.equals("id", name)) {
                                             file.attributes().setVersionId(reader.nextString());
-                                            break;
                                         }
                                         else {
                                             reader.skipValue();
