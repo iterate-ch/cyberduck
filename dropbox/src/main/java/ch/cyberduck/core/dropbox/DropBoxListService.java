@@ -26,12 +26,12 @@ import org.apache.log4j.Logger;
 
 import java.util.EnumSet;
 
-public class DropboxListService implements ListService {
-    private static final Logger log = Logger.getLogger(DropboxListService.class);
+public class DropBoxListService implements ListService {
+    private static final Logger log = Logger.getLogger(DropBoxListService.class);
 
-    private final DropboxSession session;
+    private final DropBoxSession session;
 
-    public DropboxListService(DropboxSession session) {
+    public DropBoxListService(DropBoxSession session) {
         this.session = session;
     }
 

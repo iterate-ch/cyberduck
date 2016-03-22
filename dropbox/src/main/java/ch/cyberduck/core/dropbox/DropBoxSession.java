@@ -34,22 +34,21 @@ import org.apache.log4j.Logger;
 import java.util.Locale;
 
 
-public class DropboxSession extends HttpSession<DropboxClient> {
-
-    private static final Logger log = Logger.getLogger(DropboxSession.class);
+public class DropBoxSession extends HttpSession<DropBoxClient> {
+    private static final Logger log = Logger.getLogger(DropBoxSession.class);
 
     private String token;
-    private DropboxClient client;
+    private DropBoxClient client;
 
     private Preferences preferences = PreferencesFactory.get();
 
-    public DropboxSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
+    public DropBoxSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
 
     @Override
-    protected DropboxClient connect(HostKeyCallback key) throws BackgroundException {
-        client = new DropboxClient();
+    protected DropBoxClient connect(HostKeyCallback key) throws BackgroundException {
+        client = new DropBoxClient();
         return client;
     }
 
@@ -100,7 +99,7 @@ public class DropboxSession extends HttpSession<DropboxClient> {
 
     @Override
     public AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException {
-        return new DropboxListService(this).list(directory, listener);
+        return new DropBoxListService(this).list(directory, listener);
     }
 
     public <T> T getFeature(Class<T> type) {

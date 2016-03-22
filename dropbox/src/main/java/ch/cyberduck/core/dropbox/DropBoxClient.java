@@ -17,7 +17,7 @@ package ch.cyberduck.core.dropbox;
 
 import com.dropbox.core.v2.DbxClientV2;
 
-public class DropboxClient {
+public class DropBoxClient {
 
     private DbxClientV2 dbxClient;
 
