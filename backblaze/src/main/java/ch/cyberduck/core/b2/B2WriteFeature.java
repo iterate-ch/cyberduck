@@ -16,7 +16,6 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
@@ -78,7 +77,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<B2FileResponse> imp
                             new B2FileidProvider(session).getFileid(containerService.getContainer(file)),
                             containerService.getKey(file),
                             entity, status.getChecksum().toString(),
-                            new MappingMimeTypeService().getMime(file.getName()), Collections.emptyMap());
+                            status.getMime(), Collections.emptyMap());
                 }
                 catch(B2ApiException e) {
                     throw new B2ExceptionMappingService().map("Upload {0} failed", e, file);
