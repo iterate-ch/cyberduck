@@ -17,6 +17,7 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
@@ -29,9 +30,9 @@ import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.List;
 
 import synapticloop.b2.exception.B2ApiException;
-import synapticloop.b2.request.B2RequestProperties;
 import synapticloop.b2.response.B2UploadPartResponse;
 
 public class B2PartWriteFeature extends AbstractHttpWriteFeature<B2UploadPartResponse> implements Write {
@@ -57,11 +58,7 @@ public class B2PartWriteFeature extends AbstractHttpWriteFeature<B2UploadPartRes
             @Override
             public B2UploadPartResponse call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
-                    return session.getClient().uploadPart(
-                            status.getParameters().get(B2RequestProperties.KEY_FILE_ID),
-                            Integer.valueOf(status.getParameters().get(null)),
-                            entity,
-                            status.getChecksum().hash);
+                    return session.getClient().uploadLargeFilePart(file.attributes().getVersionId(), status.getPart(), entity, status.getChecksum().toString());
                 }
                 catch(B2ApiException e) {
                     throw new B2ExceptionMappingService().map("Upload {0} failed", e, file);
@@ -81,11 +78,24 @@ public class B2PartWriteFeature extends AbstractHttpWriteFeature<B2UploadPartRes
 
     @Override
     public boolean temporary() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean random() {
         return false;
+    }
+
+    @Override
+    public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
+        Long size = 0L;
+        final List<B2UploadPartResponse> segments = new B2LargeUploadPartService(session).list(file);
+        if(segments.isEmpty()) {
+            return Write.notfound;
+        }
+        for(B2UploadPartResponse segment : segments) {
+            size += segment.getContentLength();
+        }
+        return new Append(size);
     }
 }

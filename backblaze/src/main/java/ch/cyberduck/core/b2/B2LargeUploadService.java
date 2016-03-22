@@ -19,15 +19,10 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.http.AbstractHttpWriteFeature;
-import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpUploadFeature;
-import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.SHA1ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
@@ -37,7 +32,6 @@ import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.BoundedInputStream;
-import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -88,6 +82,7 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
         this.partSize = partSize;
         this.pool = new ThreadPool(concurrency, "largeupload");
     }
+
     @Override
     public boolean pooled() {
         return true;
@@ -112,7 +107,7 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
             final List<B2UploadPartResponse> completed = new ArrayList<B2UploadPartResponse>();
             if(status.isAppend()) {
                 // Add already completed parts
-//                completed.addAll(multipartService.list(multipart));
+                completed.addAll(new B2LargeUploadPartService(session).list(file));
             }
             // Submit file segments for concurrent upload
             final List<Future<B2UploadPartResponse>> parts = new ArrayList<Future<B2UploadPartResponse>>();
@@ -124,22 +119,24 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Determine if part number %d can be skipped", partNumber));
                     }
-//                    for(MultipartPart c : completed) {
-//                        if(c.getPartNumber().equals(partNumber)) {
-//                            if(log.isInfoEnabled()) {
-//                                log.info(String.format("Skip completed part number %d", partNumber));
-//                            }
-//                            skip = true;
-//                            break;
-//                        }
-//                    }
+                    for(B2UploadPartResponse c : completed) {
+                        if(c.getPartNumber().equals(partNumber)) {
+                            if(log.isInfoEnabled()) {
+                                log.info(String.format("Skip completed part number %d", partNumber));
+                            }
+                            skip = true;
+                            break;
+                        }
+                    }
                 }
                 final Long length = Math.min(Math.max((status.getLength() / B2LargeUploadService.MAXIMUM_UPLOAD_PARTS), partSize), remaining);
-                // Submit to queue
-                parts.add(this.submit(file, local, throttle, listener, status, partNumber, offset, length));
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Part %s submitted with size %d and offset %d",
-                            partNumber, length, offset));
+                if(!skip) {
+                    // Submit to queue
+                    parts.add(this.submit(file, local, throttle, listener, status, partNumber, offset, length));
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Part %s submitted with size %d and offset %d",
+                                partNumber, length, offset));
+                    }
                 }
                 offset += length;
                 remaining -= length;
@@ -214,58 +211,5 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
                 return B2LargeUploadService.super.upload(file, local, throttle, listener, status, overall, overall);
             }
         });
-    }
-
-    private static final class B2PartWriteFeature extends AbstractHttpWriteFeature<B2UploadPartResponse> implements Write {
-
-        private final B2Session session;
-
-        public B2PartWriteFeature(final B2Session session) {
-            super(session);
-            this.session = session;
-        }
-
-        @Override
-        public ResponseOutputStream<B2UploadPartResponse> write(final Path file, final TransferStatus status) throws BackgroundException {
-            // Submit store call to background thread
-            final DelayedHttpEntityCallable<B2UploadPartResponse> command = new DelayedHttpEntityCallable<B2UploadPartResponse>() {
-                /**
-                 * @return The SHA-1 returned by the server for the uploaded object
-                 */
-                @Override
-                public B2UploadPartResponse call(final AbstractHttpEntity entity) throws BackgroundException {
-                    try {
-                        return session.getClient().uploadLargeFilePart(file.attributes().getVersionId(), status.getPart(), entity, status.getChecksum().toString());
-                    }
-                    catch(B2ApiException e) {
-                        throw new B2ExceptionMappingService().map("Upload {0} failed", e, file);
-                    }
-                    catch(IOException e) {
-                        throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
-                    }
-                }
-
-                @Override
-                public long getContentLength() {
-                    return status.getLength();
-                }
-            };
-            return this.write(file, status, command);
-        }
-
-        @Override
-        public boolean temporary() {
-            return false;
-        }
-
-        @Override
-        public boolean random() {
-            return false;
-        }
-
-        @Override
-        public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
-            return Write.notfound;
-        }
     }
 }
