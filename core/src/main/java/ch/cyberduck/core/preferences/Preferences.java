@@ -791,7 +791,7 @@ public abstract class Preferences {
         // Each part can be anywhere from 100MB to 5GB in size
         defaults.put("b2.upload.largeobject.size", String.valueOf(100 * 1024L * 1024L));
         // Cleanup
-        defaults.put("b2.upload.largeobject.cleanup", String.valueOf(true));
+        defaults.put("b2.upload.largeobject.cleanup", String.valueOf(false));
 
         defaults.put("spectra.upload.md5", String.valueOf(false));
         defaults.put("spectra.upload.crc32", String.valueOf(false));
