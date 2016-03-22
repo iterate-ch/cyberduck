@@ -131,6 +131,11 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
             = Collections.emptyList();
 
     /**
+     * Part number
+     */
+    private Integer part;
+
+    /**
      * Await completion
      *
      * @return True if complete
@@ -389,6 +394,14 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     public TransferStatus metadata(final Map<String, String> metadata) {
         this.metadata = metadata;
         return this;
+    }
+
+    public Integer getPart() {
+        return part;
+    }
+
+    public void setPart(final Integer part) {
+        this.part = part;
     }
 
     public List<TransferStatus> getSegments() {
