@@ -665,7 +665,7 @@ public abstract class Preferences {
          */
         defaults.put("s3.upload.multipart.threshold", String.valueOf(100L * 1024L * 1024L));
         defaults.put("s3.upload.multipart.required.threshold", String.valueOf(5L * 1024L * 1024L * 1024L));
-        // Maximum number of parts is 10'000. With 5MB segements this gives a maximum object size of 50GB
+        // Maximum number of parts is 10'000. With 10MB segements this gives a maximum object size of 100GB
         defaults.put("s3.upload.multipart.size", String.valueOf(10L * 1024L * 1024L)); // 10MB
 
         defaults.put("s3.upload.expect-continue", String.valueOf(true));
@@ -735,9 +735,10 @@ public abstract class Preferences {
 
         defaults.put("openstack.delete.multiple.partition", String.valueOf(10000));
 
+        defaults.put("google.drive.oauth.openbrowser", String.valueOf(true));
         defaults.put("google.drive.client.id", "996125414232.apps.googleusercontent.com");
         defaults.put("google.drive.client.secret", "YdaFjo2t74-Q0sThsXgeTv3l");
-        defaults.put("google.drive.list.limit", String.valueOf(10000));
+        defaults.put("google.drive.list.limit", String.valueOf(100));
 
         defaults.put("google.drive.upload.checksum", String.valueOf(false));
 
@@ -782,11 +783,12 @@ public abstract class Preferences {
         defaults.put("b2.bucket.acl.default", "allPrivate");
         defaults.put("b2.listing.chunksize", String.valueOf(1000));
         defaults.put("b2.upload.checksum", String.valueOf(true));
-        defaults.put("b2.upload.multipart.concurrency", String.valueOf(10));
-        /**
-         * The minimum size for each part of a large file (except the last one). This will always be 100,000,000.
-         */
-        defaults.put("b2.upload.multipart.size", String.valueOf(100L * 1024L * 1024L));
+        defaults.put("b2.upload.largeobject.concurrency", String.valueOf(5));
+        // Each part can be anywhere from 100MB to 5GB in size
+        defaults.put("b2.upload.largeobject.size", String.valueOf(100 * 1024L * 1024L));
+
+        defaults.put("spectra.upload.md5", String.valueOf(false));
+        defaults.put("spectra.upload.crc32", String.valueOf(false));
 
         /**
          * NTLM Windows Domain
