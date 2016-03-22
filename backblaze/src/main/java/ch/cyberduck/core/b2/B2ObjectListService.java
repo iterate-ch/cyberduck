@@ -84,11 +84,11 @@ public class B2ObjectListService implements ListService {
                             break;
                     }
                     if(StringUtils.endsWith(file.getFileName(), "/.bzEmpty")) {
-                        objects.add(new Path(containerService.getContainer(directory), StringUtils.removeEnd(file.getFileName(), "/.bzEmpty"),
+                        objects.add(new Path(directory, PathNormalizer.name(StringUtils.removeEnd(file.getFileName(), "/.bzEmpty")),
                                 EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes));
                     }
                     else {
-                        objects.add(new Path(containerService.getContainer(directory), file.getFileName(), EnumSet.of(Path.Type.file), attributes));
+                        objects.add(new Path(directory, PathNormalizer.name(file.getFileName()), EnumSet.of(Path.Type.file), attributes));
                     }
                     final Integer revision;
                     if(revisions.keySet().contains(file.getFileName())) {

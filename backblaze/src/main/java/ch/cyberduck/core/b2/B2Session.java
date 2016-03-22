@@ -32,6 +32,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
@@ -111,6 +112,9 @@ public class B2Session extends HttpSession<B2ApiClient> {
 
     @Override
     public <T> T getFeature(final Class<T> type) {
+        if(type == Touch.class) {
+            return (T) new B2TouchFeature(this);
+        }
         if(type == Read.class) {
             return (T) new B2ReadFeature(this);
         }

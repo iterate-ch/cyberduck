@@ -16,52 +16,40 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.features.Touch;
 
 import org.apache.http.entity.ByteArrayEntity;
 
 import java.io.IOException;
 import java.util.Collections;
 
-import synapticloop.b2.BucketType;
 import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2FileResponse;
 
-public class B2DirectoryFeature implements Directory {
+public class B2TouchFeature implements Touch {
 
-    private final PathContainerService containerService
+    private PathContainerService containerService
             = new B2PathContainerService();
 
     private final B2Session session;
 
-    public B2DirectoryFeature(final B2Session session) {
+    public B2TouchFeature(final B2Session session) {
         this.session = session;
     }
 
     @Override
-    public void mkdir(final Path file) throws BackgroundException {
-        this.mkdir(file, null);
-    }
-
-    @Override
-    public void mkdir(final Path file, final String region) throws BackgroundException {
+    public void touch(final Path file) throws BackgroundException {
         try {
-            if(containerService.isContainer(file)) {
-                session.getClient().createBucket(containerService.getContainer(file).getName(),
-                        BucketType.valueOf(PreferencesFactory.get().getProperty("b2.bucket.acl.default")));
-            }
-            else {
-                final B2FileResponse response = session.getClient().uploadFile(
-                        new B2FileidProvider(session).getFileid(containerService.getContainer(file)),
-                        String.format("%s/.bzEmpty", containerService.getKey(file)),
-                        new ByteArrayEntity(new byte[0]), "da39a3ee5e6b4b0d3255bfef95601890afd80709",
-                        "application/octet-stream", Collections.emptyMap());
-                file.attributes().setVersionId(response.getFileId());
-            }
+            final B2FileResponse response = session.getClient().uploadFile(
+                    new B2FileidProvider(session).getFileid(containerService.getContainer(file)),
+                    containerService.getKey(file),
+                    new ByteArrayEntity(new byte[0]), "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+                    new MappingMimeTypeService().getMime(file.getName()), Collections.emptyMap());
+            file.attributes().setVersionId(response.getFileId());
         }
         catch(B2ApiException e) {
             throw new B2ExceptionMappingService().map("Cannot create folder {0}", e, file);
@@ -70,5 +58,10 @@ public class B2DirectoryFeature implements Directory {
             throw new DefaultIOExceptionMappingService().map(e);
         }
     }
-}
 
+    @Override
+    public boolean isSupported(final Path workdir) {
+        // Creating files is only possible inside a bucket.
+        return !workdir.isRoot();
+    }
+}
