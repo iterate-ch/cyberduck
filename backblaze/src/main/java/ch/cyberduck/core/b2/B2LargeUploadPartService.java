@@ -58,7 +58,8 @@ public class B2LargeUploadPartService {
             String startFileId = null;
             do {
                 final B2ListFilesResponse chunk;
-                chunk = session.getClient().listUnfinishedLargeFiles(new B2FileidProvider(session).getFileid(containerService.getContainer(file)), startFileId, null);
+                chunk = session.getClient().listUnfinishedLargeFiles(
+                        new B2FileidProvider(session).getFileid(containerService.getContainer(file)), startFileId, null);
                 for(B2FileInfoResponse upload : chunk.getFiles()) {
                     if(StringUtils.equals(upload.getFileName(), containerService.getKey(file))) {
                         uploads.add(upload);
@@ -89,19 +90,24 @@ public class B2LargeUploadPartService {
 
     public List<B2UploadPartResponse> list(final Path file) throws BackgroundException {
         if(log.isInfoEnabled()) {
-            log.info(String.format("List completed parts of %s", file));
+            log.info(String.format("List completed parts of file %s", file));
         }
         // This operation lists the parts that have been uploaded for a specific multipart upload.
         try {
             // Completed parts
             final List<B2UploadPartResponse> completed = new ArrayList<B2UploadPartResponse>();
-            Integer startPartNumber = null;
-            do {
-                final B2ListPartsResponse response = session.getClient().listParts(file.attributes().getVersionId(), startPartNumber, null);
-                completed.addAll(response.getFiles());
-                startPartNumber = response.getNextPartNumber();
+            final List<B2FileInfoResponse> uploads = this.find(file);
+            for(B2FileInfoResponse upload : uploads) {
+                Integer startPartNumber = null;
+                do {
+                    final B2ListPartsResponse response = session.getClient().listParts(
+                            upload.getFileId(), startPartNumber, null);
+                    completed.addAll(response.getFiles());
+                    startPartNumber = response.getNextPartNumber();
+                }
+                while(startPartNumber != null);
+                break;
             }
-            while(startPartNumber != null);
             return completed;
         }
         catch(B2ApiException e) {
@@ -114,7 +120,7 @@ public class B2LargeUploadPartService {
 
     public void delete(final String id) throws BackgroundException {
         if(log.isInfoEnabled()) {
-            log.info(String.format("Delete multipart upload %s", id));
+            log.info(String.format("Delete multipart upload for fileid %s", id));
         }
         try {
             session.getClient().cancelLargeFileUpload(id);
