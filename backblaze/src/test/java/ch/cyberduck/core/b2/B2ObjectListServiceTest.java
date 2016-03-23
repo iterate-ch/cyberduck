@@ -168,7 +168,9 @@ public class B2ObjectListServiceTest {
         new B2TouchFeature(session).touch(file2);
         final AttributedList<Path> list = new B2ObjectListService(session).list(folder1, new DisabledListProgressListener());
         assertEquals(2, list.size());
+        file1.attributes().setVersionId(new B2FileidProvider(session).getFileid(file1));
         assertTrue(list.contains(file1));
+        folder2.attributes().setVersionId(new B2FileidProvider(session).getFileid(folder2));
         assertTrue(list.contains(folder2));
         assertFalse(list.contains(file2));
         assertFalse(list.contains(folder1));
