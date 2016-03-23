@@ -82,6 +82,7 @@ public class B2ObjectListService implements ListService {
                     attributes.setVersionId(file.getFileId());
                     switch(file.getAction()) {
                         case hide:
+                        case upload:
                             attributes.setDuplicate(true);
                             break;
                     }

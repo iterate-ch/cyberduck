@@ -111,4 +111,20 @@ public class TransferTypeFinderTest {
         ));
         assertEquals(Host.TransferType.newconnection, type);
     }
+
+    @Test
+    public void testTypeSingleFolder() throws Exception {
+        final Host host = new Host(new TestProtocol(), "h");
+        final Host.TransferType type = new TransferTypeFinder().type(new NullSession(host) {
+            @Override
+            public Host.TransferType getTransferType() {
+                return Host.TransferType.concurrent;
+            }
+        }, new UploadTransfer(host,
+                Arrays.asList(
+                        new TransferItem(new Path("/t", EnumSet.of(Path.Type.directory)), new NullLocal("/t"))
+                )
+        ));
+        assertEquals(Host.TransferType.concurrent, type);
+    }
 }

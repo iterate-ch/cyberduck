@@ -120,7 +120,7 @@ public class B2Session extends HttpSession<B2ApiClient> {
             return (T) new B2ReadFeature(this);
         }
         if(type == Upload.class) {
-            return (T) new B2SingleUploadService(this);
+            return (T) new B2ThresholdUploadService(this);
         }
         if(type == Write.class) {
             return (T) new B2WriteFeature(this);
