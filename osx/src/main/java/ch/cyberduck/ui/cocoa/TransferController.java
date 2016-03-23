@@ -148,11 +148,10 @@ public final class TransferController extends WindowController implements NSTool
         this.toolbar.setDisplayMode(NSToolbar.NSToolbarDisplayModeLabelOnly);
         this.window.setToolbar(toolbar);
 
-        TransferCollection source = TransferCollection.defaultCollection();
-        if(!source.isLoaded()) {
+        if(!collection.isLoaded()) {
             transferSpinner.startAnimation(null);
         }
-        source.addListener(new AbstractCollectionListener<Transfer>() {
+        collection.addListener(new AbstractCollectionListener<Transfer>() {
             @Override
             public void collectionLoaded() {
                 invoke(new WindowMainAction(TransferController.this) {
@@ -164,7 +163,7 @@ public final class TransferController extends WindowController implements NSTool
                 });
             }
         });
-        if(source.isLoaded()) {
+        if(collection.isLoaded()) {
             transferSpinner.stopAnimation(null);
             transferTable.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
         }
@@ -886,22 +885,20 @@ public final class TransferController extends WindowController implements NSTool
         int i = 0;
         final List<Transfer> remove = new ArrayList<Transfer>();
         for(NSUInteger index = selected.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = selected.indexGreaterThanIndex(index)) {
-            final Transfer transfer = transfers.get(index.intValue() - i);
-            if(!transfer.isRunning()) {
-                remove.add(transfer);
+            final Transfer t = transfers.get(index.intValue() - i);
+            if(!t.isRunning()) {
+                remove.add(t);
             }
         }
-        for(Transfer t : remove) {
-            collection.remove(t);
-        }
+        collection.removeAll(remove);
         collection.save();
     }
 
     @Action
     public void clearButtonClicked(final ID sender) {
         for(Iterator<Transfer> iter = collection.iterator(); iter.hasNext(); ) {
-            Transfer transfer = iter.next();
-            if(!transfer.isRunning() && transfer.isReset() && transfer.isComplete()) {
+            final Transfer t = iter.next();
+            if(t.isComplete()) {
                 iter.remove();
             }
         }

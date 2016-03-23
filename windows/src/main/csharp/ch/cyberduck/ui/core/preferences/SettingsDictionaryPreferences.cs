@@ -26,13 +26,15 @@ using System.Text.RegularExpressions;
 using ch.cyberduck.core.azure;
 using ch.cyberduck.core.dav;
 using ch.cyberduck.core.ftp;
-using ch.cyberduck.core.gstorage;
+using ch.cyberduck.core.googlestorage;
+using ch.cyberduck.core.googledrive;
 using ch.cyberduck.core.irods;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.openstack;
 using ch.cyberduck.core.s3;
 using ch.cyberduck.core.sftp;
 using ch.cyberduck.core.b2;
+using ch.cyberduck.core.spectra;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Bonjour;
 using Ch.Cyberduck.Core.Diagnostics;
@@ -105,7 +107,7 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
         {
             get
             {
-                Match match = Regex.Match(Application.ProductVersion, @"((\d+)\.(\d+)\.(\d+)).*");
+                Match match = Regex.Match(Application.ProductVersion, @"((\d+)\.(\d+)(\.(\d+))?).*");
                 return match.Groups[1].Value;
             }
         }
@@ -245,7 +247,7 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
 
             // Importers
             defaults.put("bookmark.import.winscp.location",
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Programs), "WinSCP", "winscp.ini"));
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "WinSCP.ini"));
             defaults.put("bookmark.import.filezilla.location",
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FileZilla",
                     "sitemanager.xml"));
@@ -364,10 +366,8 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
                 true.ToString());
             defaults.put(String.Format("connection.protocol.{0}.enable", new AzureProtocol().getIdentifier()),
                 true.ToString());
-            defaults.put(String.Format("connection.protocol.{0}.enable", new IRODSProtocol().getIdentifier()),
-                false.ToString());
-            defaults.put(String.Format("connection.protocol.{0}.enable", new B2Protocol().getIdentifier()),
-                false.ToString());
+            defaults.put(String.Format("connection.protocol.{0}.enable", new DriveProtocol().getIdentifier()),
+                true.ToString());
 
              // NTLM Windows Domain
             try

@@ -11,7 +11,7 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-//  
+// 
 // Bug fixes, suggestions and comments should be sent to:
 // feedback@cyberduck.io
 // 
@@ -28,10 +28,12 @@ using Windows7.DesktopIntegration;
 using ch.cyberduck.core;
 using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.azure;
+using ch.cyberduck.core.b2;
 using ch.cyberduck.core.bonjour;
 using ch.cyberduck.core.dav;
 using ch.cyberduck.core.ftp;
-using ch.cyberduck.core.gstorage;
+using ch.cyberduck.core.googlestorage;
+using ch.cyberduck.core.googledrive;
 using ch.cyberduck.core.importer;
 using ch.cyberduck.core.irods;
 using ch.cyberduck.core.notification;
@@ -41,7 +43,7 @@ using ch.cyberduck.core.s3;
 using ch.cyberduck.core.serializer;
 using ch.cyberduck.core.sftp;
 using ch.cyberduck.core.spectra;
-using ch.cyberduck.core.b2;
+using ch.cyberduck.core.updater;
 using Ch.Cyberduck.Core.Urlhandler;
 using Ch.Cyberduck.Ui.Core;
 using Ch.Cyberduck.Ui.Core.Preferences;
@@ -81,13 +83,15 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <see cref="http://msdn.microsoft.com/en-us/library/system.stathreadattribute.aspx"/>
         private BrowserController _bc;
 
+        private PeriodicUpdateChecker _updater;
+
         static MainController()
         {
             StructureMapBootstrapper.Bootstrap();
             PreferencesFactory.set(new SettingsDictionaryPreferences());
             ProtocolFactory.register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(),
                 new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(), new GoogleStorageProtocol(),
-                new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new B2Protocol());
+                new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new B2Protocol(), new DriveProtocol());
 
             if (!Debugger.IsAttached)
             {
@@ -135,6 +139,10 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 PreferencesFactory.get().setProperty("uses", PreferencesFactory.get().getInteger("uses") + 1);
                 PreferencesFactory.get().save();
+                if (_updater != null)
+                {
+                    _updater.unregister();
+                }
             };
         }
 
@@ -311,8 +319,6 @@ namespace Ch.Cyberduck.Ui.Controller
             Logger.debug("ApplicationDidFinishLaunching");
             CommandsAfterLaunch(CommandLineArgs);
             HistoryCollection.defaultCollection().addListener(this);
-            UpdateController.Instance.CheckForUpdatesIfNecessary();
-
             if (PreferencesFactory.get().getBoolean("browser.serialize"))
             {
                 _controller.Background(delegate { _sessions.load(); }, delegate
@@ -481,6 +487,20 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 thirdpartySemaphore.Signal();
             });
+            if (PreferencesFactory.get().getBoolean("update.check"))
+            {
+                _updater = new WindowsPeriodicUpdateChecker();
+                if (_updater.hasUpdatePrivileges())
+                {
+                    DateTime lastCheck = new DateTime(PreferencesFactory.get().getLong("update.check.last"));
+                    TimeSpan span = DateTime.Now.Subtract(lastCheck);
+                    if (span.TotalSeconds >= PreferencesFactory.get().getLong("update.check.interval"))
+                    {
+                        _updater.check(true);
+                    }
+                    _updater.register();
+                }
+            }
         }
 
         private IList<ThirdpartyBookmarkCollection> GetThirdpartyBookmarks()

@@ -15,8 +15,10 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.MappingMimeTypeService;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
@@ -25,11 +27,14 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.ResponseOutputStream;
+import ch.cyberduck.core.shared.DefaultAttributesFeature;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.util.Collections;
 
 import synapticloop.b2.exception.B2ApiException;
@@ -43,14 +48,19 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<B2FileResponse> imp
 
     private final B2Session session;
 
+    private final Find finder;
+
+    private final Attributes attributes;
+
     public B2WriteFeature(final B2Session session) {
-        super(session);
-        this.session = session;
+        this(session, new DefaultFindFeature(session), new DefaultAttributesFeature(session));
     }
 
     public B2WriteFeature(final B2Session session, final Find finder, final Attributes attributes) {
         super(finder, attributes);
         this.session = session;
+        this.finder = finder;
+        this.attributes = attributes;
     }
 
     @Override
@@ -67,10 +77,13 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<B2FileResponse> imp
                             new B2FileidProvider(session).getFileid(containerService.getContainer(file)),
                             containerService.getKey(file),
                             entity, status.getChecksum().toString(),
-                            new MappingMimeTypeService().getMime(file.getName()), Collections.emptyMap());
+                            status.getMime(), Collections.emptyMap());
                 }
                 catch(B2ApiException e) {
                     throw new B2ExceptionMappingService().map("Upload {0} failed", e, file);
+                }
+                catch(IOException e) {
+                    throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
                 }
             }
 
@@ -84,11 +97,20 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<B2FileResponse> imp
 
     @Override
     public boolean temporary() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean random() {
-        return true;
+        return false;
+    }
+
+    @Override
+    public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
+        if(finder.withCache(cache).find(file)) {
+            final PathAttributes attributes = this.attributes.withCache(cache).find(file);
+            return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());
+        }
+        return Write.notfound;
     }
 }

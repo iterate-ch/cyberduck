@@ -1,8 +1,5 @@
-package ch.cyberduck.core.spectra;
-
 /*
- * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
- * https://cyberduck.io/
+ * Copyright (c) 2015-2016 Spectra Logic Corporation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,37 +12,75 @@ package ch.cyberduck.core.spectra;
  * GNU General Public License for more details.
  */
 
+package ch.cyberduck.core.spectra;
+
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.RedirectException;
-import ch.cyberduck.core.s3.S3ReadFeature;
+import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.http.HttpRange;
+import ch.cyberduck.core.s3.S3PathContainerService;
+import ch.cyberduck.core.s3.ServiceExceptionMappingService;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
+import org.jets3t.service.ServiceException;
 
 import java.io.InputStream;
+import java.io.SequenceInputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 
-public class SpectraReadFeature extends S3ReadFeature {
+public class SpectraReadFeature implements Read {
     private static final Logger log = Logger.getLogger(SpectraReadFeature.class);
+
+    private final PathContainerService containerService
+            = new S3PathContainerService();
 
     private final SpectraSession session;
 
     public SpectraReadFeature(final SpectraSession session) {
-        super(session);
         this.session = session;
     }
 
     @Override
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
         final SpectraBulkService bulk = new SpectraBulkService(session);
+        // Make sure file is available in cache
+        final List<TransferStatus> chunks = bulk.query(Transfer.Type.download, file, status);
+        final List<InputStream> streams = new ArrayList<InputStream>();
         try {
-            // Make sure file is available in cache
-            bulk.query(Transfer.Type.download, file, status);
+            for(TransferStatus chunk : chunks) {
+                final HttpRange range = HttpRange.withStatus(chunk);
+                final InputStream in = session.getClient().getObjectImpl(
+                        false,
+                        containerService.getContainer(file).getName(),
+                        containerService.getKey(file),
+                        null, // ifModifiedSince
+                        null, // ifUnmodifiedSince
+                        null, // ifMatch
+                        null, // ifNoneMatch
+                        chunk.isAppend() ? range.getStart() : null,
+                        chunk.isAppend() ? (range.getEnd() == -1 ? null : range.getEnd()) : null,
+                        null,
+                        new HashMap<String, Object>(),
+                        chunk.getParameters())
+                        .getDataInputStream();
+                streams.add(in);
+            }
+            // Concatenate streams
+            return new SequenceInputStream(Collections.enumeration(streams));
         }
-        catch(RedirectException e) {
-            log.warn(String.format("Node %s returned for is not equal connected host %s.", e.getTarget(), session.getHost()));
+        catch(ServiceException e) {
+            throw new ServiceExceptionMappingService().map("Download {0} failed", e, file);
         }
-        return super.read(file, status);
+    }
+
+    @Override
+    public boolean offset(final Path file) {
+        return true;
     }
 }

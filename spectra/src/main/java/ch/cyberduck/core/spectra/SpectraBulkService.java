@@ -21,8 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Resolver;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConflictException;
-import ch.cyberduck.core.exception.RedirectException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
@@ -46,14 +45,17 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.spectralogic.ds3client.Ds3Client;
-import com.spectralogic.ds3client.commands.AllocateJobChunkRequest;
-import com.spectralogic.ds3client.commands.AllocateJobChunkResponse;
 import com.spectralogic.ds3client.commands.GetAvailableJobChunksRequest;
 import com.spectralogic.ds3client.commands.GetAvailableJobChunksResponse;
 import com.spectralogic.ds3client.helpers.Ds3ClientHelpers;
+import com.spectralogic.ds3client.helpers.options.ReadJobOptions;
+import com.spectralogic.ds3client.helpers.options.WriteJobOptions;
+import com.spectralogic.ds3client.models.Checksum;
+import com.spectralogic.ds3client.models.bulk.BulkObject;
 import com.spectralogic.ds3client.models.bulk.Ds3Object;
 import com.spectralogic.ds3client.models.bulk.MasterObjectList;
 import com.spectralogic.ds3client.models.bulk.Node;
+import com.spectralogic.ds3client.models.bulk.Objects;
 import com.spectralogic.ds3client.networking.FailedRequestException;
 import com.spectralogic.ds3client.serializer.XmlProcessingException;
 
@@ -67,7 +69,8 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
     private final PathContainerService containerService
             = new S3PathContainerService();
 
-    private static final String JOBID_IDENTIFIER = "job";
+    private static final String REQUEST_PARAMETER_JOBID_IDENTIFIER = "job";
+    private static final String REQUEST_PARAMETER_OFFSET = "offset";
 
     public SpectraBulkService(final SpectraSession session) {
         this(session, session.getFeature(Delete.class));
@@ -121,38 +124,28 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                 if(container.getValue().isEmpty()) {
                     continue;
                 }
+                final Ds3ClientHelpers.Job job;
                 switch(type) {
                     case download:
-                        final Ds3ClientHelpers.Job read = helper.startReadJob(
-                                container.getKey().getName(), container.getValue());
-                        jobs.add(read.getJobId());
-                        for(Map.Entry<Path, TransferStatus> item : files.entrySet()) {
-                            if(container.getKey().equals(containerService.getContainer(item.getKey()))) {
-                                final TransferStatus status = item.getValue();
-                                final Map<String, String> parameters = new HashMap<>(status.getParameters());
-                                parameters.put(JOBID_IDENTIFIER, read.getJobId().toString());
-                                status.parameters(parameters);
-                            }
-                        }
+                        job = helper.startReadJob(
+                                container.getKey().getName(), container.getValue(), ReadJobOptions.create());
                         break;
                     case upload:
-                        final Ds3ClientHelpers.Job write = helper.startWriteJob(
-                                container.getKey().getName(), container.getValue());
-                        jobs.add(write.getJobId());
-                        for(Map.Entry<Path, TransferStatus> item : files.entrySet()) {
-                            if(container.getKey().equals(containerService.getContainer(item.getKey()))) {
-                                final TransferStatus status = item.getValue();
-                                if(!status.isExists()) {
-                                    this.allocate(item.getKey(), write.getJobId().toString());
-                                }
-                                final Map<String, String> parameters = new HashMap<>(status.getParameters());
-                                parameters.put(JOBID_IDENTIFIER, write.getJobId().toString());
-                                status.parameters(parameters);
-                            }
-                        }
+                        job = helper.startWriteJob(
+                                container.getKey().getName(), container.getValue(), WriteJobOptions.create()
+                                        .withChecksumType(Checksum.Type.CRC32));
                         break;
                     default:
-                        throw new BackgroundException();
+                        throw new NotfoundException(String.format("Unsupported transfer type %s", type));
+                }
+                jobs.add(job.getJobId());
+                for(Map.Entry<Path, TransferStatus> item : files.entrySet()) {
+                    if(container.getKey().equals(containerService.getContainer(item.getKey()))) {
+                        final TransferStatus status = item.getValue();
+                        final Map<String, String> parameters = new HashMap<>(status.getParameters());
+                        parameters.put(REQUEST_PARAMETER_JOBID_IDENTIFIER, job.getJobId().toString());
+                        status.parameters(parameters);
+                    }
                 }
             }
             return jobs;
@@ -182,24 +175,26 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
      * @throws RetriableAccessDeniedException                File is not yet in cache
      * @throws ch.cyberduck.core.exception.RedirectException Should be accessed from different node
      */
-    public void query(final Transfer.Type type, final Path file, final TransferStatus status) throws BackgroundException {
+    public List<TransferStatus> query(final Transfer.Type type, final Path file, final TransferStatus status) throws BackgroundException {
         // This will respond with which job chunks have been loaded into cache and are ready for download.
         try {
-            final String job;
-            if(status.getParameters().containsKey(JOBID_IDENTIFIER)) {
-                job = status.getParameters().get(JOBID_IDENTIFIER);
+            if(!status.getParameters().containsKey(REQUEST_PARAMETER_JOBID_IDENTIFIER)) {
+                throw new NotfoundException(String.format("Missing job id parameter in status for %s", file.getName()));
             }
-            else {
-                log.warn(String.format("Missing job id parameter in status for %s", file.getAbsolute()));
-                final Set<UUID> id = this.pre(type, Collections.singletonMap(file, status));
-                job = id.iterator().next().toString();
-            }
+            final String job = status.getParameters().get(REQUEST_PARAMETER_JOBID_IDENTIFIER);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Query job status %s of %s", job, file));
             }
             final Ds3Client client = new SpectraClientBuilder().wrap(session);
+            // For GET, the client may need to issue multiple GET requests for a single object if it has
+            // been broken up into multiple pieces due to its large size
+            // For PUT, This will allocate a working window of job chunks, if possible, and return a list of
+            // the job chunks that the client can upload. The client should PUT all of the object parts
+            // from the list of job chunks returned and repeat this process until all chunks are transferred
             final GetAvailableJobChunksResponse response =
-                    client.getAvailableJobChunks(new GetAvailableJobChunksRequest(UUID.fromString(job)));
+                    // GetJobChunksReadyForClientProcessing
+                    client.getAvailableJobChunks(new GetAvailableJobChunksRequest(UUID.fromString(job))
+                            .withPreferredNumberOfChunks(1));
             if(log.isInfoEnabled()) {
                 log.info(String.format("Job status %s for %s", response.getStatus(), file));
             }
@@ -210,71 +205,65 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                 }
             }
             final MasterObjectList list = response.getMasterObjectList();
-            final UUID nodeId = list.getObjects().iterator().next().getNodeId();
-            if(null == nodeId) {
-                log.warn(String.format("No node returned in master object list for file %s", file));
-            }
             if(log.isInfoEnabled()) {
-                log.info(String.format("Determined node %s for %s", nodeId, file));
+                log.info(String.format("Master object list status %s for %s", list.getStatus(), file));
             }
-            for(Node node : list.getNodes()) {
-                if(node.getId().equals(nodeId)) {
-                    final Host host = session.getHost();
-                    if(!StringUtils.equals(node.getEndpoint(), new Resolver().resolve(host.getHostname()).getHostAddress())) {
-                        final Host target = new Host(host.getProtocol(), node.getEndpoint(),
-                                host.getProtocol().isSecure() ? node.getHttpsPort() : node.getHttpPort());
-                        log.warn(String.format("Redirect to %s for file %s", target, file));
-                        throw new RedirectException(target);
+            final List<TransferStatus> chunks = new ArrayList<TransferStatus>();
+            for(Objects object : list.getObjects()) {
+                final UUID nodeId = object.getNodeId();
+                if(null == nodeId) {
+                    log.warn(String.format("No node returned in master object list for file %s", file));
+                }
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Determined node %s for %s", nodeId, file));
+                }
+                for(Node node : list.getNodes()) {
+                    if(node.getId().equals(nodeId)) {
+                        final Host host = session.getHost();
+                        // The IP address or DNS name of the BlackPearl node.
+                        if(StringUtils.equals(node.getEndpoint(), host.getHostname())) {
+                            break;
+                        }
+                        if(StringUtils.equals(node.getEndpoint(), new Resolver().resolve(host.getHostname()).getHostAddress())) {
+                            break;
+                        }
+                        log.warn(String.format("Redirect to %s for file %s", node.getEndpoint(), file));
+                    }
+                }
+                for(BulkObject bulk : object) {
+                    if(bulk.getName().equals(containerService.getKey(file))) {
+                        final TransferStatus chunk = new TransferStatus()
+                                .exists(status.isExists())
+                                .metadata(status.getMetadata())
+                                .parameters(status.getParameters());
+                        if(bulk.getOffset() == 0L) {
+                            // Set our own offsets
+                            chunk.setLength(status.getLength());
+                            chunk.setOffset(status.getOffset());
+                            chunk.setAppend(status.isAppend());
+                        }
+                        else {
+                            // Server sends multiple chunks with offsets
+                            chunk.setLength(bulk.getLength());
+                            chunk.setOffset(bulk.getOffset());
+                            switch(type) {
+                                case download:
+                                    // Job parameter already present from #pre
+                                    final Map<String, String> parameters = new HashMap<>(chunk.getParameters());
+                                    // Set offset for chunk
+                                    parameters.put(REQUEST_PARAMETER_OFFSET, Long.toString(chunk.getOffset()));
+                                    chunk.setParameters(parameters);
+                                    break;
+                            }
+                        }
+                        chunks.add(chunk);
                     }
                 }
             }
-            log.warn(String.format("Failed to determine node for id %s", nodeId));
-        }
-        catch(FailedRequestException e) {
-            throw new SpectraExceptionMappingService().map(e);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
-        }
-        catch(SignatureException e) {
-            throw new BackgroundException(e);
-        }
-    }
-
-    public void allocate(final Path file, final String job) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Allocate job %s for file %s", job, file));
-        }
-        try {
-            boolean allocated = false;
-            while(!allocated) {
-                allocated = this.tryAllocateChunk(job);
+            if(chunks.isEmpty()) {
+                throw new NotfoundException(String.format("File %s not found in job %s", file.getName(), job));
             }
-        }
-        catch(ConflictException e) {
-            // Already allocated
-            log.warn(String.format("Failed to allocate file %s. %s", file, e.getMessage()));
-            throw e;
-        }
-    }
-
-    /**
-     * Allocate a specific job chunk that is part of a PUT job before beginning the PUT operation. This avoids the HTTP 307 retries on the
-     * object PUTs and increases performance.
-     */
-    private boolean tryAllocateChunk(final String job) throws BackgroundException {
-        final Ds3Client client = new SpectraClientBuilder().wrap(session);
-        try {
-            final AllocateJobChunkResponse response = client.allocateJobChunk(new AllocateJobChunkRequest(UUID.fromString(job)));
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Status %s for allocate job chunk request status", response.getStatus().toString()));
-            }
-            switch(response.getStatus()) {
-                case RETRYLATER:
-                    final Duration delay = Duration.ofSeconds((response.getRetryAfterSeconds()));
-                    throw new RetriableAccessDeniedException(String.format("Allocate job failed for job %s", job), delay);
-            }
-            return !response.getObjects().getObjects().isEmpty();
+            return chunks;
         }
         catch(FailedRequestException e) {
             throw new SpectraExceptionMappingService().map(e);

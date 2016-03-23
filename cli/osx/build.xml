@@ -67,6 +67,11 @@
             <param name="source" value="duck.bundle"/>
             <param name="target" value="duck-${version}.${revision}.tar.gz"/>
         </antcall>
+        <foreach target="sha1" param="source">
+            <fileset dir="${build.deploy}">
+                <include name="*.tar.gz"/>
+            </fileset>
+        </foreach>
         <checksum file="${build.deploy}/duck-${version}.${revision}.tar.gz"
                   algorithm="sha1" property="archive.sha1"/>
         <copy todir="${build.deploy}" overwrite="true">

@@ -14,8 +14,6 @@
 
 package ch.cyberduck.core.preferences;
 
-import ch.cyberduck.core.preferences.Preferences;
-
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
@@ -23,9 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public class MemoryPreferences extends Preferences {
 
     private Map<String, String> store;

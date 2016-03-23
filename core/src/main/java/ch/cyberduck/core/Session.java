@@ -41,8 +41,6 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.log4j.Logger;
 
-import java.util.EnumSet;
-
 /**
  * @version $Id$
  */
@@ -208,13 +206,6 @@ public abstract class Session<C> implements TranscriptListener {
             return host.getProtocol().isSecure();
         }
         return false;
-    }
-
-    /**
-     * @return The current working directory
-     */
-    public Path workdir() throws BackgroundException {
-        return new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory));
     }
 
     /**

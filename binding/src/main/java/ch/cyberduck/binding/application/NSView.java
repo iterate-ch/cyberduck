@@ -48,6 +48,12 @@ public abstract class NSView extends NSResponder {
     public static final int NSViewLayerContentsRedrawBeforeViewResize = 3;
     public static final int NSViewLayerContentsRedrawCrossfade = 4;
 
+    public enum NSFocusRingType {
+        NSFocusRingTypeDefault,
+        NSFocusRingTypeNone,
+        NSFocusRingTypeExterior
+    }
+
     public interface _Class extends ObjCClass {
         /**
          * Original signature : <code>NSView* focusView()</code><br>
@@ -944,13 +950,13 @@ public abstract class NSView extends NSResponder {
     /**
      * <i>from NSKeyboardUI native declaration : :355</i><br>
      * Conversion Error : /// Original signature : <code>void setFocusRingType(null)</code><br>
-     * - (void)setFocusRingType:(null)focusRingType; (Argument focusRingType cannot be converted)
      */
+    public abstract void setFocusRingType(int focusRingType);
     /**
      * Original signature : <code>focusRingType()</code><br>
      * <i>from NSKeyboardUI native declaration : :356</i>
      */
-    public abstract NSObject focusRingType();
+    public abstract int focusRingType();
     /**
      * <i>from NSPrinting native declaration : :364</i><br>
      * Conversion Error : NSRect

@@ -67,9 +67,6 @@ import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
 import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.security.ProviderCredentials;
 
-/**
- * @version $Id$
- */
 public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     private static final Logger log = Logger.getLogger(S3Session.class);
 
@@ -86,16 +83,16 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             S3Protocol.AuthenticationHeaderSignatureVersion.valueOf(preferences.getProperty("s3.signature.version")) :
             S3Protocol.AuthenticationHeaderSignatureVersion.AWS2;
 
-    public S3Session(final Host h) {
-        super(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+    public S3Session(final Host host) {
+        super(host, new LaxHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
     }
 
     public S3Session(final Host host, final X509TrustManager trust, final X509KeyManager key) {
-        super(host, trust, key);
+        super(host, new LaxHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
 
     public S3Session(final Host host, final X509TrustManager trust, final X509KeyManager key, final ProxyFinder proxy) {
-        super(host, trust, key, proxy);
+        super(host, new LaxHostnameDelegatingTrustManager(trust, host.getHostname()), key, proxy);
     }
 
     @Override
@@ -189,6 +186,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         configuration.setProperty("httpclient.retry-max", String.valueOf(0));
         configuration.setProperty("storage-service.internal-error-retry-max", String.valueOf(0));
         configuration.setProperty("storage-service.request-signature-version", authenticationHeaderSignatureVersion.toString());
+        configuration.setProperty("storage-service.disable-live-md5", String.valueOf(true));
         return configuration;
     }
 
@@ -213,6 +211,10 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         else {
             client.setProviderCredentials(host.getCredentials().isAnonymousLogin() ? null :
                     new AWSCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
+        }
+        if(host.getCredentials().isPassed()) {
+            log.warn(String.format("Skip verifying credentials with previous successful authentication event for %s", this));
+            return;
         }
         final Path home = new S3HomeFinderService(this).find();
         cache.put(home, this.list(home, new DisabledListProgressListener() {

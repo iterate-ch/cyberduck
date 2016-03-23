@@ -46,9 +46,6 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.text.MessageFormat;
 
-/**
- * @version $Id$
- */
 public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
     private static final Logger log = Logger.getLogger(HttpUploadFeature.class);
 

@@ -95,6 +95,10 @@ public class S3AccessControlListFeature implements AclPermission {
         try {
             final Path container = containerService.getContainer(file);
             if(null == acl.getOwner()) {
+                // Read owner from cache
+                acl.setOwner(file.attributes().getAcl().getOwner());
+            }
+            if(null == acl.getOwner()) {
                 // Read owner from bucket
                 acl.setOwner(this.getPermission(container).getOwner());
             }

@@ -90,9 +90,8 @@ public class IRODSSessionTest {
         assertNotNull(session.getClient());
 
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertNotNull(session.workdir());
 
-        final AttributedList<Path> list = session.list(session.workdir(), new DisabledListProgressListener());
+        final AttributedList<Path> list = session.list(new IRODSHomeFinderService(session).find(), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
 
         assertTrue(session.isConnected());
@@ -125,7 +124,6 @@ public class IRODSSessionTest {
         assertNotNull(session.getClient());
 
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertNotNull(session.workdir());
         assertTrue(verified.get());
 
         session.close();

@@ -46,7 +46,7 @@ public class B2Protocol extends AbstractProtocol {
 
     @Override
     public String getDefaultHostname() {
-        return super.getDefaultHostname();
+        return "api.backblaze.com";
     }
 
     @Override

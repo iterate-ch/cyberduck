@@ -16,6 +16,7 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -23,11 +24,13 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -64,37 +67,31 @@ public class B2ObjectListService implements ListService {
                 final List<B2FileInfoResponse> files = response.getFiles();
                 final Map<String, Integer> revisions = new HashMap<String, Integer>();
                 for(B2FileInfoResponse file : files) {
-                    if(containerService.isContainer(directory)) {
-                        if(!StringUtils.equals(PathNormalizer.parent(
-                                StringUtils.removeEnd(file.getFileName(), ".bzEmpty"), Path.DELIMITER), String.valueOf(Path.DELIMITER))) {
-                            log.warn(String.format("Skip file %s", file));
-                            continue;
-                        }
-                    }
-                    else {
-                        if(!StringUtils.equals(PathNormalizer.parent(
-                                StringUtils.removeEnd(file.getFileName(), ".bzEmpty"), Path.DELIMITER), containerService.getKey(directory))) {
-                            log.warn(String.format("Skip file %s", file));
-                            continue;
-                        }
+                    if(!StringUtils.equals(PathNormalizer.parent(
+                            StringUtils.removeEnd(file.getFileName(), ".bzEmpty"), Path.DELIMITER),
+                            containerService.isContainer(directory) ? String.valueOf(Path.DELIMITER) : containerService.getKey(directory))) {
+                        log.warn(String.format("Skip file %s", file));
+                        continue;
                     }
                     final PathAttributes attributes = new PathAttributes();
-                    attributes.setSize(file.getContentLength());
+                    attributes.setChecksum(Checksum.parse(file.getContentSha1()));
+                    attributes.setSize(file.getSize());
                     final long timestamp = file.getUploadTimestamp();
                     attributes.setCreationDate(timestamp);
                     attributes.setModificationDate(timestamp);
                     attributes.setVersionId(file.getFileId());
                     switch(file.getAction()) {
                         case hide:
+                        case upload:
                             attributes.setDuplicate(true);
                             break;
                     }
                     if(StringUtils.endsWith(file.getFileName(), "/.bzEmpty")) {
-                        objects.add(new Path(directory, StringUtils.removeEnd(file.getFileName(), "/.bzEmpty"),
+                        objects.add(new Path(directory, PathNormalizer.name(StringUtils.removeEnd(file.getFileName(), "/.bzEmpty")),
                                 EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes));
                     }
                     else {
-                        objects.add(new Path(directory, file.getFileName(), EnumSet.of(Path.Type.file), attributes));
+                        objects.add(new Path(directory, PathNormalizer.name(file.getFileName()), EnumSet.of(Path.Type.file), attributes));
                     }
                     final Integer revision;
                     if(revisions.keySet().contains(file.getFileName())) {
@@ -117,6 +114,9 @@ public class B2ObjectListService implements ListService {
         }
         catch(B2ApiException e) {
             throw new B2ExceptionMappingService().map("Listing directory {0} failed", e, directory);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
         }
     }
 }

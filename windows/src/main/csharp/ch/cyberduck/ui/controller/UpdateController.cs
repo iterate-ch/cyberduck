@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2015 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,10 +13,10 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
+
 using System;
-using ch.cyberduck.core;
 using ch.cyberduck.core.preferences;
 using StructureMap;
 
@@ -44,22 +44,6 @@ namespace Ch.Cyberduck.Ui.Controller
         public bool AboutToInstallUpdate
         {
             get { return View.AboutToInstallUpdate; }
-        }
-
-        public void CheckForUpdatesIfNecessary()
-        {
-            if (PreferencesFactory.get().getBoolean("update.check"))
-            {
-                DateTime lastCheck = new DateTime(PreferencesFactory.get().getLong("update.check.last"));
-                long interval = PreferencesFactory.get().getLong("update.check.interval");
-
-                // see if enough days have elapsed since last check.
-                TimeSpan span = DateTime.Now.Subtract(lastCheck);
-                if (span.TotalSeconds >= interval)
-                {
-                    ForceCheckForUpdates(true);
-                }
-            }
         }
 
         /// <summary>

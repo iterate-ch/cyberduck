@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.QuotaException;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 import org.jets3t.service.ServiceException;
@@ -47,7 +48,7 @@ public class ServiceExceptionMappingService extends AbstractExceptionMappingServ
         final int code = e.getResponseCode();
         if(StringUtils.isNotBlank(e.getErrorMessage())) {
             // S3 protocol message parsed from XML
-            this.append(buffer, e.getErrorMessage());
+            this.append(buffer, StringEscapeUtils.unescapeXml(e.getErrorMessage()));
         }
         else {
             this.append(buffer, e.getResponseStatus());

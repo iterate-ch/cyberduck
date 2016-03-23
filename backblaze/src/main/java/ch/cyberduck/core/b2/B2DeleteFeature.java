@@ -15,12 +15,14 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 
+import java.io.IOException;
 import java.util.List;
 
 import synapticloop.b2.exception.B2ApiException;
@@ -40,27 +42,27 @@ public class B2DeleteFeature implements Delete {
     public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
         for(Path file : files) {
             try {
-                if(containerService.isContainer(file)) {
-                    continue;
-                }
                 callback.delete(file);
-                session.getClient().deleteFileVersion(containerService.getKey(file),
-                        new B2FileidProvider(session).getFileid(file));
-            }
-            catch(B2ApiException e) {
-                throw new B2ExceptionMappingService().map("Cannot delete {0}", e, file);
-            }
-        }
-        for(Path file : files) {
-            try {
                 if(containerService.isContainer(file)) {
-                    callback.delete(file);
                     // Finally delete bucket itself
                     session.getClient().deleteBucket(new B2FileidProvider(session).getFileid(file));
                 }
+                else {
+                    if(file.isPlaceholder()) {
+                        session.getClient().deleteFileVersion(String.format("%s/.bzEmpty", containerService.getKey(file)),
+                                new B2FileidProvider(session).getFileid(file));
+                    }
+                    else if(file.isFile()) {
+                        session.getClient().deleteFileVersion(containerService.getKey(file),
+                                new B2FileidProvider(session).getFileid(file));
+                    }
+                }
             }
             catch(B2ApiException e) {
                 throw new B2ExceptionMappingService().map("Cannot delete {0}", e, file);
+            }
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map(e);
             }
         }
     }
