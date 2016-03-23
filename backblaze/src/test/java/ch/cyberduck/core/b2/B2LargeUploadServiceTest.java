@@ -63,9 +63,8 @@ public class B2LargeUploadServiceTest {
 
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
 
-        // Each segment, except the last, must be larger than 1048576 bytes.
-        //2MB + 1
-        final byte[] content = new byte[1048576 + 1048576 + 1];
+        // Each segment, except the last, must be larger than 100MB.
+        final byte[] content = new byte[100 * 1024 * 1024 + 1];
         new Random().nextBytes(content);
 
         final OutputStream out = local.getOutputStream(false);
