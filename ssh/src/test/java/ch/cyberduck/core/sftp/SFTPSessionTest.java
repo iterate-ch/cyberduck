@@ -26,15 +26,14 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.security.PublicKey;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import net.schmizz.sshj.DefaultConfig;
 import net.schmizz.sshj.SSHClient;
-import net.schmizz.sshj.transport.cipher.Cipher;
-import net.schmizz.sshj.transport.kex.KeyExchange;
+import net.schmizz.sshj.transport.cipher.AES256CTR;
+import net.schmizz.sshj.transport.kex.ECDHNistP;
 import net.schmizz.sshj.transport.mac.MAC;
 
 import static org.junit.Assert.*;
@@ -78,29 +77,25 @@ public class SFTPSessionTest {
     }
 
     @Test
-    public void testAllCiphers() throws Exception {
+    public void testAES256CTRCipher() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch");
         final SFTPSession session = new SFTPSession(host);
-        for(net.schmizz.sshj.common.Factory.Named<Cipher> cipher : new DefaultConfig().getCipherFactories()) {
-            final DefaultConfig configuration = new DefaultConfig();
-            configuration.setCipherFactories(Arrays.asList(cipher));
-            final SSHClient client = session.connect(new DisabledHostKeyCallback(), configuration);
-            assertTrue(client.isConnected());
-            client.close();
-        }
+        final DefaultConfig configuration = new DefaultConfig();
+        configuration.setCipherFactories(Collections.singletonList(new AES256CTR.Factory()));
+        final SSHClient client = session.connect(new DisabledHostKeyCallback(), configuration);
+        assertTrue(client.isConnected());
+        client.close();
     }
 
     @Test
-    public void testAllKeyExchange() throws Exception {
+    public void testECDHNistPKeyExchange() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch");
         final SFTPSession session = new SFTPSession(host);
-        for(net.schmizz.sshj.common.Factory.Named<KeyExchange> exchange : new DefaultConfig().getKeyExchangeFactories()) {
-            final DefaultConfig configuration = new DefaultConfig();
-            configuration.setKeyExchangeFactories(Arrays.asList(exchange));
-            final SSHClient client = session.connect(new DisabledHostKeyCallback(), configuration);
-            assertTrue(client.isConnected());
-            client.close();
-        }
+        final DefaultConfig configuration = new DefaultConfig();
+        configuration.setKeyExchangeFactories(Collections.singletonList(new ECDHNistP.Factory256()));
+        final SSHClient client = session.connect(new DisabledHostKeyCallback(), configuration);
+        assertTrue(client.isConnected());
+        client.close();
     }
 
     @Test(expected = LoginCanceledException.class)
