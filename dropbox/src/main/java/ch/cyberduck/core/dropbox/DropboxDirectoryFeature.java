@@ -21,9 +21,9 @@ import ch.cyberduck.core.features.Directory;
 
 public class DropboxDirectoryFeature implements Directory {
 
-    private DropBoxSession session;
+    private DropboxSession session;
 
-    public DropboxDirectoryFeature(DropBoxSession session) {
+    public DropboxDirectoryFeature(DropboxSession session) {
         this.session = session;
     }
 

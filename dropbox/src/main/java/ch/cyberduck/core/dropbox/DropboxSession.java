@@ -34,15 +34,15 @@ import org.apache.log4j.Logger;
 import java.util.Locale;
 
 
-public class DropBoxSession extends HttpSession<DropBoxClient> {
-    private static final Logger log = Logger.getLogger(DropBoxSession.class);
+public class DropboxSession extends HttpSession<DropBoxClient> {
+    private static final Logger log = Logger.getLogger(DropboxSession.class);
 
     private String token;
     private DropBoxClient client;
 
     private Preferences preferences = PreferencesFactory.get();
 
-    public DropBoxSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
+    public DropboxSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
 

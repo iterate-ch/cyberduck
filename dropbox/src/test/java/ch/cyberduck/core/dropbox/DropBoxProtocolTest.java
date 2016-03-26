@@ -12,11 +12,11 @@ public class DropBoxProtocolTest {
 
     @Test
     public void testPrefix() {
-        assertEquals("ch.cyberduck.core.dropbox.Dropbox", new DropBoxProtocol().getPrefix());
+        assertEquals("ch.cyberduck.core.dropbox.Dropbox", new DropboxProtocol().getPrefix());
     }
 
     @Test
     public void testPassword() {
-        assertFalse(new DropBoxProtocol().isPasswordConfigurable());
+        assertFalse(new DropboxProtocol().isPasswordConfigurable());
     }
 }

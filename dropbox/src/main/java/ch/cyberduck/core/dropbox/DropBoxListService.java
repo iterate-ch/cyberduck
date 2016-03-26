@@ -29,9 +29,9 @@ import java.util.EnumSet;
 public class DropBoxListService implements ListService {
     private static final Logger log = Logger.getLogger(DropBoxListService.class);
 
-    private final DropBoxSession session;
+    private final DropboxSession session;
 
-    public DropBoxListService(DropBoxSession session) {
+    public DropBoxListService(DropboxSession session) {
         this.session = session;
     }
 
