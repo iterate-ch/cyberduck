@@ -18,39 +18,37 @@ package ch.cyberduck.core.dropbox;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.features.*;
+import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
+import ch.cyberduck.core.ssl.X509KeyManager;
+import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 import com.dropbox.core.*;
 import com.dropbox.core.v2.DbxClientV2;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-
 import java.util.Locale;
 
-public class DropboxSession extends Session<DropboxClient> {
-    private static final Logger log = Logger.getLogger(DropboxSession.class);
+
+public class DropBoxSession extends HttpSession<DropBoxClient> {
+    private static final Logger log = Logger.getLogger(DropBoxSession.class);
 
     private String token;
-    private DropboxClient client;
+    private DropBoxClient client;
 
     private Preferences preferences = PreferencesFactory.get();
 
-    public DropboxSession(final Host host) {
-        super(host);
+    public DropBoxSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
+        super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
 
-    /*public DropboxSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
-        super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
-    }*/
-
     @Override
-    protected DropboxClient connect(HostKeyCallback key) throws BackgroundException {
-        client = new DropboxClient();
+    protected DropBoxClient connect(HostKeyCallback key) throws BackgroundException {
+        client = new DropBoxClient();
         return client;
     }
 
@@ -63,7 +61,7 @@ public class DropboxSession extends Session<DropboxClient> {
         DbxRequestConfig config = new DbxRequestConfig(
                 "Dropbox Test", Locale.getDefault().toString());
 
-        if (StringUtils.isEmpty(accessToken)) {
+        if(StringUtils.isEmpty(accessToken)) {
 
             DbxAppInfo appInfo = new DbxAppInfo(preferences.getProperty("dropbox.client.id"),
                     preferences.getProperty("dropbox.client.secret"));
@@ -84,12 +82,14 @@ public class DropboxSession extends Session<DropboxClient> {
                         host.getPort(), "www.dropbox.com", "Dropbox OAuth2 Access Token",
                         token);
 
-            } catch (DbxException ex) {
+            } catch(DbxException ex) {
                 throw new LoginFailureException(ex.getLocalizedMessage());
             }
         }
         token = accessToken;
         client.setDbxClient(new DbxClientV2(config, token));
+
+
     }
 
     @Override
@@ -99,21 +99,24 @@ public class DropboxSession extends Session<DropboxClient> {
 
     @Override
     public AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException {
-        return new DropboxListService(this).list(directory, listener);
+        return new DropBoxListService(this).list(directory, listener);
     }
 
     public <T> T getFeature(Class<T> type) {
-        if (type == Read.class) {
+        if (type == Read.class){
             return (T) new DropboxReadFeature(this);
         }
-        if (type == Write.class) {
-            return (T) new DropboxWriteFeature(this);
+        if (type == Write.class){
+
         }
-        if (type == Directory.class) {
+        if (type == Upload.class){
+
+        }
+        if (type == Directory.class){
             return (T) new DropboxDirectoryFeature(this);
 
         }
-        /*if (type == Delete.class){
+        if (type == Delete.class){
 
         }
         if (type == Move.class){
@@ -130,11 +133,7 @@ public class DropboxSession extends Session<DropboxClient> {
         }
         if (type == Home.class){
 
-        }*/
+        }
         return super.getFeature(type);
-    }
-
-    public String getAccessToken() {
-        return token;
     }
 }

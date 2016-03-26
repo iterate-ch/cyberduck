@@ -19,7 +19,7 @@ import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
 
-public class DropboxProtocol extends AbstractProtocol {
+public class DropBoxProtocol extends AbstractProtocol {
 
     @Override
     public String getIdentifier() {

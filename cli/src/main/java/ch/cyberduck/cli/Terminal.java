@@ -23,7 +23,7 @@ import ch.cyberduck.core.azure.AzureProtocol;
 import ch.cyberduck.core.b2.B2Protocol;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
-import ch.cyberduck.core.dropbox.DropboxProtocol;
+import ch.cyberduck.core.dropbox.DropBoxProtocol;
 import ch.cyberduck.core.editor.DefaultEditorListener;
 import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
@@ -116,7 +116,7 @@ public class Terminal {
     public Terminal(final Preferences defaults, final Options options, final CommandLine input) {
         this.preferences = defaults;
         ProtocolFactory.register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(), new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(),
-                new GoogleStorageProtocol(), new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new B2Protocol(), new DriveProtocol(), new DropboxProtocol());
+                new GoogleStorageProtocol(), new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new B2Protocol(), new DriveProtocol(), new DropBoxProtocol());
         this.options = options;
         if(log.isInfoEnabled()) {
             log.info(String.format("Parsed options %s from input %s", options, input));

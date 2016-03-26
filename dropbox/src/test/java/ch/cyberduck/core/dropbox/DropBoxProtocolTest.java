@@ -8,15 +8,15 @@ import static org.junit.Assert.assertFalse;
 /**
  * Created by denis on 3/21/16.
  */
-public class DropboxProtocolTest {
+public class DropBoxProtocolTest {
 
     @Test
     public void testPrefix() {
-        assertEquals("ch.cyberduck.core.dropbox.Dropbox", new DropboxProtocol().getPrefix());
+        assertEquals("ch.cyberduck.core.dropbox.Dropbox", new DropBoxProtocol().getPrefix());
     }
 
     @Test
     public void testPassword() {
-        assertFalse(new DropboxProtocol().isPasswordConfigurable());
+        assertFalse(new DropBoxProtocol().isPasswordConfigurable());
     }
 }

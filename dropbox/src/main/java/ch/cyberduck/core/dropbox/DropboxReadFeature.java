@@ -27,9 +27,9 @@ import java.io.InputStream;
 
 public class DropboxReadFeature implements Read {
 
-    private DropboxSession session;
+    private DropBoxSession session;
 
-    public DropboxReadFeature(DropboxSession session) {
+    public DropboxReadFeature(DropBoxSession session) {
         this.session = session;
     }
 
