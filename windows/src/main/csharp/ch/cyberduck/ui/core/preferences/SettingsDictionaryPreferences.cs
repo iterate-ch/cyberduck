@@ -23,18 +23,7 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using ch.cyberduck.core.azure;
-using ch.cyberduck.core.dav;
-using ch.cyberduck.core.ftp;
-using ch.cyberduck.core.googlestorage;
-using ch.cyberduck.core.googledrive;
-using ch.cyberduck.core.irods;
 using ch.cyberduck.core.local;
-using ch.cyberduck.core.openstack;
-using ch.cyberduck.core.s3;
-using ch.cyberduck.core.sftp;
-using ch.cyberduck.core.b2;
-using ch.cyberduck.core.spectra;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Bonjour;
 using Ch.Cyberduck.Core.Diagnostics;
@@ -347,27 +336,6 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             Security.addProvider(new SunMSCAPI());
             defaults.put("connection.ssl.keystore.type", "Windows-MY");
             defaults.put("connection.ssl.keystore.provider", "SunMSCAPI");
-
-            defaults.put(String.Format("connection.protocol.{0}.enable", new FTPProtocol().getIdentifier()),
-                true.ToString());
-            defaults.put(String.Format("connection.protocol.{0}.enable", new FTPTLSProtocol().getIdentifier()),
-                true.ToString());
-            defaults.put(String.Format("connection.protocol.{0}.enable", new SFTPProtocol().getIdentifier()),
-                true.ToString());
-            defaults.put(String.Format("connection.protocol.{0}.enable", new DAVProtocol().getIdentifier()),
-                true.ToString());
-            defaults.put(String.Format("connection.protocol.{0}.enable", new DAVSSLProtocol().getIdentifier()),
-                true.ToString());
-            defaults.put(String.Format("connection.protocol.{0}.enable", new SwiftProtocol().getIdentifier()),
-                true.ToString());
-            defaults.put(String.Format("connection.protocol.{0}.enable", new S3Protocol().getIdentifier()),
-                true.ToString());
-            defaults.put(String.Format("connection.protocol.{0}.enable", new GoogleStorageProtocol().getIdentifier()),
-                true.ToString());
-            defaults.put(String.Format("connection.protocol.{0}.enable", new AzureProtocol().getIdentifier()),
-                true.ToString());
-            defaults.put(String.Format("connection.protocol.{0}.enable", new DriveProtocol().getIdentifier()),
-                true.ToString());
 
              // NTLM Windows Domain
             try
