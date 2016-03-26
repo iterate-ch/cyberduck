@@ -39,13 +39,13 @@ public class DropboxReadFeature implements Read {
             DbxDownloader<FileMetadata> downloader =
                     session.getClient().getDbxClient().files().download(file.getAbsolute());
             return downloader.getInputStream();
-        } catch(DbxException ex) {
+        } catch (DbxException ex) {
             throw new BackgroundException("Download failed.", ex);
         }
     }
 
     @Override
     public boolean offset(Path file) throws BackgroundException {
-        return true;
+        return false;
     }
 }
