@@ -39,7 +39,6 @@ public class DropboxProtocol extends AbstractProtocol {
     @Override
     public String getDefaultHostname() {
         return "www.dropbox.com";
-        //return "https://www.dropbox.com/1/oauth2/authorize";
     }
 
     @Override
