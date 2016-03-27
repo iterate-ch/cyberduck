@@ -25,13 +25,15 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
-import com.dropbox.core.DbxException;
-import com.dropbox.core.v2.files.UploadUploader;
+
 import org.apache.commons.io.output.ProxyOutputStream;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
+
+import com.dropbox.core.DbxException;
+import com.dropbox.core.v2.files.UploadUploader;
 
 public class DropboxWriteFeature implements Write {
 
@@ -56,7 +58,7 @@ public class DropboxWriteFeature implements Write {
 
     @Override
     public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
-        if (finder.withCache(cache).find(file)) {
+        if(finder.withCache(cache).find(file)) {
             final PathAttributes attributes = this.attributes.withCache(cache).find(file);
             return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());
         }
@@ -66,9 +68,10 @@ public class DropboxWriteFeature implements Write {
     @Override
     public OutputStream write(Path file, TransferStatus status) throws BackgroundException {
         try {
-            UploadUploader uploader = session.getClient().getDbxClient().files().upload(file.getAbsolute());
+            UploadUploader uploader = session.getClient().files().upload(file.getAbsolute());
             return new UploadProxyOutputStream(uploader);
-        } catch (DbxException ex) {
+        }
+        catch(DbxException ex) {
             throw new BackgroundException("Upload failed.", ex);
         }
     }
@@ -97,9 +100,11 @@ public class DropboxWriteFeature implements Write {
             try {
                 uploader.finish();
                 uploader.close();
-            } catch (DbxException ex) {
+            }
+            catch(DbxException ex) {
                 throw new IOException("Upload failed.", ex);
-            } finally {
+            }
+            finally {
                 super.close();
             }
         }

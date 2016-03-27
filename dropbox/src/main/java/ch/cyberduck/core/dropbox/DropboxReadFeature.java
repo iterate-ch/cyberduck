@@ -19,11 +19,12 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
+
+import java.io.InputStream;
+
 import com.dropbox.core.DbxDownloader;
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.FileMetadata;
-
-import java.io.InputStream;
 
 public class DropboxReadFeature implements Read {
 
@@ -37,7 +38,7 @@ public class DropboxReadFeature implements Read {
     public InputStream read(Path file, TransferStatus status) throws BackgroundException {
         try {
             DbxDownloader<FileMetadata> downloader =
-                    session.getClient().getDbxClient().files().download(file.getAbsolute());
+                    session.getClient().files().download(file.getAbsolute());
             return downloader.getInputStream();
         } catch (DbxException ex) {
             throw new BackgroundException("Download failed.", ex);
