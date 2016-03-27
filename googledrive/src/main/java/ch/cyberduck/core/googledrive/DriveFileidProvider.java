@@ -35,6 +35,9 @@ public class DriveFileidProvider {
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
             return file.attributes().getVersionId();
         }
+        if(file.isRoot()) {
+            return DriveHomeFinderService.ROOT_FOLDER_ID;
+        }
         final AttributedList<Path> list = new DriveListService(session).list(
                 file.getParent(), new DisabledListProgressListener());
         for(Path f : list) {
