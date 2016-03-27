@@ -25,7 +25,7 @@ public class DropboxDirectoryFeature implements Directory {
 
     private DropboxSession session;
 
-    public DropboxDirectoryFeature(DropboxSession session) {
+    public DropboxDirectoryFeature(final DropboxSession session) {
         this.session = session;
     }
 
