@@ -56,6 +56,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.dropbox.core.DbxAppInfo;
 import com.dropbox.core.DbxException;
+import com.dropbox.core.DbxHost;
 import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.DbxWebAuthNoRedirect;
 import com.dropbox.core.http.StandardHttpRequestor;
@@ -99,7 +100,7 @@ public class DropboxSession extends SSLSession<DbxClientV2> {
 
     @Override
     protected DbxClientV2 connect(final HostKeyCallback callback) throws BackgroundException {
-        client = new DbxClientV2(config, StringUtils.EMPTY);
+        client = new DbxClientV2(config, StringUtils.EMPTY, DbxHost.DEFAULT);
         return client;
     }
 
