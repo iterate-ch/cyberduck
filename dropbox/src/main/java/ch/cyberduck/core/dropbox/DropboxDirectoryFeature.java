@@ -19,6 +19,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 
+import com.dropbox.core.DbxException;
+
 public class DropboxDirectoryFeature implements Directory {
 
     private DropboxSession session;
@@ -28,12 +30,17 @@ public class DropboxDirectoryFeature implements Directory {
     }
 
     @Override
-    public void mkdir(Path file) throws BackgroundException {
-
+    public void mkdir(final Path file) throws BackgroundException {
+        this.mkdir(file, null);
     }
 
     @Override
-    public void mkdir(Path file, String region) throws BackgroundException {
-
+    public void mkdir(final Path file, final String region) throws BackgroundException {
+        try {
+            session.getClient().files().createFolder(file.getAbsolute());
+        }
+        catch(DbxException e) {
+            throw new DropboxExceptionMappingService().map(e);
+        }
     }
 }
