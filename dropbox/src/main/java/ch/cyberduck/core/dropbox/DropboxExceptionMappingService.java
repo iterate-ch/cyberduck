@@ -15,34 +15,17 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.exception.NotfoundException;
-import org.apache.http.client.HttpResponseException;
 
-import java.io.IOException;
+import com.dropbox.core.DbxException;
 
-public class DropboxExceptionMappingService extends DefaultIOExceptionMappingService {
+public class DropboxExceptionMappingService extends AbstractExceptionMappingService<DbxException> {
 
     @Override
-    public BackgroundException map(final IOException failure) {
-        if (failure instanceof HttpResponseException) {
-            final HttpResponseException response = (HttpResponseException) failure;
-            final StringBuilder buffer = new StringBuilder();
-            this.append(buffer, response.getMessage());
-            if (response.getStatusCode() == 401) {
-                // Invalid Credentials. Refresh the access token using the long-lived refresh token
-                return new LoginFailureException(buffer.toString(), failure);
-            }
-            if (response.getStatusCode() == 403) {
-                return new AccessDeniedException(buffer.toString(), failure);
-            }
-            if (response.getStatusCode() == 404) {
-                return new NotfoundException(buffer.toString(), failure);
-            }
-        }
-        return super.map(failure);
+    public BackgroundException map(final DbxException failure) {
+        final StringBuilder buffer = new StringBuilder();
+        this.append(buffer, failure.getLocalizedMessage());
+        return this.map(buffer.toString(), failure);
     }
 }
