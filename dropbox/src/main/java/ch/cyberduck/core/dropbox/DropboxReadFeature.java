@@ -40,8 +40,9 @@ public class DropboxReadFeature implements Read {
             DbxDownloader<FileMetadata> downloader =
                     session.getClient().files().download(file.getAbsolute());
             return downloader.getInputStream();
-        } catch (DbxException ex) {
-            throw new BackgroundException("Download failed.", ex);
+        }
+        catch(DbxException ex) {
+            throw new DropboxExceptionMappingService().map("Download failed.", ex);
         }
     }
 

@@ -72,7 +72,7 @@ public class DropboxWriteFeature implements Write {
             return new UploadProxyOutputStream(uploader);
         }
         catch(DbxException ex) {
-            throw new BackgroundException("Upload failed.", ex);
+            throw new DropboxExceptionMappingService().map("Upload failed.", ex);
         }
     }
 
