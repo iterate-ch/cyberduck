@@ -26,6 +26,6 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
     public BackgroundException map(final DbxException failure) {
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, failure.getLocalizedMessage());
-        return this.map(buffer.toString(), failure);
+        return new BackgroundException(buffer.toString(), failure);
     }
 }
