@@ -38,7 +38,7 @@ import static org.junit.Assert.assertNotNull;
 public class B2FileidProviderTest {
 
     @Test
-    public void getFileid() throws Exception {
+    public void getFileidFile() throws Exception {
         final B2Session session = new B2Session(
                 new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
                         new Credentials(
@@ -48,8 +48,31 @@ public class B2FileidProviderTest {
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener());
         service.connect(session, PathCache.empty());
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path file = new Path(bucket, String.format("%s %s", UUID.randomUUID().toString(), "1"), EnumSet.of(Path.Type.file));
+        final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new B2TouchFeature(session).touch(file);
+        assertNotNull(new B2FileidProvider(session).getFileid(file));
+        new B2DeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+                //
+            }
+        });
+
+    }
+
+    @Test
+    public void getFileidFolder() throws Exception {
+        final B2Session session = new B2Session(
+                new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
+                        new Credentials(
+                                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
+                        )));
+        final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener());
+        service.connect(session, PathCache.empty());
+        final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        new B2DirectoryFeature(session).mkdir(file);
         assertNotNull(new B2FileidProvider(session).getFileid(file));
         new B2DeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
