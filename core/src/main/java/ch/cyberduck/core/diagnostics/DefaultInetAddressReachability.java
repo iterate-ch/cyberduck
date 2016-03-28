@@ -24,9 +24,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import java.io.IOException;
 import java.net.InetAddress;
 
-/**
- * @version $Id$
- */
 public class DefaultInetAddressReachability implements Reachability {
 
     private Preferences preferences
