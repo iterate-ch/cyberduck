@@ -66,7 +66,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     /**
      * The number of times this action has been run
      */
-    protected int repeat = 0;
+    private int repeat = 0;
 
     private static final String LINE_SEPARATOR
             = System.getProperty("line.separator");
