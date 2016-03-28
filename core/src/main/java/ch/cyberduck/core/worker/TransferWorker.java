@@ -22,9 +22,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.concurrent.Callable;
 
-/**
- * @version $Id$
- */
 public interface TransferWorker {
     void cancel();
 
