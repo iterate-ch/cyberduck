@@ -18,9 +18,6 @@ package ch.cyberduck.core.threading;
  * feedback@cyberduck.io
  */
 
-/**
- * @version $Id$
- */
 public interface FailureDiagnostics<T> {
 
     public enum Type {
