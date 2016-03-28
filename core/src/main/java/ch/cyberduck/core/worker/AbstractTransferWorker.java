@@ -304,13 +304,15 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                                     throw e;
                                 }
                                 if(diagnostics.determine(e) == FailureDiagnostics.Type.network) {
-                                    if(this.retry(e)) {
-                                        return this.call();
+                                    if(!this.retry(e)) {
+                                        throw e;
                                     }
-                                    throw e;
+                                    // Retry immediately
+                                    submit(this);
+                                    return null;
                                 }
                                 // Prompt to continue or abort for application errors
-                                if(error.prompt(e)) {
+                                else if(error.prompt(e)) {
                                     // Continue
                                     log.warn(String.format("Ignore transfer failure %s", e));
                                     return null;
@@ -368,12 +370,33 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                                         segment.getRename().remote != null ? segment.getRename().remote : item.remote,
                                         segment.getRename().local != null ? segment.getRename().local : item.local,
                                         options, segment, connectionCallback, progress, stream);
+
                                 transferItemCallback.complete(item);
+
+                                // Recursive
+                                if(item.remote.isDirectory()) {
+                                    for(TransferItem f : cache.get(item)) {
+                                        // Recursive
+                                        transfer(f, action);
+                                    }
+                                    cache.remove(item);
+                                }
+                                // Determine transfer filter implementation from selected overwrite action
+                                final TransferPathFilter filter = transfer.filter(session, action, progress);
+                                // Post process of file.
+                                filter.complete(item.remote, item.local, options, segment, progress);
+
+                                if(!iter.hasNext()) {
+                                    // Free memory when no more segments to transfer
+                                    table.remove(item.remote);
+                                }
                             }
                             catch(ConnectionCanceledException e) {
+                                segment.setFailure();
                                 throw e;
                             }
                             catch(RetriableAccessDeniedException e) {
+                                segment.setFailure();
                                 final BackgroundActionPauser pause = new BackgroundActionPauser(new BackgroundActionPauser.Callback() {
                                     @Override
                                     public boolean isCanceled() {
@@ -386,10 +409,11 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                                     }
                                 }, (int) e.getRetry().getSeconds());
                                 pause.await(progress);
-                                // Recurse
-                                return this.call();
+                                // Retry after pause
+                                submit(this);
                             }
                             catch(BackgroundException e) {
+                                segment.setFailure();
                                 if(AbstractTransferWorker.this.isCanceled()) {
                                     throw new ConnectionCanceledException(e);
                                 }
@@ -397,37 +421,20 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                                     throw e;
                                 }
                                 if(diagnostics.determine(e) == FailureDiagnostics.Type.network) {
-                                    if(this.retry(e)) {
-                                        return this.call();
+                                    if(!this.retry(e)) {
+                                        throw e;
                                     }
-                                    throw e;
+                                    // Retry immediately
+                                    submit(this);
                                 }
-                                segment.setFailure();
                                 // Prompt to continue or abort for application errors
-                                if(error.prompt(e)) {
+                                else if(error.prompt(e)) {
                                     // Continue
                                     log.warn(String.format("Ignore transfer failure %s", e));
                                 }
                                 else {
                                     throw new ConnectionCanceledException(e);
                                 }
-                            }
-                            // Recursive
-                            if(item.remote.isDirectory()) {
-                                for(TransferItem f : cache.get(item)) {
-                                    // Recursive
-                                    transfer(f, action);
-                                }
-                                cache.remove(item);
-                            }
-                            if(!segment.isFailure()) {
-                                // Determine transfer filter implementation from selected overwrite action
-                                final TransferPathFilter filter = transfer.filter(session, action, progress);
-                                // Post process of file.
-                                filter.complete(item.remote, item.local, options, segment, progress);
-                            }
-                            if(!iter.hasNext()) {
-                                table.remove(item.remote);
                             }
                         }
                         finally {
