@@ -25,13 +25,13 @@ usage() {
 
 run() {
     for name in `ls . | grep icns`; do
-		png=`basename $name .icns`
+		png=`basename "$name .icns"`
 		tiff;
     done;
 }
 
 tiff() {
-    $tiff -cathidpicheck $png.icns -out $png.tiff
+    $tiff -cathidpicheck "$png.icns" -out "$png.tiff"
 }
 
 while [ "$1" != "" ] # When there are arguments...
