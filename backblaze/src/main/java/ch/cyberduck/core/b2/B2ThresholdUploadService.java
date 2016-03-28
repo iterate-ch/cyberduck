@@ -59,11 +59,6 @@ public class B2ThresholdUploadService implements Upload {
     }
 
     @Override
-    public boolean pooled() {
-        return true;
-    }
-
-    @Override
     public Write.Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
         return session.getFeature(Write.class).append(file, length, cache);
     }

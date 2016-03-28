@@ -18,7 +18,6 @@ package ch.cyberduck.core.transfer;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 public class TransferTypeFinder {
@@ -36,12 +35,6 @@ public class TransferTypeFinder {
                     case copy:
                     case move:
                         break;
-                    case upload:
-                        final Upload feature = session.getFeature(Upload.class);
-                        if(feature.pooled()) {
-                            // Already pooled internally.
-                            break;
-                        }
                     default:
                         // Setup concurrent worker if not already pooled internally
                         final int connections = PreferencesFactory.get().getInteger("queue.maxtransfers");

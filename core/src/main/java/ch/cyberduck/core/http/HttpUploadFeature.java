@@ -56,11 +56,6 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
     }
 
     @Override
-    public boolean pooled() {
-        return false;
-    }
-
-    @Override
     public Write.Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
         return writer.append(file, length, cache);
     }

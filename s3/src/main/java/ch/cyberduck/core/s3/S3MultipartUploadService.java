@@ -63,9 +63,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-/**
- * @version $Id$
- */
 public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, MessageDigest> {
     private static final Logger log = Logger.getLogger(S3MultipartUploadService.class);
 
@@ -133,11 +130,6 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
     public S3MultipartUploadService withMetadata(final Map<String, String> metadata) {
         this.metadata = metadata;
         return this;
-    }
-
-    @Override
-    public boolean pooled() {
-        return true;
     }
 
     @Override

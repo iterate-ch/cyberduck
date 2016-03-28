@@ -36,10 +36,6 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author Joel Wright <joel.wright@sohonet.com>
- * @version $Id$
- */
 public class SwiftThresholdUploadService implements Upload {
     private static final Logger log = Logger.getLogger(SwiftThresholdUploadService.class);
 
@@ -70,11 +66,6 @@ public class SwiftThresholdUploadService implements Upload {
         this.regionService = regionService;
         this.threshold = threshold;
         this.segment = segment;
-    }
-
-    @Override
-    public boolean pooled() {
-        return true;
     }
 
     @Override

@@ -88,11 +88,6 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
     }
 
     @Override
-    public boolean pooled() {
-        return true;
-    }
-
-    @Override
     public B2UploadPartResponse upload(final Path file, final Local local,
                                        final BandwidthThrottle throttle,
                                        final StreamListener listener,

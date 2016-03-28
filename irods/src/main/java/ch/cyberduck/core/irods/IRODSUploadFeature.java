@@ -51,9 +51,6 @@ import org.irods.jargon.core.transfer.TransferControlBlock;
 import java.io.File;
 import java.text.MessageFormat;
 
-/**
- * @version $Id$
- */
 public class IRODSUploadFeature implements Upload<Checksum> {
     private static final Logger log = Logger.getLogger(IRODSUploadFeature.class);
 
@@ -63,11 +60,6 @@ public class IRODSUploadFeature implements Upload<Checksum> {
 
     public IRODSUploadFeature(final IRODSSession session) {
         this.session = session;
-    }
-
-    @Override
-    public boolean pooled() {
-        return true;
     }
 
     @Override

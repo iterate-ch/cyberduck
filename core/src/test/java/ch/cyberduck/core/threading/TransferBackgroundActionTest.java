@@ -58,9 +58,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 public class TransferBackgroundActionTest {
 
     @Test
@@ -103,11 +100,6 @@ public class TransferBackgroundActionTest {
                         @Override
                         public T upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
                             return null;
-                        }
-
-                        @Override
-                        public boolean pooled() {
-                            return true;
                         }
 
                         @Override
