@@ -245,7 +245,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
         }
         final TransferItem item = new TransferItem(file, local);
         if(prompt.isSelected(item)) {
-            this.submit(new TransferCallable() {
+            this.submit(new RepeatableTransferCallable() {
                 @Override
                 public TransferStatus call() throws BackgroundException {
                     final Session<?> session = borrow();
@@ -300,10 +300,13 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                                 if(isCanceled()) {
                                     throw new ConnectionCanceledException(e);
                                 }
-                                if(diagnostics.determine(e) == FailureDiagnostics.Type.network) {
+                                if(table.size() == 0) {
                                     throw e;
                                 }
-                                if(table.size() == 0) {
+                                if(diagnostics.determine(e) == FailureDiagnostics.Type.network) {
+                                    if(this.retry(e)) {
+                                        return this.call();
+                                    }
                                     throw e;
                                 }
                                 // Prompt to continue or abort for application errors
@@ -354,7 +357,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
             final List<TransferStatus> segments = status.getSegments();
             for(final Iterator<TransferStatus> iter = segments.iterator(); iter.hasNext(); ) {
                 final TransferStatus segment = iter.next();
-                this.submit(new TransferCallable() {
+                this.submit(new RepeatableTransferCallable() {
                     @Override
                     public TransferStatus call() throws BackgroundException {
                         // Transfer
@@ -383,17 +386,21 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                                     }
                                 }, (int) e.getRetry().getSeconds());
                                 pause.await(progress);
-                                transfer(item, action);
+                                // Recurse
+                                return this.call();
                             }
                             catch(BackgroundException e) {
                                 segment.setFailure();
                                 if(AbstractTransferWorker.this.isCanceled()) {
                                     throw new ConnectionCanceledException(e);
                                 }
-                                if(diagnostics.determine(e) == FailureDiagnostics.Type.network) {
+                                if(table.size() == 0) {
                                     throw e;
                                 }
-                                if(table.size() == 0) {
+                                if(diagnostics.determine(e) == FailureDiagnostics.Type.network) {
+                                    if(this.retry(e)) {
+                                        return this.call();
+                                    }
                                     throw e;
                                 }
                                 // Prompt to continue or abort for application errors
