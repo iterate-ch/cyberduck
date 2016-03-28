@@ -44,6 +44,7 @@ import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -73,7 +74,7 @@ public class CopyTransfer extends Transfer {
                         final Map<Path, Path> selected, final BandwidthThrottle bandwidth) {
         super(source, new ArrayList<TransferItem>(), bandwidth);
         this.destination = destination;
-        this.files = selected;
+        this.files = new HashMap<Path, Path>(selected);
         for(Path s : selected.keySet()) {
             roots.add(new TransferItem(s));
         }
