@@ -390,7 +390,6 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                                 return this.call();
                             }
                             catch(BackgroundException e) {
-                                segment.setFailure();
                                 if(AbstractTransferWorker.this.isCanceled()) {
                                     throw new ConnectionCanceledException(e);
                                 }
@@ -403,6 +402,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                                     }
                                     throw e;
                                 }
+                                segment.setFailure();
                                 // Prompt to continue or abort for application errors
                                 if(error.prompt(e)) {
                                     // Continue
