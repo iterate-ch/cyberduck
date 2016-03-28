@@ -75,7 +75,6 @@ public class B2ObjectListService implements ListService {
                     }
                     final PathAttributes attributes = new PathAttributes();
                     attributes.setChecksum(Checksum.parse(file.getContentSha1()));
-                    attributes.setSize(file.getSize());
                     final long timestamp = file.getUploadTimestamp();
                     attributes.setCreationDate(timestamp);
                     attributes.setModificationDate(timestamp);
@@ -91,6 +90,7 @@ public class B2ObjectListService implements ListService {
                                 EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes));
                     }
                     else {
+                        attributes.setSize(file.getSize());
                         objects.add(new Path(directory, PathNormalizer.name(file.getFileName()), EnumSet.of(Path.Type.file), attributes));
                     }
                     final Integer revision;
