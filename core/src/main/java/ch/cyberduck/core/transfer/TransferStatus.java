@@ -92,9 +92,6 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     private AtomicBoolean complete
             = new AtomicBoolean();
 
-    private AtomicBoolean failure
-            = new AtomicBoolean();
-
     private CountDownLatch done
             = new CountDownLatch(1);
 
@@ -167,7 +164,6 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     }
 
     public void setFailure() {
-        failure.set(true);
         complete.set(false);
         done.countDown();
     }
@@ -185,10 +181,6 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      */
     public boolean isCanceled() {
         return canceled.get();
-    }
-
-    public boolean isFailure() {
-        return failure.get();
     }
 
     /**
