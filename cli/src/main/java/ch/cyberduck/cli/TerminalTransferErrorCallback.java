@@ -23,9 +23,6 @@ import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
 
-/**
- * @version $Id$
- */
 public class TerminalTransferErrorCallback implements TransferErrorCallback {
 
     private TerminalProgressListener console

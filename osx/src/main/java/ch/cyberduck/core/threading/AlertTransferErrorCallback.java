@@ -29,9 +29,6 @@ import ch.cyberduck.ui.cocoa.WindowController;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * @version $Id$
- */
 public class AlertTransferErrorCallback implements TransferErrorCallback {
 
     private final WindowController controller;
