@@ -28,6 +28,7 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.UseragentProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
@@ -84,7 +85,7 @@ public class DriveSession extends HttpSession<Drive> {
     private Preferences preferences
             = PreferencesFactory.get();
 
-    private final PreferencesUseragentProvider useragent
+    private final UseragentProvider useragent
             = new PreferencesUseragentProvider();
 
     public DriveSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
