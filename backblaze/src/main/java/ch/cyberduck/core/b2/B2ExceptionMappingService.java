@@ -19,6 +19,7 @@ import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -75,6 +76,8 @@ public class B2ExceptionMappingService extends AbstractExceptionMappingService<B
                 return new InteroperabilityException(buffer.toString(), e);
             case HttpStatus.SC_NOT_IMPLEMENTED:
                 return new InteroperabilityException(buffer.toString(), e);
+            case HttpStatus.SC_SERVICE_UNAVAILABLE:
+                return new ConnectionRefusedException(buffer.toString(), e);
             default:
                 if(e.getRetry() != null) {
                     // Too Many Requests

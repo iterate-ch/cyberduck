@@ -21,6 +21,7 @@ package ch.cyberduck.core.dav;
 import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -30,9 +31,6 @@ import org.apache.http.HttpStatus;
 
 import com.github.sardine.impl.SardineException;
 
-/**
- * @version $Id$
- */
 public class DAVExceptionMappingService extends AbstractExceptionMappingService<SardineException> {
 
     @Override
@@ -68,6 +66,8 @@ public class DAVExceptionMappingService extends AbstractExceptionMappingService<
                 return new InteroperabilityException(buffer.toString(), e);
             case HttpStatus.SC_INTERNAL_SERVER_ERROR:
                 return new InteroperabilityException(buffer.toString(), e);
+            case HttpStatus.SC_SERVICE_UNAVAILABLE:
+                return new ConnectionRefusedException(buffer.toString(), e);
         }
         return this.wrap(e, buffer);
     }
