@@ -98,19 +98,21 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
             }
             finally {
                 final StreamCloser c = new DefaultStreamCloser();
-                c.close(in);
-                c.close(out);
+                try {
+                    c.close(in);
+                    c.close(out);
+                }
+                catch(BackgroundException e) {
+                    // Reset file offset
+                    status.setOffset(0L); // status.getOffset() - count.getSent()
+                    // Discard sent bytes if there is an error reply.
+                    listener.sent(-count.getSent());
+                    throw e;
+                }
             }
-            try {
-                final Output response = out.getResponse();
-                this.post(file, digest, response);
-                return response;
-            }
-            catch(BackgroundException e) {
-                // Discard sent bytes if there is an error reply.
-                listener.sent(-count.getSent());
-                throw e;
-            }
+            final Output response = out.getResponse();
+            this.post(file, digest, response);
+            return response;
         }
         catch(IOException e) {
             throw new HttpExceptionMappingService().map("Upload {0} failed", e, file);
