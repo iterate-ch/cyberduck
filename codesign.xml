@@ -58,7 +58,7 @@
                type="both"
                parallel="false" spawn="false" force="true">
             <arg line="${codesign.options} --identifier net.java.openjdk.jre --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
-            <fileset dir="${bundle}/${bundle.runtime}" erroronmissingdir="false">
+            <fileset dir="${bundle}/${bundle.runtime}">
                 <include name="**/*.dylib"/>
                 <include name="**/*.jar"/>
             </fileset>
