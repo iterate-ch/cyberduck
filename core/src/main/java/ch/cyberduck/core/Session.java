@@ -20,6 +20,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Download;
+import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Move;
@@ -316,6 +317,9 @@ public abstract class Session<C> implements TranscriptListener {
             return (T) new DefaultHomeFinderService(this);
         }
         if(type == Search.class) {
+            return (T) new DefaultSearchFeature(this);
+        }
+        if(type == IdProvider.class) {
             return (T) new DefaultSearchFeature(this);
         }
         return null;
