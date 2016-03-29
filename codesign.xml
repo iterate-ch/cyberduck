@@ -105,7 +105,7 @@
     <target name="verify-spctl">
         <echo message="Print system policy verification for ${bundle}..."/>
         <exec executable="/usr/sbin/spctl" failonerror="true">
-            <arg line="-v --assess --type execute '${bundle}'"/>
+            <arg line="-v --assess --type execute --raw '${bundle}'"/>
         </exec>
     </target>
 
