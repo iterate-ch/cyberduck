@@ -30,6 +30,7 @@ import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Read;
@@ -133,6 +134,9 @@ public class B2Session extends HttpSession<B2ApiClient> {
         }
         if(type == UrlProvider.class) {
             return (T) new B2UrlProvider(this);
+        }
+        if(type == Find.class) {
+            return (T) new B2FindFeature(this);
         }
         if(type == Attributes.class) {
             return (T) new B2AttributesFeature(this);
