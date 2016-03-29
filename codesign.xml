@@ -98,7 +98,7 @@
     <target name="verify-signature">
         <echo message="Print codesign requirement for ${bundle}..."/>
         <exec executable="/usr/bin/codesign" failonerror="true">
-            <arg line="-d -r- --deep-verify '${bundle}'"/>
+            <arg line="-vvv --deep --strict '${bundle}'"/>
         </exec>
     </target>
 
