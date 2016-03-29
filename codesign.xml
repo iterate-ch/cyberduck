@@ -62,7 +62,7 @@
                 <include name="**/*.dylib"/>
                 <include name="**/*.jar"/>
             </fileset>
-            <fileset dir="${bundle}/${bundle.macos}">
+            <fileset dir="${bundle}/${bundle.plugins}">
                 <include name="*.jre"/>
             </fileset>
             <srcfile/>

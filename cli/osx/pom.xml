@@ -109,7 +109,7 @@
                                             <destFileName>US_export_policy.jar</destFileName>
                                         </artifactItem>
                                     </artifactItems>
-                                    <outputDirectory>${project.build.directory}/duck.bundle/Contents/MacOS/Runtime.jre/Contents/Home/lib/security
+                                    <outputDirectory>${project.build.directory}/duck.bundle/Contents/PlugIns/Runtime.jre/Contents/Home/lib/security
                                     </outputDirectory>
                                 </configuration>
                             </execution>
