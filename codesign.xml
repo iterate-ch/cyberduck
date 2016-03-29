@@ -86,6 +86,9 @@
         <antcall target="verify-signature">
             <param name="bundle" value="${bundle}"/>
         </antcall>
+        <antcall target="verify-spctl">
+            <param name="bundle" value="${bundle}"/>
+        </antcall>
     </target>
 
     <target name="compile-codesign-requirement">
