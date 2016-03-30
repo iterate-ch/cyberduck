@@ -68,7 +68,7 @@ public class B2LargeUploadPartServiceTest {
         final B2StartLargeFileResponse startResponse = session.getClient().startLargeFileUpload(
                 new B2FileidProvider(session).getFileid(bucket),
                 file.getName(), null, Collections.emptyMap());
-        assertTrue(new B2LargeUploadPartService(session).list(file).isEmpty());
+        assertTrue(new B2LargeUploadPartService(session).list(new B2FileidProvider(session).getFileid(file)).isEmpty());
         session.close();
     }
 
