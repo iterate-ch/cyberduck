@@ -29,12 +29,10 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.IdProvider;
 
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id$
- */
 public class DefaultAttributesFeature implements Attributes {
     private static final Logger log = Logger.getLogger(DefaultAttributesFeature.class);
 
@@ -71,7 +69,21 @@ public class DefaultAttributesFeature implements Attributes {
         if(list.contains(file)) {
             return list.get(file).attributes();
         }
-        throw new NotfoundException(file.getAbsolute());
+        else {
+            // Try native implementation
+            final Attributes feature = session.getFeature(Attributes.class);
+            if(feature instanceof DefaultAttributesFeature) {
+                throw new NotfoundException(file.getAbsolute());
+            }
+            final IdProvider id = session.getFeature(IdProvider.class);
+            final String version = id.getFileid(file);
+            if(version == null) {
+                throw new NotfoundException(file.getAbsolute());
+            }
+            final PathAttributes attributes = new PathAttributes();
+            attributes.setVersionId(version);
+            return feature.find(new Path(file.getAbsolute(), file.getType(), attributes));
+        }
     }
 
     @Override
