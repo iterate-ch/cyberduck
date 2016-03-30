@@ -70,19 +70,22 @@ public class DefaultAttributesFeature implements Attributes {
             return list.get(file).attributes();
         }
         else {
-            // Try native implementation
-            final Attributes feature = session.getFeature(Attributes.class);
-            if(feature instanceof DefaultAttributesFeature) {
-                throw new NotfoundException(file.getAbsolute());
+            if(null == file.attributes().getVersionId()) {
+                // Try native implementation
+                final Attributes feature = session.getFeature(Attributes.class);
+                if(feature instanceof DefaultAttributesFeature) {
+                    throw new NotfoundException(file.getAbsolute());
+                }
+                final IdProvider id = session.getFeature(IdProvider.class);
+                final String version = id.getFileid(file);
+                if(version == null) {
+                    throw new NotfoundException(file.getAbsolute());
+                }
+                final PathAttributes attributes = new PathAttributes();
+                attributes.setVersionId(version);
+                return feature.find(new Path(file.getAbsolute(), file.getType(), attributes));
             }
-            final IdProvider id = session.getFeature(IdProvider.class);
-            final String version = id.getFileid(file);
-            if(version == null) {
-                throw new NotfoundException(file.getAbsolute());
-            }
-            final PathAttributes attributes = new PathAttributes();
-            attributes.setVersionId(version);
-            return feature.find(new Path(file.getAbsolute(), file.getType(), attributes));
+            throw new NotfoundException(file.getAbsolute());
         }
     }
 
