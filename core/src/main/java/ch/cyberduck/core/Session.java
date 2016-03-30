@@ -20,9 +20,9 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Download;
-import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Search;
 import ch.cyberduck.core.features.Touch;
@@ -38,6 +38,7 @@ import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.shared.DisabledMoveFeature;
+import ch.cyberduck.core.shared.NullFileidProvider;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.log4j.Logger;
@@ -320,7 +321,7 @@ public abstract class Session<C> implements TranscriptListener {
             return (T) new DefaultSearchFeature(this);
         }
         if(type == IdProvider.class) {
-            return (T) new DefaultSearchFeature(this);
+            return (T) new NullFileidProvider();
         }
         return null;
     }
