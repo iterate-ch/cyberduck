@@ -41,7 +41,6 @@
     <property name="winsdk.home" value="${programFiles}/Windows Kits/8.1/bin/x86"/>
     <property name="wybuild.home" value="${programFiles}/wyBuild"/>
 
-    <property name="jvm.runtime.bin" value="${java.home}/bin"/>
     <property name="cpack.bin" value="${env.ChocolateyInstall}/bin/cpack"/>
 
     <target name="build" depends="version">
