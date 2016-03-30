@@ -32,6 +32,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
@@ -149,6 +150,9 @@ public class B2Session extends HttpSession<B2ApiClient> {
         }
         if(type == Location.class) {
             return (T) new B2BucketTypeFeature(this);
+        }
+        if(type == IdProvider.class) {
+            return (T) new B2FileidProvider(this);
         }
         return super.getFeature(type);
     }
