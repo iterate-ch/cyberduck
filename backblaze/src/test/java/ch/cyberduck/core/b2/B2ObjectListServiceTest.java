@@ -61,6 +61,7 @@ public class B2ObjectListServiceTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        bucket.attributes().setVersionId(new B2FileidProvider(session).getFileid(bucket));
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
         status.setChecksum(Checksum.parse("da39a3ee5e6b4b0d3255bfef95601890afd80709"));
@@ -86,6 +87,35 @@ public class B2ObjectListServiceTest {
     }
 
     @Test
+    public void testListChunking() throws Exception {
+        final B2Session session = new B2Session(
+                new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
+                        new Credentials(
+                                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
+                        )));
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        bucket.attributes().setVersionId(new B2FileidProvider(session).getFileid(bucket));
+        final Path file1 = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path file2 = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        new B2TouchFeature(session).touch(file1);
+        file1.attributes().setVersionId(new B2FileidProvider(session).getFileid(file1));
+        new B2TouchFeature(session).touch(file2);
+        file2.attributes().setVersionId(new B2FileidProvider(session).getFileid(file2));
+        final List<Path> list = new B2ObjectListService(session, 1).list(bucket, new DisabledListProgressListener());
+        assertTrue(list.contains(file1));
+        assertTrue(list.contains(file2));
+
+        new B2DeleteFeature(session).delete(Arrays.asList(file1, file2), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+                //
+            }
+        });
+    }
+
+    @Test
     public void testListRevisions() throws Exception {
         final B2Session session = new B2Session(
                 new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
@@ -95,6 +125,7 @@ public class B2ObjectListServiceTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        bucket.attributes().setVersionId(new B2FileidProvider(session).getFileid(bucket));
         final String name = UUID.randomUUID().toString();
         final Path file1 = new Path(bucket, name, EnumSet.of(Path.Type.file));
         final Path file2 = new Path(bucket, name, EnumSet.of(Path.Type.file));
@@ -158,6 +189,7 @@ public class B2ObjectListServiceTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        bucket.attributes().setVersionId(new B2FileidProvider(session).getFileid(bucket));
         final Path folder1 = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path folder2 = new Path(folder1, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path file1 = new Path(folder1, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
