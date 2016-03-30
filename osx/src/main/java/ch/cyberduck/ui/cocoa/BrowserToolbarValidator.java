@@ -208,7 +208,16 @@ public class BrowserToolbarValidator implements ToolbarValidator {
             return controller.isMounted() || this.isBookmarks();
         }
         else if(action.equals(Foundation.selector("quicklookButtonClicked:"))) {
-            return this.isBrowser() && controller.isMounted() && quicklook.isAvailable() && controller.getSelectionCount() > 0;
+            if(this.isBrowser() && controller.isMounted() && quicklook.isAvailable()) {
+                if(controller.getSelectionCount() > 0) {
+                    final Path selected = controller.getSelectedPath();
+                    if(null == selected) {
+                        return false;
+                    }
+                    return selected.isFile();
+                }
+            }
+            return false;
         }
         else if(action.equals(Foundation.selector("openBrowserButtonClicked:"))) {
             return controller.isMounted();
