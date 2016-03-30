@@ -46,6 +46,10 @@ public class B2LargeUploadPartService {
         this.session = session;
     }
 
+    /**
+     * @param file File reference
+     * @return File id of unfinished large upload
+     */
     public List<B2FileInfoResponse> find(final Path file) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Finding multipart uploads for %s", file));
@@ -88,33 +92,34 @@ public class B2LargeUploadPartService {
         }
     }
 
-    public List<B2UploadPartResponse> list(final Path file) throws BackgroundException {
+    /**
+     * @param fileid File id of unfinished large upload
+     * @return List of parts
+     * @throws BackgroundException
+     */
+    public List<B2UploadPartResponse> list(final String fileid) throws BackgroundException {
         if(log.isInfoEnabled()) {
-            log.info(String.format("List completed parts of file %s", file));
+            log.info(String.format("List completed parts of file %s", fileid));
         }
         // This operation lists the parts that have been uploaded for a specific multipart upload.
         try {
             // Completed parts
             final List<B2UploadPartResponse> completed = new ArrayList<B2UploadPartResponse>();
-            final List<B2FileInfoResponse> uploads = this.find(file);
-            for(B2FileInfoResponse upload : uploads) {
-                Integer startPartNumber = null;
-                do {
-                    final B2ListPartsResponse response = session.getClient().listParts(
-                            upload.getFileId(), startPartNumber, null);
-                    completed.addAll(response.getFiles());
-                    startPartNumber = response.getNextPartNumber();
-                }
-                while(startPartNumber != null);
-                break;
+            Integer startPartNumber = null;
+            do {
+                final B2ListPartsResponse response = session.getClient().listParts(
+                        fileid, startPartNumber, null);
+                completed.addAll(response.getFiles());
+                startPartNumber = response.getNextPartNumber();
             }
+            while(startPartNumber != null);
             return completed;
         }
         catch(B2ApiException e) {
-            throw new B2ExceptionMappingService().map("Upload {0} failed", e, file);
+            throw new B2ExceptionMappingService().map(e);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
+            throw new DefaultIOExceptionMappingService().map(e);
         }
     }
 
