@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.util.List;
 
 import synapticloop.b2.exception.B2ApiException;
+import synapticloop.b2.response.B2FileInfoResponse;
 import synapticloop.b2.response.B2UploadPartResponse;
 
 public class B2PartWriteFeature extends AbstractHttpWriteFeature<B2UploadPartResponse> implements Write {
@@ -89,12 +90,14 @@ public class B2PartWriteFeature extends AbstractHttpWriteFeature<B2UploadPartRes
     @Override
     public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
         Long size = 0L;
-        final List<B2UploadPartResponse> segments = new B2LargeUploadPartService(session).list(file);
-        if(segments.isEmpty()) {
+        final B2LargeUploadPartService service = new B2LargeUploadPartService(session);
+        final List<B2FileInfoResponse> uploads = service.find(file);
+        if(uploads.isEmpty()) {
             return Write.notfound;
         }
-        for(B2UploadPartResponse segment : segments) {
-            size += segment.getContentLength();
+        final List<B2UploadPartResponse> list = service.list(uploads.iterator().next().getFileId());
+        for(B2UploadPartResponse part : list) {
+            size += part.getContentLength();
         }
         return new Append(size);
     }

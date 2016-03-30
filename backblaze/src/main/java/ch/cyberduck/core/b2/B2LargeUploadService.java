@@ -46,8 +46,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import synapticloop.b2.exception.B2ApiException;
+import synapticloop.b2.response.B2FileInfoResponse;
 import synapticloop.b2.response.B2FinishLargeFileResponse;
-import synapticloop.b2.response.B2StartLargeFileResponse;
 import synapticloop.b2.response.B2UploadPartResponse;
 
 public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse, MessageDigest> {
@@ -94,20 +94,31 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
                                        final TransferStatus status,
                                        final ConnectionCallback callback) throws BackgroundException {
         try {
-            final B2StartLargeFileResponse startResponse = session.getClient().startLargeFileUpload(new B2FileidProvider(session).getFileid(containerService.getContainer(file)),
-                    containerService.getKey(file), status.getMime(), Collections.emptyMap());
-            final String fileid = startResponse.getFileId();
-            // Save file id for use in part referencing this
-            file.attributes().setVersionId(fileid);
-
+            final String fileid;
             // Get the results of the uploads in the order they were submitted
             // this is important for building the manifest, and is not a problem in terms of performance
             // because we should only continue when all segments have uploaded successfully
             final List<B2UploadPartResponse> completed = new ArrayList<B2UploadPartResponse>();
             if(status.isAppend()) {
                 // Add already completed parts
-                completed.addAll(new B2LargeUploadPartService(session).list(file));
+                final B2LargeUploadPartService partService = new B2LargeUploadPartService(session);
+                final List<B2FileInfoResponse> uploads = partService.find(file);
+                if(uploads.isEmpty()) {
+                    fileid = session.getClient().startLargeFileUpload(new B2FileidProvider(session).getFileid(containerService.getContainer(file)),
+                            containerService.getKey(file), status.getMime(), Collections.emptyMap()).getFileId();
+                }
+                else {
+                    fileid = uploads.iterator().next().getFileId();
+                    completed.addAll(partService.list(fileid));
+                }
             }
+            else {
+                fileid = session.getClient().startLargeFileUpload(new B2FileidProvider(session).getFileid(containerService.getContainer(file)),
+                        containerService.getKey(file), status.getMime(), Collections.emptyMap()).getFileId();
+            }
+            // Save file id for use in part referencing this
+            file.attributes().setVersionId(fileid);
+
             // Submit file segments for concurrent upload
             final List<Future<B2UploadPartResponse>> parts = new ArrayList<Future<B2UploadPartResponse>>();
             long remaining = status.getLength();
