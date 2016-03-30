@@ -55,27 +55,40 @@ public class B2ThresholdUploadService implements Upload {
 
     @Override
     public Write.Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
-        return session.getFeature(Write.class).append(file, length, cache);
+        if(this.threshold(file, length)) {
+            return new B2PartWriteFeature(session).append(file, length, cache);
+        }
+        // No append
+        return new B2WriteFeature(session).append(file, length, cache);
     }
 
     @Override
     public Object upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
                          final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final Upload feature;
-        if(status.getLength() > threshold) {
-            if(!PreferencesFactory.get().getBoolean("b2.upload.largeobject")) {
-                // Disabled by user
-                if(status.getLength() < PreferencesFactory.get().getLong("b2.upload.largeobject.required.threshold")) {
-                    log.warn("Large upload is disabled with property openstack.upload.largeobject");
-                    final B2SingleUploadService single = new B2SingleUploadService(session);
-                    return single.upload(file, local, throttle, listener, status, callback);
-                }
-            }
+        if(this.threshold(file, status.getLength())) {
             feature = new B2LargeUploadService(session, partsize);
         }
         else {
             feature = new B2SingleUploadService(session);
         }
         return feature.upload(file, local, throttle, listener, status, callback);
+    }
+
+    private boolean threshold(final Path file, final Long length) {
+        if(length > threshold) {
+            if(!PreferencesFactory.get().getBoolean("b2.upload.largeobject")) {
+                // Disabled by user
+                if(length < PreferencesFactory.get().getLong("b2.upload.largeobject.required.threshold")) {
+                    log.warn("Large upload is disabled with property openstack.upload.largeobject");
+                    return false;
+                }
+            }
+            return true;
+        }
+        else {
+            // Below threshold
+            return false;
+        }
     }
 }
