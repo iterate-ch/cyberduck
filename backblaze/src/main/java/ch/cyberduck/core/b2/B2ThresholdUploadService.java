@@ -29,11 +29,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import synapticloop.b2.response.B2FileInfoResponse;
-
 public class B2ThresholdUploadService implements Upload {
     private static final Logger log = Logger.getLogger(B2ThresholdUploadService.class);
 
@@ -80,18 +75,6 @@ public class B2ThresholdUploadService implements Upload {
         }
         else {
             feature = new B2SingleUploadService(session);
-        }
-        // Previous segments to delete
-        final List<Path> segments = new ArrayList<Path>();
-        if(PreferencesFactory.get().getBoolean("b2.upload.largeobject.cleanup")) {
-            if(!status.isAppend()) {
-                // Cleanup if necessary
-                final B2LargeUploadPartService service = new B2LargeUploadPartService(session);
-                final List<B2FileInfoResponse> list = service.find(file);
-                for(B2FileInfoResponse f : list) {
-                    service.delete(f.getFileId());
-                }
-            }
         }
         return feature.upload(file, local, throttle, listener, status, callback);
     }
