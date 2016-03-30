@@ -57,7 +57,7 @@ public class AlertTransferErrorCallback implements TransferErrorCallback {
             );
             alert.setShowsSuppressionButton(true);
             alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
-            final AlertController controller = new AlertController(AlertTransferErrorCallback.this.controller, alert) {
+            final AlertController sheet = new AlertController(controller, alert) {
                 @Override
                 public void callback(final int returncode) {
                     if(returncode == SheetCallback.DEFAULT_OPTION) {
@@ -69,7 +69,7 @@ public class AlertTransferErrorCallback implements TransferErrorCallback {
                     }
                 }
             };
-            controller.beginSheet();
+            sheet.beginSheet();
             return c.get();
         }
         // Abort
