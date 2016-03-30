@@ -91,11 +91,11 @@ public class B2PartWriteFeature extends AbstractHttpWriteFeature<B2UploadPartRes
     public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
         Long size = 0L;
         final B2LargeUploadPartService service = new B2LargeUploadPartService(session);
-        final List<B2FileInfoResponse> segments = service.find(file);
-        if(segments.isEmpty()) {
+        final List<B2FileInfoResponse> uploads = service.find(file);
+        if(uploads.isEmpty()) {
             return Write.notfound;
         }
-        final List<B2UploadPartResponse> list = service.list(segments.iterator().next().getFileId());
+        final List<B2UploadPartResponse> list = service.list(uploads.iterator().next().getFileId());
         for(B2UploadPartResponse part : list) {
             size += part.getContentLength();
         }
