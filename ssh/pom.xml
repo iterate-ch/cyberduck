@@ -27,9 +27,9 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.hierynomus</groupId>
+            <groupId>ch.iterate.ssh</groupId>
             <artifactId>sshj</artifactId>
-            <version>0.15.0</version>
+            <version>0.16.0</version>
         </dependency>
         <dependency>
             <groupId>net.vrallev.ecc</groupId>
