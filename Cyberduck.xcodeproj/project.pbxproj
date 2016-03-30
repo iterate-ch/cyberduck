@@ -2250,7 +2250,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "mkdir -p \"${TARGET_BUILD_DIR}/${PLUGINS_FOLDER_PATH}/Runtime.jre\"\ncp -fpRL \"${RUNTIME_SOURCE}/\" \"${TARGET_BUILD_DIR}/${PLUGINS_FOLDER_PATH}/Runtime.jre\"";
+			shellScript = "mkdir -p ${TARGET_BUILD_DIR}/${PLUGINS_FOLDER_PATH}/Runtime.jre\ncp -fpRL ${RUNTIME_SOURCE}/ ${TARGET_BUILD_DIR}/${PLUGINS_FOLDER_PATH}/Runtime.jre\nrm ${TARGET_BUILD_DIR}/${PLUGINS_FOLDER_PATH}/Runtime.jre/Contents/MacOS/*.dylib";
 		};
 		473A4CEA1CAC6B0700B536E7 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2263,7 +2263,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "mkdir -p \"${TARGET_BUILD_DIR}/${PLUGINS_FOLDER_PATH}/Runtime.jre\"\ncp -fpRL \"${RUNTIME_SOURCE}/\" \"${TARGET_BUILD_DIR}/${PLUGINS_FOLDER_PATH}/Runtime.jre\"";
+			shellScript = "mkdir -p ${TARGET_BUILD_DIR}/${PLUGINS_FOLDER_PATH}/Runtime.jre\ncp -fpRL ${RUNTIME_SOURCE}/ ${TARGET_BUILD_DIR}/${PLUGINS_FOLDER_PATH}/Runtime.jre\nrm ${TARGET_BUILD_DIR}/${PLUGINS_FOLDER_PATH}/Runtime.jre/Contents/MacOS/*.dylib";
 		};
 		47EFE4E11BED03E7009AC47B /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
