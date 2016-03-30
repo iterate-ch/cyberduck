@@ -48,8 +48,15 @@ public class B2ObjectListService implements ListService {
 
     private final B2Session session;
 
+    private final int chunksize;
+
     public B2ObjectListService(final B2Session session) {
+        this(session, PreferencesFactory.get().getInteger("b2.listing.chunksize"));
+    }
+
+    public B2ObjectListService(final B2Session session, final int chunksize) {
         this.session = session;
+        this.chunksize = chunksize;
     }
 
     @Override
@@ -63,7 +70,7 @@ public class B2ObjectListService implements ListService {
                 // versions of files with the same name.
                 final B2ListFilesResponse response = session.getClient().listFileVersions(
                         new B2FileidProvider(session).getFileid(containerService.getContainer(directory)),
-                        nextFilename, nextFileid, PreferencesFactory.get().getInteger("b2.listing.chunksize"));
+                        nextFilename, nextFileid, chunksize);
                 final List<B2FileInfoResponse> files = response.getFiles();
                 final Map<String, Integer> revisions = new HashMap<String, Integer>();
                 for(B2FileInfoResponse file : files) {
@@ -85,14 +92,6 @@ public class B2ObjectListService implements ListService {
                             attributes.setDuplicate(true);
                             break;
                     }
-                    if(StringUtils.endsWith(file.getFileName(), "/.bzEmpty")) {
-                        objects.add(new Path(directory, PathNormalizer.name(StringUtils.removeEnd(file.getFileName(), "/.bzEmpty")),
-                                EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes));
-                    }
-                    else {
-                        attributes.setSize(file.getSize());
-                        objects.add(new Path(directory, PathNormalizer.name(file.getFileName()), EnumSet.of(Path.Type.file), attributes));
-                    }
                     final Integer revision;
                     if(revisions.keySet().contains(file.getFileName())) {
                         // Later version already found
@@ -104,6 +103,14 @@ public class B2ObjectListService implements ListService {
                     }
                     revisions.put(file.getFileName(), revision);
                     attributes.setRevision(revision);
+                    if(StringUtils.endsWith(file.getFileName(), "/.bzEmpty")) {
+                        objects.add(new Path(directory, PathNormalizer.name(StringUtils.removeEnd(file.getFileName(), "/.bzEmpty")),
+                                EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes));
+                    }
+                    else {
+                        attributes.setSize(file.getSize());
+                        objects.add(new Path(directory, PathNormalizer.name(file.getFileName()), EnumSet.of(Path.Type.file), attributes));
+                    }
                 }
                 nextFilename = response.getNextFileName();
                 nextFileid = response.getNextFileId();

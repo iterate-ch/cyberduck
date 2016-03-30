@@ -34,6 +34,7 @@ import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
@@ -240,6 +241,9 @@ public class DriveSession extends HttpSession<Drive> {
         }
         if(type == Home.class) {
             return (T) new DriveHomeFinderService(this);
+        }
+        if(type == IdProvider.class) {
+            return (T) new DriveFileidProvider(this);
         }
         return super.getFeature(type);
     }
