@@ -2,8 +2,11 @@ Cyberduck for mounting volumes in the file explorer is now available from https:
 
 5.0
 - [Feature] Support for Google Drive (#6976)
-- [Feature] Support for B2 Cloud Storage (Backblaze) (#9162)
 - [Feature] Support for Spectra BlackPearl Deep Storage Gateway (Spectra S3)
+
+4.9
+- [Feature] Support for B2 Cloud Storage (Backblaze) (#9162)
+- [Bugfix] Creating new folders with SSE restriction fails (S3) (#9378)
 
 4.8.4 [https://trac.cyberduck.io/milestone/4.8.4]
 - [Bugfix] No such file error when choosing Rename Existing in transfer overwrite prompt (#9342)
