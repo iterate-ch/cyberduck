@@ -55,6 +55,7 @@ public class B2DeleteFeatureTest {
             public void delete(final Path file) {
             }
         });
+        session.close();
     }
 
     @Test
@@ -76,6 +77,7 @@ public class B2DeleteFeatureTest {
                 //
             }
         });
+        session.close();
     }
 
     @Test
@@ -97,5 +99,6 @@ public class B2DeleteFeatureTest {
                 //
             }
         });
+        session.close();
     }
 }
