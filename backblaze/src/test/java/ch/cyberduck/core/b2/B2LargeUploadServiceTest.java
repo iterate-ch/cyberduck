@@ -33,6 +33,7 @@ import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -48,6 +49,7 @@ import static org.junit.Assert.*;
 public class B2LargeUploadServiceTest {
 
     @Test
+    @Ignore
     public void testUpload() throws Exception {
         final B2Session session = new B2Session(
                 new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
