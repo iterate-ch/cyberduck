@@ -19,7 +19,6 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
-using System.Windows.Forms;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.updater;
 using Ch.Cyberduck.Ui.Controller;
@@ -46,6 +45,7 @@ namespace Ch.Cyberduck.Ui.Core
 
         public override Duration register()
         {
+            WinSparkle.SetAutomaticCheckForUpdates(false);
             WinSparkle.Initialize();
             WinSparkle.SetCanShutdownCallback(() => Convert.ToInt32(MainController.PrepareExit()));
             WinSparkle.SetShutdownRequestCallback(delegate
@@ -58,6 +58,7 @@ namespace Ch.Cyberduck.Ui.Core
 
         public override void check(bool background)
         {
+            Log.debug($"Checking for updates, background= {background}");
             SetAppcastURL();
             if (background)
             {
