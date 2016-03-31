@@ -8,6 +8,15 @@
     <property name="bundle.runtime.lib"
               value="@executable_path/../PlugIns/Runtime.jre/Contents/Home/lib/server/libjvm.dylib"/>
 
+    <target name="runtime">
+        <mkdir dir="${bundle}/${bundle.runtime}"/>
+        <!-- Copy runtime -->
+        <echo message="Copy runtime from ${jvm.runtime.home} to ${bundle}/${bundle.runtime}"/>
+        <copy todir="${bundle}/${bundle.runtime}" preservelastmodified="true">
+            <fileset followsymlinks="false" dir="${runtime.dependency}" excludesfile="${home}/runtime-excludes.properties"/>
+        </copy>
+    </target>
+
     <target name="shared-library-install-name">
         <echo message="Change dynamic shared library install names to ${newname} in ${directory}"/>
         <apply executable="/usr/bin/install_name_tool" failonerror="true"
