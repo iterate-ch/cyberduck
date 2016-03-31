@@ -57,7 +57,7 @@
         <apply executable="/usr/bin/codesign" failonerror="true"
                type="both"
                parallel="false" spawn="false" force="true">
-            <arg line="${codesign.options} --identifier net.java.openjdk.jre --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
+            <arg line="${codesign.options} --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
             <fileset dir="${bundle}/${bundle.runtime}">
                 <include name="**/*.dylib"/>
                 <include name="**/*.jar"/>
