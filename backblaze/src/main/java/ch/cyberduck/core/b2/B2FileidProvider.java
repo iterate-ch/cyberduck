@@ -20,6 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.IdProvider;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -30,7 +31,7 @@ import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2BucketResponse;
 import synapticloop.b2.response.B2ListFilesResponse;
 
-public class B2FileidProvider {
+public class B2FileidProvider implements IdProvider {
 
     private final PathContainerService containerService
             = new B2PathContainerService();
@@ -41,6 +42,7 @@ public class B2FileidProvider {
         this.session = session;
     }
 
+    @Override
     public String getFileid(final Path file) throws BackgroundException {
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
             return file.attributes().getVersionId();

@@ -20,12 +20,11 @@ import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.features.Upload;
-import ch.cyberduck.core.shared.DefaultUploadFeature;
 
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
@@ -64,38 +63,6 @@ public class TransferTypeFinderTest {
     }
 
     @Test
-    public void testTypeMultipleFilesPooled() throws Exception {
-        final Host host = new Host(new TestProtocol(), "h");
-        final Host.TransferType type = new TransferTypeFinder().type(new NullSession(host) {
-            @Override
-            public <T> T getFeature(final Class<T> type) {
-                if(type.equals(Upload.class)) {
-                    return (T) new DefaultUploadFeature(this) {
-                        @Override
-                        public boolean pooled() {
-                            return true;
-                        }
-                    };
-                }
-                return super.getFeature(type);
-            }
-
-            @Override
-            public Host.TransferType getTransferType() {
-                return Host.TransferType.concurrent;
-            }
-        }, new UploadTransfer(host,
-                Arrays.asList(
-                        new TransferItem(new Path("/t", EnumSet.of(Path.Type.file)), new NullLocal("/t")),
-                        new TransferItem(new Path("/t", EnumSet.of(Path.Type.file)), new NullLocal("/t"))
-                )
-        ) {
-
-        });
-        assertEquals(Host.TransferType.newconnection, type);
-    }
-
-    @Test
     public void testTypeMultipleFilesSingle() throws Exception {
         final Host host = new Host(new TestProtocol(), "h");
         final Host.TransferType type = new TransferTypeFinder().type(new NullSession(host) {
@@ -110,5 +77,21 @@ public class TransferTypeFinderTest {
                 )
         ));
         assertEquals(Host.TransferType.newconnection, type);
+    }
+
+    @Test
+    public void testTypeSingleFolder() throws Exception {
+        final Host host = new Host(new TestProtocol(), "h");
+        final Host.TransferType type = new TransferTypeFinder().type(new NullSession(host) {
+            @Override
+            public Host.TransferType getTransferType() {
+                return Host.TransferType.concurrent;
+            }
+        }, new UploadTransfer(host,
+                Collections.singletonList(
+                        new TransferItem(new Path("/t", EnumSet.of(Path.Type.directory)), new NullLocal("/t"))
+                )
+        ));
+        assertEquals(Host.TransferType.concurrent, type);
     }
 }

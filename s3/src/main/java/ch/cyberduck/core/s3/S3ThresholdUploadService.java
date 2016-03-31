@@ -49,9 +49,6 @@ import org.jets3t.service.model.StorageObject;
 
 import com.barchart.udt.ExceptionUDT;
 
-/**
- * @version $Id$
- */
 public class S3ThresholdUploadService implements Upload<StorageObject> {
     private static final Logger log = Logger.getLogger(S3ThresholdUploadService.class);
 
@@ -93,11 +90,6 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
         this.trust = trust;
         this.key = key;
         this.udtTransferOption = udtTransferOption;
-    }
-
-    @Override
-    public boolean pooled() {
-        return true;
     }
 
     @Override

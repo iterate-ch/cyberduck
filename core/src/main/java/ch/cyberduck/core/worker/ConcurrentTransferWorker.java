@@ -56,11 +56,11 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
 
     private static final long BORROW_MAX_WAIT_INTERVAL = 1000L;
 
-    private GenericObjectPool<Session> pool;
+    private final GenericObjectPool<Session> pool;
 
-    private CompletionService<TransferStatus> completion;
+    private final CompletionService<TransferStatus> completion;
 
-    private AtomicInteger size = new AtomicInteger();
+    private final AtomicInteger size = new AtomicInteger();
 
     public ConcurrentTransferWorker(final ConnectionService connect,
                                     final Transfer transfer, final TransferOptions options,

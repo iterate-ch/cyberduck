@@ -92,9 +92,6 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     private AtomicBoolean complete
             = new AtomicBoolean();
 
-    private AtomicBoolean failure
-            = new AtomicBoolean();
-
     private CountDownLatch done
             = new CountDownLatch(1);
 
@@ -131,6 +128,11 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
             = Collections.emptyList();
 
     /**
+     * Part number
+     */
+    private Integer part;
+
+    /**
      * Await completion
      *
      * @return True if complete
@@ -162,7 +164,6 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     }
 
     public void setFailure() {
-        failure.set(true);
         complete.set(false);
         done.countDown();
     }
@@ -180,10 +181,6 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      */
     public boolean isCanceled() {
         return canceled.get();
-    }
-
-    public boolean isFailure() {
-        return failure.get();
     }
 
     /**
@@ -373,6 +370,10 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         return parameters;
     }
 
+    public void setParameters(final Map<String, String> parameters) {
+        this.parameters = parameters;
+    }
+
     public TransferStatus parameters(final Map<String, String> parameters) {
         this.parameters = parameters;
         return this;
@@ -389,6 +390,14 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     public TransferStatus metadata(final Map<String, String> metadata) {
         this.metadata = metadata;
         return this;
+    }
+
+    public Integer getPart() {
+        return part;
+    }
+
+    public void setPart(final Integer part) {
+        this.part = part;
     }
 
     public List<TransferStatus> getSegments() {

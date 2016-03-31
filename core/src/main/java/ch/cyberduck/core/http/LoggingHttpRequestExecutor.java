@@ -20,6 +20,7 @@ package ch.cyberduck.core.http;
 
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.UseragentProvider;
 
 import org.apache.http.Header;
 import org.apache.http.HttpClientConnection;
@@ -33,12 +34,9 @@ import org.apache.http.protocol.HttpRequestExecutor;
 
 import java.io.IOException;
 
-/**
- * @version $Id$
- */
 public class LoggingHttpRequestExecutor extends HttpRequestExecutor {
 
-    private final PreferencesUseragentProvider useragentProvider
+    private final UseragentProvider useragentProvider
             = new PreferencesUseragentProvider();
 
     private TranscriptListener listener;

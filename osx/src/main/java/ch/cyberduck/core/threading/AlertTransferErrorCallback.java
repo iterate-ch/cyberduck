@@ -20,6 +20,7 @@ package ch.cyberduck.core.threading;
 
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSCell;
+import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -29,9 +30,6 @@ import ch.cyberduck.ui.cocoa.WindowController;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * @version $Id$
- */
 public class AlertTransferErrorCallback implements TransferErrorCallback {
 
     private final WindowController controller;
@@ -60,7 +58,17 @@ public class AlertTransferErrorCallback implements TransferErrorCallback {
             );
             alert.setShowsSuppressionButton(true);
             alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
-            final AlertController controller = new AlertController(AlertTransferErrorCallback.this.controller, alert) {
+            final AlertController sheet = new AlertController(controller, alert) {
+                @Override
+                protected void beginSheet(final NSWindow window) {
+                    if(suppressed) {
+                        c.set(option);
+                    }
+                    else {
+                        super.beginSheet(window);
+                    }
+                }
+
                 @Override
                 public void callback(final int returncode) {
                     if(returncode == SheetCallback.DEFAULT_OPTION) {
@@ -72,7 +80,7 @@ public class AlertTransferErrorCallback implements TransferErrorCallback {
                     }
                 }
             };
-            controller.beginSheet();
+            sheet.beginSheet();
             return c.get();
         }
         // Abort

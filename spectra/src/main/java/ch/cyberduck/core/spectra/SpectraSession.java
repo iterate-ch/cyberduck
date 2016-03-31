@@ -16,10 +16,8 @@ package ch.cyberduck.core.spectra;
 
 import ch.cyberduck.core.DisabledUrlProvider;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Copy;
@@ -33,13 +31,14 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.proxy.ProxyFinder;
-import ch.cyberduck.core.s3.RequestEntityRestStorageService;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.shared.DefaultDownloadFeature;
 import ch.cyberduck.core.shared.DisabledMoveFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
+
+import org.jets3t.service.Jets3tProperties;
 
 public class SpectraSession extends S3Session {
 
@@ -52,9 +51,9 @@ public class SpectraSession extends S3Session {
     }
 
     @Override
-    public RequestEntityRestStorageService connect(final HostKeyCallback key) throws BackgroundException {
+    protected Jets3tProperties configure() {
         this.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS2);
-        return super.connect(key);
+        return super.configure();
     }
 
     @Override

@@ -3,6 +3,7 @@ package ch.cyberduck.core.shared;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.sftp.SFTPHomeDirectoryService;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.test.IntegrationTest;
@@ -53,7 +54,8 @@ public class DefaultAttributesFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final PathCache cache = new PathCache(1);
         final DefaultAttributesFeature f = new DefaultAttributesFeature(session).withCache(cache);
-        final Path file = new Path(session.workdir(), "test", EnumSet.of(Path.Type.file));
+        final Path workdir = new SFTPHomeDirectoryService(session).find();
+        final Path file = new Path(workdir, "test", EnumSet.of(Path.Type.file));
         final Attributes attributes = f.find(file);
         assertEquals(0L, attributes.getSize());
         assertEquals("1106", attributes.getOwner());
@@ -63,7 +65,7 @@ public class DefaultAttributesFeatureTest {
         assertTrue(cache.containsKey(file.getParent()));
         // Test wrong type
         try {
-            f.find(new Path(session.workdir(), "test", EnumSet.of(Path.Type.directory)));
+            f.find(new Path(workdir, "test", EnumSet.of(Path.Type.directory)));
             fail();
         }
         catch(NotfoundException e) {

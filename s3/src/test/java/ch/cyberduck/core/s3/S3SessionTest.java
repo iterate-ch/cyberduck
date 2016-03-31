@@ -97,7 +97,6 @@ public class S3SessionTest {
         assertNotNull(session.getClient());
         final PathCache cache = new PathCache(1);
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), cache);
-        assertNotNull(session.workdir());
         assertTrue(cache.containsKey(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume))));
         assertTrue(cache.get(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume))));
         assertTrue(session.isConnected());
@@ -106,7 +105,6 @@ public class S3SessionTest {
         assertEquals(Session.State.closed, session.getState());
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         assertTrue(session.isConnected());
-        assertNotNull(session.workdir());
         session.close();
         assertFalse(session.isConnected());
     }

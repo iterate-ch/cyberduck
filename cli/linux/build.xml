@@ -95,6 +95,7 @@
                 <fx:fileset type="license" file="${home}/LICENSE.txt"/>
                 <fx:fileset dir="${home}" type="data">
                     <include name="profiles/Rackspace US.cyberduckprofile"/>
+                    <include name="profiles/B2.cyberduckprofile"/>
                 </fx:fileset>
                 <!-- Localizations -->
                 <fx:fileset dir="${home}" type="data">

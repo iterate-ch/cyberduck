@@ -16,10 +16,10 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.AbstractExceptionMappingService;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -28,7 +28,6 @@ import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 
 import org.apache.http.HttpStatus;
 
-import java.io.IOException;
 import java.time.Duration;
 
 import synapticloop.b2.exception.B2ApiException;
@@ -77,16 +76,14 @@ public class B2ExceptionMappingService extends AbstractExceptionMappingService<B
                 return new InteroperabilityException(buffer.toString(), e);
             case HttpStatus.SC_NOT_IMPLEMENTED:
                 return new InteroperabilityException(buffer.toString(), e);
-            case HttpStatus.SC_INTERNAL_SERVER_ERROR:
-                switch(e.getCode()) {
-                    case "no_uploads_avaliable":
-                        return new RetriableAccessDeniedException(buffer.toString(), Duration.ofSeconds(1));
+            case HttpStatus.SC_SERVICE_UNAVAILABLE:
+                return new ConnectionRefusedException(buffer.toString(), e);
+            default:
+                if(e.getRetry() != null) {
+                    // Too Many Requests
+                    return new RetriableAccessDeniedException(buffer.toString(), Duration.ofSeconds(e.getRetry()));
                 }
                 return new InteroperabilityException(buffer.toString(), e);
         }
-        if(e.getCause() instanceof IOException) {
-            return new DefaultIOExceptionMappingService().map((IOException) e.getCause());
-        }
-        return new BackgroundException(buffer.toString(), e);
     }
 }

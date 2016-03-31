@@ -20,9 +20,6 @@ package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.exception.BackgroundException;
 
-/**
- * @version $Id$
- */
 public interface TransferErrorCallback {
 
     /**

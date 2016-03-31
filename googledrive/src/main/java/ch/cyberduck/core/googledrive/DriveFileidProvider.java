@@ -15,17 +15,38 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.IdProvider;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class DriveFileidProvider {
+public class DriveFileidProvider implements IdProvider {
 
-    public String getFileid(final Path file) throws NotfoundException {
+    private final DriveSession session;
+
+    public DriveFileidProvider(final DriveSession session) {
+        this.session = session;
+    }
+
+    @Override
+    public String getFileid(final Path file) throws BackgroundException {
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
             return file.attributes().getVersionId();
         }
-        throw new NotfoundException("Missing id for file " + file.getName());
+        if(file.isRoot()) {
+            return DriveHomeFinderService.ROOT_FOLDER_ID;
+        }
+        final AttributedList<Path> list = new DriveListService(session).list(
+                file.getParent(), new DisabledListProgressListener());
+        for(Path f : list) {
+            if(StringUtils.equals(f.getName(), file.getName())) {
+                return f.attributes().getVersionId();
+            }
+        }
+        throw new NotfoundException(file.getAbsolute());
     }
 }

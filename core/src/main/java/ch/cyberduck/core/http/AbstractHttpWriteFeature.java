@@ -36,14 +36,8 @@ import java.io.OutputStream;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadFactory;
 
-/**
- * @version $Id$
- */
 public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature {
     private static final Logger log = Logger.getLogger(AbstractHttpWriteFeature.class);
-
-    private final ThreadFactory factory
-            = new NamedThreadFactory("http");
 
     private abstract class FutureHttpResponse<T> implements Runnable {
 
@@ -105,6 +99,8 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature {
                     }
                 }
             };
+            final ThreadFactory factory
+                    = new NamedThreadFactory(String.format("http-%s", file.getName()));
             final Thread t = factory.newThread(target);
             t.start();
             // Wait for output stream to become available

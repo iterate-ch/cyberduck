@@ -39,6 +39,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -60,8 +61,8 @@ public class FTPStatListServiceTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final ListService service = new FTPStatListService(session,
-                new CompositeFileEntryParser(Arrays.asList(new UnixFTPEntryParser())));
-        final Path directory = session.workdir();
+                new CompositeFileEntryParser(Collections.singletonList(new UnixFTPEntryParser())));
+        final Path directory = new FTPWorkdirService(session).find();
         final AttributedList<Path> list = service.list(directory, new DisabledListProgressListener());
         assertTrue(list.contains(new Path(directory, "test", EnumSet.of(Path.Type.file))));
         assertEquals(new Permission(Permission.Action.read_write, Permission.Action.read_write, Permission.Action.read_write),

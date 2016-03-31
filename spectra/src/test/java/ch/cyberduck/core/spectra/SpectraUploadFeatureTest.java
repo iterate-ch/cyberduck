@@ -75,15 +75,16 @@ public class SpectraUploadFeatureTest {
         out.close();
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final TransferStatus status = new TransferStatus().length(content.length);
+        final TransferStatus writeStatus = new TransferStatus().length(content.length);
         final SpectraBulkService bulk = new SpectraBulkService(session);
-        bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, status));
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, writeStatus));
         final SpectraUploadFeature upload = new SpectraUploadFeature(session, new SpectraWriteFeature(session));
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                status, new DisabledConnectionCallback());
+                writeStatus, new DisabledConnectionCallback());
         final byte[] buffer = new byte[content.length];
-        bulk.pre(Transfer.Type.download, Collections.singletonMap(test, status));
-        final InputStream in = new SpectraReadFeature(session).read(test, new TransferStatus().length(content.length));
+        final TransferStatus readStatus = new TransferStatus().length(content.length);
+        bulk.pre(Transfer.Type.download, Collections.singletonMap(test, readStatus));
+        final InputStream in = new SpectraReadFeature(session).read(test, readStatus);
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);

@@ -39,9 +39,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-/**
- * @version $Id$
- */
 public class DefaultUploadFeature implements Upload<Void> {
 
     private final Write writer;
@@ -80,11 +77,6 @@ public class DefaultUploadFeature implements Upload<Void> {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
         }
-    }
-
-    @Override
-    public boolean pooled() {
-        return false;
     }
 
     @Override

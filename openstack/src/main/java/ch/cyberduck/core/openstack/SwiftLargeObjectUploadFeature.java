@@ -50,10 +50,6 @@ import java.util.concurrent.Future;
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.StorageObject;
 
-/**
- * @author Joel Wright <joel.wright@sohonet.com>
- * @version $Id$
- */
 public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObject, MessageDigest> {
     private static final Logger log = Logger.getLogger(SwiftLargeObjectUploadFeature.class);
 
@@ -99,11 +95,6 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         this.segmentSize = segmentSize;
         this.segmentService = segmentService;
         this.listService = listService;
-    }
-
-    @Override
-    public boolean pooled() {
-        return true;
     }
 
     @Override

@@ -36,12 +36,9 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public class SingleTransferWorker extends AbstractTransferWorker {
 
-    private Session session;
+    private final Session session;
 
     public SingleTransferWorker(final Session session, final Transfer transfer, final TransferOptions options,
                                 final TransferSpeedometer meter, final TransferPrompt prompt,
@@ -64,9 +61,9 @@ public class SingleTransferWorker extends AbstractTransferWorker {
     public SingleTransferWorker(final Session session, final Transfer transfer, final TransferOptions options,
                                 final TransferSpeedometer meter, final TransferPrompt prompt,
                                 final TransferErrorCallback error, final TransferItemCallback callback,
-                                final ProgressListener listener, final StreamListener streamListener,
-                                final ConnectionCallback connectionCallback, final Map<Path, TransferStatus> table) {
-        super(transfer, options, prompt, meter, connectionCallback, error, callback, listener, streamListener, table);
+                                final ProgressListener progress, final StreamListener stream, final ConnectionCallback connectionCallback,
+                                final Cache<TransferItem> cache, final Map<Path, TransferStatus> table) {
+        super(transfer, options, prompt, meter, error, callback, progress, stream, connectionCallback, cache, table);
         this.session = session;
     }
 

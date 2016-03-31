@@ -48,6 +48,7 @@ import com.spectralogic.ds3client.Ds3Client;
 import com.spectralogic.ds3client.commands.GetAvailableJobChunksRequest;
 import com.spectralogic.ds3client.commands.GetAvailableJobChunksResponse;
 import com.spectralogic.ds3client.helpers.Ds3ClientHelpers;
+import com.spectralogic.ds3client.helpers.options.ReadJobOptions;
 import com.spectralogic.ds3client.helpers.options.WriteJobOptions;
 import com.spectralogic.ds3client.models.Checksum;
 import com.spectralogic.ds3client.models.bulk.BulkObject;
@@ -127,7 +128,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                 switch(type) {
                     case download:
                         job = helper.startReadJob(
-                                container.getKey().getName(), container.getValue());
+                                container.getKey().getName(), container.getValue(), ReadJobOptions.create());
                         break;
                     case upload:
                         job = helper.startWriteJob(
@@ -178,8 +179,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
         // This will respond with which job chunks have been loaded into cache and are ready for download.
         try {
             if(!status.getParameters().containsKey(REQUEST_PARAMETER_JOBID_IDENTIFIER)) {
-                log.error(String.format("Missing job id parameter in status for %s", file.getAbsolute()));
-                return Collections.singletonList(status);
+                throw new NotfoundException(String.format("Missing job id parameter in status for %s", file.getName()));
             }
             final String job = status.getParameters().get(REQUEST_PARAMETER_JOBID_IDENTIFIER);
             if(log.isDebugEnabled()) {
@@ -205,43 +205,63 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                 }
             }
             final MasterObjectList list = response.getMasterObjectList();
-            final Objects objects = list.getObjects().iterator().next();
-            final UUID nodeId = objects.getNodeId();
-            if(null == nodeId) {
-                log.warn(String.format("No node returned in master object list for file %s", file));
-            }
             if(log.isInfoEnabled()) {
-                log.info(String.format("Determined node %s for %s", nodeId, file));
+                log.info(String.format("Master object list status %s for %s", list.getStatus(), file));
             }
-            for(Node node : list.getNodes()) {
-                if(node.getId().equals(nodeId)) {
-                    final Host host = session.getHost();
-                    // The IP address or DNS name of the BlackPearl node.
-                    if(StringUtils.equals(node.getEndpoint(), host.getHostname())) {
-                        break;
+            final List<TransferStatus> chunks = new ArrayList<TransferStatus>();
+            for(Objects object : list.getObjects()) {
+                final UUID nodeId = object.getNodeId();
+                if(null == nodeId) {
+                    log.warn(String.format("No node returned in master object list for file %s", file));
+                }
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Determined node %s for %s", nodeId, file));
+                }
+                for(Node node : list.getNodes()) {
+                    if(node.getId().equals(nodeId)) {
+                        final Host host = session.getHost();
+                        // The IP address or DNS name of the BlackPearl node.
+                        if(StringUtils.equals(node.getEndpoint(), host.getHostname())) {
+                            break;
+                        }
+                        if(StringUtils.equals(node.getEndpoint(), new Resolver().resolve(host.getHostname()).getHostAddress())) {
+                            break;
+                        }
+                        log.warn(String.format("Redirect to %s for file %s", node.getEndpoint(), file));
                     }
-                    if(StringUtils.equals(node.getEndpoint(), new Resolver().resolve(host.getHostname()).getHostAddress())) {
-                        break;
+                }
+                for(BulkObject bulk : object) {
+                    if(bulk.getName().equals(containerService.getKey(file))) {
+                        final TransferStatus chunk = new TransferStatus()
+                                .exists(status.isExists())
+                                .metadata(status.getMetadata())
+                                .parameters(status.getParameters());
+                        if(bulk.getOffset() == 0L) {
+                            // Set our own offsets
+                            chunk.setLength(status.getLength());
+                            chunk.setOffset(status.getOffset());
+                            chunk.setAppend(status.isAppend());
+                        }
+                        else {
+                            // Server sends multiple chunks with offsets
+                            chunk.setLength(bulk.getLength());
+                            chunk.setOffset(bulk.getOffset());
+                            switch(type) {
+                                case download:
+                                    // Job parameter already present from #pre
+                                    final Map<String, String> parameters = new HashMap<>(chunk.getParameters());
+                                    // Set offset for chunk
+                                    parameters.put(REQUEST_PARAMETER_OFFSET, Long.toString(chunk.getOffset()));
+                                    chunk.setParameters(parameters);
+                                    break;
+                            }
+                        }
+                        chunks.add(chunk);
                     }
-                    log.warn(String.format("Redirect to %s for file %s", node.getEndpoint(), file));
                 }
             }
-            final List<TransferStatus> chunks = new ArrayList<TransferStatus>(list.getObjects().size());
-            for(BulkObject bulk : objects) {
-                if(bulk.getName().equals(containerService.getKey(file))) {
-                    final TransferStatus chunk = new TransferStatus()
-                            .exists(status.isExists())
-                            .metadata(status.getMetadata())
-                            .parameters(status.getParameters());
-                    // Job parameter already present from #pre
-                    final Map<String, String> parameters = new HashMap<>(chunk.getParameters());
-                    // Set offset for chunk
-                    parameters.put(REQUEST_PARAMETER_OFFSET, Long.toString(chunk.getOffset()));
-                    chunk.parameters(parameters);
-                    chunk.setLength(bulk.getLength());
-                    chunk.setOffset(bulk.getOffset());
-                    chunks.add(chunk);
-                }
+            if(chunks.isEmpty()) {
+                throw new NotfoundException(String.format("File %s not found in job %s", file.getName(), job));
             }
             return chunks;
         }

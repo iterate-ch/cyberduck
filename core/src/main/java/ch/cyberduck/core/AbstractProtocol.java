@@ -49,7 +49,7 @@ public abstract class AbstractProtocol implements Protocol {
 
     @Override
     public boolean isEnabled() {
-        return PreferencesFactory.get().getBoolean(String.format("connection.protocol.%s.enable", this.getIdentifier()));
+        return true;
     }
 
     @Override

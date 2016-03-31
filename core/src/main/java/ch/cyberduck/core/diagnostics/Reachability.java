@@ -21,16 +21,13 @@ package ch.cyberduck.core.diagnostics;
 
 import ch.cyberduck.core.Host;
 
-/**
- * @version $Id$
- */
 public interface Reachability {
 
     /**
      * @param host Hostname
      * @return True if the host is reachable. Returns false if there is a
-     *         network configuration error, no such host is known or the server does
-     *         not listing at any such port
+     * network configuration error, no such host is known or the server does
+     * not listing at any such port
      */
     boolean isReachable(Host host);
 

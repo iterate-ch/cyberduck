@@ -53,6 +53,7 @@
     <property name="bundle.contents" value="Contents"/>
     <property name="bundle.home" value="${bundle.contents}/Home"/>
     <property name="bundle.macos" value="${bundle.contents}/MacOS"/>
+    <property name="bundle.plugins" value="${bundle.contents}/PlugIns"/>
     <property name="bundle.library" value="${bundle.contents}/Library"/>
     <property name="bundle.login" value="${bundle.library}/LoginItems"/>
     <property name="bundle.frameworks" value="${bundle.contents}/Frameworks"/>

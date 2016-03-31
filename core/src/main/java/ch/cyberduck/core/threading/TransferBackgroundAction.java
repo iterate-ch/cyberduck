@@ -191,10 +191,17 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> im
         }
     }
 
+    /**
+     * @return Return zero. Retry is handled in transfer worker.
+     */
+    @Override
+    protected int retry() {
+        return 0;
+    }
+
     @Override
     public void complete(final TransferItem item) {
-        // Reset repeat counter. #8223
-        repeat = 0;
+        //
     }
 
     @Override

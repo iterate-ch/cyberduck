@@ -15,6 +15,7 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -29,6 +30,7 @@ import java.util.Collections;
 
 import synapticloop.b2.BucketType;
 import synapticloop.b2.exception.B2ApiException;
+import synapticloop.b2.response.B2BucketResponse;
 
 public class B2DirectoryFeature implements Directory {
 
@@ -43,15 +45,18 @@ public class B2DirectoryFeature implements Directory {
 
     @Override
     public void mkdir(final Path file) throws BackgroundException {
-        this.mkdir(file, null);
+        this.mkdir(file, BucketType.valueOf(PreferencesFactory.get().getProperty("b2.bucket.acl.default")).name());
     }
 
     @Override
-    public void mkdir(final Path file, final String region) throws BackgroundException {
+    public void mkdir(final Path file, final String type) throws BackgroundException {
         try {
             if(containerService.isContainer(file)) {
-                session.getClient().createBucket(containerService.getContainer(file).getName(),
-                        BucketType.valueOf(PreferencesFactory.get().getProperty("b2.bucket.acl.default")));
+                final B2BucketResponse response = session.getClient().createBucket(containerService.getContainer(file).getName(), BucketType.valueOf(type));
+                switch(response.getBucketType()) {
+                    case allPublic:
+                        file.attributes().setAcl(new Acl(new Acl.GroupUser(Acl.GroupUser.EVERYONE, false), new Acl.Role(Acl.Role.READ)));
+                }
             }
             else {
                 session.getClient().uploadFile(

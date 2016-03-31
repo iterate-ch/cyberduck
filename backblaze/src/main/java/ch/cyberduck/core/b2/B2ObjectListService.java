@@ -24,6 +24,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -47,8 +48,15 @@ public class B2ObjectListService implements ListService {
 
     private final B2Session session;
 
+    private final int chunksize;
+
     public B2ObjectListService(final B2Session session) {
+        this(session, PreferencesFactory.get().getInteger("b2.listing.chunksize"));
+    }
+
+    public B2ObjectListService(final B2Session session, final int chunksize) {
         this.session = session;
+        this.chunksize = chunksize;
     }
 
     @Override
@@ -62,7 +70,7 @@ public class B2ObjectListService implements ListService {
                 // versions of files with the same name.
                 final B2ListFilesResponse response = session.getClient().listFileVersions(
                         new B2FileidProvider(session).getFileid(containerService.getContainer(directory)),
-                        nextFilename, nextFileid, PreferencesFactory.get().getInteger("b2.listing.chunksize"));
+                        nextFilename, nextFileid, chunksize);
                 final List<B2FileInfoResponse> files = response.getFiles();
                 final Map<String, Integer> revisions = new HashMap<String, Integer>();
                 for(B2FileInfoResponse file : files) {
@@ -73,22 +81,16 @@ public class B2ObjectListService implements ListService {
                         continue;
                     }
                     final PathAttributes attributes = new PathAttributes();
-                    attributes.setSize(file.getSize());
+                    attributes.setChecksum(Checksum.parse(file.getContentSha1()));
                     final long timestamp = file.getUploadTimestamp();
                     attributes.setCreationDate(timestamp);
                     attributes.setModificationDate(timestamp);
                     attributes.setVersionId(file.getFileId());
                     switch(file.getAction()) {
                         case hide:
+                        case start:
                             attributes.setDuplicate(true);
                             break;
-                    }
-                    if(StringUtils.endsWith(file.getFileName(), "/.bzEmpty")) {
-                        objects.add(new Path(containerService.getContainer(directory), StringUtils.removeEnd(file.getFileName(), "/.bzEmpty"),
-                                EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes));
-                    }
-                    else {
-                        objects.add(new Path(containerService.getContainer(directory), file.getFileName(), EnumSet.of(Path.Type.file), attributes));
                     }
                     final Integer revision;
                     if(revisions.keySet().contains(file.getFileName())) {
@@ -101,6 +103,14 @@ public class B2ObjectListService implements ListService {
                     }
                     revisions.put(file.getFileName(), revision);
                     attributes.setRevision(revision);
+                    if(StringUtils.endsWith(file.getFileName(), "/.bzEmpty")) {
+                        objects.add(new Path(directory, PathNormalizer.name(StringUtils.removeEnd(file.getFileName(), "/.bzEmpty")),
+                                EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes));
+                    }
+                    else {
+                        attributes.setSize(file.getSize());
+                        objects.add(new Path(directory, PathNormalizer.name(file.getFileName()), EnumSet.of(Path.Type.file), attributes));
+                    }
                 }
                 nextFilename = response.getNextFileName();
                 nextFileid = response.getNextFileId();
