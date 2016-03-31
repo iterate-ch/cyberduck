@@ -50,7 +50,6 @@
             <arg line="${codesign.options} --identifier ch.sudo.cyberduck --sign '${codesign.certificate}' --keychain ${codesign.keychain} ${codesign.arg} -v"/>
             <fileset dir="${bundle}/${bundle.frameworks}">
                 <include name="*.dylib"/>
-                <include name="*.jar"/>
             </fileset>
             <srcfile/>
         </apply>
@@ -60,7 +59,6 @@
             <arg line="${codesign.options} --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
             <fileset dir="${bundle}/${bundle.runtime}">
                 <include name="**/*.dylib"/>
-                <include name="**/*.jar"/>
             </fileset>
             <fileset dir="${bundle}/${bundle.plugins}">
                 <include name="*.jre"/>
