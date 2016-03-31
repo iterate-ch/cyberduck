@@ -64,6 +64,9 @@
         <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
             <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
         </taskdef>
+        <taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask">
+            <classpath path="${lib.ext}/xmltask.jar"/>
+        </taskdef>
         <msbuild buildfile="${home}/Cyberduck.csproj">
             <target name="Build"/>
 
@@ -101,6 +104,27 @@
         <copy file="${www.update}/Updater.exe" todir="${build}/update" overwrite="true"/>
 
         <mkdir dir="${build.deploy}"/>
+
+        <!-- prepare WinSparkle stuff -->
+        <xmltask source="${build}/update/changelog.rss" dest="${build}/update/changelog.rss">
+            <remove path="//*[local-name()='minimumSystemVersion']"/>
+        </xmltask>
+        <copy todir="${build}/update" overwrite="true">
+            <fileset dir="${www.update}">
+                <include name="changelog.html"/>
+            </fileset>
+        </copy>
+        <replace dir="${build}/update" summary="true" encoding="UTF-8">
+            <include name="changelog.rss"/>
+            <replacefilter token="${TIMESTAMP}" value="${touch.time}"/>
+            <replacefilter token="${ARCHIVE}"
+                           value="https://update.cyberduck.io/${sparkle.feed}/${app.name}-Installer-${version}.${revision}.msi"/>
+            <replacefilter token="${CHANGELOG}" value="https://version.cyberduck.io/${sparkle.feed}/changelog.html"/>
+            <replacefilter token="${REVISION}" value="${revision}"/>
+            <replacefilter token="${VERSION}" value="${version}"/>
+            <replacefilter token="${DSASIGNATURE}" value="unsupported"/>
+            <replacefilter token="${COPYRIGHT}" value="${copyright}"/>
+        </replace>
 
         <msbuild buildfile="${home}/Cyberduck Bootstrapper.wixproj">
             <target name="Build"/>
