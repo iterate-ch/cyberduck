@@ -121,7 +121,7 @@
             <replacefilter token="${TIMESTAMP}" value="${touch.time}"/>
             <replacefilter token="${ARCHIVE}"
                            value="https://update.cyberduck.io/windows/${sparkle.feed}/${app.name}-Installer-${version}.${revision}.msi"/>
-            <replacefilter token="${CHANGELOG}" value="https://version.cyberduck.io/${sparkle.feed}/changelog.html"/>
+            <replacefilter token="${CHANGELOG}" value="https://version.cyberduck.io/windows/${sparkle.feed}/changelog.html"/>
             <replacefilter token="${REVISION}" value="${revision}"/>
             <replacefilter token="${VERSION}" value="${version}"/>
             <replacefilter token="${DSASIGNATURE}" value="unsupported"/>
