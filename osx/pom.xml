@@ -126,7 +126,7 @@
                             </execution>
                             <execution>
                                 <id>unpack-jce-unlimited</id>
-                                <phase>verify</phase>
+                                <phase>generate-sources</phase>
                                 <goals>
                                     <goal>copy</goal>
                                 </goals>
