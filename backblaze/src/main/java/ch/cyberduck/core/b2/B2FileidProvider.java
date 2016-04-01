@@ -29,6 +29,7 @@ import java.util.List;
 
 import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2BucketResponse;
+import synapticloop.b2.response.B2FileInfoResponse;
 import synapticloop.b2.response.B2ListFilesResponse;
 
 public class B2FileidProvider implements IdProvider {
@@ -60,8 +61,10 @@ public class B2FileidProvider implements IdProvider {
             else {
                 final B2ListFilesResponse response = session.getClient().listFileNames(
                         new B2FileidProvider(session).getFileid(containerService.getContainer(file)), containerService.getKey(file), 1);
-                if(1 == response.getFiles().size()) {
-                    return response.getFiles().iterator().next().getFileId();
+                for(B2FileInfoResponse info : response.getFiles()) {
+                    if(StringUtils.equals(containerService.getKey(file), StringUtils.removeEnd(info.getFileName(), "/.bzEmpty"))) {
+                        return info.getFileId();
+                    }
                 }
                 throw new NotfoundException(file.getAbsolute());
             }

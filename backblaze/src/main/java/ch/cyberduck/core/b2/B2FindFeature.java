@@ -20,6 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
 
 import org.apache.commons.lang3.StringUtils;
@@ -29,7 +30,6 @@ import java.util.List;
 
 import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2BucketResponse;
-import synapticloop.b2.response.B2ListFilesResponse;
 
 public class B2FindFeature implements Find {
 
@@ -54,9 +54,12 @@ public class B2FindFeature implements Find {
                 }
             }
             else {
-                final B2ListFilesResponse response = session.getClient().listFileNames(
-                        new B2FileidProvider(session).getFileid(containerService.getContainer(file)), containerService.getKey(file), 1);
-                return 1 == response.getFiles().size();
+                try {
+                    return null != new B2FileidProvider(session).getFileid(file);
+                }
+                catch(NotfoundException e) {
+                    return false;
+                }
             }
             return false;
         }
