@@ -19,8 +19,11 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
+using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.updater;
 using Ch.Cyberduck.Ui.Controller;
+using Ch.Cyberduck.Ui.Sparkle;
+using java.time;
 using org.apache.log4j;
 
 namespace Ch.Cyberduck.Ui.Core
@@ -28,14 +31,52 @@ namespace Ch.Cyberduck.Ui.Core
     public class WindowsPeriodicUpdateChecker : AbstractPeriodicUpdateChecker
     {
         private static readonly Logger Log = Logger.getLogger(typeof (WindowsPeriodicUpdateChecker).Name);
+        private readonly ch.cyberduck.core.preferences.Preferences _preferences = PreferencesFactory.get();
 
         [DllImport("advapi32.dll", SetLastError = true)]
         private static extern bool GetTokenInformation(IntPtr tokenHandle, TokenInformationClass tokenInformationClass,
             IntPtr tokenInformation, int tokenInformationLength, out int returnLength);
 
+        public override void unregister()
+        {
+            base.unregister();
+            WinSparkle.Cleanup();
+        }
+
+        public override Duration register()
+        {
+            WinSparkle.SetAutomaticCheckForUpdates(false);
+            WinSparkle.Initialize();
+            WinSparkle.SetCanShutdownCallback(() => Convert.ToInt32(MainController.PrepareExit()));
+            WinSparkle.SetShutdownRequestCallback(delegate
+            {
+                Log.info("About to exit in order to install update");
+                MainController.Exit(true);
+            });
+            return base.register();
+        }
+
         public override void check(bool background)
         {
-            UpdateController.Instance.ForceCheckForUpdates(background);
+            Log.debug($"Checking for updates, background= {background}");
+            SetAppcastURL();
+            if (background)
+            {
+                WinSparkle.CheckUpdateWithoutUi();
+            }
+            else
+            {
+                WinSparkle.CheckUpdateWithUi();
+            }
+            _preferences.setProperty("update.check.last", DateTime.Now.Ticks);
+        }
+
+        private void SetAppcastURL()
+        {
+            String currentFeed = _preferences.getProperty("update.feed");
+            String feedUrl = _preferences.getProperty("update.feed." + currentFeed);
+            Log.debug("Setting feed URL to " + feedUrl);
+            WinSparkle.SetAppcastUrl(feedUrl);
         }
 
         public override bool hasUpdatePrivileges()

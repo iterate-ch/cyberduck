@@ -228,9 +228,9 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             defaults.put("application.language.custom", false.ToString());
             defaults.put("application.localization.enable", true.ToString());
 
-            defaults.put("update.feed.release", "https://version.cyberduck.io/changelog.wys");
-            defaults.put("update.feed.beta", "https://version.cyberduck.io/beta/changelog.wys");
-            defaults.put("update.feed.nightly", "https://version.cyberduck.io/nightly/changelog.wys");
+            defaults.put("update.feed.release", "https://version.cyberduck.io/windows/changelog.rss");
+            defaults.put("update.feed.beta", "https://version.cyberduck.io/windows/beta/changelog.rss");
+            defaults.put("update.feed.nightly", "https://version.cyberduck.io/windows/nightly/changelog.rss");
 
             defaults.put("update.feed", "release");
 
