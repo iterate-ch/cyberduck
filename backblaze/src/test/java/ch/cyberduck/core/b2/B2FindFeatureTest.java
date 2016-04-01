@@ -36,10 +36,10 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-public class B2FileidProviderTest {
+public class B2FindFeatureTest {
 
     @Test
-    public void getFileidFile() throws Exception {
+    public void testFind() throws Exception {
         final B2Session session = new B2Session(
                 new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
                         new Credentials(
@@ -51,49 +51,13 @@ public class B2FileidProviderTest {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new B2TouchFeature(session).touch(file);
-        assertNotNull(new B2FileidProvider(session).getFileid(file));
-        try {
-            assertNull(new B2FileidProvider(session).getFileid(new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
-            fail();
-        }
-        catch(NotfoundException e) {
-            // Expected
-        }
+        assertTrue(new B2FindFeature(session).find(file));
+        assertFalse(new B2FindFeature(session).find(new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
         new B2DeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {
                 //
             }
         });
-    }
-
-    @Test
-    public void getFileidFolder() throws Exception {
-        final B2Session session = new B2Session(
-                new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
-                        )));
-        final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener());
-        service.connect(session, PathCache.empty());
-        final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new B2DirectoryFeature(session).mkdir(file);
-        assertNotNull(new B2FileidProvider(session).getFileid(file));
-        try {
-            assertNull(new B2FileidProvider(session).getFileid(new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory))));
-            fail();
-        }
-        catch(NotfoundException e) {
-            // Expected
-        }
-        new B2DeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
-
     }
 }
