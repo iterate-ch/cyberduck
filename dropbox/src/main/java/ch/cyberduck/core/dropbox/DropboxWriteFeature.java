@@ -22,6 +22,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.http.AbstractHttpWriteFeature;
+import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -35,7 +37,7 @@ import java.io.OutputStream;
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.UploadUploader;
 
-public class DropboxWriteFeature implements Write {
+public class DropboxWriteFeature  extends AbstractHttpWriteFeature<Void> {
 
     private static final Logger log = Logger.getLogger(DropboxWriteFeature.class);
 
@@ -51,6 +53,7 @@ public class DropboxWriteFeature implements Write {
     }
 
     public DropboxWriteFeature(final DropboxSession session, final Find finder, final Attributes attributes) {
+        super(finder, attributes);
         this.session = session;
         this.finder = finder;
         this.attributes = attributes;
@@ -60,15 +63,15 @@ public class DropboxWriteFeature implements Write {
     public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
         if(finder.withCache(cache).find(file)) {
             final PathAttributes attributes = this.attributes.withCache(cache).find(file);
-            return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());
+            return new Append(true, false).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());
         }
         return Write.notfound;
     }
 
     @Override
-    public OutputStream write(Path file, TransferStatus status) throws BackgroundException {
+    public ResponseOutputStream<Void> write(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            UploadUploader uploader = session.getClient().files().upload(file.getAbsolute());
+            final UploadUploader uploader = session.getClient().files().upload(file.getName());
             return new UploadProxyOutputStream(uploader);
         }
         catch(DbxException ex) {
@@ -86,13 +89,18 @@ public class DropboxWriteFeature implements Write {
         return false;
     }
 
-    private static final class UploadProxyOutputStream extends ProxyOutputStream {
+    private static final class UploadProxyOutputStream extends ResponseOutputStream {
 
         private final UploadUploader uploader;
 
         public UploadProxyOutputStream(final UploadUploader uploader) {
             super(uploader.getOutputStream());
             this.uploader = uploader;
+        }
+
+        @Override
+        public Object getResponse() throws BackgroundException {
+            return null;
         }
 
         @Override

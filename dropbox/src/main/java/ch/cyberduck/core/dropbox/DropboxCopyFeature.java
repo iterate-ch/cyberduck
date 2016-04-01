@@ -17,37 +17,24 @@ package ch.cyberduck.core.dropbox;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.transfer.TransferStatus;
-
-import java.io.InputStream;
-
-import com.dropbox.core.DbxDownloader;
+import ch.cyberduck.core.features.Copy;
 import com.dropbox.core.DbxException;
-import com.dropbox.core.v2.files.FileMetadata;
 
-public class DropboxReadFeature implements Read {
+public class DropboxCopyFeature implements Copy {
 
     private DropboxSession session;
 
-    public DropboxReadFeature(final DropboxSession session) {
+    public DropboxCopyFeature(DropboxSession session) {
         this.session = session;
     }
 
     @Override
-    public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
+    public void copy(final Path source, final Path copy) throws BackgroundException {
         try {
-            final DbxDownloader<FileMetadata> downloader =
-                    session.getClient().files().download(file.getName());
-            return downloader.getInputStream();
+            session.getClient().files().copy(source.getName(), copy.getName());
         }
-        catch(DbxException ex) {
-            throw new DropboxExceptionMappingService().map("Download failed.", ex);
+        catch(DbxException e) {
+            throw new DropboxExceptionMappingService().map("Cannot copy {0}", e, source);
         }
-    }
-
-    @Override
-    public boolean offset(Path file) throws BackgroundException {
-        return false;
     }
 }

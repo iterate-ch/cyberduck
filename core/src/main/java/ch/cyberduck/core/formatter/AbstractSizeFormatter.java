@@ -21,6 +21,7 @@ import ch.cyberduck.core.LocaleFactory;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
+import java.util.Locale;
 
 /**
  * @version $Id$
@@ -67,7 +68,7 @@ public abstract class AbstractSizeFormatter implements SizeFormatter {
                     BigDecimal.ROUND_HALF_UP).toString()).append(" ").append(giga.suffix());
         }
         if(plain) {
-            formatted.append(" (").append(NumberFormat.getInstance().format(size)).append(" bytes)");
+            formatted.append(" (").append(NumberFormat.getInstance(Locale.US).format(size)).append(" bytes)");
         }
         return formatted.toString();
     }
