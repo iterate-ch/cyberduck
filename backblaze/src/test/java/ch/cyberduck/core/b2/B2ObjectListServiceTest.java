@@ -231,8 +231,8 @@ public class B2ObjectListServiceTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path bucket = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new B2DirectoryFeature(session).mkdir(bucket);
-        final Path folder1 = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        final Path file1 = new Path(folder1, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path folder1 = new Path(bucket, "1-d", EnumSet.of(Path.Type.directory));
+        final Path file1 = new Path(folder1, "2-f", EnumSet.of(Path.Type.file));
         new B2TouchFeature(session).touch(file1);
 
         final AttributedList<Path> list = new B2ObjectListService(session).list(bucket, new DisabledListProgressListener());
@@ -259,9 +259,9 @@ public class B2ObjectListServiceTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path bucket = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new B2DirectoryFeature(session).mkdir(bucket);
-        final Path folder1 = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        final Path folder2 = new Path(folder1, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        final Path file1 = new Path(folder2, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path folder1 = new Path(bucket, "1-d", EnumSet.of(Path.Type.directory));
+        final Path folder2 = new Path(folder1, "2-d", EnumSet.of(Path.Type.directory));
+        final Path file1 = new Path(folder2, "3-f", EnumSet.of(Path.Type.file));
         new B2TouchFeature(session).touch(file1);
 
         final AttributedList<Path> list = new B2ObjectListService(session).list(folder1, new DisabledListProgressListener());
@@ -275,5 +275,45 @@ public class B2ObjectListServiceTest {
             }
         });
         session.close();
+    }
+
+    @Test
+    public void testFindPlaceholder() throws Exception {
+        {
+            final Path directory = new Path("/bucket/1-d", EnumSet.of(Path.Type.directory, Path.Type.volume));
+            final String filename = "1-d/2-d/3-f";
+            assertEquals(new Path("/bucket/1-d/2-d", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
+                    new B2ObjectListService(null).placeholder(directory, filename));
+        }
+        {
+            final Path directory = new Path("/bucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
+            final String filename = "1-d/2-d/.bzEmpty";
+            assertEquals(new Path("/bucket/1-d", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
+                    new B2ObjectListService(null).placeholder(directory, filename));
+        }
+        {
+            final Path directory = new Path("/bucket/1-d", EnumSet.of(Path.Type.directory, Path.Type.volume));
+            final String filename = "1-d/2-d/.bzEmpty";
+            assertEquals(new Path("/bucket/1-d/2-d", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
+                    new B2ObjectListService(null).placeholder(directory, filename));
+        }
+        {
+            final Path directory = new Path("/bucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
+            final String filename = "1-d/2-f";
+            assertEquals(new Path("/bucket/1-d", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
+                    new B2ObjectListService(null).placeholder(directory, filename));
+        }
+        {
+            final Path directory = new Path("/bucket/1-d", EnumSet.of(Path.Type.directory, Path.Type.volume));
+            final String filename = "1-d/.bzEmpty";
+            assertEquals(new Path("/bucket/1-d", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
+                    new B2ObjectListService(null).placeholder(directory, filename));
+        }
+        {
+            final Path directory = new Path("/bucket/1-d", EnumSet.of(Path.Type.directory, Path.Type.volume));
+            final String filename = "1-f";
+            assertEquals(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
+                    new B2ObjectListService(null).placeholder(directory, filename));
+        }
     }
 }

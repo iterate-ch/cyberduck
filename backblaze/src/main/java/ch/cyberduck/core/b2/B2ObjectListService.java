@@ -63,7 +63,13 @@ public class B2ObjectListService implements ListService {
         try {
             final AttributedList<Path> objects = new AttributedList<Path>();
             String nextFileid = null;
-            String nextFilename = containerService.getKey(directory);
+            String nextFilename;
+            if(containerService.isContainer(directory)) {
+                nextFilename = null;
+            }
+            else {
+                nextFilename = String.format("%s%s", containerService.getKey(directory), Path.DELIMITER);
+            }
             // Seen placeholders
             final Map<String, Integer> revisions = new HashMap<String, Integer>();
             do {
@@ -93,12 +99,16 @@ public class B2ObjectListService implements ListService {
         for(B2FileInfoResponse file : response.getFiles()) {
             final PathAttributes attributes = this.parse(directory, file, revisions);
             if(attributes == null) {
-                // Look for same parent directory
-                continue;
+                final Path placeholder = this.placeholder(directory, file.getFileName());
+                if(placeholder.isChild(directory)) {
+                    if(!revisions.containsKey(containerService.getKey(placeholder))) {
+                        objects.add(placeholder);
+                    }
+                }
             }
-            else if(StringUtils.endsWith(file.getFileName(), "/.bzEmpty")) {
-                objects.add(new Path(directory, PathNormalizer.name(StringUtils.removeEnd(file.getFileName(), "/.bzEmpty")),
-                        EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes));
+            else if(StringUtils.endsWith(file.getFileName(), B2DirectoryFeature.PLACEHOLDER)) {
+                objects.add(new Path(directory, PathNormalizer.name(StringUtils.removeEnd(file.getFileName(), B2DirectoryFeature.PLACEHOLDER)),
+                        EnumSet.of(Path.Type.directory), attributes));
             }
             else {
                 attributes.setSize(file.getSize());
@@ -110,7 +120,7 @@ public class B2ObjectListService implements ListService {
 
     protected PathAttributes parse(final Path directory, final B2FileInfoResponse response, final Map<String, Integer> revisions) {
         if(!StringUtils.equals(PathNormalizer.parent(
-                StringUtils.removeEnd(response.getFileName(), ".bzEmpty"), Path.DELIMITER),
+                StringUtils.removeEnd(response.getFileName(), PathNormalizer.name(B2DirectoryFeature.PLACEHOLDER)), Path.DELIMITER),
                 containerService.isContainer(directory) ? String.valueOf(Path.DELIMITER) : containerService.getKey(directory))) {
             log.warn(String.format("Skip file %s", response));
             return null;
@@ -139,5 +149,23 @@ public class B2ObjectListService implements ListService {
         revisions.put(response.getFileName(), revision);
         attributes.setRevision(revision);
         return attributes;
+    }
+
+    protected Path placeholder(final Path directory, final String filename) {
+        // Look for same parent directory
+        String name = null;
+        String parent = StringUtils.removeEnd(filename, B2DirectoryFeature.PLACEHOLDER);
+        while(!StringUtils.equals(parent, containerService.isContainer(directory) ?
+                String.valueOf(Path.DELIMITER) : containerService.getKey(directory))) {
+            name = PathNormalizer.name(parent);
+            parent = PathNormalizer.parent(parent, Path.DELIMITER);
+            if(null == parent) {
+                return new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+            }
+        }
+        if(StringUtils.isBlank(name)) {
+            return directory;
+        }
+        return new Path(directory, name, EnumSet.of(Path.Type.directory, Path.Type.placeholder));
     }
 }

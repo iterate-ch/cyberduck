@@ -58,6 +58,9 @@ public class B2DeleteFeature implements Delete {
             if(containerService.isContainer(file)) {
                 continue;
             }
+            if(file.isPlaceholder()) {
+                continue;
+            }
             pending.add(this.submit(file, callback));
         }
         try {
@@ -104,8 +107,8 @@ public class B2DeleteFeature implements Delete {
             public Void call() throws BackgroundException {
                 try {
                     callback.delete(file);
-                    if(file.isPlaceholder()) {
-                        session.getClient().deleteFileVersion(String.format("%s/.bzEmpty", containerService.getKey(file)),
+                    if(file.isDirectory()) {
+                        session.getClient().deleteFileVersion(String.format("%s%s", containerService.getKey(file), B2DirectoryFeature.PLACEHOLDER),
                                 new B2FileidProvider(session).getFileid(file));
                     }
                     else if(file.isFile()) {
