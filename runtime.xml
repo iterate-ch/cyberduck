@@ -13,7 +13,7 @@
         <!-- Copy runtime -->
         <echo message="Copy runtime from ${jvm.runtime.home} to ${bundle}/${bundle.runtime}"/>
         <copy todir="${bundle}/${bundle.runtime}" preservelastmodified="true">
-            <fileset followsymlinks="false" dir="${runtime.dependency}" excludesfile="${home}/runtime-excludes.properties"/>
+            <fileset followsymlinks="true" dir="${runtime.dependency}" excludesfile="${home}/runtime-excludes.properties"/>
         </copy>
     </target>
 
