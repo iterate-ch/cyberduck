@@ -74,35 +74,10 @@ public class B2ObjectListService implements ListService {
                 final List<B2FileInfoResponse> files = response.getFiles();
                 final Map<String, Integer> revisions = new HashMap<String, Integer>();
                 for(B2FileInfoResponse file : files) {
-                    if(!StringUtils.equals(PathNormalizer.parent(
-                            StringUtils.removeEnd(file.getFileName(), ".bzEmpty"), Path.DELIMITER),
-                            containerService.isContainer(directory) ? String.valueOf(Path.DELIMITER) : containerService.getKey(directory))) {
-                        log.warn(String.format("Skip file %s", file));
+                    final PathAttributes attributes = this.parse(directory, revisions, file);
+                    if(attributes == null) {
                         continue;
                     }
-                    final PathAttributes attributes = new PathAttributes();
-                    attributes.setChecksum(Checksum.parse(file.getContentSha1()));
-                    final long timestamp = file.getUploadTimestamp();
-                    attributes.setCreationDate(timestamp);
-                    attributes.setModificationDate(timestamp);
-                    attributes.setVersionId(file.getFileId());
-                    switch(file.getAction()) {
-                        case hide:
-                        case start:
-                            attributes.setDuplicate(true);
-                            break;
-                    }
-                    final Integer revision;
-                    if(revisions.keySet().contains(file.getFileName())) {
-                        // Later version already found
-                        attributes.setDuplicate(true);
-                        revision = revisions.get(file.getFileName()) + 1;
-                    }
-                    else {
-                        revision = 1;
-                    }
-                    revisions.put(file.getFileName(), revision);
-                    attributes.setRevision(revision);
                     if(StringUtils.endsWith(file.getFileName(), "/.bzEmpty")) {
                         objects.add(new Path(directory, PathNormalizer.name(StringUtils.removeEnd(file.getFileName(), "/.bzEmpty")),
                                 EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes));
@@ -125,5 +100,38 @@ public class B2ObjectListService implements ListService {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
+    }
+
+    protected PathAttributes parse(final Path directory, final Map<String, Integer> revisions, final B2FileInfoResponse file) {
+        if(!StringUtils.equals(PathNormalizer.parent(
+                StringUtils.removeEnd(file.getFileName(), ".bzEmpty"), Path.DELIMITER),
+                containerService.isContainer(directory) ? String.valueOf(Path.DELIMITER) : containerService.getKey(directory))) {
+            log.warn(String.format("Skip file %s", file));
+            return null;
+        }
+        final PathAttributes attributes = new PathAttributes();
+        attributes.setChecksum(Checksum.parse(file.getContentSha1()));
+        final long timestamp = file.getUploadTimestamp();
+        attributes.setCreationDate(timestamp);
+        attributes.setModificationDate(timestamp);
+        attributes.setVersionId(file.getFileId());
+        switch(file.getAction()) {
+            case hide:
+            case start:
+                attributes.setDuplicate(true);
+                break;
+        }
+        final Integer revision;
+        if(revisions.keySet().contains(file.getFileName())) {
+            // Later version already found
+            attributes.setDuplicate(true);
+            revision = revisions.get(file.getFileName()) + 1;
+        }
+        else {
+            revision = 1;
+        }
+        revisions.put(file.getFileName(), revision);
+        attributes.setRevision(revision);
+        return attributes;
     }
 }
