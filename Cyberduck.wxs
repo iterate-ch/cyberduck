@@ -297,5 +297,15 @@
       <ComponentGroupRef Id="Profiles" />
       <ComponentRef Id="ApplicationShortcut" />
     </Feature>
+
+    <Property Id="WixShellExecTarget" Value="[#product.exe]" />
+    <CustomAction Id="LaunchFile"
+                  BinaryKey="WixCA"
+                  DllEntry="WixShellExec"
+                  Impersonate="yes" />
+
+    <InstallExecuteSequence>
+      <Custom Action='LaunchFile' After='InstallFinalize'>AUTOSTART=1</Custom>
+    </InstallExecuteSequence>
   </Product>
 </Wix>

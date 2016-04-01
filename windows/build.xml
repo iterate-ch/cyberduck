@@ -105,8 +105,11 @@
         <mkdir dir="${build.deploy}"/>
 
         <!-- prepare WinSparkle stuff -->
-        <xmltask source="${build}/update/changelog.rss" dest="${build}/update/changelog.rss">
+        <xmltask source="${www.update}/changelog.rss" destbuffer="changelog">
             <remove path="//*[local-name()='minimumSystemVersion']"/>
+        </xmltask>
+        <xmltask sourcebuffer="changelog" dest="${build}/update/changelog.rss">
+            <attr path="//item/enclosure" attr="sparkle:installerArguments" value="AUTOSTART=1"/>
         </xmltask>
         <copy todir="${build}/update" overwrite="true">
             <fileset dir="${www.update}">
