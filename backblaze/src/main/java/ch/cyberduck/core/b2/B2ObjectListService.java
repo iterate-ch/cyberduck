@@ -99,16 +99,16 @@ public class B2ObjectListService implements ListService {
         for(B2FileInfoResponse file : response.getFiles()) {
             final PathAttributes attributes = this.parse(directory, file, revisions);
             if(attributes == null) {
-                final Path placeholder = this.placeholder(directory, file.getFileName());
-                if(placeholder.isChild(directory)) {
-                    if(!revisions.containsKey(containerService.getKey(placeholder))) {
-                        objects.add(placeholder);
+                final Path virtual = this.virtual(directory, file.getFileName());
+                if(virtual.isChild(directory)) {
+                    if(!revisions.containsKey(String.format("%s%s", containerService.getKey(virtual), B2DirectoryFeature.PLACEHOLDER))) {
+                        objects.add(virtual);
                     }
                 }
             }
             else if(StringUtils.endsWith(file.getFileName(), B2DirectoryFeature.PLACEHOLDER)) {
                 objects.add(new Path(directory, PathNormalizer.name(StringUtils.removeEnd(file.getFileName(), B2DirectoryFeature.PLACEHOLDER)),
-                        EnumSet.of(Path.Type.directory), attributes));
+                        EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes));
             }
             else {
                 attributes.setSize(file.getSize());
@@ -151,7 +151,7 @@ public class B2ObjectListService implements ListService {
         return attributes;
     }
 
-    protected Path placeholder(final Path directory, final String filename) {
+    protected Path virtual(final Path directory, final String filename) {
         // Look for same parent directory
         String name = null;
         String parent = StringUtils.removeEnd(filename, B2DirectoryFeature.PLACEHOLDER);
@@ -160,12 +160,12 @@ public class B2ObjectListService implements ListService {
             name = PathNormalizer.name(parent);
             parent = PathNormalizer.parent(parent, Path.DELIMITER);
             if(null == parent) {
-                return new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+                return new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.directory));
             }
         }
         if(StringUtils.isBlank(name)) {
             return directory;
         }
-        return new Path(directory, name, EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        return new Path(directory, name, EnumSet.of(Path.Type.directory));
     }
 }
