@@ -33,7 +33,6 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import synapticloop.b2.exception.B2ApiException;
@@ -71,22 +70,7 @@ public class B2ObjectListService implements ListService {
                 final B2ListFilesResponse response = session.getClient().listFileVersions(
                         new B2FileidProvider(session).getFileid(containerService.getContainer(directory)),
                         nextFilename, nextFileid, chunksize);
-                final List<B2FileInfoResponse> files = response.getFiles();
-                final Map<String, Integer> revisions = new HashMap<String, Integer>();
-                for(B2FileInfoResponse file : files) {
-                    final PathAttributes attributes = this.parse(directory, revisions, file);
-                    if(attributes == null) {
-                        continue;
-                    }
-                    if(StringUtils.endsWith(file.getFileName(), "/.bzEmpty")) {
-                        objects.add(new Path(directory, PathNormalizer.name(StringUtils.removeEnd(file.getFileName(), "/.bzEmpty")),
-                                EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes));
-                    }
-                    else {
-                        attributes.setSize(file.getSize());
-                        objects.add(new Path(directory, PathNormalizer.name(file.getFileName()), EnumSet.of(Path.Type.file), attributes));
-                    }
-                }
+                this.parse(directory, objects, response);
                 nextFilename = response.getNextFileName();
                 nextFileid = response.getNextFileId();
                 listener.chunk(directory, objects);
@@ -102,35 +86,56 @@ public class B2ObjectListService implements ListService {
         }
     }
 
-    protected PathAttributes parse(final Path directory, final Map<String, Integer> revisions, final B2FileInfoResponse file) {
+    protected AttributedList<Path> parse(final Path directory, final AttributedList<Path> objects, final B2ListFilesResponse response) {
+        final Map<String, Integer> revisions = new HashMap<String, Integer>();
+        for(B2FileInfoResponse file : response.getFiles()) {
+            final PathAttributes attributes = this.parse(directory, revisions, file);
+            if(attributes == null) {
+                // Look for same parent directory
+
+                continue;
+            }
+            else if(StringUtils.endsWith(file.getFileName(), "/.bzEmpty")) {
+                objects.add(new Path(directory, PathNormalizer.name(StringUtils.removeEnd(file.getFileName(), "/.bzEmpty")),
+                        EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes));
+            }
+            else {
+                attributes.setSize(file.getSize());
+                objects.add(new Path(directory, PathNormalizer.name(file.getFileName()), EnumSet.of(Path.Type.file), attributes));
+            }
+        }
+        return objects;
+    }
+
+    protected PathAttributes parse(final Path directory, final Map<String, Integer> revisions, final B2FileInfoResponse response) {
         if(!StringUtils.equals(PathNormalizer.parent(
-                StringUtils.removeEnd(file.getFileName(), ".bzEmpty"), Path.DELIMITER),
+                StringUtils.removeEnd(response.getFileName(), ".bzEmpty"), Path.DELIMITER),
                 containerService.isContainer(directory) ? String.valueOf(Path.DELIMITER) : containerService.getKey(directory))) {
-            log.warn(String.format("Skip file %s", file));
+            log.warn(String.format("Skip file %s", response));
             return null;
         }
         final PathAttributes attributes = new PathAttributes();
-        attributes.setChecksum(Checksum.parse(file.getContentSha1()));
-        final long timestamp = file.getUploadTimestamp();
+        attributes.setChecksum(Checksum.parse(response.getContentSha1()));
+        final long timestamp = response.getUploadTimestamp();
         attributes.setCreationDate(timestamp);
         attributes.setModificationDate(timestamp);
-        attributes.setVersionId(file.getFileId());
-        switch(file.getAction()) {
+        attributes.setVersionId(response.getFileId());
+        switch(response.getAction()) {
             case hide:
             case start:
                 attributes.setDuplicate(true);
                 break;
         }
         final Integer revision;
-        if(revisions.keySet().contains(file.getFileName())) {
+        if(revisions.keySet().contains(response.getFileName())) {
             // Later version already found
             attributes.setDuplicate(true);
-            revision = revisions.get(file.getFileName()) + 1;
+            revision = revisions.get(response.getFileName()) + 1;
         }
         else {
             revision = 1;
         }
-        revisions.put(file.getFileName(), revision);
+        revisions.put(response.getFileName(), revision);
         attributes.setRevision(revision);
         return attributes;
     }
