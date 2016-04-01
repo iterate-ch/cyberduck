@@ -8,7 +8,7 @@
             <File source="${BUILDPATH}\Acknowledgments.rtf"/>
             <File source="${BUILDPATH}\License.txt"/>
             <File source="${BUILDPATH}\ActiveButtons.dll"/>
-            <File source="${BUILDPATH}\AutomaticUpdater.dll"/>
+            <File source="${BUILDPATH}\WinSparkle.dll"/>
             <File source="${BUILDPATH}\CustomOpenFileFolderDialog.dll"/>
             <File source="${BUILDPATH}\Cyberduck.exe"/>
             <File source="${BUILDPATH}\Cyberduck.exe.config"/>

@@ -32,8 +32,8 @@ using ch.cyberduck.core.b2;
 using ch.cyberduck.core.bonjour;
 using ch.cyberduck.core.dav;
 using ch.cyberduck.core.ftp;
-using ch.cyberduck.core.googlestorage;
 using ch.cyberduck.core.googledrive;
+using ch.cyberduck.core.googlestorage;
 using ch.cyberduck.core.importer;
 using ch.cyberduck.core.irods;
 using ch.cyberduck.core.notification;
@@ -494,11 +494,11 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     DateTime lastCheck = new DateTime(PreferencesFactory.get().getLong("update.check.last"));
                     TimeSpan span = DateTime.Now.Subtract(lastCheck);
+                    _updater.register();
                     if (span.TotalSeconds >= PreferencesFactory.get().getLong("update.check.interval"))
                     {
                         _updater.check(true);
                     }
-                    _updater.register();
                 }
             }
         }
@@ -622,11 +622,6 @@ namespace Ch.Cyberduck.Ui.Controller
         public static bool ApplicationShouldTerminate()
         {
             Logger.debug("ApplicationShouldTerminate");
-            // Check if the automatic updater wants to install an update
-            if (UpdateController.Instance.AboutToInstallUpdate)
-            {
-                return true;
-            }
 
             // Determine if there are any running transfers
             bool terminate = TransferController.ApplicationShouldTerminate();
@@ -654,8 +649,10 @@ namespace Ch.Cyberduck.Ui.Controller
             return true;
         }
 
-        public static void Exit()
+
+        public static bool PrepareExit()
         {
+            bool readyToExit = true;
             foreach (BrowserController controller in new List<BrowserController>(Browsers))
             {
                 if (controller.IsConnected())
@@ -681,13 +678,15 @@ namespace Ch.Cyberduck.Ui.Controller
                                     case -1: // Cancel
                                         // Quit has been interrupted. Delete any saved sessions so far.
                                         Application._sessions.clear();
-                                        return;
+                                        readyToExit = false;
+                                        break;
                                     case 0: // Review
                                         if (BrowserController.ApplicationShouldTerminate())
                                         {
                                             break;
                                         }
-                                        return;
+                                        readyToExit = false;
+                                        break;
                                     case 1: // Quit
                                         foreach (BrowserController c in
                                             new List<BrowserController>(Browsers))
@@ -704,9 +703,21 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                 }
             }
-            NotificationServiceFactory.get().unregister();
-            ApplicationShouldTerminateAfterDonationPrompt();
-            System.Windows.Forms.Application.Exit();
+            return readyToExit;
+        }
+
+        public static void Exit(bool updateInProgress)
+        {
+            if (updateInProgress)
+            {
+                NotificationServiceFactory.get().unregister();
+                System.Windows.Forms.Application.Exit();
+            }
+            else if (PrepareExit())
+            {
+                ApplicationShouldTerminateAfterDonationPrompt();
+                System.Windows.Forms.Application.Exit();
+            }
         }
 
         private static BrowserController NewBrowser(bool force, bool show)
@@ -749,7 +760,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         forms[i].Dispose();
                     }
-                    Exit();
+                    Exit(false);
                 }
                 else
                 {

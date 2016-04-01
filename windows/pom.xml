@@ -154,11 +154,11 @@
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
-                    <groupId>com.wyday</groupId>
-                    <artifactId>AutomaticUpdater</artifactId>
+                    <groupId>WinSparkle</groupId>
+                    <artifactId>WinSparkle</artifactId>
                     <classifier>native</classifier>
                     <type>dll</type>
-                    <version>2.6.18.4</version>
+                    <version>0.5.x86</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
