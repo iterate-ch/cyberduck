@@ -25,6 +25,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 
 import org.junit.Test;
@@ -33,7 +34,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 public class B2FileidProviderTest {
 
@@ -51,13 +52,19 @@ public class B2FileidProviderTest {
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new B2TouchFeature(session).touch(file);
         assertNotNull(new B2FileidProvider(session).getFileid(file));
+        try {
+            assertNull(new B2FileidProvider(session).getFileid(new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
+            fail();
+        }
+        catch(NotfoundException e) {
+            // Expected
+        }
         new B2DeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {
                 //
             }
         });
-
     }
 
     @Test
@@ -74,6 +81,13 @@ public class B2FileidProviderTest {
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new B2DirectoryFeature(session).mkdir(file);
         assertNotNull(new B2FileidProvider(session).getFileid(file));
+        try {
+            assertNull(new B2FileidProvider(session).getFileid(new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory))));
+            fail();
+        }
+        catch(NotfoundException e) {
+            // Expected
+        }
         new B2DeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {
