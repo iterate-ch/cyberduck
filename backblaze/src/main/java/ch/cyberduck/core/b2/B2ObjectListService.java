@@ -64,13 +64,15 @@ public class B2ObjectListService implements ListService {
             final AttributedList<Path> objects = new AttributedList<Path>();
             String nextFileid = null;
             String nextFilename = containerService.getKey(directory);
+            // Seen placeholders
+            final Map<String, Integer> revisions = new HashMap<String, Integer>();
             do {
                 // In alphabetical order by file name, and by reverse of date/time uploaded for
                 // versions of files with the same name.
                 final B2ListFilesResponse response = session.getClient().listFileVersions(
                         new B2FileidProvider(session).getFileid(containerService.getContainer(directory)),
                         nextFilename, nextFileid, chunksize);
-                this.parse(directory, objects, response);
+                this.parse(directory, objects, response, revisions);
                 nextFilename = response.getNextFileName();
                 nextFileid = response.getNextFileId();
                 listener.chunk(directory, objects);
@@ -86,13 +88,12 @@ public class B2ObjectListService implements ListService {
         }
     }
 
-    protected AttributedList<Path> parse(final Path directory, final AttributedList<Path> objects, final B2ListFilesResponse response) {
-        final Map<String, Integer> revisions = new HashMap<String, Integer>();
+    protected AttributedList<Path> parse(final Path directory, final AttributedList<Path> objects,
+                                         final B2ListFilesResponse response, final Map<String, Integer> revisions) {
         for(B2FileInfoResponse file : response.getFiles()) {
-            final PathAttributes attributes = this.parse(directory, revisions, file);
+            final PathAttributes attributes = this.parse(directory, file, revisions);
             if(attributes == null) {
                 // Look for same parent directory
-
                 continue;
             }
             else if(StringUtils.endsWith(file.getFileName(), "/.bzEmpty")) {
@@ -107,7 +108,7 @@ public class B2ObjectListService implements ListService {
         return objects;
     }
 
-    protected PathAttributes parse(final Path directory, final Map<String, Integer> revisions, final B2FileInfoResponse response) {
+    protected PathAttributes parse(final Path directory, final B2FileInfoResponse response, final Map<String, Integer> revisions) {
         if(!StringUtils.equals(PathNormalizer.parent(
                 StringUtils.removeEnd(response.getFileName(), ".bzEmpty"), Path.DELIMITER),
                 containerService.isContainer(directory) ? String.valueOf(Path.DELIMITER) : containerService.getKey(directory))) {
