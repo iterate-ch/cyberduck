@@ -39,6 +39,8 @@ public class B2DirectoryFeature implements Directory {
 
     private final B2Session session;
 
+    public static final String PLACEHOLDER = "/.bzEmpty";
+
     public B2DirectoryFeature(final B2Session session) {
         this.session = session;
     }
@@ -61,7 +63,7 @@ public class B2DirectoryFeature implements Directory {
             else {
                 session.getClient().uploadFile(
                         new B2FileidProvider(session).getFileid(containerService.getContainer(file)),
-                        String.format("%s/.bzEmpty", containerService.getKey(file)),
+                        String.format("%s%s", containerService.getKey(file), PLACEHOLDER),
                         new ByteArrayEntity(new byte[0]), "da39a3ee5e6b4b0d3255bfef95601890afd80709",
                         "application/octet-stream", Collections.emptyMap());
             }

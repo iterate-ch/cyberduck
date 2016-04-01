@@ -84,6 +84,7 @@ public class B2ObjectListServiceTest {
             }
         });
         assertFalse(new B2ObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(file));
+        session.close();
     }
 
     @Test
@@ -113,6 +114,7 @@ public class B2ObjectListServiceTest {
                 //
             }
         });
+        session.close();
     }
 
     @Test
@@ -177,6 +179,7 @@ public class B2ObjectListServiceTest {
             assertFalse(list.contains(file1));
             assertFalse(list.contains(file2));
         }
+        session.close();
     }
 
     @Test
@@ -214,5 +217,103 @@ public class B2ObjectListServiceTest {
                 //
             }
         });
+        session.close();
+    }
+
+    @Test
+    public void testDisplayFolderInBucketMissingPlaceholder() throws Exception {
+        final B2Session session = new B2Session(
+                new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
+                        new Credentials(
+                                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
+                        )));
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path bucket = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
+        new B2DirectoryFeature(session).mkdir(bucket);
+        final Path folder1 = new Path(bucket, "1-d", EnumSet.of(Path.Type.directory));
+        final Path file1 = new Path(folder1, "2-f", EnumSet.of(Path.Type.file));
+        new B2TouchFeature(session).touch(file1);
+
+        final AttributedList<Path> list = new B2ObjectListService(session).list(bucket, new DisabledListProgressListener());
+        assertEquals(1, list.size());
+        assertEquals(folder1, list.iterator().next());
+
+        new B2DeleteFeature(session).delete(Arrays.asList(bucket, file1), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+                //
+            }
+        });
+        session.close();
+    }
+
+    @Test
+    public void testDisplayFolderInFolderMissingPlaceholder() throws Exception {
+        final B2Session session = new B2Session(
+                new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
+                        new Credentials(
+                                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
+                        )));
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path bucket = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
+        new B2DirectoryFeature(session).mkdir(bucket);
+        final Path folder1 = new Path(bucket, "1-d", EnumSet.of(Path.Type.directory));
+        final Path folder2 = new Path(folder1, "2-d", EnumSet.of(Path.Type.directory));
+        final Path file1 = new Path(folder2, "3-f", EnumSet.of(Path.Type.file));
+        new B2TouchFeature(session).touch(file1);
+
+        final AttributedList<Path> list = new B2ObjectListService(session).list(folder1, new DisabledListProgressListener());
+        assertEquals(1, list.size());
+        assertEquals(folder2, list.iterator().next());
+
+        new B2DeleteFeature(session).delete(Arrays.asList(bucket, file1), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+                //
+            }
+        });
+        session.close();
+    }
+
+    @Test
+    public void testFindPlaceholder() throws Exception {
+        {
+            final Path directory = new Path("/bucket/1-d", EnumSet.of(Path.Type.directory, Path.Type.volume));
+            final String filename = "1-d/2-d/3-f";
+            assertEquals(new Path("/bucket/1-d/2-d", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
+                    new B2ObjectListService(null).virtual(directory, filename));
+        }
+        {
+            final Path directory = new Path("/bucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
+            final String filename = "1-d/2-d/.bzEmpty";
+            assertEquals(new Path("/bucket/1-d", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
+                    new B2ObjectListService(null).virtual(directory, filename));
+        }
+        {
+            final Path directory = new Path("/bucket/1-d", EnumSet.of(Path.Type.directory, Path.Type.volume));
+            final String filename = "1-d/2-d/.bzEmpty";
+            assertEquals(new Path("/bucket/1-d/2-d", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
+                    new B2ObjectListService(null).virtual(directory, filename));
+        }
+        {
+            final Path directory = new Path("/bucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
+            final String filename = "1-d/2-f";
+            assertEquals(new Path("/bucket/1-d", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
+                    new B2ObjectListService(null).virtual(directory, filename));
+        }
+        {
+            final Path directory = new Path("/bucket/1-d", EnumSet.of(Path.Type.directory, Path.Type.volume));
+            final String filename = "1-d/.bzEmpty";
+            assertEquals(new Path("/bucket/1-d", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
+                    new B2ObjectListService(null).virtual(directory, filename));
+        }
+        {
+            final Path directory = new Path("/bucket/1-d", EnumSet.of(Path.Type.directory, Path.Type.volume));
+            final String filename = "1-f";
+            assertEquals(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
+                    new B2ObjectListService(null).virtual(directory, filename));
+        }
     }
 }

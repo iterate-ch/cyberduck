@@ -105,7 +105,7 @@ public class B2DeleteFeature implements Delete {
                 try {
                     callback.delete(file);
                     if(file.isPlaceholder()) {
-                        session.getClient().deleteFileVersion(String.format("%s/.bzEmpty", containerService.getKey(file)),
+                        session.getClient().deleteFileVersion(String.format("%s%s", containerService.getKey(file), B2DirectoryFeature.PLACEHOLDER),
                                 new B2FileidProvider(session).getFileid(file));
                     }
                     else if(file.isFile()) {
