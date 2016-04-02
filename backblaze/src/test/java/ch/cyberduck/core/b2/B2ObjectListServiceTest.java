@@ -261,14 +261,16 @@ public class B2ObjectListServiceTest {
         new B2DirectoryFeature(session).mkdir(bucket);
         final Path folder1 = new Path(bucket, "1-d", EnumSet.of(Path.Type.directory));
         final Path folder2 = new Path(folder1, "2-d", EnumSet.of(Path.Type.directory));
-        final Path file1 = new Path(folder2, "3-f", EnumSet.of(Path.Type.file));
-        new B2TouchFeature(session).touch(file1);
+        final Path file11 = new Path(folder2, "31-f", EnumSet.of(Path.Type.file));
+        final Path file12 = new Path(folder2, "32-f", EnumSet.of(Path.Type.file));
+        new B2TouchFeature(session).touch(file11);
+        new B2TouchFeature(session).touch(file12);
 
         final AttributedList<Path> list = new B2ObjectListService(session).list(folder1, new DisabledListProgressListener());
         assertEquals(1, list.size());
         assertEquals(folder2, list.iterator().next());
 
-        new B2DeleteFeature(session).delete(Arrays.asList(bucket, file1), new DisabledLoginCallback(), new Delete.Callback() {
+        new B2DeleteFeature(session).delete(Arrays.asList(bucket, file11, file12), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {
                 //
