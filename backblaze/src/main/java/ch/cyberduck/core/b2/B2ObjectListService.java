@@ -101,9 +101,14 @@ public class B2ObjectListService implements ListService {
             if(attributes == null) {
                 final Path virtual = this.virtual(directory, file.getFileName());
                 if(virtual.isChild(directory)) {
-                    if(!revisions.containsKey(String.format("%s%s", containerService.getKey(virtual), B2DirectoryFeature.PLACEHOLDER))) {
-                        objects.add(virtual);
+                    if(revisions.containsKey(containerService.getKey(virtual))) {
+                        return objects;
                     }
+                    if(revisions.containsKey(String.format("%s%s", containerService.getKey(virtual), B2DirectoryFeature.PLACEHOLDER))) {
+                        return objects;
+                    }
+                    revisions.put(containerService.getKey(virtual), null);
+                    objects.add(virtual);
                 }
             }
             else if(StringUtils.endsWith(file.getFileName(), B2DirectoryFeature.PLACEHOLDER)) {
