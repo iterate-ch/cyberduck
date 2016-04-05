@@ -31,7 +31,6 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
-import ch.cyberduck.core.googledrive.DriveProtocol;
 import ch.cyberduck.core.googlestorage.GoogleStorageProtocol;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.irods.IRODSProtocol;
@@ -44,7 +43,6 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.sftp.SFTPProtocol;
-import ch.cyberduck.core.spectra.SpectraProtocol;
 import ch.cyberduck.core.ssl.CertificateStoreX509TrustManager;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.PreferencesX509KeyManager;
@@ -123,9 +121,7 @@ public class Terminal {
                 new GoogleStorageProtocol(),
                 new AzureProtocol(),
                 new IRODSProtocol(),
-                new SpectraProtocol(),
-                new B2Protocol(),
-                new DriveProtocol()
+                new B2Protocol()
         );
         this.options = options;
         if(log.isInfoEnabled()) {
