@@ -162,10 +162,10 @@ public class B2ObjectListServiceTest {
             final List<Path> list = new B2ObjectListService(session).list(bucket, new DisabledListProgressListener());
             file2.attributes().setVersionId(resopnse.getFileId());
             assertTrue(list.contains(file2));
-//            assertEquals("2", list.get(list.indexOf(file2)).attributes().getRevision());
+            assertEquals("1", list.get(list.indexOf(file2)).attributes().getRevision());
             assertFalse(list.get(list.indexOf(file2)).attributes().isDuplicate());
             assertTrue(list.contains(file1));
-//            assertEquals("1", list.get(list.indexOf(file1)).attributes().getRevision());
+            assertEquals("2", list.get(list.indexOf(file1)).attributes().getRevision());
             assertTrue(list.get(list.indexOf(file1)).attributes().isDuplicate());
             assertEquals(bucket, list.get(list.indexOf(file1)).getParent());
         }
