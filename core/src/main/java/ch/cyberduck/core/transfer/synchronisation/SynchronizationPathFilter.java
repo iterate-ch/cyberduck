@@ -32,9 +32,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id$
- */
 public class SynchronizationPathFilter implements TransferPathFilter {
     private static final Logger log = Logger.getLogger(SynchronizationPathFilter.class);
 
@@ -82,7 +79,8 @@ public class SynchronizationPathFilter implements TransferPathFilter {
         if(compare.equals(Comparison.local)) {
             return uploadFilter.prepare(file, local, parent);
         }
-        return new TransferStatus().exists(true);
+        // Equal comparison. Read attributes from server
+        return uploadFilter.prepare(file, local, parent).exists(true);
     }
 
     @Override

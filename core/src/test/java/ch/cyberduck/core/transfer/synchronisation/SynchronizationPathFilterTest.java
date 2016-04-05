@@ -28,9 +28,6 @@ import java.util.TimeZone;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 public class SynchronizationPathFilterTest {
 
     @Test
