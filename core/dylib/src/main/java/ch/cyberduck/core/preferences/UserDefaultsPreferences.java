@@ -207,7 +207,7 @@ public class UserDefaultsPreferences extends Preferences {
         defaults.put("connection.ssl.keystore.type", "KeychainStore");
         defaults.put("connection.ssl.keystore.provider", "Apple");
 
-        defaults.put("network.interface.blacklist", "awdl0,utun0");
+        defaults.put("network.interface.blacklist", "awdl0 utun0");
     }
 
     /**
