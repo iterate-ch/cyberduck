@@ -26,7 +26,7 @@ public class B2Protocol extends AbstractProtocol {
 
     @Override
     public String getDescription() {
-        return "B2 Cloud Storage";
+        return "Backblaze B2 Cloud Storage";
     }
 
     @Override
