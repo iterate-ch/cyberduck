@@ -9,6 +9,8 @@
                                                     LogoSideFile="setup\wix\welcome.bmp"/>
         </BootstrapperApplicationRef>
         <Variable Name="InstallFolder" Type="string" Value="[ProgramFilesFolder]Cyberduck"/>
+        <Variable Name="Autostart" bal:Overridable="yes" Type="numeric" Value="0" />
+
         <Chain>
             <PackageGroupRef Id="NetFx40ClientRedist"/>
             <RollbackBoundary/>
@@ -18,6 +20,7 @@
                     SourceFile="$(var.cyberduck-installer-msi.TargetPath)"
                     Vital="yes">
                 <MsiProperty Name="INSTALLLOCATION" Value="[InstallFolder]"/>
+                <MsiProperty Name="AUTOSTART" Value="[Autostart]"/>
             </MsiPackage>
             <MsiPackage SourceFile="setup\wix\Bonjour.msi" Compressed="yes" Vital="no" InstallCondition="NOT VersionNT64"/>
             <MsiPackage SourceFile="setup\wix\Bonjour64.msi" Compressed="yes" Vital="no" InstallCondition="VersionNT64"/>
