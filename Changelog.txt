@@ -3,6 +3,10 @@ http://cyberduck.io/
 
 Changelog. Last modified: $Date$
 
+5.0 [https://trac.cyberduck.io/milestone/5.0]
+- [Feature] Support for Google Drive (#6976)
+- [Feature] Support for Spectra BlackPearl Deep Storage Gateway (Spectra S3)
+
 4.9 [https://trac.cyberduck.io/milestone/4.9]
 - [Feature] Support for B2 Cloud Storage (Backblaze) (#9162)
 - [Bugfix] Creating new folders with SSE restriction fails (S3) (#9378)
