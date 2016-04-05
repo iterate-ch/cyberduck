@@ -20,6 +20,7 @@
     <Icon Id="icon.ico" SourceFile="cyberduck-application.ico"/>
     <Icon Id="cd_document.ico" SourceFile="cyberduck-document.ico"/>
     <Property Id="ARPPRODUCTICON" Value="icon.ico" />
+    <Property Id="AUTOSTART" Value="0"/>
 
     <ComponentGroup Id="ProductComponents" Directory="INSTALLLOCATION">
       <Component Id="ProductExe">
