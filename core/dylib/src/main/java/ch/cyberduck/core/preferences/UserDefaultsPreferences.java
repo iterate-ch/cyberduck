@@ -49,6 +49,8 @@ import java.util.List;
 public class UserDefaultsPreferences extends Preferences {
     private static final Logger log = Logger.getLogger(UserDefaultsPreferences.class);
 
+    public final NSBundle bundle = new BundleApplicationResourcesFinder().bundle();
+
     private NSUserDefaults store;
 
     /**
@@ -63,7 +65,7 @@ public class UserDefaultsPreferences extends Preferences {
         final String value = super.getDefault(property);
         if(null == value) {
             // Missing in default. Lookup in Info.plist
-            NSObject plist = NSBundle.mainBundle().infoDictionary().objectForKey(property);
+            NSObject plist = bundle.infoDictionary().objectForKey(property);
             if(null == plist) {
                 log.warn(String.format("No default value for property %s", property));
                 return null;
@@ -150,20 +152,25 @@ public class UserDefaultsPreferences extends Preferences {
 
         defaults.put("tmp.dir", FoundationKitFunctionsLibrary.NSTemporaryDirectory());
 
-        final NSBundle bundle = NSBundle.mainBundle();
-        defaults.put("application.name", bundle.objectForInfoDictionaryKey("CFBundleName").toString());
-        defaults.put("application.copyright", bundle.objectForInfoDictionaryKey("NSHumanReadableCopyright").toString());
-        defaults.put("application.identifier",
-                bundle.objectForInfoDictionaryKey("CFBundleIdentifier").toString());
-        final NSObject version = bundle.objectForInfoDictionaryKey("CFBundleShortVersionString");
-        if(version != null) {
-            defaults.put("application.version", version.toString());
+        final NSBundle bundle = this.bundle;
+        if(null != bundle) {
+            defaults.put("application.name", bundle.objectForInfoDictionaryKey("CFBundleName") != null ?
+                    bundle.objectForInfoDictionaryKey("CFBundleName").toString() : null);
+            defaults.put("application.copyright", bundle.objectForInfoDictionaryKey("NSHumanReadableCopyright") != null ?
+                    bundle.objectForInfoDictionaryKey("NSHumanReadableCopyright").toString() : null
+            );
+            defaults.put("application.identifier",
+                    bundle.objectForInfoDictionaryKey("CFBundleIdentifier").toString());
+            final NSObject version = bundle.objectForInfoDictionaryKey("CFBundleShortVersionString");
+            if(version != null) {
+                defaults.put("application.version", version.toString());
+            }
+            final NSObject revision = bundle.objectForInfoDictionaryKey("CFBundleVersion");
+            if(revision != null) {
+                defaults.put("application.revision", revision.toString());
+            }
+            defaults.put("application.receipt.path", bundle.bundlePath() + "/Contents/_MASReceipt");
         }
-        final NSObject revision = bundle.objectForInfoDictionaryKey("CFBundleVersion");
-        if(revision != null) {
-            defaults.put("application.revision", revision.toString());
-        }
-        defaults.put("application.receipt.path", bundle.bundlePath() + "/Contents/_MASReceipt");
         final Local resources = ApplicationResourcesFinderFactory.get().find();
         defaults.put("application.bookmarks.path", String.format("%s/Bookmarks", resources.getAbsolute()));
         defaults.put("application.profiles.path", String.format("%s/Profiles", resources.getAbsolute()));
@@ -174,6 +181,7 @@ public class UserDefaultsPreferences extends Preferences {
         // Fix #9395
         if(!StringUtils.startsWith(this.getProperty(Updater.PROPERTY_FEED_URL), Scheme.https.name())) {
             this.deleteProperty(Updater.PROPERTY_FEED_URL);
+            this.save();
         }
 
         defaults.put("bookmark.import.filezilla.location", "~/.config/filezilla/sitemanager.xml");
@@ -243,7 +251,7 @@ public class UserDefaultsPreferences extends Preferences {
 
     @Override
     public List<String> applicationLocales() {
-        return this.toList(NSBundle.mainBundle().localizations());
+        return this.toList(bundle.localizations());
     }
 
     @Override
