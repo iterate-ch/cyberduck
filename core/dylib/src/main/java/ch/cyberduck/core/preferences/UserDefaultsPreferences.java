@@ -154,22 +154,22 @@ public class UserDefaultsPreferences extends Preferences {
 
         final NSBundle bundle = this.bundle;
         if(null != bundle) {
-            defaults.put("application.name", bundle.objectForInfoDictionaryKey("CFBundleName") != null ?
-                    bundle.objectForInfoDictionaryKey("CFBundleName").toString() : null);
-            defaults.put("application.copyright", bundle.objectForInfoDictionaryKey("NSHumanReadableCopyright") != null ?
-                    bundle.objectForInfoDictionaryKey("NSHumanReadableCopyright").toString() : null
-            );
-            defaults.put("application.identifier",
-                    bundle.objectForInfoDictionaryKey("CFBundleIdentifier").toString());
-            final NSObject version = bundle.objectForInfoDictionaryKey("CFBundleShortVersionString");
-            if(version != null) {
-                defaults.put("application.version", version.toString());
+            if(bundle.objectForInfoDictionaryKey("CFBundleName") != null) {
+                defaults.put("application.name", bundle.objectForInfoDictionaryKey("CFBundleName").toString());
             }
-            final NSObject revision = bundle.objectForInfoDictionaryKey("CFBundleVersion");
-            if(revision != null) {
-                defaults.put("application.revision", revision.toString());
+            if(bundle.objectForInfoDictionaryKey("NSHumanReadableCopyright") != null) {
+                defaults.put("application.copyright", bundle.objectForInfoDictionaryKey("NSHumanReadableCopyright").toString());
             }
-            defaults.put("application.receipt.path", bundle.bundlePath() + "/Contents/_MASReceipt");
+            if(bundle.objectForInfoDictionaryKey("CFBundleIdentifier") != null) {
+                defaults.put("application.identifier", bundle.objectForInfoDictionaryKey("CFBundleIdentifier").toString());
+            }
+            if(bundle.objectForInfoDictionaryKey("CFBundleShortVersionString") != null) {
+                defaults.put("application.version", bundle.objectForInfoDictionaryKey("CFBundleShortVersionString").toString());
+            }
+            if(bundle.objectForInfoDictionaryKey("CFBundleVersion") != null) {
+                defaults.put("application.revision", bundle.objectForInfoDictionaryKey("CFBundleVersion").toString());
+            }
+            defaults.put("application.receipt.path", String.format("%s/Contents/_MASReceipt", bundle.bundlePath()));
         }
         final Local resources = ApplicationResourcesFinderFactory.get().find();
         defaults.put("application.bookmarks.path", String.format("%s/Bookmarks", resources.getAbsolute()));
