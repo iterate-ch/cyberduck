@@ -29,6 +29,8 @@ import ch.cyberduck.binding.foundation.NSUserDefaults;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.sparkle.Updater;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -169,6 +171,10 @@ public class UserDefaultsPreferences extends Preferences {
         defaults.put("update.feed.release", "https://version.cyberduck.io/changelog.rss");
         defaults.put("update.feed.beta", "https://version.cyberduck.io/beta/changelog.rss");
         defaults.put("update.feed.nightly", "https://version.cyberduck.io/nightly/changelog.rss");
+        // Fix #9395
+        if(!StringUtils.startsWith(this.getProperty(Updater.PROPERTY_FEED_URL), Scheme.https.name())) {
+            this.deleteProperty(Updater.PROPERTY_FEED_URL);
+        }
 
         defaults.put("bookmark.import.filezilla.location", "~/.config/filezilla/sitemanager.xml");
         defaults.put("bookmark.import.fetch.location", "~/Library/Preferences/com.fetchsoftworks.Fetch.Shortcuts.plist");
