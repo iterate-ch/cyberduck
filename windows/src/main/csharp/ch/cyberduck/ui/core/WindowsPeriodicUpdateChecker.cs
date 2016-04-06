@@ -21,7 +21,6 @@ using System.Runtime.InteropServices;
 using System.Security.Principal;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.updater;
-using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Sparkle;
 using java.time;
 using org.apache.log4j;
@@ -31,7 +30,29 @@ namespace Ch.Cyberduck.Ui.Core
     public class WindowsPeriodicUpdateChecker : AbstractPeriodicUpdateChecker
     {
         private static readonly Logger Log = Logger.getLogger(typeof (WindowsPeriodicUpdateChecker).Name);
+        private static volatile WindowsPeriodicUpdateChecker _instance;
+        private static readonly object SyncRoot = new Object();
         private readonly ch.cyberduck.core.preferences.Preferences _preferences = PreferencesFactory.get();
+
+        private WindowsPeriodicUpdateChecker()
+        {
+        }
+
+        public static WindowsPeriodicUpdateChecker Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    lock (SyncRoot)
+                    {
+                        if (_instance == null)
+                            _instance = new WindowsPeriodicUpdateChecker();
+                    }
+                }
+                return _instance;
+            }
+        }
 
         [DllImport("advapi32.dll", SetLastError = true)]
         private static extern bool GetTokenInformation(IntPtr tokenHandle, TokenInformationClass tokenInformationClass,
@@ -43,16 +64,20 @@ namespace Ch.Cyberduck.Ui.Core
             WinSparkle.Cleanup();
         }
 
+        public void SetCanShutdownCallback(WinSparkle.win_sparkle_can_shutdown_callback_t callback)
+        {
+            WinSparkle.SetCanShutdownCallback(callback);
+        }
+
+        public void SetShutdownRequestCallback(WinSparkle.win_sparkle_shutdown_request_callback_t callback)
+        {
+            WinSparkle.SetShutdownRequestCallback(callback);
+        }
+
         public override Duration register()
         {
             WinSparkle.SetAutomaticCheckForUpdates(false);
             WinSparkle.Initialize();
-            WinSparkle.SetCanShutdownCallback(() => Convert.ToInt32(MainController.PrepareExit()));
-            WinSparkle.SetShutdownRequestCallback(delegate
-            {
-                Log.info("About to exit in order to install update");
-                MainController.Exit(true);
-            });
             return base.register();
         }
 
