@@ -33,15 +33,19 @@ public class SFTPHomeDirectoryService extends DefaultHomeFinderService {
 
     @Override
     public Path find() throws BackgroundException {
-        try {
-            // "." as referring to the current directory
-            final String directory = session.sftp().canonicalize(".");
-            return new Path(directory,
-                    directory.equals(String.valueOf(Path.DELIMITER)) ?
-                            EnumSet.of(Path.Type.volume, Path.Type.directory) : EnumSet.of(Path.Type.directory));
+        final Path home = super.find();
+        if(home == DEFAULT_HOME) {
+            try {
+                // "." as referring to the current directory
+                final String directory = session.sftp().canonicalize(".");
+                return new Path(directory,
+                        directory.equals(String.valueOf(Path.DELIMITER)) ?
+                                EnumSet.of(Path.Type.volume, Path.Type.directory) : EnumSet.of(Path.Type.directory));
+            }
+            catch(IOException e) {
+                throw new SFTPExceptionMappingService().map(e);
+            }
         }
-        catch(IOException e) {
-            throw new SFTPExceptionMappingService().map(e);
-        }
+        return home;
     }
 }

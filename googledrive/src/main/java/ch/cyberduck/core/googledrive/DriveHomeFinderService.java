@@ -37,8 +37,8 @@ public class DriveHomeFinderService extends DefaultHomeFinderService {
     }
 
     @Override
-    public Path find(final Path workdir, final String path) {
-        final Path home = super.find(workdir, path);
+    public Path find(final Path root, final String path) {
+        final Path home = super.find(root, path);
         if(home.isRoot()) {
             home.attributes().setVersionId(ROOT_FOLDER_ID);
         }

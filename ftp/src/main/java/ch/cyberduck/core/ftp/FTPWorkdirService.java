@@ -33,17 +33,21 @@ public class FTPWorkdirService extends DefaultHomeFinderService {
 
     @Override
     public Path find() throws BackgroundException {
-        final String directory;
-        try {
-            directory = session.getClient().printWorkingDirectory();
-            if(null == directory) {
-                throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
+        final Path home = super.find();
+        if(home == DEFAULT_HOME) {
+            final String directory;
+            try {
+                directory = session.getClient().printWorkingDirectory();
+                if(null == directory) {
+                    throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
+                }
+                return new Path(directory,
+                        directory.equals(String.valueOf(Path.DELIMITER)) ? EnumSet.of(Path.Type.volume, Path.Type.directory) : EnumSet.of(Path.Type.directory));
             }
-            return new Path(directory,
-                    directory.equals(String.valueOf(Path.DELIMITER)) ? EnumSet.of(Path.Type.volume, Path.Type.directory) : EnumSet.of(Path.Type.directory));
+            catch(IOException e) {
+                throw new FTPExceptionMappingService().map(e);
+            }
         }
-        catch(IOException e) {
-            throw new FTPExceptionMappingService().map(e);
-        }
+        return home;
     }
 }
