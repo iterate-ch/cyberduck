@@ -55,9 +55,9 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.sparkle.Updater;
+import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
-import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.view.BookmarkCell;
 
 import org.apache.commons.lang3.StringUtils;
@@ -1873,7 +1873,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.updateFeedPopup.lastItem().setRepresentedObject(preferences.getProperty("update.feed.beta"));
         this.updateFeedPopup.addItemWithTitle(LocaleFactory.localizedString("Snapshot Builds"));
         this.updateFeedPopup.lastItem().setRepresentedObject(preferences.getProperty("update.feed.nightly"));
-        String feed = preferences.getProperty("SUFeedURL");
+        final String feed = preferences.getProperty(Updater.PROPERTY_FEED_URL);
         NSInteger selected = this.updateFeedPopup.menu().indexOfItemWithRepresentedObject(feed);
         if(-1 == selected.intValue()) {
             log.warn(String.format("Invalid feed setting:%s", feed));
@@ -1889,12 +1889,12 @@ public class PreferencesController extends ToolbarWindowController {
     public void updateFeedPopupClicked(NSPopUpButton sender) {
         // Update sparkle feed property. Default is in Info.plist
         String selected = sender.selectedItem().representedObject();
-        if(null == selected || preferences.getDefault("SUFeedURL").equals(selected)) {
+        if(null == selected || preferences.getDefault(Updater.PROPERTY_FEED_URL).equals(selected)) {
             // Remove custom value
-            preferences.deleteProperty("SUFeedURL");
+            preferences.deleteProperty(Updater.PROPERTY_FEED_URL);
         }
         else {
-            preferences.setProperty("SUFeedURL", selected);
+            preferences.setProperty(Updater.PROPERTY_FEED_URL, selected);
         }
     }
 

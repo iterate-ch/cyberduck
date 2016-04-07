@@ -1136,7 +1136,7 @@ public abstract class Preferences {
             return Integer.parseInt(v);
         }
         catch(NumberFormatException e) {
-            return (int) Double.parseDouble(v);
+            return (int) this.getDouble(property);
         }
     }
 
@@ -1145,7 +1145,12 @@ public abstract class Preferences {
         if(null == v) {
             return -1;
         }
-        return Float.parseFloat(v);
+        try {
+            return Float.parseFloat(v);
+        }
+        catch(NumberFormatException e) {
+            return (float) this.getDouble(property);
+        }
     }
 
     public long getLong(final String property) {
@@ -1157,7 +1162,7 @@ public abstract class Preferences {
             return Long.parseLong(v);
         }
         catch(NumberFormatException e) {
-            return (long) Double.parseDouble(v);
+            return (long) this.getDouble(property);
         }
     }
 
@@ -1166,7 +1171,12 @@ public abstract class Preferences {
         if(null == v) {
             return -1;
         }
-        return Double.parseDouble(v);
+        try {
+            return Double.parseDouble(v);
+        }
+        catch(NumberFormatException e) {
+            return -1;
+        }
     }
 
     public boolean getBoolean(final String property) {

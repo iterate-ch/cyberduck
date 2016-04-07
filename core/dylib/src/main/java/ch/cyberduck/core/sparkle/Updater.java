@@ -26,11 +26,10 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import org.rococoa.ID;
 import org.rococoa.ObjCClass;
 
-/**
- * @version $Id:$
- */
 public abstract class Updater extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("SUUpdater", _Class.class);
+
+    public static final String PROPERTY_FEED_URL = "SUFeedURL";
 
     public static Updater create() {
         final Updater updater = CLASS.sharedUpdater();
@@ -43,7 +42,7 @@ public abstract class Updater extends NSObject {
     }
 
     public static String getFeed() {
-        return PreferencesFactory.get().getDefault("SUFeedURL");
+        return PreferencesFactory.get().getDefault(PROPERTY_FEED_URL);
     }
 
     public abstract Updater init();

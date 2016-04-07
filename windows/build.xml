@@ -109,7 +109,10 @@
             <remove path="//*[local-name()='minimumSystemVersion']"/>
         </xmltask>
         <xmltask sourcebuffer="changelog" dest="${build}/update/changelog.rss">
-            <attr path="//item/enclosure" attr="sparkle:installerArguments" value="AUTOSTART=1"/>
+            <attr path="//item/enclosure" attr="sparkle:installerArguments" value="-quiet Autostart=1"/>
+        </xmltask>
+        <xmltask sourcebuffer="changelog" dest="${build}/update/changelog.rss">
+            <attr path="//item/enclosure" attr="sparkle:version" value="${FULLVERSION}"/>
         </xmltask>
         <copy todir="${build}/update" overwrite="true">
             <fileset dir="${www.update}">
@@ -120,8 +123,9 @@
             <include name="changelog.rss"/>
             <replacefilter token="${TIMESTAMP}" value="${touch.time}"/>
             <replacefilter token="${ARCHIVE}"
-                           value="https://update.cyberduck.io/windows/${sparkle.feed}/${app.name}-Installer-${normalized.version}.${revision}.msi"/>
+                           value="https://update.cyberduck.io/windows/${sparkle.feed}/${app.name}-Installer-${normalized.version}.${revision}.exe"/>
             <replacefilter token="${CHANGELOG}" value="https://version.cyberduck.io/windows/${sparkle.feed}/changelog.html"/>
+            <replacefilter token="${FULLVERSION}" value="${normalized.version}.${revision}"/>
             <replacefilter token="${REVISION}" value="${revision}"/>
             <replacefilter token="${VERSION}" value="${version}"/>
             <replacefilter token="${DSASIGNATURE}" value="unsupported"/>

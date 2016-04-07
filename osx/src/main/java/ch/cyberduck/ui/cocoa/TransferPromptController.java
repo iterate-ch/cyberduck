@@ -23,6 +23,7 @@ import ch.cyberduck.binding.Delegate;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.application.*;
 import ch.cyberduck.binding.foundation.NSAttributedString;
+import ch.cyberduck.binding.foundation.NSIndexSet;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.Cache;
@@ -164,6 +165,7 @@ public abstract class TransferPromptController extends SheetController
             log.debug("Reload table view");
         }
         browserView.reloadData();
+        browserView.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(0L)), false);
         statusLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
                 MessageFormat.format(LocaleFactory.localizedString("{0} Files"), String.valueOf(browserView.numberOfRows())),
                 TRUNCATE_MIDDLE_ATTRIBUTES));

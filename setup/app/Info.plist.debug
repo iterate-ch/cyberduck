@@ -247,19 +247,19 @@
         </dict>
         <key>NSAppleScriptEnabled</key>
         <false/>
-        <key>${SPARKLE_KEY_PREFIX}FeedURL</key>
+        <key>SUFeedURL</key>
         <string>${SPARKLEFEED}</string>
-        <key>${SPARKLE_KEY_PREFIX}CheckAtStartup</key>
+        <key>SUCheckAtStartup</key>
         <false/>
-        <key>${SPARKLE_KEY_PREFIX}EnableSystemProfiling</key>
+        <key>SUEnableSystemProfiling</key>
         <false/>
-        <key>${SPARKLE_KEY_PREFIX}EnableAutomaticChecks</key>
+        <key>SUEnableAutomaticChecks</key>
         <false/>
-        <key>${SPARKLE_KEY_PREFIX}AllowsAutomaticUpdates</key>
+        <key>SUAllowsAutomaticUpdates</key>
         <false/>
-        <key>${SPARKLE_KEY_PREFIX}PublicDSAKeyFile</key>
+        <key>SUPublicDSAKeyFile</key>
         <string>update.pem</string>
-        <key>${SPARKLE_KEY_PREFIX}ExpectsDSASignature</key>
+        <key>SUExpectsDSASignature</key>
         <true/>
         <key>NSServices</key>
         <array>

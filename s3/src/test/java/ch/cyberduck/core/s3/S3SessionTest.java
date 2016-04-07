@@ -309,7 +309,6 @@ public class S3SessionTest {
         final S3Session session = new S3Session(host, new DefaultX509TrustManager() {
             @Override
             public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
-                assertEquals(3, certs.length);
                 verified.set(true);
                 super.verify(hostname, certs, cipher);
             }
