@@ -184,6 +184,11 @@
                 <artifactId>jackson-module-jaxb-annotations</artifactId>
                 <version>2.7.2</version>
             </dependency>
+            <dependency>
+                <groupId>joda-time</groupId>
+                <artifactId>joda-time</artifactId>
+                <version>2.9.3</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
