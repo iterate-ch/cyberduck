@@ -24,7 +24,7 @@
         <dependency>
             <groupId>org.irods.jargon</groupId>
             <artifactId>jargon-core</artifactId>
-            <version>4.0.2.4-RELEASE</version>
+            <version>4.0.2.5-RELEASE</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.claymoresystems</groupId>
