@@ -39,7 +39,7 @@ public final class DAVSSLProtocol extends AbstractProtocol {
 
     @Override
     public String getPrefix() {
-        return String.format("%s.%s", this.getClass().getPackage().getName(), StringUtils.upperCase(this.getType().name()));
+        return String.format("%s.%s", DAVSSLProtocol.class.getPackage().getName(), StringUtils.upperCase(this.getType().name()));
     }
 
     @Override

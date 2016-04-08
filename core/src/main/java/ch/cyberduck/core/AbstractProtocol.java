@@ -173,7 +173,7 @@ public abstract class AbstractProtocol implements Protocol {
 
     @Override
     public String getPrefix() {
-        return String.format("%s.%s", this.getClass().getPackage().getName(), StringUtils.capitalize(this.getType().name()));
+        return String.format("%s.%s", AbstractProtocol.class.getPackage().getName(), StringUtils.capitalize(this.getType().name()));
     }
 
     @Override
