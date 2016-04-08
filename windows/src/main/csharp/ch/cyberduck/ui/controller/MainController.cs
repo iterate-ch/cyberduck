@@ -43,7 +43,6 @@ using ch.cyberduck.core.s3;
 using ch.cyberduck.core.serializer;
 using ch.cyberduck.core.sftp;
 using ch.cyberduck.core.spectra;
-using ch.cyberduck.core.updater;
 using Ch.Cyberduck.Core.Urlhandler;
 using Ch.Cyberduck.Ui.Core;
 using Ch.Cyberduck.Ui.Core.Preferences;
@@ -83,7 +82,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <see cref="http://msdn.microsoft.com/en-us/library/system.stathreadattribute.aspx"/>
         private BrowserController _bc;
 
-        private PeriodicUpdateChecker _updater;
+        private WindowsPeriodicUpdateChecker _updater;
 
         static MainController()
         {
@@ -490,6 +489,12 @@ namespace Ch.Cyberduck.Ui.Controller
             if (PreferencesFactory.get().getBoolean("update.check"))
             {
                 _updater = new WindowsPeriodicUpdateChecker();
+                WindowsPeriodicUpdateChecker.SetCanShutdownCallback(() => Convert.ToInt32(PrepareExit()));
+                WindowsPeriodicUpdateChecker.SetShutdownRequestCallback(delegate
+                {
+                    Logger.info("About to exit in order to install update");
+                    Exit(true);
+                });
                 if (_updater.hasUpdatePrivileges())
                 {
                     DateTime lastCheck = new DateTime(PreferencesFactory.get().getLong("update.check.last"));
