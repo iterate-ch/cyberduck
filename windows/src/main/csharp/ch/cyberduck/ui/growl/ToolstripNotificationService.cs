@@ -48,7 +48,7 @@ namespace Ch.Cyberduck.Ui.Growl
             {
                 Text = LocaleFactory.get().localize("Check for Update…", "Main")
             };
-            PeriodicUpdateChecker updater = WindowsPeriodicUpdateChecker.Instance;
+            PeriodicUpdateChecker updater = new WindowsPeriodicUpdateChecker();
             itemUpdate.Enabled = updater.hasUpdatePrivileges();
             itemUpdate.Click += delegate { updater.check(false); };
             ToolStripMenuItem itemDonate = new ToolStripMenuItem

@@ -1695,9 +1695,9 @@ namespace Ch.Cyberduck.Ui.Winforms
                 (sender, args) => new AboutBox().ShowDialog(), () => true);
             Commands.Add(new ToolStripItem[] {licenseToolStripMenuItem}, new[] {licenseMainMenuItem},
                 (sender, args) => ApplicationLauncherFactory.get().open(LocalFactory.get("License.txt")), () => true);
-            bool HasUpdatePrivilges = WindowsPeriodicUpdateChecker.Instance.hasUpdatePrivileges();
+            bool HasUpdatePrivilges = new WindowsPeriodicUpdateChecker().hasUpdatePrivileges();
             Commands.Add(new ToolStripItem[] {checkToolStripMenuItem}, new[] {updateMainMenuItem},
-                (sender, args) => WindowsPeriodicUpdateChecker.Instance.check(false), () => HasUpdatePrivilges);
+                (sender, args) => new WindowsPeriodicUpdateChecker().check(false), () => HasUpdatePrivilges);
         }
 
         private void ConfigureGoCommands()

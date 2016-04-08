@@ -282,7 +282,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_CheckForUpdateEvent()
         {
-            WindowsPeriodicUpdateChecker.Instance.check(false);
+            new WindowsPeriodicUpdateChecker().check(false);
         }
 
         private void View_AutomaticUpdateChangedEvent()
@@ -1013,7 +1013,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             #region Update
 
-            View.UpdateEnabled = WindowsPeriodicUpdateChecker.Instance.hasUpdatePrivileges();
+            View.UpdateEnabled = new WindowsPeriodicUpdateChecker().hasUpdatePrivileges();
             View.AutomaticUpdateCheck = PreferencesFactory.get().getBoolean("update.check");
             long lastCheck = PreferencesFactory.get().getLong("update.check.last");
             View.LastUpdateCheck = 0 == lastCheck

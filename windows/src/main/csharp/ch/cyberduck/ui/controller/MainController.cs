@@ -488,9 +488,9 @@ namespace Ch.Cyberduck.Ui.Controller
             });
             if (PreferencesFactory.get().getBoolean("update.check"))
             {
-                _updater = WindowsPeriodicUpdateChecker.Instance;
-                _updater.SetCanShutdownCallback(() => Convert.ToInt32(PrepareExit()));
-                _updater.SetShutdownRequestCallback(delegate
+                _updater = new WindowsPeriodicUpdateChecker();
+                WindowsPeriodicUpdateChecker.SetCanShutdownCallback(() => Convert.ToInt32(PrepareExit()));
+                WindowsPeriodicUpdateChecker.SetShutdownRequestCallback(delegate
                 {
                     Logger.info("About to exit in order to install update");
                     Exit(true);

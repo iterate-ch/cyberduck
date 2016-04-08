@@ -30,29 +30,7 @@ namespace Ch.Cyberduck.Ui.Core
     public class WindowsPeriodicUpdateChecker : AbstractPeriodicUpdateChecker
     {
         private static readonly Logger Log = Logger.getLogger(typeof (WindowsPeriodicUpdateChecker).Name);
-        private static volatile WindowsPeriodicUpdateChecker _instance;
-        private static readonly object SyncRoot = new Object();
         private readonly ch.cyberduck.core.preferences.Preferences _preferences = PreferencesFactory.get();
-
-        private WindowsPeriodicUpdateChecker()
-        {
-        }
-
-        public static WindowsPeriodicUpdateChecker Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    lock (SyncRoot)
-                    {
-                        if (_instance == null)
-                            _instance = new WindowsPeriodicUpdateChecker();
-                    }
-                }
-                return _instance;
-            }
-        }
 
         [DllImport("advapi32.dll", SetLastError = true)]
         private static extern bool GetTokenInformation(IntPtr tokenHandle, TokenInformationClass tokenInformationClass,
@@ -64,12 +42,12 @@ namespace Ch.Cyberduck.Ui.Core
             WinSparkle.Cleanup();
         }
 
-        public void SetCanShutdownCallback(WinSparkle.win_sparkle_can_shutdown_callback_t callback)
+        public static void SetCanShutdownCallback(WinSparkle.win_sparkle_can_shutdown_callback_t callback)
         {
             WinSparkle.SetCanShutdownCallback(callback);
         }
 
-        public void SetShutdownRequestCallback(WinSparkle.win_sparkle_shutdown_request_callback_t callback)
+        public static void SetShutdownRequestCallback(WinSparkle.win_sparkle_shutdown_request_callback_t callback)
         {
             WinSparkle.SetShutdownRequestCallback(callback);
         }

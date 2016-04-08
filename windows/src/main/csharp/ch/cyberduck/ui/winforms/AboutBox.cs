@@ -58,7 +58,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             ackButton.Click +=
                 delegate { ApplicationLauncherFactory.get().open(LocalFactory.get("Acknowledgments.rtf")); };
-            PeriodicUpdateChecker updater = WindowsPeriodicUpdateChecker.Instance;
+            PeriodicUpdateChecker updater = new WindowsPeriodicUpdateChecker();
             updateButton.Enabled = updater.hasUpdatePrivileges();
             updateButton.Click += delegate { updater.check(false); };
         }
