@@ -17,9 +17,6 @@ package ch.cyberduck.cli;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-/**
- * @version $Id$
- */
 public interface TerminalPromptReader {
     boolean prompt(String message);
 }
