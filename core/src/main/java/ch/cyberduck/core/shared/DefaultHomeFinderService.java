@@ -29,10 +29,10 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.EnumSet;
 
-/**
- * @version $Id$
- */
 public class DefaultHomeFinderService implements Home {
+
+    protected final Path DEFAULT_HOME = new Path(String.valueOf(Path.DELIMITER),
+            EnumSet.of(Path.Type.volume, Path.Type.directory));
 
     private Session<?> session;
 
@@ -49,17 +49,17 @@ public class DefaultHomeFinderService implements Home {
         else {
             final String path = host.getDefaultPath();
             if(StringUtils.isNotBlank(path)) {
-                return this.find(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), path);
+                return this.find(DEFAULT_HOME, path);
             }
             else {
                 // No default path configured
-                return new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory));
+                return DEFAULT_HOME;
             }
         }
     }
 
     @Override
-    public Path find(final Path workdir, final String path) {
+    public Path find(final Path root, final String path) {
         if(path.startsWith(String.valueOf(Path.DELIMITER))) {
             // Mount absolute path
             final String normalized = PathNormalizer.normalize(path);
@@ -69,12 +69,12 @@ public class DefaultHomeFinderService implements Home {
         else {
             if(path.startsWith(Path.HOME)) {
                 // Relative path to the home directory
-                return new Path(workdir, PathNormalizer.normalize(StringUtils.removeStart(
+                return new Path(root, PathNormalizer.normalize(StringUtils.removeStart(
                         StringUtils.removeStart(path, Path.HOME), String.valueOf(Path.DELIMITER)), false), EnumSet.of(Path.Type.directory));
             }
             else {
                 // Relative path
-                return new Path(workdir, PathNormalizer.normalize(path, false), EnumSet.of(Path.Type.directory));
+                return new Path(root, PathNormalizer.normalize(path, false), EnumSet.of(Path.Type.directory));
             }
         }
     }
