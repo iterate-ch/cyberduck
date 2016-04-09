@@ -110,9 +110,9 @@ public class KeychainLoginService implements LoginService {
                             appender.append(message);
                             appender.append(LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"));
                             callback.prompt(bookmark, credentials,
-                                    LocaleFactory.localizedString("Login", "Login"),
-                                    appender.toString(),
-                                    options);
+                                    String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
+                                            appender.toString(),
+                                            options);
                         }
                         // We decide later if the key is encrypted and a password must be known to decrypt.
                     }
@@ -128,7 +128,7 @@ public class KeychainLoginService implements LoginService {
                         appender.append(message);
                         appender.append(LocaleFactory.localizedString("The use of the Keychain is disabled in the Preferences", "Credentials"));
                         callback.prompt(bookmark, credentials,
-                                LocaleFactory.localizedString("Login", "Login"),
+                                String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
                                 appender.toString(), options);
                     }
                     // We decide later if the key is encrypted and a password must be known to decrypt.
@@ -141,7 +141,7 @@ public class KeychainLoginService implements LoginService {
                 appender.append(message);
                 appender.append(LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"));
                 callback.prompt(bookmark, credentials,
-                        LocaleFactory.localizedString("Login", "Login"),
+                        String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
                         appender.toString(), options);
             }
         }
