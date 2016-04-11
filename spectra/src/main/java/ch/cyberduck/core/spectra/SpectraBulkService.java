@@ -206,6 +206,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
             }
             final MasterObjectList list = response.getMasterObjectList();
             if(log.isInfoEnabled()) {
+                log.info(String.format("Master object list with %d objects for %s", list.getObjects().size(), file));
                 log.info(String.format("Master object list status %s for %s", list.getStatus(), file));
             }
             final List<TransferStatus> chunks = new ArrayList<TransferStatus>();
@@ -214,8 +215,10 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                 if(null == nodeId) {
                     log.warn(String.format("No node returned in master object list for file %s", file));
                 }
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Determined node %s for %s", nodeId, file));
+                else {
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Determined node %s for %s", nodeId, file));
+                    }
                 }
                 for(Node node : list.getNodes()) {
                     if(node.getId().equals(nodeId)) {
@@ -230,8 +233,17 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                         log.warn(String.format("Redirect to %s for file %s", node.getEndpoint(), file));
                     }
                 }
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Object list with %d chunks for %s", object.getObjects().size(), file));
+                }
                 for(BulkObject bulk : object) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Found chunk %s %s", bulk, file));
+                    }
                     if(bulk.getName().equals(containerService.getKey(file))) {
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("Found chunk %s matching file %s", bulk, file));
+                        }
                         final TransferStatus chunk = new TransferStatus()
                                 .exists(status.isExists())
                                 .metadata(status.getMetadata())
@@ -255,6 +267,9 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                                     chunk.setParameters(parameters);
                                     break;
                             }
+                        }
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("Add chunk %s for file %s", chunk, file));
                         }
                         chunks.add(chunk);
                     }
