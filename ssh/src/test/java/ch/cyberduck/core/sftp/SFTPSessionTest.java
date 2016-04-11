@@ -206,7 +206,7 @@ public class SFTPSessionTest {
             public void prompt(Host bookmark, Credentials credentials,
                                String title, String reason, LoginOptions options)
                     throws LoginCanceledException {
-                assertEquals("Login", title);
+                assertEquals("Login test.cyberduck.ch", title);
                 assertEquals("Login test.cyberduck.ch with username and password. No login credentials could be found in the Keychain.", reason);
                 credentials.setUsername("u");
                 change.set(true);
