@@ -62,9 +62,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public class DownloadTransfer extends Transfer {
     private static final Logger log = Logger.getLogger(DownloadTransfer.class);
 

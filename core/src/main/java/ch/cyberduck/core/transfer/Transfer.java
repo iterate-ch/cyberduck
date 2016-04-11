@@ -43,9 +43,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * @version $Id$
- */
 public abstract class Transfer implements Serializable {
     private static final Logger log = Logger.getLogger(Transfer.class);
 
