@@ -50,15 +50,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-/**
- * @version $Id$
- */
 public class FinderLocal extends Local {
     private static final Logger log = Logger.getLogger(FinderLocal.class);
 
     static {
         Native.load("core");
     }
+
+    private static final NSFileManager manager = NSFileManager.defaultManager();
 
     /**
      * Application scoped bookmark to access outside of sandbox
@@ -96,7 +95,7 @@ public class FinderLocal extends Local {
      */
     @Override
     public String getDisplayName() {
-        return NSFileManager.defaultManager().displayNameAtPath(this.getName());
+        return manager.displayNameAtPath(this.getName());
     }
 
     /**
@@ -219,7 +218,7 @@ public class FinderLocal extends Local {
         if(PreferencesFactory.get().getBoolean("local.list.native")) {
             final AttributedList<Local> children = new AttributedList<Local>();
             final ObjCObjectByReference error = new ObjCObjectByReference();
-            final NSArray files = NSFileManager.defaultManager().contentsOfDirectoryAtPath_error(this.getAbsolute(), error);
+            final NSArray files = manager.contentsOfDirectoryAtPath_error(this.getAbsolute(), error);
             if(null == files) {
                 final NSError f = error.getValueAs(NSError.class);
                 if(null == f) {
@@ -241,7 +240,7 @@ public class FinderLocal extends Local {
 
     @Override
     public boolean exists() {
-        return NSFileManager.defaultManager().fileExistsAtPath(this.getAbsolute());
+        return manager.fileExistsAtPath(this.getAbsolute());
     }
 
     /**
@@ -258,7 +257,7 @@ public class FinderLocal extends Local {
     @Override
     public Local getSymlinkTarget() throws NotfoundException, LocalAccessDeniedException {
         final ObjCObjectByReference error = new ObjCObjectByReference();
-        final String destination = NSFileManager.defaultManager().destinationOfSymbolicLinkAtPath_error(
+        final String destination = manager.destinationOfSymbolicLinkAtPath_error(
                 this.getAbsolute(), error);
         if(null == destination) {
             final NSError f = error.getValueAs(NSError.class);
