@@ -47,6 +47,6 @@ public final class IRODSProtocol extends AbstractProtocol {
 
     @Override
     public String getPrefix() {
-        return String.format("%s.%s", IRODSProtocol.class.getName(), StringUtils.upperCase(this.getType().name()));
+        return String.format("%s.%s", IRODSProtocol.class.getPackage().getName(), StringUtils.upperCase(this.getType().name()));
     }
 }
