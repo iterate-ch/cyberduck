@@ -76,16 +76,16 @@
             </fileset>
         </copy>
 
-        <mkdir dir="${build.deploy}"/>
+        <mkdir dir="${build}/update"/>
 
         <!-- prepare WinSparkle stuff -->
-        <xmltask source="${www.update}/changelog.rss" destbuffer="changelog">
+        <xmltask source="${www.update}/changelog.rss" destbuffer="minversion">
             <remove path="//*[local-name()='minimumSystemVersion']"/>
         </xmltask>
-        <xmltask sourcebuffer="changelog" dest="${build}/update/changelog.rss">
+        <xmltask sourcebuffer="minversion" destbuffer="installerArgs">
             <attr path="//item/enclosure" attr="sparkle:installerArguments" value="-quiet Autostart=1"/>
         </xmltask>
-        <xmltask sourcebuffer="changelog" dest="${build}/update/changelog.rss">
+        <xmltask sourcebuffer="installerArgs" dest="${build}/update/changelog.rss">
             <attr path="//item/enclosure" attr="sparkle:version" value="${FULLVERSION}"/>
         </xmltask>
         <copy todir="${build}/update" overwrite="true">
