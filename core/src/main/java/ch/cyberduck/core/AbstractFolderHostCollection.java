@@ -137,12 +137,6 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
                 if(null == bookmark) {
                     continue;
                 }
-                // Legacy support.
-                final Local file = this.getFile(bookmark);
-                if(!file.equals(next)) {
-                    // Rename all files previously saved with nickname to UUID.
-                    next.rename(file);
-                }
                 this.add(bookmark);
             }
             // Sort using previously built index
