@@ -427,10 +427,6 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
      * @return True if this is a child in the path hierarchy of the argument passed
      */
     public boolean isChild(final Local directory) {
-        if(directory.isFile()) {
-            // If a file we don't have any children at all
-            return false;
-        }
         if(this.isRoot()) {
             // Root cannot be a child of any other path
             return false;
