@@ -43,6 +43,9 @@
         <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
             <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
         </taskdef>
+        <taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask">
+            <classpath path="${lib.ext}/xmltask.jar"/>
+        </taskdef>
         <!-- Create DLL Cyberduck.dll -->
         <msbuild buildfile="${home}/Cyberduck.csproj">
             <target name="Build"/>
