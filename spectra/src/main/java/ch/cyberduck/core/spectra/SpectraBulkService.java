@@ -194,7 +194,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
             final GetAvailableJobChunksResponse response =
                     // GetJobChunksReadyForClientProcessing
                     client.getAvailableJobChunks(new GetAvailableJobChunksRequest(UUID.fromString(job))
-                            .withPreferredNumberOfChunks(1));
+                            .withPreferredNumberOfChunks(Integer.MAX_VALUE));
             if(log.isInfoEnabled()) {
                 log.info(String.format("Job status %s for %s", response.getStatus(), file));
             }
@@ -238,7 +238,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                 }
                 for(BulkObject bulk : object) {
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Found chunk %s %s", bulk, file));
+                        log.debug(String.format("Found chunk %s looking for %s", bulk, file));
                     }
                     if(bulk.getName().equals(containerService.getKey(file))) {
                         if(log.isInfoEnabled()) {
@@ -248,7 +248,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                                 .exists(status.isExists())
                                 .metadata(status.getMetadata())
                                 .parameters(status.getParameters());
-                        if(bulk.getOffset() == 0L) {
+                        if(bulk.getOffset() == 0L && bulk.getLength() == status.getLength()) {
                             // Set our own offsets
                             chunk.setLength(status.getLength());
                             chunk.setOffset(status.getOffset());
@@ -256,6 +256,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                         }
                         else {
                             // Server sends multiple chunks with offsets
+                            chunk.setAppend(true);
                             chunk.setLength(bulk.getLength());
                             chunk.setOffset(bulk.getOffset());
                             switch(type) {
