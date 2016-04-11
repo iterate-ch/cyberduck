@@ -69,15 +69,23 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     private final LocalAttributes attributes;
 
     public Local(final String parent, final String name) throws LocalAccessDeniedException {
-        this(parent.endsWith(DELIMITER) ?
+        this(parent, name, DELIMITER);
+    }
+
+    public Local(final String parent, final String name, final String delimiter) throws LocalAccessDeniedException {
+        this(parent.endsWith(delimiter) ?
                 String.format("%s%s", parent, name) :
-                String.format("%s%c%s", parent, CharUtils.toChar(DELIMITER), name));
+                String.format("%s%c%s", parent, CharUtils.toChar(delimiter), name));
     }
 
     public Local(final Local parent, final String name) throws LocalAccessDeniedException {
+        this(parent, name, DELIMITER);
+    }
+
+    public Local(final Local parent, final String name, final String delimiter) throws LocalAccessDeniedException {
         this(parent.isRoot() ?
                 String.format("%s%s", parent.getAbsolute(), name) :
-                String.format("%s%c%s", parent.getAbsolute(), CharUtils.toChar(DELIMITER), name));
+                String.format("%s%c%s", parent.getAbsolute(), CharUtils.toChar(delimiter), name));
     }
 
     /**
