@@ -238,11 +238,6 @@ public class FinderLocal extends Local {
         }
     }
 
-    @Override
-    public boolean exists() {
-        return manager.fileExistsAtPath(this.getAbsolute());
-    }
-
     /**
      * @param absolute The absolute path of the alias file.
      * @return The absolute path this alias is pointing to.
