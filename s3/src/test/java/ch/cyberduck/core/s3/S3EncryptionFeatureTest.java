@@ -45,7 +45,7 @@ public class S3EncryptionFeatureTest {
 
     @Test
     public void testGetAlgorithms() throws Exception {
-        assertEquals(Collections.singletonList("AES256"), new S3EncryptionFeature(null).getAlgorithms());
+        assertEquals(2, new S3EncryptionFeature(null).getAlgorithms().size());
     }
 
     @Test

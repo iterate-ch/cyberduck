@@ -23,12 +23,9 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Encryption;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class S3EncryptionFeature implements Encryption {
 
     private S3Session session;
@@ -39,7 +36,7 @@ public class S3EncryptionFeature implements Encryption {
 
     @Override
     public List<String> getAlgorithms() {
-        return Collections.singletonList("AES256");
+        return Arrays.asList("AES256", "aws:kms");
     }
 
     @Override
