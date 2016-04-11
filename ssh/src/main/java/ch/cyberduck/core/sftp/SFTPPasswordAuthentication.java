@@ -80,7 +80,7 @@ public class SFTPPasswordAuthentication implements SFTPAuthentication {
 
                 @Override
                 public boolean shouldRetry(final Resource<?> resource) {
-                    return true;
+                    return false;
                 }
             });
             return session.getClient().isAuthenticated();
