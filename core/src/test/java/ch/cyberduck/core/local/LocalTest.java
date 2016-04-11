@@ -91,6 +91,11 @@ public class LocalTest {
         assertFalse(l.exists());
     }
 
+    @Test
+    public void testFollowLinks() throws Exception {
+        assertTrue(new Local("/tmp").exists());
+    }
+
     private static class WindowsLocal extends Local {
 
         public WindowsLocal(final String parent, final String name, final String delimiter) throws LocalAccessDeniedException {
