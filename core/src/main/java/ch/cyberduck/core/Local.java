@@ -146,7 +146,10 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
      * @see Local#exists()
      */
     public boolean isDirectory() {
-        return Files.isDirectory(Paths.get(path));
+        if(this.exists()) {
+            return Files.isDirectory(Paths.get(path));
+        }
+        return false;
     }
 
     /**
@@ -155,7 +158,10 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
      * @see Local#exists()
      */
     public boolean isFile() {
-        return Files.isRegularFile(Paths.get(path));
+        if(this.exists()) {
+            return Files.isRegularFile(Paths.get(path));
+        }
+        return false;
     }
 
     /**
