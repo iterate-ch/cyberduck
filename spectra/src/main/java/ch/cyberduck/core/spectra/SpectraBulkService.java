@@ -264,6 +264,9 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                 log.error(String.format("File %s not found in job %s", file.getName(), job));
                 chunks.add(status);
             }
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Server returned %d chunks for %s", chunks.size(), file));
+            }
             return chunks;
         }
         catch(FailedRequestException e) {
