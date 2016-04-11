@@ -19,6 +19,7 @@ package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Read;
@@ -48,9 +49,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public class CopyTransfer extends Transfer {
     private static final Logger log = Logger.getLogger(CopyTransfer.class);
 
@@ -190,6 +188,24 @@ public class CopyTransfer extends Transfer {
             nullified.add(new TransferItem(p));
         }
         return nullified;
+    }
+
+    @Override
+    public void pre(final Session<?> session, final Map<Path, TransferStatus> files) throws BackgroundException {
+        final Bulk download = session.getFeature(Bulk.class);
+        if(null != download) {
+            final Object id = download.pre(Type.download, files);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Obtained bulk id %s for transfer %s", id, this));
+            }
+        }
+        final Bulk upload = destination.getFeature(Bulk.class);
+        if(null != upload) {
+            final Object id = upload.pre(Type.upload, files);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Obtained bulk id %s for transfer %s", id, this));
+            }
+        }
     }
 
     @Override
