@@ -35,9 +35,6 @@ import org.apache.log4j.Logger;
 import java.text.MessageFormat;
 import java.util.EnumSet;
 
-/**
- * @version $Id$
- */
 public class MountWorker extends Worker<Path> {
     private static final Logger log = Logger.getLogger(MountWorker.class);
 
