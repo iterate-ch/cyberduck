@@ -46,13 +46,11 @@ import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.MessageFormat;
 import java.util.EnumSet;
 import java.util.Objects;
 
-/**
- * @version $Id$
- */
 public class Local extends AbstractPath implements Referenceable, Serializable {
     private static final Logger log = Logger.getLogger(Local.class);
 
@@ -315,7 +313,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
 
     public void rename(final Local renamed) throws AccessDeniedException {
         try {
-            Files.move(Paths.get(path), Paths.get(renamed.getAbsolute()));
+            Files.move(Paths.get(path), Paths.get(renamed.getAbsolute()), StandardCopyOption.REPLACE_EXISTING);
         }
         catch(IOException e) {
             throw new LocalAccessDeniedException(String.format("Rename failed for %s", renamed), e);

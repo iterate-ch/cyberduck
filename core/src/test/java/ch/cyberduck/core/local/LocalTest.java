@@ -96,6 +96,19 @@ public class LocalTest {
         assertTrue(new Local("/tmp").exists());
     }
 
+    @Test
+    public void testMoveOverride() throws Exception {
+        final TestLocal l = new TestLocal(System.getProperty("java.io.tmpdir") + UUID.randomUUID().toString());
+        final TestLocal n = new TestLocal(System.getProperty("java.io.tmpdir") + UUID.randomUUID().toString());
+        new DefaultLocalTouchFeature().touch(l);
+        new DefaultLocalTouchFeature().touch(n);
+        l.rename(n);
+        assertTrue(n.exists());
+        assertFalse(l.exists());
+        n.delete();
+    }
+
+
     private static class WindowsLocal extends Local {
 
         public WindowsLocal(final String parent, final String name, final String delimiter) throws LocalAccessDeniedException {
