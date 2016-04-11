@@ -183,21 +183,6 @@ public class FTPSessionTest {
         session.list(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
     }
 
-
-    @Test
-    public void testMountFallbackNotfound() throws Exception {
-        final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
-        ));
-        host.setDefaultPath(UUID.randomUUID().toString());
-        final FTPSession session = new FTPSession(host);
-        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertEquals("/", new FTPWorkdirService(session).find().getAbsolute());
-    }
-
     @Test
     public void testConnectionTlsUpgrade() throws Exception {
         final Host host = new Host(new FTPProtocol(), "test.cyberduck.ch", new Credentials(
