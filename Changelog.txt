@@ -13,6 +13,7 @@ Changelog. Last modified: $Date$
 
 4.9 [https://trac.cyberduck.io/milestone/4.9]
 - [Feature] Support for B2 Cloud Storage (Backblaze) (#9162)
+- [Feature] New bundled application updater using MSI for installation (Windows)
 - [Bugfix] Creating new folders with SSE restriction fails (S3) (#9378)
 - [Bugfix] Unable to duplicate folders (#9383)
 - [Bugfix] Routing failure when connecting to IPv6 address (#8802)
