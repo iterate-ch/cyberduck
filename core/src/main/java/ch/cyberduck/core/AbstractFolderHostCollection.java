@@ -138,9 +138,10 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
                     continue;
                 }
                 // Legacy support.
-                if(!this.getFile(bookmark).equals(next)) {
-                    this.rename(next, bookmark);
-
+                final Local file = this.getFile(bookmark);
+                if(!file.equals(next)) {
+                    // Rename all files previously saved with nickname to UUID.
+                    next.rename(file);
                 }
                 this.add(bookmark);
             }
@@ -151,11 +152,6 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
             this.unlock();
         }
         super.load();
-    }
-
-    protected void rename(final Local next, final Host bookmark) throws AccessDeniedException {
-        // Rename all files previously saved with nickname to UUID.
-        next.rename(this.getFile(bookmark));
     }
 
     @Override
