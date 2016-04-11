@@ -177,8 +177,10 @@ public class SpectraBulkServiceTest {
         assertEquals(2, list.size());
         assertEquals(100000000000L, list.get(0).getLength());
         assertEquals(0L, list.get(0).getOffset());
+        assertEquals("0", list.get(0).getParameters().get("offset"));
         assertEquals(12640000000L, list.get(1).getLength());
         assertEquals(100000000000L, list.get(1).getOffset());
+        assertEquals("100000000000", list.get(1).getParameters().get("offset"));
         try {
             service.pre(Transfer.Type.download, files);
             fail();
@@ -227,8 +229,10 @@ public class SpectraBulkServiceTest {
             assertEquals(2, list.size());
             assertEquals(100000000000L, list.get(0).getLength());
             assertEquals(0L, list.get(0).getOffset());
+            assertEquals("0", list.get(0).getParameters().get("offset"));
             assertEquals(18111600640L, list.get(1).getLength());
             assertEquals(100000000000L, list.get(1).getOffset());
+            assertEquals("100000000000", list.get(1).getParameters().get("offset"));
         }
         new SpectraDeleteFeature(session).delete(new ArrayList<Path>(files.keySet()), new DisabledLoginCallback(), new Delete.Callback() {
             @Override

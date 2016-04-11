@@ -259,16 +259,12 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                             chunk.setAppend(true);
                             chunk.setLength(bulk.getLength());
                             chunk.setOffset(bulk.getOffset());
-                            switch(type) {
-                                case download:
-                                    // Job parameter already present from #pre
-                                    final Map<String, String> parameters = new HashMap<>(chunk.getParameters());
-                                    // Set offset for chunk
-                                    parameters.put(REQUEST_PARAMETER_OFFSET, Long.toString(chunk.getOffset()));
-                                    chunk.setParameters(parameters);
-                                    break;
-                            }
                         }
+                        // Job parameter already present from #pre
+                        final Map<String, String> parameters = new HashMap<>(chunk.getParameters());
+                        // Set offset for chunk.
+                        parameters.put(REQUEST_PARAMETER_OFFSET, Long.toString(chunk.getOffset()));
+                        chunk.setParameters(parameters);
                         if(log.isInfoEnabled()) {
                             log.info(String.format("Add chunk %s for file %s", chunk, file));
                         }
