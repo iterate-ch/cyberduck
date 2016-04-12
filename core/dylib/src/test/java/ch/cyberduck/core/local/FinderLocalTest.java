@@ -16,6 +16,7 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 
@@ -92,18 +93,12 @@ public class FinderLocalTest {
 
     @Test
     public void testWriteUnixPermission() throws Exception {
-//        this.repeat(new Callable<Local>() {
-//            @Override
-//            public Local call() throws Exception {
-//                Local l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-//                new DefaultLocalTouchFeature().touch(l);
-//                final Permission permission = new Permission(644);
-//                l.attributes().setPermission(permission);
-//                assertEquals(permission, l.attributes().getPermission());
-//                l.delete();
-//                return l;
-//            }
-//        }, 10);
+        Local l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        new DefaultLocalTouchFeature().touch(l);
+        final Permission permission = new Permission(644);
+        l.attributes().setPermission(permission);
+        assertEquals(permission, l.attributes().getPermission());
+        l.delete();
     }
 
     @Test
