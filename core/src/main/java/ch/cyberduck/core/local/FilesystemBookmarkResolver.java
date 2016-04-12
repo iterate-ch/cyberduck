@@ -21,10 +21,7 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
 
-/**
- * @version $Id$
- */
-public interface SandboxBookmarkResolver<B> {
+public interface FilesystemBookmarkResolver<B> {
 
     /**
      * @param file File outside of sandbox

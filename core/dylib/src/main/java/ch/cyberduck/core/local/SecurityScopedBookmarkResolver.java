@@ -42,8 +42,8 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import java.text.MessageFormat;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class PanelSandboxBookmarkResolver implements SandboxBookmarkResolver<NSURL> {
-    private static final Logger log = Logger.getLogger(PanelSandboxBookmarkResolver.class);
+public class SecurityScopedBookmarkResolver implements FilesystemBookmarkResolver<NSURL> {
+    private static final Logger log = Logger.getLogger(SecurityScopedBookmarkResolver.class);
 
     private static final boolean SANDBOXED
             = Sandbox.get().isSandboxed();

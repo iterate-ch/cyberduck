@@ -125,7 +125,7 @@ public class FinderLocal extends Local {
     public String getBookmark() {
         if(StringUtils.isBlank(bookmark)) {
             try {
-                bookmark = new PanelSandboxBookmarkResolver().create(this);
+                bookmark = new SecurityScopedBookmarkResolver().create(this);
             }
             catch(AccessDeniedException e) {
                 log.warn(String.format("Failure resolving bookmark %s", bookmark));
@@ -168,7 +168,7 @@ public class FinderLocal extends Local {
 
     @Override
     public NSURL lock() throws AccessDeniedException {
-        final NSURL resolved = new PanelSandboxBookmarkResolver().resolve(this);
+        final NSURL resolved = new SecurityScopedBookmarkResolver().resolve(this);
         if(resolved.respondsToSelector(Foundation.selector("startAccessingSecurityScopedResource"))) {
             if(!resolved.startAccessingSecurityScopedResource()) {
                 throw new LocalAccessDeniedException(String.format("Failure accessing security scoped resource for %s", this));
