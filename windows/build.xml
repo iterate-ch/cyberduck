@@ -83,7 +83,7 @@
             <remove path="//*[local-name()='minimumSystemVersion']"/>
         </xmltask>
         <xmltask sourcebuffer="minversion" destbuffer="installerArgs">
-            <attr path="//item/enclosure" attr="sparkle:installerArguments" value="-quiet Autostart=1"/>
+            <attr path="//item/enclosure" attr="sparkle:installerArguments" value="/passive Autostart=1"/>
         </xmltask>
         <xmltask sourcebuffer="installerArgs" dest="${build}/update/changelog.rss">
             <attr path="//item/enclosure" attr="sparkle:version" value="${FULLVERSION}"/>
