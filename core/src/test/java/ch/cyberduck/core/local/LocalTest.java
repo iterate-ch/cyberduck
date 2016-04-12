@@ -72,17 +72,16 @@ public class LocalTest {
 
     @Test(expected = LocalAccessDeniedException.class)
     public void testRenameExistingDirectory() throws Exception {
-        final TestLocal l = new TestLocal(System.getProperty("java.io.tmpdir") + UUID.randomUUID().toString());
+        final TestLocal l = new TestLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final TestLocal n = new TestLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         l.mkdir();
-        final TestLocal n = new TestLocal(System.getProperty("java.io.tmpdir") + UUID.randomUUID().toString());
         n.rename(l);
     }
 
     @Test
-    @Ignore
     public void testRenameDirectory() throws Exception {
-        final TestLocal l = new TestLocal(System.getProperty("java.io.tmpdir") + UUID.randomUUID().toString());
-        final TestLocal n = new TestLocal(System.getProperty("java.io.tmpdir") + UUID.randomUUID().toString());
+        final TestLocal l = new TestLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final TestLocal n = new TestLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         n.mkdir();
         n.rename(l);
         assertFalse(n.exists());
@@ -98,8 +97,8 @@ public class LocalTest {
 
     @Test
     public void testMoveOverride() throws Exception {
-        final TestLocal l = new TestLocal(System.getProperty("java.io.tmpdir") + UUID.randomUUID().toString());
-        final TestLocal n = new TestLocal(System.getProperty("java.io.tmpdir") + UUID.randomUUID().toString());
+        final TestLocal l = new TestLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final TestLocal n = new TestLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         new DefaultLocalTouchFeature().touch(l);
         new DefaultLocalTouchFeature().touch(n);
         l.rename(n);
@@ -128,6 +127,10 @@ public class LocalTest {
     private final class TestLocal extends Local {
         private TestLocal(final String name) throws LocalAccessDeniedException {
             super(name);
+        }
+
+        public TestLocal(final String parent, final String name) throws LocalAccessDeniedException {
+            super(parent, name);
         }
     }
 }
