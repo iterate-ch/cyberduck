@@ -139,8 +139,8 @@ public class PanelSandboxBookmarkResolver implements SandboxBookmarkResolver<NSU
             throw new LocalAccessDeniedException(String.format("%s", f.localizedDescription()));
         }
         final String encoded = data.base64Encoding();
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Encoded bookmark for %s as %s", file, encoded));
+        if(log.isTraceEnabled()) {
+            log.trace(String.format("Encoded bookmark for %s as %s", file, encoded));
         }
         return encoded;
     }
