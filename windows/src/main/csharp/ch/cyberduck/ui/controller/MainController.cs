@@ -486,15 +486,16 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 thirdpartySemaphore.Signal();
             });
+            // register callbacks
+            WindowsPeriodicUpdateChecker.SetCanShutdownCallback(() => Convert.ToInt32(PrepareExit()));
+            WindowsPeriodicUpdateChecker.SetShutdownRequestCallback(delegate
+            {
+                Logger.info("About to exit in order to install update");
+                Exit(true);
+            });
             if (PreferencesFactory.get().getBoolean("update.check"))
             {
                 _updater = new WindowsPeriodicUpdateChecker();
-                WindowsPeriodicUpdateChecker.SetCanShutdownCallback(() => Convert.ToInt32(PrepareExit()));
-                WindowsPeriodicUpdateChecker.SetShutdownRequestCallback(delegate
-                {
-                    Logger.info("About to exit in order to install update");
-                    Exit(true);
-                });
                 if (_updater.hasUpdatePrivileges())
                 {
                     DateTime lastCheck = new DateTime(PreferencesFactory.get().getLong("update.check.last"));
