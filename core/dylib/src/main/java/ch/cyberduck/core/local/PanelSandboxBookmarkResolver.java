@@ -45,7 +45,11 @@ import java.util.concurrent.atomic.AtomicReference;
 public class PanelSandboxBookmarkResolver implements SandboxBookmarkResolver<NSURL> {
     private static final Logger log = Logger.getLogger(PanelSandboxBookmarkResolver.class);
 
+    private static final boolean SANDBOXED
+            = Sandbox.get().isSandboxed();
+
     private final Preferences preferences = PreferencesFactory.get();
+
 
     @Override
     public NSURL resolve(final Local file) throws AccessDeniedException {
@@ -66,7 +70,7 @@ public class PanelSandboxBookmarkResolver implements SandboxBookmarkResolver<NSU
         }
         final ObjCObjectByReference error = new ObjCObjectByReference();
         final NSURL resolved = NSURL.URLByResolvingBookmarkData(bookmark,
-                Sandbox.get().isSandboxed() ?
+                SANDBOXED ?
                         NSURL.NSURLBookmarkResolutionOptions.NSURLBookmarkResolutionWithSecurityScope : 0, error);
         if(null == resolved) {
             log.warn(String.format("Error resolving bookmark for %s to URL", file));
@@ -116,7 +120,7 @@ public class PanelSandboxBookmarkResolver implements SandboxBookmarkResolver<NSU
         final ObjCObjectByReference error = new ObjCObjectByReference();
         // Create new security scoped bookmark
         final NSData data = NSURL.fileURLWithPath(file.getAbsolute()).bookmarkDataWithOptions_includingResourceValuesForKeys_relativeToURL_error(
-                Sandbox.get().isSandboxed() ?
+                SANDBOXED ?
                         NSURL.NSURLBookmarkCreationOptions.NSURLBookmarkCreationWithSecurityScope :
                         NSURL.NSURLBookmarkCreationOptions.NSURLBookmarkCreationSuitableForBookmarkFile, null, null, error);
         if(null == data) {
