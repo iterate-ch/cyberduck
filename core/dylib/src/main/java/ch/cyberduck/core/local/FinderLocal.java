@@ -270,13 +270,4 @@ public class FinderLocal extends Local {
         // Relative path
         return new FinderLocal(this.getParent(), destination);
     }
-
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("FinderLocal{");
-        sb.append("path='").append(path).append('\'');
-        sb.append(", bookmark='").append(bookmark).append('\'');
-        sb.append('}');
-        return sb.toString();
-    }
 }
