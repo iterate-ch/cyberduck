@@ -17,6 +17,7 @@ package ch.cyberduck.core.local;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 
@@ -24,32 +25,38 @@ import org.junit.Test;
 
 import java.util.UUID;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 public class PanelSandboxBookmarkResolverTest {
 
-    @Test(expected = LocalAccessDeniedException.class)
+    @Test
     public void testCreateNotFound() throws Exception {
         final String name = UUID.randomUUID().toString();
-        Local l = new Local(System.getProperty("java.io.tmpdir"), name);
+        Local l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
         try {
             assertNull(new PanelSandboxBookmarkResolver().create(l));
+            fail();
         }
         catch(LocalAccessDeniedException e) {
-//            assertEquals("The file “" + name + "” couldn’t be opened because there is no such file. Please verify disk permissions.", e.getDetail());
-            throw e;
+            //
         }
     }
 
-    @Test(expected = LocalAccessDeniedException.class)
-    public void testCreate() throws Exception {
+    @Test
+    public void testCreateFile() throws Exception {
         final String name = UUID.randomUUID().toString();
-        Local l = new Local(System.getProperty("java.io.tmpdir"), name);
-        l.mkdir();
-        assertNotNull(new PanelSandboxBookmarkResolver().create(l));
+        Local l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
+        new DefaultLocalTouchFeature().touch(l);
+        try {
+            final PanelSandboxBookmarkResolver resolver = new PanelSandboxBookmarkResolver();
+            final String bookmark = resolver.create(l);
+            assertNotNull(bookmark);
+            l.setBookmark(bookmark);
+            final NSURL resolved = resolver.resolve(l);
+            assertNotNull(resolved);
+        }
+        finally {
+            l.delete();
+        }
     }
 }
