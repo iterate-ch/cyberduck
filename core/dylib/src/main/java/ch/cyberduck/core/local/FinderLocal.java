@@ -170,7 +170,9 @@ public class FinderLocal extends Local {
     public NSURL lock() throws AccessDeniedException {
         final NSURL resolved = new PanelSandboxBookmarkResolver().resolve(this);
         if(resolved.respondsToSelector(Foundation.selector("startAccessingSecurityScopedResource"))) {
-            resolved.startAccessingSecurityScopedResource();
+            if(!resolved.startAccessingSecurityScopedResource()) {
+                throw new LocalAccessDeniedException(String.format("Failure accessing security scoped resource for %s", this));
+            }
         }
         return resolved;
     }
