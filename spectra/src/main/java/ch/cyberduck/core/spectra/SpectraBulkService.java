@@ -248,18 +248,12 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                                 .exists(status.isExists())
                                 .metadata(status.getMetadata())
                                 .parameters(status.getParameters());
-                        if(bulk.getOffset() == 0L && bulk.getLength() == status.getLength()) {
-                            // Set our own offsets
-                            chunk.setLength(status.getLength());
-                            chunk.setOffset(status.getOffset());
-                            chunk.setAppend(status.isAppend());
-                        }
-                        else {
-                            // Server sends multiple chunks with offsets
+                        // Server sends multiple chunks with offsets
+                        if(bulk.getOffset() > 0L) {
                             chunk.setAppend(true);
-                            chunk.setLength(bulk.getLength());
-                            chunk.setOffset(bulk.getOffset());
                         }
+                        chunk.setLength(bulk.getLength());
+                        chunk.setOffset(bulk.getOffset());
                         // Job parameter already present from #pre
                         final Map<String, String> parameters = new HashMap<>(chunk.getParameters());
                         // Set offset for chunk.
