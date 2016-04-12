@@ -14,16 +14,18 @@
 
 package ch.cyberduck.core.local;
 
+import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
+import java.io.InputStream;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
@@ -120,7 +122,6 @@ public class FinderLocalTest {
     }
 
     @Test
-    @Ignore
     public void testBookmark() throws Exception {
         FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         assertNull(l.getBookmark());
@@ -174,5 +175,42 @@ public class FinderLocalTest {
     public void testGetSymlinkTargetAbsolute() throws Exception {
         assertEquals(new FinderLocal("/System/Library/Frameworks/JavaVM.framework/Versions/Current/Commands/java"),
                 new FinderLocal("/usr/bin/java").getSymlinkTarget());
+    }
+
+    @Test
+    public void testReleaseSecurityScopeBookmarkInputStreamClose() throws Exception {
+        final AtomicBoolean released = new AtomicBoolean(false);
+        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString()) {
+            @Override
+            public void release(final Object lock) {
+                released.set(true);
+                super.release(lock);
+            }
+        };
+        new DefaultLocalTouchFeature().touch(l);
+        final InputStream in = l.getInputStream();
+        in.close();
+        assertTrue(released.get());
+        l.delete();
+    }
+
+    @Test(expected = LocalAccessDeniedException.class)
+    public void testLockNoSuchFile() throws Exception {
+        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        l.lock();
+    }
+
+    @Test
+    public void testLock() throws Exception {
+        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        new DefaultLocalTouchFeature().touch(l);
+        try {
+            final NSURL lock = l.lock();
+            assertNotNull(lock);
+            l.release(lock);
+        }
+        finally {
+            l.delete();
+        }
     }
 }
