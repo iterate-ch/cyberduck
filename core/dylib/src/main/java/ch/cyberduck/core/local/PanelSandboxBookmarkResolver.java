@@ -53,34 +53,41 @@ public class PanelSandboxBookmarkResolver implements SandboxBookmarkResolver<NSU
 
     @Override
     public NSURL resolve(final Local file) throws AccessDeniedException {
-        final NSData bookmark;
-        if(null == file.getBookmark()) {
-            if(preferences.getBoolean("local.bookmark.resolve.prompt")) {
-                // Prompt user if no bookmark reference is available
-                final String reference = this.choose(file);
-                file.setBookmark(reference);
-                bookmark = NSData.dataWithBase64EncodedString(reference);
+        NSData bookmark = null;
+        try {
+            if(null == file.getBookmark()) {
+                if(preferences.getBoolean("local.bookmark.resolve.prompt")) {
+                    // Prompt user if no bookmark reference is available
+                    final String reference = this.choose(file);
+                    file.setBookmark(reference);
+                    bookmark = NSData.allocDataWithBase64EncodedString(reference);
+                }
+                else {
+                    throw new LocalAccessDeniedException(String.format("No security scoped bookmark for %s", file.getAbsolute()));
+                }
             }
             else {
-                throw new LocalAccessDeniedException(String.format("No security scoped bookmark for %s", file.getAbsolute()));
+                bookmark = NSData.allocDataWithBase64EncodedString(file.getBookmark());
+            }
+            final ObjCObjectByReference error = new ObjCObjectByReference();
+            final NSURL resolved = NSURL.URLByResolvingBookmarkData(bookmark,
+                    SANDBOXED ?
+                            NSURL.NSURLBookmarkResolutionOptions.NSURLBookmarkResolutionWithSecurityScope : 0, error);
+            if(null == resolved) {
+                log.warn(String.format("Error resolving bookmark for %s to URL", file));
+                final NSError f = error.getValueAs(NSError.class);
+                if(null == f) {
+                    throw new LocalAccessDeniedException(file.getAbsolute());
+                }
+                throw new LocalAccessDeniedException(String.format("%s", f.localizedDescription()));
+            }
+            return resolved;
+        }
+        finally {
+            if(bookmark != null) {
+                bookmark.release();
             }
         }
-        else {
-            bookmark = NSData.dataWithBase64EncodedString(file.getBookmark());
-        }
-        final ObjCObjectByReference error = new ObjCObjectByReference();
-        final NSURL resolved = NSURL.URLByResolvingBookmarkData(bookmark,
-                SANDBOXED ?
-                        NSURL.NSURLBookmarkResolutionOptions.NSURLBookmarkResolutionWithSecurityScope : 0, error);
-        if(null == resolved) {
-            log.warn(String.format("Error resolving bookmark for %s to URL", file));
-            final NSError f = error.getValueAs(NSError.class);
-            if(null == f) {
-                throw new LocalAccessDeniedException(file.getAbsolute());
-            }
-            throw new LocalAccessDeniedException(String.format("%s", f.localizedDescription()));
-        }
-        return resolved;
     }
 
     /**
