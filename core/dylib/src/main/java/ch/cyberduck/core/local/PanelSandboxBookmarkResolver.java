@@ -32,16 +32,16 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.sparkle.Sandbox;
 
 import org.apache.log4j.Logger;
+import org.rococoa.ObjCObjectByReference;
+import org.rococoa.cocoa.foundation.NSError;
 import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.text.MessageFormat;
 import java.util.concurrent.atomic.AtomicReference;
 
-/**
- * @version $Id$
- */
 public class PanelSandboxBookmarkResolver implements SandboxBookmarkResolver<NSURL> {
     private static final Logger log = Logger.getLogger(PanelSandboxBookmarkResolver.class);
 
@@ -64,10 +64,17 @@ public class PanelSandboxBookmarkResolver implements SandboxBookmarkResolver<NSU
         else {
             bookmark = NSData.dataWithBase64EncodedString(file.getBookmark());
         }
-        final NSURL resolved = NSURL.URLByResolvingBookmarkData(bookmark, null);
+        final ObjCObjectByReference error = new ObjCObjectByReference();
+        final NSURL resolved = NSURL.URLByResolvingBookmarkData(bookmark,
+                Sandbox.get().isSandboxed() ?
+                        NSURL.NSURLBookmarkResolutionOptions.NSURLBookmarkResolutionWithSecurityScope : 0, error);
         if(null == resolved) {
             log.warn(String.format("Error resolving bookmark for %s to URL", file));
-            throw new LocalAccessDeniedException(file.getAbsolute());
+            final NSError f = error.getValueAs(NSError.class);
+            if(null == f) {
+                throw new LocalAccessDeniedException(file.getAbsolute());
+            }
+            throw new LocalAccessDeniedException(String.format("%s", f.localizedDescription()));
         }
         return resolved;
     }
@@ -106,12 +113,19 @@ public class PanelSandboxBookmarkResolver implements SandboxBookmarkResolver<NSU
 
     @Override
     public String create(final Local file) throws AccessDeniedException {
+        final ObjCObjectByReference error = new ObjCObjectByReference();
         // Create new security scoped bookmark
         final NSData data = NSURL.fileURLWithPath(file.getAbsolute()).bookmarkDataWithOptions_includingResourceValuesForKeys_relativeToURL_error(
-                NSURL.NSURLBookmarkCreationOptions.NSURLBookmarkCreationWithSecurityScope, null, null, null);
+                Sandbox.get().isSandboxed() ?
+                        NSURL.NSURLBookmarkCreationOptions.NSURLBookmarkCreationWithSecurityScope :
+                        NSURL.NSURLBookmarkCreationOptions.NSURLBookmarkCreationSuitableForBookmarkFile, null, null, error);
         if(null == data) {
             log.warn(String.format("Failure getting bookmark data for file %s", file));
-            throw new LocalAccessDeniedException(file.getAbsolute());
+            final NSError f = error.getValueAs(NSError.class);
+            if(null == f) {
+                throw new LocalAccessDeniedException(file.getAbsolute());
+            }
+            throw new LocalAccessDeniedException(String.format("%s", f.localizedDescription()));
         }
         final String encoded = data.base64Encoding();
         if(log.isDebugEnabled()) {
