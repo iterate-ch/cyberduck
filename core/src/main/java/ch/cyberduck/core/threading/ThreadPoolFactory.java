@@ -15,19 +15,15 @@ package ch.cyberduck.core.threading;
  * GNU General Public License for more details.
  */
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.TimeUnit;
+import ch.cyberduck.core.Factory;
 
-public interface ThreadPool {
-    void shutdown(boolean gracefully);
+public class ThreadPoolFactory extends Factory<ThreadPool> {
 
-    void await(long timeout, TimeUnit unit);
+    public ThreadPoolFactory() {
+        super("factory.threadpool.class");
+    }
 
-    void shutdown();
-
-    void execute(Runnable command);
-
-    <T> Future<T> execute(Callable<T> command) throws RejectedExecutionException;
+    public static ThreadPool get() {
+        return new ThreadPoolFactory().create();
+    }
 }

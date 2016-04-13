@@ -15,19 +15,19 @@ package ch.cyberduck.core.threading;
  * GNU General Public License for more details.
  */
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.TimeUnit;
+import org.rococoa.ID;
+import org.rococoa.ObjCClass;
+import org.rococoa.Rococoa;
+import org.rococoa.Selector;
 
-public interface ThreadPool {
-    void shutdown(boolean gracefully);
+public abstract class NSInvocationOperation extends NSOperation {
+    public static final _Class CLASS = Rococoa.createClass(NSInvocationOperation.class.getSimpleName(), _Class.class);
 
-    void await(long timeout, TimeUnit unit);
+    public interface _Class extends ObjCClass {
+        public NSInvocationOperation alloc();
+    }
 
-    void shutdown();
+    public abstract NSInvocationOperation initWithTarget_selector_object(ID target, Selector sel, ID arg);
 
-    void execute(Runnable command);
-
-    <T> Future<T> execute(Callable<T> command) throws RejectedExecutionException;
+    public abstract ID result();
 }

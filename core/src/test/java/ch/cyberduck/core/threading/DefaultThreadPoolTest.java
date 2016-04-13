@@ -34,11 +34,11 @@ import static org.junit.Assert.fail;
 /**
  * @version $Id$
  */
-public class ThreadPoolTest {
+public class DefaultThreadPoolTest {
 
     @Test(expected = RejectedExecutionException.class)
     public void testShutdown() throws Exception {
-        final ThreadPool p = new ThreadPool();
+        final DefaultThreadPool p = new DefaultThreadPool();
         p.shutdown();
         p.execute(new Runnable() {
             @Override
@@ -50,7 +50,7 @@ public class ThreadPoolTest {
 
     @Test
     public void testGracefulShutdown() throws Exception {
-        final ThreadPool pool = new ThreadPool();
+        final DefaultThreadPool pool = new DefaultThreadPool();
         final AtomicInteger counter = new AtomicInteger(10);
         for(int i = 0; i < 10; i++) {
             pool.execute(new Callable<Integer>() {
@@ -68,7 +68,7 @@ public class ThreadPoolTest {
 
     @Test
     public void testExecute() throws Exception {
-        final ThreadPool p = new ThreadPool();
+        final DefaultThreadPool p = new DefaultThreadPool();
         final Object r = new Object();
         assertEquals(r, p.execute(new Callable<Object>() {
             @Override
@@ -80,7 +80,7 @@ public class ThreadPoolTest {
 
     @Test
     public void testFifoOrderSingleThread() throws Exception {
-        final ThreadPool p = new ThreadPool();
+        final DefaultThreadPool p = new DefaultThreadPool();
         final List<Future<Integer>> wait = new ArrayList<Future<Integer>>();
         final AtomicInteger counter = new AtomicInteger(0);
         for(int i = 0; i < 1000; i++) {

@@ -55,6 +55,7 @@ import ch.cyberduck.core.serializer.impl.dd.PlistSerializer;
 import ch.cyberduck.core.serializer.impl.dd.PlistWriter;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.serializer.impl.dd.TransferPlistReader;
+import ch.cyberduck.core.threading.DefaultThreadPool;
 import ch.cyberduck.core.threading.DisabledActionOperationBatcher;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
@@ -1246,6 +1247,7 @@ public abstract class Preferences {
         defaults.put("factory.browserlauncher.class", DisabledBrowserLauncher.class.getName());
         defaults.put("factory.reachability.class", DefaultInetAddressReachability.class.getName());
         defaults.put("factory.updater.class", DisabledPeriodicUpdater.class.getName());
+        defaults.put("factory.threadpool.class", DefaultThreadPool.class.getName());
     }
 
     /**

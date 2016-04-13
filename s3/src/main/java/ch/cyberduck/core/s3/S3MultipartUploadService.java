@@ -35,6 +35,7 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.threading.DefaultThreadPool;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -112,7 +113,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
     public S3MultipartUploadService(final S3Session session, final Long partsize, final Integer concurrency) {
         super(new S3WriteFeature(session).withStorage(null));
         this.session = session;
-        this.pool = new ThreadPool(concurrency, "multipart");
+        this.pool = new DefaultThreadPool(concurrency, "multipart");
         this.multipartService = new S3DefaultMultipartService(session);
         this.partsize = partsize;
     }

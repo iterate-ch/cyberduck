@@ -28,6 +28,7 @@ import ch.cyberduck.core.io.SHA1ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.threading.DefaultThreadPool;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -84,7 +85,7 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
         super(writer);
         this.session = session;
         this.partSize = partSize;
-        this.pool = new ThreadPool(concurrency, "largeupload");
+        this.pool = new DefaultThreadPool(concurrency, "largeupload");
     }
 
     @Override

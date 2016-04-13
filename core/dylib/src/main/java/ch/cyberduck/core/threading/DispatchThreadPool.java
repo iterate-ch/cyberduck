@@ -15,19 +15,9 @@ package ch.cyberduck.core.threading;
  * GNU General Public License for more details.
  */
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.TimeUnit;
+public class DispatchThreadPool extends ExecutorServiceThreadPool implements ThreadPool {
 
-public interface ThreadPool {
-    void shutdown(boolean gracefully);
-
-    void await(long timeout, TimeUnit unit);
-
-    void shutdown();
-
-    void execute(Runnable command);
-
-    <T> Future<T> execute(Callable<T> command) throws RejectedExecutionException;
+    public DispatchThreadPool() {
+        super(new DispatchExecutorService());
+    }
 }
