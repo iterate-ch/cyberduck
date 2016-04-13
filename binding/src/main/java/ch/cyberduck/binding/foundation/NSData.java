@@ -31,7 +31,7 @@ public abstract class NSData extends NSObject {
         return CLASS.dataWithContentsOfURL(url);
     }
 
-    public static NSData allocDataWithBase64EncodedString(String base64String) {
+    public static NSData dataWithBase64EncodedString(String base64String) {
         return CLASS.alloc().initWithBase64Encoding(base64String);
     }
 
