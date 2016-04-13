@@ -48,6 +48,10 @@ public class SecurityScopedBookmarkResolver implements FilesystemBookmarkResolve
     private static final boolean SANDBOXED
             = Sandbox.get().isSandboxed();
 
+    public static boolean isSandboxed() {
+        return SANDBOXED;
+    }
+
     private final Preferences preferences = PreferencesFactory.get();
 
     @Override

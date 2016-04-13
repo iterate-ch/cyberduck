@@ -169,9 +169,11 @@ public class FinderLocal extends Local {
     @Override
     public NSURL lock() throws AccessDeniedException {
         final NSURL resolved = new SecurityScopedBookmarkResolver().resolve(this);
-        if(resolved.respondsToSelector(Foundation.selector("startAccessingSecurityScopedResource"))) {
-            if(!resolved.startAccessingSecurityScopedResource()) {
-                throw new LocalAccessDeniedException(String.format("Failure accessing security scoped resource for %s", this));
+        if(SecurityScopedBookmarkResolver.isSandboxed()) {
+            if(resolved.respondsToSelector(Foundation.selector("startAccessingSecurityScopedResource"))) {
+                if(!resolved.startAccessingSecurityScopedResource()) {
+                    throw new LocalAccessDeniedException(String.format("Failure accessing security scoped resource for %s", this));
+                }
             }
         }
         return resolved;
@@ -182,9 +184,11 @@ public class FinderLocal extends Local {
         if(null == lock) {
             return;
         }
-        final NSURL resolved = (NSURL) lock;
-        if(resolved.respondsToSelector(Foundation.selector("stopAccessingSecurityScopedResource"))) {
-            resolved.stopAccessingSecurityScopedResource();
+        if(SecurityScopedBookmarkResolver.isSandboxed()) {
+            final NSURL resolved = (NSURL) lock;
+            if(resolved.respondsToSelector(Foundation.selector("stopAccessingSecurityScopedResource"))) {
+                resolved.stopAccessingSecurityScopedResource();
+            }
         }
     }
 
