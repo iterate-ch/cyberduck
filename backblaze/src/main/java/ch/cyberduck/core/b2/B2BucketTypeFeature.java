@@ -91,9 +91,8 @@ public class B2BucketTypeFeature implements AclPermission, Location {
     @Override
     public Set<Name> getLocations() {
         final Set<Name> types = new LinkedHashSet<Name>();
-        for(BucketType t : BucketType.values()) {
-            types.add(new B2BucketTypeName(t));
-        }
+        types.add(new B2BucketTypeName(BucketType.allPrivate));
+        types.add(new B2BucketTypeName(BucketType.allPublic));
         return types;
     }
 
