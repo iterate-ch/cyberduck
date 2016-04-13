@@ -168,15 +168,16 @@ public class FinderLocal extends Local {
 
     @Override
     public NSURL lock() throws AccessDeniedException {
-        final NSURL resolved = new SecurityScopedBookmarkResolver().resolve(this);
         if(SecurityScopedBookmarkResolver.isSandboxed()) {
+            final NSURL resolved = new SecurityScopedBookmarkResolver().resolve(this);
             if(resolved.respondsToSelector(Foundation.selector("startAccessingSecurityScopedResource"))) {
                 if(!resolved.startAccessingSecurityScopedResource()) {
                     throw new LocalAccessDeniedException(String.format("Failure accessing security scoped resource for %s", this));
                 }
             }
+            return resolved;
         }
-        return resolved;
+        throw new LocalAccessDeniedException("Sandbox disabled");
     }
 
     @Override
