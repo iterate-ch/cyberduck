@@ -63,33 +63,40 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
     private Long udtThreshold
             = preferences.getLong("s3.upload.udt.threshold");
 
-    private UDTTransferOption udtTransferOption
-            = new DisabledUDTTransferOption();
+    private final UDTTransferOption udtTransferOption;
 
     private X509TrustManager trust;
 
     private X509KeyManager key;
 
+    private final S3SingleUploadService singleUploadService;
+
+    private final S3MultipartUploadService multipartUploadService;
+
     public S3ThresholdUploadService(final S3Session session, final X509TrustManager trust, final X509KeyManager key) {
-        this.session = session;
-        this.trust = trust;
-        this.key = key;
+        this(session, trust, key, PreferencesFactory.get().getLong("s3.upload.multipart.threshold"));
     }
 
     public S3ThresholdUploadService(final S3Session session, final X509TrustManager trust, final X509KeyManager key,
                                     final Long multipartThreshold) {
-        this.session = session;
-        this.trust = trust;
-        this.key = key;
-        this.multipartThreshold = multipartThreshold;
+        this(session, trust, key, multipartThreshold, new DisabledUDTTransferOption());
     }
 
     public S3ThresholdUploadService(final S3Session session, final X509TrustManager trust, final X509KeyManager key,
                                     final UDTTransferOption udtTransferOption) {
+        this(session, trust, key, PreferencesFactory.get().getLong("s3.upload.multipart.threshold"), udtTransferOption);
+    }
+
+    public S3ThresholdUploadService(final S3Session session, final X509TrustManager trust, final X509KeyManager key,
+                                    final Long multipartThreshold,
+                                    final UDTTransferOption udtTransferOption) {
         this.session = session;
         this.trust = trust;
         this.key = key;
+        this.multipartThreshold = multipartThreshold;
         this.udtTransferOption = udtTransferOption;
+        this.singleUploadService = new S3SingleUploadService(session);
+        this.multipartUploadService = new S3MultipartUploadService(session);
     }
 
     @Override
@@ -143,20 +150,17 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
                 // Disabled by user
                 if(status.getLength() < preferences.getLong("s3.upload.multipart.required.threshold")) {
                     log.warn("Multipart upload is disabled with property s3.upload.multipart");
-                    final S3SingleUploadService single = new S3SingleUploadService(session);
-                    return single.upload(file, local, throttle, listener, status, prompt);
+                    return singleUploadService.upload(file, local, throttle, listener, status, prompt);
                 }
             }
-            final S3MultipartUploadService service = new S3MultipartUploadService(session);
             try {
-                return service.upload(file, local, throttle, listener, status, prompt);
+                return multipartUploadService.upload(file, local, throttle, listener, status, prompt);
             }
             catch(NotfoundException | InteroperabilityException e) {
                 log.warn(String.format("Failure using multipart upload %s. Fallback to single upload.", e.getMessage()));
             }
         }
-        final S3SingleUploadService single = new S3SingleUploadService(session);
-        return single.upload(file, local, throttle, listener, status, prompt);
+        return singleUploadService.upload(file, local, throttle, listener, status, prompt);
     }
 
     public S3ThresholdUploadService withMultipartThreshold(final Long threshold) {

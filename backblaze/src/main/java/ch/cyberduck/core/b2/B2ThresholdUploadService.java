@@ -36,10 +36,9 @@ public class B2ThresholdUploadService implements Upload {
 
     private final Long threshold;
 
-    /**
-     * Segment size
-     */
-    private final Long partsize;
+    public final B2LargeUploadService largeUploadService;
+
+    public final B2SingleUploadService singleUploadService;
 
     public B2ThresholdUploadService(final B2Session session) {
         this(session, PreferencesFactory.get().getLong("b2.upload.largeobject.threshold"),
@@ -50,7 +49,8 @@ public class B2ThresholdUploadService implements Upload {
     public B2ThresholdUploadService(final B2Session session, final Long threshold, final Long partsize) {
         this.session = session;
         this.threshold = threshold;
-        this.partsize = partsize;
+        this.largeUploadService = new B2LargeUploadService(session, partsize);
+        this.singleUploadService = new B2SingleUploadService(session);
     }
 
     @Override
@@ -67,12 +67,11 @@ public class B2ThresholdUploadService implements Upload {
                          final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final Upload feature;
         if(this.threshold(file, status.getLength())) {
-            feature = new B2LargeUploadService(session, partsize);
+            return largeUploadService.upload(file, local, throttle, listener, status, callback);
         }
         else {
-            feature = new B2SingleUploadService(session);
+            return singleUploadService.upload(file, local, throttle, listener, status, callback);
         }
-        return feature.upload(file, local, throttle, listener, status, callback);
     }
 
     private boolean threshold(final Path file, final Long length) {
