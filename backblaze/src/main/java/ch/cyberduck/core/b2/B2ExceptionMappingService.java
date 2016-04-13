@@ -16,6 +16,9 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.AbstractExceptionMappingService;
+import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
@@ -27,12 +30,20 @@ import ch.cyberduck.core.exception.QuotaException;
 import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 
 import org.apache.http.HttpStatus;
+import org.apache.log4j.Logger;
 
 import java.time.Duration;
 
 import synapticloop.b2.exception.B2ApiException;
 
 public class B2ExceptionMappingService extends AbstractExceptionMappingService<B2ApiException> {
+    private static final Logger log = Logger.getLogger(B2ExceptionMappingService.class);
+
+    private final B2Session session;
+
+    public B2ExceptionMappingService(final B2Session session) {
+        this.session = session;
+    }
 
     @Override
     public BackgroundException map(final B2ApiException e) {
@@ -40,6 +51,18 @@ public class B2ExceptionMappingService extends AbstractExceptionMappingService<B
         this.append(buffer, e.getMessage());
         switch(e.getStatus()) {
             case HttpStatus.SC_UNAUTHORIZED:
+                // 401 Unauthorized.
+                switch(e.getCode()) {
+                    case "expired_auth_token":
+                        try {
+                            session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+                            return new RetriableAccessDeniedException(buffer.toString());
+                        }
+                        catch(BackgroundException f) {
+                            log.warn(String.format("Attempt to renew expired auth token failed. %s", f.getDetail()));
+                        }
+                        break;
+                }
                 return new LoginFailureException(buffer.toString(), e);
             case HttpStatus.SC_FORBIDDEN:
                 switch(e.getCode()) {
@@ -80,7 +103,7 @@ public class B2ExceptionMappingService extends AbstractExceptionMappingService<B
                 return new ConnectionRefusedException(buffer.toString(), e);
             default:
                 if(e.getRetry() != null) {
-                    // Too Many Requests
+                    // Too Many Requests (429)
                     return new RetriableAccessDeniedException(buffer.toString(), Duration.ofSeconds(e.getRetry()));
                 }
                 return new InteroperabilityException(buffer.toString(), e);

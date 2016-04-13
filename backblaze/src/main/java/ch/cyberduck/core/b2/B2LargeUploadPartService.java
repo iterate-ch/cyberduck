@@ -85,7 +85,7 @@ public class B2LargeUploadPartService {
             return uploads;
         }
         catch(B2ApiException e) {
-            throw new B2ExceptionMappingService().map("Upload {0} failed", e, file);
+            throw new B2ExceptionMappingService(session).map("Upload {0} failed", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, file);
@@ -116,7 +116,7 @@ public class B2LargeUploadPartService {
             return completed;
         }
         catch(B2ApiException e) {
-            throw new B2ExceptionMappingService().map(e);
+            throw new B2ExceptionMappingService(session).map(e);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
@@ -131,7 +131,7 @@ public class B2LargeUploadPartService {
             session.getClient().cancelLargeFileUpload(id);
         }
         catch(B2ApiException e) {
-            throw new B2ExceptionMappingService().map(e);
+            throw new B2ExceptionMappingService(session).map(e);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);

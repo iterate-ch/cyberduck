@@ -49,7 +49,7 @@ public class B2AttributesFeature implements Attributes {
             return this.toAttributes(info);
         }
         catch(B2ApiException e) {
-            throw new B2ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+            throw new B2ExceptionMappingService(session).map("Failure to read attributes of {0}", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
