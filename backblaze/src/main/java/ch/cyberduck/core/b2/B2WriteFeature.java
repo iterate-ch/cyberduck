@@ -39,6 +39,7 @@ import java.util.Collections;
 
 import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2FileResponse;
+import synapticloop.b2.response.B2GetUploadUrlResponse;
 
 public class B2WriteFeature extends AbstractHttpWriteFeature<B2FileResponse> implements Write {
     private static final Logger log = Logger.getLogger(B2WriteFeature.class);
@@ -51,6 +52,9 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<B2FileResponse> imp
     private final Find finder;
 
     private final Attributes attributes;
+
+    private final ThreadLocal<B2GetUploadUrlResponse> urls
+            = new ThreadLocal<B2GetUploadUrlResponse>();
 
     public B2WriteFeature(final B2Session session) {
         this(session, new DefaultFindFeature(session), new DefaultAttributesFeature(session));
@@ -65,34 +69,51 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<B2FileResponse> imp
 
     @Override
     public ResponseOutputStream<B2FileResponse> write(final Path file, final TransferStatus status) throws BackgroundException {
-        // Submit store call to background thread
-        final DelayedHttpEntityCallable<B2FileResponse> command = new DelayedHttpEntityCallable<B2FileResponse>() {
-            /**
-             * @return The SHA-1 returned by the server for the uploaded object
-             */
-            @Override
-            public B2FileResponse call(final AbstractHttpEntity entity) throws BackgroundException {
-                try {
-                    return session.getClient().uploadFile(
-                            new B2FileidProvider(session).getFileid(containerService.getContainer(file)),
-                            containerService.getKey(file),
-                            entity, status.getChecksum().toString(),
-                            status.getMime(), Collections.emptyMap());
-                }
-                catch(B2ApiException e) {
-                    throw new B2ExceptionMappingService(session).map("Upload {0} failed", e, file);
-                }
-                catch(IOException e) {
-                    throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
-                }
+        try {
+            final B2GetUploadUrlResponse uploadUrl;
+            if(null == urls.get()) {
+                uploadUrl = session.getClient().getUploadUrl(new B2FileidProvider(session).getFileid(containerService.getContainer(file)));
+                urls.set(uploadUrl);
             }
+            else {
+                uploadUrl = urls.get();
+            }
+            // Submit store call to background thread
+            final DelayedHttpEntityCallable<B2FileResponse> command = new DelayedHttpEntityCallable<B2FileResponse>() {
+                /**
+                 * @return The SHA-1 returned by the server for the uploaded object
+                 */
+                @Override
+                public B2FileResponse call(final AbstractHttpEntity entity) throws BackgroundException {
+                    try {
+                        return session.getClient().uploadFile(uploadUrl,
+                                containerService.getKey(file),
+                                entity, status.getChecksum().toString(),
+                                status.getMime(), Collections.emptyMap());
+                    }
+                    catch(B2ApiException e) {
+                        urls.remove();
+                        throw new B2ExceptionMappingService(session).map("Upload {0} failed", e, file);
+                    }
+                    catch(IOException e) {
+                        urls.remove();
+                        throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
+                    }
+                }
 
-            @Override
-            public long getContentLength() {
-                return status.getLength();
-            }
-        };
-        return this.write(file, status, command);
+                @Override
+                public long getContentLength() {
+                    return status.getLength();
+                }
+            };
+            return this.write(file, status, command);
+        }
+        catch(B2ApiException e) {
+            throw new B2ExceptionMappingService(session).map("Upload {0} failed", e, file);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
+        }
     }
 
     @Override
