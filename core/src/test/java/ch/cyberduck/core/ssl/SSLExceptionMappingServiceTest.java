@@ -27,9 +27,6 @@ import java.net.SocketException;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * @version $Id$
- */
 public class SSLExceptionMappingServiceTest {
 
     @Test

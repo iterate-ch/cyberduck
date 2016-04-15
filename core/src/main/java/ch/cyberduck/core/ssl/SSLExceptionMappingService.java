@@ -19,9 +19,9 @@ package ch.cyberduck.core.ssl;
  */
 
 import ch.cyberduck.core.AbstractExceptionMappingService;
+import ch.cyberduck.core.DefaultSocketExceptionMappingService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 
 import org.apache.commons.lang3.StringUtils;
@@ -34,9 +34,6 @@ import java.net.SocketException;
 import java.security.GeneralSecurityException;
 import java.security.cert.CertificateException;
 
-/**
- * @version $Id$
- */
 public class SSLExceptionMappingService extends AbstractExceptionMappingService<SSLException> {
     private static final Logger log = Logger.getLogger(SSLExceptionMappingService.class);
 
@@ -175,10 +172,11 @@ public class SSLExceptionMappingService extends AbstractExceptionMappingService<
     @Override
     public BackgroundException map(final SSLException failure) {
         final StringBuilder buffer = new StringBuilder();
-        if(ExceptionUtils.getRootCause(failure) instanceof SocketException) {
-            // Map Connection has been shutdown: javax.net.ssl.SSLException: java.net.SocketException: Broken pipe
-            this.append(buffer, ExceptionUtils.getRootCause(failure).getMessage());
-            return new ConnectionRefusedException(buffer.toString(), failure);
+        for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
+            if(cause instanceof SocketException) {
+                // Map Connection has been shutdown: javax.net.ssl.SSLException: java.net.SocketException: Broken pipe
+                return new DefaultSocketExceptionMappingService().map((SocketException) cause);
+            }
         }
         if(failure instanceof SSLHandshakeException) {
             if(ExceptionUtils.getRootCause(failure) instanceof CertificateException) {
