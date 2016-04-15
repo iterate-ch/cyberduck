@@ -27,14 +27,14 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-public class SecurityScopedBookmarkResolverTest {
+public class SecurityScopedFilesystemBookmarkResolverTest {
 
     @Test
     public void testCreateNotFound() throws Exception {
         final String name = UUID.randomUUID().toString();
         Local l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
         try {
-            assertNull(new SecurityScopedBookmarkResolver().create(l));
+            assertNull(new SecurityScopedFilesystemBookmarkResolver().create(l));
             fail();
         }
         catch(LocalAccessDeniedException e) {
@@ -42,13 +42,13 @@ public class SecurityScopedBookmarkResolverTest {
         }
     }
 
-    @Test
+    @Test(expected = LocalAccessDeniedException.class)
     public void testCreateFile() throws Exception {
         final String name = UUID.randomUUID().toString();
         Local l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
         new DefaultLocalTouchFeature().touch(l);
         try {
-            final SecurityScopedBookmarkResolver resolver = new SecurityScopedBookmarkResolver();
+            final SecurityScopedFilesystemBookmarkResolver resolver = new SecurityScopedFilesystemBookmarkResolver();
             final String bookmark = resolver.create(l);
             assertNotNull(bookmark);
             l.setBookmark(bookmark);

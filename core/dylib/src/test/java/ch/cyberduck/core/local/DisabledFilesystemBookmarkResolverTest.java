@@ -15,18 +15,20 @@ package ch.cyberduck.core.local;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.NullLocal;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 
-public class DisabledFilesystemBookmarkResolver<B> implements FilesystemBookmarkResolver<Local> {
+import org.junit.Test;
 
-    @Override
-    public Local resolve(final Local file) throws AccessDeniedException {
-        return file;
+public class DisabledFilesystemBookmarkResolverTest {
+
+    @Test(expected = LocalAccessDeniedException.class)
+    public void testResolve() throws Exception {
+        new DisabledFilesystemBookmarkResolver().resolve(new NullLocal("/t"));
     }
 
-    @Override
-    public String create(final Local file) throws AccessDeniedException {
-        return null;
+    @Test(expected = LocalAccessDeniedException.class)
+    public void testCreate() throws Exception {
+        new DisabledFilesystemBookmarkResolver().create(new NullLocal("/t"));
     }
 }

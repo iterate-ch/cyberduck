@@ -9,12 +9,14 @@ import ch.cyberduck.core.bonjour.RendezvousResponder;
 import ch.cyberduck.core.diagnostics.SystemConfigurationReachability;
 import ch.cyberduck.core.editor.FSEventWatchEditorFactory;
 import ch.cyberduck.core.i18n.BundleLocale;
+import ch.cyberduck.core.local.AliasFilesystemBookmarkResolver;
 import ch.cyberduck.core.local.FileManagerWorkingDirectoryFinder;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
 import ch.cyberduck.core.local.LaunchServicesFileDescriptor;
 import ch.cyberduck.core.local.LaunchServicesQuarantineService;
 import ch.cyberduck.core.local.NativeLocalTrashFeature;
+import ch.cyberduck.core.local.SecurityScopedFilesystemBookmarkResolver;
 import ch.cyberduck.core.local.WorkspaceApplicationBadgeLabeler;
 import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
 import ch.cyberduck.core.local.WorkspaceBrowserLauncher;
@@ -27,6 +29,7 @@ import ch.cyberduck.core.preferences.SecurityApplicationGroupSupportDirectoryFin
 import ch.cyberduck.core.preferences.UserDefaultsPreferences;
 import ch.cyberduck.core.proxy.SystemConfigurationProxy;
 import ch.cyberduck.core.resources.NSImageIconCache;
+import ch.cyberduck.core.sparkle.Sandbox;
 import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.core.urlhandler.LaunchServicesSchemeHandler;
@@ -71,6 +74,12 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
         defaults.put("factory.schemehandler.class", LaunchServicesSchemeHandler.class.getName());
         defaults.put("factory.iconcache.class", NSImageIconCache.class.getName());
         defaults.put("factory.workingdirectory.class", FileManagerWorkingDirectoryFinder.class.getName());
+        if(Sandbox.get().isSandboxed()) {
+            defaults.put("factory.bookmarkresolver.class", SecurityScopedFilesystemBookmarkResolver.class.getName());
+        }
+        else {
+            defaults.put("factory.bookmarkresolver.class", AliasFilesystemBookmarkResolver.class.getName());
+        }
     }
 
     @Override

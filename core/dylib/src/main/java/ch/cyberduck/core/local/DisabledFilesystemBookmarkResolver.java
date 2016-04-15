@@ -1,8 +1,8 @@
 package ch.cyberduck.core.local;
 
 /*
- * Copyright (c) 2002-2014 David Kocher. All rights reserved.
- * http://cyberduck.io/
+ * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,26 +13,22 @@ package ch.cyberduck.core.local;
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to:
- * feedback@cyberduck.io
  */
 
+import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 
-public interface FilesystemBookmarkResolver<B> {
+public class DisabledFilesystemBookmarkResolver implements FilesystemBookmarkResolver<NSURL> {
 
-    /**
-     * @param file File outside of sandbox
-     * @return Security scoped bookmark
-     * @throws AccessDeniedException
-     */
-    String create(Local file) throws AccessDeniedException;
+    @Override
+    public String create(final Local file) throws AccessDeniedException {
+        throw new LocalAccessDeniedException();
+    }
 
-    /**
-     * @param file File outside of sandbox
-     * @return Reference to file by bookmark
-     */
-    B resolve(Local file) throws AccessDeniedException;
+    @Override
+    public NSURL resolve(final Local file) throws AccessDeniedException {
+        throw new LocalAccessDeniedException();
+    }
 }

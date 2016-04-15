@@ -22,7 +22,6 @@ import ch.cyberduck.core.exception.NotfoundException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -174,7 +173,6 @@ public class FinderLocalTest {
     }
 
     @Test
-    @Ignore
     public void testReleaseSecurityScopeBookmarkInputStreamClose() throws Exception {
         final AtomicBoolean released = new AtomicBoolean(false);
         FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString()) {
@@ -197,7 +195,7 @@ public class FinderLocalTest {
         l.lock();
     }
 
-    @Test(expected = LocalAccessDeniedException.class)
+    @Test
     public void testLock() throws Exception {
         FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         new DefaultLocalTouchFeature().touch(l);
