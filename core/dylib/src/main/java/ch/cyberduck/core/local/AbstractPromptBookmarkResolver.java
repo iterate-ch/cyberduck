@@ -1,8 +1,8 @@
 package ch.cyberduck.core.local;
 
 /*
- * Copyright (c) 2002-2014 David Kocher. All rights reserved.
- * http://cyberduck.io/
+ * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,9 +13,6 @@ package ch.cyberduck.core.local;
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to:
- * feedback@cyberduck.io
  */
 
 import ch.cyberduck.binding.application.NSOpenPanel;
@@ -32,7 +29,6 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.sparkle.Sandbox;
 
 import org.apache.log4j.Logger;
 import org.rococoa.ObjCObjectByReference;
@@ -42,13 +38,49 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import java.text.MessageFormat;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class SecurityScopedBookmarkResolver implements FilesystemBookmarkResolver<NSURL> {
-    private static final Logger log = Logger.getLogger(SecurityScopedBookmarkResolver.class);
-
-    private static final boolean SANDBOXED
-            = Sandbox.get().isSandboxed();
+public abstract class AbstractPromptBookmarkResolver implements FilesystemBookmarkResolver<NSURL> {
+    private static final Logger log = Logger.getLogger(AbstractPromptBookmarkResolver.class);
 
     private final Preferences preferences = PreferencesFactory.get();
+
+    private final int create;
+
+    private final int resolve;
+
+    /**
+     * @param create  Create options
+     * @param resolve Resolve options
+     */
+    public AbstractPromptBookmarkResolver(final int create, final int resolve) {
+        this.create = create;
+        this.resolve = resolve;
+    }
+
+
+    @Override
+    public String create(final Local file) throws AccessDeniedException {
+        final ObjCObjectByReference error = new ObjCObjectByReference();
+        // Create new security scoped bookmark
+        final NSURL url = NSURL.fileURLWithPath(file.getAbsolute());
+        if(log.isTraceEnabled()) {
+            log.trace(String.format("Resolved file %s to url %s", file, url));
+        }
+        final NSData data = url.bookmarkDataWithOptions_includingResourceValuesForKeys_relativeToURL_error(
+                create, null, null, error);
+        if(null == data) {
+            log.warn(String.format("Failure getting bookmark data for file %s", file));
+            final NSError f = error.getValueAs(NSError.class);
+            if(null == f) {
+                throw new LocalAccessDeniedException(file.getAbsolute());
+            }
+            throw new LocalAccessDeniedException(String.format("%s", f.localizedDescription()));
+        }
+        final String encoded = data.base64Encoding();
+        if(log.isTraceEnabled()) {
+            log.trace(String.format("Encoded bookmark for %s as %s", file, encoded));
+        }
+        return encoded;
+    }
 
     @Override
     public NSURL resolve(final Local file) throws AccessDeniedException {
@@ -61,16 +93,14 @@ public class SecurityScopedBookmarkResolver implements FilesystemBookmarkResolve
                 bookmark = NSData.dataWithBase64EncodedString(reference);
             }
             else {
-                throw new LocalAccessDeniedException(String.format("No security scoped bookmark for %s", file.getAbsolute()));
+                throw new LocalAccessDeniedException(String.format("No security scoped bookmark for %s", file));
             }
         }
         else {
             bookmark = NSData.dataWithBase64EncodedString(file.getBookmark());
         }
         final ObjCObjectByReference error = new ObjCObjectByReference();
-        final NSURL resolved = NSURL.URLByResolvingBookmarkData(bookmark,
-                SANDBOXED ?
-                        NSURL.NSURLBookmarkResolutionOptions.NSURLBookmarkResolutionWithSecurityScope : 0, error);
+        final NSURL resolved = NSURL.URLByResolvingBookmarkData(bookmark, resolve, error);
         if(null == resolved) {
             log.warn(String.format("Error resolving bookmark for %s to URL", file));
             final NSError f = error.getValueAs(NSError.class);
@@ -109,31 +139,9 @@ public class SecurityScopedBookmarkResolver implements FilesystemBookmarkResolve
         panel.close();
         final String reference = bookmark.get();
         if(reference == null) {
-            throw new LocalAccessDeniedException(String.format("Prompt for %s canceled", file.getAbsolute()));
+            throw new LocalAccessDeniedException(String.format("Prompt for %s canceled", file));
         }
         return reference;
     }
 
-    @Override
-    public String create(final Local file) throws AccessDeniedException {
-        final ObjCObjectByReference error = new ObjCObjectByReference();
-        // Create new security scoped bookmark
-        final NSData data = NSURL.fileURLWithPath(file.getAbsolute()).bookmarkDataWithOptions_includingResourceValuesForKeys_relativeToURL_error(
-                SANDBOXED ?
-                        NSURL.NSURLBookmarkCreationOptions.NSURLBookmarkCreationWithSecurityScope :
-                        NSURL.NSURLBookmarkCreationOptions.NSURLBookmarkCreationSuitableForBookmarkFile, null, null, error);
-        if(null == data) {
-            log.warn(String.format("Failure getting bookmark data for file %s", file));
-            final NSError f = error.getValueAs(NSError.class);
-            if(null == f) {
-                throw new LocalAccessDeniedException(file.getAbsolute());
-            }
-            throw new LocalAccessDeniedException(String.format("%s", f.localizedDescription()));
-        }
-        final String encoded = data.base64Encoding();
-        if(log.isTraceEnabled()) {
-            log.trace(String.format("Encoded bookmark for %s as %s", file, encoded));
-        }
-        return encoded;
-    }
 }

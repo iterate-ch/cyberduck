@@ -21,7 +21,6 @@ import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -37,12 +36,14 @@ public class FinderLocalTest {
         final String name = UUID.randomUUID().toString();
         FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
         assertEquals(new FinderLocal(System.getProperty("java.io.tmpdir"), name), l);
-        LocalTouchFactory.get().touch(l);
+        new DefaultLocalTouchFeature().touch(l);
         assertEquals(new FinderLocal(System.getProperty("java.io.tmpdir"), name), l);
         final FinderLocal other = new FinderLocal(System.getProperty("java.io.tmpdir"), name + "-");
-        Assert.assertNotSame(other, l);
-        LocalTouchFactory.get().touch(other);
-        Assert.assertNotSame(other, l);
+        assertNotSame(other, l);
+        new DefaultLocalTouchFeature().touch(other);
+        assertNotSame(other, l);
+        l.delete();
+        other.delete();
     }
 
     @Test(expected = LocalAccessDeniedException.class)
@@ -56,10 +57,11 @@ public class FinderLocalTest {
     public void testNoCaseSensitive() throws Exception {
         final String name = UUID.randomUUID().toString();
         FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
-        LocalTouchFactory.get().touch(l);
+        new DefaultLocalTouchFeature().touch(l);
         assertTrue(l.exists());
         assertTrue(new FinderLocal(System.getProperty("java.io.tmpdir"), StringUtils.upperCase(name)).exists());
         assertTrue(new FinderLocal(System.getProperty("java.io.tmpdir"), StringUtils.lowerCase(name)).exists());
+        l.delete();
     }
 
     @Test
@@ -120,10 +122,11 @@ public class FinderLocalTest {
     public void testBookmark() throws Exception {
         FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         assertNull(l.getBookmark());
-        LocalTouchFactory.get().touch(l);
+        new DefaultLocalTouchFeature().touch(l);
         assertNotNull(l.getBookmark());
         assertEquals(l.getBookmark(), l.getBookmark());
         assertSame(l.getBookmark(), l.getBookmark());
+        l.delete();
     }
 
     @Test
