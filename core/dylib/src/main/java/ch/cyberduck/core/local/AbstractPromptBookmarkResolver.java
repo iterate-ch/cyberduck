@@ -61,7 +61,11 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
     public String create(final Local file) throws AccessDeniedException {
         final ObjCObjectByReference error = new ObjCObjectByReference();
         // Create new security scoped bookmark
-        final NSData data = NSURL.fileURLWithPath(file.getAbsolute()).bookmarkDataWithOptions_includingResourceValuesForKeys_relativeToURL_error(
+        final NSURL url = NSURL.fileURLWithPath(file.getAbsolute());
+        if(log.isTraceEnabled()) {
+            log.trace(String.format("Resolved file %s to url %s", file, url));
+        }
+        final NSData data = url.bookmarkDataWithOptions_includingResourceValuesForKeys_relativeToURL_error(
                 create, null, null, error);
         if(null == data) {
             log.warn(String.format("Failure getting bookmark data for file %s", file));
@@ -89,7 +93,7 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
                 bookmark = NSData.dataWithBase64EncodedString(reference);
             }
             else {
-                throw new LocalAccessDeniedException(String.format("No security scoped bookmark for %s", file.getAbsolute()));
+                throw new LocalAccessDeniedException(String.format("No security scoped bookmark for %s", file));
             }
         }
         else {
@@ -135,7 +139,7 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
         panel.close();
         final String reference = bookmark.get();
         if(reference == null) {
-            throw new LocalAccessDeniedException(String.format("Prompt for %s canceled", file.getAbsolute()));
+            throw new LocalAccessDeniedException(String.format("Prompt for %s canceled", file));
         }
         return reference;
     }
