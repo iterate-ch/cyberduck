@@ -200,7 +200,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
             }
             switch(response.getStatus()) {
                 case RETRYLATER: {
-                    final Duration delay = Duration.ofSeconds((response.getRetryAfterSeconds()));
+                    final Duration delay = Duration.ofSeconds(response.getRetryAfterSeconds());
                     throw new RetriableAccessDeniedException(String.format("Job %s not yet loaded into cache", job), delay);
                 }
             }
