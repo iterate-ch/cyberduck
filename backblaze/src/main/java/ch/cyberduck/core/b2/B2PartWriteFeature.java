@@ -34,6 +34,7 @@ import java.util.List;
 
 import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2FileInfoResponse;
+import synapticloop.b2.response.B2GetUploadPartUrlResponse;
 import synapticloop.b2.response.B2UploadPartResponse;
 
 public class B2PartWriteFeature extends AbstractHttpWriteFeature<B2UploadPartResponse> implements Write {
@@ -44,6 +45,9 @@ public class B2PartWriteFeature extends AbstractHttpWriteFeature<B2UploadPartRes
 
     private final B2Session session;
 
+    private final ThreadLocal<B2GetUploadPartUrlResponse> urls
+            = new ThreadLocal<B2GetUploadPartUrlResponse>();
+
     public B2PartWriteFeature(final B2Session session) {
         super(session);
         this.session = session;
@@ -51,30 +55,49 @@ public class B2PartWriteFeature extends AbstractHttpWriteFeature<B2UploadPartRes
 
     @Override
     public ResponseOutputStream<B2UploadPartResponse> write(final Path file, final TransferStatus status) throws BackgroundException {
-        // Submit store call to background thread
-        final DelayedHttpEntityCallable<B2UploadPartResponse> command = new DelayedHttpEntityCallable<B2UploadPartResponse>() {
-            /**
-             * @return The SHA-1 returned by the server for the uploaded object
-             */
-            @Override
-            public B2UploadPartResponse call(final AbstractHttpEntity entity) throws BackgroundException {
-                try {
-                    return session.getClient().uploadLargeFilePart(file.attributes().getVersionId(), status.getPart(), entity, status.getChecksum().toString());
-                }
-                catch(B2ApiException e) {
-                    throw new B2ExceptionMappingService(session).map("Upload {0} failed", e, file);
-                }
-                catch(IOException e) {
-                    throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
-                }
+        try {
+            final B2GetUploadPartUrlResponse uploadUrl;
+            if(null == urls.get()) {
+                uploadUrl = session.getClient().getUploadPartUrl(new B2FileidProvider(session).getFileid(file));
+                urls.set(uploadUrl);
             }
+            else {
+                uploadUrl = urls.get();
+            }
+            // Submit store call to background thread
+            final DelayedHttpEntityCallable<B2UploadPartResponse> command = new DelayedHttpEntityCallable<B2UploadPartResponse>() {
+                /**
+                 * @return The SHA-1 returned by the server for the uploaded object
+                 */
+                @Override
+                public B2UploadPartResponse call(final AbstractHttpEntity entity) throws BackgroundException {
+                    try {
+                        return session.getClient().uploadLargeFilePart(uploadUrl,
+                                status.getPart(), entity, status.getChecksum().toString());
+                    }
+                    catch(B2ApiException e) {
+                        urls.remove();
+                        throw new B2ExceptionMappingService(session).map("Upload {0} failed", e, file);
+                    }
+                    catch(IOException e) {
+                        urls.remove();
+                        throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
+                    }
+                }
 
-            @Override
-            public long getContentLength() {
-                return status.getLength();
-            }
-        };
-        return this.write(file, status, command);
+                @Override
+                public long getContentLength() {
+                    return status.getLength();
+                }
+            };
+            return this.write(file, status, command);
+        }
+        catch(B2ApiException e) {
+            throw new B2ExceptionMappingService(session).map("Upload {0} failed", e, file);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
+        }
     }
 
     @Override
