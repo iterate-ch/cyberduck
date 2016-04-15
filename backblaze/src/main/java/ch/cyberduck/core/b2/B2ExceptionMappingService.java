@@ -100,7 +100,7 @@ public class B2ExceptionMappingService extends AbstractExceptionMappingService<B
             default:
                 if(e.getRetry() != null) {
                     // Too Many Requests (429)
-                    return new RetriableAccessDeniedException(buffer.toString(), Duration.ofSeconds(e.getRetry()));
+                    return new RetriableAccessDeniedException(buffer.toString(), Duration.ofSeconds(e.getRetry()), e);
                 }
                 return new InteroperabilityException(buffer.toString(), e);
         }
