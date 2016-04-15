@@ -26,12 +26,14 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.QuotaException;
+import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 
 import org.apache.commons.net.MalformedServerReplyException;
 import org.apache.commons.net.ftp.FTPConnectionClosedException;
 import org.apache.commons.net.ftp.FTPReply;
 
 import java.io.IOException;
+import java.time.Duration;
 
 public class FTPExceptionMappingService extends AbstractExceptionMappingService<IOException> {
 
@@ -71,7 +73,8 @@ public class FTPExceptionMappingService extends AbstractExceptionMappingService<
                 // Requested action not taken. File unavailable (e.g., file not found, no access)
                 return new NotfoundException(buffer.toString(), e);
             case FTPReply.SERVICE_NOT_AVAILABLE:
-                return new ConnectionRefusedException(buffer.toString(), e);
+                final Duration delay = Duration.ofSeconds(1);
+                return new RetriableAccessDeniedException(buffer.toString(), delay, e);
         }
         return new InteroperabilityException(buffer.toString(), e);
     }

@@ -397,6 +397,12 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                             }
                             catch(RetriableAccessDeniedException e) {
                                 segment.setFailure();
+                                if(AbstractTransferWorker.this.isCanceled()) {
+                                    throw new ConnectionCanceledException(e);
+                                }
+                                if(!this.retry(e)) {
+                                    throw e;
+                                }
                                 final BackgroundActionPauser pause = new BackgroundActionPauser(new BackgroundActionPauser.Callback() {
                                     @Override
                                     public boolean isCanceled() {
