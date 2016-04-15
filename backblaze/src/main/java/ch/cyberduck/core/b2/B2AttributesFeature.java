@@ -44,6 +44,9 @@ public class B2AttributesFeature implements Attributes {
 
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
+        if(file.isRoot()) {
+            return PathAttributes.EMPTY;
+        }
         try {
             final B2FileResponse info = session.getClient().getFileInfo(new B2FileidProvider(session).getFileid(file));
             return this.toAttributes(info);

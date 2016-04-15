@@ -55,8 +55,11 @@ public class S3AttributesFeature implements Attributes {
 
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
+        if(file.isRoot()) {
+            return PathAttributes.EMPTY;
+        }
         if(containerService.isContainer(file)) {
-            return new PathAttributes();
+            return PathAttributes.EMPTY;
         }
         else {
             return this.convert(this.details(file));
