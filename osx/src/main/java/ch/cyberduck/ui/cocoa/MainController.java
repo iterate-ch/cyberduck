@@ -184,9 +184,7 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Action
     public void updateMenuClicked(ID sender) {
-        if(updater != null) {
-            updater.check(false);
-        }
+        updater.check(false);
     }
 
     @Outlet
