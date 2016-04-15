@@ -9,7 +9,7 @@ import ch.cyberduck.core.bonjour.RendezvousResponder;
 import ch.cyberduck.core.diagnostics.SystemConfigurationReachability;
 import ch.cyberduck.core.editor.FSEventWatchEditorFactory;
 import ch.cyberduck.core.i18n.BundleLocale;
-import ch.cyberduck.core.local.AliasFilesystemBookmarkResolver;
+import ch.cyberduck.core.local.DisabledFilesystemBookmarkResolver;
 import ch.cyberduck.core.local.FileManagerWorkingDirectoryFinder;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
@@ -78,7 +78,7 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
             defaults.put("factory.bookmarkresolver.class", SecurityScopedFilesystemBookmarkResolver.class.getName());
         }
         else {
-            defaults.put("factory.bookmarkresolver.class", AliasFilesystemBookmarkResolver.class.getName());
+            defaults.put("factory.bookmarkresolver.class", DisabledFilesystemBookmarkResolver.class.getName());
         }
     }
 
