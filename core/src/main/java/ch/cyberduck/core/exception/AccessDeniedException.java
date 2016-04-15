@@ -20,11 +20,12 @@ package ch.cyberduck.core.exception;
 
 import ch.cyberduck.core.LocaleFactory;
 
-/**
- * @version $Id$
- */
 public class AccessDeniedException extends BackgroundException {
     private static final long serialVersionUID = 1479727475235108160L;
+
+    public AccessDeniedException() {
+        super();
+    }
 
     public AccessDeniedException(final String detail) {
         super(LocaleFactory.localizedString("Access denied", "Credentials"), detail);
