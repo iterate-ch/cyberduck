@@ -124,7 +124,7 @@ public class MainController extends BundleController implements NSApplication.De
 
     private final Preferences preferences = PreferencesFactory.get();
 
-    private PeriodicUpdateChecker updater;
+    private final PeriodicUpdateChecker updater = new SparklePeriodicUpdateChecker();
 
     public MainController() {
         this.loadBundle();
@@ -1106,7 +1106,6 @@ public class MainController extends BundleController implements NSApplication.De
                         new FlowBookmarkCollection(), new InterarchyBookmarkCollection(), new CrossFtpBookmarkCollection(), new FireFtpBookmarkCollection());
             }
         });
-        updater = new SparklePeriodicUpdateChecker();
         if(updater.hasUpdatePrivileges()) {
             final long next = preferences.getLong("update.check.timestamp") + preferences.getLong("update.check.interval") * 1000;
             if(next < System.currentTimeMillis()) {
