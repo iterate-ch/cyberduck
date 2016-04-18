@@ -20,7 +20,7 @@
     <parent>
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
-        <version>5.0-SNAPSHOT</version>
+        <version>4.9.1</version>
     </parent>
     <artifactId>azure</artifactId>
     <packaging>jar</packaging>
