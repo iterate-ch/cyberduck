@@ -54,11 +54,6 @@ import java.util.Objects;
 public class Local extends AbstractPath implements Referenceable, Serializable {
     private static final Logger log = Logger.getLogger(Local.class);
 
-    private static final boolean NORMALIZE_UNICODE = PreferencesFactory.get().getBoolean("local.normalize.unicode");
-    private static final boolean NORMALIZE_TILDE = PreferencesFactory.get().getBoolean("local.normalize.tilde");
-    private static final boolean NORMALIZE_PREFIX = PreferencesFactory.get().getBoolean("local.normalize.prefix");
-    private static final String DELIMITER = PreferencesFactory.get().getProperty("local.delimiter");
-
     /**
      * Absolute path in local file system
      */
@@ -67,7 +62,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     private final LocalAttributes attributes;
 
     public Local(final String parent, final String name) throws LocalAccessDeniedException {
-        this(parent, name, DELIMITER);
+        this(parent, name, PreferencesFactory.get().getProperty("local.delimiter"));
     }
 
     public Local(final String parent, final String name, final String delimiter) throws LocalAccessDeniedException {
@@ -77,7 +72,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     }
 
     public Local(final Local parent, final String name) throws LocalAccessDeniedException {
-        this(parent, name, DELIMITER);
+        this(parent, name, PreferencesFactory.get().getProperty("local.delimiter"));
     }
 
     public Local(final Local parent, final String name, final String delimiter) throws LocalAccessDeniedException {
@@ -91,13 +86,13 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
      */
     public Local(final String name) throws LocalAccessDeniedException {
         String path = name;
-        if(NORMALIZE_UNICODE) {
+        if(PreferencesFactory.get().getBoolean("local.normalize.unicode")) {
             path = new NFCNormalizer().normalize(path);
         }
-        if(NORMALIZE_TILDE) {
+        if(PreferencesFactory.get().getBoolean("local.normalize.tilde")) {
             path = new TildeExpander().expand(path);
         }
-        if(NORMALIZE_PREFIX) {
+        if(PreferencesFactory.get().getBoolean("local.normalize.prefix")) {
             path = new WorkdirPrefixer().normalize(path);
         }
         try {
@@ -189,7 +184,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
 
     @Override
     public char getDelimiter() {
-        return CharUtils.toChar(DELIMITER);
+        return CharUtils.toChar(PreferencesFactory.get().getProperty("local.delimiter"));
     }
 
     public void mkdir() throws AccessDeniedException {
