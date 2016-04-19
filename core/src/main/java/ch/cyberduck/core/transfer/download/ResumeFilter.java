@@ -43,8 +43,6 @@ public class ResumeFilter extends AbstractDownloadFilter {
 
     private Attributes attribute;
 
-    private DownloadFilterOptions options;
-
     public ResumeFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session) {
         this(symlinkResolver, session, new DownloadFilterOptions());
     }
@@ -59,7 +57,6 @@ public class ResumeFilter extends AbstractDownloadFilter {
         super(symlinkResolver, session, options);
         this.download = download;
         this.attribute = new DefaultAttributesFeature(session);
-        this.options = options;
     }
 
     public AbstractDownloadFilter withCache(final PathCache cache) {
