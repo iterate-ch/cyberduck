@@ -19,21 +19,27 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.logging.SystemLogAppender;
+import ch.cyberduck.core.sparkle.SparklePeriodicUpdateChecker;
+import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.AlertTransferErrorCallback;
+import ch.cyberduck.core.updater.DisabledPeriodicUpdater;
 import ch.cyberduck.preferences.ApplicationPreferences;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
-/**
- * @version $Id:$
- */
 public class ApplicationUserDefaultsPreferences extends ApplicationPreferences {
 
     @Override
     protected void setDefaults() {
         super.setDefaults();
 
+        if(null == Updater.getFeed()) {
+            defaults.put("factory.updater.class", DisabledPeriodicUpdater.class.getName());
+        }
+        else {
+            defaults.put("factory.updater.class", SparklePeriodicUpdateChecker.class.getName());
+        }
         defaults.put("factory.dateformatter.class", UserDefaultsDateFormatter.class.getName());
         defaults.put("factory.hostkeycallback.class", AlertHostKeyController.class.getName());
         defaults.put("factory.logincallback.class", PromptLoginController.class.getName());
