@@ -262,6 +262,9 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Compile %d segments to file %s", segments.size(), local));
                 }
+                if(local.exists()) {
+                    local.delete();
+                }
                 for(Iterator<TransferStatus> iterator = segments.iterator(); iterator.hasNext(); ) {
                     final TransferStatus segmentStatus = iterator.next();
                     // Segment
