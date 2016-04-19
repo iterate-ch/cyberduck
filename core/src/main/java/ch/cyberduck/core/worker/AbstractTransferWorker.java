@@ -154,7 +154,9 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
     @Override
     public void reset() {
         for(TransferStatus status : table.values()) {
-            status.setCanceled();
+            for(TransferStatus segment : status.getSegments()) {
+                segment.setCanceled();
+            }
         }
     }
 

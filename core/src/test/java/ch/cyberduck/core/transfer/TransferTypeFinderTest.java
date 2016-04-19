@@ -42,7 +42,7 @@ public class TransferTypeFinderTest {
         }, new DownloadTransfer(host,
                 new Path("/t", EnumSet.of(Path.Type.file)),
                 new NullLocal("/t")));
-        assertEquals(Host.TransferType.newconnection, type);
+        assertEquals(Host.TransferType.concurrent, type);
     }
 
     @Test
