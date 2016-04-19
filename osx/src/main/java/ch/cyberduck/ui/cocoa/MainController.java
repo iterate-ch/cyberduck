@@ -55,12 +55,12 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.serializer.HostDictionary;
-import ch.cyberduck.core.sparkle.SparklePeriodicUpdateChecker;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.updater.PeriodicUpdateChecker;
+import ch.cyberduck.core.updater.PeriodicUpdateCheckerFactory;
 import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
 import ch.cyberduck.ui.browser.Column;
 import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
@@ -94,8 +94,6 @@ import java.util.concurrent.CountDownLatch;
 
 /**
  * Setting the main menu and implements application delegate methods
- *
- * @version $Id$
  */
 public class MainController extends BundleController implements NSApplication.Delegate {
     private static Logger log = Logger.getLogger(MainController.class);
@@ -124,7 +122,7 @@ public class MainController extends BundleController implements NSApplication.De
 
     private final Preferences preferences = PreferencesFactory.get();
 
-    private final PeriodicUpdateChecker updater = new SparklePeriodicUpdateChecker();
+    private final PeriodicUpdateChecker updater = PeriodicUpdateCheckerFactory.get();
 
     public MainController() {
         this.loadBundle();
