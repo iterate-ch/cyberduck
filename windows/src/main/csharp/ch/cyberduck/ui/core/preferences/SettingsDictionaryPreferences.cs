@@ -11,7 +11,7 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-//  
+// 
 // Bug fixes, suggestions and comments should be sent to:
 // feedback@cyberduck.io
 // 
@@ -336,37 +336,14 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             Security.addProvider(new SunMSCAPI());
             defaults.put("connection.ssl.keystore.type", "Windows-MY");
             defaults.put("connection.ssl.keystore.provider", "SunMSCAPI");
-
-             // NTLM Windows Domain
-            try
-            {
-                 // Gets the network domain name associated with the current user
-                defaults.put("webdav.ntlm.domain", Environment.UserDomainName);
-            }
-            catch (PlatformNotSupportedException e)
-            {
-                // The operating system does not support retrieving the network domain name.
-            }
-            catch (InvalidOperationException e)
-            {
-                // The network domain name cannot be retrieved.
-            }
-            try
-            {
-                defaults.put("webdav.ntlm.workstation", Environment.MachineName);
-            }
-            catch (InvalidOperationException e)
-            {
-                // The name of this computer cannot be obtained.
-            }
         }
 
         protected override void post()
         {
             base.post();
             Logger root = Logger.getRootLogger();
-            var fileName = Path.Combine(this.getProperty("application.support.path"),
-                this.getProperty("application.name").ToLower().Replace(" ", "") + ".log");
+            var fileName = Path.Combine(getProperty("application.support.path"),
+                getProperty("application.name").ToLower().Replace(" ", "") + ".log");
             RollingFileAppender appender = new RollingFileAppender(new PatternLayout(@"%d [%t] %-5p %c - %m%n"),
                 fileName, true);
             appender.setMaxFileSize("10MB");
