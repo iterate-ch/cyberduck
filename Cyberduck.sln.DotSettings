@@ -1,0 +1,21 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/CodeStyle/CodeCleanup/Profiles/=iterateCleanup/@EntryIndexedValue">&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;Profile name="iterateCleanup"&gt;&lt;CSReorderTypeMembers&gt;True&lt;/CSReorderTypeMembers&gt;&lt;CSUpdateFileHeader&gt;True&lt;/CSUpdateFileHeader&gt;&lt;CSMakeFieldReadonly&gt;True&lt;/CSMakeFieldReadonly&gt;&lt;CSArrangeQualifiers&gt;True&lt;/CSArrangeQualifiers&gt;&lt;CSOptimizeUsings&gt;&lt;OptimizeUsings&gt;True&lt;/OptimizeUsings&gt;&lt;EmbraceInRegion&gt;False&lt;/EmbraceInRegion&gt;&lt;RegionName&gt;&lt;/RegionName&gt;&lt;/CSOptimizeUsings&gt;&lt;CSShortenReferences&gt;True&lt;/CSShortenReferences&gt;&lt;CSReformatCode&gt;True&lt;/CSReformatCode&gt;&lt;XMLReformatCode&gt;True&lt;/XMLReformatCode&gt;&lt;/Profile&gt;</s:String>
+	<s:String x:Key="/Default/CodeStyle/CodeCleanup/RecentlyUsedProfile/@EntryValue">iterateCleanup</s:String>
+	<s:String x:Key="/Default/CodeStyle/CodeCleanup/SilentCleanupProfile/@EntryValue">iterateCleanup</s:String>
+	<s:String x:Key="/Default/CodeStyle/FileHeader/FileHeaderText/@EntryValue">Copyright (c) 2010-$CURRENT_YEAR$ Yves Langisch. All rights reserved.&#xD;
+http://cyberduck.io/&#xD;
+&#xD;
+This program is free software; you can redistribute it and/or modify&#xD;
+it under the terms of the GNU General Public License as published by&#xD;
+the Free Software Foundation; either version 2 of the License, or&#xD;
+(at your option) any later version.&#xD;
+&#xD;
+This program is distributed in the hope that it will be useful,&#xD;
+but WITHOUT ANY WARRANTY; without even the implied warranty of&#xD;
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the&#xD;
+GNU General Public License for more details.&#xD;
+&#xD;
+Bug fixes, suggestions and comments should be sent to:&#xD;
+feedback@cyberduck.io&#xD;
+&#xD;
+</s:String></wpf:ResourceDictionary>
