@@ -33,7 +33,7 @@ public class DriveProtocol extends AbstractProtocol {
 
     @Override
     public String getPrefix() {
-        return String.format("%s.%s", this.getClass().getPackage().getName(), "Drive");
+        return String.format("%s.%s", DriveProtocol.class.getPackage().getName(), "Drive");
     }
 
     @Override

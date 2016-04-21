@@ -41,8 +41,8 @@ public class B2HomeFinderService extends DefaultHomeFinderService {
     }
 
     @Override
-    public Path find(final Path workdir, final String path) {
-        final Path home = super.find(workdir, path);
+    public Path find(final Path root, final String path) {
+        final Path home = super.find(root, path);
         if(containerService.isContainer(home)) {
             return new Path(home.getAbsolute(), EnumSet.of(Path.Type.volume, Path.Type.directory));
         }

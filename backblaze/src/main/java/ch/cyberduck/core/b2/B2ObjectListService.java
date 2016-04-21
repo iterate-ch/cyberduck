@@ -87,7 +87,7 @@ public class B2ObjectListService implements ListService {
             return objects;
         }
         catch(B2ApiException e) {
-            throw new B2ExceptionMappingService().map("Listing directory {0} failed", e, directory);
+            throw new B2ExceptionMappingService(session).map("Listing directory {0} failed", e, directory);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);

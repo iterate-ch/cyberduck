@@ -67,7 +67,13 @@ public interface Protocol extends Comparable<Protocol> {
                 return true;
             }
         },
-        googledrive,
+        googledrive {
+            @Override
+            public boolean validate(final Credentials credentials, final LoginOptions options) {
+                // OAuth only requires the project token
+                return true;
+            }
+        },
         swift,
         dav,
         azure {

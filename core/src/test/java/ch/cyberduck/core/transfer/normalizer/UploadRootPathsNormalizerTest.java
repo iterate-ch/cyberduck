@@ -13,9 +13,6 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * @version $Id$
- */
 public class UploadRootPathsNormalizerTest {
 
     @Test
@@ -37,6 +34,18 @@ public class UploadRootPathsNormalizerTest {
         final List<TransferItem> normalized = n.normalize(list);
         assertEquals(1, normalized.size());
         assertEquals(new Path("/a", EnumSet.of(Path.Type.directory)), normalized.iterator().next().remote);
+    }
+
+    @Test
+    public void testNormalizeLargeSet() throws Exception {
+        UploadRootPathsNormalizer n = new UploadRootPathsNormalizer();
+        final List<TransferItem> list = new ArrayList<TransferItem>();
+        for(int i = 0; i < 1000; i++) {
+            final String name = String.format("f-%d", i);
+            list.add(new TransferItem(new Path(name, EnumSet.of(Path.Type.file)), new NullLocal(name)));
+        }
+        final List<TransferItem> normalized = n.normalize(list);
+        assertEquals(1000, normalized.size());
     }
 
     @Test

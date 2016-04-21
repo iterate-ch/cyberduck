@@ -22,9 +22,6 @@ import ch.cyberduck.core.library.Native;
 
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id$
- */
 public final class Sandbox {
     private static final Logger log = Logger.getLogger(Sandbox.class);
 

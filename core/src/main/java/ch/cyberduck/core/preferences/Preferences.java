@@ -61,6 +61,7 @@ import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.updater.DisabledPeriodicUpdater;
 import ch.cyberduck.core.urlhandler.DisabledSchemeHandler;
 
 import org.apache.commons.lang3.StringUtils;
@@ -498,9 +499,9 @@ public abstract class Preferences {
         defaults.put("queue.download.wherefrom", String.valueOf(true));
 
         // Segmented concurrent downloads
-        defaults.put("queue.download.segments", String.valueOf(false));
-        defaults.put("queue.download.segments.threshold", String.valueOf(Long.MAX_VALUE));
-        defaults.put("queue.download.segments.size", String.valueOf(100L * 1024L * 1024L));
+        defaults.put("queue.download.segments", String.valueOf(true));
+        defaults.put("queue.download.segments.threshold", String.valueOf(100L * 1024L * 1024L));
+        defaults.put("queue.download.segments.size", String.valueOf(50L * 1024L * 1024L));
 
         /**
          * Open completed downloads
@@ -1244,6 +1245,7 @@ public abstract class Preferences {
         defaults.put("factory.applicationlauncher.class", DisabledApplicationLauncher.class.getName());
         defaults.put("factory.browserlauncher.class", DisabledBrowserLauncher.class.getName());
         defaults.put("factory.reachability.class", DefaultInetAddressReachability.class.getName());
+        defaults.put("factory.updater.class", DisabledPeriodicUpdater.class.getName());
     }
 
     /**

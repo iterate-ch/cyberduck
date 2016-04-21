@@ -18,24 +18,12 @@ package ch.cyberduck.core.local;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.binding.foundation.NSURL;
 
-/**
- * @version $Id$
- */
-public interface SandboxBookmarkResolver<B> {
+public class SecurityScopedFilesystemBookmarkResolver extends AbstractPromptBookmarkResolver {
 
-    /**
-     * @param file File outside of sandbox
-     * @return Reference to file by bookmark
-     */
-    B resolve(Local file) throws AccessDeniedException;
-
-    /**
-     * @param file File outside of sandbox
-     * @return Security scoped bookmark
-     * @throws AccessDeniedException
-     */
-    String create(Local file) throws AccessDeniedException;
+    public SecurityScopedFilesystemBookmarkResolver() {
+        super(NSURL.NSURLBookmarkCreationOptions.NSURLBookmarkCreationSuitableForBookmarkFile | NSURL.NSURLBookmarkCreationOptions.NSURLBookmarkCreationWithSecurityScope,
+                NSURL.NSURLBookmarkResolutionOptions.NSURLBookmarkResolutionWithSecurityScope);
+    }
 }

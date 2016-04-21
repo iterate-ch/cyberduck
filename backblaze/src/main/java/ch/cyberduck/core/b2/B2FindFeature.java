@@ -64,7 +64,7 @@ public class B2FindFeature implements Find {
             return false;
         }
         catch(B2ApiException e) {
-            throw new B2ExceptionMappingService().map(e);
+            throw new B2ExceptionMappingService(session).map(e);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);

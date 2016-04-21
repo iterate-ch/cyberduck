@@ -27,7 +27,6 @@ using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.s3;
 using ch.cyberduck.core.transfer;
-using ch.cyberduck.core.updater;
 using Ch.Cyberduck.Ui.Core;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Controls;
@@ -51,7 +50,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private static readonly String NullString = "null";
         private static PreferencesController _instance;
-        private readonly PeriodicUpdateChecker _updater = new WindowsPeriodicUpdateChecker();
         private bool _downloadRegexInvalid;
         private bool _uploadRegexInvalid;
 
@@ -284,7 +282,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_CheckForUpdateEvent()
         {
-            _updater.check(false);
+            new WindowsPeriodicUpdateChecker().check(false);
         }
 
         private void View_AutomaticUpdateChangedEvent()
@@ -1015,7 +1013,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             #region Update
 
-            View.UpdateEnabled = _updater.hasUpdatePrivileges();
+            View.UpdateEnabled = new WindowsPeriodicUpdateChecker().hasUpdatePrivileges();
             View.AutomaticUpdateCheck = PreferencesFactory.get().getBoolean("update.check");
             long lastCheck = PreferencesFactory.get().getLong("update.check.last");
             View.LastUpdateCheck = 0 == lastCheck

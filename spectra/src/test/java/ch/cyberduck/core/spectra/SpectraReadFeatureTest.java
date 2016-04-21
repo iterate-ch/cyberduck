@@ -25,7 +25,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.io.SHA256ChecksumCompute;
+import ch.cyberduck.core.io.CRC32ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -90,7 +90,7 @@ public class SpectraReadFeatureTest {
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomStringUtils.random(1000).getBytes();
         final TransferStatus status = new TransferStatus().length(content.length);
-        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content)));
+        status.setChecksum(new CRC32ChecksumCompute().compute(new ByteArrayInputStream(content)));
         final OutputStream out = new S3WriteFeature(session).write(test, status);
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
@@ -111,93 +111,7 @@ public class SpectraReadFeatureTest {
     }
 
     @Test
-    public void testReadRange() throws Exception {
-        final Host host = new Host(new SpectraProtocol() {
-            @Override
-            public Scheme getScheme() {
-                return Scheme.http;
-            }
-        }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
-                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
-        ));
-        final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
-                new DefaultX509KeyManager());
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final byte[] content = RandomStringUtils.random(1000).getBytes();
-        final TransferStatus writeStatus = new TransferStatus().length(content.length);
-        writeStatus.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content)));
-        final OutputStream out = new S3WriteFeature(session).write(test, writeStatus);
-        assertNotNull(out);
-        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        out.close();
-        writeStatus.setAppend(true);
-        writeStatus.setOffset(100L);
-        writeStatus.setLength(content.length - 100);
-        new SpectraBulkService(session).pre(Transfer.Type.download, Collections.singletonMap(test, writeStatus));
-        final InputStream in = new SpectraReadFeature(session).read(test, writeStatus);
-        assertNotNull(in);
-        final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
-        new StreamCopier(writeStatus, writeStatus).transfer(in, buffer);
-        final byte[] reference = new byte[content.length - 100];
-        System.arraycopy(content, 100, reference, 0, content.length - 100);
-        assertArrayEquals(reference, buffer.toByteArray());
-        in.close();
-        new SpectraDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
-        session.close();
-    }
-
-    @Test
-    public void testReadRangeUnknownLength() throws Exception {
-        final Host host = new Host(new SpectraProtocol() {
-            @Override
-            public Scheme getScheme() {
-                return Scheme.http;
-            }
-        }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
-                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
-        ));
-        final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
-                new DefaultX509KeyManager());
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final byte[] content = RandomStringUtils.random(1000).getBytes();
-        final TransferStatus status = new TransferStatus().length(content.length);
-        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content)));
-        final OutputStream out = new S3WriteFeature(session).write(test, status);
-        assertNotNull(out);
-        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        out.close();
-        status.setAppend(true);
-        status.setOffset(100L);
-        status.setLength(-1L);
-        new SpectraBulkService(session).pre(Transfer.Type.download, Collections.singletonMap(test, status));
-        final InputStream in = new SpectraReadFeature(session).read(test, status);
-        assertNotNull(in);
-        final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
-        new StreamCopier(status, status).transfer(in, buffer);
-        final byte[] reference = new byte[content.length - 100];
-        System.arraycopy(content, 100, reference, 0, content.length - 100);
-        assertArrayEquals(reference, buffer.toByteArray());
-        in.close();
-        new SpectraDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
-        session.close();
-    }
-
-    @Test
     public void testOffsetSupport() throws Exception {
-        assertTrue(new SpectraReadFeature(null).offset(null));
+        assertFalse(new SpectraReadFeature(null).offset(null));
     }
 }

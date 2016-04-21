@@ -37,10 +37,6 @@
     <property name="msbuild.configuration" value="release"/>
     <property name="msbuild.architecture" value="x86"/>
 
-    <property name="nsis.home" value="${programFiles}/NSIS"/>
-    <property name="winsdk.home" value="${programFiles}/Windows Kits/8.1/bin/x86"/>
-    <property name="wybuild.home" value="${programFiles}/wyBuild"/>
-
     <property name="cpack.bin" value="${env.ChocolateyInstall}/bin/cpack"/>
 
     <target name="build" depends="version">
@@ -80,38 +76,16 @@
             </fileset>
         </copy>
 
-        <loadfile property="changes" srcFile="${www.update}/changelog.txt"/>
-
-        <copy file="${www.update}/version.xml" todir="${build}" overwrite="true"/>
-        <replace file="${build}/version.xml" summary="true" encoding="UTF-8">
-            <replacefilter token="${VERSION}" value="${revision} (${version})"/>
-            <replacefilter token="${CHANGES}" value="${changes}"/>
-            <replacefilter token="${BUILDPATH}" value="${build}"/>
-        </replace>
-
-        <!-- copy wyUpdate project over to the build directory -->
-        <copy file="${www.update}/${sparkle.feed}/changelog.wyp" tofile="${build}/changelog.wyp" overwrite="true"/>
-
-        <exec executable="${wybuild.home}/wybuild.cmd.exe" failonerror="true" dir="${build}">
-            <arg value="${build}/changelog.wyp"/>
-            <arg value="/bwu"/>
-            <arg value="/bu"/>
-            <arg value="-add=${build}/version.xml"/>
-        </exec>
-
-        <!-- overwrite generated wyUpdate.exe -->
-        <copy file="${www.update}/Updater.exe" todir="${build}/update" overwrite="true"/>
-
-        <mkdir dir="${build.deploy}"/>
+        <mkdir dir="${build}/update"/>
 
         <!-- prepare WinSparkle stuff -->
-        <xmltask source="${www.update}/changelog.rss" destbuffer="changelog">
+        <xmltask source="${www.update}/changelog.rss" destbuffer="minversion">
             <remove path="//*[local-name()='minimumSystemVersion']"/>
         </xmltask>
-        <xmltask sourcebuffer="changelog" dest="${build}/update/changelog.rss">
-            <attr path="//item/enclosure" attr="sparkle:installerArguments" value="-quiet Autostart=1"/>
+        <xmltask sourcebuffer="minversion" destbuffer="installerArgs">
+            <attr path="//item/enclosure" attr="sparkle:installerArguments" value="/passive Autostart=1"/>
         </xmltask>
-        <xmltask sourcebuffer="changelog" dest="${build}/update/changelog.rss">
+        <xmltask sourcebuffer="installerArgs" dest="${build}/update/changelog.rss">
             <attr path="//item/enclosure" attr="sparkle:version" value="${FULLVERSION}"/>
         </xmltask>
         <copy todir="${build}/update" overwrite="true">

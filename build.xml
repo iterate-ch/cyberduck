@@ -24,7 +24,6 @@
 <project name="Cyberduck" basedir=".">
 
     <property file="build.properties"/>
-    <property file="tools.properties"/>
 
     <property environment="env"/>
 

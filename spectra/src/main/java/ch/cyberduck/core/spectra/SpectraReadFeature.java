@@ -18,7 +18,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.s3.ServiceExceptionMappingService;
 import ch.cyberduck.core.transfer.Transfer;
@@ -54,7 +53,6 @@ public class SpectraReadFeature implements Read {
         final List<InputStream> streams = new ArrayList<InputStream>();
         try {
             for(TransferStatus chunk : chunks) {
-                final HttpRange range = HttpRange.withStatus(chunk);
                 final InputStream in = session.getClient().getObjectImpl(
                         false,
                         containerService.getContainer(file).getName(),
@@ -63,8 +61,8 @@ public class SpectraReadFeature implements Read {
                         null, // ifUnmodifiedSince
                         null, // ifMatch
                         null, // ifNoneMatch
-                        chunk.isAppend() ? range.getStart() : null,
-                        chunk.isAppend() ? (range.getEnd() == -1 ? null : range.getEnd()) : null,
+                        null,
+                        null,
                         null,
                         new HashMap<String, Object>(),
                         chunk.getParameters())
@@ -81,6 +79,6 @@ public class SpectraReadFeature implements Read {
 
     @Override
     public boolean offset(final Path file) {
-        return true;
+        return false;
     }
 }

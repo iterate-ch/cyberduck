@@ -21,6 +21,7 @@ import ch.cyberduck.core.diagnostics.SystemConfigurationReachability;
 import ch.cyberduck.core.editor.FSEventWatchEditorFactory;
 import ch.cyberduck.core.i18n.BundleLocale;
 import ch.cyberduck.core.io.watchservice.FSEventWatchService;
+import ch.cyberduck.core.local.DisabledFilesystemBookmarkResolver;
 import ch.cyberduck.core.local.FileManagerWorkingDirectoryFinder;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
@@ -56,5 +57,6 @@ public class ApplicationTerminalPreferences extends TerminalPreferences {
         defaults.put("factory.workingdirectory.class", FileManagerWorkingDirectoryFinder.class.getName());
         defaults.put("factory.symlink.class", WorkspaceSymlinkFeature.class.getName());
         defaults.put("factory.watchservice.class", FSEventWatchService.class.getName());
+        defaults.put("factory.bookmarkresolver.class", DisabledFilesystemBookmarkResolver.class.getName());
     }
 }

@@ -61,9 +61,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public class UploadTransfer extends Transfer {
     private static final Logger log = Logger.getLogger(UploadTransfer.class);
 

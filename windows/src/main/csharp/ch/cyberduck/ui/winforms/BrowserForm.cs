@@ -32,7 +32,6 @@ using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.bonjour;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
-using ch.cyberduck.core.updater;
 using ch.cyberduck.ui.comparator;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller;
@@ -63,7 +62,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         private static readonly Font FixedFont = new Font(FontFamily.GenericMonospace, 8);
         private static readonly Logger Log = Logger.getLogger(typeof (BrowserForm).FullName);
         private static readonly TypeConverter ShortcutConverter = TypeDescriptor.GetConverter(typeof (Keys));
-        private readonly PeriodicUpdateChecker _updater = new WindowsPeriodicUpdateChecker();
         private bool _browserStateRestored;
         private BrowserView _currentView;
         private bool _lastActivityRunning;
@@ -1697,9 +1695,9 @@ namespace Ch.Cyberduck.Ui.Winforms
                 (sender, args) => new AboutBox().ShowDialog(), () => true);
             Commands.Add(new ToolStripItem[] {licenseToolStripMenuItem}, new[] {licenseMainMenuItem},
                 (sender, args) => ApplicationLauncherFactory.get().open(LocalFactory.get("License.txt")), () => true);
-            bool HasUpdatePrivilges = _updater.hasUpdatePrivileges();
+            bool HasUpdatePrivilges = new WindowsPeriodicUpdateChecker().hasUpdatePrivileges();
             Commands.Add(new ToolStripItem[] {checkToolStripMenuItem}, new[] {updateMainMenuItem},
-                (sender, args) => _updater.check(false), () => HasUpdatePrivilges);
+                (sender, args) => new WindowsPeriodicUpdateChecker().check(false), () => HasUpdatePrivilges);
         }
 
         private void ConfigureGoCommands()

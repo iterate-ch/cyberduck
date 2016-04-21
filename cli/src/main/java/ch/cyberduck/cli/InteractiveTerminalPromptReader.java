@@ -20,9 +20,6 @@ package ch.cyberduck.cli;
 
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
-/**
- * @version $Id$
- */
 public class InteractiveTerminalPromptReader implements TerminalPromptReader {
 
     private final Console console = new Console();

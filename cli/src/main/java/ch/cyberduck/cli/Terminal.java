@@ -381,7 +381,7 @@ public class Terminal {
                 new TerminalListProgressListener(reader, verbose));
         final SessionBackgroundAction action = new TerminalBackgroundAction<AttributedList<Path>>(
                 new TerminalLoginService(input, new TerminalLoginCallback(reader)), controller,
-                session, cache, worker);
+                session, cache, new TerminalHostKeyVerifier(reader), worker);
         this.execute(action);
         if(action.hasFailed()) {
             return Exit.failure;
@@ -403,7 +403,7 @@ public class Terminal {
         }
         final SessionBackgroundAction action = new TerminalBackgroundAction<Boolean>(
                 new TerminalLoginService(input, new TerminalLoginCallback(reader)), controller,
-                session, cache, worker);
+                session, cache, new TerminalHostKeyVerifier(reader), worker);
         this.execute(action);
         if(action.hasFailed()) {
             return Exit.failure;
@@ -439,7 +439,7 @@ public class Terminal {
         }, new DisabledTransferErrorCallback(), new DefaultEditorListener(controller, session, editor));
         final SessionBackgroundAction action = new TerminalBackgroundAction<Transfer>(
                 new TerminalLoginService(input, new TerminalLoginCallback(reader)),
-                controller, session, cache, worker
+                controller, session, cache, new TerminalHostKeyVerifier(reader), worker
         );
         this.execute(action);
         if(action.hasFailed()) {

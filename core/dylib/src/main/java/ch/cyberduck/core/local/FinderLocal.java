@@ -50,15 +50,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-/**
- * @version $Id$
- */
 public class FinderLocal extends Local {
     private static final Logger log = Logger.getLogger(FinderLocal.class);
 
     static {
         Native.load("core");
     }
+
+    private static final NSFileManager manager
+            = NSFileManager.defaultManager();
+
+    private static final FilesystemBookmarkResolver<NSURL> resolver
+            = FilesystemBookmarkResolverFactory.get();
 
     /**
      * Application scoped bookmark to access outside of sandbox
@@ -96,7 +99,7 @@ public class FinderLocal extends Local {
      */
     @Override
     public String getDisplayName() {
-        return NSFileManager.defaultManager().displayNameAtPath(this.getName());
+        return manager.displayNameAtPath(this.getName());
     }
 
     /**
@@ -110,7 +113,11 @@ public class FinderLocal extends Local {
     @Override
     public Local getVolume() {
         for(Local parent = this.getParent(); !parent.isRoot(); parent = parent.getParent()) {
-            if(parent.getParent().getAbsolute().equals("/Volumes")) {
+            final Local directory = parent.getParent();
+            if(null == directory) {
+                return super.getVolume();
+            }
+            if("/Volumes".equals(directory.getAbsolute())) {
                 return parent;
             }
         }
@@ -126,10 +133,10 @@ public class FinderLocal extends Local {
     public String getBookmark() {
         if(StringUtils.isBlank(bookmark)) {
             try {
-                bookmark = new PanelSandboxBookmarkResolver().create(this);
+                bookmark = resolver.create(this);
             }
             catch(AccessDeniedException e) {
-                log.warn(String.format("Failure resolving bookmark %s", bookmark));
+                log.warn(String.format("Failure resolving bookmark %s. %s", bookmark, e.getDetail()));
             }
         }
         return bookmark;
@@ -169,9 +176,11 @@ public class FinderLocal extends Local {
 
     @Override
     public NSURL lock() throws AccessDeniedException {
-        final NSURL resolved = new PanelSandboxBookmarkResolver().resolve(this);
+        final NSURL resolved = resolver.resolve(this);
         if(resolved.respondsToSelector(Foundation.selector("startAccessingSecurityScopedResource"))) {
-            resolved.startAccessingSecurityScopedResource();
+            if(!resolved.startAccessingSecurityScopedResource()) {
+                throw new LocalAccessDeniedException(String.format("Failure accessing security scoped resource for %s", this));
+            }
         }
         return resolved;
     }
@@ -219,7 +228,7 @@ public class FinderLocal extends Local {
         if(PreferencesFactory.get().getBoolean("local.list.native")) {
             final AttributedList<Local> children = new AttributedList<Local>();
             final ObjCObjectByReference error = new ObjCObjectByReference();
-            final NSArray files = NSFileManager.defaultManager().contentsOfDirectoryAtPath_error(this.getAbsolute(), error);
+            final NSArray files = manager.contentsOfDirectoryAtPath_error(this.getAbsolute(), error);
             if(null == files) {
                 final NSError f = error.getValueAs(NSError.class);
                 if(null == f) {
@@ -239,11 +248,6 @@ public class FinderLocal extends Local {
         }
     }
 
-    @Override
-    public boolean exists() {
-        return NSFileManager.defaultManager().fileExistsAtPath(this.getAbsolute());
-    }
-
     /**
      * @param absolute The absolute path of the alias file.
      * @return The absolute path this alias is pointing to.
@@ -258,7 +262,7 @@ public class FinderLocal extends Local {
     @Override
     public Local getSymlinkTarget() throws NotfoundException, LocalAccessDeniedException {
         final ObjCObjectByReference error = new ObjCObjectByReference();
-        final String destination = NSFileManager.defaultManager().destinationOfSymbolicLinkAtPath_error(
+        final String destination = manager.destinationOfSymbolicLinkAtPath_error(
                 this.getAbsolute(), error);
         if(null == destination) {
             final NSError f = error.getValueAs(NSError.class);
@@ -273,14 +277,5 @@ public class FinderLocal extends Local {
         }
         // Relative path
         return new FinderLocal(this.getParent(), destination);
-    }
-
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("FinderLocal{");
-        sb.append("path='").append(path).append('\'');
-        sb.append(", bookmark='").append(bookmark).append('\'');
-        sb.append('}');
-        return sb.toString();
     }
 }

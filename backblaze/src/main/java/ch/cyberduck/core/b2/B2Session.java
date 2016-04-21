@@ -106,7 +106,7 @@ public class B2Session extends HttpSession<B2ApiClient> {
             client.authenticate(host.getCredentials().getUsername(), host.getCredentials().getPassword());
         }
         catch(B2ApiException e) {
-            throw new B2ExceptionMappingService().map(e);
+            throw new B2ExceptionMappingService(this).map(e);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
