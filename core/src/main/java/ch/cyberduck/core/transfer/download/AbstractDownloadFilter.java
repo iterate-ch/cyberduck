@@ -67,7 +67,7 @@ import java.util.List;
 public abstract class AbstractDownloadFilter implements TransferPathFilter {
     private static final Logger log = Logger.getLogger(AbstractDownloadFilter.class);
 
-    private SymlinkResolver<Path> symlinkResolver;
+    private final SymlinkResolver<Path> symlinkResolver;
 
     private final QuarantineService quarantine
             = QuarantineServiceFactory.get();
@@ -75,13 +75,13 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
     private final ApplicationLauncher launcher
             = ApplicationLauncherFactory.get();
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
     private final IconService icon
             = IconServiceFactory.get();
 
-    private Session<?> session;
+    private final Session<?> session;
 
     private Attributes attribute;
 
@@ -202,37 +202,22 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                             // Sorted list
                             final List<TransferStatus> segments = new ArrayList<TransferStatus>();
                             for(int segmentNumber = 1; remaining > 0; segmentNumber++) {
-                                final Local renamed = LocalFactory.get(
+                                final Local segmentFile = LocalFactory.get(
                                         LocalFactory.get(local.getParent(), String.format("%s.cyberducksegment", local.getName())),
                                         String.format("%s-%d.cyberducksegment", local.getName(), segmentNumber));
                                 boolean skip = false;
                                 // Last part can be less than 5 MB. Adjust part size.
-                                final Long length = Math.min(partsize, remaining);
-                                if(status.isAppend()) {
-                                    if(log.isInfoEnabled()) {
-                                        log.info(String.format("Determine if part number %d can be skipped", segmentNumber));
-                                    }
-                                    if(renamed.exists()) {
-                                        if(renamed.attributes().getSize() == length) {
-                                            if(log.isInfoEnabled()) {
-                                                log.info(String.format("Skip completed segment number %d", segmentNumber));
-                                            }
-                                            skip = true;
-                                        }
-                                    }
+                                Long length = Math.min(partsize, remaining);
+                                final TransferStatus segmentStatus = new TransferStatus()
+                                        .segment(true)
+                                        .append(true)
+                                        .skip(offset)
+                                        .length(length)
+                                        .rename(segmentFile);
+                                if(log.isDebugEnabled()) {
+                                    log.debug(String.format("Adding status %s for segment %s", segmentStatus, segmentFile));
                                 }
-                                if(!skip) {
-                                    final TransferStatus segment = new TransferStatus()
-                                            .segment(true)
-                                            .append(true)
-                                            .skip(offset)
-                                            .length(length)
-                                            .rename(renamed);
-                                    if(log.isDebugEnabled()) {
-                                        log.debug(String.format("Adding segment %s", segment));
-                                    }
-                                    segments.add(segment);
-                                }
+                                segments.add(segmentStatus);
                                 remaining -= length;
                                 offset += length;
                             }
@@ -274,16 +259,30 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             if(status.isSegmented()) {
                 // Obtain ordered list of segments to reassemble
                 final List<TransferStatus> segments = status.getSegments();
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Compile %d segments to file %s", segments.size(), local));
+                }
+                if(local.exists()) {
+                    local.delete();
+                }
                 for(Iterator<TransferStatus> iterator = segments.iterator(); iterator.hasNext(); ) {
-                    final TransferStatus segment = iterator.next();
-                    final Local f = segment.getRename().local;
+                    final TransferStatus segmentStatus = iterator.next();
+                    // Segment
+                    final Local segmentFile = segmentStatus.getRename().local;
                     if(log.isInfoEnabled()) {
-                        log.info(String.format("Append segment %s to %s", f, local));
+                        log.info(String.format("Append segment %s to %s", segmentFile, local));
                     }
-                    f.copy(local, new Local.CopyOptions().append(true));
-                    f.delete();
+                    segmentFile.copy(local, new Local.CopyOptions().append(true));
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Delete segment %s", segmentFile));
+                    }
+                    segmentFile.delete();
                     if(!iterator.hasNext()) {
-                        f.getParent().delete();
+                        final Local folder = segmentFile.getParent();
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("Remove segment folder %s", folder));
+                        }
+                        folder.delete();
                     }
                 }
             }
