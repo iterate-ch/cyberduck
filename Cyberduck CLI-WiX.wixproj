@@ -6,7 +6,7 @@
     <ProductVersion>3.9</ProductVersion>
     <ProjectGuid>f6975079-f730-4a31-9909-de536e524764</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
-    <OutputName>duck</OutputName>
+    <OutputName>duck-$(Version)</OutputName>
     <OutputType>Package</OutputType>
     <SignOutput>true</SignOutput>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
