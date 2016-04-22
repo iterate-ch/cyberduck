@@ -35,13 +35,13 @@ public class OverwriteFilterTest {
     @Test
     public void testAcceptDirectory() throws Exception {
         OverwriteFilter f = new OverwriteFilter(new DisabledDownloadSymlinkResolver(), new NullSession(new Host(new TestProtocol())));
-        assertTrue(f.accept(new Path("a", EnumSet.of(Path.Type.directory)), new NullLocal("/", "a") {
+        assertTrue(f.accept(new Path("a", EnumSet.of(Path.Type.directory)), new NullLocal(System.getProperty("java.io.tmpdir"), "a") {
             @Override
             public boolean exists() {
                 return false;
             }
         }, new TransferStatus()));
-        assertTrue(f.accept(new Path("a", EnumSet.of(Path.Type.directory)), new NullLocal("/", "a") {
+        assertTrue(f.accept(new Path("a", EnumSet.of(Path.Type.directory)), new NullLocal(System.getProperty("java.io.tmpdir"), "a") {
             @Override
             public boolean exists() {
                 return true;
