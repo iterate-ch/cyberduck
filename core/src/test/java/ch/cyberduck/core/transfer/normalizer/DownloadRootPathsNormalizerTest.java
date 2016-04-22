@@ -2,6 +2,8 @@ package ch.cyberduck.core.transfer.normalizer;
 
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.local.TemporaryFileService;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferItem;
 
 import org.junit.Test;
@@ -34,7 +36,7 @@ public class DownloadRootPathsNormalizerTest {
         DownloadRootPathsNormalizer n = new DownloadRootPathsNormalizer();
         final List<TransferItem> list = new ArrayList<TransferItem>();
         final Path fa = new Path("/f/a", EnumSet.of(Path.Type.file));
-        list.add(new TransferItem(fa, new NullLocal("/", fa.getName()) {
+        list.add(new TransferItem(fa, new NullLocal(PreferencesFactory.get().getProperty("tmp.dir"), fa.getName()) {
             @Override
             public boolean exists() {
                 return false;
@@ -42,7 +44,7 @@ public class DownloadRootPathsNormalizerTest {
         }));
         {
             final Path ga = new Path("/g/a", EnumSet.of(Path.Type.file));
-            list.add(new TransferItem(ga, new NullLocal("/", ga.getName()) {
+            list.add(new TransferItem(ga, new NullLocal(PreferencesFactory.get().getProperty("tmp.dir"), ga.getName()) {
                 @Override
                 public boolean exists() {
                     return false;
@@ -51,8 +53,8 @@ public class DownloadRootPathsNormalizerTest {
             final List<TransferItem> normalized = n.normalize(list);
             assertEquals(2, normalized.size());
             final Iterator<TransferItem> iterator = normalized.iterator();
-            assertEquals(new NullLocal("/", "a"), iterator.next().local);
-            assertEquals(new NullLocal("/", "a-1"), iterator.next().local);
+            assertEquals(new NullLocal(PreferencesFactory.get().getProperty("tmp.dir"), "a"), iterator.next().local);
+            assertEquals(new NullLocal(PreferencesFactory.get().getProperty("tmp.dir"), "a-1"), iterator.next().local);
         }
     }
 }
