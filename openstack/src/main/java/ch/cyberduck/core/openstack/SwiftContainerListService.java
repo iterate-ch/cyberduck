@@ -30,6 +30,7 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.threading.DefaultThreadPool;
 import ch.cyberduck.core.threading.ThreadPool;
 
 import org.apache.commons.lang3.StringUtils;
@@ -52,7 +53,7 @@ import ch.iterate.openstack.swift.model.Region;
 public class SwiftContainerListService implements RootListService {
     private static final Logger log = Logger.getLogger(SwiftContainerListService.class);
 
-    private final ThreadPool pool = new ThreadPool("cdn");
+    private final ThreadPool pool = new DefaultThreadPool("cdn");
 
     private SwiftSession session;
 

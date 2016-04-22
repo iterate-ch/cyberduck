@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.threading.DefaultThreadPool;
 import ch.cyberduck.core.threading.ThreadPool;
 
 import org.apache.log4j.Logger;
@@ -48,7 +49,7 @@ public class B2DeleteFeature implements Delete {
 
     public B2DeleteFeature(final B2Session session) {
         this.session = session;
-        this.pool = new ThreadPool(PreferencesFactory.get().getInteger("b2.delete.concurrency"), "delete");
+        this.pool = new DefaultThreadPool(PreferencesFactory.get().getInteger("b2.delete.concurrency"), "delete");
     }
 
     @Override

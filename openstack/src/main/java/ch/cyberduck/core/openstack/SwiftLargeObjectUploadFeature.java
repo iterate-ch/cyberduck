@@ -32,6 +32,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.threading.DefaultThreadPool;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -91,7 +92,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         super(writer);
         this.session = session;
         this.regionService = regionService;
-        this.pool = new ThreadPool(concurrency, "multipart");
+        this.pool = new DefaultThreadPool(concurrency, "multipart");
         this.segmentSize = segmentSize;
         this.segmentService = segmentService;
         this.listService = listService;

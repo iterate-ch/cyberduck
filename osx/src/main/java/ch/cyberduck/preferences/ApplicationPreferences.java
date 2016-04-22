@@ -31,6 +31,7 @@ import ch.cyberduck.core.proxy.SystemConfigurationProxy;
 import ch.cyberduck.core.resources.NSImageIconCache;
 import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
+import ch.cyberduck.core.threading.DispatchThreadPool;
 import ch.cyberduck.core.urlhandler.LaunchServicesSchemeHandler;
 import ch.cyberduck.ui.browser.Column;
 
@@ -80,6 +81,7 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
         else {
             defaults.put("factory.bookmarkresolver.class", DisabledFilesystemBookmarkResolver.class.getName());
         }
+        defaults.put("factory.threadpool.class", DispatchThreadPool.class.getName());
     }
 
     @Override

@@ -19,6 +19,7 @@ package ch.cyberduck.core.local;
  */
 
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.threading.DefaultThreadPool;
 import ch.cyberduck.core.threading.ThreadPool;
 
 import org.apache.log4j.Logger;
@@ -35,7 +36,7 @@ public class ExecApplicationLauncher implements ApplicationLauncher {
     private final Runtime runtime = Runtime.getRuntime();
 
     private ThreadPool pool
-            = new ThreadPool(1, "process");
+            = new DefaultThreadPool(1, "process");
 
     @Override
     public boolean open(final Local file) {
