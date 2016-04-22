@@ -52,10 +52,10 @@ public class TemporaryFileServiceTest {
         final String s = System.getProperty("file.separator");
         final Path file = new Path("/container", EnumSet.of(Path.Type.directory));
         file.attributes().setRegion("region");
-        assertEquals(PathNormalizer.normalize(String.format("%s%su%sregion%scontainer", temp, s, s, s)),
+        assertEquals(String.format("%s%su%sregion%scontainer", temp, s, s, s),
                 new TemporaryFileService().create("u", file).getAbsolute());
         file.attributes().setVersionId("2");
-        assertEquals(PathNormalizer.normalize(String.format("%s%su%sregion2%scontainer", temp, s, s, s)),
+        assertEquals(String.format("%s%su%sregion2%scontainer", temp, s, s, s),
                 new TemporaryFileService().create("u", file).getAbsolute());
     }
 }
