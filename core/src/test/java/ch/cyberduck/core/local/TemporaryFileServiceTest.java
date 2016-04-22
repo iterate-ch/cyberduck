@@ -16,8 +16,8 @@ public class TemporaryFileServiceTest {
         final String temp = System.getProperty("java.io.tmpdir");
         final String s = System.getProperty("file.separator");
         assertEquals(String.format("%su%sp%sf", temp, s, s),
-                new TemporaryFileService().create("u", new Path(String.format("%sp%sf", s, s), EnumSet.of(Path.Type.file))).getAbsolute());
-        final Path file = new Path(String.format("%sp%sf", s, s), EnumSet.of(Path.Type.file));
+                new TemporaryFileService().create("u", new Path("/p/f", EnumSet.of(Path.Type.file))).getAbsolute());
+        final Path file = new Path("/p/f", EnumSet.of(Path.Type.file));
         file.attributes().setRegion("region");
         assertEquals(String.format("%su%sp%sf", temp, s, s),
                 new TemporaryFileService().create("u", file).getAbsolute());
