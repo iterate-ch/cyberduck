@@ -70,6 +70,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
+import java.io.File;
 import java.net.URL;
 import java.security.Security;
 import java.util.Arrays;
@@ -262,7 +263,7 @@ public abstract class Preferences {
         defaults.put("local.normalize.unicode", String.valueOf(true));
         defaults.put("local.normalize.tilde", String.valueOf(true));
         defaults.put("local.list.native", String.valueOf(true));
-        defaults.put("local.delimiter", String.valueOf('/'));
+        defaults.put("local.delimiter", File.separator);
         /**
          * Prompt to resolve bookmark of file outside of sandbox with choose panel
          */
