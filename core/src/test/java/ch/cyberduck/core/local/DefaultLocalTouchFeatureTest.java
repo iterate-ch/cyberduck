@@ -26,7 +26,7 @@ public class DefaultLocalTouchFeatureTest {
         l.delete();
     }
 
-    @Test(expected = AccessDeniedException.class)
+    @Test
     public void testFailure() throws Exception {
         Local l = new Local("/" + UUID.randomUUID().toString());
         final DefaultLocalTouchFeature f = new DefaultLocalTouchFeature();
@@ -37,7 +37,6 @@ public class DefaultLocalTouchFeatureTest {
             final String s = l.getName();
             assertEquals("Cannot create /" + s + ". Please verify disk permissions.", e.getDetail());
             assertEquals("Access denied", e.getMessage());
-            throw e;
         }
     }
 

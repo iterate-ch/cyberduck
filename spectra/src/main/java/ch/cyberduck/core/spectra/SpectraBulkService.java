@@ -194,18 +194,19 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
             final GetAvailableJobChunksResponse response =
                     // GetJobChunksReadyForClientProcessing
                     client.getAvailableJobChunks(new GetAvailableJobChunksRequest(UUID.fromString(job))
-                            .withPreferredNumberOfChunks(1));
+                            .withPreferredNumberOfChunks(Integer.MAX_VALUE));
             if(log.isInfoEnabled()) {
                 log.info(String.format("Job status %s for %s", response.getStatus(), file));
             }
             switch(response.getStatus()) {
                 case RETRYLATER: {
-                    final Duration delay = Duration.ofSeconds((response.getRetryAfterSeconds()));
+                    final Duration delay = Duration.ofSeconds(response.getRetryAfterSeconds());
                     throw new RetriableAccessDeniedException(String.format("Job %s not yet loaded into cache", job), delay);
                 }
             }
             final MasterObjectList list = response.getMasterObjectList();
             if(log.isInfoEnabled()) {
+                log.info(String.format("Master object list with %d objects for %s", list.getObjects().size(), file));
                 log.info(String.format("Master object list status %s for %s", list.getStatus(), file));
             }
             final List<TransferStatus> chunks = new ArrayList<TransferStatus>();
@@ -214,8 +215,10 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                 if(null == nodeId) {
                     log.warn(String.format("No node returned in master object list for file %s", file));
                 }
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Determined node %s for %s", nodeId, file));
+                else {
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Determined node %s for %s", nodeId, file));
+                    }
                 }
                 for(Node node : list.getNodes()) {
                     if(node.getId().equals(nodeId)) {
@@ -230,38 +233,45 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                         log.warn(String.format("Redirect to %s for file %s", node.getEndpoint(), file));
                     }
                 }
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Object list with %d chunks for %s", object.getObjects().size(), file));
+                }
                 for(BulkObject bulk : object) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Found chunk %s looking for %s", bulk, file));
+                    }
                     if(bulk.getName().equals(containerService.getKey(file))) {
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("Found chunk %s matching file %s", bulk, file));
+                        }
                         final TransferStatus chunk = new TransferStatus()
                                 .exists(status.isExists())
                                 .metadata(status.getMetadata())
                                 .parameters(status.getParameters());
-                        if(bulk.getOffset() == 0L) {
-                            // Set our own offsets
-                            chunk.setLength(status.getLength());
-                            chunk.setOffset(status.getOffset());
-                            chunk.setAppend(status.isAppend());
+                        // Server sends multiple chunks with offsets
+                        if(bulk.getOffset() > 0L) {
+                            chunk.setAppend(true);
                         }
-                        else {
-                            // Server sends multiple chunks with offsets
-                            chunk.setLength(bulk.getLength());
-                            chunk.setOffset(bulk.getOffset());
-                            switch(type) {
-                                case download:
-                                    // Job parameter already present from #pre
-                                    final Map<String, String> parameters = new HashMap<>(chunk.getParameters());
-                                    // Set offset for chunk
-                                    parameters.put(REQUEST_PARAMETER_OFFSET, Long.toString(chunk.getOffset()));
-                                    chunk.setParameters(parameters);
-                                    break;
-                            }
+                        chunk.setLength(bulk.getLength());
+                        chunk.setOffset(bulk.getOffset());
+                        // Job parameter already present from #pre
+                        final Map<String, String> parameters = new HashMap<>(chunk.getParameters());
+                        // Set offset for chunk.
+                        parameters.put(REQUEST_PARAMETER_OFFSET, Long.toString(chunk.getOffset()));
+                        chunk.setParameters(parameters);
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("Add chunk %s for file %s", chunk, file));
                         }
                         chunks.add(chunk);
                     }
                 }
             }
             if(chunks.isEmpty()) {
-                throw new NotfoundException(String.format("File %s not found in job %s", file.getName(), job));
+                log.error(String.format("File %s not found in job %s", file.getName(), job));
+                chunks.add(status);
+            }
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Server returned %d chunks for %s", chunks.size(), file));
             }
             return chunks;
         }

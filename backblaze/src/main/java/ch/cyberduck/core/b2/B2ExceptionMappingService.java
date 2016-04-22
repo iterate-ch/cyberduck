@@ -16,6 +16,9 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.AbstractExceptionMappingService;
+import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
@@ -27,12 +30,20 @@ import ch.cyberduck.core.exception.QuotaException;
 import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 
 import org.apache.http.HttpStatus;
+import org.apache.log4j.Logger;
 
 import java.time.Duration;
 
 import synapticloop.b2.exception.B2ApiException;
 
 public class B2ExceptionMappingService extends AbstractExceptionMappingService<B2ApiException> {
+    private static final Logger log = Logger.getLogger(B2ExceptionMappingService.class);
+
+    private final B2Session session;
+
+    public B2ExceptionMappingService(final B2Session session) {
+        this.session = session;
+    }
 
     @Override
     public BackgroundException map(final B2ApiException e) {
@@ -40,14 +51,23 @@ public class B2ExceptionMappingService extends AbstractExceptionMappingService<B
         this.append(buffer, e.getMessage());
         switch(e.getStatus()) {
             case HttpStatus.SC_UNAUTHORIZED:
+                // 401 Unauthorized.
+                if("expired_auth_token".equalsIgnoreCase(e.getCode())) {
+                    try {
+                        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+                        return new RetriableAccessDeniedException(buffer.toString());
+                    }
+                    catch(BackgroundException f) {
+                        log.warn(String.format("Attempt to renew expired auth token failed. %s", f.getDetail()));
+                    }
+
+                }
                 return new LoginFailureException(buffer.toString(), e);
             case HttpStatus.SC_FORBIDDEN:
-                switch(e.getCode()) {
-                    case "cap_exceeded":
-                    case "storage_cap_exceeded":
-                    case "transaction_cap_exceeded":
-                        // Reached the storage cap that you set
-                        return new QuotaException(buffer.toString(), e);
+                if("cap_exceeded".equalsIgnoreCase(e.getCode())
+                        || "storage_cap_exceeded".equalsIgnoreCase(e.getCode())
+                        || "transaction_cap_exceeded".equalsIgnoreCase(e.getCode())) {// Reached the storage cap that you set
+                    return new QuotaException(buffer.toString(), e);
                 }
                 return new AccessDeniedException(buffer.toString(), e);
             case HttpStatus.SC_NOT_FOUND:
@@ -59,17 +79,16 @@ public class B2ExceptionMappingService extends AbstractExceptionMappingService<B
             case HttpStatus.SC_PAYMENT_REQUIRED:
                 return new QuotaException(buffer.toString(), e);
             case HttpStatus.SC_BAD_REQUEST:
-                switch(e.getCode()) {
-                    case "file_not_present":
-                        return new NotfoundException(buffer.toString(), e);
-                    case "cap_exceeded":
-                        // Reached the storage cap that you set
-                        return new QuotaException(buffer.toString(), e);
-                    case "bad_request":
-                        switch(e.getMessage()) {
-                            case "sha1 did not match data received":
-                                return new ChecksumException(buffer.toString(), e);
-                        }
+                if("file_not_present".equalsIgnoreCase(e.getCode())) {
+                    return new NotfoundException(buffer.toString(), e);
+                }
+                if("cap_exceeded".equalsIgnoreCase(e.getCode())) {// Reached the storage cap that you set
+                    return new QuotaException(buffer.toString(), e);
+                }
+                if("bad_request".equalsIgnoreCase(e.getCode())) {
+                    if("sha1 did not match data received".equalsIgnoreCase(e.getMessage())) {
+                        return new ChecksumException(buffer.toString(), e);
+                    }
                 }
                 return new InteroperabilityException(buffer.toString(), e);
             case HttpStatus.SC_METHOD_NOT_ALLOWED:
@@ -80,8 +99,8 @@ public class B2ExceptionMappingService extends AbstractExceptionMappingService<B
                 return new ConnectionRefusedException(buffer.toString(), e);
             default:
                 if(e.getRetry() != null) {
-                    // Too Many Requests
-                    return new RetriableAccessDeniedException(buffer.toString(), Duration.ofSeconds(e.getRetry()));
+                    // Too Many Requests (429)
+                    return new RetriableAccessDeniedException(buffer.toString(), Duration.ofSeconds(e.getRetry()), e);
                 }
                 return new InteroperabilityException(buffer.toString(), e);
         }

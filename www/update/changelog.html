@@ -11,15 +11,6 @@
             font-size: 12px;
         }
 
-        p.note {
-            display: block;
-            height: 15px;
-            padding: 3px 10px 3px 10px;
-            background-color: #fff3f3;
-            border: 1px solid red;
-            color: #cc0000;
-        }
-
         p.mountainduck {
             display: block;
             background-image: url(https://mountainduck.io/images/mountainduck_y_32.png);
@@ -39,31 +30,63 @@
     <strong><a href="https://mountainduck.io">Mountain Duck</a></strong>. Cyberduck for mounting volumes in the file explorer for Mac &amp; Windows.
 </p>
 
-<p class="note">
-    <strong>Note</strong>: <strong>OS X 10.7 (Lion) or later on
-    <a href="http://support.apple.com/kb/ht3696">64bit</a> Intel</strong> is required.
-</p>
-
 <p>
     <a href="https://trac.cyberduck.io/milestone/5.0"><strong>Version 5.0</strong></a>
 </p>
 <ul>
-    <li>[Feature] Support for Google Drive (<a
-            href="https://trac.cyberduck.io/ticket/6976">#6976</a>)
-    </li>
-    <li>[Feature] Support for B2 Cloud Storage (Backblaze) (<a
-            href="https://trac.cyberduck.io/ticket/9162">#9162</a>)
+    <li>[Feature] Segmented downloads with multiple connections per file (<a
+            href="https://trac.cyberduck.io/ticket/4498">#4498</a>)
     </li>
     <li>[Feature] Support for Spectra BlackPearl Deep Storage Gateway (Spectra S3)</li>
+    <li>[Feature] Option to use AWS KMS–Managed Keys (SSE-KMS) for server side encryption (S3) (<a
+            href="https://trac.cyberduck.io/ticket/9426">#9426</a>)
+    </li>
+</ul>
+
+<p>
+    <a href="https://trac.cyberduck.io/milestone/4.9.3"><strong>Version 4.9.3</strong></a>
+</p>
+<ul>
+    <li>[Bugfix] Revert reading NTLM domain and workstation from environment (WebDAV, Windows)</li>
+    <li>[Bugfix] Fix crash in software updater (Windows)</li>
+</ul>
+
+<p>
+    <a href="https://trac.cyberduck.io/milestone/4.9.2"><strong>Version 4.9.2</strong></a>
+</p>
+<ul>
+    <li>[Bugfix] Fix application launch failure when running with disabled updater (Mac)</li>
+</ul>
+
+<p>
+    <a href="https://trac.cyberduck.io/milestone/4.9.1"><strong>Version 4.9.1</strong></a>
+</p>
+<ul>
+    <li>[Feature] Support password change requests (SFTP) (<a
+            href="https://trac.cyberduck.io/ticket/8821">#8821</a>)
+    </li>
+    <li>[Bugfix] Default path value setting in bookmark ignored (<a
+            href="https://trac.cyberduck.io/ticket/9435">#9435</a>)
+    </li>
+    <li>[Bugfix] Excessive memory usage when uploading many files (<a
+            href="https://trac.cyberduck.io/ticket/9439">#9439</a>)
+    </li>
+    <li>[Bugfix] Retry transfer when authentication token expires (Backblaze B2)</li>
+    <li>[Bugfix] Uploads use a lot of Class C transactions (<a
+            href="https://trac.cyberduck.io/ticket/9417">#9417</a>) (Backblaze B2)
+    </li>
+    <li>[Bugfix] Retry transfer for 421 error reply from server with a delay (FTP)</li>
+
 </ul>
 
 <p>
     <a href="https://trac.cyberduck.io/milestone/4.9"><strong>Version 4.9</strong></a>
 </p>
 <ul>
-    <li>[Feature] Support for B2 Cloud Storage (Backblaze) (<a
+    <li>[Feature] Support for B2 Cloud Storage (Backblaze B2) (<a
             href="https://trac.cyberduck.io/ticket/9162">#9162</a>)
     </li>
+    <li>New bundled application updater using MSI for installation (Windows)</li>
     <li>[Bugfix] Creating new folders with SSE restriction fails (S3) (<a
             href="https://trac.cyberduck.io/ticket/9378">#9378</a>)
     </li>

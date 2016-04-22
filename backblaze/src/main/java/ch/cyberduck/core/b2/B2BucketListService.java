@@ -64,7 +64,7 @@ public class B2BucketListService implements RootListService {
             return buckets;
         }
         catch(B2ApiException e) {
-            throw new B2ExceptionMappingService().map("Listing directory {0} failed", e,
+            throw new B2ExceptionMappingService(session).map("Listing directory {0} failed", e,
                     new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)));
         }
         catch(IOException e) {

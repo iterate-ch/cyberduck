@@ -337,27 +337,31 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             defaults.put("connection.ssl.keystore.type", "Windows-MY");
             defaults.put("connection.ssl.keystore.provider", "SunMSCAPI");
 
-             // NTLM Windows Domain
-            try
+            defaults.put("webdav.ntlm.environment", false.ToString());
+            if (this.getBoolean("webdav.ntlm.environment"))
             {
-                 // Gets the network domain name associated with the current user
-                defaults.put("webdav.ntlm.domain", Environment.UserDomainName);
-            }
-            catch (PlatformNotSupportedException e)
-            {
-                // The operating system does not support retrieving the network domain name.
-            }
-            catch (InvalidOperationException e)
-            {
-                // The network domain name cannot be retrieved.
-            }
-            try
-            {
-                defaults.put("webdav.ntlm.workstation", Environment.MachineName);
-            }
-            catch (InvalidOperationException e)
-            {
-                // The name of this computer cannot be obtained.
+                 // NTLM Windows Domain
+                try
+                {
+                     // Gets the network domain name associated with the current user
+                    defaults.put("webdav.ntlm.domain", Environment.UserDomainName);
+                }
+                catch (PlatformNotSupportedException e)
+                {
+                    // The operating system does not support retrieving the network domain name.
+                }
+                catch (InvalidOperationException e)
+                {
+                    // The network domain name cannot be retrieved.
+                }
+                try
+                {
+                    defaults.put("webdav.ntlm.workstation", Environment.MachineName);
+                }
+                catch (InvalidOperationException e)
+                {
+                    // The name of this computer cannot be obtained.
+                }
             }
         }
 
@@ -365,8 +369,8 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
         {
             base.post();
             Logger root = Logger.getRootLogger();
-            var fileName = Path.Combine(this.getProperty("application.support.path"),
-                this.getProperty("application.name").ToLower().Replace(" ", "") + ".log");
+            var fileName = Path.Combine(getProperty("application.support.path"),
+                getProperty("application.name").ToLower().Replace(" ", "") + ".log");
             RollingFileAppender appender = new RollingFileAppender(new PatternLayout(@"%d [%t] %-5p %c - %m%n"),
                 fileName, true);
             appender.setMaxFileSize("10MB");

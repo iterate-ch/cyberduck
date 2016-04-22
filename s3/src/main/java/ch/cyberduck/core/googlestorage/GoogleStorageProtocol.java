@@ -27,9 +27,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * @version $Id$
- */
 public final class GoogleStorageProtocol extends AbstractProtocol {
     @Override
     public String getName() {
@@ -53,7 +50,7 @@ public final class GoogleStorageProtocol extends AbstractProtocol {
 
     @Override
     public String getPrefix() {
-        return String.format("%s.%s", this.getClass().getPackage().getName(), "GoogleStorage");
+        return String.format("%s.%s", GoogleStorageProtocol.class.getPackage().getName(), "GoogleStorage");
     }
 
     @Override

@@ -28,6 +28,7 @@ import ch.cyberduck.core.io.SHA1ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.threading.DefaultThreadPool;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -84,7 +85,7 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
         super(writer);
         this.session = session;
         this.partSize = partSize;
-        this.pool = new ThreadPool(concurrency, "largeupload");
+        this.pool = new DefaultThreadPool(concurrency, "largeupload");
     }
 
     @Override
@@ -185,7 +186,7 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
             return null;
         }
         catch(B2ApiException e) {
-            throw new B2ExceptionMappingService().map("Upload {0} failed", e, file);
+            throw new B2ExceptionMappingService(session).map("Upload {0} failed", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);

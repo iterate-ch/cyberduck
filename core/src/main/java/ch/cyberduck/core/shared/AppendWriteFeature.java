@@ -49,8 +49,8 @@ public abstract class AppendWriteFeature implements Write {
     @Override
     public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
         if(finder.withCache(cache).find(file)) {
-            final PathAttributes attributes = this.attributes.withCache(cache).find(file);
-            return new Append(attributes.getSize()).withChecksum(attributes.getChecksum());
+            final PathAttributes attr = attributes.withCache(cache).find(file);
+            return new Append(attr.getSize()).withChecksum(attr.getChecksum());
         }
         return Write.notfound;
     }

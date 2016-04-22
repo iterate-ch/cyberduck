@@ -4,11 +4,30 @@ http://cyberduck.io/
 Changelog. Last modified: $Date$
 
 5.0 [https://trac.cyberduck.io/milestone/5.0]
+- [Feature] Segmented downloads with multiple connections per file (#4498)
 - [Feature] Support for Google Drive (#6976)
 - [Feature] Support for Spectra BlackPearl Deep Storage Gateway (Spectra S3)
+- [Feature] Option to use AWS KMS–Managed Keys (SSE-KMS) for server side encryption (S3)
+
+4.9.3
+- [Bugfix] Revert reading NTLM domain and workstation from environment (WebDAV, Windows)
+- [Bugfix] Fix crash in software updater (Windows)
+
+4.9.2
+- [Bugfix] Fix application launch failure when running with disabled updater (Mac)
+
+4.9.1
+- [Feature] Support password change requests (SFTP) (#8821)
+- [Bugfix] Default path value setting in bookmark ignored (#9435)
+- [Bugfix] Excessive memory usage when uploading many files (#9439)
+- [Bugfix] Retry transfer when authentication token expires (Backblaze B2)
+- [Bugfix] Uploads use a lot of Class C transactions (#9417) (Backblaze B2)
+- [Bugfix] Retry transfer for 421 error reply from server with a delay (FTP)
 
 4.9 [https://trac.cyberduck.io/milestone/4.9]
-- [Feature] Support for B2 Cloud Storage (Backblaze) (#9162)
+- [Feature] Support for B2 Cloud Storage (Backblaze B2) (#9162)
+- [Feature] New bundled application updater using MSI for installation (Windows)
+- [Feature] New software updater (Windows)
 - [Bugfix] Creating new folders with SSE restriction fails (S3) (#9378)
 - [Bugfix] Unable to duplicate folders (#9383)
 - [Bugfix] Routing failure when connecting to IPv6 address (#8802)

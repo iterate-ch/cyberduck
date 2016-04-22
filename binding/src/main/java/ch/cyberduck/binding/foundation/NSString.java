@@ -30,7 +30,7 @@ public abstract class NSString extends NSObject implements NSCopying {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSString", _Class.class);
 
     public static NSString stringWithString(String string) {
-        return CLASS.alloc().initWithString(string);
+        return CLASS.stringWithString(string);
     }
 
     public static String stringByAbbreviatingWithTildeInPath(String string) {

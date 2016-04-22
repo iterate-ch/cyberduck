@@ -46,6 +46,7 @@ using ch.cyberduck.core.spectra;
 using Ch.Cyberduck.Core.Urlhandler;
 using Ch.Cyberduck.Ui.Core;
 using Ch.Cyberduck.Ui.Core.Preferences;
+using Ch.Cyberduck.Ui.Sparkle;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using java.util;
 using Microsoft.VisualBasic.ApplicationServices;
@@ -67,6 +68,8 @@ namespace Ch.Cyberduck.Ui.Controller
         private static MainController _application;
         private static JumpListManager _jumpListManager;
         private readonly BaseController _controller = new BaseController();
+        private WinSparkle.win_sparkle_can_shutdown_callback_t _canShutdownCallback;
+        private WinSparkle.win_sparkle_shutdown_request_callback_t _shutdownRequestCallback;
 
         /// <summary>
         /// Saved browsers
@@ -486,15 +489,14 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 thirdpartySemaphore.Signal();
             });
+            // register callbacks
+            _canShutdownCallback = CanShutdownCallback;
+            _shutdownRequestCallback = ShutdownRequestCallback;
+            WindowsPeriodicUpdateChecker.SetCanShutdownCallback(_canShutdownCallback);
+            WindowsPeriodicUpdateChecker.SetShutdownRequestCallback(_shutdownRequestCallback);
             if (PreferencesFactory.get().getBoolean("update.check"))
             {
                 _updater = new WindowsPeriodicUpdateChecker();
-                WindowsPeriodicUpdateChecker.SetCanShutdownCallback(() => Convert.ToInt32(PrepareExit()));
-                WindowsPeriodicUpdateChecker.SetShutdownRequestCallback(delegate
-                {
-                    Logger.info("About to exit in order to install update");
-                    Exit(true);
-                });
                 if (_updater.hasUpdatePrivileges())
                 {
                     DateTime lastCheck = new DateTime(PreferencesFactory.get().getLong("update.check.last"));
@@ -506,6 +508,17 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                 }
             }
+        }
+
+        private void ShutdownRequestCallback()
+        {
+            Logger.info("About to exit in order to install update");
+            Exit(true);
+        }
+
+        private int CanShutdownCallback()
+        {
+            return Convert.ToInt32(PrepareExit());
         }
 
         private IList<ThirdpartyBookmarkCollection> GetThirdpartyBookmarks()

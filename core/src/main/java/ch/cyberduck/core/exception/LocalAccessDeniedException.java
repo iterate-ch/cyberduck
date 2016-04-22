@@ -19,10 +19,11 @@ package ch.cyberduck.core.exception;
 
 import ch.cyberduck.core.LocaleFactory;
 
-/**
- * @version $Id$
- */
 public class LocalAccessDeniedException extends AccessDeniedException {
+
+    public LocalAccessDeniedException() {
+        super();
+    }
 
     public LocalAccessDeniedException(final String detail) {
         super(detail);
