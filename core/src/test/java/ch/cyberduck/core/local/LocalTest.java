@@ -91,11 +91,6 @@ public class LocalTest {
     }
 
     @Test
-    public void testFollowLinks() throws Exception {
-        assertTrue(new Local("/tmp").exists());
-    }
-
-    @Test
     public void testMoveOverride() throws Exception {
         final TestLocal l = new TestLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final TestLocal n = new TestLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
