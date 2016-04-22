@@ -7,6 +7,7 @@ Changelog. Last modified: $Date$
 - [Feature] Segmented downloads with multiple connections per file (#4498)
 - [Feature] Support for Google Drive (#6976)
 - [Feature] Support for Spectra BlackPearl Deep Storage Gateway (Spectra S3)
+- [Feature] Option to use AWS KMS–Managed Keys (SSE-KMS) for server side encryption (S3)
 
 4.9.3
 - [Bugfix] Revert reading NTLM domain and workstation from environment (WebDAV, Windows)
