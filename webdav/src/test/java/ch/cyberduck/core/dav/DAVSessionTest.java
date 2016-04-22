@@ -380,7 +380,7 @@ public class DAVSessionTest {
         assertNotNull(session.getFeature(Timestamp.class));
         assertNotNull(session.getFeature(Copy.class));
         assertNotNull(session.getFeature(Headers.class));
-        assertNotNull(session.getFeature(DistributionConfiguration.class));
+        assertNull(session.getFeature(DistributionConfiguration.class));
     }
 
     @Test(expected = LoginFailureException.class)
