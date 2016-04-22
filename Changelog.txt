@@ -8,6 +8,13 @@ Changelog. Last modified: $Date$
 - [Feature] Support for Google Drive (#6976)
 - [Feature] Support for Spectra BlackPearl Deep Storage Gateway (Spectra S3)
 
+4.9.3
+- [Bugfix] Revert reading NTLM domain and workstation from environment (WebDAV, Windows)
+- [Bugfix] Fix crash in software updater (Windows)
+
+4.9.2
+- [Bugfix] Fix application launch failure when running with disabled updater (Mac)
+
 4.9.1
 - [Feature] Support password change requests (SFTP) (#8821)
 - [Bugfix] Default path value setting in bookmark ignored (#9435)
@@ -19,6 +26,7 @@ Changelog. Last modified: $Date$
 4.9 [https://trac.cyberduck.io/milestone/4.9]
 - [Feature] Support for B2 Cloud Storage (Backblaze B2) (#9162)
 - [Feature] New bundled application updater using MSI for installation (Windows)
+- [Feature] New software updater (Windows)
 - [Bugfix] Creating new folders with SSE restriction fails (S3) (#9378)
 - [Bugfix] Unable to duplicate folders (#9383)
 - [Bugfix] Routing failure when connecting to IPv6 address (#8802)
