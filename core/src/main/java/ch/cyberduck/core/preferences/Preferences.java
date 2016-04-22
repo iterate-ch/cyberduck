@@ -620,8 +620,8 @@ public abstract class Preferences {
         /**
          * Authentication header version
          */
-        defaults.put("s3.signature.version", "AWS2");
-//        defaults.put("s3.signature.version", "AWS4HMACSHA256");
+//        defaults.put("s3.signature.version", "AWS2");
+        defaults.put("s3.signature.version", "AWS4HMACSHA256");
         /**
          * Default bucket location
          */
@@ -796,7 +796,7 @@ public abstract class Preferences {
         defaults.put("b2.delete.concurrency", String.valueOf(10));
 
         defaults.put("spectra.upload.md5", String.valueOf(false));
-        defaults.put("spectra.upload.crc32", String.valueOf(false));
+        defaults.put("spectra.upload.crc32", String.valueOf(true));
 
         /**
          * NTLM Windows Domain
