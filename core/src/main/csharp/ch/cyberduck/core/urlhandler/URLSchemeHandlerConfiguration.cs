@@ -18,13 +18,17 @@
 
 using System;
 using System.Windows.Forms;
+using ch.cyberduck.core;
 using Microsoft.Win32;
 using org.apache.log4j;
 using ch.cyberduck.core.urlhandler;
+using java.util;
+using ch.cyberduck.core.local;
+using Application = System.Windows.Forms.Application;
 
 namespace Ch.Cyberduck.Core.Urlhandler
 {
-    public class URLSchemeHandlerConfiguration : SchemeHandler
+    public class URLSchemeHandlerConfiguration : AbstractSchemeHandler
     {
         private static readonly Logger Logger = Logger.getLogger(typeof (URLSchemeHandlerConfiguration).FullName);
         private static readonly URLSchemeHandlerConfiguration instance = new URLSchemeHandlerConfiguration();
@@ -160,6 +164,36 @@ namespace Ch.Cyberduck.Core.Urlhandler
                 if (null != r32) r32.Close();
                 if (null != r64) r64.Close();
             }
+        }
+
+        public override void setDefaultHandlerForScheme(ch.cyberduck.core.local.Application a, Scheme scheme)
+        {
+            if(Scheme.ftp.@equals(scheme))
+            {
+                this.RegisterFtpProtocol();
+            }
+            if (Scheme.sftp.@equals(scheme))
+            {
+                this.RegisterSftpProtocol();
+            }
+        }
+
+        public override ch.cyberduck.core.local.Application getDefaultHandler(Scheme scheme)
+        {
+            if (Scheme.ftp.@equals(scheme))
+            {
+                if(this.IsDefaultApplicationForFtp()) return new ch.cyberduck.core.local.Application(Application.ExecutablePath);
+            }
+            if (Scheme.sftp.@equals(scheme))
+            {
+                if(this.IsDefaultApplicationForSftp()) return new ch.cyberduck.core.local.Application(Application.ExecutablePath);
+            }
+            return ch.cyberduck.core.local.Application.notfound;
+        }
+
+        public override List getAllHandlers(Scheme value)
+        {
+            return Arrays.asList(new ch.cyberduck.core.local.Application(Application.ExecutablePath));
         }
     }
 }
