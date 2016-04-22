@@ -18,11 +18,17 @@ package ch.cyberduck.core.io;
  * feedback@cyberduck.io
  */
 
-/**
- * @version $Id$
- */
+import org.apache.commons.lang3.StringUtils;
+
 public enum HashAlgorithm {
     md5,
     sha1,
-    sha256
+    sha256,
+    sha512,
+    crc32;
+
+    @Override
+    public String toString() {
+        return StringUtils.upperCase(this.name());
+    }
 }

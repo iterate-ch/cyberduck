@@ -20,6 +20,7 @@ package ch.cyberduck.core.http;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.shared.AppendWriteFeature;
@@ -35,14 +36,8 @@ import java.io.OutputStream;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadFactory;
 
-/**
- * @version $Id$
- */
 public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature {
     private static final Logger log = Logger.getLogger(AbstractHttpWriteFeature.class);
-
-    private final ThreadFactory factory
-            = new NamedThreadFactory("http");
 
     private abstract class FutureHttpResponse<T> implements Runnable {
 
@@ -104,6 +99,8 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature {
                     }
                 }
             };
+            final ThreadFactory factory
+                    = new NamedThreadFactory(String.format("http-%s", file.getName()));
             final Thread t = factory.newThread(target);
             t.start();
             // Wait for output stream to become available
@@ -123,6 +120,9 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature {
                 @Override
                 public T getResponse() throws BackgroundException {
                     try {
+                        if(status.isCanceled()) {
+                            throw new ConnectionCanceledException();
+                        }
                         // Block the calling thread until after the full response from the server
                         // has been consumed.
                         exit.await();

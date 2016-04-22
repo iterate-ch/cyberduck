@@ -24,7 +24,6 @@
 <project name="Cyberduck" basedir=".">
 
     <property file="build.properties"/>
-    <property file="tools.properties"/>
 
     <property environment="env"/>
 
@@ -47,12 +46,12 @@
     <property name="www.update" value="${www}/update"/>
     <property name="www.help" value="${www}/help"/>
     <property name="setup" value="${home}/setup"/>
-    <property name="copyright" value="Copyright (c) 2001-2016 David Kocher. Copyright (c) 2011–2016 Yves Langisch"/>
-    <property name="version" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
+    <property name="copyright" value="Copyright (c) 2001-2016 David Kocher. Copyright (c) 2011-2016 Yves Langisch"/>
 
     <property name="bundle.contents" value="Contents"/>
     <property name="bundle.home" value="${bundle.contents}/Home"/>
     <property name="bundle.macos" value="${bundle.contents}/MacOS"/>
+    <property name="bundle.plugins" value="${bundle.contents}/PlugIns"/>
     <property name="bundle.library" value="${bundle.contents}/Library"/>
     <property name="bundle.login" value="${bundle.library}/LoginItems"/>
     <property name="bundle.frameworks" value="${bundle.contents}/Frameworks"/>
@@ -98,6 +97,18 @@
                        input="${version}"
                        regexp="((\d+)\.(\d+)(\.(\d+))?)(-SNAPSHOT)?"
                        select="\1"/>
+        <condition property="twoDigitsVersion">
+            <matches string="${version}" pattern="^(\d+)\.(\d+)$"/>
+        </condition>
+        <if>
+            <isset property="twoDigitsVersion"/>
+            <then>
+                <property name="normalized.version" value="${version}.0"/>
+            </then>
+            <else>
+                <property name="normalized.version" value="${version}"/>
+            </else>
+        </if>
         <echo message="Version ${version}"/>
         <echo message="Revision ${revision}"/>
         <echo message="Hash ${git.revision}"/>

@@ -49,9 +49,7 @@ public class ResumeFilter extends AbstractDownloadFilter {
 
     public ResumeFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session,
                         final DownloadFilterOptions options) {
-        super(symlinkResolver, session, options);
-        this.download = session.getFeature(Download.class);
-        this.attribute = new DefaultAttributesFeature(session);
+        this(symlinkResolver, session, options, session.getFeature(Download.class));
     }
 
     public ResumeFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session,
@@ -81,7 +79,9 @@ public class ResumeFilter extends AbstractDownloadFilter {
                             }
                             return false;
                         }
-                        log.warn(String.format("Checksum mismatch for %s and %s", file, local));
+                        else {
+                            log.warn(String.format("Checksum mismatch for %s and %s", file, local));
+                        }
                     }
                     else {
                         if(log.isInfoEnabled()) {
@@ -99,13 +99,30 @@ public class ResumeFilter extends AbstractDownloadFilter {
     @Override
     public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
         final TransferStatus status = super.prepare(file, local, parent);
-        if(download.offset(file)) {
-            if(local.isFile()) {
-                if(local.exists()) {
-                    if(local.attributes().getSize() > 0) {
-                        status.setAppend(true);
-                        status.setLength(status.getLength() - local.attributes().getSize());
-                        status.setOffset(local.attributes().getSize());
+        if(status.isSegmented()) {
+            for(TransferStatus segmentStatus : status.getSegments()) {
+                final Local segmentFile = segmentStatus.getRename().local;
+                if(segmentFile.exists()) {
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Determine if part %s can be skipped", segmentStatus));
+                    }
+                    if(segmentFile.attributes().getSize() > 0) {
+                        segmentStatus.setAppend(true);
+                        segmentStatus.setLength(segmentStatus.getLength() - segmentFile.attributes().getSize());
+                        segmentStatus.setOffset(segmentStatus.getOffset() + segmentFile.attributes().getSize());
+                    }
+                }
+            }
+        }
+        else {
+            if(download.offset(file)) {
+                if(local.isFile()) {
+                    if(local.exists()) {
+                        if(local.attributes().getSize() > 0) {
+                            status.setAppend(true);
+                            status.setLength(status.getLength() - local.attributes().getSize());
+                            status.setOffset(status.getOffset() + local.attributes().getSize());
+                        }
                     }
                 }
             }

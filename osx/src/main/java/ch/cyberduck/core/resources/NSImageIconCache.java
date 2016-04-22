@@ -36,13 +36,10 @@ import org.rococoa.cocoa.foundation.NSSize;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public class NSImageIconCache extends AbstractIconCache<NSImage> {
     private static final Logger log = Logger.getLogger(NSImageIconCache.class);
 
-    private final NSRect NSZeroRect = new NSRect(0, 0);
+    private final static NSRect NSZeroRect = new NSRect(0, 0);
 
     /**
      * Cache limited to n entries

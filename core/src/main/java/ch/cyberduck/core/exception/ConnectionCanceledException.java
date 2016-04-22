@@ -37,4 +37,8 @@ public class ConnectionCanceledException extends BackgroundException {
     public ConnectionCanceledException(final Throwable cause) {
         super(cause);
     }
+
+    public ConnectionCanceledException(final String detail, final Throwable cause) {
+        super(detail, cause);
+    }
 }

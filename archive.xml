@@ -27,8 +27,11 @@
             <param name="source" value="."/>
             <param name="target" value="duck-src-${version}.${revision}.tar.gz"/>
         </antcall>
-        <checksum file="${build.deploy}/duck-src-${version}.${revision}.tar.gz"
-                  algorithm="sha-256" property="source.sha256"/>
+        <foreach target="sha256" param="source">
+            <fileset dir="${build.deploy}">
+                <include name="*.tar.gz"/>
+            </fileset>
+        </foreach>
     </target>
 
     <target name="tar" if="platform.mac">
@@ -44,8 +47,20 @@
         <mkdir dir="${build.deploy}"/>
         <echo message="Creating ZIP archive from ${directory}/${source}"/>
         <exec dir="${directory}" executable="ditto" spawn="false" failonerror="true">
-            <arg line="-c -k --keepParent ${source} ${build.deploy}/${target}"/>
+            <arg line="-c -k --keepParent --sequesterRsrc ${source} ${build.deploy}/${target}"/>
         </exec>
         <checksum file="${build.deploy}/${target}" algorithm="md5"/>
+    </target>
+
+    <target name="md5">
+        <checksum file="${source}" algorithm="md5"/>
+    </target>
+
+    <target name="sha1">
+        <checksum file="${source}" algorithm="sha1"/>
+    </target>
+
+    <target name="sha256">
+        <checksum file="${source}" algorithm="sha-256"/>
     </target>
 </project>

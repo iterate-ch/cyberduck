@@ -201,6 +201,16 @@
                 <key>CFBundleTypeRole</key>
                 <string>Viewer</string>
                 <key>CFBundleURLName</key>
+                <string>WebDAV URL</string>
+                <key>CFBundleURLSchemes</key>
+                <array>
+                    <string>dav</string>
+                </array>
+            </dict>
+            <dict>
+                <key>CFBundleTypeRole</key>
+                <string>Viewer</string>
+                <key>CFBundleURLName</key>
                 <string>S3 URL</string>
                 <key>CFBundleURLSchemes</key>
                 <array>
@@ -225,7 +235,7 @@
         <key>Runtime</key>
         <dict>
             <key>Library</key>
-            <string>$APP_PACKAGE/Contents/MacOS/Runtime.jre</string>
+            <string>$APP_PACKAGE/Contents/PlugIns/Runtime.jre</string>
             <key>MainClass</key>
             <string>ch.cyberduck.ui.cocoa.MainApplication</string>
             <key>StartOnMainThread</key>
@@ -233,7 +243,7 @@
             <key>WorkingDirectory</key>
             <string>$APP_PACKAGE/Contents/Resources</string>
             <key>VMOptions</key>
-            <string>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -Xmx512m -XX:+DisableAttachMechanism -Djava.library.path=$APP_PACKAGE/Contents/Frameworks -Djna.boot.library.path=$APP_PACKAGE/Contents/Frameworks -Djna.library.path=$APP_PACKAGE/Contents/Frameworks -Djna.nounpack=true -Djava.awt.headless=false -Dsun.jnu.encoding=utf-8 -Dfile.encoding=utf-8 -Dsun.io.useCanonCaches=false -Xverify:none -XX:-UsePerfData -XX:+ReduceSignalUsage -XX:-OptimizeStringConcat</string>
+            <string>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -Djava.ext.dirs=$APP_PACKAGE/Contents/PlugIns/Runtime.jre/Contents/Home/lib/ext -Djava.library.path=$APP_PACKAGE/Contents/Frameworks -Djna.boot.library.path=$APP_PACKAGE/Contents/Frameworks -Djna.library.path=$APP_PACKAGE/Contents/Frameworks -Djna.nounpack=true -Djava.awt.headless=true -Dsun.jnu.encoding=utf-8 -Dfile.encoding=utf-8 -Dsun.io.useCanonCaches=false -Xverify:none</string>
         </dict>
         <key>NSAppleScriptEnabled</key>
         <false/>
@@ -244,7 +254,7 @@
         <key>SUEnableSystemProfiling</key>
         <false/>
         <key>SUEnableAutomaticChecks</key>
-        <true/>
+        <false/>
         <key>SUAllowsAutomaticUpdates</key>
         <false/>
         <key>SUPublicDSAKeyFile</key>
@@ -376,7 +386,6 @@
                 <key>UTTypeConformsTo</key>
                 <array>
                     <string>com.apple.package</string>
-                    <string>public.data</string>
                 </array>
                 <key>UTTypeDescription</key>
                 <string>Cyberduck Segment</string>

@@ -51,19 +51,16 @@ import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * @version $Id$
- */
 public class ConcurrentTransferWorker extends AbstractTransferWorker {
     private static final Logger log = Logger.getLogger(ConcurrentTransferWorker.class);
 
     private static final long BORROW_MAX_WAIT_INTERVAL = 1000L;
 
-    private GenericObjectPool<Session> pool;
+    private final GenericObjectPool<Session> pool;
 
-    private CompletionService<TransferStatus> completion;
+    private final CompletionService<TransferStatus> completion;
 
-    private AtomicInteger size = new AtomicInteger();
+    private final AtomicInteger size = new AtomicInteger();
 
     public ConcurrentTransferWorker(final ConnectionService connect,
                                     final Transfer transfer, final TransferOptions options,

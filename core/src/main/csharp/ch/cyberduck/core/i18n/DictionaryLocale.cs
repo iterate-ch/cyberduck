@@ -107,7 +107,7 @@ namespace Ch.Cyberduck.Core.I18n
             }
             else
             {
-                Log.error(String.Format("Bundle {0} for language {1} not found", bundle, language));
+                Log.warn(String.Format("Bundle {0} for language {1} not found", bundle, language));
             }
         }
     }

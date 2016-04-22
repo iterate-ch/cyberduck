@@ -20,6 +20,7 @@ package ch.cyberduck.cli;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.azure.AzureProtocol;
+import ch.cyberduck.core.b2.B2Protocol;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.editor.DefaultEditorListener;
@@ -27,9 +28,11 @@ import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
-import ch.cyberduck.core.gstorage.GoogleStorageProtocol;
+import ch.cyberduck.core.googledrive.DriveProtocol;
+import ch.cyberduck.core.googlestorage.GoogleStorageProtocol;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.irods.IRODSProtocol;
 import ch.cyberduck.core.local.Application;
@@ -79,9 +82,6 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 
-/**
- * @version $Id$
- */
 public class Terminal {
     private static final Logger log = Logger.getLogger(Terminal.class);
 
@@ -112,8 +112,21 @@ public class Terminal {
 
     public Terminal(final Preferences defaults, final Options options, final CommandLine input) {
         this.preferences = defaults;
-        ProtocolFactory.register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(), new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(),
-                new GoogleStorageProtocol(), new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol());
+        ProtocolFactory.register(
+                new FTPProtocol(),
+                new FTPTLSProtocol(),
+                new SFTPProtocol(),
+                new DAVProtocol(),
+                new DAVSSLProtocol(),
+                new SwiftProtocol(),
+                new S3Protocol(),
+                new GoogleStorageProtocol(),
+                new AzureProtocol(),
+                new IRODSProtocol(),
+                new SpectraProtocol(),
+                new B2Protocol(),
+                new DriveProtocol()
+        );
         this.options = options;
         if(log.isInfoEnabled()) {
             log.info(String.format("Parsed options %s from input %s", options, input));
@@ -193,7 +206,7 @@ public class Terminal {
             return Exit.failure;
         }
         this.configure(input);
-        Session session = null;
+        Session<?> session = null;
         try {
             final TerminalAction action = TerminalActionFinder.get(input);
             if(null == action) {
@@ -211,7 +224,8 @@ public class Terminal {
             if(new CommandLinePathParser(input).parse(uri).getAbsolute().startsWith(TildePathExpander.PREFIX)) {
                 // Already connect here because the tilde expander may need to use the current working directory
                 this.connect(session);
-                remote = new TildePathExpander(session.workdir()).expand(new CommandLinePathParser(input).parse(uri));
+                final Home home = session.getFeature(Home.class);
+                remote = new TildePathExpander(home.find()).expand(new CommandLinePathParser(input).parse(uri));
             }
             else {
                 remote = new CommandLinePathParser(input).parse(uri);
@@ -367,7 +381,7 @@ public class Terminal {
                 new TerminalListProgressListener(reader, verbose));
         final SessionBackgroundAction action = new TerminalBackgroundAction<AttributedList<Path>>(
                 new TerminalLoginService(input, new TerminalLoginCallback(reader)), controller,
-                session, cache, worker);
+                session, cache, new TerminalHostKeyVerifier(reader), worker);
         this.execute(action);
         if(action.hasFailed()) {
             return Exit.failure;
@@ -389,7 +403,7 @@ public class Terminal {
         }
         final SessionBackgroundAction action = new TerminalBackgroundAction<Boolean>(
                 new TerminalLoginService(input, new TerminalLoginCallback(reader)), controller,
-                session, cache, worker);
+                session, cache, new TerminalHostKeyVerifier(reader), worker);
         this.execute(action);
         if(action.hasFailed()) {
             return Exit.failure;
@@ -425,7 +439,7 @@ public class Terminal {
         }, new DisabledTransferErrorCallback(), new DefaultEditorListener(controller, session, editor));
         final SessionBackgroundAction action = new TerminalBackgroundAction<Transfer>(
                 new TerminalLoginService(input, new TerminalLoginCallback(reader)),
-                controller, session, cache, worker
+                controller, session, cache, new TerminalHostKeyVerifier(reader), worker
         );
         this.execute(action);
         if(action.hasFailed()) {

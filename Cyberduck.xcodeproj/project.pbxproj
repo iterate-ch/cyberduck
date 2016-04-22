@@ -47,6 +47,7 @@
 		4732BDA813182C7F00CBC46B /* Download.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4732BD8613182C7F00CBC46B /* Download.strings */; };
 		4737F9041C32DD8900FDBDA2 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4737F9031C32DD8900FDBDA2 /* Quartz.framework */; };
 		4739EF6E0856981300405FD3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
+		473A4B6A1CAC67CE00B536E7 /* B2.cyberduckprofile in CopyFiles */ = {isa = PBXBuildFile; fileRef = 479421BB1C8DF2A800444CD7 /* B2.cyberduckprofile */; };
 		473BF0871892968E0068B4C1 /* azure.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 473BF0851892968E0068B4C1 /* azure.tiff */; };
 		474163C106C4F64100AC0BD2 /* Info.xib in Resources */ = {isa = PBXBuildFile; fileRef = 474163A306C4F64000AC0BD2 /* Info.xib */; };
 		474163C206C4F64100AC0BD2 /* Browser.xib in Resources */ = {isa = PBXBuildFile; fileRef = 474163A506C4F64100AC0BD2 /* Browser.xib */; };
@@ -155,6 +156,7 @@
 		478F0DF412FB03DC000FE33C /* update.pem in Resources */ = {isa = PBXBuildFile; fileRef = 478F0DF312FB03DC000FE33C /* update.pem */; };
 		47911A180B84C4E8001A29AE /* Acknowledgments.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 47911A170B84C4E8001A29AE /* Acknowledgments.rtf */; };
 		4791D0541C282B1100CC7DAB /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4791D0521C2829F300CC7DAB /* Sparkle.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		479626AF1C98057C00CEBEC0 /* googledrive.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 479626AE1C98057C00CEBEC0 /* googledrive.tiff */; };
 		47990FD2195C63AE009EBB7C /* Support.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47990FD0195C63AE009EBB7C /* Support.strings */; };
 		47993F7811699F12000271A8 /* Transfer.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47993F5711699F12000271A8 /* Transfer.strings */; };
 		47993F7C11699F40000271A8 /* Transfer.xib in Resources */ = {isa = PBXBuildFile; fileRef = 47993F7B11699F40000271A8 /* Transfer.xib */; };
@@ -198,6 +200,7 @@
 		47D93A151A2762A40006D4AE /* Credentials.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4751799C097943FA008F671F /* Credentials.strings */; };
 		47D93A161A2762A40006D4AE /* Status.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47F0B7D2087AD1AE00439978 /* Status.strings */; };
 		47D93A171A2762A40006D4AE /* Support.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47990FD0195C63AE009EBB7C /* Support.strings */; };
+		47DD99831CAA766100960EAF /* B2.cyberduckprofile in CopyFiles */ = {isa = PBXBuildFile; fileRef = 479421BB1C8DF2A800444CD7 /* B2.cyberduckprofile */; };
 		47E987600D689A280077733F /* S3.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47E9875E0D689A280077733F /* S3.strings */; };
 		47F0B7D3087AD1B100439978 /* Status.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47F0B7D2087AD1AE00439978 /* Status.strings */; };
 		47F85C121C0F0E8900FDA856 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 477CFC7E1AF0FAFB001E81AF /* Cocoa.framework */; };
@@ -253,6 +256,7 @@
 			dstPath = Profiles;
 			dstSubfolderSpec = 7;
 			files = (
+				47DD99831CAA766100960EAF /* B2.cyberduckprofile in CopyFiles */,
 				47472EF5177F788E0090A595 /* Rackspace US.cyberduckprofile in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -273,6 +277,7 @@
 			dstPath = Profiles;
 			dstSubfolderSpec = 7;
 			files = (
+				473A4B6A1CAC67CE00B536E7 /* B2.cyberduckprofile in CopyFiles */,
 				47D93A051A2760810006D4AE /* Rackspace US.cyberduckprofile in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -972,6 +977,8 @@
 		4790762A0764903900676C18 /* cs */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = cs; path = i18n/src/main/resources/cs.lproj/Localizable.strings; sourceTree = "<group>"; };
 		47911A170B84C4E8001A29AE /* Acknowledgments.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = Acknowledgments.rtf; sourceTree = "<group>"; };
 		4791D0521C2829F300CC7DAB /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = osx/target/Sparkle.framework; sourceTree = "<group>"; };
+		479421BB1C8DF2A800444CD7 /* B2.cyberduckprofile */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = B2.cyberduckprofile; sourceTree = "<group>"; };
+		479626AE1C98057C00CEBEC0 /* googledrive.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = googledrive.tiff; sourceTree = "<group>"; };
 		4796C7271B3317F60042891D /* zh_TW */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = zh_TW; path = i18n/src/main/resources/zh_TW.lproj/Alert.strings; sourceTree = "<group>"; };
 		4796C7281B3317F60042891D /* zh_TW */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = zh_TW; path = i18n/src/main/resources/zh_TW.lproj/Archive.strings; sourceTree = "<group>"; };
 		4796C7291B3317F60042891D /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = zh_TW; path = i18n/src/main/resources/zh_TW.lproj/Bookmark.xib; sourceTree = "<group>"; };
@@ -1637,6 +1644,7 @@
 			children = (
 				4718F4A9175F432400B424AD /* Rackspace UK.cyberduckprofile */,
 				4718F4AA175F432400B424AD /* Rackspace US.cyberduckprofile */,
+				479421BB1C8DF2A800444CD7 /* B2.cyberduckprofile */,
 			);
 			path = profiles;
 			sourceTree = "<group>";
@@ -1743,6 +1751,7 @@
 		4741653C06C4FC3F00AC0BD2 /* img */ = {
 			isa = PBXGroup;
 			children = (
+				479626AE1C98057C00CEBEC0 /* googledrive.tiff */,
 				473BF0851892968E0068B4C1 /* azure.tiff */,
 				475C6D59170C9214006535BB /* googlestorage.tiff */,
 				47B3318B16680FF100C9FFA0 /* ftp.tiff */,
@@ -2058,6 +2067,7 @@
 				475D17C10805D54C00166B8A /* download1.icns in Resources */,
 				475D17C20805D54C00166B8A /* download4.icns in Resources */,
 				4781AF410828423100B3E0FA /* download0.icns in Resources */,
+				479626AF1C98057C00CEBEC0 /* googledrive.tiff in Resources */,
 				4716C5F50872BA9900938886 /* Command.xib in Resources */,
 				47F0B7D3087AD1B100439978 /* Status.strings in Resources */,
 				4751799E097943FA008F671F /* Credentials.strings in Resources */,

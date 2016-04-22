@@ -65,7 +65,6 @@ public class DAVSessionTest {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertNotNull(session.workdir());
         final AttributedList<Path> list = session.list(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
         assertNotNull(list.get(new Path("/trunk", EnumSet.of(Path.Type.directory))));
         assertNotNull(list.get(new Path("/branches", EnumSet.of(Path.Type.directory))));
@@ -206,7 +205,7 @@ public class DAVSessionTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         try {
-            session.list(session.workdir(), new DisabledListProgressListener());
+            session.list(new DefaultHomeFinderService(session).find(), new DisabledListProgressListener());
         }
         catch(InteroperabilityException e) {
             assertEquals("Not a valid DAV response.", e.getDetail());
@@ -240,7 +239,6 @@ public class DAVSessionTest {
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertNotNull(session.workdir());
         session.close();
     }
 
@@ -262,7 +260,6 @@ public class DAVSessionTest {
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertNotNull(session.workdir());
         session.close();
     }
 
@@ -418,7 +415,6 @@ public class DAVSessionTest {
         assertTrue(session.isConnected());
         assertTrue(session.isSecured());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertNotNull(session.workdir());
         assertFalse(session.getAcceptedIssuers().isEmpty());
         session.close();
     }
@@ -432,7 +428,6 @@ public class DAVSessionTest {
         assertTrue(session.isConnected());
         assertTrue(session.isSecured());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertNotNull(session.workdir());
         assertFalse(session.getAcceptedIssuers().isEmpty());
         session.close();
     }
@@ -446,7 +441,6 @@ public class DAVSessionTest {
         assertTrue(session.isConnected());
         assertTrue(session.isSecured());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertNotNull(session.workdir());
         assertFalse(session.getAcceptedIssuers().isEmpty());
         session.close();
     }
@@ -468,7 +462,6 @@ public class DAVSessionTest {
         assertTrue(session.isConnected());
         assertTrue(session.isSecured());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertNotNull(session.workdir());
         assertFalse(session.getAcceptedIssuers().isEmpty());
         session.close();
     }
@@ -490,7 +483,6 @@ public class DAVSessionTest {
         assertTrue(session.isConnected());
         assertTrue(session.isSecured());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertNotNull(session.workdir());
         assertFalse(session.getAcceptedIssuers().isEmpty());
         session.close();
     }
@@ -512,7 +504,6 @@ public class DAVSessionTest {
         assertTrue(session.isConnected());
         assertTrue(session.isSecured());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertNotNull(session.workdir());
         assertFalse(session.getAcceptedIssuers().isEmpty());
         session.close();
     }
@@ -546,7 +537,6 @@ public class DAVSessionTest {
         assertTrue(prompt.get());
         assertTrue(session.isConnected());
         assertFalse(session.isSecured());
-        assertNotNull(session.workdir());
         session.close();
     }
 

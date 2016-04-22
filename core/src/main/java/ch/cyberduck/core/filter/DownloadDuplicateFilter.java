@@ -22,9 +22,6 @@ import ch.cyberduck.core.Path;
 
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id$
- */
 public class DownloadDuplicateFilter implements Filter<Path> {
     private static final Logger log = Logger.getLogger(DownloadDuplicateFilter.class);
 

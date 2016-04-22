@@ -20,6 +20,7 @@ package ch.cyberduck.core.iam;
 import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -29,9 +30,6 @@ import org.apache.http.HttpStatus;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 
-/**
- * @version $Id$
- */
 public class AmazonServiceExceptionMappingService extends AbstractExceptionMappingService<AmazonClientException> {
 
     @Override
@@ -40,38 +38,33 @@ public class AmazonServiceExceptionMappingService extends AbstractExceptionMappi
         this.append(buffer, e.getMessage());
         if(e instanceof AmazonServiceException) {
             final AmazonServiceException failure = (AmazonServiceException) e;
-            if(failure.getStatusCode() == HttpStatus.SC_BAD_REQUEST) {
-                return new InteroperabilityException(buffer.toString(), e);
-            }
-            if(failure.getStatusCode() == HttpStatus.SC_METHOD_NOT_ALLOWED) {
-                return new InteroperabilityException(buffer.toString(), e);
-            }
-            if(failure.getStatusCode() == HttpStatus.SC_FORBIDDEN) {
-                if(failure.getErrorCode().equals("SignatureDoesNotMatch")) {
+            switch(failure.getStatusCode()) {
+                case HttpStatus.SC_BAD_REQUEST:
+                    return new InteroperabilityException(buffer.toString(), e);
+                case HttpStatus.SC_METHOD_NOT_ALLOWED:
+                    return new InteroperabilityException(buffer.toString(), e);
+                case HttpStatus.SC_FORBIDDEN:
+                    switch(failure.getErrorCode()) {
+                        case "SignatureDoesNotMatch":
+                            return new LoginFailureException(buffer.toString(), e);
+                        case "InvalidAccessKeyId":
+                            return new LoginFailureException(buffer.toString(), e);
+                        case "InvalidClientTokenId":
+                            return new LoginFailureException(buffer.toString(), e);
+                        case "InvalidSecurity":
+                            return new LoginFailureException(buffer.toString(), e);
+                        case "MissingClientTokenId":
+                            return new LoginFailureException(buffer.toString(), e);
+                        case "MissingAuthenticationToken":
+                            return new LoginFailureException(buffer.toString(), e);
+                    }
+                    return new AccessDeniedException(buffer.toString(), e);
+                case HttpStatus.SC_UNAUTHORIZED:
                     return new LoginFailureException(buffer.toString(), e);
-                }
-                if(failure.getErrorCode().equals("InvalidAccessKeyId")) {
-                    return new LoginFailureException(buffer.toString(), e);
-                }
-                if(failure.getErrorCode().equals("InvalidClientTokenId")) {
-                    return new LoginFailureException(buffer.toString(), e);
-                }
-                if(failure.getErrorCode().equals("InvalidSecurity")) {
-                    return new LoginFailureException(buffer.toString(), e);
-                }
-                if(failure.getErrorCode().equals("MissingClientTokenId")) {
-                    return new LoginFailureException(buffer.toString(), e);
-                }
-                if(failure.getErrorCode().equals("MissingAuthenticationToken")) {
-                    return new LoginFailureException(buffer.toString(), e);
-                }
-                return new AccessDeniedException(buffer.toString(), e);
-            }
-            if(failure.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
-                return new LoginFailureException(buffer.toString(), e);
-            }
-            if(failure.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
-                return new NotfoundException(buffer.toString(), e);
+                case HttpStatus.SC_NOT_FOUND:
+                    return new NotfoundException(buffer.toString(), e);
+                case HttpStatus.SC_SERVICE_UNAVAILABLE:
+                    return new ConnectionRefusedException(buffer.toString(), e);
             }
         }
         return this.wrap(e, buffer);

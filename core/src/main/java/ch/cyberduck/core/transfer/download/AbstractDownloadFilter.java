@@ -67,7 +67,7 @@ import java.util.List;
 public abstract class AbstractDownloadFilter implements TransferPathFilter {
     private static final Logger log = Logger.getLogger(AbstractDownloadFilter.class);
 
-    private SymlinkResolver<Path> symlinkResolver;
+    private final SymlinkResolver<Path> symlinkResolver;
 
     private final QuarantineService quarantine
             = QuarantineServiceFactory.get();
@@ -75,13 +75,13 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
     private final ApplicationLauncher launcher
             = ApplicationLauncherFactory.get();
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
     private final IconService icon
             = IconServiceFactory.get();
 
-    private Session<?> session;
+    private final Session<?> session;
 
     private Attributes attribute;
 
@@ -182,60 +182,47 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             status.setPermission(permission);
         }
         status.setAcl(attributes.getAcl());
-        if(file.isFile()) {
-            if(session.getTransferType() == Host.TransferType.concurrent) {
-                // Make segments
-                if(status.getLength() >= preferences.getLong("queue.download.segments.threshold")
-                        && status.getLength() > preferences.getLong("queue.download.segments.size")) {
-                    final Download read = session.getFeature(Download.class);
-                    if(read.offset(file)) {
-                        if(log.isInfoEnabled()) {
-                            log.info(String.format("Split download %s into segments", local));
-                        }
-                        long remaining = status.getLength();
-                        long offset = 0;
-                        // Part size from default setting of size divided by maximum number of connections
-                        long partsize = Math.max(
-                                preferences.getLong("queue.download.segments.size"),
-                                status.getLength() / preferences.getInteger("queue.maxtransfers"));
-                        // Sorted list
-                        final List<TransferStatus> segments = new ArrayList<TransferStatus>();
-                        for(int segmentNumber = 1; remaining > 0; segmentNumber++) {
-                            final Local renamed = LocalFactory.get(
-                                    LocalFactory.get(local.getParent(), String.format("%s.cyberducksegment", local.getName())),
-                                    String.format("%s-%d.cyberducksegment", local.getName(), segmentNumber));
-                            boolean skip = false;
-                            // Last part can be less than 5 MB. Adjust part size.
-                            final Long length = Math.min(partsize, remaining);
-                            if(status.isAppend()) {
-                                if(log.isInfoEnabled()) {
-                                    log.info(String.format("Determine if part number %d can be skipped", segmentNumber));
-                                }
-                                if(renamed.exists()) {
-                                    if(renamed.attributes().getSize() == length) {
-                                        if(log.isInfoEnabled()) {
-                                            log.info(String.format("Skip completed segment number %d", segmentNumber));
-                                        }
-                                        skip = true;
-                                    }
-                                }
+        if(options.segments) {
+            if(file.isFile()) {
+                if(session.getTransferType() == Host.TransferType.concurrent) {
+                    // Make segments
+                    if(status.getLength() >= preferences.getLong("queue.download.segments.threshold")
+                            && status.getLength() > preferences.getLong("queue.download.segments.size")) {
+                        final Download read = session.getFeature(Download.class);
+                        if(read.offset(file)) {
+                            if(log.isInfoEnabled()) {
+                                log.info(String.format("Split download %s into segments", local));
                             }
-                            if(!skip) {
-                                final TransferStatus segment = new TransferStatus()
+                            long remaining = status.getLength();
+                            long offset = 0;
+                            // Part size from default setting of size divided by maximum number of connections
+                            long partsize = Math.max(
+                                    preferences.getLong("queue.download.segments.size"),
+                                    status.getLength() / preferences.getInteger("queue.maxtransfers"));
+                            // Sorted list
+                            final List<TransferStatus> segments = new ArrayList<TransferStatus>();
+                            for(int segmentNumber = 1; remaining > 0; segmentNumber++) {
+                                final Local segmentFile = LocalFactory.get(
+                                        LocalFactory.get(local.getParent(), String.format("%s.cyberducksegment", local.getName())),
+                                        String.format("%s-%d.cyberducksegment", local.getName(), segmentNumber));
+                                boolean skip = false;
+                                // Last part can be less than 5 MB. Adjust part size.
+                                Long length = Math.min(partsize, remaining);
+                                final TransferStatus segmentStatus = new TransferStatus()
                                         .segment(true)
                                         .append(true)
                                         .skip(offset)
                                         .length(length)
-                                        .rename(renamed);
+                                        .rename(segmentFile);
                                 if(log.isDebugEnabled()) {
-                                    log.debug(String.format("Adding segment %s", segment));
+                                    log.debug(String.format("Adding status %s for segment %s", segmentStatus, segmentFile));
                                 }
-                                segments.add(segment);
+                                segments.add(segmentStatus);
+                                remaining -= length;
+                                offset += length;
                             }
-                            remaining -= length;
-                            offset += length;
+                            status.withSegments(segments);
                         }
-                        status.withSegments(segments);
                     }
                 }
             }
@@ -272,16 +259,30 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             if(status.isSegmented()) {
                 // Obtain ordered list of segments to reassemble
                 final List<TransferStatus> segments = status.getSegments();
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Compile %d segments to file %s", segments.size(), local));
+                }
+                if(local.exists()) {
+                    local.delete();
+                }
                 for(Iterator<TransferStatus> iterator = segments.iterator(); iterator.hasNext(); ) {
-                    final TransferStatus segment = iterator.next();
-                    final Local f = segment.getRename().local;
+                    final TransferStatus segmentStatus = iterator.next();
+                    // Segment
+                    final Local segmentFile = segmentStatus.getRename().local;
                     if(log.isInfoEnabled()) {
-                        log.info(String.format("Append segment %s to %s", f, local));
+                        log.info(String.format("Append segment %s to %s", segmentFile, local));
                     }
-                    f.copy(local, new Local.CopyOptions().append(true));
-                    f.delete();
+                    segmentFile.copy(local, new Local.CopyOptions().append(true));
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Delete segment %s", segmentFile));
+                    }
+                    segmentFile.delete();
                     if(!iterator.hasNext()) {
-                        f.getParent().delete();
+                        final Local folder = segmentFile.getParent();
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("Remove segment folder %s", folder));
+                        }
+                        folder.delete();
                     }
                 }
             }
@@ -356,8 +357,8 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                         if(!checksum.equals(download)) {
                             throw new ChecksumException(
                                     MessageFormat.format(LocaleFactory.localizedString("Download {0} failed", "Error"), file.getName()),
-                                    MessageFormat.format("Mismatch between MD5 hash {0} of downloaded data and ETag {1} returned by the server",
-                                            download.hash, checksum.hash));
+                                    MessageFormat.format("Mismatch between {0} hash {1} of downloaded data and ETag {2} returned by the server",
+                                            download.algorithm.toString(), download.hash, checksum.hash));
                         }
                     }
                 }

@@ -10,7 +10,6 @@ import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
@@ -21,7 +20,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -39,42 +37,8 @@ import ch.iterate.openstack.swift.model.StorageObject;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class SwiftLargeObjectUploadFeatureTest {
-
-    @Test
-    @Ignore
-    public void testUploadHP() throws Exception {
-        final Host host = new Host(new SwiftProtocol() {
-            @Override
-            public String getContext() {
-                return "/v2.0/tokens";
-            }
-        }, "region-a.geo-1.identity.hpcloudsvc.com", 35357, new Credentials(
-                System.getProperties().getProperty("hpcloud.key"), System.getProperties().getProperty("hpcloud.secret")
-        ));
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("region-a.geo-1");
-        this.test(host, container);
-    }
-
-    @Test(expected = NotfoundException.class)
-    public void testUploadHPNotFound() throws Exception {
-        final Host host = new Host(new SwiftProtocol() {
-            @Override
-            public String getContext() {
-                return "/v2.0/tokens";
-            }
-        }, "region-a.geo-1.identity.hpcloudsvc.com", 35357, new Credentials(
-                System.getProperties().getProperty("hpcloud.key"), System.getProperties().getProperty("hpcloud.secret")
-        ));
-        final Path container = new Path("t.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("region-b.geo-1");
-        this.test(host, container);
-    }
 
     @Test
     public void testUploadRax() throws Exception {
@@ -83,10 +47,6 @@ public class SwiftLargeObjectUploadFeatureTest {
                         System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")));
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
-        this.test(host, container);
-    }
-
-    private void test(final Host host, final Path container) throws Exception {
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -102,7 +62,7 @@ public class SwiftLargeObjectUploadFeatureTest {
 
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
-        IOUtils.closeQuietly(out);
+        out.close();
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
 
@@ -110,17 +70,18 @@ public class SwiftLargeObjectUploadFeatureTest {
         final SwiftLargeObjectUploadFeature upload = new SwiftLargeObjectUploadFeature(session,
                 regionService,
                 new SwiftObjectListService(session, regionService),
-                new SwiftSegmentService(session, ".segments-test/"), new SwiftWriteFeature(session, regionService), (long) (content.length / 2), 4);
+                new SwiftSegmentService(session, ".segments-test/"),
+                new SwiftWriteFeature(session, regionService), (long) (content.length / 2), 4);
 
         final StorageObject object = upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status, new DisabledConnectionCallback());
         assertNull(Checksum.parse(object.getMd5sum()));
         assertNull(new SwiftAttributesFeature(session).find(test).getChecksum());
-        assertNull(new DefaultAttributesFeature(session).find(test).getChecksum());
+        assertNotNull(new DefaultAttributesFeature(session).find(test).getChecksum());
 
-        assertEquals(content.length, status.getOffset());
         assertTrue(status.isComplete());
         assertFalse(status.isCanceled());
+        assertEquals(content.length, status.getOffset());
 
         assertTrue(new SwiftFindFeature(session).find(test));
         final InputStream in = new SwiftReadFeature(session, regionService).read(test, new TransferStatus());

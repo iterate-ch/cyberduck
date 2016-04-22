@@ -17,52 +17,18 @@ package ch.cyberduck.core.threading;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.NullSession;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 public class BackgroundActionPauserTest {
 
     @Test
     public void testAwait() throws Exception {
-        final SessionBackgroundAction action = new SessionBackgroundAction(new NullSession(new Host(new TestProtocol())), PathCache.empty(), new AlertCallback() {
-            @Override
-            public boolean alert(final Host host, final BackgroundException failure, final StringBuilder transcript) {
-                return false;
-            }
-
-
-        }, new ProgressListener() {
-            @Override
-            public void message(final String message) {
-                //
-            }
-        }, new TranscriptListener() {
-            @Override
-            public void log(final boolean request, final String message) {
-                //
-            }
-        }, new DisabledLoginCallback(), new DisabledHostKeyCallback()
-        ) {
-            @Override
-            protected boolean connect(final Session session) throws BackgroundException {
-                return false;
-            }
-
+        final AbstractBackgroundAction action = new AbstractBackgroundAction() {
             @Override
             public Object run() throws BackgroundException {
                 throw new BackgroundException(new RuntimeException("f"));
@@ -75,7 +41,17 @@ public class BackgroundActionPauserTest {
         catch(BackgroundException e) {
             //
         }
-        new BackgroundActionPauser(action).await(new ProgressListener() {
+        new BackgroundActionPauser(new BackgroundActionPauser.Callback() {
+            @Override
+            public boolean isCanceled() {
+                return action.isCanceled();
+            }
+
+            @Override
+            public void progress(final Integer delay) {
+                //
+            }
+        }).await(new ProgressListener() {
             String previous;
 
             @Override

@@ -69,7 +69,7 @@ public class DefaultUploadFeatureTest {
         new Random().nextBytes(content);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
-        IOUtils.closeQuietly(out);
+        out.close();
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         {
             final TransferStatus status = new TransferStatus().length(content.length / 2);
@@ -89,7 +89,7 @@ public class DefaultUploadFeatureTest {
         final Read read = session.getFeature(Read.class);
         final InputStream in = read.read(test, new TransferStatus().length(content.length));
         IOUtils.readFully(in, buffer);
-        IOUtils.closeQuietly(in);
+        in.close();
         assertArrayEquals(content, buffer);
         final Delete delete = session.getFeature(Delete.class);
         delete.delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {

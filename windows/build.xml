@@ -22,6 +22,7 @@
 <project name="Cyberduck for Windows" basedir=".">
 
     <import file="../build.xml"/>
+    <import file="../archive.xml"/>
 
     <property name="app.name" value="Cyberduck"/>
 
@@ -36,11 +37,6 @@
     <property name="msbuild.configuration" value="release"/>
     <property name="msbuild.architecture" value="x86"/>
 
-    <property name="nsis.home" value="${programFiles}/NSIS"/>
-    <property name="winsdk.home" value="${programFiles}/Windows Kits/8.1/bin/x86"/>
-    <property name="wybuild.home" value="${programFiles}/wyBuild"/>
-
-    <property name="jvm.runtime.bin" value="${java.home}/bin"/>
     <property name="cpack.bin" value="${env.ChocolateyInstall}/bin/cpack"/>
 
     <target name="build" depends="version">
@@ -48,10 +44,10 @@
             <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
         </taskdef>
         <!-- Create DLL Cyberduck.dll -->
-        <msbuild buildfile="../Cyberduck.csproj">
+        <msbuild buildfile="${home}/Cyberduck.csproj">
             <target name="Build"/>
 
-            <property name="Version" value="${version}.${revision}"/>
+            <property name="Version" value="${normalized.version}.${revision}"/>
             <property name="ShortVersion" value="${version} (${revision})"/>
             <property name="Configuration" value="${msbuild.configuration}"/>
             <property name="Platform" value="${msbuild.architecture}"/>
@@ -63,10 +59,13 @@
         <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
             <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
         </taskdef>
-        <msbuild buildfile="../Cyberduck.csproj">
+        <taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask">
+            <classpath path="${lib.ext}/xmltask.jar"/>
+        </taskdef>
+        <msbuild buildfile="${home}/Cyberduck.csproj">
             <target name="Build"/>
 
-            <property name="Version" value="${version}.${revision}"/>
+            <property name="Version" value="${normalized.version}.${revision}"/>
             <property name="ShortVersion" value="${version} (${revision})"/>
             <property name="Configuration" value="${msbuild.configuration}"/>
             <property name="Platform" value="${msbuild.architecture}"/>
@@ -77,41 +76,48 @@
             </fileset>
         </copy>
 
-        <loadfile property="changes" srcFile="${www.update}/changelog.txt"/>
+        <mkdir dir="${build}/update"/>
 
-        <copy file="${www.update}/version.xml" todir="${build}" overwrite="true"/>
-        <replace file="${build}/version.xml" summary="true" encoding="UTF-8">
-            <replacefilter token="${VERSION}" value="${revision} (${version})"/>
-            <replacefilter token="${CHANGES}" value="${changes}"/>
-            <replacefilter token="${BUILDPATH}" value="${build}"/>
+        <!-- prepare WinSparkle stuff -->
+        <xmltask source="${www.update}/changelog.rss" destbuffer="minversion">
+            <remove path="//*[local-name()='minimumSystemVersion']"/>
+        </xmltask>
+        <xmltask sourcebuffer="minversion" destbuffer="installerArgs">
+            <attr path="//item/enclosure" attr="sparkle:installerArguments" value="/passive Autostart=1"/>
+        </xmltask>
+        <xmltask sourcebuffer="installerArgs" dest="${build}/update/changelog.rss">
+            <attr path="//item/enclosure" attr="sparkle:version" value="${FULLVERSION}"/>
+        </xmltask>
+        <copy todir="${build}/update" overwrite="true">
+            <fileset dir="${www.update}">
+                <include name="changelog.html"/>
+            </fileset>
+        </copy>
+        <replace dir="${build}/update" summary="true" encoding="UTF-8">
+            <include name="changelog.rss"/>
+            <replacefilter token="${TIMESTAMP}" value="${touch.time}"/>
+            <replacefilter token="${ARCHIVE}"
+                           value="https://update.cyberduck.io/windows/${sparkle.feed}/${app.name}-Installer-${normalized.version}.${revision}.exe"/>
+            <replacefilter token="${CHANGELOG}" value="https://version.cyberduck.io/windows/${sparkle.feed}/changelog.html"/>
+            <replacefilter token="${FULLVERSION}" value="${normalized.version}.${revision}"/>
+            <replacefilter token="${REVISION}" value="${revision}"/>
+            <replacefilter token="${VERSION}" value="${version}"/>
+            <replacefilter token="${DSASIGNATURE}" value="unsupported"/>
+            <replacefilter token="${COPYRIGHT}" value="${copyright}"/>
         </replace>
 
-        <!-- copy wyUpdate project over to the build directory -->
-        <copy file="${www.update}/${sparkle.feed}/changelog.wyp" tofile="${build}/changelog.wyp" overwrite="true"/>
-
-        <exec executable="${wybuild.home}/wybuild.cmd.exe" failonerror="true" dir="${build}">
-            <arg value="${build}/changelog.wyp"/>
-            <arg value="/bwu"/>
-            <arg value="/bu"/>
-            <arg value="-add=${build}/version.xml"/>
-        </exec>
-
-        <!-- overwrite generated wyUpdate.exe -->
-        <copy file="${www.update}/Updater.exe" todir="${build}/update" overwrite="true"/>
-
-        <mkdir dir="${build.deploy}"/>
-
-        <property name="setup.file"
-                  location="${build.deploy}/${app.name}-Installer-${version}.${revision}.exe"/>
-        <exec executable="${nsis.home}/makensis" failonerror="true">
-            <arg value="/DBASEDIR=${build}"/>
-            <arg value="/DPRODUCT_VERSION=${version}"/>
-            <arg value="/DSETUPFILE=${setup.file}"/>
-            <arg value="${setup}/nsi/cyberduck.nsi"/>
-        </exec>
-        <exec executable="${winsdk.home}/signtool.exe" failonerror="true">
-            <arg line='sign /r "StartCom" /tr http://timestamp.globalsign.com/scripts/timestamp.dll "${setup.file}"'/>
-        </exec>
-        <checksum file="${setup.file}" algorithm="md5"/>
+        <msbuild buildfile="${home}/Cyberduck Bootstrapper.wixproj">
+            <target name="Build"/>
+            <property name="Version" value="${normalized.version}.${revision}"/>
+            <property name="ShortVersion" value="${version} (${revision})"/>
+            <property name="Configuration" value="${msbuild.configuration}"/>
+            <property name="Platform" value="${msbuild.architecture}"/>
+        </msbuild>
+        <foreach target="md5" param="source">
+            <fileset dir="${build.deploy}">
+                <include name="*.msi"/>
+                <exclude name="*.exe"/>
+            </fileset>
+        </foreach>
     </target>
 </project>

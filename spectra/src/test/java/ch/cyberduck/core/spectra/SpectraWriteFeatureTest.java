@@ -25,20 +25,21 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.SHA256ChecksumCompute;
+import ch.cyberduck.core.io.CRC32ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
+import ch.cyberduck.core.s3.S3AttributesFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -55,7 +56,7 @@ import static org.junit.Assert.*;
 public class SpectraWriteFeatureTest {
 
     @Test
-    public void testOverwrite() throws Exception {
+    public void testWriteOverwrite() throws Exception {
         final Host host = new Host(new SpectraProtocol() {
             @Override
             public Scheme getScheme() {
@@ -72,19 +73,33 @@ public class SpectraWriteFeatureTest {
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomStringUtils.random(1000).getBytes();
         final TransferStatus status = new TransferStatus().length(content.length);
-        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content)));
+        status.setChecksum(new CRC32ChecksumCompute().compute(new ByteArrayInputStream(content)));
+        // Allocate
+        final SpectraBulkService bulk = new SpectraBulkService(session);
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, status));
         {
             final OutputStream out = new SpectraWriteFeature(session).write(test, status);
             assertNotNull(out);
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-            IOUtils.closeQuietly(out);
-        }// Overwrite
-        {
-            final OutputStream out = new SpectraWriteFeature(session).write(test, status);
-            new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-            IOUtils.closeQuietly(out);
+            out.close();
         }
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+        assertEquals(content.length, new S3AttributesFeature(session).find(test).getSize());
+        try {
+            bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, status));
+            fail();
+        }
+        catch(AccessDeniedException e) {
+            // Conflict
+        }
+        // Overwrite
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, status.exists(true)));
+        {
+            final OutputStream out = new SpectraWriteFeature(session).write(test, status.exists(true));
+            new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
+            out.close();
+        }
+        assertEquals(content.length, new S3AttributesFeature(session).find(test).getSize());
+        new SpectraDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {
             }
@@ -108,54 +123,24 @@ public class SpectraWriteFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        // Make 0-byte file
+        new SpectraTouchFeature(session).touch(test);
+        // Replace content
         final byte[] content = RandomStringUtils.random(1000).getBytes();
         final TransferStatus status = new TransferStatus().length(content.length);
-        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content)));
-        new SpectraTouchFeature(session).touch(test);
+        status.setChecksum(new CRC32ChecksumCompute().compute(new ByteArrayInputStream(content)));
+        final SpectraBulkService bulk = new SpectraBulkService(session);
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, status.exists(true)));
         final OutputStream out = new SpectraWriteFeature(session).write(test, status);
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        IOUtils.closeQuietly(out);
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+        out.close();
+        new SpectraDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {
             }
         });
         session.close();
-    }
-
-    @Test
-    public void testAppendBelowLimit() throws Exception {
-        final SpectraSession session = new SpectraSession(new Host(new SpectraProtocol() {
-            @Override
-            public Scheme getScheme() {
-                return Scheme.http;
-            }
-        }), new DisabledX509TrustManager(),
-                new DefaultX509KeyManager());
-        final SpectraWriteFeature feature = new SpectraWriteFeature(session, null, new Find() {
-            @Override
-            public boolean find(final Path file) throws BackgroundException {
-                return true;
-            }
-
-            @Override
-            public Find withCache(final PathCache cache) {
-                return this;
-            }
-        }, new Attributes() {
-            @Override
-            public PathAttributes find(final Path file) throws BackgroundException {
-                return new PathAttributes();
-            }
-
-            @Override
-            public Attributes withCache(final PathCache cache) {
-                return this;
-            }
-        });
-        final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), 0L, PathCache.empty());
-        assertFalse(append.append);
     }
 
     @Test
@@ -167,7 +152,7 @@ public class SpectraWriteFeatureTest {
             }
         }), new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
-        final SpectraWriteFeature feature = new SpectraWriteFeature(session, null, new Find() {
+        final SpectraWriteFeature feature = new SpectraWriteFeature(session, new Find() {
             @Override
             public boolean find(final Path file) throws BackgroundException {
                 return true;

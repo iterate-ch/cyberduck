@@ -29,12 +29,10 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -65,7 +63,7 @@ public class FTPReadFeatureTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
-        new FTPReadFeature(session).read(new Path(session.workdir(), "nosuchname", EnumSet.of(Path.Type.file)), status);
+        new FTPReadFeature(session).read(new Path(new FTPWorkdirService(session).find(), "nosuchname", EnumSet.of(Path.Type.file)), status);
     }
 
     @Test
@@ -76,7 +74,7 @@ public class FTPReadFeatureTest {
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new FTPWorkdirService(session).find();
         final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature(session).touch(test);
         final byte[] content = new byte[39865];
@@ -114,13 +112,13 @@ public class FTPReadFeatureTest {
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature(session).touch(test);
         final byte[] content = RandomStringUtils.random(1000).getBytes();
         final OutputStream out = new FTPWriteFeature(session).write(test, new TransferStatus().length(content.length));
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        IOUtils.closeQuietly(out);
+        out.close();
         final TransferStatus status = new TransferStatus();
         // Partial read with offset and not full content length
         status.setLength(content.length - 100 - 1);
@@ -150,17 +148,17 @@ public class FTPReadFeatureTest {
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature(session).touch(test);
         final TransferStatus status = new TransferStatus();
         status.setLength(5L);
-        final Path workdir = session.workdir();
+        final Path workdir = new FTPWorkdirService(session).find();
         final InputStream in = new FTPReadFeature(session).read(new Path(workdir, "test", EnumSet.of(Path.Type.file)), status);
         assertNotNull(in);
         // Send ABOR because stream was not read completly
         in.close();
         // Make sure subsequent PWD command works
-        assertEquals(workdir, session.workdir());
+        assertEquals(workdir, new FTPWorkdirService(session).find());
         new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {
@@ -177,23 +175,23 @@ public class FTPReadFeatureTest {
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature(session).touch(test);
         final OutputStream out = new FTPWriteFeature(session).write(test, new TransferStatus().length(20L));
         assertNotNull(out);
         final byte[] content = RandomStringUtils.random(1000).getBytes();
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        IOUtils.closeQuietly(out);
+        out.close();
         final TransferStatus status = new TransferStatus();
         status.setLength(20L);
-        final Path workdir = session.workdir();
+        final Path workdir = new FTPWorkdirService(session).find();
         final InputStream in = new FTPReadFeature(session).read(test, status);
         assertNotNull(in);
         assertTrue(in.read() > 0);
         // Send ABOR because stream was not read completly
         in.close();
         // Make sure subsequent PWD command works
-        assertEquals(workdir, session.workdir());
+        assertEquals(workdir, new FTPWorkdirService(session).find());
         new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {
@@ -210,11 +208,11 @@ public class FTPReadFeatureTest {
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature(session).touch(test);
         final TransferStatus status = new TransferStatus();
         status.setLength(5L);
-        final Path workdir = session.workdir();
+        final Path workdir = new FTPWorkdirService(session).find();
         final InputStream in = new FTPReadFeature(session).read(new Path(workdir, "test", EnumSet.of(Path.Type.file)), status);
         assertNotNull(in);
         // Read 226 reply

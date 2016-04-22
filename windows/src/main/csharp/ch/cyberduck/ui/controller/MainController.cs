@@ -11,7 +11,7 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-//  
+// 
 // Bug fixes, suggestions and comments should be sent to:
 // feedback@cyberduck.io
 // 
@@ -28,10 +28,12 @@ using Windows7.DesktopIntegration;
 using ch.cyberduck.core;
 using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.azure;
+using ch.cyberduck.core.b2;
 using ch.cyberduck.core.bonjour;
 using ch.cyberduck.core.dav;
 using ch.cyberduck.core.ftp;
-using ch.cyberduck.core.gstorage;
+using ch.cyberduck.core.googledrive;
+using ch.cyberduck.core.googlestorage;
 using ch.cyberduck.core.importer;
 using ch.cyberduck.core.irods;
 using ch.cyberduck.core.notification;
@@ -44,6 +46,7 @@ using ch.cyberduck.core.spectra;
 using Ch.Cyberduck.Core.Urlhandler;
 using Ch.Cyberduck.Ui.Core;
 using Ch.Cyberduck.Ui.Core.Preferences;
+using Ch.Cyberduck.Ui.Sparkle;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using java.util;
 using Microsoft.VisualBasic.ApplicationServices;
@@ -65,6 +68,8 @@ namespace Ch.Cyberduck.Ui.Controller
         private static MainController _application;
         private static JumpListManager _jumpListManager;
         private readonly BaseController _controller = new BaseController();
+        private WinSparkle.win_sparkle_can_shutdown_callback_t _canShutdownCallback;
+        private WinSparkle.win_sparkle_shutdown_request_callback_t _shutdownRequestCallback;
 
         /// <summary>
         /// Saved browsers
@@ -80,13 +85,15 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <see cref="http://msdn.microsoft.com/en-us/library/system.stathreadattribute.aspx"/>
         private BrowserController _bc;
 
+        private WindowsPeriodicUpdateChecker _updater;
+
         static MainController()
         {
             StructureMapBootstrapper.Bootstrap();
             PreferencesFactory.set(new SettingsDictionaryPreferences());
             ProtocolFactory.register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(),
                 new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(), new GoogleStorageProtocol(),
-                new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol());
+                new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new B2Protocol(), new DriveProtocol());
 
             if (!Debugger.IsAttached)
             {
@@ -134,6 +141,10 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 PreferencesFactory.get().setProperty("uses", PreferencesFactory.get().getInteger("uses") + 1);
                 PreferencesFactory.get().save();
+                if (_updater != null)
+                {
+                    _updater.unregister();
+                }
             };
         }
 
@@ -310,8 +321,6 @@ namespace Ch.Cyberduck.Ui.Controller
             Logger.debug("ApplicationDidFinishLaunching");
             CommandsAfterLaunch(CommandLineArgs);
             HistoryCollection.defaultCollection().addListener(this);
-            UpdateController.Instance.CheckForUpdatesIfNecessary();
-
             if (PreferencesFactory.get().getBoolean("browser.serialize"))
             {
                 _controller.Background(delegate { _sessions.load(); }, delegate
@@ -480,6 +489,36 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 thirdpartySemaphore.Signal();
             });
+            // register callbacks
+            _canShutdownCallback = CanShutdownCallback;
+            _shutdownRequestCallback = ShutdownRequestCallback;
+            WindowsPeriodicUpdateChecker.SetCanShutdownCallback(_canShutdownCallback);
+            WindowsPeriodicUpdateChecker.SetShutdownRequestCallback(_shutdownRequestCallback);
+            if (PreferencesFactory.get().getBoolean("update.check"))
+            {
+                _updater = new WindowsPeriodicUpdateChecker();
+                if (_updater.hasUpdatePrivileges())
+                {
+                    DateTime lastCheck = new DateTime(PreferencesFactory.get().getLong("update.check.last"));
+                    TimeSpan span = DateTime.Now.Subtract(lastCheck);
+                    _updater.register();
+                    if (span.TotalSeconds >= PreferencesFactory.get().getLong("update.check.interval"))
+                    {
+                        _updater.check(true);
+                    }
+                }
+            }
+        }
+
+        private void ShutdownRequestCallback()
+        {
+            Logger.info("About to exit in order to install update");
+            Exit(true);
+        }
+
+        private int CanShutdownCallback()
+        {
+            return Convert.ToInt32(PrepareExit());
         }
 
         private IList<ThirdpartyBookmarkCollection> GetThirdpartyBookmarks()
@@ -601,11 +640,6 @@ namespace Ch.Cyberduck.Ui.Controller
         public static bool ApplicationShouldTerminate()
         {
             Logger.debug("ApplicationShouldTerminate");
-            // Check if the automatic updater wants to install an update
-            if (UpdateController.Instance.AboutToInstallUpdate)
-            {
-                return true;
-            }
 
             // Determine if there are any running transfers
             bool terminate = TransferController.ApplicationShouldTerminate();
@@ -633,8 +667,10 @@ namespace Ch.Cyberduck.Ui.Controller
             return true;
         }
 
-        public static void Exit()
+
+        public static bool PrepareExit()
         {
+            bool readyToExit = true;
             foreach (BrowserController controller in new List<BrowserController>(Browsers))
             {
                 if (controller.IsConnected())
@@ -660,13 +696,15 @@ namespace Ch.Cyberduck.Ui.Controller
                                     case -1: // Cancel
                                         // Quit has been interrupted. Delete any saved sessions so far.
                                         Application._sessions.clear();
-                                        return;
+                                        readyToExit = false;
+                                        break;
                                     case 0: // Review
                                         if (BrowserController.ApplicationShouldTerminate())
                                         {
                                             break;
                                         }
-                                        return;
+                                        readyToExit = false;
+                                        break;
                                     case 1: // Quit
                                         foreach (BrowserController c in
                                             new List<BrowserController>(Browsers))
@@ -683,9 +721,21 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                 }
             }
-            NotificationServiceFactory.get().unregister();
-            ApplicationShouldTerminateAfterDonationPrompt();
-            System.Windows.Forms.Application.Exit();
+            return readyToExit;
+        }
+
+        public static void Exit(bool updateInProgress)
+        {
+            if (updateInProgress)
+            {
+                NotificationServiceFactory.get().unregister();
+                System.Windows.Forms.Application.Exit();
+            }
+            else if (PrepareExit())
+            {
+                ApplicationShouldTerminateAfterDonationPrompt();
+                System.Windows.Forms.Application.Exit();
+            }
         }
 
         private static BrowserController NewBrowser(bool force, bool show)
@@ -728,7 +778,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         forms[i].Dispose();
                     }
-                    Exit();
+                    Exit(false);
                 }
                 else
                 {

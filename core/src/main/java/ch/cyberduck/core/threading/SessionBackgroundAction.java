@@ -22,6 +22,7 @@ import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginService;
@@ -34,7 +35,10 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+
+import java.text.MessageFormat;
 
 /**
  * @version $Id$
@@ -62,7 +66,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     /**
      * The number of times this action has been run
      */
-    protected int repeat = 0;
+    private int repeat = 0;
 
     private static final String LINE_SEPARATOR
             = System.getProperty("line.separator");
@@ -237,14 +241,26 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     @Override
     public void cleanup() {
-        this.message(null);
+        this.message(StringUtils.EMPTY);
     }
 
     /**
      * Idle this action for some time. Blocks the caller.
      */
     public void pause() {
-        final BackgroundActionPauser pauser = new BackgroundActionPauser(this);
+        final int attempt = this.retry();
+        final BackgroundActionPauser pauser = new BackgroundActionPauser(new BackgroundActionPauser.Callback() {
+            @Override
+            public boolean isCanceled() {
+                return SessionBackgroundAction.this.isCanceled();
+            }
+
+            @Override
+            public void progress(final Integer delay) {
+                SessionBackgroundAction.this.message(MessageFormat.format(LocaleFactory.localizedString("Retry again in {0} seconds ({1} more attempts)", "Status"),
+                        delay, attempt));
+            }
+        });
         pauser.await(this);
     }
 

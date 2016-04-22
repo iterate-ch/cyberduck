@@ -46,13 +46,11 @@ import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.MessageFormat;
 import java.util.EnumSet;
 import java.util.Objects;
 
-/**
- * @version $Id$
- */
 public class Local extends AbstractPath implements Referenceable, Serializable {
     private static final Logger log = Logger.getLogger(Local.class);
 
@@ -64,15 +62,23 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     private final LocalAttributes attributes;
 
     public Local(final String parent, final String name) throws LocalAccessDeniedException {
-        this(parent.endsWith(PreferencesFactory.get().getProperty("local.delimiter")) ?
+        this(parent, name, PreferencesFactory.get().getProperty("local.delimiter"));
+    }
+
+    public Local(final String parent, final String name, final String delimiter) throws LocalAccessDeniedException {
+        this(parent.endsWith(delimiter) ?
                 String.format("%s%s", parent, name) :
-                String.format("%s%c%s", parent, CharUtils.toChar(PreferencesFactory.get().getProperty("local.delimiter")), name));
+                String.format("%s%c%s", parent, CharUtils.toChar(delimiter), name));
     }
 
     public Local(final Local parent, final String name) throws LocalAccessDeniedException {
+        this(parent, name, PreferencesFactory.get().getProperty("local.delimiter"));
+    }
+
+    public Local(final Local parent, final String name, final String delimiter) throws LocalAccessDeniedException {
         this(parent.isRoot() ?
                 String.format("%s%s", parent.getAbsolute(), name) :
-                String.format("%s%c%s", parent.getAbsolute(), CharUtils.toChar(PreferencesFactory.get().getProperty("local.delimiter")), name));
+                String.format("%s%c%s", parent.getAbsolute(), CharUtils.toChar(delimiter), name));
     }
 
     /**
@@ -133,7 +139,10 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
      * @see Local#exists()
      */
     public boolean isDirectory() {
-        return Files.isDirectory(Paths.get(path));
+        if(this.exists()) {
+            return Files.isDirectory(Paths.get(path));
+        }
+        return false;
     }
 
     /**
@@ -142,7 +151,10 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
      * @see Local#exists()
      */
     public boolean isFile() {
-        return Files.isRegularFile(Paths.get(path));
+        if(this.exists()) {
+            return Files.isRegularFile(Paths.get(path));
+        }
+        return false;
     }
 
     /**
@@ -296,7 +308,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
 
     public void rename(final Local renamed) throws AccessDeniedException {
         try {
-            Files.move(Paths.get(path), Paths.get(renamed.getAbsolute()));
+            Files.move(Paths.get(path), Paths.get(renamed.getAbsolute()), StandardCopyOption.REPLACE_EXISTING);
         }
         catch(IOException e) {
             throw new LocalAccessDeniedException(String.format("Rename failed for %s", renamed), e);
@@ -408,10 +420,6 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
      * @return True if this is a child in the path hierarchy of the argument passed
      */
     public boolean isChild(final Local directory) {
-        if(directory.isFile()) {
-            // If a file we don't have any children at all
-            return false;
-        }
         if(this.isRoot()) {
             // Root cannot be a child of any other path
             return false;

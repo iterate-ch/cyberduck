@@ -66,7 +66,7 @@ public class SFTPWriteFeature extends AppendWriteFeature {
             }
             else {
                 // A new file is created; if the file already exists, it is opened and truncated.
-                if(status.isExists() && !status.isRename()) {
+                if(status.isExists()) {
                     if(file.isSymbolicLink()) {
                         // Workaround for #7327
                         session.sftp().remove(file.getAbsolute());

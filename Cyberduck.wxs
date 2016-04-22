@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
+  <Product Id="*" Name="Cyberduck" Language="1033" Version="!(bind.FileVersion.product.exe)" Manufacturer="iterate GmbH" UpgradeCode="B9C33495-4B77-4863-9A40-4E767388647E">
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine"/>
+
+    <MajorUpgrade AllowDowngrades="yes" />
+    <Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLLOCATION" Name="!(bind.property.ProductName)">
+          <Directory Id="PROFILES" Name="profiles"/>
+        </Directory>
+        <Directory Id="ProgramMenuFolder">
+          <Directory Id="ApplicationProgramsFolder" Name="!(bind.property.ProductName)"/>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <Icon Id="icon.ico" SourceFile="cyberduck-application.ico"/>
+    <Icon Id="cd_document.ico" SourceFile="cyberduck-document.ico"/>
+    <Property Id="ARPPRODUCTICON" Value="icon.ico" />
+    <Property Id="AUTOSTART" Value="0"/>
+
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLLOCATION">
+      <Component Id="ProductExe">
+        <File Id="product.exe" Source="$(var.cyberduck.TargetPath)" KeyPath="yes" Checksum="yes" >
+          <netfx:NativeImage Id="ngen_product.exe" Platform="32bit" Priority="3" />
+        </File>
+
+        <!-- Capabilities keys for Vista/7 "Set Program Access and Defaults" -->
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities" Name="ApplicationDescription" Value="Libre FTP, SFTP, WebDAV, S3 and OpenStack Swift browser for Mac and Windows." Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities" Name="ApplicationIcon" Value="[INSTALLLOCATION]Cyberduck.exe,0" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities" Name="ApplicationName" Value="!(bind.property.ProductName)" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities\DefaultIcon" Value="[APPLICATIONFOLDER]Cyberduck.exe,1" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities\FileAssociations" Name=".duck" Value="Cyberduck.Bookmark" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities\FileAssociations" Name=".cyberduckprofile" Value="Cyberduck Connection.Profile" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities\FileAssociations" Name=".cyberducklicense" Value="Cyberduck.License" Type="string" />
+        <!--      <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities\MIMEAssociations" Name="application/xyz" Value="Cyberduck.Document" Type="string" />-->
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities\shell\Open\command" Value='"[INSTALLLOCATION]Cyberduck.exe" "%1"' Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\RegisteredApplications" Name="!(bind.property.ProductName)" Value="SOFTWARE\Cyberduck\Capabilities" Type="string" />
+
+        <!-- App Paths to support Start,Run -> "Cyberduck" -->
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\Cyberduck.exe" Value="[!product.exe]" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\Cyberduck.exe" Name="Path" Value="[APPLICATIONFOLDER]" Type="string" />
+
+        <!-- Extend to the "open with" list + Win7 jump menu pinning  -->
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Applications\Cyberuck.exe\SupportedTypes" Name=".duck" Value="" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Applications\Cyberuck.exe\SupportedTypes" Name=".cyberduckprofile" Value="" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Applications\Cyberuck.exe\SupportedTypes" Name=".cyberducklicense" Value="" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Applications\Cyberuck.exe\shell\open" Name="FriendlyAppName" Value="!(bind.property.ProductName)" Type="string" />
+
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Cyberduck.Bookmark" Name="FriendlyTypeName" Value="Cyberduck Bookmark" Type="string" />
+        <ProgId Id="Cyberduck.Bookmark" Description="Cyberduck Bookmark" Icon="cd_document.ico" Advertise="yes">
+          <Extension Id="duck">
+            <Verb Id="open" Command="Open" Argument='"%1"' />
+          </Extension>
+        </ProgId>
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Cyberduck Connection.Profile" Name="FriendlyTypeName" Value="Cyberduck Connection Profile" Type="string" />
+        <ProgId Id="Cyberduck Connection.Profile" Description="Cyberduck Connection Profile" Icon="cd_document.ico" Advertise="yes">
+          <Extension Id="cyberduckprofile">
+            <Verb Id="open" Command="Open" Argument='"%1"' />
+          </Extension>
+        </ProgId>
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Cyberduck.License" Name="FriendlyTypeName" Value="Cyberduck License" Type="string" />
+        <ProgId Id="Cyberduck.License" Description="Cyberduck License" Icon="cd_document.ico" Advertise="yes">
+          <Extension Id="cyberducklicense">
+            <Verb Id="open" Command="Open" Argument='"%1"' />
+          </Extension>
+        </ProgId>
+      </Component>
+      <Component Id="Cyberduck.Exe.Config">
+        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.exe.config" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <Component Id="ExceptionReporter.WinForms">
+        <File Source="$(var.cyberduck.TargetDir)/ExceptionReporter.WinForms.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ExceptionReporter.WinForms" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ActiveButtons">
+        <File Source="$(var.cyberduck.TargetDir)/ActiveButtons.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ActiveButtons" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="CustomOpenFileFolderDialog">
+        <File Source="$(var.cyberduck.TargetDir)/CustomOpenFileFolderDialog.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_CustomOpenFileFolderDialog" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="Cyberduck.Core">
+        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Core.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_Cyberduck.Core" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="Cyberduck.Core.Native">
+        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Core.Native.dll" KeyPath="yes" Checksum="yes">
+            <netfx:NativeImage Id="ngen_Cyberduck.Core.Native" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="Cyberduck.Protocols">
+        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Protocols.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_Cyberduck.Protocols" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="Cyberduck.Bonjour">
+        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Bonjour.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_Cyberduck.Bonjour" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="Cyberduck.Bonjour.Native">
+        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Bonjour.Native.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_Cyberduck.Bonjour.Native" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="Cyberduck.Importer">
+        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Importer.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_Cyberduck.Importer" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="WinSparkle">
+        <File Source="$(var.cyberduck.TargetDir)/WinSparkle.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <Component Id="msvcr120">
+        <File Source="$(var.cyberduck.TargetDir)/msvcr120.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="msvcp120">
+        <File Source="$(var.cyberduck.TargetDir)/msvcp120.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="vccorlib120">
+        <File Source="$(var.cyberduck.TargetDir)/vccorlib120.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="msvcr100">
+        <File Source="$(var.cyberduck.TargetDir)/msvcr100.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="ikvm.beans">
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Beans.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ikvm.beans" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ikvm.core">
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Core.dll" KeyPath="yes" Checksum="yes">
+           <netfx:NativeImage Id="ngen_ikvm.core" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ikvm.charsets">
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Charsets.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ikvm.charsets" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ikvm.localedata">
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Localedata.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ikvm.localedata" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ikvm.security">
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Security.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ikvm.security" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ikvm.text">
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Text.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ikvm.text" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ikvm.util">
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Util.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ikvm.util" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ikvm.management">
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Management.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ikvm.management" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ikvm.xml.api">
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.XML.API.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ikvm.xml.api" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ikvm.xml.bind">
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.XML.Bind.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ikvm.xml.bind" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ikvm.xml.parse">
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.XML.Parse.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ikvm.xml.parse" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ikvm.xml.transform">
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.XML.Transform.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ikvm.xml.transform" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ikvm.xml.xpath">
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.XML.XPath.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ikvm.xml.path" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ikvm.swingawt">
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.SwingAWT.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ikvm.swingawt" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ikvm.naming">
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Naming.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ikvm.naming" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ikvm.remoting">
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Remoting.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ikvm.remoting" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ikvm.runtime">
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.Runtime.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ikvm.runtime" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ikvm.runtime.jni">
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.Runtime.JNI.dll" KeyPath="yes" Checksum="yes">
+           <netfx:NativeImage Id="ngen_ikvm.runtime.jni" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ikvm.jdbc">
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Jdbc.dll" KeyPath="yes" Checksum="yes">
+           <netfx:NativeImage Id="ngen_ikvm.jdbc" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="Interop.Bonjour">
+        <File Source="$(var.cyberduck.TargetDir)/Interop.Bonjour.dll" KeyPath="yes" Checksum="yes">
+           <netfx:NativeImage Id="ngen_Interop.Bonjour" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="objectlistview">
+        <File Source="$(var.cyberduck.TargetDir)/ObjectListView.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_objectlistview" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="structuremap">
+        <File Source="$(var.cyberduck.TargetDir)/StructureMap.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_structuremap" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="VistaBridgeLibrary">
+        <File Source="$(var.cyberduck.TargetDir)/VistaBridgeLibrary.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_VistaBridgeLibrary" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="Windows7.DesktopIntegration">
+        <File Source="$(var.cyberduck.TargetDir)/Windows7.DesktopIntegration.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_Windows7.DesktopIntegration" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ikvm.native">
+        <File Source="$(var.cyberduck.TargetDir)/ikvm-native-win32-x86.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ikvm.native" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="jnidispatch">
+        <File Source="$(var.cyberduck.TargetDir)/jnidispatch.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_jnidispatch" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="sunmscapi">
+        <File Source="$(var.cyberduck.TargetDir)/sunmscapi.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="sunec">
+        <File Source="$(var.cyberduck.TargetDir)/sunec.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="additional" Guid="c0733025-a4ec-4437-8617-0ace7d29318a">
+        <File Source="$(var.cyberduck.TargetDir)/Acknowledgments.rtf" Checksum="yes" />
+        <File Source="$(var.cyberduck.TargetDir)/License.txt" Checksum="yes" />
+      </Component>
+    </ComponentGroup>
+    <ComponentGroup Id="Profiles" Directory="PROFILES">
+      <Component Id="rackspace">
+        <File Source="$(var.cyberduck.TargetDir)/profiles/Rackspace US.cyberduckprofile" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="b2">
+        <File Source="$(var.cyberduck.TargetDir)/profiles/B2.cyberduckprofile" KeyPath="yes" Checksum="yes" />
+      </Component>
+    </ComponentGroup>
+
+    <DirectoryRef Id="ApplicationProgramsFolder">
+      <Component Id="ApplicationShortcut">
+        <Shortcut Id="ApplicationStartMenuShortcut"
+             Name="Cyberduck"
+             Description="Libre FTP, SFTP, WebDAV, S3 and OpenStack Swift browser"
+             Target="[#product.exe]" WorkingDirectory="INSTALLLOCATION"/>
+        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/>
+        <RegistryValue Root="HKCU" Key="Software\Microsoft\Cyberduck" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+
+    <Feature Id="ProductFeature" Title="cyberduck-WiX" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+      <ComponentGroupRef Id="Profiles" />
+      <ComponentRef Id="ApplicationShortcut" />
+    </Feature>
+
+    <Property Id="WixShellExecTarget" Value="[#product.exe]" />
+    <CustomAction Id="LaunchFile"
+                  BinaryKey="WixCA"
+                  DllEntry="WixShellExec"
+                  Impersonate="yes" />
+
+    <InstallExecuteSequence>
+      <Custom Action='LaunchFile' After='InstallFinalize'>AUTOSTART=1</Custom>
+    </InstallExecuteSequence>
+  </Product>
+</Wix>

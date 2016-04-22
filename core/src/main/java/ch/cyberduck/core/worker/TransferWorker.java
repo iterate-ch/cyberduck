@@ -22,9 +22,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.concurrent.Callable;
 
-/**
- * @version $Id$
- */
 public interface TransferWorker {
     void cancel();
 
@@ -32,7 +29,7 @@ public interface TransferWorker {
 
     void submit(TransferCallable callable) throws BackgroundException;
 
-    public interface TransferCallable extends Callable<TransferStatus> {
+    interface TransferCallable extends Callable<TransferStatus> {
         TransferStatus call() throws BackgroundException;
     }
 }

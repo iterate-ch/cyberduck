@@ -1,4 +1,7 @@
-﻿using Ch.Cyberduck.Ui.Winforms.Controls;
+﻿using System;
+using System.Windows.Forms;
+using BrightIdeasSoftware;
+using Ch.Cyberduck.Ui.Winforms.Controls;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -2422,6 +2425,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.browser.SelectionChanged += new System.EventHandler(this.browser_SelectionChanged);
             this.browser.BeforeLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.browser_BeforeLabelEdit);
             this.browser.DoubleClick += new System.EventHandler(this.browser_DoubleClick);
+            this.browser.Expanding += new System.EventHandler<TreeBranchExpandingEventArgs>(this.browser_Expanding);
             this.browser.KeyDown += new System.Windows.Forms.KeyEventHandler(this.browser_KeyDown);
             this.browser.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.browser_KeyPress);
             // 
@@ -2749,6 +2753,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.searchTextBox.Size = new System.Drawing.Size(114, 24);
             this.searchTextBox.TabIndex = 14;
             this.searchTextBox.TextChanged += new Ch.Cyberduck.ui.winforms.controls.SearchTextBox2.TextChange(this.searchTextBox_TextChanged);
+            this.searchTextBox.KeyUp += new KeyEventHandler(this.searchTextBox_KeyUp);
             // 
             // parentPathButton
             // 

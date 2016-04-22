@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System;
@@ -641,6 +641,16 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { updateFeedComboBox.SelectedValue = value; }
         }
 
+        public bool UpdateEnabled
+        {
+            set
+            {
+                updateCheckBox.Enabled = value;
+                updateCheckButton.Enabled = value;
+                updateFeedComboBox.Enabled = value;
+            }
+        }
+
         public bool UseSystemProxy
         {
             get { return systemProxyCheckBox.Checked; }
@@ -728,7 +738,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         }
 
         public event VoidHandler AutomaticUpdateChangedEvent = delegate { };
-        public event VoidHandler CheckForUpdateEvent;
+        public event VoidHandler CheckForUpdateEvent = delegate { };
 
         public string DocumentExportFormat
         {

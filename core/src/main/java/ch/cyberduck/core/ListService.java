@@ -19,9 +19,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.BackgroundException;
 
-/**
- * @version $Id$
- */
 public interface ListService {
     AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException;
 }

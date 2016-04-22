@@ -20,6 +20,7 @@ package ch.cyberduck.core.threading;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Controller;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
@@ -32,9 +33,6 @@ import ch.cyberduck.core.worker.Worker;
 
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id$
- */
 public class WorkerBackgroundAction<T> extends BrowserBackgroundAction<T> {
     private static final Logger log = Logger.getLogger(WorkerBackgroundAction.class);
 
@@ -54,6 +52,16 @@ public class WorkerBackgroundAction<T> extends BrowserBackgroundAction<T> {
                                   final Cache<Path> cache,
                                   final Worker<T> worker) {
         super(login, controller, session, cache);
+        this.worker = worker;
+    }
+
+    public WorkerBackgroundAction(final LoginService login,
+                                  final Controller controller,
+                                  final Session session,
+                                  final Cache<Path> cache,
+                                  final HostKeyCallback key,
+                                  final Worker<T> worker) {
+        super(login, controller, session, cache, controller, controller, key);
         this.worker = worker;
     }
 
@@ -118,7 +126,6 @@ public class WorkerBackgroundAction<T> extends BrowserBackgroundAction<T> {
 
     @Override
     public void cleanup() {
-        super.cleanup();
         if(null == result) {
             log.warn(String.format("Missing result for worker %s. Use default value.", worker));
             worker.cleanup(worker.initialize());
@@ -129,6 +136,7 @@ public class WorkerBackgroundAction<T> extends BrowserBackgroundAction<T> {
             }
             worker.cleanup(result);
         }
+        super.cleanup();
     }
 
     @Override

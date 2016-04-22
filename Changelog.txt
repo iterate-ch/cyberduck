@@ -3,14 +3,64 @@ http://cyberduck.io/
 
 Changelog. Last modified: $Date$
 
+5.0 [https://trac.cyberduck.io/milestone/5.0]
+- [Feature] Segmented downloads with multiple connections per file (#4498)
+- [Feature] Support for Google Drive (#6976)
+- [Feature] Support for Spectra BlackPearl Deep Storage Gateway (Spectra S3)
+
+4.9.3
+- [Bugfix] Revert reading NTLM domain and workstation from environment (WebDAV, Windows)
+- [Bugfix] Fix crash in software updater (Windows)
+
+4.9.2
+- [Bugfix] Fix application launch failure when running with disabled updater (Mac)
+
+4.9.1
+- [Feature] Support password change requests (SFTP) (#8821)
+- [Bugfix] Default path value setting in bookmark ignored (#9435)
+- [Bugfix] Excessive memory usage when uploading many files (#9439)
+- [Bugfix] Retry transfer when authentication token expires (Backblaze B2)
+- [Bugfix] Uploads use a lot of Class C transactions (#9417) (Backblaze B2)
+- [Bugfix] Retry transfer for 421 error reply from server with a delay (FTP)
+
+4.9 [https://trac.cyberduck.io/milestone/4.9]
+- [Feature] Support for B2 Cloud Storage (Backblaze B2) (#9162)
+- [Feature] New bundled application updater using MSI for installation (Windows)
+- [Feature] New software updater (Windows)
+- [Bugfix] Creating new folders with SSE restriction fails (S3) (#9378)
+- [Bugfix] Unable to duplicate folders (#9383)
+- [Bugfix] Routing failure when connecting to IPv6 address (#8802)
+
+4.8.4 [https://trac.cyberduck.io/milestone/4.8.4]
+- [Bugfix] Restore compatibility with OS X 10.7 (Mac)
+- [Bugfix] No such file error when choosing Rename Existing in transfer overwrite prompt (#9342)
+- [Bugfix] Disable updater when missing admin privilege (#9155) (Windows)
+- [Bugfix] Browser tries to expand files as directories (#9340) (Windows)
+- [Bugfix] Authentication always takes a long time (S3) (#9348)
+- [Bugfix] Certificate trust verification failure for four level domains (WebDAV) (#9358)
+
+4.8.3 [https://trac.cyberduck.io/milestone/4.8.3]
+- [Bugfix] Fix use of unlimited strength cryptography for strong ciphers (SFTP) (#9325)
+
+4.8.2 [https://trac.cyberduck.io/milestone/4.8.2]
+- [Bugfix] Installer may fail if newer Bonjour Zeroconf dependency is installed (Windows)
+- [Bugfix] Disable trashing file on overwrite download (#9298)
+
+4.8.1 [https://trac.cyberduck.io/milestone/4.8.1]
+- [Bugfix] Restore compatibility with OS X 10.8 - 10.9 (Mac)
+
 4.8 [https://trac.cyberduck.io/milestone/4.8]
+- [Feature] Multiple connections for transfers enabled by default
+- [Feature] Recursively search for files (#8345)
 - [Feature] Support for key exchange algorithm diffie-hellman-group-exchange-sha256 (SFTP) (#8488)
 - [Feature] Support for key exchange algorithm curve25519-sha256@libssh.org (SFTP) (#8528)
 - [Feature] Support ssh-ed25519 host keys (SFTP) (#8553)
 - [Feature] Support for authentication with Keystone v3 API (OpenStack Swift) (#8813)
+- [Feature] Read NTLM domain and workstation from environment (WebDAV, Windows)
 - [Bugfix] Files greater than 100GB fail to upload (OpenStack Swift) (#9131)
 - [Bugfix] Changed fingerprint prompt and duplicate ECDSA host key entries in ~/.ssh/known_hosts (SFTP) (#8867)
 - [Bugfix] Certificate trust errors for DNS-named buckets (S3) (#3813)
+- [Bugfix] Search is broken always including folders (#9076)
 
 4.7.3 [https://trac.cyberduck.io/milestone/4.7.3]
 - [Feature] Shared bookmarks and history with CLI and Mountain Duck in application group support directory (Mac)

@@ -5,7 +5,7 @@
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
         <relativePath>../../pom.xml</relativePath>
-        <version>4.8-SNAPSHOT</version>
+        <version>5.0-SNAPSHOT</version>
     </parent>
     <artifactId>cli-osx</artifactId>
     <description>Cyberduck CLI Mac</description>
@@ -80,14 +80,80 @@
                                             <groupId>com.oracle.java</groupId>
                                             <artifactId>jre</artifactId>
                                             <type>zip</type>
-                                            <version>8u66</version>
+                                            <version>8u77</version>
                                         </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${project.build.directory}</outputDirectory>
                                 </configuration>
                             </execution>
+                            <execution>
+                                <id>unpack-jce-unlimited</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>copy</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>com.oracle.java</groupId>
+                                            <artifactId>local_policy</artifactId>
+                                            <type>jar</type>
+                                            <version>8</version>
+                                            <destFileName>local_policy.jar</destFileName>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>com.oracle.java</groupId>
+                                            <artifactId>US_export_policy</artifactId>
+                                            <type>jar</type>
+                                            <version>8</version>
+                                            <destFileName>US_export_policy.jar</destFileName>
+                                        </artifactItem>
+                                    </artifactItems>
+                                    <outputDirectory>${project.build.directory}/duck.bundle/Contents/PlugIns/Runtime.jre/Contents/Home/lib/security
+                                    </outputDirectory>
+                                </configuration>
+                            </execution>
                         </executions>
                     </plugin>
+                </plugins>
+            </build>
+            <dependencies>
+                <dependency>
+                    <groupId>ch.cyberduck</groupId>
+                    <artifactId>libcore</artifactId>
+                    <type>dylib</type>
+                    <scope>runtime</scope>
+                    <version>${project.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>sparkle</id>
+            <!-- activate profile for non-Jenkins builds -->
+            <activation>
+                <property>
+                    <name>!env.JENKINS_HOME</name>
+                </property>
+            </activation>
+            <properties>
+                <xcode.configuration>Release</xcode.configuration>
+                <sparkle.feed>/dev/null</sparkle.feed>
+                <codesign.certificate>Developer ID Application: David Kocher</codesign.certificate>
+                <installer.certificate>3rd Party Mac Developer Installer: David Kocher (G69SCX94XU)</installer.certificate>
+            </properties>
+        </profile>
+        <profile>
+            <id>sign</id>
+            <activation>
+                <property>
+                    <name>env.JENKINS_HOME</name>
+                </property>
+                <os>
+                    <family>Mac</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
                     <plugin>
                         <artifactId>maven-antrun-plugin</artifactId>
                         <executions>
@@ -104,6 +170,7 @@
                                         <property name="revision" value="${git.commitsCount}" />
                                         <property name="git.revision" value="${git.revision}" />
                                         <property name="sparkle.feed" value="${sparkle.feed}" />
+                                        <property name="installer.certificate" value="${installer.certificate}" />
                                         <ant antfile="${project.basedir}/build.xml" target="package" dir="." />
                                     </tasks>
                                 </configuration>
@@ -112,15 +179,6 @@
                     </plugin>
                 </plugins>
             </build>
-            <dependencies>
-                <dependency>
-                    <groupId>ch.cyberduck</groupId>
-                    <artifactId>libcore</artifactId>
-                    <type>dylib</type>
-                    <scope>runtime</scope>
-                    <version>${project.version}</version>
-                </dependency>
-            </dependencies>
         </profile>
     </profiles>
 

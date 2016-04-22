@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System;
@@ -24,7 +24,9 @@ using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.notification;
 using ch.cyberduck.core.preferences;
+using ch.cyberduck.core.updater;
 using Ch.Cyberduck.Ui.Controller;
+using Ch.Cyberduck.Ui.Core;
 using Application = System.Windows.Forms.Application;
 
 namespace Ch.Cyberduck.Ui.Growl
@@ -46,7 +48,9 @@ namespace Ch.Cyberduck.Ui.Growl
             {
                 Text = LocaleFactory.get().localize("Check for Update…", "Main")
             };
-            itemUpdate.Click += delegate { UpdateController.Instance.ForceCheckForUpdates(false); };
+            PeriodicUpdateChecker updater = new WindowsPeriodicUpdateChecker();
+            itemUpdate.Enabled = updater.hasUpdatePrivileges();
+            itemUpdate.Click += delegate { updater.check(false); };
             ToolStripMenuItem itemDonate = new ToolStripMenuItem
             {
                 Text = LocaleFactory.get().localize("Donate…", "Main")
@@ -58,15 +62,17 @@ namespace Ch.Cyberduck.Ui.Growl
             {
                 Text = LocaleFactory.get().localize("Exit", "Localizable")
             };
-            itemExit.Click += delegate { MainController.Exit(); };
+            itemExit.Click += delegate { MainController.Exit(false); };
             rightMenu.Items.AddRange(new ToolStripItem[]
             {itemUpdate, new ToolStripSeparator(), itemDonate, itemKey, new ToolStripSeparator(), itemExit});
 
-            try {
+            try
+            {
                 _icon.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
             }
             catch (ArgumentException)
-            {}
+            {
+            }
             _icon.Visible = true;
             _icon.ContextMenuStrip = rightMenu;
 

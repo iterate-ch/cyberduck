@@ -40,9 +40,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * @version $Id$
- */
 public class FTPMlsdListResponseReader implements FTPDataResponseReader {
     private static final Logger log = Logger.getLogger(FTPMlsdListResponseReader.class);
 
@@ -148,7 +145,6 @@ public class FTPMlsdListResponseReader implements FTPDataResponseReader {
                     parsed.attributes().setCreationDate(this.parseTimestamp(facts.get("create")));
                 }
                 children.add(parsed);
-                listener.chunk(directory, children);
             }
         }
         if(!success) {

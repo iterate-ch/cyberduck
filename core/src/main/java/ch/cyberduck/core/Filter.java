@@ -18,9 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-/**
- * @version $Id$
- */
 public interface Filter<E> {
     boolean accept(E file);
 }

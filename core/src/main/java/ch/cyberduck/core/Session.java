@@ -18,12 +18,13 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Search;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.preferences.Preferences;
@@ -32,15 +33,15 @@ import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.shared.DefaultDownloadFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.shared.DefaultSearchFeature;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.shared.DisabledMoveFeature;
+import ch.cyberduck.core.shared.NullFileidProvider;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.log4j.Logger;
-
-import java.util.EnumSet;
 
 /**
  * @version $Id$
@@ -131,7 +132,8 @@ public abstract class Session<C> implements TranscriptListener {
 
     /**
      * Send the authentication credentials to the server. The connection must be opened first.
-     *  @param keychain Password store
+     *
+     * @param keychain Password store
      * @param prompt   Prompt
      * @param cancel   Cancel callback
      * @param cache    Directory listing cache
@@ -162,6 +164,7 @@ public abstract class Session<C> implements TranscriptListener {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Connection did close to %s", host));
             }
+            listener = null;
         }
     }
 
@@ -205,13 +208,6 @@ public abstract class Session<C> implements TranscriptListener {
             return host.getProtocol().isSecure();
         }
         return false;
-    }
-
-    /**
-     * @return The current working directory
-     */
-    public Path workdir() throws BackgroundException {
-        return new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory));
     }
 
     /**
@@ -281,7 +277,13 @@ public abstract class Session<C> implements TranscriptListener {
         if(log.isInfoEnabled()) {
             log.info(message);
         }
-        listener.log(request, message);
+        switch(state) {
+            case opening:
+            case open:
+            case closing:
+                listener.log(request, message);
+                break;
+        }
     }
 
     /**
@@ -314,6 +316,12 @@ public abstract class Session<C> implements TranscriptListener {
         }
         if(type == Home.class) {
             return (T) new DefaultHomeFinderService(this);
+        }
+        if(type == Search.class) {
+            return (T) new DefaultSearchFeature(this);
+        }
+        if(type == IdProvider.class) {
+            return (T) new NullFileidProvider();
         }
         return null;
     }

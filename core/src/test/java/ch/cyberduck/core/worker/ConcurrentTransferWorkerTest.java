@@ -17,7 +17,6 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.ssl.CertificateStoreX509KeyManager;
@@ -36,7 +35,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.transfer.download.AbstractDownloadFilter;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -53,30 +51,6 @@ import java.util.concurrent.TimeoutException;
 import static org.junit.Assert.*;
 
 public class ConcurrentTransferWorkerTest {
-
-    @Ignore
-    @Test(expected = BackgroundException.class)
-    public void testBorrowDnsFailure() throws Exception {
-        final Host host = new Host(new TestProtocol(), "unknownhostname", new Credentials("u", "p"));
-        final Transfer t = new UploadTransfer(host,
-                new Path("/t", EnumSet.of(Path.Type.directory)),
-                new NullLocal("l"));
-        final LoginConnectionService connection = new LoginConnectionService(new DisabledLoginCallback(),
-                new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener());
-        final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
-                connection, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(),
-                new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DisabledCertificateStore()),
-                new CertificateStoreX509KeyManager(new DisabledCertificateStore()), PathCache.empty(), 5);
-        try {
-            worker.borrow();
-        }
-        catch(BackgroundException e) {
-            assertEquals("DNS lookup for unknownhostname failed. DNS is the network service that translates a server name to its Internet address. This error is most often caused by having no connection to the Internet or a misconfigured network. It can also be caused by an unresponsive DNS server or a firewall preventing access to the network.", e.getDetail());
-            assertEquals("Connection failed", e.getMessage());
-            throw e;
-        }
-    }
 
     @Test
     public void testDoubleRelease() throws Exception {
@@ -105,23 +79,6 @@ public class ConcurrentTransferWorkerTest {
         final Session<?> session = worker.borrow();
         worker.release(session);
         worker.release(session);
-    }
-
-    @Ignore
-    @Test(expected = LoginCanceledException.class)
-    public void testBorrowMissingLoginCredentials() throws Exception {
-        final Host host = new Host(new TestProtocol(), "test.cyberduck.ch");
-        final Transfer t = new UploadTransfer(host,
-                new Path("/t", EnumSet.of(Path.Type.directory)),
-                new NullLocal("l"));
-        final LoginConnectionService connection = new LoginConnectionService(new DisabledLoginCallback(),
-                new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener());
-        final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
-                connection, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(),
-                new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DisabledCertificateStore()),
-                new CertificateStoreX509KeyManager(new DisabledCertificateStore()), PathCache.empty(), 2);
-        worker.borrow();
     }
 
     @Test
@@ -203,7 +160,6 @@ public class ConcurrentTransferWorkerTest {
     }
 
     @Test
-    @Ignore
     public void testConcurrentSessions() throws Exception {
         final int files = 5;
         final int connections = 3;

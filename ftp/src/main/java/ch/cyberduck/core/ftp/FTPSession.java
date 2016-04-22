@@ -34,6 +34,7 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Symlink;
@@ -62,7 +63,6 @@ import org.apache.log4j.Logger;
 import javax.net.SocketFactory;
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.EnumSet;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -137,6 +137,19 @@ public class FTPSession extends SSLSession<FTPClient> {
             log.warn(String.format("Ignore disconnect failure %s", e.getMessage()));
         }
         super.disconnect();
+    }
+
+    @Override
+    public void interrupt() throws BackgroundException {
+        if(host.getProtocol().isSecure()) {
+            // The client and the server must share knowledge that the connection is ending in order to avoid a truncation attack.
+            // Either party may initiate the exchange of closing messages.
+            log.warn(String.format("Skip disconnect for %s connection to workaround hang in closing socket", host.getProtocol()));
+            super.disconnect();
+        }
+        else {
+            super.interrupt();
+        }
     }
 
     protected void configure(final FTPClient client) throws IOException {
@@ -302,22 +315,6 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     @Override
-    public Path workdir() throws BackgroundException {
-        final String directory;
-        try {
-            directory = client.printWorkingDirectory();
-            if(null == directory) {
-                throw new FTPException(this.getClient().getReplyCode(), this.getClient().getReplyString());
-            }
-        }
-        catch(IOException e) {
-            throw new FTPExceptionMappingService().map(e);
-        }
-        return new Path(directory,
-                directory.equals(String.valueOf(Path.DELIMITER)) ? EnumSet.of(Path.Type.volume, Path.Type.directory) : EnumSet.of(Path.Type.directory));
-    }
-
-    @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         return listService.list(directory, listener);
     }
@@ -353,6 +350,9 @@ public class FTPSession extends SSLSession<FTPClient> {
         }
         if(type == DistributionConfiguration.class) {
             return (T) new CustomOriginCloudFrontDistributionConfiguration(host, this);
+        }
+        if(type == Home.class) {
+            return (T) new FTPWorkdirService(this);
         }
         return super.getFeature(type);
     }

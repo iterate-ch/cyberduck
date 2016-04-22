@@ -26,9 +26,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class UploadRootPathsNormalizer implements RootPathsNormalizer<List<TransferItem>> {
     private static final Logger log = Logger.getLogger(UploadRootPathsNormalizer.class);
 

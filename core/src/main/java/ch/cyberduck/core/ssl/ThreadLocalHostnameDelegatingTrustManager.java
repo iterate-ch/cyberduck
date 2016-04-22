@@ -18,18 +18,13 @@ package ch.cyberduck.core.ssl;
  * feedback@cyberduck.io
  */
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
-/**
- * @version $Id$
- */
-public final class ThreadLocalHostnameDelegatingTrustManager implements X509TrustManager, TrustManagerHostnameCallback {
+public class ThreadLocalHostnameDelegatingTrustManager implements X509TrustManager, TrustManagerHostnameCallback {
     private static final Logger log = Logger.getLogger(ThreadLocalHostnameDelegatingTrustManager.class);
 
     /**
@@ -40,18 +35,8 @@ public final class ThreadLocalHostnameDelegatingTrustManager implements X509Trus
 
     private X509TrustManager delegate;
 
-    /**
-     * Lax hostname verification
-     */
-    private final boolean strict;
-
     public ThreadLocalHostnameDelegatingTrustManager(final X509TrustManager delegate, final String hostname) {
-        this(delegate, hostname, false);
-    }
-
-    public ThreadLocalHostnameDelegatingTrustManager(final X509TrustManager delegate, final String hostname, final boolean strict) {
         this.delegate = delegate;
-        this.strict = strict;
         this.setTarget(hostname);
     }
 
@@ -87,22 +72,6 @@ public final class ThreadLocalHostnameDelegatingTrustManager implements X509Trus
     }
 
     public void setTarget(final String hostname) {
-        final String simple;
-        if(strict) {
-            simple = hostname;
-        }
-        else {
-            final String[] parts = StringUtils.split(hostname, '.');
-            if(parts.length > 4) {
-                ArrayUtils.reverse(parts);
-                // Rewrite c.cyberduck.s3.amazonaws.com which does not match wildcard certificate *.s3.amazonaws.com
-                simple = StringUtils.join(parts[3], ".", parts[2], ".", parts[1], ".", parts[0]);
-                log.warn(String.format("Rewrite hostname target to %s", simple));
-            }
-            else {
-                simple = hostname;
-            }
-        }
-        this.target.set(simple);
+        this.target.set(hostname);
     }
 }

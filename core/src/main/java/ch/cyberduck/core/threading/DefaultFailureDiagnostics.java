@@ -32,9 +32,6 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeoutException;
 
-/**
- * @version $Id$
- */
 public final class DefaultFailureDiagnostics implements FailureDiagnostics<Exception> {
     private static final Logger log = Logger.getLogger(DefaultFailureDiagnostics.class);
 

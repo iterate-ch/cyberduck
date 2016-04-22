@@ -49,9 +49,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * @version $Id$
- */
 public class SyncTransfer extends Transfer {
     private static final Logger log = Logger.getLogger(SyncTransfer.class);
 
@@ -168,6 +165,11 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
+    public void pre(final Session<?> session, final Map<Path, TransferStatus> files) throws BackgroundException {
+        log.warn(String.format("Skip pre transfer bulk operation for %s", files));
+    }
+
+    @Override
     public List<TransferItem> list(final Session<?> session, final Path directory, final Local local,
                                    final ListProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
@@ -209,9 +211,11 @@ public class SyncTransfer extends Transfer {
         }
         final Comparison compare = comparison.compare(file, local);
         if(compare.equals(Comparison.remote)) {
+            download.pre(session, Collections.singletonMap(file, status));
             download.transfer(session, file, local, options, status, callback, progressListener, streamListener);
         }
         else if(compare.equals(Comparison.local)) {
+            upload.pre(session, Collections.singletonMap(file, status));
             upload.transfer(session, file, local, options, status, callback, progressListener, streamListener);
         }
     }

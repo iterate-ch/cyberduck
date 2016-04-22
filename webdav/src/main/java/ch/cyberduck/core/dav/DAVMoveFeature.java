@@ -18,12 +18,12 @@ package ch.cyberduck.core.dav;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 
 import java.io.IOException;
@@ -56,7 +56,7 @@ public class DAVMoveFeature implements Move {
             throw new DAVExceptionMappingService().map("Cannot rename {0}", e, file);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e, file);
+            throw new HttpExceptionMappingService().map(e, file);
         }
     }
 

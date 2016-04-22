@@ -22,9 +22,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.EnumSet;
 
-/**
- * @version $Id$
- */
 public class DefaultPathReference implements CacheReference<Path> {
 
     private Path file;

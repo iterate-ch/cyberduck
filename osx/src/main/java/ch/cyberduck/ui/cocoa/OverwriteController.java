@@ -69,7 +69,7 @@ public class OverwriteController extends ProxyController {
             i++;
         }
         if(i >= 10) {
-            alertText.append("\n").append(Character.toString('\u2022')).append(" ...)");
+            alertText.append("\n").append(Character.toString('\u2022')).append(" …)");
         }
         if(shouldWarn) {
             NSAlert alert = NSAlert.alert(

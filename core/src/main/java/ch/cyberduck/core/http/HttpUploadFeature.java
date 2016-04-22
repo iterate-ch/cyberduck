@@ -18,7 +18,6 @@ package ch.cyberduck.core.http;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -47,9 +46,6 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.text.MessageFormat;
 
-/**
- * @version $Id$
- */
 public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
     private static final Logger log = Logger.getLogger(HttpUploadFeature.class);
 
@@ -57,11 +53,6 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
 
     public HttpUploadFeature(final AbstractHttpWriteFeature<Output> writer) {
         this.writer = writer;
-    }
-
-    @Override
-    public boolean pooled() {
-        return false;
     }
 
     @Override
@@ -107,8 +98,17 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
             }
             finally {
                 final StreamCloser c = new DefaultStreamCloser();
-                c.close(in);
-                c.close(out);
+                try {
+                    c.close(in);
+                    c.close(out);
+                }
+                catch(BackgroundException e) {
+                    // Reset file offset for broken pipe (B2)
+                    status.setOffset(0L); // status.getOffset() - count.getSent()
+                    // Discard sent bytes if there is an error reply.
+                    listener.sent(-count.getSent());
+                    throw e;
+                }
             }
             try {
                 final Output response = out.getResponse();
@@ -116,13 +116,15 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
                 return response;
             }
             catch(BackgroundException e) {
+                // Reset file offset for error reply after entity is sent
+                status.setOffset(0L); // status.getOffset() - count.getSent()
                 // Discard sent bytes if there is an error reply.
                 listener.sent(-count.getSent());
                 throw e;
             }
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
+            throw new HttpExceptionMappingService().map("Upload {0} failed", e, file);
         }
     }
 

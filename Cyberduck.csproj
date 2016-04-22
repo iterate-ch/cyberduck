@@ -65,7 +65,8 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(OutputType)' == 'Library'">
-    <StartupObject></StartupObject>
+    <StartupObject>
+    </StartupObject>
     <AssemblyName>Cyberduck.Native</AssemblyName>
     <OutputPath>windows\target\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
@@ -79,10 +80,6 @@
     <Reference Include="ActiveButtons">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>windows\target\ActiveButtons.dll</HintPath>
-    </Reference>
-    <Reference Include="AutomaticUpdater">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>windows\target\AutomaticUpdater.dll</HintPath>
     </Reference>
     <Reference Include="Cyberduck.Core">
       <SpecificVersion>False</SpecificVersion>
@@ -187,6 +184,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\core\WindowsPeriodicUpdateChecker.cs" />
+    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\sparkle\WinSparkle.cs" />
     <Compile Include="windows\target\AssemblyInfo.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\BaseController.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\CommandController.cs" />
@@ -198,7 +197,6 @@
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\IUpdateView.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\MainController.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\threading\BrowserControllerBackgroundAction.cs" />
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\UpdateController.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\core\Commands.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\core\DragDropLib.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\core\GlobalKeyboardHook.cs" />
@@ -251,12 +249,6 @@
     </Compile>
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\threading\DialogAlertCallback.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\threading\DialogTransferErrorCallback.cs" />
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\UpdateForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\UpdateForm.Designer.cs">
-      <DependentUpon>UpdateForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\UserDefaultsDateFormatter.cs" />
     <EmbeddedResource Include="windows\src\main\csharp\ch\cyberduck\ResourcesBundle.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -342,9 +334,6 @@
     <EmbeddedResource Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\TransferPromptForm.resx">
       <DependentUpon>TransferPromptForm.cs</DependentUpon>
       <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\UpdateForm.resx">
-      <DependentUpon>UpdateForm.cs</DependentUpon>
     </EmbeddedResource>
     <!-- end localizations -->
     <None Include="App.config">
@@ -636,7 +625,7 @@
   <!-- Import of the MSBuildCommunityTask targets -->
   <Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.targets" />
   <Target Name="AssemblyInfo">
-    <AssemblyInfo CodeLanguage="CS" OutputFile="windows\target\AssemblyInfo.cs" AssemblyTitle="Cyberduck" AssemblyDescription="Libre FTP, SFTP, WebDAV, S3 and OpenStack Swift browser for Mac and Windows." AssemblyCompany="iterate GmbH" AssemblyProduct="Cyberduck" AssemblyCopyright="Copyright (c) 2001-2015 David Kocher. Copyright (c) 2011–2015 Yves Langisch" ComVisible="false" Guid="5fc1c120-24c7-469d-b52b-9bce20db208d" AssemblyVersion="$(Version)" AssemblyFileVersion="$(Version)" AssemblyInformationalVersion="$(ShortVersion)" Condition="$(Version) != '0' " />
+    <AssemblyInfo CodeLanguage="CS" OutputFile="windows\target\AssemblyInfo.cs" AssemblyTitle="Cyberduck" AssemblyDescription="Libre FTP, SFTP, WebDAV, S3 and OpenStack Swift browser for Mac and Windows." AssemblyCompany="iterate GmbH" AssemblyProduct="Cyberduck" AssemblyCopyright="Copyright (c) 2001-2016 David Kocher. Copyright (c) 2011–2016 Yves Langisch" ComVisible="false" Guid="5fc1c120-24c7-469d-b52b-9bce20db208d" AssemblyVersion="$(Version)" AssemblyFileVersion="$(Version)" AssemblyInformationalVersion="$(Version)" Condition="$(Version) != '0' " />
   </Target>
   <!-- to manage version number -->
   <!-- to generate our personnal version info -->
@@ -654,6 +643,7 @@
     </ItemGroup>
     <ItemGroup>
       <DefaultProfiles Include="profiles\Rackspace US.cyberduckprofile" />
+      <DefaultProfiles Include="profiles\B2.cyberduckprofile" />
     </ItemGroup>
     <ItemGroup>
       <JNASupport Include="windows\target\ikvm-8.1.5717.0\bin\ikvm-native-win32-x86.dll" />

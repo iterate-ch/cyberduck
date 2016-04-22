@@ -23,11 +23,9 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
 
+import java.util.Objects;
 import java.util.regex.Pattern;
 
-/**
- * @version $Id$
- */
 public class DownloadRegexFilter extends DownloadDuplicateFilter {
     private static final Logger log = Logger.getLogger(DownloadRegexFilter.class);
 
@@ -53,5 +51,30 @@ public class DownloadRegexFilter extends DownloadDuplicateFilter {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("DownloadRegexFilter{");
+        sb.append("pattern=").append(pattern);
+        sb.append('}');
+        return sb.toString();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(!(o instanceof DownloadRegexFilter)) {
+            return false;
+        }
+        final DownloadRegexFilter that = (DownloadRegexFilter) o;
+        return Objects.equals(pattern, that.pattern);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pattern);
     }
 }

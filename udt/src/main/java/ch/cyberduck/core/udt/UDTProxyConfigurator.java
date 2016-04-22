@@ -159,7 +159,7 @@ public class UDTProxyConfigurator implements TrustManagerHostnameCallback {
         public UDTHttpConnectionPoolBuilder(final Host host, final Host proxy, final List<Header> headers,
                                             final X509TrustManager trust, final X509KeyManager key,
                                             final UDTSocketCallback callback) {
-            super(host, trust, key, new DisabledProxyFinder());
+            super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, new DisabledProxyFinder());
             this.proxy = proxy;
             this.headers = headers;
             this.trust = trust;

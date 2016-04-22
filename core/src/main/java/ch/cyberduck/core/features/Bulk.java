@@ -22,9 +22,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.Map;
 
-/**
- * @version $Id:$
- */
 public interface Bulk<R> {
     R pre(Transfer.Type type, Map<Path, TransferStatus> files) throws BackgroundException;
 }

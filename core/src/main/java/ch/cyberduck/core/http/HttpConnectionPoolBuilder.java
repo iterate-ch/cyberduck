@@ -63,9 +63,6 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.Charset;
 
-/**
- * @version $Id$
- */
 public class HttpConnectionPoolBuilder {
     private static final Logger log = Logger.getLogger(HttpConnectionPoolBuilder.class);
 
@@ -84,7 +81,7 @@ public class HttpConnectionPoolBuilder {
     private Host host;
 
     public HttpConnectionPoolBuilder(final Host host,
-                                     final X509TrustManager trust,
+                                     final ThreadLocalHostnameDelegatingTrustManager trust,
                                      final X509KeyManager key,
                                      final ProxyFinder proxy) {
         this(host, new PlainConnectionSocketFactory() {
@@ -119,9 +116,7 @@ public class HttpConnectionPoolBuilder {
                                         final InetSocketAddress remoteAddress,
                                         final InetSocketAddress localAddress,
                                         final HttpContext context) throws IOException {
-                if(trust instanceof ThreadLocalHostnameDelegatingTrustManager) {
-                    ((ThreadLocalHostnameDelegatingTrustManager) trust).setTarget(remoteAddress.getHostName());
-                }
+                trust.setTarget(remoteAddress.getHostName());
                 return super.connectSocket(connectTimeout, socket, host, remoteAddress, localAddress, context);
             }
         }, proxy);
@@ -195,11 +190,11 @@ public class HttpConnectionPoolBuilder {
                 .build());
         builder.setDefaultRequestConfig(RequestConfig.custom()
                 .setRedirectsEnabled(true)
-                        // Disable use of Expect: Continue by default for all methods
+                // Disable use of Expect: Continue by default for all methods
                 .setExpectContinueEnabled(false)
                 .setAuthenticationEnabled(true)
                 .setConnectTimeout(timeout)
-                        // Sets the timeout in milliseconds used when retrieving a connection from the ClientConnectionManager
+                // Sets the timeout in milliseconds used when retrieving a connection from the ClientConnectionManager
                 .setConnectionRequestTimeout(preferences.getInteger("http.manager.timeout"))
                 .setSocketTimeout(timeout)
                 .build());

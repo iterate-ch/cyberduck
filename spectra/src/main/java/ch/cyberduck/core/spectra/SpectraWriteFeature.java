@@ -14,56 +14,42 @@
 
 package ch.cyberduck.core.spectra;
 
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
-import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.http.ResponseOutputStream;
-import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
-import ch.cyberduck.core.s3.S3MultipartService;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.s3.S3DisabledMultipartService;
 import ch.cyberduck.core.s3.S3WriteFeature;
+import ch.cyberduck.core.shared.DefaultAttributesFeature;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.jets3t.service.model.StorageObject;
-
-import java.util.Collections;
+import org.apache.log4j.Logger;
+import org.jets3t.service.model.S3Object;
 
 public class SpectraWriteFeature extends S3WriteFeature {
-
-    private final S3DefaultDeleteFeature delete;
+    private static final Logger log = Logger.getLogger(SpectraWriteFeature.class);
 
     public SpectraWriteFeature(final SpectraSession session) {
-        this(session, new S3DefaultDeleteFeature(session));
+        this(session, new DefaultFindFeature(session), new DefaultAttributesFeature(session));
     }
 
-    public SpectraWriteFeature(final SpectraSession session, final S3MultipartService multipartService,
-                               final Find finder, final Attributes attributes) {
-        this(session, multipartService, finder, attributes, new S3DefaultDeleteFeature(session));
+    public SpectraWriteFeature(final SpectraSession session, final Find finder, final Attributes attributes) {
+        super(session, new S3DisabledMultipartService(), finder, attributes);
     }
 
-    public SpectraWriteFeature(final SpectraSession session, final S3DefaultDeleteFeature delete) {
-        super(session);
-        this.delete = delete;
-    }
-
-    public SpectraWriteFeature(final SpectraSession session, final S3MultipartService multipartService,
-                               final Find finder, final Attributes attributes, final S3DefaultDeleteFeature delete) {
-        super(session, multipartService, finder, attributes);
-        this.delete = delete;
-    }
-
-    @Override
-    public ResponseOutputStream<StorageObject> write(final Path file, final TransferStatus status) throws BackgroundException {
-        if(status.isExists()) {
-            delete.delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.Callback() {
-                @Override
-                public void delete(final Path file) {
-                    //
-                }
-            });
+    /**
+     * Add default metadata
+     */
+    protected S3Object getDetails(final String key, final TransferStatus status) {
+        final S3Object object = super.getDetails(key, status);
+        final Checksum checksum = status.getChecksum();
+        if(null != checksum) {
+            switch(checksum.algorithm) {
+                case crc32:
+                    object.addMetadata("Content-CRC32", checksum.hash);
+                    break;
+            }
         }
-        return super.write(file, status);
+        return object;
     }
 }

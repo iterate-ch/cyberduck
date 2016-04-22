@@ -23,14 +23,10 @@ import org.apache.log4j.Logger;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * A cache for remote directory listings
- *
- * @version $Id$
- */
 public abstract class Cache<T extends Referenceable> {
     private static final Logger log = Logger.getLogger(Cache.class);
 
@@ -73,6 +69,12 @@ public abstract class Cache<T extends Referenceable> {
         }
         final T[] entries = (T[]) list.toArray(new Referenceable[list.size()]);
         for(T entry : entries) {
+            if(this.key(entry).equals(reference)) {
+                return entry;
+            }
+        }
+        final List<T> hidden = list.attributes().getHidden();
+        for(T entry : hidden) {
             if(this.key(entry).equals(reference)) {
                 return entry;
             }
@@ -140,6 +142,9 @@ public abstract class Cache<T extends Referenceable> {
             log.info(String.format("Caching %s", reference));
         }
         for(T f : children) {
+            reverse.put(this.key(f), reference);
+        }
+        for(T f : children.attributes().getHidden()) {
             reverse.put(this.key(f), reference);
         }
         return impl.put(reference, children);

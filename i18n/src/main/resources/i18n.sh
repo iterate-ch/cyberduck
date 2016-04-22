@@ -16,6 +16,7 @@
 
 #!/bin/bash
 
+workdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 nibtool="ibtool"
 convertstrings="ruby convertstrings.rb"
 base_language="en.lproj"
@@ -45,7 +46,7 @@ init() {
 		cp -R $base_language/$n $language/$n
 	}
 	done
-	for stringsfile in `ls $base_language | grep .strings`; do
+	for stringsfile in `ls $base_language | grep .strings | grep -v .strings.1`; do
 	{
 		echo "Copying $stringsfile"
 		cp -R $base_language/$stringsfile $language/$stringsfile
@@ -63,7 +64,8 @@ test() {
 
 run() {
 	echo "Running app using `basename $language .lproj`...";
-	arch -arch $arch ./osx/target/Cyberduck.app/Contents/MacOS/Cyberduck -AppleLanguages "(`basename $language .lproj`)"
+    basedir="$( cd "$workdir/../../../.." && pwd )"
+	arch -arch $arch $basedir/osx/target/Cyberduck.app/Contents/MacOS/Cyberduck -AppleLanguages "(`basename $language .lproj`)"
 }
 
 nib() {
@@ -165,7 +167,7 @@ tx_push() {
     echo "*** Updating all localizations...";
     if [ "$stringsfile" = "all" ] ; then
         echo "*** Updating all .strings...";
-        for stringsfile in `ls en.lproj | grep .strings`; do
+        for stringsfile in `ls en.lproj | grep .strings | grep -v .strings.1`; do
             strings=`basename $stringsfile .strings`
             echo "*** Updating $strings.strings...";
             $tx --traceback set --auto-local -r cyberduck.$strings '<lang>'.lproj/$strings.strings --source-language en --type=STRINGS --execute
@@ -181,20 +183,50 @@ tx_push() {
 }
 
 tx_pull() {
-    echo "*** Updating all localizations...";
-    if [ "$stringsfile" = "all" ] ; then
-        echo "*** Updating all .strings...";
-        for stringsfile in `ls en.lproj | grep .strings`; do
+	if [ "$language" = "all" ] ; then
+	{
+		echo "*** Updating all localizations...";
+		for lproj in `ls . | grep lproj`; do
+			language=$lproj;
+            lang=`basename $language .lproj`
+            echo "*** Updating $language Localization...";
+            if [ "$stringsfile" = "all" ] ; then
+                echo "*** Updating all .strings...";
+                for stringsfile in `ls en.lproj | grep .strings | grep -v .strings.1`; do
+                    strings=`basename $stringsfile .strings`
+                    lang=`basename $language .lproj`
+                    echo "*** Updating $strings.strings...";
+                    $tx --traceback pull -l $lang --resource=cyberduck.$strings --force
+                done;
+            fi;
+            if [ "$stringsfile" != "all" ] ; then
+                strings=`basename $stringsfile .strings`
+                lang=`basename $language .lproj`
+                echo "*** Updating $strings.strings...";
+                $tx --traceback pull -l $lang --resource=cyberduck.$strings --force
+            fi;
+		done;
+	}
+	else
+	{
+		echo "*** Updating $language Localization...";
+        if [ "$stringsfile" = "all" ] ; then
+            echo "*** Updating all .strings...";
+            for stringsfile in `ls en.lproj | grep .strings | grep -v .strings.1`; do
+                strings=`basename $stringsfile .strings`
+                lang=`basename $language .lproj`
+                echo "*** Updating $strings.strings...";
+                $tx --traceback pull --source -l $lang --resource=cyberduck.$strings --force
+            done;
+        fi;
+        if [ "$stringsfile" != "all" ] ; then
             strings=`basename $stringsfile .strings`
+            lang=`basename $language .lproj`
             echo "*** Updating $strings.strings...";
-            $tx --traceback pull --source --resource=cyberduck.$strings --force
-        done;
-    fi;
-    if [ "$stringsfile" != "all" ] ; then
-        strings=`basename $stringsfile .strings`
-        echo "*** Updating $strings.strings...";
-        $tx --traceback pull --source --resource=cyberduck.$strings --force
-    fi;
+            $tx --traceback pull --source -l $lang --resource=cyberduck.$strings --force
+        fi;
+	}
+	fi;
 }
 
 language="all";

@@ -34,9 +34,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * @version $Id:$
- */
 public abstract class CopyURLMenuDelegate extends URLMenuDelegate {
     private static final Logger log = Logger.getLogger(CopyURLMenuDelegate.class);
 
@@ -51,7 +48,7 @@ public abstract class CopyURLMenuDelegate extends URLMenuDelegate {
     }
 
     @Override
-    protected List<DescriptiveUrl> getURLs(Path selected) {
+    protected List<DescriptiveUrl> getURLs(final Path selected) {
         final ArrayList<DescriptiveUrl> list = new ArrayList<DescriptiveUrl>();
         final UrlProvider provider = this.getSession().getFeature(UrlProvider.class);
         if(provider != null) {

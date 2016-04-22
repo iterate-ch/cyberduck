@@ -18,7 +18,8 @@ public class FolderBookmarkCollectionTest {
     public void testLoad() throws Exception {
         ProtocolFactory.register(new TestProtocol());
         final Local source = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        final Local b = new Local(source, String.format("%s.duck", UUID.randomUUID().toString()));
+        final String uid = "4d6b034c-8635-4e2f-93b1-7306ba22da22";
+        final Local b = new Local(source, String.format("%s.duck", uid));
         final String bookmark = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n" +
                 "<plist version=\"1.0\">\n" +
@@ -34,7 +35,7 @@ public class FolderBookmarkCollectionTest {
                 "\t<key>Protocol</key>\n" +
                 "\t<string>test</string>\n" +
                 "\t<key>UUID</key>\n" +
-                "\t<string>4d6b034c-8635-4e2f-93b1-7306ba22da22</string>\n" +
+                "\t<string>" + uid + "</string>\n" +
                 "\t<key>Username</key>\n" +
                 "\t<string>anonymous</string>\n" +
                 "</dict>\n" +
@@ -48,9 +49,8 @@ public class FolderBookmarkCollectionTest {
         collection.load();
         assertFalse(collection.isEmpty());
         assertEquals(1, collection.size());
-        assertEquals("4d6b034c-8635-4e2f-93b1-7306ba22da22", collection.get(0).getUuid());
-        assertEquals("4d6b034c-8635-4e2f-93b1-7306ba22da22.duck", collection.getFile(collection.get(0)).getName());
-        assertFalse(b.exists());
+        assertEquals(uid, collection.get(0).getUuid());
+        assertEquals(uid + ".duck", collection.getFile(collection.get(0)).getName());
         collection.getFile(collection.get(0)).delete();
     }
 

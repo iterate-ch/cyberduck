@@ -58,7 +58,7 @@ public class AzureWriteFeatureTest {
         final OutputStream out = new AzureWriteFeature(session, context).write(test, status);
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        IOUtils.closeQuietly(out);
+        out.close();
         assertTrue(new AzureFindFeature(session, context).find(test));
         final PathAttributes attributes = new AzureAttributesFeature(session, context).find(test);
         assertEquals(content.length, attributes.getSize());
@@ -69,7 +69,7 @@ public class AzureWriteFeatureTest {
         final byte[] buffer = new byte[content.length];
         final InputStream in = new AzureReadFeature(session, context).read(test, new TransferStatus());
         IOUtils.readFully(in, buffer);
-        IOUtils.closeQuietly(in);
+        in.close();
         assertArrayEquals(content, buffer);
         final OutputStream overwrite = new AzureWriteFeature(session, context).write(test, new TransferStatus()
                 .length("overwrite".getBytes("UTF-8").length).metadata(Collections.singletonMap("Content-Type", "text/plain")));

@@ -109,7 +109,7 @@
   <!-- Import of the MSBuildCommunityTask targets -->
   <Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.targets" />
   <Target Name="AssemblyInfo">
-    <AssemblyInfo CodeLanguage="CS" OutputFile="bonjour\target\AssemblyInfo.cs" AssemblyTitle="Cyberduck" AssemblyDescription="Libre FTP, SFTP, WebDAV, S3 and OpenStack Swift browser for Mac and Windows." AssemblyCompany="iterate GmbH" AssemblyProduct="Cyberduck" AssemblyCopyright="Copyright (c) 2001-2015 David Kocher. Copyright (c) 2011–2015 Yves Langisch" ComVisible="false" Guid="5fc1c120-24c7-469d-b52b-9bce20db208d" AssemblyVersion="$(Version)" AssemblyFileVersion="$(Version)" AssemblyInformationalVersion="$(ShortVersion)" Condition="$(Version) != '0' " />
+    <AssemblyInfo CodeLanguage="CS" OutputFile="bonjour\target\AssemblyInfo.cs" AssemblyTitle="Cyberduck" AssemblyDescription="Libre FTP, SFTP, WebDAV, S3 and OpenStack Swift browser for Mac and Windows." AssemblyCompany="iterate GmbH" AssemblyProduct="Cyberduck" AssemblyCopyright="Copyright (c) 2001-2016 David Kocher. Copyright (c) 2011–2016 Yves Langisch" ComVisible="false" Guid="5fc1c120-24c7-469d-b52b-9bce20db208d" AssemblyVersion="$(Version)" AssemblyFileVersion="$(Version)" AssemblyInformationalVersion="$(Version)" Condition="$(Version) != '0' " />
   </Target>
   <Target Name="BeforeBuild">
     <CallTarget Targets="AssemblyInfo" />

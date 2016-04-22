@@ -21,10 +21,12 @@ package ch.cyberduck.core.transfer.download;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-/**
- * @version $Id$
- */
 public final class DownloadFilterOptions {
+
+    /**
+     * Split download into segments
+     */
+    public boolean segments;
 
     public boolean permissions;
 
@@ -38,6 +40,7 @@ public final class DownloadFilterOptions {
 
     public DownloadFilterOptions() {
         final Preferences preferences = PreferencesFactory.get();
+        segments = preferences.getBoolean("queue.download.segments");
         permissions = preferences.getBoolean("queue.download.permissions.change");
         timestamp = preferences.getBoolean("queue.download.timestamp.change");
         wherefrom = preferences.getBoolean("queue.download.wherefrom");

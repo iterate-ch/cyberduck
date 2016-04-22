@@ -22,6 +22,7 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.dav.DAVReadFeature;
 import ch.cyberduck.core.dav.DAVSession;
@@ -41,22 +42,26 @@ import java.util.EnumSet;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.MalformedJsonException;
 
-/**
- * @version $Id$
- */
 public class S3SessionCredentialsRetriever {
 
-    private TranscriptListener transcript;
+    private final TranscriptListener transcript;
 
-    private String url;
+    private final ProtocolFactory factory;
+
+    private final String url;
 
     public S3SessionCredentialsRetriever(final TranscriptListener transcript, final String url) {
+        this(ProtocolFactory.global, transcript, url);
+    }
+
+    public S3SessionCredentialsRetriever(final ProtocolFactory factory, final TranscriptListener transcript, final String url) {
+        this.factory = factory;
         this.transcript = transcript;
         this.url = url;
     }
 
     public AWSCredentials get() throws BackgroundException {
-        final Host address = HostParser.parse(url);
+        final Host address = new HostParser(factory).get(url);
         final Path access = new Path(address.getDefaultPath(), EnumSet.of(Path.Type.file));
         address.setDefaultPath(String.valueOf(Path.DELIMITER));
         final DAVSession connection = new DAVSession(address);

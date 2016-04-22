@@ -143,28 +143,16 @@ int launch(int argc, char *argv[]) {
                                userInfo:nil] raise];
     }
     JLI_Launch_t jli_LaunchFxnPtr = NULL;
-    NSError *error;
-    if (CFBundleLoadExecutableAndReturnError(runtimeBundle, (CFErrorRef *)&error)) {
-        // Locate the JLI_Launch() function
-        JLI_Launch_t jli_LaunchFxnPtr = CFBundleGetFunctionPointerForName(runtimeBundle, CFSTR("JLI_Launch"));
-        if (jli_LaunchFxnPtr == NULL) {
-            [[NSException exceptionWithName:@JAVA_LAUNCH_ERROR
-                                     reason:NSLocalizedString(@"Error getting launcher function.", nil)
-                                   userInfo:nil] raise];
-        }
+    // Locate the JLI_Launch() function
+    NSString *libjliPath = [runtimePath stringByAppendingString:@"/Contents/Home/lib/jli/libjli.dylib"];
+    void *libJLI = dlopen([libjliPath fileSystemRepresentation], RTLD_LAZY);
+    if(libJLI != NULL) {
+        jli_LaunchFxnPtr = dlsym(libJLI, "JLI_Launch");
     }
-    else {
-        // Locate the JLI_Launch() function
-        NSString *libjliPath = [runtimePath stringByAppendingString:@"/Contents/Home/lib/jli/libjli.dylib"];
-        void *libJLI = dlopen([libjliPath fileSystemRepresentation], RTLD_LAZY);
-        if(libJLI != NULL) {
-            jli_LaunchFxnPtr = dlsym(libJLI, "JLI_Launch");
-        }
-        if(jli_LaunchFxnPtr == NULL) {
-            [[NSException exceptionWithName:@JAVA_LAUNCH_ERROR
-                                     reason:NSLocalizedString(@"Error loading runtime executable.", nil)
-                                   userInfo:nil] raise];
-        }
+    if(jli_LaunchFxnPtr == NULL) {
+        [[NSException exceptionWithName:@JAVA_LAUNCH_ERROR
+                                 reason:NSLocalizedString(@"Error loading runtime executable.", nil)
+                               userInfo:nil] raise];
     }
 
     int jliArgumentsCount = (int)[arguments count];

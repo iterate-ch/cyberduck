@@ -21,6 +21,7 @@ package ch.cyberduck.core.http;
 import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -29,9 +30,6 @@ import ch.cyberduck.core.exception.QuotaException;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
 
-/**
- * @version $Id$
- */
 public class HttpResponseExceptionMappingService extends AbstractExceptionMappingService<HttpResponseException> {
 
     @Override
@@ -60,6 +58,8 @@ public class HttpResponseExceptionMappingService extends AbstractExceptionMappin
                 return new InteroperabilityException(buffer.toString(), e);
             case HttpStatus.SC_INTERNAL_SERVER_ERROR:
                 return new InteroperabilityException(buffer.toString(), e);
+            case HttpStatus.SC_SERVICE_UNAVAILABLE:
+                return new ConnectionRefusedException(buffer.toString(), e);
         }
         return this.wrap(e, buffer);
     }

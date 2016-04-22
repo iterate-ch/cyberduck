@@ -27,13 +27,11 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.IdProvider;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id$
- */
 public class DefaultFindFeature implements Find {
     private static final Logger log = Logger.getLogger(DefaultFindFeature.class);
 
@@ -74,6 +72,13 @@ public class DefaultFindFeature implements Find {
                                 return true;
                             }
                         }
+                }
+                if(null == file.attributes().getVersionId()) {
+                    final IdProvider id = session.getFeature(IdProvider.class);
+                    final String version = id.getFileid(file);
+                    if(version != null) {
+                        return true;
+                    }
                 }
             }
             return found;

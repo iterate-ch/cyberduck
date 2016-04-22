@@ -18,14 +18,12 @@ package ch.cyberduck.core.io;
  *  dkocher@cyberduck.ch
  */
 
-import java.io.FilterInputStream;
+import org.apache.commons.io.input.ProxyInputStream;
+
 import java.io.IOException;
 import java.io.InputStream;
 
-/**
- * @version $Id$
- */
-public class ThrottledInputStream extends FilterInputStream {
+public class ThrottledInputStream extends ProxyInputStream {
 
     /**
      * The delegate.

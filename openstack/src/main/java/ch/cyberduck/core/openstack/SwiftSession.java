@@ -53,6 +53,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -74,9 +75,6 @@ import ch.iterate.openstack.swift.method.AuthenticationRequest;
 import ch.iterate.openstack.swift.model.AccountInfo;
 import ch.iterate.openstack.swift.model.Region;
 
-/**
- * @version $Id$
- */
 public class SwiftSession extends HttpSession<Client> {
     private static final Logger log = Logger.getLogger(SwiftSession.class);
 
@@ -92,20 +90,20 @@ public class SwiftSession extends HttpSession<Client> {
     protected Map<Region, AccountInfo> accounts
             = new HashMap<Region, AccountInfo>();
 
-    public SwiftSession(final Host h) {
-        super(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+    public SwiftSession(final Host host) {
+        super(host, new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
     }
 
     public SwiftSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
-        super(host, trust, key);
+        super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
 
     public SwiftSession(final Host host, final X509TrustManager trust, final X509KeyManager key, final ProxyFinder proxy) {
-        super(host, trust, key, proxy);
+        super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, proxy);
     }
 
     public SwiftSession(final Host host, final X509TrustManager trust, final X509KeyManager key, final SocketFactory socketFactory) {
-        super(host, trust, key, socketFactory);
+        super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, socketFactory);
     }
 
     @Override
@@ -154,6 +152,10 @@ public class SwiftSession extends HttpSession<Client> {
                     }
                 }
                 cancel.verify();
+            }
+            if(host.getCredentials().isPassed()) {
+                log.warn(String.format("Skip verifying credentials with previous successful authentication event for %s", this));
+                return;
             }
             if(preferences.getBoolean("openstack.account.preload")) {
                 final ThreadPool pool = new ThreadPool("accounts");
@@ -249,9 +251,6 @@ public class SwiftSession extends HttpSession<Client> {
             return (T) cdn;
         }
         if(type == UrlProvider.class) {
-            if(host.getHostname().endsWith("identity.hpcloudsvc.com")) {
-                return (T) new SwiftHpUrlProvider(this);
-            }
             return (T) new SwiftUrlProvider(this, accounts);
         }
         if(type == Attributes.class) {

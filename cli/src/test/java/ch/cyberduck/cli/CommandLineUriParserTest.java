@@ -51,7 +51,7 @@ public class CommandLineUriParserTest {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Arrays.asList(new FTPTLSProtocol(), new S3Protocol())));
         assertTrue(new Host(new S3Protocol(), "s3.amazonaws.com", 443, "/cyberduck-test/key", new Credentials("AWS456", null))
                 .compareTo(new CommandLineUriParser(input, factory).parse("s3://AWS456@cyberduck-test/key")) == 0);
-        assertTrue(new Host(new FTPTLSProtocol(), "cyberduck.io", 55, "/cyberduck-test/key", new Credentials("anonymous", null))
+        assertTrue(new Host(new FTPTLSProtocol(), "cyberduck.io", 55, "/folder", new Credentials("anonymous", null))
                 .compareTo(new CommandLineUriParser(input, factory).parse("ftps://cyberduck.io:55/folder")) == 0);
     }
 

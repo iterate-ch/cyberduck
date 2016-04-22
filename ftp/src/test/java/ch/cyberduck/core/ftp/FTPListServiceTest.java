@@ -47,9 +47,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class FTPListServiceTest {
 
@@ -62,14 +59,11 @@ public class FTPListServiceTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final ListService service = new FTPListService(session, null, TimeZone.getDefault());
-        final Path directory = session.workdir();
+        final Path directory = new FTPWorkdirService(session).find();
         final AttributedList<Path> list = service.list(directory, new DisabledListProgressListener() {
-            int size = 0;
-
             @Override
             public void chunk(final Path parent, AttributedList<Path> list) throws ListCanceledException {
-                assertEquals(++size, list.size());
-                assertNotNull(list.get(list.size() - 1));
+                assertFalse(list.isEmpty());
             }
         });
         assertTrue(list.contains(
@@ -91,13 +85,11 @@ public class FTPListServiceTest {
         service.remove(FTPListService.Command.list);
         service.remove(FTPListService.Command.stat);
         service.remove(FTPListService.Command.mlsd);
-        final Path directory = session.workdir();
+        final Path directory = new FTPWorkdirService(session).find();
         final AttributedList<Path> list = service.list(directory, new DisabledListProgressListener() {
-            int size = 0;
-
             @Override
             public void chunk(final Path parent, AttributedList<Path> list) throws ListCanceledException {
-                assertEquals(++size, list.size());
+                assertFalse(list.isEmpty());
             }
         });
         assertTrue(list.contains(
@@ -119,7 +111,7 @@ public class FTPListServiceTest {
         list.remove(FTPListService.Command.list);
         list.remove(FTPListService.Command.lista);
         list.remove(FTPListService.Command.mlsd);
-        assertTrue(list.list(new Path(session.workdir(), "test.d", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
+        assertTrue(list.list(new Path(new FTPWorkdirService(session).find(), "test.d", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
         session.close();
     }
 
@@ -135,7 +127,7 @@ public class FTPListServiceTest {
         list.remove(FTPListService.Command.stat);
         list.remove(FTPListService.Command.lista);
         list.remove(FTPListService.Command.mlsd);
-        assertTrue(list.list(new Path(session.workdir(), "test.d", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
+        assertTrue(list.list(new Path(new FTPWorkdirService(session).find(), "test.d", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
         session.close();
     }
 
@@ -153,7 +145,7 @@ public class FTPListServiceTest {
         l.setSymlinkTarget(new Path("/test.s", EnumSet.of(Path.Type.file)));
         list.add(l);
         assertTrue(list.contains(new Path("/test.d", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink))));
-        service.post(new Path("/", EnumSet.of(Path.Type.directory)), list);
+        service.post(new Path("/", EnumSet.of(Path.Type.directory)), list, new DisabledListProgressListener());
         assertFalse(list.contains(new Path("/test.d", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink))));
         assertTrue(list.contains(new Path("/test.d", EnumSet.of(Path.Type.directory, AbstractPath.Type.symboliclink))));
         session.close();
@@ -181,7 +173,7 @@ public class FTPListServiceTest {
                 throw new BackgroundException("t", new SocketTimeoutException());
             }
         });
-        final Path directory = session.workdir();
+        final Path directory = new FTPWorkdirService(session).find();
         final AttributedList<Path> list = service.list(directory, new DisabledListProgressListener());
         assertTrue(set.get());
         assertTrue(session.isConnected());

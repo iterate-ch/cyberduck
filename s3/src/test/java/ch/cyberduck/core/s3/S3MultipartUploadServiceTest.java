@@ -219,7 +219,7 @@ public class S3MultipartUploadServiceTest {
         final byte[] buffer = new byte[random.length];
         final InputStream in = new S3ReadFeature(session).read(test, new TransferStatus());
         IOUtils.readFully(in, buffer);
-        IOUtils.closeQuietly(in);
+        in.close();
         assertArrayEquals(random, buffer);
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
@@ -282,7 +282,7 @@ public class S3MultipartUploadServiceTest {
         final byte[] buffer = new byte[random.length];
         final InputStream in = new S3ReadFeature(session).read(test, new TransferStatus());
         IOUtils.readFully(in, buffer);
-        IOUtils.closeQuietly(in);
+        in.close();
         assertArrayEquals(random, buffer);
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
             @Override

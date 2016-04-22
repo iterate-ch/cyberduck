@@ -12,8 +12,9 @@ class Duck < Formula
   depends_on "maven" => :build
 
   def install
+    ENV.java_cache
     revision = version.to_s.rpartition(".").last
-    system "mvn", "-DskipTests", "-Drevision=#{revision}", "--projects", "cli/osx", "--also-make", "verify"
+    system "mvn", "-DskipTests", "-Dgit.commitsCount=#{revision}", "--projects", "cli/osx", "--also-make", "install"
     libexec.install Dir["cli/osx/target/duck.bundle/*"]
     bin.install_symlink "#{libexec}/Contents/MacOS/duck" => "duck"
   end

@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2015 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -11,7 +11,7 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-//  
+// 
 // Bug fixes, suggestions and comments should be sent to:
 // feedback@cyberduck.io
 // 
@@ -191,6 +191,7 @@ namespace Ch.Cyberduck.Ui.Controller
         event EventHandler<ConnectBookmarkArgs> ConnectBookmark;
         event ValidateCommand ValidateConnectBookmark;
         event VoidHandler SearchFieldChanged;
+        event VoidHandler SearchFieldEnter;
         event VoidHandler QuickConnect;
         event VoidHandler BrowserDoubleClicked;
         event VoidHandler BrowserSelectionChanged;
@@ -210,6 +211,7 @@ namespace Ch.Cyberduck.Ui.Controller
         event ModelDropHandler HostModelDropped;
         event DragHandler HostDrag;
         event EndDragHandler HostEndDrag;
+        event EventHandler<PathArgs> Expanding;
         void BeginBrowserUpdate();
         void EndBrowserUpdate();
         void SetBrowserModel(IEnumerable<Path> model);
@@ -220,5 +222,6 @@ namespace Ch.Cyberduck.Ui.Controller
         void ClearTranscript();
         void FocusBrowser();
         void RemoveDonateButton();
+        bool IsExpanded(Path path);
     }
 }

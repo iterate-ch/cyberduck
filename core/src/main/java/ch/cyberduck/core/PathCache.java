@@ -19,9 +19,6 @@ package ch.cyberduck.core;
 
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class PathCache extends Cache<Path> {
 
     public static PathCache empty() {

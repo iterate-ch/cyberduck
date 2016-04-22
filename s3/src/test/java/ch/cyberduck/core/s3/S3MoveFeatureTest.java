@@ -10,8 +10,8 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.gstorage.GoogleStorageProtocol;
-import ch.cyberduck.core.gstorage.GoogleStorageSession;
+import ch.cyberduck.core.googlestorage.GoogleStorageProtocol;
+import ch.cyberduck.core.googlestorage.GoogleStorageSession;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;

@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System;
@@ -23,8 +23,7 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
-using ch.cyberduck.core.threading;
-using ch.cyberduck.core.worker;
+using ch.cyberduck.ui.browser;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Winforms;
 using java.util;
@@ -51,19 +50,10 @@ namespace Ch.Cyberduck.Ui.Controller
             return ((Path) path).isDirectory();
         }
 
-        public IEnumerable<Path> ChildrenGetter(object p)
-        {
-            Path directory = (Path) p;
-            AttributedList list;
-            if (!_cache.isValid(directory))
-            {
-                // Reloading a workdir that is not cached yet would cause the interface to freeze;
-                // Delay until path is cached in the background
-                // switch to blocking children fetching
-                //path.childs();
-                _controller.background(new ListAction(_controller, directory, _cache, _listener));
-            }
-            list = _cache.get(directory).filter(_controller.FilenameComparator, _controller.FilenameFilter);
+        public IEnumerable<Path> ChildrenGetter(object folder)
+        {            
+            AttributedList list = _cache.get((Path) folder)
+                .filter(_controller.FilenameComparator, _controller.FilenameFilter);
             for (int i = 0; i < list.size(); i++)
             {
                 yield return (Path) list.get(i);
@@ -179,34 +169,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public bool GetActive(Path path)
         {
-            return _controller.IsConnected() && BrowserController.HiddenFilter.accept(path);
-        }
-
-        private class ListAction : WorkerBackgroundAction
-        {
-            public ListAction(BrowserController controller, Path directory, PathCache cache, ListProgressListener listener)
-                : base(controller, controller.Session, new InnerListWorker(controller, directory, cache, listener))
-            {
-            }
-
-            private class InnerListWorker : SessionListWorker
-            {
-                private readonly BrowserController _controller;
-                private readonly Path _directory;
-
-                public InnerListWorker(BrowserController controller, Path directory, PathCache cache,
-                    ListProgressListener listener) : base(cache, directory, listener)
-                {
-                    _controller = controller;
-                    _directory = directory;
-                }
-
-                public override void cleanup(object result)
-                {
-                    base.cleanup(result);
-                    _controller.ReloadData(_directory, true);
-                }
-            }
+            return _controller.IsConnected() && SearchFilterFactory.HIDDEN_FILTER.accept(path);
         }
     }
 }

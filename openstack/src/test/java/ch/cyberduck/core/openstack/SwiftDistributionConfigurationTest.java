@@ -107,40 +107,4 @@ public class SwiftDistributionConfigurationTest {
         });
         session.close();
     }
-
-    @Test
-    public void testReadHpcloud() throws Exception {
-        final SwiftProtocol protocol = new SwiftProtocol() {
-            @Override
-            public String getContext() {
-                return "/v2.0/tokens";
-            }
-        };
-        final Host host = new Host(protocol, "region-a.geo-1.identity.hpcloudsvc.com", 35357);
-        host.setCredentials(System.getProperties().getProperty("hpcloud.key"), System.getProperties().getProperty("hpcloud.secret"));
-        final SwiftSession session = new SwiftSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
-        final Path container = new Path(new Path(String.valueOf(Path.DELIMITER),
-                EnumSet.of(Path.Type.volume, Path.Type.directory)), "test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("region-a.geo-1");
-        final Distribution test = configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginCallback());
-        assertNotNull(test);
-        assertEquals(Distribution.DOWNLOAD, test.getMethod());
-        assertArrayEquals(new String[]{}, test.getCNAMEs());
-        assertEquals("index.html", test.getIndexDocument());
-        assertNull(test.getErrorDocument());
-        assertEquals("None", test.getInvalidationStatus());
-        assertTrue(test.isEnabled());
-        assertTrue(test.isDeployed());
-        assertFalse(test.isLogging());
-        assertEquals("test.cyberduck.ch", test.getId());
-        assertEquals(URI.create("http://h2c0a3c89b6b2779528b78c25aeab0958.cdn.hpcloudsvc.com"), test.getUrl());
-        assertEquals(URI.create("https://a248.e.akamai.net/cdn.hpcloudsvc.com/h2c0a3c89b6b2779528b78c25aeab0958/prodaw2/"), test.getSslUrl());
-        assertEquals(1, test.getContainers().size());
-        assertEquals(URI.create("https://region-a.geo-1.objects.hpcloudsvc.com/v1/88650632417788/test.cyberduck.ch"),
-                test.getOrigin());
-        session.close();
-    }
 }

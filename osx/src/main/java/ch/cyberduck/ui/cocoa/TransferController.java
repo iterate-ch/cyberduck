@@ -53,6 +53,7 @@ import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.core.threading.ControllerMainAction;
 import ch.cyberduck.core.threading.TransferBackgroundAction;
 import ch.cyberduck.core.threading.TransferCollectionBackgroundAction;
+import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferCallback;
@@ -64,7 +65,6 @@ import ch.cyberduck.core.transfer.TransferQueueFactory;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
 import ch.cyberduck.ui.cocoa.delegate.AbstractMenuDelegate;
-import ch.cyberduck.core.threading.WindowMainAction;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -148,11 +148,10 @@ public final class TransferController extends WindowController implements NSTool
         this.toolbar.setDisplayMode(NSToolbar.NSToolbarDisplayModeLabelOnly);
         this.window.setToolbar(toolbar);
 
-        TransferCollection source = TransferCollection.defaultCollection();
-        if(!source.isLoaded()) {
+        if(!collection.isLoaded()) {
             transferSpinner.startAnimation(null);
         }
-        source.addListener(new AbstractCollectionListener<Transfer>() {
+        collection.addListener(new AbstractCollectionListener<Transfer>() {
             @Override
             public void collectionLoaded() {
                 invoke(new WindowMainAction(TransferController.this) {
@@ -164,7 +163,7 @@ public final class TransferController extends WindowController implements NSTool
                 });
             }
         });
-        if(source.isLoaded()) {
+        if(collection.isLoaded()) {
             transferSpinner.stopAnimation(null);
             transferTable.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
         }
@@ -399,8 +398,8 @@ public final class TransferController extends WindowController implements NSTool
 
     @Action
     public void bandwidthPopupChanged(NSPopUpButton sender) {
-        NSIndexSet selected = transferTable.selectedRowIndexes();
-        float bandwidth = Float.valueOf(sender.selectedItem().representedObject());
+        final NSIndexSet selected = transferTable.selectedRowIndexes();
+        final float bandwidth = Float.valueOf(sender.selectedItem().representedObject());
         for(NSUInteger index = selected.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = selected.indexGreaterThanIndex(index)) {
             final Transfer transfer = collection.get(index.intValue());
             transfer.setBandwidth(bandwidth);
@@ -542,8 +541,8 @@ public final class TransferController extends WindowController implements NSTool
      * Update highlighted rows
      */
     private void updateHighlight() {
-        boolean main = window().isMainWindow();
-        NSIndexSet set = transferTable.selectedRowIndexes();
+        final boolean main = window().isMainWindow();
+        final NSIndexSet set = transferTable.selectedRowIndexes();
         for(int i = 0; i < transferTableModel.numberOfRowsInTableView(transferTable).intValue(); i++) {
             boolean highlighted = set.containsIndex(new NSUInteger(i)) && main;
             if(transferTableModel.isHighlighted(i) == highlighted) {
@@ -610,7 +609,7 @@ public final class TransferController extends WindowController implements NSTool
     private void updateBandwidthPopup() {
         final int selected = transferTable.numberOfSelectedRows().intValue();
         bandwidthPopup.setEnabled(selected > 0);
-        NSIndexSet set = transferTable.selectedRowIndexes();
+        final NSIndexSet set = transferTable.selectedRowIndexes();
         for(NSUInteger index = set.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = set.indexGreaterThanIndex(index)) {
             final Transfer transfer = transferTableModel.getSource().get(index.intValue());
             if(transfer.getBandwidth().getRate() != BandwidthThrottle.UNLIMITED) {
@@ -790,7 +789,7 @@ public final class TransferController extends WindowController implements NSTool
 
     @Action
     public void stopButtonClicked(final ID sender) {
-        NSIndexSet selected = transferTable.selectedRowIndexes();
+        final NSIndexSet selected = transferTable.selectedRowIndexes();
         final BackgroundActionRegistry registry = this.getActions();
         for(NSUInteger index = selected.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = selected.indexGreaterThanIndex(index)) {
             final Transfer transfer = transferTableModel.getSource().get(index.intValue());
@@ -829,7 +828,7 @@ public final class TransferController extends WindowController implements NSTool
 
     @Action
     public void resumeButtonClicked(final ID sender) {
-        NSIndexSet selected = transferTable.selectedRowIndexes();
+        final NSIndexSet selected = transferTable.selectedRowIndexes();
         for(NSUInteger index = selected.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = selected.indexGreaterThanIndex(index)) {
             final Collection<Transfer> transfers = transferTableModel.getSource();
             final Transfer transfer = transfers.get(index.intValue());
@@ -844,7 +843,7 @@ public final class TransferController extends WindowController implements NSTool
 
     @Action
     public void reloadButtonClicked(final ID sender) {
-        NSIndexSet selected = transferTable.selectedRowIndexes();
+        final NSIndexSet selected = transferTable.selectedRowIndexes();
         for(NSUInteger index = selected.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = selected.indexGreaterThanIndex(index)) {
             final Collection<Transfer> transfers = transferTableModel.getSource();
             final Transfer transfer = transfers.get(index.intValue());
@@ -869,7 +868,7 @@ public final class TransferController extends WindowController implements NSTool
 
     @Action
     public void revealButtonClicked(final ID sender) {
-        NSIndexSet selected = transferTable.selectedRowIndexes();
+        final NSIndexSet selected = transferTable.selectedRowIndexes();
         final Collection<Transfer> transfers = transferTableModel.getSource();
         for(NSUInteger index = selected.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = selected.indexGreaterThanIndex(index)) {
             final Transfer transfer = transfers.get(index.intValue());
@@ -881,27 +880,25 @@ public final class TransferController extends WindowController implements NSTool
 
     @Action
     public void deleteButtonClicked(final ID sender) {
-        NSIndexSet selected = transferTable.selectedRowIndexes();
+        final NSIndexSet selected = transferTable.selectedRowIndexes();
         final Collection<Transfer> transfers = transferTableModel.getSource();
         int i = 0;
         final List<Transfer> remove = new ArrayList<Transfer>();
         for(NSUInteger index = selected.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = selected.indexGreaterThanIndex(index)) {
-            final Transfer transfer = transfers.get(index.intValue() - i);
-            if(!transfer.isRunning()) {
-                remove.add(transfer);
+            final Transfer t = transfers.get(index.intValue() - i);
+            if(!t.isRunning()) {
+                remove.add(t);
             }
         }
-        for(Transfer t : remove) {
-            collection.remove(t);
-        }
+        collection.removeAll(remove);
         collection.save();
     }
 
     @Action
     public void clearButtonClicked(final ID sender) {
         for(Iterator<Transfer> iter = collection.iterator(); iter.hasNext(); ) {
-            Transfer transfer = iter.next();
-            if(!transfer.isRunning() && transfer.isReset() && transfer.isComplete()) {
+            final Transfer t = iter.next();
+            if(t.isComplete()) {
                 iter.remove();
             }
         }
@@ -910,7 +907,7 @@ public final class TransferController extends WindowController implements NSTool
 
     @Action
     public void trashButtonClicked(final ID sender) {
-        NSIndexSet selected = transferTable.selectedRowIndexes();
+        final NSIndexSet selected = transferTable.selectedRowIndexes();
         final Collection<Transfer> transfers = transferTableModel.getSource();
         for(NSUInteger index = selected.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = selected.indexGreaterThanIndex(index)) {
             final Transfer transfer = transfers.get(index.intValue());

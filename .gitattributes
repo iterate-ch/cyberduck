@@ -2162,15 +2162,17 @@ pl.lproj/Status.strings -text svneol=unset#text/utf-16
 pl.lproj/Support.strings -text svneol=unset#text/utf-16
 pl.lproj/Transfer.strings -text svneol=unset#text/utf-16
 pom/bundle/pom.xml -text
+profiles/B2.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Box.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Cloud.ca[!!-~]Object[!!-~]Store[!!-~]East-1[!!-~]Region.cyberduckprofile -text svneol=unset#application/octet-stream
-profiles/DreamObjects.cyberduckprofile -text
+profiles/DreamObjects.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Dump[!!-~]Truck.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Dunkel[!!-~]Cloud[!!-~]Storage.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Enter[!!-~]Cloud[!!-~]Suite.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Eucalyptus[!!-~]Walrus[!!-~]S3.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/FlexCloud.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/GMX[!!-~]Mediacenter.cyberduckprofile -text svneol=unset#application/octet-stream
+profiles/Google[!!-~]Drive.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/HP[!!-~]Cloud[!!-~]Object[!!-~]Storage.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Internap[!!-~]XIPCloud[!!-~]Storage.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Lunacloud.cyberduckprofile -text svneol=unset#application/octet-stream
@@ -2207,6 +2209,7 @@ profiles/Spectra[!!-~]S3[!!-~](HTTPS).cyberduckprofile -text svneol=native#appli
 profiles/Verizon[!!-~]Cloud[!!-~]Storage[!!-~](AMS1A).cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Verizon[!!-~]Cloud[!!-~]Storage[!!-~](IAD3A).cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Verizon[!!-~]Cloud[!!-~]Storage[!!-~](USHAA).cyberduckprofile -text svneol=unset#application/octet-stream
+profiles/Zetta.IO.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/assets/Dream Objects.tiff -text svneol=unset#image/tiff
 profiles/assets/Dump[!!-~]Truck.png -text svneol=unset#image/png
 profiles/assets/GreenQloud.tiff -text svneol=unset#image/tiff

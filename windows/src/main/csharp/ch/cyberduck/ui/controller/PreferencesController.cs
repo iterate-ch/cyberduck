@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System;
@@ -27,7 +27,7 @@ using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.s3;
 using ch.cyberduck.core.transfer;
-using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Ui.Core;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using java.util;
@@ -35,6 +35,7 @@ using java.util.regex;
 using org.apache.log4j;
 using org.jets3t.service.model;
 using StructureMap;
+using Utils = Ch.Cyberduck.Core.Utils;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -281,7 +282,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_CheckForUpdateEvent()
         {
-            UpdateController.Instance.ForceCheckForUpdates(false);
+            new WindowsPeriodicUpdateChecker().check(false);
         }
 
         private void View_AutomaticUpdateChangedEvent()
@@ -1012,6 +1013,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             #region Update
 
+            View.UpdateEnabled = new WindowsPeriodicUpdateChecker().hasUpdatePrivileges();
             View.AutomaticUpdateCheck = PreferencesFactory.get().getBoolean("update.check");
             long lastCheck = PreferencesFactory.get().getLong("update.check.last");
             View.LastUpdateCheck = 0 == lastCheck
@@ -1172,14 +1174,11 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             IList<KeyValuePair<string, string>> storageClasses = new List<KeyValuePair<string, string>>();
             storageClasses.Add(new KeyValuePair<string, string>(S3Object.STORAGE_CLASS_STANDARD,
-                LocaleFactory.localizedString(S3Object.STORAGE_CLASS_STANDARD, "S3"))
-            );
+                LocaleFactory.localizedString(S3Object.STORAGE_CLASS_STANDARD, "S3")));
             storageClasses.Add(new KeyValuePair<string, string>("STANDARD_IA",
-                LocaleFactory.localizedString("STANDARD_IA", "S3"))
-            );
+                LocaleFactory.localizedString("STANDARD_IA", "S3")));
             storageClasses.Add(new KeyValuePair<string, string>(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY,
-                LocaleFactory.localizedString(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, "S3"))
-            );
+                LocaleFactory.localizedString(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, "S3")));
             View.PopulateDefaultStorageClasses(storageClasses);
         }
 
@@ -1227,9 +1226,8 @@ namespace Ch.Cyberduck.Ui.Controller
         private void PopulateTransferModes()
         {
             List<KeyValuePair<string, Host.TransferType>> modes = new List<KeyValuePair<string, Host.TransferType>>();
-            foreach (
-                String name in
-                    Utils.ConvertFromJavaList<String>(PreferencesFactory.get().getList("queue.transfer.type.enabled")))
+            foreach (String name in
+                Utils.ConvertFromJavaList<String>(PreferencesFactory.get().getList("queue.transfer.type.enabled")))
             {
                 Host.TransferType t = Host.TransferType.valueOf(name);
                 modes.Add(new KeyValuePair<string, Host.TransferType>(t.toString(), t));

@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System;
@@ -28,7 +28,9 @@ using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.ssl;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.core.transfer;
+using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller.Threading;
+using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using org.apache.log4j;
 using StructureMap;
 
@@ -39,6 +41,8 @@ namespace Ch.Cyberduck.Ui.Controller
         private static readonly Logger Log = Logger.getLogger(typeof (TransferController).FullName);
         private static readonly object SyncRoot = new Object();
         private static volatile TransferController _instance;
+        private readonly TransferCollection _collection = TransferCollection.defaultCollection();
+        private readonly Preferences _preferences = PreferencesFactory.get();
 
         private readonly IDictionary<Transfer, ProgressController> _transferMap =
             new Dictionary<Transfer, ProgressController>();
@@ -46,9 +50,9 @@ namespace Ch.Cyberduck.Ui.Controller
         private TransferController()
         {
             View = ObjectFactory.GetInstance<ITransferView>();
-            lock (TransferCollection.defaultCollection())
+            lock (_collection)
             {
-                foreach (Transfer transfer in TransferCollection.defaultCollection())
+                foreach (Transfer transfer in _collection)
                 {
                     collectionItemAdded(transfer);
                 }
@@ -163,19 +167,18 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void Init()
         {
-            TransferCollection.defaultCollection().addListener(this);
-
+            _collection.addListener(this);
             PopulateBandwithList();
 
             View.PositionSizeRestoredEvent += delegate
             {
-                View.TranscriptVisible = PreferencesFactory.get().getBoolean("queue.transcript.open");
-                View.TranscriptHeight = PreferencesFactory.get().getInteger("queue.transcript.size.height");
+                View.TranscriptVisible = _preferences.getBoolean("queue.transcript.open");
+                View.TranscriptHeight = _preferences.getInteger("queue.transcript.size.height");
 
                 View.ToggleTranscriptEvent += View_ToggleTranscriptEvent;
                 View.TranscriptHeightChangedEvent += View_TranscriptHeightChangedEvent;
             };
-            View.QueueSize = PreferencesFactory.get().getInteger("queue.maxtransfers");
+            View.QueueSize = _preferences.getInteger("queue.maxtransfers");
             View.BandwidthEnabled = false;
 
             View.ResumeEvent += View_ResumeEvent;
@@ -224,13 +227,13 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_TranscriptHeightChangedEvent()
         {
-            PreferencesFactory.get().setProperty("queue.transcript.size.height", View.TranscriptHeight);
+            _preferences.setProperty("queue.transcript.size.height", View.TranscriptHeight);
         }
 
         private void View_ToggleTranscriptEvent()
         {
             View.TranscriptVisible = !View.TranscriptVisible;
-            PreferencesFactory.get().setProperty("queue.transcript.open", View.TranscriptVisible);
+            _preferences.setProperty("queue.transcript.open", View.TranscriptVisible);
         }
 
         private bool View_ValidateShowEvent()
@@ -276,35 +279,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 return false;
             });
-        }
-
-        private bool View_ValidateCleanEvent()
-        {
-            return _transferMap.Count > 0;
-        }
-
-        private void View_CleanEvent()
-        {
-            IList<Transfer> toRemove = new List<Transfer>();
-            foreach (KeyValuePair<Transfer, ProgressController> pair in _transferMap)
-            {
-                Transfer t = pair.Key;
-                if (!t.isRunning() && t.isReset() && t.isComplete())
-                {
-                    TransferCollection.defaultCollection().remove(t);
-                    toRemove.Add(t);
-                }
-            }
-            foreach (Transfer t in toRemove)
-            {
-                _transferMap.Remove(t);
-            }
-            TransferCollection.defaultCollection().save();
-        }
-
-        private bool View_ValidateRemoveEvent()
-        {
-            return View.SelectedTransfers.Count > 0;
         }
 
         private bool View_ValidateStopEvent()
@@ -353,8 +327,7 @@ namespace Ch.Cyberduck.Ui.Controller
             list.Add(new KeyValuePair<float, string>(BandwidthThrottle.UNLIMITED,
                 LocaleFactory.localizedString("Unlimited Bandwidth", "Preferences")));
             foreach (String option in
-                PreferencesFactory.get()
-                    .getProperty("queue.bandwidth.options")
+                _preferences.getProperty("queue.bandwidth.options")
                     .Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries))
             {
                 list.Add(new KeyValuePair<float, string>(Convert.ToInt32(option.Trim()),
@@ -365,8 +338,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_QueueSizeChangedEvent()
         {
-            PreferencesFactory.get().setProperty("queue.maxtransfers", View.QueueSize);
-            TransferQueueFactory.get().resize(PreferencesFactory.get().getInteger("queue.maxtransfers"));
+            _preferences.setProperty("queue.maxtransfers", View.QueueSize);
+            TransferQueueFactory.get().resize(_preferences.getInteger("queue.maxtransfers"));
         }
 
         private void View_BandwidthChangedEvent()
@@ -511,6 +484,31 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
+        private bool View_ValidateCleanEvent()
+        {
+            return _transferMap.Count > 0;
+        }
+
+        private void View_CleanEvent()
+        {
+            IList<Transfer> remove = new List<Transfer>();
+            foreach (KeyValuePair<Transfer, ProgressController> pair in _transferMap)
+            {
+                Transfer t = pair.Key;
+                if (t.isComplete())
+                {
+                    remove.Add(t);
+                }
+            }
+            _collection.removeAll(Utils.ConvertToJavaList(remove));
+            _collection.save();
+        }
+
+        private bool View_ValidateRemoveEvent()
+        {
+            return View.SelectedTransfers.Count > 0;
+        }
+
         private void View_RemoveEvent()
         {
             foreach (IProgressView progressView in View.SelectedTransfers)
@@ -518,10 +516,10 @@ namespace Ch.Cyberduck.Ui.Controller
                 Transfer transfer = GetTransferFromView(progressView);
                 if (!transfer.isRunning())
                 {
-                    TransferCollection.defaultCollection().remove(transfer);
+                    _collection.remove(transfer);
                 }
             }
-            TransferCollection.defaultCollection().save();
+            _collection.save();
         }
 
         private void View_StopEvent()
@@ -603,9 +601,30 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public void StartTransfer(Transfer transfer, TransferOptions options, TransferCallback callback)
         {
-            if (!TransferCollection.defaultCollection().contains(transfer))
+            if (!_collection.contains(transfer))
             {
-                TransferCollection.defaultCollection().add(transfer);
+                if (_collection.size() > _preferences.getInteger("queue.size.warn"))
+                {
+                    CommandBox(LocaleFactory.localizedString("Clean Up"),
+                        LocaleFactory.localizedString("Remove completed transfers from list."), null,
+                        LocaleFactory.localizedString("Clean Up"), true,
+                        LocaleFactory.localizedString("Don't ask again", "Configuration"), SysIcons.Question,
+                        delegate(int option, bool verificationChecked)
+                        {
+                            if (verificationChecked)
+                            {
+                                // Never show again.
+                                _preferences.setProperty("queue.size.warn", int.MaxValue);
+                            }
+                            switch (option)
+                            {
+                                case 0: // Clean Up
+                                    View_CleanEvent();
+                                    break;
+                            }
+                        });
+                }
+                _collection.add(transfer);
             }
             ProgressController progressController;
             _transferMap.TryGetValue(transfer, out progressController);
@@ -646,6 +665,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             private readonly TransferCallback _callback;
             private readonly TransferController _controller;
+            private readonly Preferences _preferences = PreferencesFactory.get();
             private readonly Transfer _transfer;
 
             public TransferBackgroundAction(TransferController controller, Transfer transfer, TransferOptions options,
@@ -665,7 +685,7 @@ namespace Ch.Cyberduck.Ui.Controller
             public override void init()
             {
                 base.init();
-                if (PreferencesFactory.get().getBoolean("queue.window.open.transfer.start"))
+                if (_preferences.getBoolean("queue.window.open.transfer.start"))
                 {
                     _controller.View.Show();
                     _controller.View.BringToFront();
@@ -686,7 +706,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 base.cleanup();
                 if (_transfer.isComplete() && _transfer.isReset())
                 {
-                    if (PreferencesFactory.get().getBoolean("queue.window.open.transfer.stop"))
+                    if (_preferences.getBoolean("queue.window.open.transfer.stop"))
                     {
                         if (!(TransferCollection.defaultCollection().numberOfRunningTransfers() > 0))
                         {

@@ -178,7 +178,7 @@ public class UDTProxyConfiguratorTest {
         final byte[] content = "test".getBytes("UTF-8");
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
-        IOUtils.closeQuietly(out);
+        out.close();
         status.setLength(content.length);
         final Path test = new Path(new Path("container", EnumSet.of(Path.Type.volume)),
                 UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -234,7 +234,7 @@ public class UDTProxyConfiguratorTest {
         final String random = RandomStringUtils.random(1000);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(random, out);
-        IOUtils.closeQuietly(out);
+        out.close();
         status.setLength(random.getBytes().length);
 
         final Path test = new Path(new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume)),
@@ -255,7 +255,7 @@ public class UDTProxyConfiguratorTest {
             final byte[] buffer = new byte[random.getBytes().length - 1];
             final InputStream in = new S3ReadFeature(tunneled).read(test, new TransferStatus().length(random.getBytes().length).append(true).skip(1L));
             IOUtils.readFully(in, buffer);
-            IOUtils.closeQuietly(in);
+            in.close();
             final byte[] reference = new byte[random.getBytes().length - 1];
             System.arraycopy(random.getBytes(), 1, reference, 0, random.getBytes().length - 1);
             assertArrayEquals(reference, buffer);
@@ -295,7 +295,7 @@ public class UDTProxyConfiguratorTest {
         final OutputStream out = new S3WriteFeature(tunneled).write(test, new TransferStatus().length(content.length));
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        IOUtils.closeQuietly(out);
+        out.close();
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);

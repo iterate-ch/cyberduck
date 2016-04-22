@@ -22,11 +22,9 @@ import ch.cyberduck.core.filter.DownloadDuplicateFilter;
 
 import org.apache.log4j.Logger;
 
+import java.util.Objects;
 import java.util.regex.Pattern;
 
-/**
- * @version $Id$
- */
 public class DownloadGlobFilter extends DownloadDuplicateFilter {
     private static final Logger log = Logger.getLogger(DownloadGlobFilter.class);
 
@@ -77,5 +75,30 @@ public class DownloadGlobFilter extends DownloadDuplicateFilter {
             log.debug(String.format("Skip %s excluded with regex", file.getAbsolute()));
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("DownloadGlobFilter{");
+        sb.append("pattern=").append(pattern);
+        sb.append('}');
+        return sb.toString();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(!(o instanceof DownloadGlobFilter)) {
+            return false;
+        }
+        final DownloadGlobFilter that = (DownloadGlobFilter) o;
+        return Objects.equals(pattern, that.pattern);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pattern);
     }
 }

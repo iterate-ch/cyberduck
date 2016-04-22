@@ -28,9 +28,6 @@ import ch.cyberduck.core.local.BrowserLauncherFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @version $Id:$
- */
 public abstract class OpenURLMenuDelegate extends URLMenuDelegate {
 
     @Override
@@ -44,7 +41,7 @@ public abstract class OpenURLMenuDelegate extends URLMenuDelegate {
     }
 
     @Override
-    protected List<DescriptiveUrl> getURLs(Path selected) {
+    protected List<DescriptiveUrl> getURLs(final Path selected) {
         final ArrayList<DescriptiveUrl> list = new ArrayList<DescriptiveUrl>();
         final UrlProvider provider = this.getSession().getFeature(UrlProvider.class);
         if(provider != null) {

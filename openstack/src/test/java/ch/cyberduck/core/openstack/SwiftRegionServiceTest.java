@@ -47,25 +47,6 @@ public class SwiftRegionServiceTest {
     }
 
     @Test
-    public void testLookupHp() throws Exception {
-        final SwiftProtocol protocol = new SwiftProtocol() {
-            @Override
-            public String getContext() {
-                return "/v2.0/tokens";
-            }
-        };
-        final Host host = new Host(protocol, "region-a.geo-1.identity.hpcloudsvc.com", 35357);
-        host.setCredentials(System.getProperties().getProperty("hpcloud.key"), System.getProperties().getProperty("hpcloud.secret"));
-        final SwiftSession session = new SwiftSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Region lookup = new SwiftRegionService(session).lookup(Location.unknown);
-        assertEquals("region-a.geo-1", lookup.getRegionId());
-        assertNotNull(lookup.getStorageUrl());
-        assertNotNull(lookup.getCDNManagementUrl());
-    }
-
-    @Test
     public void testFindDefaultLocationInBookmark() throws Exception {
         ProtocolFactory.register(new SwiftProtocol());
         final Profile profile = ProfileReaderFactory.get().read(

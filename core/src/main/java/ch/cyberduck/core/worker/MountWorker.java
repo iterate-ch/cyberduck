@@ -33,10 +33,8 @@ import ch.cyberduck.core.features.Home;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
+import java.util.EnumSet;
 
-/**
- * @version $Id$
- */
 public class MountWorker extends Worker<Path> {
     private static final Logger log = Logger.getLogger(MountWorker.class);
 
@@ -71,7 +69,7 @@ public class MountWorker extends Worker<Path> {
             log.warn(String.format("Mount failed with %s", e.getMessage()));
             // The default path does not exist or is not readable due to possible permission issues. Fallback
             // to default working directory
-            home = session.workdir();
+            home = new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory));
             // Remove cached home to force error if repeated attempt to mount fails
             cache.invalidate(home);
             // Retrieve directory listing of working directory

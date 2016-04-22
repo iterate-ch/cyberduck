@@ -19,9 +19,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
-/**
- * @version $Id$
- */
 public interface ListProgressListener extends ProgressListener {
     void chunk(Path folder, AttributedList<Path> list) throws ConnectionCanceledException;
 }

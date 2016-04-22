@@ -61,7 +61,7 @@
         <echo message="Building ${app.bundle} with configuration ${xcode.configuration}"/>
         <local name="build.settings"/>
         <property name="build.settings"
-                  value="${build.xcodeoptions} VERSION=${version} REVISION=${revision} SPARKLEFEED='https://version.cyberduck.io/${sparkle.feed}/changelog.rss' SPARKLE_KEY_PREFIX='${sparkle.key.prefix}' COPYRIGHT='${copyright}'"/>
+                  value="${build.xcodeoptions} RUNTIME_SOURCE=${runtime.dependency} VERSION=${version} REVISION=${revision} SPARKLEFEED='https://version.cyberduck.io/${sparkle.feed}/changelog.rss' SPARKLE_KEY_PREFIX='${sparkle.key.prefix}' COPYRIGHT='${copyright}'"/>
         <echo message="Build settings ${build.settings}"/>
         <exec dir="${home}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
             <arg line="xcodebuild -project ${home}/'Cyberduck.xcodeproj' -configuration '${xcode.configuration}' -target '${xcode.target}' ${build.settings}"/>
@@ -87,7 +87,7 @@
             <param name="source" value="${app.name}.app"/>
         </antcall>
         <checksum file="${build.deploy}/${app.name}-${version}.${revision}.zip"
-                  algorithm="md5" property="md5sum"/>
+                  algorithm="md5" property="archive.md5"/>
         <echo message="Calculating DSA signature..."/>
         <exec dir="${home}" executable="sh" outputproperty="signature.dsa" failonerror="true">
             <arg value="-o"/>
@@ -96,7 +96,7 @@
             <arg value="openssl dgst -sha1 -binary '${build.deploy}/${app.name}-${version}.${revision}.zip' | openssl dgst -dss1 -sign ${www.update}/private.pem | openssl enc -base64"/>
         </exec>
         <echo message="DSASIGNATURE=${signature.dsa}"/>
-        <echo message="MD5SUM=${md5sum}"/>
+        <echo message="MD5SUM=${archive.md5}"/>
         <copy todir="${build.deploy}" overwrite="true">
             <fileset dir="${www.update}">
                 <include name="changelog.rss"/>
@@ -119,6 +119,11 @@
         <exec dir="${build.deploy}" executable="/usr/bin/productbuild" spawn="false" failonerror="true">
             <arg line="--component ${app.bundle} /Applications --version ${version} --sign '${installer.certificate}' --keychain ${installer.keychain} ${build.deploy}/${app.name}-${version}.${revision}.pkg"/>
         </exec>
-        <checksum file="${build.deploy}/${app.name}-${version}.${revision}.pkg" algorithm="md5"/>
+        <foreach target="md5" param="source">
+            <fileset dir="${build.deploy}">
+                <include name="*.pkg"/>
+                <include name="*.zip"/>
+            </fileset>
+        </foreach>
     </target>
 </project>

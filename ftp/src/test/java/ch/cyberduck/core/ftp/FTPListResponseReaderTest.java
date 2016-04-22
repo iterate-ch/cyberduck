@@ -37,9 +37,6 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class FTPListResponseReaderTest {
 
@@ -144,14 +141,29 @@ public class FTPListResponseReaderTest {
     }
 
     @Test(expected = ListCanceledException.class)
+    @Ignore
     public void testLimit() throws Exception {
         final CompositeFileEntryParser parser = new FTPParserSelector().getParser("NETWARE  Type : L8");
         final AttributedList<Path> list = new FTPListResponseReader(parser).read(
-                new Path("/", EnumSet.of(Path.Type.directory)), Arrays.asList(
+                new Path("/", EnumSet.of(Path.Type.directory)), Collections.singletonList(
                         "lrwxrwxrwx    1 ftp      ftp            23 Feb 05 06:51 debian -> ../pool/4/mirror/debian"), new DisabledListProgressListener() {
                     @Override
                     public void chunk(final Path parent, AttributedList<Path> list) throws ListCanceledException {
                         throw new ListCanceledException(AttributedList.<Path>emptyList());
+                    }
+                }
+        );
+    }
+
+    @Test
+    public void testNoChunkNotification() throws Exception {
+        final CompositeFileEntryParser parser = new FTPParserSelector().getParser("NETWARE  Type : L8");
+        final AttributedList<Path> list = new FTPListResponseReader(parser).read(
+                new Path("/", EnumSet.of(Path.Type.directory)), Collections.singletonList(
+                        "lrwxrwxrwx    1 ftp      ftp            23 Feb 05 06:51 debian -> ../pool/4/mirror/debian"), new DisabledListProgressListener() {
+                    @Override
+                    public void chunk(final Path parent, AttributedList<Path> list) throws ListCanceledException {
+                        fail();
                     }
                 }
         );

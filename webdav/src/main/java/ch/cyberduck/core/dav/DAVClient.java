@@ -18,6 +18,7 @@ package ch.cyberduck.core.dav;
  * feedback@cyberduck.ch
  */
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -29,9 +30,6 @@ import java.net.URI;
 
 import com.github.sardine.impl.SardineImpl;
 
-/**
- * @version $Id$
- */
 public class DAVClient extends SardineImpl {
 
     private String uri;
@@ -43,13 +41,23 @@ public class DAVClient extends SardineImpl {
 
     @Override
     public <T> T execute(final HttpRequestBase request, final ResponseHandler<T> responseHandler) throws IOException {
-        request.setURI(URI.create(uri + request.getURI().getRawPath()));
+        if(StringUtils.isNotBlank(request.getURI().getRawQuery())) {
+            request.setURI(URI.create(String.format("%s%s?%s", uri, request.getURI().getRawPath(), request.getURI().getRawQuery())));
+        }
+        else {
+            request.setURI(URI.create(String.format("%s%s", uri, request.getURI().getRawPath())));
+        }
         return super.execute(request, responseHandler);
     }
 
     @Override
     protected HttpResponse execute(final HttpRequestBase request) throws IOException {
-        request.setURI(URI.create(uri + request.getURI().getRawPath()));
+        if(StringUtils.isNotBlank(request.getURI().getRawQuery())) {
+            request.setURI(URI.create(String.format("%s%s?%s", uri, request.getURI().getRawPath(), request.getURI().getRawQuery())));
+        }
+        else {
+            request.setURI(URI.create(String.format("%s%s", uri, request.getURI().getRawPath())));
+        }
         return super.execute(request);
     }
 

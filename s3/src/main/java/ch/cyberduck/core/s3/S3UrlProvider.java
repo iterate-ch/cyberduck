@@ -34,7 +34,6 @@ import ch.cyberduck.core.shared.DefaultUrlProvider;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.utils.ServiceUtils;
 
 import java.net.URI;
@@ -44,9 +43,6 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
-/**
- * @version $Id$
- */
 public class S3UrlProvider implements UrlProvider {
     private static final Logger log = Logger.getLogger(S3UrlProvider.class);
 
@@ -77,16 +73,24 @@ public class S3UrlProvider implements UrlProvider {
             list.add(this.toUrl(file, session.getHost().getProtocol().getScheme()));
             list.add(this.toUrl(file, Scheme.http));
             if(!session.getHost().getCredentials().isAnonymousLogin()) {
+                // X-Amz-Expires must be less than a week (in seconds); that is, the given X-Amz-Expires must be less
+                // than 604800 seconds
                 // In one hour
                 list.add(this.sign(file, (int) TimeUnit.HOURS.toSeconds(1)));
                 // Default signed URL expiring in 24 hours.
                 list.add(this.sign(file, (int) TimeUnit.SECONDS.toSeconds(PreferencesFactory.get().getInteger("s3.url.expire.seconds"))));
                 // 1 Week
                 list.add(this.sign(file, (int) TimeUnit.DAYS.toSeconds(7)));
-                // 1 Month
-                list.add(this.sign(file, (int) TimeUnit.DAYS.toSeconds(30)));
-                // 1 Year
-                list.add(this.sign(file, (int) TimeUnit.DAYS.toSeconds(365)));
+                switch(session.getSignatureVersion()) {
+                    case AWS2:
+                        // 1 Month
+                        list.add(this.sign(file, (int) TimeUnit.DAYS.toSeconds(30)));
+                        // 1 Year
+                        list.add(this.sign(file, (int) TimeUnit.DAYS.toSeconds(365)));
+                        break;
+                    case AWS4HMACSHA256:
+                        break;
+                }
             }
             // Torrent
             list.add(new DescriptiveUrl(URI.create(new S3TorrentUrlProvider(session.getHost()).create(
@@ -156,10 +160,10 @@ public class S3UrlProvider implements UrlProvider {
             region = session.getClient().getRegionEndpointCache()
                     .getRegionForBucketName(containerService.getContainer(file).getName());
         }
-        return new DescriptiveUrl(URI.create(new S3PresignedUrlProvider(session.getHost()).create(
-                new AWSCredentials(session.getHost().getCredentials().getUsername(), secret), "GET",
+        return new DescriptiveUrl(URI.create(new S3PresignedUrlProvider().create(
+                session.getHost().getCredentials().getUsername(), secret,
                 containerService.getContainer(file).getName(), region, containerService.getKey(file),
-                expiry.getTimeInMillis() / 1000, false)), DescriptiveUrl.Type.signed,
+                expiry.getTimeInMillis())), DescriptiveUrl.Type.signed,
                 MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Signed", "S3"))
                         + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
                         UserDateFormatterFactory.get().getMediumFormat(expiry.getTimeInMillis()))

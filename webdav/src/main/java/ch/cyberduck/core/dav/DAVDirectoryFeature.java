@@ -17,10 +17,10 @@ package ch.cyberduck.core.dav;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.http.HttpExceptionMappingService;
 
 import java.io.IOException;
 
@@ -51,7 +51,7 @@ public class DAVDirectoryFeature implements Directory {
             throw new DAVExceptionMappingService().map("Cannot create folder {0}", e, file);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e, file);
+            throw new HttpExceptionMappingService().map(e, file);
         }
     }
 }

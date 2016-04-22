@@ -61,8 +61,7 @@ public final class SessionFactory {
             return constructor.newInstance(host, trust, key);
         }
         catch(InstantiationException | InvocationTargetException | ClassNotFoundException | IllegalAccessException e) {
-            log.error(String.format("Failure loading session class for %s protocol. Failure %s", protocol, e.getMessage()));
-            return null;
+            throw new FactoryException(String.format("Failure loading session class for %s protocol. Failure %s", protocol, e));
         }
     }
 

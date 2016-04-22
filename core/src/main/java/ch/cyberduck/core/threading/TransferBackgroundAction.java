@@ -1,8 +1,8 @@
 package ch.cyberduck.core.threading;
 
 /*
- * Copyright (c) 2002-2013 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,14 +13,11 @@ package ch.cyberduck.core.threading;
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -38,6 +35,7 @@ import ch.cyberduck.core.transfer.TransferListener;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
+import ch.cyberduck.core.transfer.TransferTypeFinder;
 import ch.cyberduck.core.worker.ConcurrentTransferWorker;
 import ch.cyberduck.core.worker.SingleTransferWorker;
 
@@ -47,9 +45,6 @@ import org.apache.log4j.Logger;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-/**
- * @version $Id$
- */
 public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> implements TransferItemCallback {
     private static final Logger log = Logger.getLogger(TransferBackgroundAction.class);
 
@@ -170,32 +165,6 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> im
         this.prompt = prompt;
     }
 
-    private static final class TransferTypeFinder {
-        private Host.TransferType type(final Session<?> session, final Transfer transfer) {
-            switch(session.getTransferType()) {
-                case concurrent:
-                    switch(transfer.getType()) {
-                        case copy:
-                        case move:
-                            break;
-                        case upload:
-                            final Upload feature = session.getFeature(Upload.class);
-                            if(feature.pooled()) {
-                                // Already pooled internally.
-                                break;
-                            }
-                        default:
-                            // Setup concurrent worker if not already pooled internally
-                            final int connections = PreferencesFactory.get().getInteger("queue.maxtransfers");
-                            if(connections > 1) {
-                                return Host.TransferType.concurrent;
-                            }
-                    }
-            }
-            return Host.TransferType.newconnection;
-        }
-    }
-
     @Override
     protected boolean connect(final Session session) throws BackgroundException {
         switch(transfer.getType()) {
@@ -222,10 +191,17 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> im
         }
     }
 
+    /**
+     * @return Return zero. Retry is handled in transfer worker.
+     */
+    @Override
+    protected int retry() {
+        return 0;
+    }
+
     @Override
     public void complete(final TransferItem item) {
-        // Reset repeat counter. #8223
-        repeat = 0;
+        //
     }
 
     @Override

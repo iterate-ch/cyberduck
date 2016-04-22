@@ -18,13 +18,13 @@ package ch.cyberduck.core.dav;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.http.HttpExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -81,7 +81,7 @@ public class DAVListService implements ListService {
             throw new DAVExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e, directory);
+            throw new HttpExceptionMappingService().map(e, directory);
         }
     }
 }

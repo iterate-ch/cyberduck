@@ -31,6 +31,7 @@ import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.features.Compress;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Symlink;
@@ -56,7 +57,6 @@ import java.security.PublicKey;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.EnumSet;
 import java.util.List;
 
 import net.schmizz.concurrent.Promise;
@@ -180,6 +180,7 @@ public class SFTPSession extends Session<SSHClient> {
         connection.addAlgorithmsVerifier(new AlgorithmsVerifier() {
             @Override
             public boolean verify(final NegotiatedAlgorithms negotiatedAlgorithms) {
+                log.info(String.format("Negotiated algorithms %s", negotiatedAlgorithms));
                 algorithms = negotiatedAlgorithms;
                 return true;
             }
@@ -370,22 +371,6 @@ public class SFTPSession extends Session<SSHClient> {
     }
 
     @Override
-    public Path workdir() throws BackgroundException {
-        // "." as referring to the current directory
-        final String directory;
-        try {
-            directory = this.sftp().canonicalize(".");
-        }
-        catch(IOException e) {
-            throw new SFTPExceptionMappingService().map(e);
-        }
-        return new Path(directory,
-                directory.equals(String.valueOf(Path.DELIMITER)) ?
-                        EnumSet.of(Path.Type.volume, Path.Type.directory) : EnumSet.of(Path.Type.directory)
-        );
-    }
-
-    @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         return new SFTPListService(this).list(directory, listener);
     }
@@ -430,6 +415,9 @@ public class SFTPSession extends Session<SSHClient> {
         }
         if(type == DistributionConfiguration.class) {
             return (T) new CustomOriginCloudFrontDistributionConfiguration(host, this);
+        }
+        if(type == Home.class) {
+            return (T) new SFTPHomeDirectoryService(this);
         }
         return super.getFeature(type);
     }

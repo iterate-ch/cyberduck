@@ -17,10 +17,11 @@ package ch.cyberduck.core.dav;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -33,8 +34,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.github.sardine.impl.SardineException;
+import com.github.sardine.impl.io.ContentLengthInputStream;
 
 /**
  * @version $Id$
@@ -68,13 +71,41 @@ public class DAVReadFeature implements Read {
             headers.add(new BasicHeader(HttpHeaders.ACCEPT_ENCODING, "identity"));
         }
         try {
-            return session.getClient().get(new DAVPathEncoder().encode(file), headers);
+            final StringBuilder resource = new StringBuilder(new DAVPathEncoder().encode(file));
+            if(!status.getParameters().isEmpty()) {
+                resource.append("?");
+            }
+            for(Map.Entry<String, String> parameter : status.getParameters().entrySet()) {
+                if(!resource.toString().endsWith("?")) {
+                    resource.append("&");
+                }
+                resource.append(URIEncoder.encode(parameter.getKey()))
+                        .append("=")
+                        .append(URIEncoder.encode(parameter.getValue()));
+
+            }
+            final ContentLengthInputStream stream = session.getClient().get(resource.toString(), headers);
+            if(status.isAppend()) {
+                if(-1 == status.getLength()) {
+                    if(stream.getLength() == file.attributes().getSize()) {
+                        log.warn(String.format("Range header not supported. Skipping %d bytes in file %s.", status.getOffset(), file));
+                        stream.skip(status.getOffset());
+                    }
+                }
+                else {
+                    if(stream.getLength() != status.getLength()) {
+                        log.warn(String.format("Range header not supported. Skipping %d bytes in file %s.", status.getOffset(), file));
+                        stream.skip(status.getOffset());
+                    }
+                }
+            }
+            return stream;
         }
         catch(SardineException e) {
             throw new DAVExceptionMappingService().map("Download {0} failed", e, file);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Download {0} failed", e, file);
+            throw new HttpExceptionMappingService().map("Download {0} failed", e, file);
         }
     }
 

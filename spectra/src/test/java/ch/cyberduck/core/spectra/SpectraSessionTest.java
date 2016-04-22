@@ -34,13 +34,13 @@ import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class SpectraSessionTest {
 
     @Test(expected = LoginFailureException.class)
-    public void testLoginFailure() throws Exception {
+    public void testLoginFailureInvalidSecret() throws Exception {
         final Host host = new Host(new SpectraProtocol() {
             @Override
             public Scheme getScheme() {
@@ -53,6 +53,29 @@ public class SpectraSessionTest {
                 new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+    }
+
+    @Test(expected = LoginFailureException.class)
+    public void testLoginFailureInvalidAccessKey() throws Exception {
+        final Host host = new Host(new SpectraProtocol() {
+            @Override
+            public Scheme getScheme() {
+                return Scheme.http;
+            }
+        }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
+                "u", System.getProperties().getProperty("spectra.key")
+        ));
+        final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
+                new DefaultX509KeyManager());
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        try {
+            session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+            fail();
+        }
+        catch(LoginFailureException e) {
+            assertEquals("Authorization id 'u' is unknown. Please contact your web hosting service provider for assistance.", e.getDetail());
+            throw e;
+        }
     }
 
     @Test

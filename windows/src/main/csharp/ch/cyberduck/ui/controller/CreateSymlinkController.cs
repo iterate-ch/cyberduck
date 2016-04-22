@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,16 +13,17 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using Ch.Cyberduck.Ui.Controller.Threading;
 using ch.cyberduck.core;
 using ch.cyberduck.core.features;
 using ch.cyberduck.core.preferences;
+using Ch.Cyberduck.Ui.Controller.Threading;
 using java.util;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -61,11 +62,15 @@ namespace Ch.Cyberduck.Ui.Controller
                 _workdir = workdir;
                 _symlink = symlink;
                 _link = new Path(_workdir, _symlink, EnumSet.of(AbstractPath.Type.file));
-                if(PreferencesFactory.get().getBoolean(
-                        String.Format("{0}.symlink.absolute", BrowserController.Session.getHost().getProtocol().getScheme().name()))) {
+                if (
+                    PreferencesFactory.get()
+                        .getBoolean(String.Format("{0}.symlink.absolute",
+                            BrowserController.Session.getHost().getProtocol().getScheme().name())))
+                {
                     _target = BrowserController.SelectedPath.getAbsolute();
                 }
-                else {
+                else
+                {
                     _target = BrowserController.SelectedPath.getName();
                 }
             }
@@ -83,7 +88,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     BrowserController.ShowHiddenFiles = true;
                 }
-                BrowserController.RefreshParentPath(_link);
+                BrowserController.Reload(BrowserController.Workdir, new List<Path> {_link}, new List<Path> {_link});
             }
 
             public override string getActivity()

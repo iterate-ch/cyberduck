@@ -29,9 +29,6 @@ import org.jets3t.service.ServiceException;
 
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class S3DefaultDeleteFeature implements Delete {
     private static final Logger log = Logger.getLogger(S3DefaultDeleteFeature.class);
 
@@ -46,13 +43,15 @@ public class S3DefaultDeleteFeature implements Delete {
 
     public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
         for(Path file : files) {
-            if(containerService.isContainer(file)) {
-                continue;
-            }
             callback.delete(file);
             try {
-                // Always returning 204 even if the key does not exist. Does not return 404 for non-existing keys
-                session.getClient().deleteObject(containerService.getContainer(file).getName(), containerService.getKey(file));
+                if(containerService.isContainer(file)) {
+                    session.getClient().deleteBucket(containerService.getContainer(file).getName());
+                }
+                else {
+                    // Always returning 204 even if the key does not exist. Does not return 404 for non-existing keys
+                    session.getClient().deleteObject(containerService.getContainer(file).getName(), containerService.getKey(file));
+                }
             }
             catch(ServiceException e) {
                 try {
@@ -60,18 +59,6 @@ public class S3DefaultDeleteFeature implements Delete {
                 }
                 catch(NotfoundException n) {
                     // Ignore
-                }
-            }
-        }
-        for(Path file : files) {
-            if(containerService.isContainer(file)) {
-                callback.delete(file);
-                // Finally delete bucket itself
-                try {
-                    session.getClient().deleteBucket(containerService.getContainer(file).getName());
-                }
-                catch(ServiceException e) {
-                    throw new ServiceExceptionMappingService().map("Cannot delete {0}", e, file);
                 }
             }
         }

@@ -68,8 +68,8 @@ public class IRODSMoveFeatureTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
 
-        final Path source = new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        final Path destination = new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final Path source = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final Path destination = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new IRODSDirectoryFeature(session).mkdir(source);
         new IRODSDirectoryFeature(session).mkdir(destination);
         new IRODSMoveFeature(session).move(source, destination, true, new Delete.Callback() {
@@ -100,8 +100,8 @@ public class IRODSMoveFeatureTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
 
-        final Path source = new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final Path destination = new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path source = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path destination = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new IRODSTouchFeature(session).touch(source);
         new IRODSTouchFeature(session).touch(destination);
         new IRODSMoveFeature(session).move(source, destination, true, new Delete.Callback() {
@@ -132,8 +132,8 @@ public class IRODSMoveFeatureTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
 
-        final Path source = new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        final Path destination = new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final Path source = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final Path destination = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         assertFalse(session.getFeature(Find.class).find(source));
         assertFalse(session.getFeature(Find.class).find(destination));
 

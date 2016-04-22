@@ -29,7 +29,6 @@ import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.shared.DefaultFindFeature;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Ignore;
@@ -43,9 +42,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.assertTrue;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class S3DirectoryFeatureTest {
 
@@ -61,7 +57,7 @@ public class S3DirectoryFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final S3DirectoryFeature feature = new S3DirectoryFeature(session);
         for(Location.Name region : new S3Protocol().getRegions()) {
-            final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
+            final Path test = new Path(new S3HomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
             test.attributes().setRegion(region.getIdentifier());
             feature.mkdir(test, region.getIdentifier());
             assertTrue(new S3FindFeature(session).find(test));

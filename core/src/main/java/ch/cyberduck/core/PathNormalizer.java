@@ -43,7 +43,7 @@ public final class PathNormalizer {
     }
 
     public static String parent(final String absolute, final char delimiter) {
-        if(absolute.equals(String.valueOf(delimiter))) {
+        if(String.valueOf(delimiter).equals(absolute)) {
             return null;
         }
         int index = absolute.length() - 1;

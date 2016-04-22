@@ -50,6 +50,7 @@ import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.s3.S3BucketListService;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
+import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
@@ -114,7 +115,9 @@ public class CloudFrontDistributionConfiguration
 
             @Override
             protected HttpClientBuilder initHttpClientBuilder() {
-                return new HttpConnectionPoolBuilder(session.getHost(), trust, key, ProxyFactory.get()).build(session);
+                return new HttpConnectionPoolBuilder(session.getHost(),
+                        new ThreadLocalHostnameDelegatingTrustManager(trust, session.getHost().getHostname()), key,
+                        ProxyFactory.get()).build(session);
             }
         };
     }

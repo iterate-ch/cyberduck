@@ -138,7 +138,7 @@ public class FTPListService implements ListService {
                 // indicates that both MLST and MLSD are supported.
                 if(session.getClient().hasFeature(FTPCmd.MLST.getCommand())) {
                     try {
-                        return this.post(directory, implementations.get(Command.mlsd).list(directory, listener));
+                        return this.post(directory, implementations.get(Command.mlsd).list(directory, listener), listener);
                     }
                     catch(InteroperabilityException | FTPInvalidListException e) {
                         this.remove(Command.mlsd);
@@ -150,7 +150,7 @@ public class FTPListService implements ListService {
             }
             if(implementations.containsKey(Command.stat)) {
                 try {
-                    return this.post(directory, implementations.get(Command.stat).list(directory, listener));
+                    return this.post(directory, implementations.get(Command.stat).list(directory, listener), listener);
                 }
                 catch(FTPInvalidListException | InteroperabilityException e) {
                     this.remove(Command.stat);
@@ -174,7 +174,7 @@ public class FTPListService implements ListService {
             }
             if(implementations.containsKey(Command.lista)) {
                 try {
-                    return this.post(directory, implementations.get(Command.lista).list(directory, listener));
+                    return this.post(directory, implementations.get(Command.lista).list(directory, listener), listener);
                 }
                 catch(InteroperabilityException e) {
                     this.remove(Command.lista);
@@ -184,11 +184,11 @@ public class FTPListService implements ListService {
                 }
             }
             try {
-                return this.post(directory, implementations.get(Command.list).list(directory, listener));
+                return this.post(directory, implementations.get(Command.list).list(directory, listener), listener);
             }
             catch(FTPInvalidListException f) {
                 // Empty directory listing
-                return this.post(directory, f.getParsed());
+                return this.post(directory, f.getParsed(), listener);
             }
         }
         catch(IOException e) {
@@ -199,7 +199,8 @@ public class FTPListService implements ListService {
     /**
      * Handle all symbolic link targets
      */
-    protected AttributedList<Path> post(final Path directory, final AttributedList<Path> list) throws BackgroundException {
+    protected AttributedList<Path> post(final Path directory, final AttributedList<Path> list,
+                                        final ListProgressListener listener) throws BackgroundException {
         try {
             final List<Path> verified = new ArrayList<Path>();
             for(Iterator<Path> iter = list.iterator(); iter.hasNext(); ) {
@@ -233,6 +234,7 @@ public class FTPListService implements ListService {
                 }
             }
             list.addAll(verified);
+            listener.chunk(directory, list);
             return list;
         }
         catch(IOException e) {

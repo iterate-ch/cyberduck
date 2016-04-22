@@ -26,19 +26,18 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class SFTPTimestampFeatureTest {
 
@@ -52,13 +51,41 @@ public class SFTPTimestampFeatureTest {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path home = new DefaultHomeFinderService(session).find();
-        final Path test = new Path(home, "test", EnumSet.of(Path.Type.file));
+        final Path home = new SFTPHomeDirectoryService(session).find();
+        final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        new SFTPTouchFeature(session).touch(test);
         final long modified = System.currentTimeMillis();
         new SFTPTimestampFeature(session).setTimestamp(test, modified);
-        assertEquals(modified / 1000 * 1000, session.list(home, new DisabledListProgressListener()).get(test).attributes().getModificationDate());
-        assertTrue(session.list(home, new DisabledListProgressListener()).get(test).attributes().getCreationDate() == -1L);
-        assertFalse(session.list(home, new DisabledListProgressListener()).get(test).attributes().getAccessedDate() == -1L);
+        assertEquals(modified / 1000 * 1000, session.list(home, new DisabledListProgressListener()).get(test).attributes().getModificationDate(), 0L);
+        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
+        session.close();
+    }
+
+    @Test
+    public void testSetTimestampDirectory() throws Exception {
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
+                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
+        ));
+        final SFTPSession session = new SFTPSession(host);
+        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        assertTrue(session.isConnected());
+        assertNotNull(session.getClient());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path home = new SFTPHomeDirectoryService(session).find();
+        final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        new SFTPDirectoryFeature(session).mkdir(test);
+        final long modified = System.currentTimeMillis();
+        new SFTPTimestampFeature(session).setTimestamp(test, modified);
+        assertEquals(modified / 1000 * 1000, session.list(home, new DisabledListProgressListener()).get(test).attributes().getModificationDate(), 0L);
+        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
         session.close();
     }
 }

@@ -63,9 +63,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-/**
- * @version $Id$
- */
 public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, MessageDigest> {
     private static final Logger log = Logger.getLogger(S3MultipartUploadService.class);
 
@@ -74,7 +71,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
     private PathContainerService containerService
             = new S3PathContainerService();
 
-    private S3MultipartService multipartService;
+    private S3DefaultMultipartService multipartService;
 
     /**
      * At any point, at most <tt>nThreads</tt> threads will be active processing tasks.
@@ -116,7 +113,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
         super(new S3WriteFeature(session).withStorage(null));
         this.session = session;
         this.pool = new ThreadPool(concurrency, "multipart");
-        this.multipartService = new S3MultipartService(session);
+        this.multipartService = new S3DefaultMultipartService(session);
         this.partsize = partsize;
     }
 
@@ -133,11 +130,6 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
     public S3MultipartUploadService withMetadata(final Map<String, String> metadata) {
         this.metadata = metadata;
         return this;
-    }
-
-    @Override
-    public boolean pooled() {
-        return true;
     }
 
     @Override
@@ -197,7 +189,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                         }
                     }
                     // Last part can be less than 5 MB. Adjust part size.
-                    final Long length = Math.min(Math.max((status.getLength() / S3MultipartService.MAXIMUM_UPLOAD_PARTS), partsize), remaining);
+                    final Long length = Math.min(Math.max((status.getLength() / S3DefaultMultipartService.MAXIMUM_UPLOAD_PARTS), partsize), remaining);
                     if(!skip) {
                         // Submit to queue
                         parts.add(this.submit(file, local, throttle, listener, status, multipart, partNumber, offset, length));

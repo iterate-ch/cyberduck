@@ -16,7 +16,7 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.dav.DAVProtocol;
-import ch.cyberduck.core.gstorage.GoogleStorageProtocol;
+import ch.cyberduck.core.googlestorage.GoogleStorageProtocol;
 import ch.cyberduck.core.s3.S3Protocol;
 
 import org.junit.Test;

@@ -19,7 +19,19 @@ package ch.cyberduck.core.dav;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.HostPasswordStore;
+import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Attributes;
@@ -29,8 +41,10 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.PreferencesRedirectCallback;
 import ch.cyberduck.core.http.RedirectCallback;
@@ -40,6 +54,7 @@ import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -72,9 +87,6 @@ import com.github.sardine.impl.SardineRedirectStrategy;
 import com.github.sardine.impl.handler.ValidatingResponseHandler;
 import com.github.sardine.impl.handler.VoidResponseHandler;
 
-/**
- * @version $Id$
- */
 public class DAVSession extends HttpSession<DAVClient> {
     private static final Logger log = Logger.getLogger(DAVSession.class);
 
@@ -84,34 +96,34 @@ public class DAVSession extends HttpSession<DAVClient> {
     private Preferences preferences
             = PreferencesFactory.get();
 
-    public DAVSession(final Host h) {
-        super(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+    public DAVSession(final Host host) {
+        super(host, new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
     }
 
     public DAVSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
-        super(host, trust, key);
+        super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
 
     public DAVSession(final Host host, final RedirectCallback redirect) {
-        super(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        super(host, new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
         this.redirect = redirect;
     }
 
     public DAVSession(final Host host, final X509TrustManager trust, final X509KeyManager key, final RedirectCallback redirect) {
-        super(host, trust, key);
+        super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
         this.redirect = redirect;
     }
 
     public DAVSession(final Host host, final X509TrustManager trust, final X509KeyManager key, final SocketFactory socketFactory) {
-        super(host, trust, key, socketFactory);
+        super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, socketFactory);
     }
 
     public DAVSession(final Host host, final X509TrustManager trust, final X509KeyManager key, final ProxyFinder proxy) {
-        super(host, trust, key, proxy);
+        super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, proxy);
     }
 
     public DAVSession(final Host host, final X509TrustManager trust, final X509KeyManager key, final SocketFactory socketFactory, final RedirectCallback redirect) {
-        super(host, trust, key, socketFactory);
+        super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, socketFactory);
         this.redirect = redirect;
     }
 
@@ -151,7 +163,7 @@ public class DAVSession extends HttpSession<DAVClient> {
             client.shutdown();
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+            throw new HttpExceptionMappingService().map(e);
         }
     }
 
@@ -162,14 +174,16 @@ public class DAVSession extends HttpSession<DAVClient> {
                 // Windows credentials. Provide empty string for NTLM domain by default.
                 preferences.getProperty("webdav.ntlm.workstation"),
                 preferences.getProperty("webdav.ntlm.domain"));
-        if(host.getCredentials().validate(host.getProtocol(), new LoginOptions())) {
-            if(preferences.getBoolean("webdav.basic.preemptive")) {
-                // Enable preemptive authentication. See HttpState#setAuthenticationPreemptive
-                client.enablePreemptiveAuthentication(this.getHost().getHostname());
-            }
-            else {
-                client.disablePreemptiveAuthentication();
-            }
+        if(preferences.getBoolean("webdav.basic.preemptive")) {
+            // Enable preemptive authentication. See HttpState#setAuthenticationPreemptive
+            client.enablePreemptiveAuthentication(this.getHost().getHostname());
+        }
+        else {
+            client.disablePreemptiveAuthentication();
+        }
+        if(host.getCredentials().isPassed()) {
+            log.warn(String.format("Skip verifying credentials with previous successful authentication event for %s", this));
+            return;
         }
         try {
             final Path home = new DefaultHomeFinderService(this).find();
@@ -177,30 +191,31 @@ public class DAVSession extends HttpSession<DAVClient> {
                 client.execute(new HttpHead(new DAVPathEncoder().encode(home)), new VoidResponseHandler());
             }
             catch(SardineException e) {
-                if(e.getStatusCode() == HttpStatus.SC_FORBIDDEN
-                        || e.getStatusCode() == HttpStatus.SC_NOT_FOUND
-                        || e.getStatusCode() == HttpStatus.SC_UNSUPPORTED_MEDIA_TYPE
-                        || e.getStatusCode() == HttpStatus.SC_METHOD_NOT_ALLOWED) {
-                    log.warn(String.format("Failed HEAD request to %s with %s. Retry with PROPFIND.",
-                            host, e.getResponsePhrase()));
-                    cancel.verify();
-                    // Possibly only HEAD requests are not allowed
-                    cache.put(home, this.list(home, new DisabledListProgressListener()));
-                }
-                else if(e.getStatusCode() == HttpStatus.SC_BAD_REQUEST) {
-                    if(preferences.getBoolean("webdav.basic.preemptive")) {
-                        log.warn(String.format("Disable preemptive authentication for %s due to failure %s",
+                switch(e.getStatusCode()) {
+                    case HttpStatus.SC_FORBIDDEN:
+                    case HttpStatus.SC_NOT_FOUND:
+                    case HttpStatus.SC_UNSUPPORTED_MEDIA_TYPE:
+                    case HttpStatus.SC_METHOD_NOT_ALLOWED:
+                        log.warn(String.format("Failed HEAD request to %s with %s. Retry with PROPFIND.",
                                 host, e.getResponsePhrase()));
                         cancel.verify();
-                        client.disablePreemptiveAuthentication();
-                        client.execute(new HttpHead(new DAVPathEncoder().encode(home)), new VoidResponseHandler());
-                    }
-                    else {
+                        // Possibly only HEAD requests are not allowed
+                        cache.put(home, this.list(home, new DisabledListProgressListener()));
+                        break;
+                    case HttpStatus.SC_BAD_REQUEST:
+                        if(preferences.getBoolean("webdav.basic.preemptive")) {
+                            log.warn(String.format("Disable preemptive authentication for %s due to failure %s",
+                                    host, e.getResponsePhrase()));
+                            cancel.verify();
+                            client.disablePreemptiveAuthentication();
+                            client.execute(new HttpHead(new DAVPathEncoder().encode(home)), new VoidResponseHandler());
+                        }
+                        else {
+                            throw new DAVExceptionMappingService().map(e);
+                        }
+                        break;
+                    default:
                         throw new DAVExceptionMappingService().map(e);
-                    }
-                }
-                else {
-                    throw new DAVExceptionMappingService().map(e);
                 }
             }
         }
@@ -208,7 +223,7 @@ public class DAVSession extends HttpSession<DAVClient> {
             throw new DAVExceptionMappingService().map(e);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+            throw new HttpExceptionMappingService().map(e);
         }
     }
 
@@ -260,7 +275,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                 log.warn(String.format("Ignore failed HEAD request to %s with %s.", host, e.getResponsePhrase()));
             }
             catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map(e);
+                throw new HttpExceptionMappingService().map(e);
             }
             return preferences.getBoolean("webdav.basic.preemptive");
         }
@@ -300,6 +315,9 @@ public class DAVSession extends HttpSession<DAVClient> {
         }
         if(type == Attributes.class) {
             return (T) new DAVAttributesFeature(this);
+        }
+        if(type == Timestamp.class) {
+            return (T) new DAVTimestampFeature(this);
         }
         return super.getFeature(type);
     }

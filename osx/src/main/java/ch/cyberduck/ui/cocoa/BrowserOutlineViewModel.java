@@ -41,9 +41,6 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class BrowserOutlineViewModel extends BrowserTableDataSource implements NSOutlineView.DataSource {
     private static final Logger log = Logger.getLogger(BrowserOutlineViewModel.class);
 
@@ -59,13 +56,18 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
         }
         if(controller.isMounted()) {
             final NSOutlineView outline = (NSOutlineView) view;
-            for(Path folder : folders) {
-                if(folder.equals(controller.workdir())) {
-                    outline.reloadData();
-                    break;
-                }
-                else {
-                    outline.reloadItem_reloadChildren(NSObjectPathReference.get(folder), true);
+            if(folders.isEmpty()) {
+                view.reloadData();
+            }
+            else {
+                for(Path folder : folders) {
+                    if(folder.equals(controller.workdir())) {
+                        outline.reloadData();
+                        break;
+                    }
+                    else {
+                        outline.reloadItem_reloadChildren(NSObjectPathReference.get(folder), true);
+                    }
                 }
             }
         }

@@ -32,29 +32,33 @@ import org.jets3t.service.model.S3Object;
 
 import java.io.InputStream;
 
-/**
- * @version $Id$
- */
 public class S3ReadFeature implements Read {
     private static final Logger log = Logger.getLogger(S3ReadFeature.class);
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new S3PathContainerService();
 
-    private S3Session session;
+    private final S3Session session;
+
+    private final Versioning versioning;
 
     public S3ReadFeature(final S3Session session) {
+        this(session, session.getFeature(Versioning.class));
+    }
+
+    public S3ReadFeature(final S3Session session, final Versioning versioning) {
         this.session = session;
+        this.versioning = versioning;
     }
 
     @Override
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
+        final RequestEntityRestStorageService client = session.getClient();
         try {
             final S3Object object;
-            final Versioning feature = session.getFeature(Versioning.class);
             final HttpRange range = HttpRange.withStatus(status);
-            if(feature != null && feature.getConfiguration(containerService.getContainer(file)).isEnabled()) {
-                object = session.getClient().getVersionedObject(
+            if(versioning != null && versioning.getConfiguration(containerService.getContainer(file)).isEnabled()) {
+                object = client.getVersionedObject(
                         file.attributes().getVersionId(),
                         containerService.getContainer(file).getName(), containerService.getKey(file),
                         null, // ifModifiedSince
@@ -63,10 +67,9 @@ public class S3ReadFeature implements Read {
                         null, // ifNoneMatch
                         status.isAppend() ? range.getStart() : null,
                         status.isAppend() ? (range.getEnd() == -1 ? null : range.getEnd()) : null);
-                return object.getDataInputStream();
             }
             else {
-                object = session.getClient().getObject(
+                object = client.getObject(
                         containerService.getContainer(file).getName(),
                         containerService.getKey(file),
                         null, // ifModifiedSince

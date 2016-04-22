@@ -18,37 +18,37 @@ package ch.cyberduck.core.threading;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
 
-import java.text.MessageFormat;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 
-/**
- * @version $Id$
- */
 public class BackgroundActionPauser {
     private static final Logger log = Logger.getLogger(BackgroundActionPauser.class);
-
-    private SessionBackgroundAction action;
 
     /**
      * The delay to wait before execution of the action in seconds
      */
-    private int delay
-            = PreferencesFactory.get().getInteger("connection.retry.delay");
+    private Integer delay;
 
-    private final String pattern
-            = LocaleFactory.localizedString("Retry again in {0} seconds ({1} more attempts)", "Status");
+    private final Callback callback;
 
-    public BackgroundActionPauser(final SessionBackgroundAction action) {
-        this.action = action;
+    public BackgroundActionPauser(final Callback callback) {
+        this.callback = callback;
+        this.delay = PreferencesFactory.get().getInteger("connection.retry.delay");
+    }
+
+    /**
+     * @param delay In seconds
+     */
+    public BackgroundActionPauser(final Callback callback, final Integer delay) {
+        this.callback = callback;
+        this.delay = delay;
     }
 
     public void await(final ProgressListener listener) {
@@ -58,30 +58,8 @@ public class BackgroundActionPauser {
         }
         final Timer wakeup = new Timer();
         final CyclicBarrier wait = new CyclicBarrier(2);
-
-        wakeup.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                if(0 == delay || action.isCanceled()) {
-                    // Cancel the timer repetition
-                    this.cancel();
-                    return;
-                }
-                listener.message(MessageFormat.format(pattern, delay--, action.retry()));
-            }
-
-            @Override
-            public boolean cancel() {
-                try {
-                    // Notify to return to caller from #pause()
-                    wait.await();
-                }
-                catch(InterruptedException | BrokenBarrierException e) {
-                    log.error(e.getMessage(), e);
-                }
-                return super.cancel();
-            }
-        }, 0, 1000); // Schedule for immediate execution with an interval of 1s
+        // Schedule for immediate execution with an interval of 1s
+        wakeup.scheduleAtFixedRate(new PauserTimerTask(listener, wait), 0, 1000);
         try {
             // Wait for notify from wakeup timer
             wait.await();
@@ -89,5 +67,49 @@ public class BackgroundActionPauser {
         catch(InterruptedException | BrokenBarrierException e) {
             log.error(e.getMessage(), e);
         }
+    }
+
+    private final class PauserTimerTask extends TimerTask {
+        private final ProgressListener listener;
+        private final CyclicBarrier wait;
+
+        public PauserTimerTask(final ProgressListener listener, final CyclicBarrier wait) {
+            this.listener = listener;
+            this.wait = wait;
+        }
+
+        @Override
+        public void run() {
+            if(0 == delay || callback.isCanceled()) {
+                // Cancel the timer repetition
+                this.cancel();
+                return;
+            }
+            callback.progress(delay--);
+        }
+
+        @Override
+        public boolean cancel() {
+            try {
+                // Notify to return to caller from #pause()
+                wait.await();
+            }
+            catch(InterruptedException | BrokenBarrierException e) {
+                log.error(e.getMessage(), e);
+            }
+            return super.cancel();
+        }
+    }
+
+    public interface Callback {
+        /**
+         * @return True if task should be cancled and wait interrupted.
+         */
+        boolean isCanceled();
+
+        /**
+         * @param delay Remaining delay
+         */
+        void progress(final Integer delay);
     }
 }

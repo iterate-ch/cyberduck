@@ -33,6 +33,8 @@ import java.util.Map;
  */
 public class PathAttributes extends Attributes implements Serializable {
 
+    public static final PathAttributes EMPTY = new PathAttributes();
+
     /**
      * The file length
      */

@@ -3,7 +3,7 @@
     <parent>
         <artifactId>parent</artifactId>
         <groupId>ch.cyberduck</groupId>
-        <version>4.8-SNAPSHOT</version>
+        <version>5.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>Cyberduck.Native</artifactId>
@@ -150,15 +150,15 @@
                     <artifactId>ActiveButtons</artifactId>
                     <classifier>native</classifier>
                     <type>dll</type>
-                    <version>1.0.1.0</version>
+                    <version>1.0.1.0.win10</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
-                    <groupId>com.wyday</groupId>
-                    <artifactId>AutomaticUpdater</artifactId>
+                    <groupId>WinSparkle</groupId>
+                    <artifactId>WinSparkle</artifactId>
                     <classifier>native</classifier>
                     <type>dll</type>
-                    <version>2.6.18.4</version>
+                    <version>0.5.x86</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>

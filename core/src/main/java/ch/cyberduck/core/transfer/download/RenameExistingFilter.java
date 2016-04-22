@@ -34,9 +34,6 @@ import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 
-/**
- * @version $Id$
- */
 public class RenameExistingFilter extends AbstractDownloadFilter {
     private static final Logger log = Logger.getLogger(RenameExistingFilter.class);
 
@@ -57,7 +54,7 @@ public class RenameExistingFilter extends AbstractDownloadFilter {
             do {
                 String proposal = MessageFormat.format(PreferencesFactory.get().getProperty("queue.download.file.rename.format"),
                         FilenameUtils.getBaseName(file.getName()),
-                        UserDateFormatterFactory.get().getLongFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
+                        UserDateFormatterFactory.get().getMediumFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
                         StringUtils.isNotEmpty(file.getExtension()) ? "." + file.getExtension() : StringUtils.EMPTY);
                 rename = LocalFactory.get(local.getParent().getAbsolute(), proposal);
             }
@@ -66,6 +63,10 @@ public class RenameExistingFilter extends AbstractDownloadFilter {
                 log.info(String.format("Rename existing file %s to %s", local, rename));
             }
             local.rename(rename);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Clear exist flag for file %s", local));
+            }
+            status.setExists(false);
         }
         super.apply(file, local, status, listener);
     }

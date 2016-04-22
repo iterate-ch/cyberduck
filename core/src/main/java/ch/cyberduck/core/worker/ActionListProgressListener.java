@@ -24,9 +24,6 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ListCanceledException;
 
-/**
- * @version $Id$
- */
 public class ActionListProgressListener implements ListProgressListener {
 
     private Worker worker;

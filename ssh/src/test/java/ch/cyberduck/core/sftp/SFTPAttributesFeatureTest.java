@@ -51,11 +51,11 @@ public class SFTPAttributesFeatureTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final SFTPAttributesFeature f = new SFTPAttributesFeature(session);
-        final PathAttributes attributes = f.find(session.workdir());
+        final PathAttributes attributes = f.find(new SFTPHomeDirectoryService(session).find());
         assertNotNull(attributes);
         // Test wrong type
         try {
-            f.find(new Path(session.workdir().getAbsolute(), EnumSet.of(Path.Type.file)));
+            f.find(new Path(new SFTPHomeDirectoryService(session).find().getAbsolute(), EnumSet.of(Path.Type.file)));
             fail();
         }
         catch(NotfoundException e) {
@@ -78,7 +78,7 @@ public class SFTPAttributesFeatureTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final SFTPAttributesFeature f = new SFTPAttributesFeature(session);
-        final Path file = new Path(session.workdir(), "dropbox/f", EnumSet.of(Path.Type.file));
+        final Path file = new Path(new SFTPHomeDirectoryService(session).find(), "dropbox/f", EnumSet.of(Path.Type.file));
         final Attributes attributes = f.find(file);
         assertEquals(37L, attributes.getSize());
     }

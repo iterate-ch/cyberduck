@@ -68,10 +68,10 @@ public class IRODSListServiceTest {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final AttributedList<Path> list = new IRODSListService(session).list(session.workdir(), new DisabledListProgressListener());
+        final AttributedList<Path> list = new IRODSListService(session).list(new IRODSHomeFinderService(session).find(), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path p : list) {
-            assertEquals(session.workdir(), p.getParent());
+            assertEquals(new IRODSHomeFinderService(session).find(), p.getParent());
             assertNotNull(p.attributes().getModificationDate());
             assertNotNull(p.attributes().getSize());
 //            if(p.isFile()) {

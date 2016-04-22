@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,20 +13,18 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.Windows.Forms;
-using Ch.Cyberduck.Ui.Controller.Threading;
 using ch.cyberduck.core;
-using ch.cyberduck.core.editor;
-using ch.cyberduck.core.features;
-using UploadTargetFinder = ch.cyberduck.ui.browser.UploadTargetFinder;
-using DisabledApplicationQuitCallback = ch.cyberduck.core.local.DisabledApplicationQuitCallback;
-using DisabledTransferErrorCallback = ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
+using ch.cyberduck.core.threading;
+using ch.cyberduck.core.worker;
+using ch.cyberduck.ui.browser;
 using java.util;
+using Boolean = java.lang.Boolean;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -53,49 +51,51 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class CreateFileAction : BrowserControllerBackgroundAction
+        private class CreateFileAction : WorkerBackgroundAction
         {
-            private readonly bool _edit;
-            private readonly Path _file;
-            private readonly string _filename;
-            private readonly Path _workdir;
-
-            public CreateFileAction(BrowserController controller, Path workdir, string filename, bool edit)
-                : base(controller)
+            public CreateFileAction(BrowserController controller, Path directory, string filename, bool edit)
+                : base(
+                    controller, controller.Session,
+                    new InnerCreateFileWorker(controller,
+                        new Path(directory, filename, EnumSet.of(AbstractPath.Type.file)), filename, edit))
             {
-                _workdir = workdir;
-                _filename = filename;
-                _edit = edit;
-                _file = new Path(_workdir, _filename, EnumSet.of(AbstractPath.Type.file));
             }
 
-            public override object run()
+            private class InnerCreateFileWorker : TouchWorker
             {
-                Session session = BrowserController.Session;
-                Touch feature = (Touch) session.getFeature(typeof (Touch));
-                feature.touch(_file);
-                if (_edit)
+                private readonly BrowserController _controller;
+                private readonly bool _edit;
+                private readonly Path _file;
+                private readonly string _filename;
+                private readonly IList<Path> _files;
+
+                public InnerCreateFileWorker(BrowserController controller, Path file, String filename, bool edit)
+                    : base(file)
                 {
-                    _file.attributes().setSize(0L);
-                    Editor editor = EditorFactory.instance().create(BrowserController, session, _file);
-                    BrowserController.edit(editor);
+                    _controller = controller;
+                    _file = file;
+                    _filename = filename;
+                    _edit = edit;
                 }
-                return true;
-            }
 
-            public override void cleanup()
-            {
-                base.cleanup();
-                if (_filename.StartsWith("."))
+                public override void cleanup(object result)
                 {
-                    BrowserController.ShowHiddenFiles = true;
+                    Boolean done = (Boolean) result;
+                    if (done.booleanValue())
+                    {
+                        if (_filename.StartsWith("."))
+                        {
+                            _controller.ShowHiddenFiles = true;
+                        }
+                        List<Path> files = new List<Path>() {_file};
+                        _controller.Reload(_controller.Workdir, files, files);
+                        if (_edit)
+                        {
+                            _file.attributes().setSize(0L);
+                            _controller.edit(_file);
+                        }
+                    }
                 }
-                BrowserController.RefreshParentPaths(new Collection<Path> {_file}, new Collection<Path> {_file});
-            }
-
-            public override string getActivity()
-            {
-                return String.Format(LocaleFactory.localizedString("Uploading {0}", "Status"), _file.getName());
             }
         }
     }

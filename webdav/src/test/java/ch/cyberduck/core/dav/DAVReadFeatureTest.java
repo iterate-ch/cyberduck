@@ -26,6 +26,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.CountingInputStream;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -39,9 +40,6 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class DAVReadFeatureTest {
 
@@ -55,7 +53,7 @@ public class DAVReadFeatureTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
-        new DAVReadFeature(session).read(new Path(session.workdir(), "nosuchname", EnumSet.of(Path.Type.file)), status);
+        new DAVReadFeature(session).read(new Path(new DefaultHomeFinderService(session).find(), "nosuchname", EnumSet.of(Path.Type.file)), status);
     }
 
     @Test
@@ -84,6 +82,32 @@ public class DAVReadFeatureTest {
     }
 
     @Test
+    public void testReadInterrupt() throws Exception {
+        final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.ch", new Credentials(
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
+        ));
+        final DAVSession session = new DAVSession(host);
+        final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener());
+        service.connect(session, PathCache.empty());
+        final Path test = new Path("/trunk/LICENSE.txt", EnumSet.of(Path.Type.file));
+        // Unknown length in status
+        final TransferStatus status = new TransferStatus();
+        // Read a single byte
+        {
+            final InputStream in = new DAVReadFeature(session).read(test, status);
+            assertNotNull(in.read());
+            in.close();
+        }
+        {
+            final InputStream in = new DAVReadFeature(session).read(test, status);
+            assertNotNull(in);
+            in.close();
+        }
+        session.close();
+    }
+
+    @Test
     public void testReadRange() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
                 System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
@@ -100,7 +124,7 @@ public class DAVReadFeatureTest {
         final OutputStream out = local.getOutputStream(false);
         assertNotNull(out);
         IOUtils.write(content, out);
-        IOUtils.closeQuietly(out);
+        out.close();
         new DAVUploadFeature(new DAVWriteFeature(session)).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 new TransferStatus().length(content.length),
@@ -142,7 +166,7 @@ public class DAVReadFeatureTest {
         final OutputStream out = local.getOutputStream(false);
         assertNotNull(out);
         IOUtils.write(content, out);
-        IOUtils.closeQuietly(out);
+        out.close();
         new DAVUploadFeature(new DAVWriteFeature(session)).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 new TransferStatus().length(content.length),
@@ -164,6 +188,22 @@ public class DAVReadFeatureTest {
             public void delete(final Path file) {
             }
         });
+        session.close();
+    }
+
+    @Test
+    public void testReadCloseReleaseEntity() throws Exception {
+        final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.ch", new Credentials(
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
+        ));
+        final DAVSession session = new DAVSession(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final TransferStatus status = new TransferStatus();
+        final Path test = new Path("/trunk/LICENSE.txt", EnumSet.of(Path.Type.file));
+        final CountingInputStream in = new CountingInputStream(new DAVReadFeature(session).read(test, status));
+        in.close();
+        assertEquals(0L, in.getByteCount(), 0L);
         session.close();
     }
 }

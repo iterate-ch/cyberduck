@@ -30,6 +30,7 @@ import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.date.ISO8601DateParser;
 import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -86,7 +87,7 @@ public class SwiftObjectListService implements ListService {
                     if(StringUtils.isNotBlank(object.getMd5sum())) {
                         // For manifest files, the ETag in the response for a GET or HEAD on the manifest file is the MD5 sum of
                         // the concatenated string of ETags for each of the segments in the manifest.
-                        attributes.setChecksum(null);
+                        attributes.setChecksum(Checksum.parse(object.getMd5sum()));
                     }
                     attributes.setSize(object.getSize());
                     final String lastModified = object.getLastModified();

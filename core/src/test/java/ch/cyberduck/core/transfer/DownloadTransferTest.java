@@ -1,19 +1,6 @@
 package ch.cyberduck.core.transfer;
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.NullLocal;
-import ch.cyberduck.core.NullSession;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.filter.DownloadRegexFilter;
@@ -168,7 +155,7 @@ public class DownloadTransferTest {
                 return null;
             }
         }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
-                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), table);
+                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), TransferItemCache.empty(), table);
         worker.prepare(test, new NullLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString()), new TransferStatus().exists(true),
                 TransferAction.overwrite
         );
@@ -193,7 +180,7 @@ public class DownloadTransferTest {
         LocalTouchFactory.get().touch(local);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write("test", out);
-        IOUtils.closeQuietly(out);
+        out.close();
         final Transfer transfer = new DownloadTransfer(host, test, local) {
             @Override
             public AbstractDownloadFilter filter(final Session<?> session, final TransferAction action, final ProgressListener listener) {
@@ -216,7 +203,7 @@ public class DownloadTransferTest {
                 return null;
             }
         }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
-                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), table);
+                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), TransferItemCache.empty(), table);
         worker.prepare(test, local, new TransferStatus().exists(true), TransferAction.resume);
         final TransferStatus status = new TransferStatus();
         status.setExists(true);

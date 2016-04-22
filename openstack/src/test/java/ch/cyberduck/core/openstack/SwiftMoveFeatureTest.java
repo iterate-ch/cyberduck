@@ -25,6 +25,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.test.IntegrationTest;
@@ -39,9 +40,6 @@ import java.util.UUID;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class SwiftMoveFeatureTest {
 
@@ -70,6 +68,32 @@ public class SwiftMoveFeatureTest {
         assertFalse(new SwiftFindFeature(session).find(test));
         assertTrue(new SwiftFindFeature(session).find(target));
         new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
+        session.close();
+    }
+
+    @Test(expected = InteroperabilityException.class)
+    public void testMoveBetweenRegions() throws Exception {
+        final SwiftSession session = new SwiftSession(
+                new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
+                        new Credentials(
+                                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
+                        )));
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path sourceContainer = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        sourceContainer.attributes().setRegion("IAD");
+        final String name = UUID.randomUUID().toString();
+        final Path test = new Path(sourceContainer, name, EnumSet.of(Path.Type.file));
+        new SwiftTouchFeature(session).touch(test);
+        assertTrue(new SwiftFindFeature(session).find(test));
+        final Path targetContainer = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        targetContainer.attributes().setRegion("DFW");
+        final Path target = new Path(targetContainer, name, EnumSet.of(Path.Type.file));
+        new SwiftMoveFeature(session).move(test, target, false, new Delete.Callback() {
             @Override
             public void delete(final Path file) {
             }

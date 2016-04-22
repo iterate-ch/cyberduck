@@ -16,7 +16,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.socket.DefaultSocketConfigurator;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
@@ -61,7 +60,7 @@ public class FTPSessionTest {
         assertTrue(session.isConnected());
         assertFalse(session.isSecured());
         assertNotNull(session.getClient());
-        assertNotNull(session.workdir());
+        assertNotNull(new FTPWorkdirService(session).find());
         session.close();
         assertEquals(Session.State.closed, session.getState());
         assertFalse(session.isConnected());
@@ -119,9 +118,9 @@ public class FTPSessionTest {
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertTrue(session.isSecured());
-        final Path path = session.workdir();
+        final Path path = new FTPWorkdirService(session).find();
         assertNotNull(path);
-        assertEquals(path, session.workdir());
+        assertEquals(path, new FTPWorkdirService(session).find());
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
@@ -134,7 +133,7 @@ public class FTPSessionTest {
         ));
         final FTPSession session = new FTPSession(host);
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
-        session.workdir();
+        new FTPWorkdirService(session).find();
     }
 
     @Test
@@ -147,7 +146,7 @@ public class FTPSessionTest {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature(session).touch(test);
         assertTrue(session.getFeature(Find.class).find(test));
         new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
@@ -182,21 +181,6 @@ public class FTPSessionTest {
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.list(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
-    }
-
-
-    @Test
-    public void testMountFallbackNotfound() throws Exception {
-        final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
-        ));
-        host.setDefaultPath(UUID.randomUUID().toString());
-        final FTPSession session = new FTPSession(host);
-        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertEquals("/", session.workdir().getAbsolute());
     }
 
     @Test
