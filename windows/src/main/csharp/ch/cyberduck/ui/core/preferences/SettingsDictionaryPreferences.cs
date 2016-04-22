@@ -11,7 +11,7 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-// 
+//  
 // Bug fixes, suggestions and comments should be sent to:
 // feedback@cyberduck.io
 // 
@@ -336,6 +336,33 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             Security.addProvider(new SunMSCAPI());
             defaults.put("connection.ssl.keystore.type", "Windows-MY");
             defaults.put("connection.ssl.keystore.provider", "SunMSCAPI");
+
+            defaults.put("webdav.ntlm.environment", false.ToString());
+            if (this.getBoolean("webdav.ntlm.environment"))
+            {
+                 // NTLM Windows Domain
+                try
+                {
+                     // Gets the network domain name associated with the current user
+                    defaults.put("webdav.ntlm.domain", Environment.UserDomainName);
+                }
+                catch (PlatformNotSupportedException e)
+                {
+                    // The operating system does not support retrieving the network domain name.
+                }
+                catch (InvalidOperationException e)
+                {
+                    // The network domain name cannot be retrieved.
+                }
+                try
+                {
+                    defaults.put("webdav.ntlm.workstation", Environment.MachineName);
+                }
+                catch (InvalidOperationException e)
+                {
+                    // The name of this computer cannot be obtained.
+                }
+            }
         }
 
         protected override void post()
