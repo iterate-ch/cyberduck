@@ -16,21 +16,14 @@ import java.util.Iterator;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class S3UrlProviderTest {
 
     @Test
     public void testToHttpURL() throws Exception {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
+        session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS2);
         Path p = new Path("/bucket/f/key f", EnumSet.of(Path.Type.file));
-        assertEquals("https://bucket.s3.amazonaws.com/f/key%20f",
-                new S3UrlProvider(session).toUrl(p).find(DescriptiveUrl.Type.http).getUrl());
-        assertTrue(new S3UrlProvider(session).toUrl(p).filter(DescriptiveUrl.Type.http).contains(
-                new DescriptiveUrl(URI.create("http://bucket.s3.amazonaws.com/f/key%20f"))
-        ));
         assertEquals(5, new S3UrlProvider(session, new DisabledPasswordStore() {
             @Override
             public String find(final Host host) {
