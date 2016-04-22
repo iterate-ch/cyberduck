@@ -211,4 +211,9 @@ public class FinderLocalTest {
             l.delete();
         }
     }
+
+    @Test
+    public void testFollowLinks() throws Exception {
+        assertTrue(new Local("/tmp").exists());
+    }
 }

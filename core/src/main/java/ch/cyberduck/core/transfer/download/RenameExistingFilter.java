@@ -54,7 +54,7 @@ public class RenameExistingFilter extends AbstractDownloadFilter {
             do {
                 String proposal = MessageFormat.format(PreferencesFactory.get().getProperty("queue.download.file.rename.format"),
                         FilenameUtils.getBaseName(file.getName()),
-                        UserDateFormatterFactory.get().getMediumFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
+                        UserDateFormatterFactory.get().getMediumFormat(System.currentTimeMillis(), false).replace(local.getDelimiter(), '-').replace(':', '-'),
                         StringUtils.isNotEmpty(file.getExtension()) ? "." + file.getExtension() : StringUtils.EMPTY);
                 rename = LocalFactory.get(local.getParent().getAbsolute(), proposal);
             }

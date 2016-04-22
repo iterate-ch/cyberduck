@@ -17,6 +17,7 @@ package ch.cyberduck.core.local;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
@@ -24,6 +25,7 @@ import static org.junit.Assert.assertNotNull;
 public class LibcWorkingDirectoryFinderTest {
 
     @Test
+    @Ignore
     public void testFind() throws Exception {
         assertNotNull(new LibcWorkingDirectoryFinder().find());
     }

@@ -92,7 +92,7 @@ public class TransferDictionaryTest {
     @Test
     public void testSyncTransfer() throws Exception {
         Transfer t = new SyncTransfer(new Host(new TestProtocol(), "t"),
-                new TransferItem(new Path("t", EnumSet.of(Path.Type.file)), new NullLocal("/", "t")));
+                new TransferItem(new Path("t", EnumSet.of(Path.Type.file)), new NullLocal(System.getProperty("java.io.tmpdir"), "t")));
         t.addSize(4L);
         t.addTransferred(3L);
         final Transfer serialized = new TransferDictionary().deserialize(t.serialize(SerializerFactory.get()));

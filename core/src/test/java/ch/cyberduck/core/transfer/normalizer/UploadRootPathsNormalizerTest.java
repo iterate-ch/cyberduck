@@ -6,6 +6,7 @@ import ch.cyberduck.core.transfer.TransferItem;
 
 import org.junit.Test;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Iterator;
@@ -19,7 +20,7 @@ public class UploadRootPathsNormalizerTest {
     public void testNormalize() throws Exception {
         UploadRootPathsNormalizer n = new UploadRootPathsNormalizer();
         final List<TransferItem> list = new ArrayList<TransferItem>();
-        list.add(new TransferItem(new Path("/a", EnumSet.of(Path.Type.directory)), new NullLocal("/f/a") {
+        list.add(new TransferItem(new Path("/a", EnumSet.of(Path.Type.directory)), new NullLocal(System.getProperty("java.io.tmpdir"), "a") {
             @Override
             public boolean isDirectory() {
                 return true;
@@ -30,7 +31,7 @@ public class UploadRootPathsNormalizerTest {
                 return false;
             }
         }));
-        list.add(new TransferItem(new Path("/a", EnumSet.of(Path.Type.file)), new NullLocal("/f/a/b")));
+        list.add(new TransferItem(new Path("/a", EnumSet.of(Path.Type.file)), new NullLocal(System.getProperty("java.io.tmpdir"), "a"+ File.separator + "b")));
         final List<TransferItem> normalized = n.normalize(list);
         assertEquals(1, normalized.size());
         assertEquals(new Path("/a", EnumSet.of(Path.Type.directory)), normalized.iterator().next().remote);

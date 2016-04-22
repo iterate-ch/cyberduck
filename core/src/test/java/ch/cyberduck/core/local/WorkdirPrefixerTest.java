@@ -20,13 +20,15 @@ package ch.cyberduck.core.local;
 
 import org.junit.Test;
 
+import java.io.File;
+
 import static org.junit.Assert.assertEquals;
 
 public class WorkdirPrefixerTest {
 
     @Test
     public void testNormalize() throws Exception {
-        assertEquals(System.getProperty("user.dir") + "/n", new WorkdirPrefixer().normalize("n"));
+        assertEquals(System.getProperty("user.dir") + File.separator+ "n", new WorkdirPrefixer().normalize("n"));
     }
 
     @Test
