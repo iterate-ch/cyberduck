@@ -24,8 +24,8 @@ public class DownloadRootPathsNormalizerTest {
     public void testNormalize() throws Exception {
         DownloadRootPathsNormalizer n = new DownloadRootPathsNormalizer();
         final List<TransferItem> list = new ArrayList<TransferItem>();
-        list.add(new TransferItem(new Path("/a", EnumSet.of(Path.Type.directory)), new NullLocal("/", "a")));
-        list.add(new TransferItem(new Path("/a/b", EnumSet.of(Path.Type.file)), new NullLocal("/a", "b")));
+        list.add(new TransferItem(new Path("/a", EnumSet.of(Path.Type.directory)), new NullLocal(System.getProperty("java.io.tmpdir"), "a")));
+        list.add(new TransferItem(new Path("/a/b", EnumSet.of(Path.Type.file)), new NullLocal(System.getProperty("java.io.tmpdir"), "a/b")));
         final List<TransferItem> normalized = n.normalize(list);
         assertEquals(1, normalized.size());
         assertEquals(new Path("/a", EnumSet.of(Path.Type.directory)), normalized.iterator().next().remote);
