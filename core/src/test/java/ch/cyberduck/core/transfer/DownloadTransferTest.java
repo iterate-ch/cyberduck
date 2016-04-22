@@ -47,7 +47,7 @@ public class DownloadTransferTest {
                 return children;
             }
         };
-        assertEquals(Collections.<TransferItem>singletonList(new TransferItem(new Path("/t/c", EnumSet.of(Path.Type.file)), new NullLocal("t/c"))),
+        assertEquals(Collections.<TransferItem>singletonList(new TransferItem(new Path("/t/c", EnumSet.of(Path.Type.file)), new NullLocal("t", "c"))),
                 t.list(session, root, new NullLocal("t") {
                     @Override
                     public boolean exists() {
@@ -377,7 +377,7 @@ public class DownloadTransferTest {
                 new NullLocal(System.getProperty("java.io.tmpdir")), new DisabledListProgressListener());
         assertEquals(2, list.size());
         // Make sure folder is first in list
-        assertTrue(list.get(0).equals(new TransferItem(new Path("/f", EnumSet.of(Path.Type.directory)), new Local(System.getProperty("java.io.tmpdir"), "f"))));
+        assertEquals(new TransferItem(new Path("/f", EnumSet.of(Path.Type.directory)), new Local(System.getProperty("java.io.tmpdir"), "f")), list.get(0));
         assertTrue(list.contains(new TransferItem(new Path("/f", EnumSet.of(Path.Type.file)), new Local(System.getProperty("java.io.tmpdir"), "f"))));
     }
 }
