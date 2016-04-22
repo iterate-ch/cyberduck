@@ -149,13 +149,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             get { return new ContextMenu[0]; }
         }
 
-        public DialogResult MessageBox(string title, string message, string content, string expandedInfo, string help,
+        public virtual DialogResult MessageBox(string title, string message, string content, string expandedInfo, string help,
             string verificationText, DialogResponseHandler handler)
         {
             return Utils.MessageBox(this, title, message, content, expandedInfo, help, verificationText, handler);
         }
 
-        public DialogResult CommandBox(string title, string mainInstruction, string content, string expandedInfo,
+        public virtual DialogResult CommandBox(string title, string mainInstruction, string content, string expandedInfo,
             string help, string verificationText, string commandButtons, bool showCancelButton, SysIcons mainIcon,
             SysIcons footerIcon, DialogResponseHandler handler)
         {
@@ -276,7 +276,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             return ShowDialog();
         }
 
-        public DialogResult MessageBox(string title, string message, string content, TaskDialogButtons buttons,
+        public virtual DialogResult MessageBox(string title, string message, string content, TaskDialogButtons buttons,
             SysIcons icons)
         {
             //BringToFront();
