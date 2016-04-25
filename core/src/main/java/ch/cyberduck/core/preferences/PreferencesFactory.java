@@ -18,8 +18,6 @@ package ch.cyberduck.core.preferences;
  *  dkocher@cyberduck.ch
  */
 
-import org.apache.log4j.BasicConfigurator;
-
 public final class PreferencesFactory {
     private PreferencesFactory() {
         //
@@ -46,7 +44,8 @@ public final class PreferencesFactory {
     private static final class DefaultLoggingMemoryPreferenes extends MemoryPreferences {
         @Override
         protected void setLogging() {
-            BasicConfigurator.configure();
+            this.setProperty("logging.config", "log4j.xml");
+            super.setLogging();
         }
     }
 }
