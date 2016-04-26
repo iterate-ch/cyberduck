@@ -57,37 +57,18 @@ public class BrowserToolbarValidator implements ToolbarValidator {
     public boolean validate(final NSToolbarItem item) {
         final String identifier = item.itemIdentifier();
         switch(identifier) {
-            case BrowserToolbarFactory.TOOLBAR_EDIT: {
-                Application editor = null;
-                final Path selected = controller.getSelectedPath();
-                if(null != selected) {
-                    if(controller.isEditable(selected)) {
-                        // Choose editor for selected file
-                        final EditorFactory factory = EditorFactory.instance();
-                        editor = factory.getEditor(selected.getName());
-                    }
-                }
-                if(null == editor) {
-                    // No editor found
-                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed("pencil.tiff", 32));
-                }
-                else {
-                    item.setImage(IconCacheFactory.<NSImage>get().applicationIcon(editor, 32));
-                }
-                break;
-            }
             case BrowserToolbarFactory.TOOLBAR_DISCONNECT:
                 if(controller.isActivityRunning()) {
                     item.setLabel(LocaleFactory.localizedString("Stop"));
                     item.setPaletteLabel(LocaleFactory.localizedString("Stop"));
                     item.setToolTip(LocaleFactory.localizedString("Cancel current operation in progress"));
-                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed("stop", 32));
+                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed("stop.pdf"));
                 }
                 else {
                     item.setLabel(LocaleFactory.localizedString(BrowserToolbarFactory.TOOLBAR_DISCONNECT));
                     item.setPaletteLabel(LocaleFactory.localizedString(BrowserToolbarFactory.TOOLBAR_DISCONNECT));
                     item.setToolTip(LocaleFactory.localizedString("Disconnect from server"));
-                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed("eject.tiff", 32));
+                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed("eject.pdf"));
                 }
                 break;
             case BrowserToolbarFactory.TOOLBAR_ARCHIVE: {
