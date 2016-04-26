@@ -16,11 +16,9 @@
 package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.AbstractController;
-import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
@@ -29,10 +27,6 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
-import ch.cyberduck.core.features.Upload;
-import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
@@ -43,7 +37,6 @@ import ch.cyberduck.core.transfer.TransferListener;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferProgress;
 import ch.cyberduck.core.transfer.TransferPrompt;
-import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.worker.ConcurrentTransferWorker;
 import ch.cyberduck.core.worker.SingleTransferWorker;
@@ -58,9 +51,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 public class TransferBackgroundActionTest {
 
     @Test
@@ -74,12 +64,12 @@ public class TransferBackgroundActionTest {
         final Host host = new Host(new TestProtocol(), "l");
         host.setTransfer(Host.TransferType.newconnection);
         assertEquals(SingleTransferWorker.class, new TransferBackgroundAction(controller, new NullSession(host), PathCache.empty(),
-                new TransferAdapter(), new UploadTransfer(host, Collections.<TransferItem>emptyList()), new TransferOptions()).worker.getClass());
+                new TransferAdapter(), new UploadTransfer(host, Collections.emptyList()), new TransferOptions()).worker.getClass());
 
         assertEquals(SingleTransferWorker.class, new TransferBackgroundAction(controller, new NullSession(host), PathCache.empty(),
-                new TransferAdapter(), new UploadTransfer(host, Collections.<TransferItem>emptyList()), new TransferOptions()).worker.getClass());
+                new TransferAdapter(), new UploadTransfer(host, Collections.emptyList()), new TransferOptions()).worker.getClass());
         assertEquals(SingleTransferWorker.class, new TransferBackgroundAction(controller, new NullSession(host), PathCache.empty(),
-                new TransferAdapter(), new DownloadTransfer(host, Collections.<TransferItem>emptyList()), new TransferOptions()).worker.getClass());
+                new TransferAdapter(), new DownloadTransfer(host, Collections.emptyList()), new TransferOptions()).worker.getClass());
     }
 
     @Test
@@ -93,41 +83,9 @@ public class TransferBackgroundActionTest {
         final Host host = new Host(new TestProtocol(), "l");
         host.setTransfer(Host.TransferType.concurrent);
         assertEquals(ConcurrentTransferWorker.class, new TransferBackgroundAction(controller, new NullSession(host), PathCache.empty(),
-                new TransferAdapter(), new UploadTransfer(host, Collections.<TransferItem>emptyList()), new TransferOptions()).worker.getClass());
-
-        final NullSession pooled = new NullSession(host) {
-            @Override
-            public <T> T getFeature(final Class<T> type) {
-                if(type == Upload.class) {
-                    return (T) new Upload<T>() {
-                        @Override
-                        public T upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-                            return null;
-                        }
-
-                        @Override
-                        public boolean pooled() {
-                            return true;
-                        }
-
-                        @Override
-                        public Write.Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
-                            return Write.notfound;
-                        }
-                    };
-                }
-                return super.getFeature(type);
-            }
-        };
-        assertEquals(SingleTransferWorker.class, new TransferBackgroundAction(controller, pooled, PathCache.empty(),
-                new TransferAdapter(), new UploadTransfer(host, Collections.<TransferItem>emptyList()), new TransferOptions()).worker.getClass());
+                new TransferAdapter(), new UploadTransfer(host, Collections.emptyList()), new TransferOptions()).worker.getClass());
         assertEquals(ConcurrentTransferWorker.class, new TransferBackgroundAction(controller, new NullSession(host), PathCache.empty(),
-                new TransferAdapter(), new DownloadTransfer(host, Collections.<TransferItem>emptyList()), new TransferOptions()).worker.getClass());
-
-        assertEquals(SingleTransferWorker.class, new TransferBackgroundAction(controller, pooled, PathCache.empty(),
-                new TransferAdapter(), new UploadTransfer(host, Collections.<TransferItem>emptyList()), new TransferOptions()).worker.getClass());
-        assertEquals(ConcurrentTransferWorker.class, new TransferBackgroundAction(controller, new NullSession(host), PathCache.empty(),
-                new TransferAdapter(), new DownloadTransfer(host, Collections.<TransferItem>emptyList()), new TransferOptions()).worker.getClass());
+                new TransferAdapter(), new DownloadTransfer(host, Collections.emptyList()), new TransferOptions()).worker.getClass());
     }
 
     @Test

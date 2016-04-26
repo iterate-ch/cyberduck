@@ -22,14 +22,12 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.ServiceException;
-import org.jets3t.service.model.StorageObject;
+import org.jets3t.service.model.S3Object;
 
-/**
- * @version $Id$
- */
 public class S3DirectoryFeature implements Directory {
 
     private S3Session session;
@@ -37,8 +35,11 @@ public class S3DirectoryFeature implements Directory {
     private PathContainerService containerService
             = new S3PathContainerService();
 
+    private S3WriteFeature write;
+
     public S3DirectoryFeature(final S3Session session) {
         this.session = session;
+        this.write = new S3WriteFeature(session);
     }
 
     @Override
@@ -60,11 +61,10 @@ public class S3DirectoryFeature implements Directory {
             }
             else {
                 // Add placeholder object
-                final StorageObject object = new StorageObject(containerService.getKey(file).concat(String.valueOf(Path.DELIMITER)));
-                object.setBucketName(containerService.getContainer(file).getName());
-                object.setContentLength(0);
-                object.setContentType("application/x-directory");
-                session.getClient().putObject(containerService.getContainer(file).getName(), object);
+                final TransferStatus status = new TransferStatus();
+                status.setMime("application/x-directory");
+                final S3Object key = write.getDetails(containerService.getKey(file).concat(String.valueOf(Path.DELIMITER)), status);
+                session.getClient().putObject(containerService.getContainer(file).getName(), key);
             }
         }
         catch(ServiceException e) {

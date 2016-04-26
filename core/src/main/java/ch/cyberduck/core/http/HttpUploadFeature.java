@@ -56,11 +56,6 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
     }
 
     @Override
-    public boolean pooled() {
-        return false;
-    }
-
-    @Override
     public Write.Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
         return writer.append(file, length, cache);
     }
@@ -103,8 +98,17 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
             }
             finally {
                 final StreamCloser c = new DefaultStreamCloser();
-                c.close(in);
-                c.close(out);
+                try {
+                    c.close(in);
+                    c.close(out);
+                }
+                catch(BackgroundException e) {
+                    // Reset file offset for broken pipe (B2)
+                    status.setOffset(0L); // status.getOffset() - count.getSent()
+                    // Discard sent bytes if there is an error reply.
+                    listener.sent(-count.getSent());
+                    throw e;
+                }
             }
             try {
                 final Output response = out.getResponse();
@@ -112,6 +116,8 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
                 return response;
             }
             catch(BackgroundException e) {
+                // Reset file offset for error reply after entity is sent
+                status.setOffset(0L); // status.getOffset() - count.getSent()
                 // Discard sent bytes if there is an error reply.
                 listener.sent(-count.getSent());
                 throw e;

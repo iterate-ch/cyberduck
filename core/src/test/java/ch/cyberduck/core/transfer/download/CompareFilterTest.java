@@ -54,7 +54,7 @@ public class CompareFilterTest {
         }
         );
         final Path file = new Path("/f", EnumSet.of(Path.Type.file));
-        final Local local = new NullLocal("/", "f");
+        final Local local = new NullLocal(System.getProperty("java.io.tmpdir"), "f");
         assertFalse(filter.accept(file, local, new TransferStatus().exists(true)));
     }
 

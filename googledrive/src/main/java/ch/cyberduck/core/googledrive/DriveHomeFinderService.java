@@ -21,7 +21,9 @@ import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 public class DriveHomeFinderService extends DefaultHomeFinderService {
 
-    public DriveHomeFinderService(DriveSession session) {
+    protected static final String ROOT_FOLDER_ID = "root";
+
+    public DriveHomeFinderService(final DriveSession session) {
         super(session);
     }
 
@@ -29,16 +31,16 @@ public class DriveHomeFinderService extends DefaultHomeFinderService {
     public Path find() throws BackgroundException {
         final Path home = super.find();
         if(home.isRoot()) {
-            home.attributes().setVersionId("root");
+            home.attributes().setVersionId(ROOT_FOLDER_ID);
         }
         return home;
     }
 
     @Override
-    public Path find(Path workdir, String path) {
-        final Path home = super.find(workdir, path);
+    public Path find(final Path root, final String path) {
+        final Path home = super.find(root, path);
         if(home.isRoot()) {
-            home.attributes().setVersionId("root");
+            home.attributes().setVersionId(ROOT_FOLDER_ID);
         }
         return home;
     }

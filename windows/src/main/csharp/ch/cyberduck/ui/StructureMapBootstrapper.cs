@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using Ch.Cyberduck.Ui.Controller;
@@ -30,31 +30,28 @@ namespace Ch.Cyberduck.Ui
         public void BootstrapStructureMap()
         {
             ObjectFactory.Initialize(x =>
-                {
-                    x.For<IBrowserView>().Use<BrowserForm>();
-                    x.For<IInfoView>().Use<InfoForm>();
-                    x.For<IActivityView>().Use<ActivityForm>();
-                    x.For<ILoginView>().Use<LoginForm>();
-                    x.For<IBookmarkView>().Use<BookmarkForm>();
-                    x.For<IConnectionView>().Use<ConnectionForm>();
-                    x.For<ITransferPromptView>().Use<TransferPromptForm>();
-                    x.For<IErrorView>().Use<ErrorForm>();
-                    x.For<INewFolderPromptView>().Use<NewFolderPromptForm>();
-                    x.For<ICreateFilePromptView>().Use<CreateFilePromptForm>();
-                    x.For<ICreateSymlinkPromptView>().Use<CreateSymlinkPromptForm>();
-                    x.For<IGotoPromptView>().Use<GotoPromptForm>();
-                    x.For<IDuplicateFilePromptView>().Use<DuplicateFilePromptForm>();
-                    x.For<IDonationView>().Use<DonationForm>();
-                    x.For<ITransferView>().Use<TransferForm>();
-                    x.For<IProgressView>().Use<TransferControl>();
-                    x.For<ICommandView>().Use<CommandForm>();
+            {
+                x.For<IBrowserView>().Use<BrowserForm>();
+                x.For<IInfoView>().Use<InfoForm>();
+                x.For<IActivityView>().Use<ActivityForm>();
+                x.For<ILoginView>().Use<LoginForm>();
+                x.For<IBookmarkView>().Use<BookmarkForm>();
+                x.For<IConnectionView>().Use<ConnectionForm>();
+                x.For<ITransferPromptView>().Use<TransferPromptForm>();
+                x.For<IErrorView>().Use<ErrorForm>();
+                x.For<INewFolderPromptView>().Use<NewFolderPromptForm>();
+                x.For<ICreateFilePromptView>().Use<CreateFilePromptForm>();
+                x.For<ICreateSymlinkPromptView>().Use<CreateSymlinkPromptForm>();
+                x.For<IGotoPromptView>().Use<GotoPromptForm>();
+                x.For<IDuplicateFilePromptView>().Use<DuplicateFilePromptForm>();
+                x.For<IDonationView>().Use<DonationForm>();
+                x.For<ITransferView>().Use<TransferForm>();
+                x.For<IProgressView>().Use<TransferControl>();
+                x.For<ICommandView>().Use<CommandForm>();
 
-                    // Singletons
-                    x.For<IPreferencesView>().Singleton().Use<PreferencesForm>();
-
-                    // might be a singleton
-                    x.For<IUpdateView>().Use<UpdateForm>();
-                });
+                // Singletons
+                x.For<IPreferencesView>().Singleton().Use<PreferencesForm>();
+            });
         }
 
         public static void Restart()

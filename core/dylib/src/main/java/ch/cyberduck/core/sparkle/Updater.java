@@ -20,19 +20,22 @@ package ch.cyberduck.core.sparkle;
  */
 
 import ch.cyberduck.binding.foundation.NSObject;
+import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.rococoa.ID;
 import org.rococoa.ObjCClass;
 
-/**
- * @version $Id:$
- */
 public abstract class Updater extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("SUUpdater", _Class.class);
 
-    public static Updater create() {
+    public static final String PROPERTY_FEED_URL = "SUFeedURL";
+
+    public static Updater create() throws FactoryException {
+        if(null == getFeed()) {
+            throw new FactoryException("Missing SUFeedURL property");
+        }
         final Updater updater = CLASS.sharedUpdater();
         updater.setUserAgentString(new PreferencesUseragentProvider().get());
         return updater;
@@ -43,7 +46,7 @@ public abstract class Updater extends NSObject {
     }
 
     public static String getFeed() {
-        return PreferencesFactory.get().getDefault("SUFeedURL");
+        return PreferencesFactory.get().getDefault(PROPERTY_FEED_URL);
     }
 
     public abstract Updater init();

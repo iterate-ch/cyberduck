@@ -36,6 +36,11 @@ public class RetriableAccessDeniedException extends AccessDeniedException {
         this.retry = seconds;
     }
 
+    public RetriableAccessDeniedException(final String detail, final Duration seconds, final Throwable cause) {
+        super(detail, cause);
+        this.retry = seconds;
+    }
+
     /**
      * @return Retry after this delay has expired
      */

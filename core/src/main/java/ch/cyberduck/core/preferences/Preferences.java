@@ -55,12 +55,14 @@ import ch.cyberduck.core.serializer.impl.dd.PlistSerializer;
 import ch.cyberduck.core.serializer.impl.dd.PlistWriter;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.serializer.impl.dd.TransferPlistReader;
+import ch.cyberduck.core.threading.DefaultThreadPool;
 import ch.cyberduck.core.threading.DisabledActionOperationBatcher;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.updater.DisabledPeriodicUpdater;
 import ch.cyberduck.core.urlhandler.DisabledSchemeHandler;
 
 import org.apache.commons.lang3.StringUtils;
@@ -69,6 +71,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
+import java.io.File;
 import java.net.URL;
 import java.security.Security;
 import java.util.Arrays;
@@ -261,7 +264,7 @@ public abstract class Preferences {
         defaults.put("local.normalize.unicode", String.valueOf(true));
         defaults.put("local.normalize.tilde", String.valueOf(true));
         defaults.put("local.list.native", String.valueOf(true));
-        defaults.put("local.delimiter", String.valueOf('/'));
+        defaults.put("local.delimiter", File.separator);
         /**
          * Prompt to resolve bookmark of file outside of sandbox with choose panel
          */
@@ -498,9 +501,9 @@ public abstract class Preferences {
         defaults.put("queue.download.wherefrom", String.valueOf(true));
 
         // Segmented concurrent downloads
-        defaults.put("queue.download.segments", String.valueOf(false));
-        defaults.put("queue.download.segments.threshold", String.valueOf(Long.MAX_VALUE));
-        defaults.put("queue.download.segments.size", String.valueOf(100L * 1024L * 1024L));
+        defaults.put("queue.download.segments", String.valueOf(true));
+        defaults.put("queue.download.segments.threshold", String.valueOf(100L * 1024L * 1024L));
+        defaults.put("queue.download.segments.size", String.valueOf(50L * 1024L * 1024L));
 
         /**
          * Open completed downloads
@@ -619,8 +622,8 @@ public abstract class Preferences {
         /**
          * Authentication header version
          */
-        defaults.put("s3.signature.version", "AWS2");
-//        defaults.put("s3.signature.version", "AWS4HMACSHA256");
+//        defaults.put("s3.signature.version", "AWS2");
+        defaults.put("s3.signature.version", "AWS4HMACSHA256");
         /**
          * Default bucket location
          */
@@ -784,8 +787,18 @@ public abstract class Preferences {
         defaults.put("b2.listing.chunksize", String.valueOf(1000));
         defaults.put("b2.upload.checksum", String.valueOf(true));
 
+        defaults.put("b2.upload.largeobject", String.valueOf(true));
+        defaults.put("b2.upload.largeobject.concurrency", String.valueOf(5));
+        defaults.put("openstack.upload.largeobject.required.threshold", String.valueOf(5L * 1024L * 1024L * 1024L)); // 5GB
+        // When uploading files larger than 200MB, use the large files support to break up the files into parts and upload the parts in parallel.
+        defaults.put("b2.upload.largeobject.threshold", String.valueOf(200 * 1024L * 1024L)); // 200MB
+        // Each part can be anywhere from 100MB to 5GB in size
+        defaults.put("b2.upload.largeobject.size", String.valueOf(100 * 1024L * 1024L));
+
+        defaults.put("b2.delete.concurrency", String.valueOf(10));
+
         defaults.put("spectra.upload.md5", String.valueOf(false));
-        defaults.put("spectra.upload.crc32", String.valueOf(false));
+        defaults.put("spectra.upload.crc32", String.valueOf(true));
 
         /**
          * NTLM Windows Domain
@@ -1129,7 +1142,7 @@ public abstract class Preferences {
             return Integer.parseInt(v);
         }
         catch(NumberFormatException e) {
-            return (int) Double.parseDouble(v);
+            return (int) this.getDouble(property);
         }
     }
 
@@ -1138,7 +1151,12 @@ public abstract class Preferences {
         if(null == v) {
             return -1;
         }
-        return Float.parseFloat(v);
+        try {
+            return Float.parseFloat(v);
+        }
+        catch(NumberFormatException e) {
+            return (float) this.getDouble(property);
+        }
     }
 
     public long getLong(final String property) {
@@ -1150,7 +1168,7 @@ public abstract class Preferences {
             return Long.parseLong(v);
         }
         catch(NumberFormatException e) {
-            return (long) Double.parseDouble(v);
+            return (long) this.getDouble(property);
         }
     }
 
@@ -1159,7 +1177,12 @@ public abstract class Preferences {
         if(null == v) {
             return -1;
         }
-        return Double.parseDouble(v);
+        try {
+            return Double.parseDouble(v);
+        }
+        catch(NumberFormatException e) {
+            return -1;
+        }
     }
 
     public boolean getBoolean(final String property) {
@@ -1227,6 +1250,8 @@ public abstract class Preferences {
         defaults.put("factory.applicationlauncher.class", DisabledApplicationLauncher.class.getName());
         defaults.put("factory.browserlauncher.class", DisabledBrowserLauncher.class.getName());
         defaults.put("factory.reachability.class", DefaultInetAddressReachability.class.getName());
+        defaults.put("factory.updater.class", DisabledPeriodicUpdater.class.getName());
+        defaults.put("factory.threadpool.class", DefaultThreadPool.class.getName());
     }
 
     /**

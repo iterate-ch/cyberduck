@@ -7,7 +7,7 @@
         <key>Vendor</key>
         <string>backblaze</string>
         <key>Description</key>
-        <string>B2 Cloud Storage</string>
+        <string>Backblaze B2 Cloud Storage</string>
         <key>Scheme</key>
         <string>https</string>
         <key>Default Hostname</key>

@@ -63,4 +63,9 @@ public class SpectraProtocol extends AbstractProtocol {
     public String disk() {
         return String.format("%s.tiff", "ftp");
     }
+
+    @Override
+    public boolean isEnabled() {
+        return false;
+    }
 }

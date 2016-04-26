@@ -22,9 +22,11 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.core.threading.BackgroundCallable;
+import ch.cyberduck.core.threading.DefaultThreadPool;
 import ch.cyberduck.core.threading.LoggingUncaughtExceptionHandler;
 import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.core.threading.ThreadPool;
+import ch.cyberduck.core.threading.ThreadPoolFactory;
 
 import org.apache.commons.lang3.concurrent.ConcurrentUtils;
 import org.apache.log4j.Logger;
@@ -45,8 +47,8 @@ public abstract class AbstractController implements Controller {
     }
 
     protected AbstractController(final Thread.UncaughtExceptionHandler handler) {
-        singleExecutor = new ThreadPool(1, handler);
-        concurrentExecutor = new ThreadPool(handler);
+        singleExecutor = new DefaultThreadPool(1, handler);
+        concurrentExecutor = ThreadPoolFactory.get(handler);
     }
 
     /**

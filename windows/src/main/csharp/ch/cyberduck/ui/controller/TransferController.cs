@@ -614,7 +614,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             if (verificationChecked)
                             {
                                 // Never show again.
-                                _preferences.setProperty("queue.size.warn", false);
+                                _preferences.setProperty("queue.size.warn", int.MaxValue);
                             }
                             switch (option)
                             {

@@ -46,10 +46,8 @@ import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 import com.google.api.client.json.Json;
-import com.google.gson.stream.JsonReader;
 
 public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> {
     private static final Logger log = Logger.getLogger(DriveWriteFeature.class);
@@ -114,7 +112,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> {
                     request.addHeader(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", session.getAccessToken()));
                     request.setEntity(new StringEntity("{\"name\": \""
                             + file.getName() + "\", \"parents\": [\""
-                            + new DriveFileidProvider().getFileid(file.getParent()) + "\"]}"));
+                            + new DriveFileidProvider(session).getFileid(file.getParent()) + "\"]}"));
                     final CloseableHttpClient client = session.getBuilder().build(new DisabledTranscriptListener()).build();
                     final CloseableHttpResponse response = client.execute(request);
                     try {
@@ -139,20 +137,6 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> {
                             switch(putResponse.getStatusLine().getStatusCode()) {
                                 case HttpStatus.SC_OK:
                                 case HttpStatus.SC_CREATED:
-                                    // Read file id
-                                    final JsonReader reader = new JsonReader(new InputStreamReader(putResponse.getEntity().getContent(), "UTF-8"));
-                                    reader.beginObject();
-                                    while(reader.hasNext()) {
-                                        final String name = reader.nextName();
-                                        if(StringUtils.equals("id", name)) {
-                                            file.attributes().setVersionId(reader.nextString());
-                                            break;
-                                        }
-                                        else {
-                                            reader.skipValue();
-                                        }
-                                    }
-                                    reader.endObject();
                                     break;
                                 default:
                                     throw new DriveExceptionMappingService().map(new HttpResponseException(

@@ -6,6 +6,7 @@ import ch.cyberduck.core.transfer.TransferItem;
 
 import org.junit.Test;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Iterator;
@@ -13,16 +14,13 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * @version $Id$
- */
 public class UploadRootPathsNormalizerTest {
 
     @Test
     public void testNormalize() throws Exception {
         UploadRootPathsNormalizer n = new UploadRootPathsNormalizer();
         final List<TransferItem> list = new ArrayList<TransferItem>();
-        list.add(new TransferItem(new Path("/a", EnumSet.of(Path.Type.directory)), new NullLocal("/f/a") {
+        list.add(new TransferItem(new Path("/a", EnumSet.of(Path.Type.directory)), new NullLocal(System.getProperty("java.io.tmpdir"), "a") {
             @Override
             public boolean isDirectory() {
                 return true;
@@ -33,10 +31,22 @@ public class UploadRootPathsNormalizerTest {
                 return false;
             }
         }));
-        list.add(new TransferItem(new Path("/a", EnumSet.of(Path.Type.file)), new NullLocal("/f/a/b")));
+        list.add(new TransferItem(new Path("/a", EnumSet.of(Path.Type.file)), new NullLocal(System.getProperty("java.io.tmpdir"), "a"+ File.separator + "b")));
         final List<TransferItem> normalized = n.normalize(list);
         assertEquals(1, normalized.size());
         assertEquals(new Path("/a", EnumSet.of(Path.Type.directory)), normalized.iterator().next().remote);
+    }
+
+    @Test
+    public void testNormalizeLargeSet() throws Exception {
+        UploadRootPathsNormalizer n = new UploadRootPathsNormalizer();
+        final List<TransferItem> list = new ArrayList<TransferItem>();
+        for(int i = 0; i < 1000; i++) {
+            final String name = String.format("f-%d", i);
+            list.add(new TransferItem(new Path(name, EnumSet.of(Path.Type.file)), new NullLocal(name)));
+        }
+        final List<TransferItem> normalized = n.normalize(list);
+        assertEquals(1000, normalized.size());
     }
 
     @Test

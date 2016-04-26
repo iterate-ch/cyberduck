@@ -164,6 +164,9 @@
       <Component Id="rackspace" Guid="23B4C8D9-0E58-43D9-A8CE-85A069E6FDC8">
         <File Source="$(var.CLI.TargetDir)/profiles/Rackspace US.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
+      <Component Id="b2" Guid="88764897-D0C8-4134-B78A-026EFB74D219">
+        <File Source="$(var.CLI.TargetDir)/profiles/B2.cyberduckprofile" KeyPath="yes" Checksum="yes" />
+      </Component>
     </ComponentGroup>
 
     <Feature Id="ProductFeature" Title="CLI_WiX" Level="1">

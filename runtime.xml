@@ -2,28 +2,19 @@
 
 <project name="Java Runtime" basedir=".">
 
-    <property name="jvm.runtime.home" value="${build}/1.8.0_74.jre"/>
-    <property name="jvm.runtime.bin" value="${jvm.runtime.home}/${bundle.home}/bin"/>
-    <property name="jvm.runtime.bin" value="${java.home}/bin"/>
+    <property name="runtime.dependency" value="${build}/1.8.0_77.jre"/>
 
-    <property name="bundle.runtime" value="${bundle.macos}/Runtime.jre"/>
+    <property name="bundle.runtime" value="${bundle.plugins}/Runtime.jre"/>
     <property name="bundle.runtime.lib"
-              value="@executable_path/../MacOS/Runtime.jre/Contents/Home/lib/server/libjvm.dylib"/>
-
-    <property name="build.lipo.binaries" value="**/Contents/MacOS/*,**/*.framework/Versions/Current/*,**/*.dylib"/>
-    <property name="build.lipo.arch.remove" value=""/>
+              value="@executable_path/../PlugIns/Runtime.jre/Contents/Home/lib/server/libjvm.dylib"/>
 
     <target name="runtime">
         <mkdir dir="${bundle}/${bundle.runtime}"/>
         <!-- Copy runtime -->
         <echo message="Copy runtime from ${jvm.runtime.home} to ${bundle}/${bundle.runtime}"/>
         <copy todir="${bundle}/${bundle.runtime}" preservelastmodified="true">
-            <fileset followsymlinks="false" dir="${jvm.runtime.home}" excludesfile="${home}/runtime-excludes.properties"/>
+            <fileset followsymlinks="true" dir="${runtime.dependency}" excludesfile="${home}/runtime-excludes.properties"/>
         </copy>
-        <!-- Remove architectures -->
-        <foreach target="lipo" param="arch" list="${build.lipo.arch.remove}">
-            <param name="directory" value="${bundle}"/>
-        </foreach>
     </target>
 
     <target name="shared-library-install-name">
@@ -36,21 +27,6 @@
                 <include name="*.dylib"/>
             </fileset>
             <srcfile/>
-        </apply>
-    </target>
-
-    <target name="lipo">
-        <echo message="Remove ${arch} slice from ${build.lipo.binaries} in ${directory}"/>
-        <apply executable="/usr/bin/lipo" failonerror="false" dest="${directory}"
-               parallel="false" spawn="false" force="true">
-            <!--Remove from executables-->
-            <!--Remove from frameworks-->
-            <!--Remove from shared libraries-->
-            <fileset dir="${directory}" includes="${build.lipo.binaries}"/>
-            <arg line="-remove ${arch} -output"/>
-            <srcfile/>
-            <targetfile/>
-            <identitymapper/>
         </apply>
     </target>
 </project>

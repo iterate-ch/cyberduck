@@ -18,8 +18,11 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
@@ -28,11 +31,9 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 
 import net.schmizz.sshj.userauth.password.PasswordFinder;
+import net.schmizz.sshj.userauth.password.PasswordUpdateProvider;
 import net.schmizz.sshj.userauth.password.Resource;
 
-/**
- * @version $Id$
- */
 public class SFTPPasswordAuthentication implements SFTPAuthentication {
     private static final Logger log = Logger.getLogger(SFTPPasswordAuthentication.class);
 
@@ -43,20 +44,38 @@ public class SFTPPasswordAuthentication implements SFTPAuthentication {
     }
 
     @Override
-    public boolean authenticate(final Host host, final LoginCallback prompt, final CancelCallback cancel)
+    public boolean authenticate(final Host bookmark, final LoginCallback callback, final CancelCallback cancel)
             throws BackgroundException {
-        if(StringUtils.isBlank(host.getCredentials().getPassword())) {
+        if(StringUtils.isBlank(bookmark.getCredentials().getPassword())) {
             return false;
         }
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Login using password authentication with credentials %s", host.getCredentials()));
+            log.debug(String.format("Login using password authentication with credentials %s", bookmark.getCredentials()));
         }
         try {
             // Use both password and keyboard-interactive
-            session.getClient().authPassword(host.getCredentials().getUsername(), new PasswordFinder() {
+            session.getClient().authPassword(bookmark.getCredentials().getUsername(), new PasswordFinder() {
                 @Override
                 public char[] reqPassword(final Resource<?> resource) {
-                    return host.getCredentials().getPassword().toCharArray();
+                    return bookmark.getCredentials().getPassword().toCharArray();
+                }
+
+                @Override
+                public boolean shouldRetry(final Resource<?> resource) {
+                    return false;
+                }
+            }, new PasswordUpdateProvider() {
+                @Override
+                public char[] provideNewPassword(final Resource<?> resource, final String prompt) {
+                    try {
+                        callback.prompt(bookmark, bookmark.getCredentials(), LocaleFactory.localizedString("Change Password", "Credentials"), prompt,
+                                new LoginOptions(bookmark.getProtocol()).anonymous(false).user(false).publickey(false));
+                        return bookmark.getCredentials().getPassword().toCharArray();
+                    }
+                    catch(LoginCanceledException e) {
+                        // Return null if user cancels
+                        return null;
+                    }
                 }
 
                 @Override

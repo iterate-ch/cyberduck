@@ -13,7 +13,7 @@
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <OutputPath>cli\windows\target\</OutputPath>
+    <OutputPath>cli\windows\target\release</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
     <DefineConstants>Debug</DefineConstants>
   </PropertyGroup>
@@ -64,11 +64,11 @@
   </Target>
 
   <Target Name="SignBundleEngine" DependsOnTargets="UsesSignTool">
-    <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck CLI&quot; /fd sha256 /tr http://timestamp.globalsign.com/scripts/timestamp.dll /td sha256 /a &quot;@(SignBundleEngine)&quot;" />
+    <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck CLI&quot; /fd sha256 /tr http://timestamp.globalsign.com/scripts/timestamp.dll /td sha256 /a /sm &quot;@(SignBundleEngine)&quot;" />
   </Target>
 
   <Target Name="SignBundle" DependsOnTargets="UsesSignTool">
-    <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck CLI&quot; /fd sha256 /tr http://timestamp.globalsign.com/scripts/timestamp.dll /td sha256 /a &quot;@(SignBundle)&quot;" />
+    <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck CLI&quot; /fd sha256 /tr http://timestamp.globalsign.com/scripts/timestamp.dll /td sha256 /a /sm &quot;@(SignBundle)&quot;" />
   </Target>
 
     <!--

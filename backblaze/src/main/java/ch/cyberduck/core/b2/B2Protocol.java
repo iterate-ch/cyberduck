@@ -26,7 +26,7 @@ public class B2Protocol extends AbstractProtocol {
 
     @Override
     public String getDescription() {
-        return "B2 Cloud Storage";
+        return "Backblaze B2 Cloud Storage";
     }
 
     @Override
@@ -67,5 +67,10 @@ public class B2Protocol extends AbstractProtocol {
     @Override
     public String disk() {
         return String.format("%s.tiff", "ftp");
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return false;
     }
 }

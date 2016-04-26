@@ -62,7 +62,7 @@ public class RenameExistingFilter extends AbstractUploadFilter {
             do {
                 final String proposal = MessageFormat.format(PreferencesFactory.get().getProperty("queue.upload.file.rename.format"),
                         FilenameUtils.getBaseName(file.getName()),
-                        UserDateFormatterFactory.get().getMediumFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
+                        UserDateFormatterFactory.get().getMediumFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, '-').replace(':', '-'),
                         StringUtils.isNotEmpty(file.getExtension()) ? "." + file.getExtension() : StringUtils.EMPTY);
                 rename = new Path(file.getParent(), proposal, file.getType());
             }

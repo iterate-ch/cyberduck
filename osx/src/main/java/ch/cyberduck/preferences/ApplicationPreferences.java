@@ -5,24 +5,18 @@ import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.IOKitSleepPreventer;
 import ch.cyberduck.core.Keychain;
 import ch.cyberduck.core.aquaticprime.ReceiptFactory;
-import ch.cyberduck.core.azure.AzureProtocol;
 import ch.cyberduck.core.bonjour.RendezvousResponder;
-import ch.cyberduck.core.dav.DAVProtocol;
-import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.diagnostics.SystemConfigurationReachability;
 import ch.cyberduck.core.editor.FSEventWatchEditorFactory;
-import ch.cyberduck.core.ftp.FTPProtocol;
-import ch.cyberduck.core.ftp.FTPTLSProtocol;
-import ch.cyberduck.core.googledrive.DriveProtocol;
-import ch.cyberduck.core.googlestorage.GoogleStorageProtocol;
-import ch.cyberduck.core.dropbox.DropboxProtocol;
 import ch.cyberduck.core.i18n.BundleLocale;
+import ch.cyberduck.core.local.DisabledFilesystemBookmarkResolver;
 import ch.cyberduck.core.local.FileManagerWorkingDirectoryFinder;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
 import ch.cyberduck.core.local.LaunchServicesFileDescriptor;
 import ch.cyberduck.core.local.LaunchServicesQuarantineService;
 import ch.cyberduck.core.local.NativeLocalTrashFeature;
+import ch.cyberduck.core.local.SecurityScopedFilesystemBookmarkResolver;
 import ch.cyberduck.core.local.WorkspaceApplicationBadgeLabeler;
 import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
 import ch.cyberduck.core.local.WorkspaceBrowserLauncher;
@@ -30,16 +24,14 @@ import ch.cyberduck.core.local.WorkspaceIconService;
 import ch.cyberduck.core.local.WorkspaceRevealService;
 import ch.cyberduck.core.local.WorkspaceSymlinkFeature;
 import ch.cyberduck.core.notification.NotificationCenter;
-import ch.cyberduck.core.openstack.SwiftProtocol;
 import ch.cyberduck.core.preferences.BundleApplicationResourcesFinder;
 import ch.cyberduck.core.preferences.SecurityApplicationGroupSupportDirectoryFinder;
 import ch.cyberduck.core.preferences.UserDefaultsPreferences;
 import ch.cyberduck.core.proxy.SystemConfigurationProxy;
 import ch.cyberduck.core.resources.NSImageIconCache;
-import ch.cyberduck.core.s3.S3Protocol;
-import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
+import ch.cyberduck.core.threading.DispatchThreadPool;
 import ch.cyberduck.core.urlhandler.LaunchServicesSchemeHandler;
 import ch.cyberduck.ui.browser.Column;
 
@@ -82,6 +74,14 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
         defaults.put("factory.schemehandler.class", LaunchServicesSchemeHandler.class.getName());
         defaults.put("factory.iconcache.class", NSImageIconCache.class.getName());
         defaults.put("factory.workingdirectory.class", FileManagerWorkingDirectoryFinder.class.getName());
+        if(null == Updater.getFeed()) {
+            // Only enable security bookmarks for Mac App Store when running in sandboxed environment
+            defaults.put("factory.bookmarkresolver.class", SecurityScopedFilesystemBookmarkResolver.class.getName());
+        }
+        else {
+            defaults.put("factory.bookmarkresolver.class", DisabledFilesystemBookmarkResolver.class.getName());
+        }
+        defaults.put("factory.threadpool.class", DispatchThreadPool.class.getName());
     }
 
     @Override
@@ -113,17 +113,5 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
         defaults.put(String.format("browser.column.%s.width", Column.version.name()), String.valueOf(80));
 
         defaults.put("browser.sort.column", Column.filename.name());
-
-        defaults.put(String.format("connection.protocol.%s.enable", new FTPProtocol().getIdentifier()), String.valueOf(true));
-        defaults.put(String.format("connection.protocol.%s.enable", new FTPTLSProtocol().getIdentifier()), String.valueOf(true));
-        defaults.put(String.format("connection.protocol.%s.enable", new SFTPProtocol().getIdentifier()), String.valueOf(true));
-        defaults.put(String.format("connection.protocol.%s.enable", new DAVProtocol().getIdentifier()), String.valueOf(true));
-        defaults.put(String.format("connection.protocol.%s.enable", new DAVSSLProtocol().getIdentifier()), String.valueOf(true));
-        defaults.put(String.format("connection.protocol.%s.enable", new SwiftProtocol().getIdentifier()), String.valueOf(true));
-        defaults.put(String.format("connection.protocol.%s.enable", new S3Protocol().getIdentifier()), String.valueOf(true));
-        defaults.put(String.format("connection.protocol.%s.enable", new GoogleStorageProtocol().getIdentifier()), String.valueOf(true));
-        defaults.put(String.format("connection.protocol.%s.enable", new AzureProtocol().getIdentifier()), String.valueOf(true));
-        defaults.put(String.format("connection.protocol.%s.enable", new DriveProtocol().getIdentifier()), String.valueOf(true));
-        defaults.put(String.format("connection.protocol.%s.enable", new DropboxProtocol().getIdentifier()), String.valueOf(true));
     }
 }

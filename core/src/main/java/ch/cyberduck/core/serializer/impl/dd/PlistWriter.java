@@ -27,15 +27,13 @@ import ch.cyberduck.core.serializer.Writer;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.Collection;
 
 import com.dd.plist.NSArray;
 import com.dd.plist.NSDictionary;
 
-/**
- * @version $Id$
- */
 public class PlistWriter<S extends Serializable> implements Writer<S> {
 
     @Override
@@ -47,22 +45,30 @@ public class PlistWriter<S extends Serializable> implements Writer<S> {
             i++;
         }
         final String content = list.toXMLPropertyList();
+        final OutputStream out = file.getOutputStream(false);
         try {
-            IOUtils.write(content, file.getOutputStream(false), Charset.forName("UTF-8"));
+            IOUtils.write(content, out, Charset.forName("UTF-8"));
         }
         catch(IOException e) {
             throw new AccessDeniedException(String.format("Cannot create file %s", file.getAbsolute()), e);
+        }
+        finally {
+            IOUtils.closeQuietly(out);
         }
     }
 
     @Override
     public void write(final S item, final Local file) throws AccessDeniedException {
         final String content = item.<NSDictionary>serialize(SerializerFactory.get()).toXMLPropertyList();
+        final OutputStream out = file.getOutputStream(false);
         try {
-            IOUtils.write(content, file.getOutputStream(false), Charset.forName("UTF-8"));
+            IOUtils.write(content, out, Charset.forName("UTF-8"));
         }
         catch(IOException e) {
             throw new AccessDeniedException(String.format("Cannot create file %s", file.getAbsolute()), e);
+        }
+        finally {
+            IOUtils.closeQuietly(out);
         }
     }
 }

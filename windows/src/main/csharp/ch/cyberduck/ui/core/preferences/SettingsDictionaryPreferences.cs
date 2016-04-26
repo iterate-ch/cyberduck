@@ -23,18 +23,7 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using ch.cyberduck.core.azure;
-using ch.cyberduck.core.dav;
-using ch.cyberduck.core.ftp;
-using ch.cyberduck.core.googlestorage;
-using ch.cyberduck.core.googledrive;
-using ch.cyberduck.core.irods;
 using ch.cyberduck.core.local;
-using ch.cyberduck.core.openstack;
-using ch.cyberduck.core.s3;
-using ch.cyberduck.core.sftp;
-using ch.cyberduck.core.b2;
-using ch.cyberduck.core.spectra;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Bonjour;
 using Ch.Cyberduck.Core.Diagnostics;
@@ -239,9 +228,9 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             defaults.put("application.language.custom", false.ToString());
             defaults.put("application.localization.enable", true.ToString());
 
-            defaults.put("update.feed.release", "https://version.cyberduck.io/changelog.wys");
-            defaults.put("update.feed.beta", "https://version.cyberduck.io/beta/changelog.wys");
-            defaults.put("update.feed.nightly", "https://version.cyberduck.io/nightly/changelog.wys");
+            defaults.put("update.feed.release", "https://version.cyberduck.io/windows/changelog.rss");
+            defaults.put("update.feed.beta", "https://version.cyberduck.io/windows/beta/changelog.rss");
+            defaults.put("update.feed.nightly", "https://version.cyberduck.io/windows/nightly/changelog.rss");
 
             defaults.put("update.feed", "release");
 
@@ -348,48 +337,31 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             defaults.put("connection.ssl.keystore.type", "Windows-MY");
             defaults.put("connection.ssl.keystore.provider", "SunMSCAPI");
 
-            defaults.put(String.Format("connection.protocol.{0}.enable", new FTPProtocol().getIdentifier()),
-                true.ToString());
-            defaults.put(String.Format("connection.protocol.{0}.enable", new FTPTLSProtocol().getIdentifier()),
-                true.ToString());
-            defaults.put(String.Format("connection.protocol.{0}.enable", new SFTPProtocol().getIdentifier()),
-                true.ToString());
-            defaults.put(String.Format("connection.protocol.{0}.enable", new DAVProtocol().getIdentifier()),
-                true.ToString());
-            defaults.put(String.Format("connection.protocol.{0}.enable", new DAVSSLProtocol().getIdentifier()),
-                true.ToString());
-            defaults.put(String.Format("connection.protocol.{0}.enable", new SwiftProtocol().getIdentifier()),
-                true.ToString());
-            defaults.put(String.Format("connection.protocol.{0}.enable", new S3Protocol().getIdentifier()),
-                true.ToString());
-            defaults.put(String.Format("connection.protocol.{0}.enable", new GoogleStorageProtocol().getIdentifier()),
-                true.ToString());
-            defaults.put(String.Format("connection.protocol.{0}.enable", new AzureProtocol().getIdentifier()),
-                true.ToString());
-            defaults.put(String.Format("connection.protocol.{0}.enable", new DriveProtocol().getIdentifier()),
-                true.ToString());
-
-             // NTLM Windows Domain
-            try
+            defaults.put("webdav.ntlm.environment", false.ToString());
+            if (this.getBoolean("webdav.ntlm.environment"))
             {
-                 // Gets the network domain name associated with the current user
-                defaults.put("webdav.ntlm.domain", Environment.UserDomainName);
-            }
-            catch (PlatformNotSupportedException e)
-            {
-                // The operating system does not support retrieving the network domain name.
-            }
-            catch (InvalidOperationException e)
-            {
-                // The network domain name cannot be retrieved.
-            }
-            try
-            {
-                defaults.put("webdav.ntlm.workstation", Environment.MachineName);
-            }
-            catch (InvalidOperationException e)
-            {
-                // The name of this computer cannot be obtained.
+                 // NTLM Windows Domain
+                try
+                {
+                     // Gets the network domain name associated with the current user
+                    defaults.put("webdav.ntlm.domain", Environment.UserDomainName);
+                }
+                catch (PlatformNotSupportedException e)
+                {
+                    // The operating system does not support retrieving the network domain name.
+                }
+                catch (InvalidOperationException e)
+                {
+                    // The network domain name cannot be retrieved.
+                }
+                try
+                {
+                    defaults.put("webdav.ntlm.workstation", Environment.MachineName);
+                }
+                catch (InvalidOperationException e)
+                {
+                    // The name of this computer cannot be obtained.
+                }
             }
         }
 
@@ -397,8 +369,8 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
         {
             base.post();
             Logger root = Logger.getRootLogger();
-            var fileName = Path.Combine(this.getProperty("application.support.path"),
-                this.getProperty("application.name").ToLower().Replace(" ", "") + ".log");
+            var fileName = Path.Combine(getProperty("application.support.path"),
+                getProperty("application.name").ToLower().Replace(" ", "") + ".log");
             RollingFileAppender appender = new RollingFileAppender(new PatternLayout(@"%d [%t] %-5p %c - %m%n"),
                 fileName, true);
             appender.setMaxFileSize("10MB");

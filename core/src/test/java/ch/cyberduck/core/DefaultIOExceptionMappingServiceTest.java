@@ -32,9 +32,6 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
-/**
- * @version $Id$
- */
 public class DefaultIOExceptionMappingServiceTest {
 
     @Test
@@ -65,7 +62,7 @@ public class DefaultIOExceptionMappingServiceTest {
     public void testSameMessageInRootCause() throws Exception {
         assertEquals("S. The connection attempt was rejected. The server may be down, or your network may not be properly configured.", new DefaultIOExceptionMappingService().map(new IOException("s", new SocketException("s")))
                 .getDetail());
-        assertEquals("S. The connection attempt was rejected. The server may be down, or your network may not be properly configured.", new DefaultIOExceptionMappingService().map(new IOException("s", new SocketException(null)))
+        assertEquals("The connection attempt was rejected. The server may be down, or your network may not be properly configured.", new DefaultIOExceptionMappingService().map(new IOException("s", new SocketException(null)))
                 .getDetail());
         assertEquals("S. The connection attempt was rejected. The server may be down, or your network may not be properly configured.", new DefaultIOExceptionMappingService().map(new IOException(null, new SocketException("s")))
                 .getDetail());

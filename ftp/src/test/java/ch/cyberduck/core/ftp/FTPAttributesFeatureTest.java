@@ -65,7 +65,7 @@ public class FTPAttributesFeatureTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final FTPAttributesFeature f = new FTPAttributesFeature(session);
-        f.find(new Path(session.workdir(), "test", EnumSet.of(Path.Type.file)));
+        f.find(new Path(new FTPWorkdirService(session).find(), "test", EnumSet.of(Path.Type.file)));
         session.close();
     }
 
@@ -84,14 +84,14 @@ public class FTPAttributesFeatureTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final FTPAttributesFeature f = new FTPAttributesFeature(session);
-        final Path file = new Path(session.workdir(), "test", EnumSet.of(Path.Type.file));
+        final Path file = new Path(new FTPWorkdirService(session).find(), "test", EnumSet.of(Path.Type.file));
         final Attributes attributes = f.find(file);
         assertEquals(0L, attributes.getSize());
         assertEquals("1106", attributes.getOwner());
         assertEquals(new Permission("-rw-rw-rw-"), attributes.getPermission());
         // Test wrong type
         try {
-            f.find(new Path(session.workdir(), "test", EnumSet.of(Path.Type.directory)));
+            f.find(new Path(new FTPWorkdirService(session).find(), "test", EnumSet.of(Path.Type.directory)));
             fail();
         }
         catch(NotfoundException e) {

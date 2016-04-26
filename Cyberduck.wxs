@@ -20,6 +20,7 @@
     <Icon Id="icon.ico" SourceFile="cyberduck-application.ico"/>
     <Icon Id="cd_document.ico" SourceFile="cyberduck-document.ico"/>
     <Property Id="ARPPRODUCTICON" Value="icon.ico" />
+    <Property Id="AUTOSTART" Value="0"/>
 
     <ComponentGroup Id="ProductComponents" Directory="INSTALLLOCATION">
       <Component Id="ProductExe">
@@ -81,11 +82,6 @@
           <netfx:NativeImage Id="ngen_ActiveButtons" Platform="32bit" Priority="3" />
         </File>
       </Component>
-      <Component Id="AutomaticUpdater">
-        <File Source="$(var.cyberduck.TargetDir)/AutomaticUpdater.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_AutomaticUpdater" Platform="32bit" Priority="3" />
-        </File>
-      </Component>
       <Component Id="CustomOpenFileFolderDialog">
         <File Source="$(var.cyberduck.TargetDir)/CustomOpenFileFolderDialog.dll" KeyPath="yes" Checksum="yes">
           <netfx:NativeImage Id="ngen_CustomOpenFileFolderDialog" Platform="32bit" Priority="3" />
@@ -120,6 +116,9 @@
         <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Importer.dll" KeyPath="yes" Checksum="yes">
           <netfx:NativeImage Id="ngen_Cyberduck.Importer" Platform="32bit" Priority="3" />
         </File>
+      </Component>
+      <Component Id="WinSparkle">
+        <File Source="$(var.cyberduck.TargetDir)/WinSparkle.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="msvcr120">
         <File Source="$(var.cyberduck.TargetDir)/msvcr120.dll" KeyPath="yes" Checksum="yes" />
@@ -269,12 +268,6 @@
       <Component Id="sunec">
         <File Source="$(var.cyberduck.TargetDir)/sunec.dll" KeyPath="yes" Checksum="yes" />
       </Component>
-      <Component Id="updater">
-        <File Source="$(var.cyberduck.TargetDir)/update/Updater.exe" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="updater.meta">
-        <File Source="$(var.cyberduck.TargetDir)/update/client.wyc" KeyPath="yes" Checksum="yes" />
-      </Component>
       <Component Id="additional" Guid="c0733025-a4ec-4437-8617-0ace7d29318a">
         <File Source="$(var.cyberduck.TargetDir)/Acknowledgments.rtf" Checksum="yes" />
         <File Source="$(var.cyberduck.TargetDir)/License.txt" Checksum="yes" />
@@ -283,6 +276,9 @@
     <ComponentGroup Id="Profiles" Directory="PROFILES">
       <Component Id="rackspace">
         <File Source="$(var.cyberduck.TargetDir)/profiles/Rackspace US.cyberduckprofile" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="b2">
+        <File Source="$(var.cyberduck.TargetDir)/profiles/B2.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
     </ComponentGroup>
 
@@ -302,5 +298,15 @@
       <ComponentGroupRef Id="Profiles" />
       <ComponentRef Id="ApplicationShortcut" />
     </Feature>
+
+    <Property Id="WixShellExecTarget" Value="[#product.exe]" />
+    <CustomAction Id="LaunchFile"
+                  BinaryKey="WixCA"
+                  DllEntry="WixShellExec"
+                  Impersonate="yes" />
+
+    <InstallExecuteSequence>
+      <Custom Action='LaunchFile' After='InstallFinalize'>AUTOSTART=1</Custom>
+    </InstallExecuteSequence>
   </Product>
 </Wix>

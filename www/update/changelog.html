@@ -11,37 +11,6 @@
             font-size: 12px;
         }
 
-        p.note {
-            display: block;
-            height: 15px;
-            padding: 3px 10px 3px 10px;
-            background-color: #fff3f3;
-            border: 1px solid red;
-            color: #cc0000;
-        }
-
-        p.windows {
-            display: block;
-            background-image: url(https://media.cyberduck.io/img/windows32.png);
-            background-repeat: no-repeat;
-            background-position: 5px 5px;
-            padding: 10px 10px 10px 50px;
-            background-color: #E5E5DB;
-            border: 1px solid #cccccc;
-            color: black;
-        }
-
-        p.cli {
-            display: block;
-            background-image: url(https://media.cyberduck.io/img/cli32.png);
-            background-repeat: no-repeat;
-            background-position: 5px 5px;
-            padding: 15px 10px 15px 50px;
-            background-color: #E5E5DB;
-            border: 1px solid #cccccc;
-            color: black;
-        }
-
         p.mountainduck {
             display: block;
             background-image: url(https://mountainduck.io/images/mountainduck_y_32.png);
@@ -61,106 +30,71 @@
     <strong><a href="https://mountainduck.io">Mountain Duck</a></strong>. Cyberduck for mounting volumes in the file explorer for Mac &amp; Windows.
 </p>
 
-<p class="windows">
-    Try the <strong><a href="https://cyberduck.io/">Windows</a></strong> version with all the same features.
-</p>
-
-<p class="cli">
-    A command line interface (<strong>CLI</strong>) version is now available from <a href="https://duck.sh/">duck.sh</a>
-    for <strong>Windows, Linux &amp; Mac</strong>.
-</p>
-
-<p class="note">
-    <strong>Note</strong>: <strong>OS X 10.7 (Lion) or later on
-    <a href="http://support.apple.com/kb/ht3696">64bit</a> Intel</strong> is required.
-</p>
-
 <p>
     <a href="https://trac.cyberduck.io/milestone/5.0"><strong>Version 5.0</strong></a>
 </p>
 <ul>
-    <li>[Feature] Support for Google Drive (<a
-            href="https://trac.cyberduck.io/ticket/6976">#6976</a>)
-    </li>
-    <li>[Feature] Support for B2 Cloud Storage (Backblaze) (<a
-            href="https://trac.cyberduck.io/ticket/9162">#9162</a>)
+    <li>[Feature] Segmented downloads with multiple connections per file (<a
+            href="https://trac.cyberduck.io/ticket/4498">#4498</a>)
     </li>
     <li>[Feature] Support for Spectra BlackPearl Deep Storage Gateway (Spectra S3)</li>
-</ul>
-
-<p>
-    <a href="https://trac.cyberduck.io/milestone/4.8.4"><strong>Version 4.8.4</strong></a>
-</p>
-<ul>
-    <li>[Bugfix] Restore compatibility with OS X 10.7 (Mac)</li>
-    <li>[Bugfix] No such file error when choosing Rename Existing in transfer overwrite prompt (<a
-            href="https://trac.cyberduck.io/ticket/9342">#9342</a>)
-    </li>
-    <li>[Bugfix] Authentication always takes a long time (S3) (<a
-            href="https://trac.cyberduck.io/ticket/9348">#9348</a>)
-    </li>
-    <li>[Bugfix] Certificate trust verification failure for four level domains (WebDAV) (<a
-            href="https://trac.cyberduck.io/ticket/9358">#9358</a>)
+    <li>[Feature] Option to use AWS KMS–Managed Keys (SSE-KMS) for server side encryption (S3) (<a
+            href="https://trac.cyberduck.io/ticket/9426">#9426</a>)
     </li>
 </ul>
 
 <p>
-    <a href="https://trac.cyberduck.io/milestone/4.8.3"><strong>Version 4.8.3</strong></a>
+    <a href="https://trac.cyberduck.io/milestone/4.9.3"><strong>Version 4.9.3</strong></a>
 </p>
 <ul>
-    <li>[Bugfix] Fix use of unlimited strength cryptography for strong ciphers (SFTP) (<a
-            href="https://trac.cyberduck.io/ticket/9325">#9325</a>)
-    </li>
+    <li>[Bugfix] Revert reading NTLM domain and workstation from environment (WebDAV, Windows)</li>
+    <li>[Bugfix] Fix crash in software updater (Windows)</li>
 </ul>
 
 <p>
-    <a href="https://trac.cyberduck.io/milestone/4.8.2"><strong>Version 4.8.2</strong></a>
+    <a href="https://trac.cyberduck.io/milestone/4.9.2"><strong>Version 4.9.2</strong></a>
 </p>
 <ul>
-    <li>[Bugfix] Installer may fail if newer Bonjour Zeroconf dependency is installed (Windows)</li>
-    <li>[Bugfix] Disable trashing file on overwrite download (<a
-            href="https://trac.cyberduck.io/ticket/9298">#9298</a>)
-    </li>
+    <li>[Bugfix] Fix application launch failure when running with disabled updater (Mac)</li>
 </ul>
 
 <p>
-    <a href="https://trac.cyberduck.io/milestone/4.8.1"><strong>Version 4.8.1</strong></a>
+    <a href="https://trac.cyberduck.io/milestone/4.9.1"><strong>Version 4.9.1</strong></a>
 </p>
 <ul>
-    <li>[Bugfix] Restore compatibility with OS X 10.7 - 10.9 (Mac)</li>
+    <li>[Feature] Support password change requests (SFTP) (<a
+            href="https://trac.cyberduck.io/ticket/8821">#8821</a>)
+    </li>
+    <li>[Bugfix] Default path value setting in bookmark ignored (<a
+            href="https://trac.cyberduck.io/ticket/9435">#9435</a>)
+    </li>
+    <li>[Bugfix] Excessive memory usage when uploading many files (<a
+            href="https://trac.cyberduck.io/ticket/9439">#9439</a>)
+    </li>
+    <li>[Bugfix] Retry transfer when authentication token expires (Backblaze B2)</li>
+    <li>[Bugfix] Uploads use a lot of Class C transactions (<a
+            href="https://trac.cyberduck.io/ticket/9417">#9417</a>) (Backblaze B2)
+    </li>
+    <li>[Bugfix] Retry transfer for 421 error reply from server with a delay (FTP)</li>
+
 </ul>
 
 <p>
-    <a href="https://trac.cyberduck.io/milestone/4.8"><strong>Version 4.8</strong></a>
+    <a href="https://trac.cyberduck.io/milestone/4.9"><strong>Version 4.9</strong></a>
 </p>
 <ul>
-    <li>[Feature] Multiple connections for transfers enabled by default</li>
-    <li>[Feature] Recursively search for files (<a
-            href="https://trac.cyberduck.io/ticket/8345">#8345</a>)
+    <li>[Feature] Support for B2 Cloud Storage (Backblaze B2) (<a
+            href="https://trac.cyberduck.io/ticket/9162">#9162</a>)
     </li>
-    <li>[Feature] Support for key exchange algorithm diffie-hellman-group-exchange-sha256 (SFTP) (<a
-            href="https://trac.cyberduck.io/ticket/8488">#8488</a>)
+    <li>New bundled application updater using MSI for installation (Windows)</li>
+    <li>[Bugfix] Creating new folders with SSE restriction fails (S3) (<a
+            href="https://trac.cyberduck.io/ticket/9378">#9378</a>)
     </li>
-    <li>[Feature] Support for key exchange algorithm curve25519-sha256@libssh.org (SFTP) (<a
-            href="https://trac.cyberduck.io/ticket/8528">#8528</a>)
+    <li>[Bugfix] Unable to duplicate folders (<a
+            href="https://trac.cyberduck.io/ticket/9383">#9383</a>)
     </li>
-    <li>[Feature] Support ssh-ed25519 host keys (SFTP) (<a
-            href="https://trac.cyberduck.io/ticket/8553">#8553</a>)
-    </li>
-    <li>[Feature] Support for authentication with Keystone v3 API (OpenStack Swift) (<a
-            href="https://trac.cyberduck.io/ticket/8813">#8813</a>)
-    </li>
-    <li>[Bugfix] Files greater than 100GB fail to upload (OpenStack Swift) (<a
-            href="https://trac.cyberduck.io/ticket/9131">#9131</a>)
-    </li>
-    <li>[Bugfix] Changed fingerprint prompt and duplicate ECDSA host key entries in ~/.ssh/known_hosts (SFTP) (<a
-            href="https://trac.cyberduck.io/ticket/8867">#8867</a>)
-    </li>
-    <li>[Bugfix] Certificate trust errors for DNS-named buckets (S3) (<a
-            href="https://trac.cyberduck.io/ticket/3813">#3813</a>)
-    </li>
-    <li>[Bugfix] Search is broken always including folders (<a
-            href="https://trac.cyberduck.io/ticket/9076">#9076</a>)
+    <li>[Bugfix] Routing failure when connecting to IPv6 address (<a
+            href="https://trac.cyberduck.io/ticket/8802">#8802</a>)
     </li>
 </ul>
 

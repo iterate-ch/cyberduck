@@ -10,6 +10,7 @@ import ch.cyberduck.core.transfer.TransferItem;
 
 import org.junit.Test;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -17,9 +18,6 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-/**
- * @version $Id$
- */
 public class UploadSymlinkResolverTest {
 
     @Test
@@ -32,7 +30,7 @@ public class UploadSymlinkResolverTest {
     public void testResolve() throws Exception {
         final ArrayList<TransferItem> files = new ArrayList<TransferItem>();
         final Path a = new Path("/a", EnumSet.of(Path.Type.directory));
-        files.add(new TransferItem(a, new NullLocal("/a") {
+        files.add(new TransferItem(a, new NullLocal(System.getProperty("java.io.tmpdir"), "a") {
             @Override
             public boolean isFile() {
                 return false;
@@ -49,7 +47,7 @@ public class UploadSymlinkResolverTest {
                 //
             }
         }, files);
-        assertTrue(resolver.resolve(new NullLocal("/a/b") {
+        assertTrue(resolver.resolve(new NullLocal(System.getProperty("java.io.tmpdir"), "a" + File.separator + "b") {
             @Override
             public boolean isSymbolicLink() {
                 return true;
@@ -62,7 +60,7 @@ public class UploadSymlinkResolverTest {
 
             @Override
             public Local getSymlinkTarget() throws LocalAccessDeniedException {
-                return new NullLocal("/a/c");
+                return new NullLocal(System.getProperty("java.io.tmpdir"),  "a" + File.separator + "c");
             }
         }));
         assertFalse(resolver.resolve(new NullLocal("/a/b") {

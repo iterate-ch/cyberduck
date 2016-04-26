@@ -42,9 +42,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.assertTrue;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class S3DirectoryFeatureTest {
 

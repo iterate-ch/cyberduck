@@ -43,6 +43,9 @@ public class FTPAttributesFeature implements Attributes {
 
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
+        if(file.isRoot()) {
+            return PathAttributes.EMPTY;
+        }
         try {
             if(session.getClient().hasFeature(FTPCmd.MLST.getCommand())) {
                 if(!FTPReply.isPositiveCompletion(session.getClient().sendCommand(FTPCmd.MLST, file.getAbsolute()))) {

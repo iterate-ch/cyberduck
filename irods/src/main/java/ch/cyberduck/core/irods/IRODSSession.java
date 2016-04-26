@@ -133,7 +133,8 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
                 scheme = AuthScheme.STANDARD;
             }
             final IRODSAccount account = IRODSAccount.instance(host.getHostname(), host.getPort(),
-                    user, credentials.getPassword(), this.workdir().getAbsolute(), region, resource, scheme);
+                    user, credentials.getPassword(), new IRODSHomeFinderService(this).find().getAbsolute(),
+                    region, resource, scheme);
 
             final IRODSAccessObjectFactory factory = client.getIRODSAccessObjectFactory();
             final AuthResponse auth = factory.authenticateIRODSAccount(account);

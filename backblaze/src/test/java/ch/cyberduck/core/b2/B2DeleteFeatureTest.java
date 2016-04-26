@@ -28,7 +28,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -56,6 +55,7 @@ public class B2DeleteFeatureTest {
             public void delete(final Path file) {
             }
         });
+        session.close();
     }
 
     @Test
@@ -70,13 +70,14 @@ public class B2DeleteFeatureTest {
         service.connect(session, PathCache.empty());
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, String.format("%s %s", UUID.randomUUID().toString(), "1"), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature(session).touch(file);
+        new B2TouchFeature(session).touch(file);
         new B2DeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {
                 //
             }
         });
+        session.close();
     }
 
     @Test
@@ -98,5 +99,6 @@ public class B2DeleteFeatureTest {
                 //
             }
         });
+        session.close();
     }
 }

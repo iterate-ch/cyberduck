@@ -100,7 +100,7 @@
                                             <groupId>org.sparkle-project</groupId>
                                             <artifactId>sparkle</artifactId>
                                             <type>zip</type>
-                                            <version>1.13.1</version>
+                                            <version>1.14.0</version>
                                         </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${project.build.directory}</outputDirectory>
@@ -118,7 +118,7 @@
                                             <groupId>com.oracle.java</groupId>
                                             <artifactId>jre</artifactId>
                                             <type>zip</type>
-                                            <version>8u74</version>
+                                            <version>8u77</version>
                                         </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${project.build.directory}</outputDirectory>
@@ -126,7 +126,7 @@
                             </execution>
                             <execution>
                                 <id>unpack-jce-unlimited</id>
-                                <phase>verify</phase>
+                                <phase>generate-sources</phase>
                                 <goals>
                                     <goal>copy</goal>
                                 </goals>
@@ -147,7 +147,7 @@
                                             <destFileName>US_export_policy.jar</destFileName>
                                         </artifactItem>
                                     </artifactItems>
-                                    <outputDirectory>${project.build.directory}/Cyberduck.app/Contents/MacOS/Runtime.jre/Contents/Home/lib/security
+                                    <outputDirectory>${project.build.directory}/Cyberduck.app/Contents/PlugIns/Runtime.jre/Contents/Home/lib/security
                                     </outputDirectory>
                                 </configuration>
                             </execution>

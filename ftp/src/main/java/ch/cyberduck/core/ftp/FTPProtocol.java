@@ -24,9 +24,6 @@ import ch.cyberduck.core.Scheme;
 
 import org.apache.commons.lang3.StringUtils;
 
-/**
- * @version $Id$
- */
 public final class FTPProtocol extends AbstractProtocol {
 
     @Override
@@ -36,7 +33,7 @@ public final class FTPProtocol extends AbstractProtocol {
 
     @Override
     public String getPrefix() {
-        return String.format("%s.%s", this.getClass().getPackage().getName(), StringUtils.upperCase(this.getType().name()));
+        return String.format("%s.%s", FTPProtocol.class.getPackage().getName(), StringUtils.upperCase(this.getType().name()));
     }
 
     @Override

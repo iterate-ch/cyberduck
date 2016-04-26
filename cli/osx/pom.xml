@@ -80,7 +80,7 @@
                                             <groupId>com.oracle.java</groupId>
                                             <artifactId>jre</artifactId>
                                             <type>zip</type>
-                                            <version>8u74</version>
+                                            <version>8u77</version>
                                         </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${project.build.directory}</outputDirectory>
@@ -88,7 +88,7 @@
                             </execution>
                             <execution>
                                 <id>unpack-jce-unlimited</id>
-                                <phase>verify</phase>
+                                <phase>generate-sources</phase>
                                 <goals>
                                     <goal>copy</goal>
                                 </goals>
@@ -109,7 +109,7 @@
                                             <destFileName>US_export_policy.jar</destFileName>
                                         </artifactItem>
                                     </artifactItems>
-                                    <outputDirectory>${project.build.directory}/duck.bundle/Contents/MacOS/Runtime.jre/Contents/Home/lib/security
+                                    <outputDirectory>${project.build.directory}/duck.bundle/Contents/PlugIns/Runtime.jre/Contents/Home/lib/security
                                     </outputDirectory>
                                 </configuration>
                             </execution>
@@ -138,6 +138,7 @@
             <properties>
                 <xcode.configuration>Release</xcode.configuration>
                 <sparkle.feed>/dev/null</sparkle.feed>
+                <codesign.certificate>Developer ID Application: David Kocher</codesign.certificate>
                 <installer.certificate>3rd Party Mac Developer Installer: David Kocher (G69SCX94XU)</installer.certificate>
             </properties>
         </profile>

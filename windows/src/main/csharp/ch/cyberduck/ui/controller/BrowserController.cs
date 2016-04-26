@@ -1593,7 +1593,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_Exit()
         {
-            MainController.Exit();
+            MainController.Exit(false);
         }
 
         private List<string> View_GetArchives()

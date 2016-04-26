@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.github.sardine.impl.SardineException;
+import com.github.sardine.impl.io.ContentLengthInputStream;
 
 /**
  * @version $Id$
@@ -83,7 +84,22 @@ public class DAVReadFeature implements Read {
                         .append(URIEncoder.encode(parameter.getValue()));
 
             }
-            return session.getClient().get(resource.toString(), headers);
+            final ContentLengthInputStream stream = session.getClient().get(resource.toString(), headers);
+            if(status.isAppend()) {
+                if(-1 == status.getLength()) {
+                    if(stream.getLength() == file.attributes().getSize()) {
+                        log.warn(String.format("Range header not supported. Skipping %d bytes in file %s.", status.getOffset(), file));
+                        stream.skip(status.getOffset());
+                    }
+                }
+                else {
+                    if(stream.getLength() != status.getLength()) {
+                        log.warn(String.format("Range header not supported. Skipping %d bytes in file %s.", status.getOffset(), file));
+                        stream.skip(status.getOffset());
+                    }
+                }
+            }
+            return stream;
         }
         catch(SardineException e) {
             throw new DAVExceptionMappingService().map("Download {0} failed", e, file);

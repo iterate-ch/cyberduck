@@ -43,8 +43,8 @@ public class DriveTouchFeature implements Touch {
         try {
             final Drive.Files.Create insert = session.getClient().files().create(new File()
                     .setName(file.getName())
-                    .setParents(Collections.singletonList(new DriveFileidProvider().getFileid(file.getParent()))));
-            file.attributes().setVersionId(insert.execute().getId());
+                    .setParents(Collections.singletonList(new DriveFileidProvider(session).getFileid(file.getParent()))));
+            insert.execute();
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Cannot create file {0}", e, file);

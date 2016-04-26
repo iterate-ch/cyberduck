@@ -20,6 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.IdProvider;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -28,9 +29,10 @@ import java.util.List;
 
 import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2BucketResponse;
+import synapticloop.b2.response.B2FileInfoResponse;
 import synapticloop.b2.response.B2ListFilesResponse;
 
-public class B2FileidProvider {
+public class B2FileidProvider implements IdProvider {
 
     private final PathContainerService containerService
             = new B2PathContainerService();
@@ -41,6 +43,7 @@ public class B2FileidProvider {
         this.session = session;
     }
 
+    @Override
     public String getFileid(final Path file) throws BackgroundException {
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
             return file.attributes().getVersionId();
@@ -58,14 +61,16 @@ public class B2FileidProvider {
             else {
                 final B2ListFilesResponse response = session.getClient().listFileNames(
                         new B2FileidProvider(session).getFileid(containerService.getContainer(file)), containerService.getKey(file), 1);
-                if(1 == response.getFiles().size()) {
-                    return response.getFiles().iterator().next().getFileId();
+                for(B2FileInfoResponse info : response.getFiles()) {
+                    if(StringUtils.equals(containerService.getKey(file), StringUtils.removeEnd(info.getFileName(), "/.bzEmpty"))) {
+                        return info.getFileId();
+                    }
                 }
                 throw new NotfoundException(file.getAbsolute());
             }
         }
         catch(B2ApiException e) {
-            throw new B2ExceptionMappingService().map(e);
+            throw new B2ExceptionMappingService(session).map(e);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);

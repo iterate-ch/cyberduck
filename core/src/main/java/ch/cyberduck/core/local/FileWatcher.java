@@ -22,6 +22,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.io.watchservice.RegisterWatchService;
 import ch.cyberduck.core.io.watchservice.WatchServiceFactory;
+import ch.cyberduck.core.threading.DefaultThreadPool;
 import ch.cyberduck.core.threading.ThreadPool;
 
 import org.apache.commons.lang3.StringUtils;
@@ -54,7 +55,7 @@ public final class FileWatcher {
 
     public FileWatcher(final RegisterWatchService monitor) {
         this.monitor = monitor;
-        this.pool = new ThreadPool(1, "watcher");
+        this.pool = new DefaultThreadPool(1, "watcher");
     }
 
     public CountDownLatch register(final Local file, final FileWatcherListener listener) throws IOException {

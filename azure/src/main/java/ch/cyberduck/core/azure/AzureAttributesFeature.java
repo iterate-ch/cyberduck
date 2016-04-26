@@ -39,9 +39,6 @@ import com.microsoft.azure.storage.blob.BlobRequestOptions;
 import com.microsoft.azure.storage.blob.CloudBlobContainer;
 import com.microsoft.azure.storage.blob.CloudBlockBlob;
 
-/**
- * @version $Id$
- */
 public class AzureAttributesFeature implements Attributes {
 
     private AzureSession session;
@@ -58,6 +55,9 @@ public class AzureAttributesFeature implements Attributes {
 
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
+        if(file.isRoot()) {
+            return PathAttributes.EMPTY;
+        }
         try {
             if(containerService.isContainer(file)) {
                 final PathAttributes attributes = new PathAttributes();

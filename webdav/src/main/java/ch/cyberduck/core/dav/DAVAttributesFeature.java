@@ -60,6 +60,9 @@ public class DAVAttributesFeature implements Attributes {
 
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
+        if(file.isRoot()) {
+            return PathAttributes.EMPTY;
+        }
         try {
             try {
                 final List<DavResource> status = session.getClient().list(new DAVPathEncoder().encode(file));

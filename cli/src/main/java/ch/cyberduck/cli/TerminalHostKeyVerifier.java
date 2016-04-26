@@ -31,18 +31,12 @@ import java.text.MessageFormat;
 
 import net.schmizz.sshj.common.KeyType;
 
-/**
- * @version $Id$
- */
 public class TerminalHostKeyVerifier extends OpenSSHHostKeyVerifier {
 
     private TerminalPromptReader prompt;
 
     public TerminalHostKeyVerifier() {
-        super(LocalFactory.get(PreferencesFactory.get().getProperty("ssh.knownhosts")).withBookmark(
-                PreferencesFactory.get().getProperty("ssh.knownhosts.bookmark")
-        ));
-        this.prompt = new InteractiveTerminalPromptReader();
+        this(new InteractiveTerminalPromptReader());
     }
 
     public TerminalHostKeyVerifier(final TerminalPromptReader prompt) {

@@ -19,6 +19,7 @@ package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Read;
@@ -44,12 +45,10 @@ import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public class CopyTransfer extends Transfer {
     private static final Logger log = Logger.getLogger(CopyTransfer.class);
 
@@ -73,7 +72,7 @@ public class CopyTransfer extends Transfer {
                         final Map<Path, Path> selected, final BandwidthThrottle bandwidth) {
         super(source, new ArrayList<TransferItem>(), bandwidth);
         this.destination = destination;
-        this.files = selected;
+        this.files = new HashMap<Path, Path>(selected);
         for(Path s : selected.keySet()) {
             roots.add(new TransferItem(s));
         }
@@ -192,6 +191,24 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
+    public void pre(final Session<?> session, final Map<Path, TransferStatus> files) throws BackgroundException {
+        final Bulk download = session.getFeature(Bulk.class);
+        if(null != download) {
+            final Object id = download.pre(Type.download, files);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Obtained bulk id %s for transfer %s", id, this));
+            }
+        }
+        final Bulk upload = destination.getFeature(Bulk.class);
+        if(null != upload) {
+            final Object id = upload.pre(Type.upload, files);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Obtained bulk id %s for transfer %s", id, this));
+            }
+        }
+    }
+
+    @Override
     public void transfer(final Session<?> session, final Path source, final Local n,
                          final TransferOptions options, final TransferStatus status,
                          final ConnectionCallback callback,
@@ -241,6 +258,7 @@ public class CopyTransfer extends Transfer {
         OutputStream out = null;
         try {
             if(file.isFile()) {
+                status.setChecksum(file.attributes().getChecksum());
                 in = new ThrottledInputStream(session.getFeature(Read.class).read(file, status), throttle);
                 out = new ThrottledOutputStream(target.getFeature(Write.class).write(copy, status), throttle);
                 new StreamCopier(status, status)

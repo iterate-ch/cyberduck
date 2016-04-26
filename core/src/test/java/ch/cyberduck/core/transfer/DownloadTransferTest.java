@@ -1,19 +1,6 @@
 package ch.cyberduck.core.transfer;
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.NullLocal;
-import ch.cyberduck.core.NullSession;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.filter.DownloadRegexFilter;
@@ -60,7 +47,7 @@ public class DownloadTransferTest {
                 return children;
             }
         };
-        assertEquals(Collections.<TransferItem>singletonList(new TransferItem(new Path("/t/c", EnumSet.of(Path.Type.file)), new NullLocal("t/c"))),
+        assertEquals(Collections.<TransferItem>singletonList(new TransferItem(new Path("/t/c", EnumSet.of(Path.Type.file)), new NullLocal("t", "c"))),
                 t.list(session, root, new NullLocal("t") {
                     @Override
                     public boolean exists() {
@@ -168,7 +155,7 @@ public class DownloadTransferTest {
                 return null;
             }
         }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
-                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), table);
+                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), TransferItemCache.empty(), table);
         worker.prepare(test, new NullLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString()), new TransferStatus().exists(true),
                 TransferAction.overwrite
         );
@@ -216,7 +203,7 @@ public class DownloadTransferTest {
                 return null;
             }
         }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
-                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), table);
+                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), TransferItemCache.empty(), table);
         worker.prepare(test, local, new TransferStatus().exists(true), TransferAction.resume);
         final TransferStatus status = new TransferStatus();
         status.setExists(true);
@@ -390,7 +377,7 @@ public class DownloadTransferTest {
                 new NullLocal(System.getProperty("java.io.tmpdir")), new DisabledListProgressListener());
         assertEquals(2, list.size());
         // Make sure folder is first in list
-        assertTrue(list.get(0).equals(new TransferItem(new Path("/f", EnumSet.of(Path.Type.directory)), new Local(System.getProperty("java.io.tmpdir"), "f"))));
+        assertEquals(new TransferItem(new Path("/f", EnumSet.of(Path.Type.directory)), new Local(System.getProperty("java.io.tmpdir"), "f")), list.get(0));
         assertTrue(list.contains(new TransferItem(new Path("/f", EnumSet.of(Path.Type.file)), new Local(System.getProperty("java.io.tmpdir"), "f"))));
     }
 }

@@ -84,6 +84,7 @@ public class DriveMoveFeatureTest {
             }
         });
         assertFalse(session.getFeature(Find.class).find(test));
+        target.attributes().setVersionId(new DriveFileidProvider(session).getFileid(target));
         assertTrue(session.getFeature(Find.class).find(target));
         new DriveDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.Callback() {
             @Override

@@ -19,7 +19,6 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -58,7 +57,7 @@ public class SFTPWriteFeatureTest {
         final byte[] content = new byte[1048576];
         new Random().nextBytes(content);
         status.setLength(content.length);
-        final Path test = new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new SFTPHomeDirectoryService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final OutputStream out = new ThrottledOutputStream(new SFTPWriteFeature(session).write(test, status),
                 new BandwidthThrottle(102400f));
         assertNotNull(out);
@@ -97,11 +96,12 @@ public class SFTPWriteFeatureTest {
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path target = new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path workdir = new SFTPHomeDirectoryService(session).find();
+        final Path target = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SFTPTouchFeature(session).touch(target);
         assertTrue(new SFTPFindFeature(session).find(target));
         final String name = UUID.randomUUID().toString();
-        final Path symlink = new Path(session.workdir(), name, EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
+        final Path symlink = new Path(workdir, name, EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
         new SFTPSymlinkFeature(session).symlink(symlink, target.getName());
         assertTrue(new SFTPFindFeature(session).find(symlink));
         final TransferStatus status = new TransferStatus();
@@ -125,8 +125,8 @@ public class SFTPWriteFeatureTest {
             in.close();
             assertArrayEquals(new byte[0], buffer);
         }
-        final AttributedList<Path> list = new SFTPListService(session).list(session.workdir(), new DisabledListProgressListener());
-        assertTrue(list.contains(new Path(session.workdir(), name, EnumSet.of(Path.Type.file))));
+        final AttributedList<Path> list = new SFTPListService(session).list(workdir, new DisabledListProgressListener());
+        assertTrue(list.contains(new Path(workdir, name, EnumSet.of(Path.Type.file))));
         assertFalse(list.contains(symlink));
         new SFTPDeleteFeature(session).delete(Arrays.asList(target, symlink), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
@@ -143,7 +143,7 @@ public class SFTPWriteFeatureTest {
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path test = new Path(new DefaultHomeFinderService(session).find().getAbsolute() + "/nosuchdirectory/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new SFTPHomeDirectoryService(session).find().getAbsolute() + "/nosuchdirectory/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SFTPWriteFeature(session).write(test, new TransferStatus());
     }
 
@@ -155,11 +155,12 @@ public class SFTPWriteFeatureTest {
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path test = new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path workdir = new SFTPHomeDirectoryService(session).find();
+        final Path test = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         assertEquals(false, new SFTPWriteFeature(session).append(
-                new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 0L, PathCache.empty()).append);
+                new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 0L, PathCache.empty()).append);
         assertEquals(true, new SFTPWriteFeature(session).append(
-                new Path(session.workdir(), "test", EnumSet.of(Path.Type.file)), 0L, PathCache.empty()).append);
+                new Path(workdir, "test", EnumSet.of(Path.Type.file)), 0L, PathCache.empty()).append);
     }
 
     @Test
@@ -171,7 +172,7 @@ public class SFTPWriteFeatureTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final SFTPWriteFeature feature = new SFTPWriteFeature(session);
-        final Path test = new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new SFTPHomeDirectoryService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(64000);
         {
             final TransferStatus status = new TransferStatus();
@@ -215,7 +216,7 @@ public class SFTPWriteFeatureTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final SFTPWriteFeature feature = new SFTPWriteFeature(session);
-        final Path test = new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new SFTPHomeDirectoryService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(2048);
         {
             // Write end of file first

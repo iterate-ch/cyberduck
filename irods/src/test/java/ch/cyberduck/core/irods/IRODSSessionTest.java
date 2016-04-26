@@ -32,17 +32,11 @@ import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProfileReaderFactory;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-
-import java.security.cert.X509Certificate;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
@@ -90,44 +84,11 @@ public class IRODSSessionTest {
         assertNotNull(session.getClient());
 
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertNotNull(session.workdir());
 
         final AttributedList<Path> list = session.list(new IRODSHomeFinderService(session).find(), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
 
         assertTrue(session.isConnected());
-        session.close();
-        assertFalse(session.isConnected());
-    }
-
-    @Test
-    public void testLoginPam() throws Exception {
-        final Profile profile = ProfileReaderFactory.get().read(
-                new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
-        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("tacc.key"), System.getProperties().getProperty("tacc.secret")
-        ));
-        host.setHostname("irods.wrangler.tacc.utexas.edu");
-        host.setPort(1247);
-        host.setRegion("taccWranglerZ");
-        host.setDefaultPath("/taccWranglerZ/home/iterate");
-        final AtomicBoolean verified = new AtomicBoolean();
-        final IRODSSession session = new IRODSSession(host, new DisabledX509TrustManager() {
-            @Override
-            protected void accept(final List<X509Certificate> certs) {
-                verified.set(true);
-                super.accept(certs);
-            }
-        }, new DefaultX509KeyManager());
-
-        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
-
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertNotNull(session.workdir());
-        assertTrue(verified.get());
-
         session.close();
         assertFalse(session.isConnected());
     }

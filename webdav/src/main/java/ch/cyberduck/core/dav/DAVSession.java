@@ -191,30 +191,31 @@ public class DAVSession extends HttpSession<DAVClient> {
                 client.execute(new HttpHead(new DAVPathEncoder().encode(home)), new VoidResponseHandler());
             }
             catch(SardineException e) {
-                if(e.getStatusCode() == HttpStatus.SC_FORBIDDEN
-                        || e.getStatusCode() == HttpStatus.SC_NOT_FOUND
-                        || e.getStatusCode() == HttpStatus.SC_UNSUPPORTED_MEDIA_TYPE
-                        || e.getStatusCode() == HttpStatus.SC_METHOD_NOT_ALLOWED) {
-                    log.warn(String.format("Failed HEAD request to %s with %s. Retry with PROPFIND.",
-                            host, e.getResponsePhrase()));
-                    cancel.verify();
-                    // Possibly only HEAD requests are not allowed
-                    cache.put(home, this.list(home, new DisabledListProgressListener()));
-                }
-                else if(e.getStatusCode() == HttpStatus.SC_BAD_REQUEST) {
-                    if(preferences.getBoolean("webdav.basic.preemptive")) {
-                        log.warn(String.format("Disable preemptive authentication for %s due to failure %s",
+                switch(e.getStatusCode()) {
+                    case HttpStatus.SC_FORBIDDEN:
+                    case HttpStatus.SC_NOT_FOUND:
+                    case HttpStatus.SC_UNSUPPORTED_MEDIA_TYPE:
+                    case HttpStatus.SC_METHOD_NOT_ALLOWED:
+                        log.warn(String.format("Failed HEAD request to %s with %s. Retry with PROPFIND.",
                                 host, e.getResponsePhrase()));
                         cancel.verify();
-                        client.disablePreemptiveAuthentication();
-                        client.execute(new HttpHead(new DAVPathEncoder().encode(home)), new VoidResponseHandler());
-                    }
-                    else {
+                        // Possibly only HEAD requests are not allowed
+                        cache.put(home, this.list(home, new DisabledListProgressListener()));
+                        break;
+                    case HttpStatus.SC_BAD_REQUEST:
+                        if(preferences.getBoolean("webdav.basic.preemptive")) {
+                            log.warn(String.format("Disable preemptive authentication for %s due to failure %s",
+                                    host, e.getResponsePhrase()));
+                            cancel.verify();
+                            client.disablePreemptiveAuthentication();
+                            client.execute(new HttpHead(new DAVPathEncoder().encode(home)), new VoidResponseHandler());
+                        }
+                        else {
+                            throw new DAVExceptionMappingService().map(e);
+                        }
+                        break;
+                    default:
                         throw new DAVExceptionMappingService().map(e);
-                    }
-                }
-                else {
-                    throw new DAVExceptionMappingService().map(e);
                 }
             }
         }

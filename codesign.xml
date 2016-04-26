@@ -50,19 +50,17 @@
             <arg line="${codesign.options} --identifier ch.sudo.cyberduck --sign '${codesign.certificate}' --keychain ${codesign.keychain} ${codesign.arg} -v"/>
             <fileset dir="${bundle}/${bundle.frameworks}">
                 <include name="*.dylib"/>
-                <include name="*.jar"/>
             </fileset>
             <srcfile/>
         </apply>
         <apply executable="/usr/bin/codesign" failonerror="true"
                type="both"
                parallel="false" spawn="false" force="true">
-            <arg line="${codesign.options} --identifier net.java.openjdk.jre --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
-            <fileset dir="${bundle}/${bundle.runtime}" erroronmissingdir="false">
+            <arg line="${codesign.options} --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
+            <fileset dir="${bundle}/${bundle.runtime}">
                 <include name="**/*.dylib"/>
-                <include name="**/*.jar"/>
             </fileset>
-            <fileset dir="${bundle}/${bundle.macos}">
+            <fileset dir="${bundle}/${bundle.plugins}">
                 <include name="*.jre"/>
             </fileset>
             <srcfile/>
@@ -98,14 +96,14 @@
     <target name="verify-signature">
         <echo message="Print codesign requirement for ${bundle}..."/>
         <exec executable="/usr/bin/codesign" failonerror="true">
-            <arg line="-d -r- --deep-verify '${bundle}'"/>
+            <arg line="--verbose=4 --deep --strict '${bundle}'"/>
         </exec>
     </target>
 
     <target name="verify-spctl">
         <echo message="Print system policy verification for ${bundle}..."/>
         <exec executable="/usr/sbin/spctl" failonerror="true">
-            <arg line="-v --assess --type execute '${bundle}'"/>
+            <arg line="-v --assess --type execute --raw '${bundle}'"/>
         </exec>
     </target>
 

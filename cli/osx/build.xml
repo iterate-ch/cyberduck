@@ -23,8 +23,6 @@
 
     <import file="../../build.xml"/>
 
-    <property name="jvm.runtime.bin" value="${java.home}/bin"/>
-
     <property name="cli.bundle" value="${build}/duck.bundle"/>
 
     <property name="app.name" value="Cyberduck"/>
@@ -42,7 +40,7 @@
         <echo message="Building ${cli.bundle} with configuration ${xcode.configuration}"/>
         <local name="build.settings"/>
         <property name="build.settings"
-                  value="${build.xcodeoptions} VERSION=${version} REVISION=${revision} COPYRIGHT='${copyright}'"/>
+                  value="${build.xcodeoptions} RUNTIME_SOURCE=${runtime.dependency} VERSION=${version} REVISION=${revision} COPYRIGHT='${copyright}'"/>
         <echo message="Build settings ${build.settings}"/>
         <exec dir="${home}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
             <arg line="xcodebuild -project ${home}/'Cyberduck.xcodeproj' -configuration '${xcode.configuration}' -target '${xcode.target}' ${build.settings}"/>

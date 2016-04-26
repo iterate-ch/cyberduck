@@ -70,11 +70,12 @@ public class DriveListServiceTest {
                     }
                 }, new DisabledProgressListener(),
                 new DisabledTranscriptListener()).connect(session, PathCache.empty());
-        final AttributedList<Path> list = session.list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        final AttributedList<Path> list = new DriveListService(session).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path f : list) {
             assertEquals(new Path("/", EnumSet.of(Path.Type.directory)), f.getParent());
             assertNotNull(f.attributes().getVersionId());
+            assertNotNull(f.attributes().getModificationDate());
         }
     }
 }

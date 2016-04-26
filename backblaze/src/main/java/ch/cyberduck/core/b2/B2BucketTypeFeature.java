@@ -17,24 +17,26 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.features.Location;
 
 import org.jets3t.service.acl.Permission;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import synapticloop.b2.BucketType;
 import synapticloop.b2.exception.B2ApiException;
 
-public class B2BucketTypeFeature implements AclPermission {
+public class B2BucketTypeFeature implements AclPermission, Location {
 
     private final PathContainerService containerService
             = new B2PathContainerService();
@@ -47,12 +49,7 @@ public class B2BucketTypeFeature implements AclPermission {
 
     @Override
     public Acl getPermission(final Path file) throws BackgroundException {
-        for(Path bucket : new B2BucketListService(session).list(new DisabledListProgressListener())) {
-            if(bucket.equals(containerService.getContainer(file))) {
-                return bucket.attributes().getAcl();
-            }
-        }
-        throw new NotfoundException(file.getAbsolute());
+        return containerService.getContainer(file).attributes().getAcl();
     }
 
     @Override
@@ -71,7 +68,7 @@ public class B2BucketTypeFeature implements AclPermission {
                     BucketType.allPrivate);
         }
         catch(B2ApiException e) {
-            throw new B2ExceptionMappingService().map("Cannot change permissions of {0}", e, file);
+            throw new B2ExceptionMappingService(session).map("Cannot change permissions of {0}", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
@@ -89,5 +86,51 @@ public class B2BucketTypeFeature implements AclPermission {
     public List<Acl.Role> getAvailableAclRoles(final List<Path> files) {
         return Arrays.asList(
                 new Acl.Role(Permission.PERMISSION_READ.toString()));
+    }
+
+    @Override
+    public Set<Name> getLocations() {
+        final Set<Name> types = new LinkedHashSet<Name>();
+        types.add(new B2BucketTypeName(BucketType.allPrivate));
+        types.add(new B2BucketTypeName(BucketType.allPublic));
+        return types;
+    }
+
+    @Override
+    public Name getLocation(final Path file) throws BackgroundException {
+        final Path container = containerService.getContainer(file);
+        for(Acl.UserAndRole role : container.attributes().getAcl().asList()) {
+            if(role.getUser().equals(new Acl.GroupUser(Acl.GroupUser.EVERYONE))) {
+                if(role.getRole().equals(new Acl.Role(Acl.Role.READ))) {
+                    return new B2BucketTypeName(BucketType.allPublic);
+                }
+            }
+        }
+        return new B2BucketTypeName(BucketType.allPrivate);
+    }
+
+
+    public static final class B2BucketTypeName extends Name {
+
+        private final String description;
+
+        public B2BucketTypeName(final BucketType type) {
+            super(type.name());
+            switch(type) {
+                case allPublic:
+                    description = LocaleFactory.localizedString("Public", "B2");
+                    break;
+                case allPrivate:
+                    description = LocaleFactory.localizedString("Private", "B2");
+                    break;
+                default:
+                    description = LocaleFactory.localizedString("Unknown");
+            }
+        }
+
+        @Override
+        public String toString() {
+            return description;
+        }
     }
 }

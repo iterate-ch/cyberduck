@@ -39,6 +39,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -60,8 +61,8 @@ public class FTPStatListServiceTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final ListService service = new FTPStatListService(session,
-                new CompositeFileEntryParser(Arrays.asList(new UnixFTPEntryParser())));
-        final Path directory = session.workdir();
+                new CompositeFileEntryParser(Collections.singletonList(new UnixFTPEntryParser())));
+        final Path directory = new FTPWorkdirService(session).find();
         final AttributedList<Path> list = service.list(directory, new DisabledListProgressListener());
         assertTrue(list.contains(new Path(directory, "test", EnumSet.of(Path.Type.file))));
         assertEquals(new Permission(Permission.Action.read_write, Permission.Action.read_write, Permission.Action.read_write),
@@ -113,5 +114,26 @@ public class FTPStatListServiceTest {
         final AttributedList<Path> parsed = new FTPListResponseReader(parser, true).read(
                 parent, list, new DisabledListProgressListener());
         assertEquals(2, parsed.size());
+    }
+
+    @Test
+    public void testParse9399() throws Exception {
+        final List<String> list = new FTPStatListService(null, null).parse(
+                212, new String[]{
+                        "drwxrwxr-x   11 995      993          4096 Jan 11 21:24 .",
+                        "drwxrwxr-x    4 995      993          4096 Jan 11 21:20 ..",
+                        "drwxrwxr-x    2 995      993          4096 Jun 25  2015 assets",
+                        "drwxrwxr-x    3 995      993          4096 Jan 11 18:05 css",
+                        "drwxrwxr-x    2 995      993          4096 Jun 25  2015 fonts",
+                        "drwxrwxr-x    8 995      993         12288 Dec 07 18:11 images",
+                        "drwxrwxr-x    3 995      993          4096 Jun 25  2015 layerednavigationajax",
+                        "lrwxrwxrwx    1 995      993            55 Jan 25 16:39 locale -> ../../../../app/design/frontend/liberty/liberty/locale/",
+                        "drwxrwxr-x    5 995      993          4096 Jun 25  2015 magentothem",
+                        "drwxrwxr-x    4 995      993          4096 Jun 25  2015 magentothem_blog",
+                        "drwxrwxr-x    5 995      993          4096 Jun 25  2015 onepagecheckout",
+                        "drwxrwxr-x    3 995      993          4096 Jul 24  2015 tm"
+
+                });
+        assertEquals(12, list.size());
     }
 }

@@ -23,17 +23,10 @@ import org.apache.log4j.Logger;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-/**
- * @version $Id$
- */
 public class ScheduledThreadPool {
     private static final Logger log = Logger.getLogger(ScheduledThreadPool.class);
-
-    private final ThreadFactory threadFactory
-            = new NamedThreadFactory("timer");
 
     private final ScheduledExecutorService pool;
 
@@ -41,7 +34,7 @@ public class ScheduledThreadPool {
      * With FIFO (first-in-first-out) ordered wait queue.
      */
     public ScheduledThreadPool() {
-        pool = Executors.newScheduledThreadPool(1, threadFactory);
+        pool = Executors.newScheduledThreadPool(1, new NamedThreadFactory("timer"));
     }
 
     public ScheduledFuture repeat(final Runnable runnable, final Long period, final TimeUnit unit) {

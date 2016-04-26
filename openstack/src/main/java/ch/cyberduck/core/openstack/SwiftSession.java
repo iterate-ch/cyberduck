@@ -57,6 +57,7 @@ import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
+import ch.cyberduck.core.threading.DefaultThreadPool;
 import ch.cyberduck.core.threading.ThreadPool;
 
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -158,7 +159,7 @@ public class SwiftSession extends HttpSession<Client> {
                 return;
             }
             if(preferences.getBoolean("openstack.account.preload")) {
-                final ThreadPool pool = new ThreadPool("accounts");
+                final ThreadPool pool = new DefaultThreadPool("accounts");
                 try {
                     pool.execute(new Runnable() {
                         @Override

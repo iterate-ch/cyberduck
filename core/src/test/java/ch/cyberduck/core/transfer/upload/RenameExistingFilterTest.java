@@ -38,7 +38,7 @@ public class RenameExistingFilterTest {
     public void testAccept() throws Exception {
         final RenameExistingFilter f = new RenameExistingFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host(new TestProtocol())));
         final Path t = new Path("t", EnumSet.of(Path.Type.file));
-        assertTrue(f.accept(t, new NullLocal("/", "t") {
+        assertTrue(f.accept(t, new NullLocal(System.getProperty("java.io.tmpdir"), "t") {
 
             @Override
             public boolean exists() {
@@ -84,9 +84,9 @@ public class RenameExistingFilterTest {
                 return new Path("p", EnumSet.of(Path.Type.directory));
             }
         };
-        f.prepare(p, new NullLocal("/", "t"), new TransferStatus().exists(true));
+        f.prepare(p, new NullLocal(System.getProperty("java.io.tmpdir"), "t"), new TransferStatus().exists(true));
         assertFalse(c.get());
-        f.apply(p, new NullLocal("/", "t"), new TransferStatus().exists(true), new DisabledProgressListener());
+        f.apply(p, new NullLocal(System.getProperty("java.io.tmpdir"), "t"), new TransferStatus().exists(true), new DisabledProgressListener());
         assertTrue(c.get());
     }
 

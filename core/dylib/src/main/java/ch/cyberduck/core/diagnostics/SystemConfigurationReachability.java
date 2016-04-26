@@ -24,9 +24,6 @@ import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.idna.PunycodeConverter;
 import ch.cyberduck.core.library.Native;
 
-/**
- * @version $Id$
- */
 public final class SystemConfigurationReachability extends DefaultInetAddressReachability {
 
     static {

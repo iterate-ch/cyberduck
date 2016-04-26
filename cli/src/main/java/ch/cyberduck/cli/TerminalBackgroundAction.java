@@ -19,22 +19,21 @@ package ch.cyberduck.cli;
  */
 
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.worker.Worker;
 
-/**
- * @version $Id$
- */
 public class TerminalBackgroundAction<T> extends WorkerBackgroundAction<T> {
 
     public TerminalBackgroundAction(final LoginService login,
                                     final TerminalController controller,
                                     final Session<?> session,
                                     final Cache<Path> cache,
+                                    final HostKeyCallback key,
                                     final Worker<T> worker) {
-        super(login, controller, session, cache, worker);
+        super(login, controller, session, cache, key, worker);
     }
 }

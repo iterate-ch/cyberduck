@@ -15,26 +15,33 @@
 package ch.cyberduck.core.spectra;
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.s3.S3ReadFeature;
+import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.s3.S3PathContainerService;
+import ch.cyberduck.core.s3.ServiceExceptionMappingService;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
+import org.jets3t.service.ServiceException;
 
 import java.io.InputStream;
 import java.io.SequenceInputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
-public class SpectraReadFeature extends S3ReadFeature {
+public class SpectraReadFeature implements Read {
     private static final Logger log = Logger.getLogger(SpectraReadFeature.class);
+
+    private final PathContainerService containerService
+            = new S3PathContainerService();
 
     private final SpectraSession session;
 
     public SpectraReadFeature(final SpectraSession session) {
-        super(session);
         this.session = session;
     }
 
@@ -43,14 +50,35 @@ public class SpectraReadFeature extends S3ReadFeature {
         final SpectraBulkService bulk = new SpectraBulkService(session);
         // Make sure file is available in cache
         final List<TransferStatus> chunks = bulk.query(Transfer.Type.download, file, status);
-        if(chunks.isEmpty()) {
-            log.error(String.format("Empty chunk array for download %s", file));
-        }
         final List<InputStream> streams = new ArrayList<InputStream>();
-        for(TransferStatus chunk : chunks) {
-            streams.add(super.read(file, chunk));
+        try {
+            for(TransferStatus chunk : chunks) {
+                final InputStream in = session.getClient().getObjectImpl(
+                        false,
+                        containerService.getContainer(file).getName(),
+                        containerService.getKey(file),
+                        null, // ifModifiedSince
+                        null, // ifUnmodifiedSince
+                        null, // ifMatch
+                        null, // ifNoneMatch
+                        null,
+                        null,
+                        null,
+                        new HashMap<String, Object>(),
+                        chunk.getParameters())
+                        .getDataInputStream();
+                streams.add(in);
+            }
+            // Concatenate streams
+            return new SequenceInputStream(Collections.enumeration(streams));
         }
-        // Concatenate streams
-        return new SequenceInputStream(Collections.enumeration(streams));
+        catch(ServiceException e) {
+            throw new ServiceExceptionMappingService().map("Download {0} failed", e, file);
+        }
+    }
+
+    @Override
+    public boolean offset(final Path file) {
+        return false;
     }
 }

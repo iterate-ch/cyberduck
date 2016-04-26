@@ -63,48 +63,46 @@ import java.util.Map;
 public abstract class AbstractTransferWorker extends Worker<Boolean> implements TransferWorker {
     private static final Logger log = Logger.getLogger(AbstractTransferWorker.class);
 
-    private SleepPreventer sleep = SleepPreventerFactory.get();
+    private final SleepPreventer sleep = SleepPreventerFactory.get();
 
-    private NotificationService growl = NotificationServiceFactory.get();
+    private final NotificationService growl = NotificationServiceFactory.get();
 
-    private Transfer transfer;
+    private final Transfer transfer;
 
     /**
      * Overwrite prompt
      */
-    private TransferPrompt prompt;
+    private final TransferPrompt prompt;
 
     /**
      * Error prompt
      */
-    private TransferErrorCallback error;
+    private final TransferErrorCallback error;
 
-    private TransferItemCallback transferItemCallback;
+    private final TransferItemCallback transferItemCallback;
 
-    private ConnectionCallback connectionCallback;
+    private final ConnectionCallback connectionCallback;
 
-    private TransferOptions options;
+    private final TransferOptions options;
 
-    private TransferSpeedometer meter;
+    private final TransferSpeedometer meter;
 
     /**
      * Transfer status determined by filters
      */
-    private Map<Path, TransferStatus> table
-            = new HashMap<Path, TransferStatus>();
+    private final Map<Path, TransferStatus> table;
 
     /**
      * Workload
      */
-    private Cache<TransferItem> cache
-            = new TransferItemCache(Integer.MAX_VALUE);
+    private final Cache<TransferItem> cache;
 
-    private FailureDiagnostics<Exception> diagnostics
+    private final FailureDiagnostics<Exception> diagnostics
             = new DefaultFailureDiagnostics();
 
-    private ProgressListener progress;
+    private final ProgressListener progress;
 
-    private StreamListener stream;
+    private final StreamListener stream;
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
                                   final TransferPrompt prompt, final TransferSpeedometer meter,
@@ -113,15 +111,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                                   final ProgressListener progress,
                                   final StreamListener stream,
                                   final ConnectionCallback connectionCallback) {
-        this.transfer = transfer;
-        this.prompt = prompt;
-        this.meter = meter;
-        this.error = error;
-        this.connectionCallback = connectionCallback;
-        this.options = options;
-        this.progress = progress;
-        this.stream = stream;
-        this.transferItemCallback = callback;
+        this(transfer, options, prompt, meter, error, callback, progress, stream, connectionCallback, new TransferItemCache(Integer.MAX_VALUE));
     }
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
@@ -132,36 +122,29 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                                   final StreamListener stream,
                                   final ConnectionCallback connectionCallback,
                                   final Cache<TransferItem> cache) {
-        this.transfer = transfer;
-        this.options = options;
-        this.prompt = prompt;
-        this.meter = meter;
-        this.error = error;
-        this.connectionCallback = connectionCallback;
-        this.cache = cache;
-        this.progress = progress;
-        this.stream = stream;
-        this.transferItemCallback = callback;
+        this(transfer, options, prompt, meter, error, callback, progress, stream, connectionCallback, cache, new HashMap<Path, TransferStatus>());
     }
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
                                   final TransferPrompt prompt, final TransferSpeedometer meter,
-                                  final ConnectionCallback connectionCallback,
                                   final TransferErrorCallback error,
                                   final TransferItemCallback callback,
                                   final ProgressListener progress,
                                   final StreamListener stream,
+                                  final ConnectionCallback connectionCallback,
+                                  final Cache<TransferItem> cache,
                                   final Map<Path, TransferStatus> table) {
         this.transfer = transfer;
         this.options = options;
         this.prompt = prompt;
         this.meter = meter;
         this.error = error;
-        this.connectionCallback = connectionCallback;
-        this.table = table;
+        this.transferItemCallback = callback;
         this.progress = progress;
         this.stream = stream;
-        this.transferItemCallback = callback;
+        this.connectionCallback = connectionCallback;
+        this.cache = cache;
+        this.table = table;
     }
 
     protected abstract Session<?> borrow() throws BackgroundException;
@@ -171,7 +154,9 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
     @Override
     public void reset() {
         for(TransferStatus status : table.values()) {
-            status.setCanceled();
+            for(TransferStatus segment : status.getSegments()) {
+                segment.setCanceled();
+            }
         }
     }
 
@@ -262,7 +247,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
         }
         final TransferItem item = new TransferItem(file, local);
         if(prompt.isSelected(item)) {
-            this.submit(new TransferCallable() {
+            this.submit(new RepeatableTransferCallable() {
                 @Override
                 public TransferStatus call() throws BackgroundException {
                     final Session<?> session = borrow();
@@ -317,14 +302,19 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                                 if(isCanceled()) {
                                     throw new ConnectionCanceledException(e);
                                 }
-                                if(diagnostics.determine(e) == FailureDiagnostics.Type.network) {
-                                    throw e;
-                                }
                                 if(table.size() == 0) {
                                     throw e;
                                 }
+                                if(diagnostics.determine(e) == FailureDiagnostics.Type.network) {
+                                    if(!this.retry(e)) {
+                                        throw e;
+                                    }
+                                    // Retry immediately
+                                    submit(this);
+                                    return null;
+                                }
                                 // Prompt to continue or abort for application errors
-                                if(error.prompt(e)) {
+                                else if(error.prompt(e)) {
                                     // Continue
                                     log.warn(String.format("Ignore transfer failure %s", e));
                                     return null;
@@ -371,7 +361,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
             final List<TransferStatus> segments = status.getSegments();
             for(final Iterator<TransferStatus> iter = segments.iterator(); iter.hasNext(); ) {
                 final TransferStatus segment = iter.next();
-                this.submit(new TransferCallable() {
+                this.submit(new RepeatableTransferCallable() {
                     @Override
                     public TransferStatus call() throws BackgroundException {
                         // Transfer
@@ -382,12 +372,39 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                                         segment.getRename().remote != null ? segment.getRename().remote : item.remote,
                                         segment.getRename().local != null ? segment.getRename().local : item.local,
                                         options, segment, connectionCallback, progress, stream);
+
                                 transferItemCallback.complete(item);
+
+                                // Recursive
+                                if(item.remote.isDirectory()) {
+                                    for(TransferItem f : cache.get(item)) {
+                                        // Recursive
+                                        transfer(f, action);
+                                    }
+                                    cache.remove(item);
+                                }
+                                // Determine transfer filter implementation from selected overwrite action
+                                final TransferPathFilter filter = transfer.filter(session, action, progress);
+                                // Post process of file.
+                                filter.complete(item.remote, item.local, options, segment, progress);
+
+                                if(!iter.hasNext()) {
+                                    // Free memory when no more segments to transfer
+                                    table.remove(item.remote);
+                                }
                             }
                             catch(ConnectionCanceledException e) {
+                                segment.setFailure();
                                 throw e;
                             }
                             catch(RetriableAccessDeniedException e) {
+                                segment.setFailure();
+                                if(AbstractTransferWorker.this.isCanceled()) {
+                                    throw new ConnectionCanceledException(e);
+                                }
+                                if(!this.retry(e)) {
+                                    throw e;
+                                }
                                 final BackgroundActionPauser pause = new BackgroundActionPauser(new BackgroundActionPauser.Callback() {
                                     @Override
                                     public boolean isCanceled() {
@@ -400,44 +417,32 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                                     }
                                 }, (int) e.getRetry().getSeconds());
                                 pause.await(progress);
-                                transfer(item, action);
+                                // Retry after pause
+                                submit(this);
                             }
                             catch(BackgroundException e) {
                                 segment.setFailure();
                                 if(AbstractTransferWorker.this.isCanceled()) {
                                     throw new ConnectionCanceledException(e);
                                 }
-                                if(diagnostics.determine(e) == FailureDiagnostics.Type.network) {
-                                    throw e;
-                                }
                                 if(table.size() == 0) {
                                     throw e;
                                 }
+                                if(diagnostics.determine(e) == FailureDiagnostics.Type.network) {
+                                    if(!this.retry(e)) {
+                                        throw e;
+                                    }
+                                    // Retry immediately
+                                    submit(this);
+                                }
                                 // Prompt to continue or abort for application errors
-                                if(error.prompt(e)) {
+                                else if(error.prompt(e)) {
                                     // Continue
                                     log.warn(String.format("Ignore transfer failure %s", e));
                                 }
                                 else {
                                     throw new ConnectionCanceledException(e);
                                 }
-                            }
-                            // Recursive
-                            if(item.remote.isDirectory()) {
-                                for(TransferItem f : cache.get(item)) {
-                                    // Recursive
-                                    transfer(f, action);
-                                }
-                                cache.remove(item);
-                            }
-                            if(!segment.isFailure()) {
-                                // Determine transfer filter implementation from selected overwrite action
-                                final TransferPathFilter filter = transfer.filter(session, action, progress);
-                                // Post process of file.
-                                filter.complete(item.remote, item.local, options, segment, progress);
-                            }
-                            if(!iter.hasNext()) {
-                                table.remove(item.remote);
                             }
                         }
                         finally {

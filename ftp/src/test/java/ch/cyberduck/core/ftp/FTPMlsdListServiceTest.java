@@ -54,7 +54,7 @@ public class FTPMlsdListServiceTest {
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
         final ListService list = new FTPMlsdListService(session, new DisabledPasswordStore(), new DisabledLoginCallback());
-        final Path directory = session.workdir();
+        final Path directory = new FTPWorkdirService(session).find();
         list.list(directory, new DisabledListProgressListener());
         session.close();
     }
@@ -68,7 +68,7 @@ public class FTPMlsdListServiceTest {
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
         final ListService list = new FTPMlsdListService(session, new DisabledPasswordStore(), new DisabledLoginCallback());
-        final Path directory = session.workdir();
+        final Path directory = new FTPWorkdirService(session).find();
         list.list(directory, new DisabledListProgressListener());
         session.close();
     }
@@ -83,7 +83,7 @@ public class FTPMlsdListServiceTest {
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
         final ListService s = new FTPMlsdListService(session, new DisabledPasswordStore(), new DisabledLoginCallback());
-        final Path directory = session.workdir();
+        final Path directory = new FTPWorkdirService(session).find();
         final AttributedList<Path> list = s.list(directory, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         session.close();

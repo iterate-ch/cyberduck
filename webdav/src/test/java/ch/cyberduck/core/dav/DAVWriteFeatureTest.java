@@ -44,9 +44,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class DAVWriteFeatureTest {
 
@@ -80,7 +77,7 @@ public class DAVWriteFeatureTest {
         }
         {
             final byte[] buffer = new byte[content.length - 1];
-            final InputStream in = new DAVReadFeature(session).read(test, new TransferStatus().length(content.length).append(true).skip(1L));
+            final InputStream in = new DAVReadFeature(session).read(test, new TransferStatus().length(content.length - 1L).append(true).skip(1L));
             IOUtils.readFully(in, buffer);
             in.close();
             final byte[] reference = new byte[content.length - 1];

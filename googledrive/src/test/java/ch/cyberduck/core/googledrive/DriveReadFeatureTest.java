@@ -91,7 +91,7 @@ public class DriveReadFeatureTest {
                 }, new DisabledProgressListener(),
                 new DisabledTranscriptListener()).connect(session, PathCache.empty());
         final TransferStatus status = new TransferStatus();
-        new DriveReadFeature(session).read(new Path(session.workdir(), "nosuchname", EnumSet.of(Path.Type.file)), status);
+        new DriveReadFeature(session).read(new Path(new DriveHomeFinderService(session).find(), "nosuchname", EnumSet.of(Path.Type.file)), status);
     }
 
     @Test

@@ -95,6 +95,19 @@ public class SingleTransferItemFinderTest  {
     }
 
     @Test
+    public void testUploadDirectoryServerRoot() throws Exception {
+        final CommandLineParser parser = new PosixParser();
+        final CommandLine input = parser.parse(TerminalOptionsBuilder.options(), new String[]{"--upload", "ftps://test.cyberduck.ch/", System.getProperty("java.io.tmpdir")});
+
+        final Set<TransferItem> found = new SingleTransferItemFinder().find(input, TerminalAction.upload, new Path("/", EnumSet.of(Path.Type.directory)));
+        assertFalse(found.isEmpty());
+        final Iterator<TransferItem> iter = found.iterator();
+        final Local temp = LocalFactory.get(System.getProperty("java.io.tmpdir"));
+        assertTrue(temp.getType().contains(Path.Type.directory));
+        assertEquals(new TransferItem(new Path("/", EnumSet.of(Path.Type.directory)), temp), iter.next());
+    }
+
+    @Test
     public void testDownloadFileToDirectoryTarget() throws Exception {
         final CommandLineParser parser = new PosixParser();
         final String temp = System.getProperty("java.io.tmpdir");

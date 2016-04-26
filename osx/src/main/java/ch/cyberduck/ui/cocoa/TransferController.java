@@ -83,9 +83,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
-/**
- * @version $Id$
- */
 public final class TransferController extends WindowController implements NSToolbar.Delegate, NSMenu.Validation {
     private static final Logger log = Logger.getLogger(TransferController.class);
 
@@ -520,9 +517,9 @@ public final class TransferController extends WindowController implements NSTool
                 NSPasteboard.StringPboardType,
                 // Accept file promises made myself
                 NSPasteboard.FilesPromisePboardType));
-
+        // No grid lines until list is loaded
         this.transferTable.setGridStyleMask(NSTableView.NSTableViewGridNone);
-        //selection properties
+        // Set sselection properties
         this.transferTable.setAllowsMultipleSelection(true);
         this.transferTable.setAllowsEmptySelection(true);
         this.transferTable.setAllowsColumnReordering(false);

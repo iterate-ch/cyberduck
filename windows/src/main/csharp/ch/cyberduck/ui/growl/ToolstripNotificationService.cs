@@ -62,7 +62,7 @@ namespace Ch.Cyberduck.Ui.Growl
             {
                 Text = LocaleFactory.get().localize("Exit", "Localizable")
             };
-            itemExit.Click += delegate { MainController.Exit(); };
+            itemExit.Click += delegate { MainController.Exit(false); };
             rightMenu.Items.AddRange(new ToolStripItem[]
             {itemUpdate, new ToolStripSeparator(), itemDonate, itemKey, new ToolStripSeparator(), itemExit});
 

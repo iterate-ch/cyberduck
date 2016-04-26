@@ -6,19 +6,19 @@
     <ProductVersion>3.9</ProductVersion>
     <ProjectGuid>f6975079-f730-4a31-9909-de536e524764</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
-    <OutputName>CLI-WiX</OutputName>
+    <OutputName>duck-$(Version)</OutputName>
     <OutputType>Package</OutputType>
     <SignOutput>true</SignOutput>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <OutputPath>cli\target\</OutputPath>
+    <OutputPath>cli\windows\target\release</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
     <DefineConstants>Debug</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <OutputPath>cli\target\</OutputPath>
+    <OutputPath>cli\windows\target\release</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
@@ -57,7 +57,7 @@
     </PropertyGroup>
   </Target>
   <Target Name="SignMsi" DependsOnTargets="UsesSignTool">
-    <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck CLI&quot; /fd sha256 /tr http://timestamp.globalsign.com/scripts/timestamp.dll /td sha256 /a &quot;%(SignMsi.FullPath)&quot;" />
+    <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck CLI&quot; /fd sha256 /tr http://timestamp.globalsign.com/scripts/timestamp.dll /td sha256 /a /sm &quot;%(SignMsi.FullPath)&quot;" />
   </Target>
   <!--
 	To modify your build process, add your task inside one of the targets below and uncomment it.

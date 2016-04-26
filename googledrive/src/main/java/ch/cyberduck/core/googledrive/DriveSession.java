@@ -28,11 +28,13 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.UseragentProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
@@ -84,7 +86,7 @@ public class DriveSession extends HttpSession<Drive> {
     private Preferences preferences
             = PreferencesFactory.get();
 
-    private final PreferencesUseragentProvider useragent
+    private final UseragentProvider useragent
             = new PreferencesUseragentProvider();
 
     public DriveSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
@@ -239,6 +241,9 @@ public class DriveSession extends HttpSession<Drive> {
         }
         if(type == Home.class) {
             return (T) new DriveHomeFinderService(this);
+        }
+        if(type == IdProvider.class) {
+            return (T) new DriveFileidProvider(this);
         }
         return super.getFeature(type);
     }

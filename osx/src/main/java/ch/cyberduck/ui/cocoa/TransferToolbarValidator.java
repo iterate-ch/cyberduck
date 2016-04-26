@@ -28,9 +28,6 @@ import org.rococoa.Foundation;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-/**
- * @version $Id$
- */
 public class TransferToolbarValidator implements ToolbarValidator {
 
     private TransferController controller;
