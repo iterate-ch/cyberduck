@@ -43,9 +43,6 @@ import ch.cyberduck.ui.cocoa.quicklook.QuickLookFactory;
 import org.rococoa.Foundation;
 import org.rococoa.Selector;
 
-/**
- * @version $Id$
- */
 public class BrowserToolbarValidator implements ToolbarValidator {
 
     private final QuickLook quicklook = QuickLookFactory.get();

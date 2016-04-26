@@ -125,9 +125,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * @version $Id$
- */
 public class BrowserController extends WindowController
         implements ProgressListener, TranscriptListener, NSToolbar.Delegate, NSMenu.Validation, QLPreviewPanelController {
     private static Logger log = Logger.getLogger(BrowserController.class);
@@ -138,6 +135,8 @@ public class BrowserController extends WindowController
     private final BrowserToolbarFactory browserToolbarFactory = new BrowserToolbarFactory(this);
 
     private final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
+
+    public final BrowserToolbarValidator browserToolbarValidator = new BrowserToolbarValidator(this);
 
     /**
      *
@@ -3628,7 +3627,7 @@ public class BrowserController extends WindowController
 
     @Override
     public boolean validateToolbarItem(final NSToolbarItem item) {
-        return new BrowserToolbarValidator(this).validate(item);
+        return browserToolbarValidator.validate(item);
     }
 
     @Override
