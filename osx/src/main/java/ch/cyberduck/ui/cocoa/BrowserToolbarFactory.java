@@ -18,38 +18,35 @@ package ch.cyberduck.ui.cocoa;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSButtonCell;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSMenu;
 import ch.cyberduck.binding.application.NSMenuItem;
+import ch.cyberduck.binding.application.NSPopUpButton;
+import ch.cyberduck.binding.application.NSSegmentedControl;
 import ch.cyberduck.binding.application.NSToolbarItem;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.core.DefaultCharsetProvider;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
-import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
 import ch.cyberduck.ui.cocoa.quicklook.QuickLook;
 import ch.cyberduck.ui.cocoa.quicklook.QuickLookFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.Foundation;
+import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSRect;
 
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public class BrowserToolbarFactory implements ToolbarFactory {
 
     protected static final String TOOLBAR_NEW_CONNECTION = "New Connection";
@@ -81,9 +78,6 @@ public class BrowserToolbarFactory implements ToolbarFactory {
 
     private BrowserController controller;
 
-    @Outlet
-    private NSButton quicklookButton;
-
     /**
      * Keep reference to weak toolbar items. A toolbar may ask again for a kind of toolbar
      * item already supplied to it, in which case this method may return the same toolbar
@@ -104,11 +98,13 @@ public class BrowserToolbarFactory implements ToolbarFactory {
         }
         final NSToolbarItem item = toolbarItems.get(itemIdentifier);
         switch(itemIdentifier) {
-            case TOOLBAR_BROWSER_VIEW:
+            case TOOLBAR_BROWSER_VIEW: {
                 item.setLabel(LocaleFactory.localizedString("View"));
                 item.setPaletteLabel(LocaleFactory.localizedString("View"));
                 item.setToolTip(LocaleFactory.localizedString("Switch Browser View"));
-                item.setView(controller.getBrowserSwitchView());
+                final NSSegmentedControl control = controller.getBrowserSwitchView();
+                control.setSegmentStyle(NSSegmentedControl.NSSegmentStyleCapsule);
+                item.setView(control);
                 // Add a menu representation for text mode of toolbar
                 NSMenuItem viewMenu = NSMenuItem.itemWithTitle(LocaleFactory.localizedString("View"), null, StringUtils.EMPTY);
                 NSMenu viewSubmenu = NSMenu.menu();
@@ -121,33 +117,51 @@ public class BrowserToolbarFactory implements ToolbarFactory {
                 viewMenu.setSubmenu(viewSubmenu);
                 item.setMenuFormRepresentation(viewMenu);
                 return item;
-            case TOOLBAR_NEW_CONNECTION:
+            }
+            case TOOLBAR_NEW_CONNECTION: {
                 item.setLabel(LocaleFactory.localizedString(TOOLBAR_NEW_CONNECTION));
                 item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_NEW_CONNECTION));
                 item.setToolTip(LocaleFactory.localizedString("Connect to server"));
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("connect.tiff", 32));
                 item.setTarget(controller.id());
                 item.setAction(Foundation.selector("connectButtonClicked:"));
+                final NSButton button = NSButton.buttonWithFrame(new NSRect(0, 0));
+                button.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
+                button.setImage(IconCacheFactory.<NSImage>get().iconNamed("connect.pdf"));
+                button.sizeToFit();
+                button.setTarget(controller.id());
+                button.setAction(Foundation.selector("connectButtonClicked:"));
+                item.setView(button);
                 return item;
-            case TOOLBAR_TRANSFERS:
+            }
+            case TOOLBAR_TRANSFERS: {
                 item.setLabel(LocaleFactory.localizedString(TOOLBAR_TRANSFERS));
                 item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_TRANSFERS));
                 item.setToolTip(LocaleFactory.localizedString("Show Transfers window"));
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("queue.tiff", 32));
+                item.setTarget(controller.id());
                 item.setAction(Foundation.selector("showTransferQueueClicked:"));
+                final NSButton button = NSButton.buttonWithFrame(new NSRect(0, 0));
+                button.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
+                button.setImage(IconCacheFactory.<NSImage>get().iconNamed("filetransfer.pdf"));
+                button.sizeToFit();
+                button.setTarget(controller.id());
+                button.setAction(Foundation.selector("showTransferQueueClicked:"));
+                item.setView(button);
                 return item;
-            case TOOLBAR_TOOLS:
+            }
+            case TOOLBAR_TOOLS: {
                 item.setLabel(LocaleFactory.localizedString("Action"));
                 item.setPaletteLabel(LocaleFactory.localizedString("Action"));
                 final NSInteger index = new NSInteger(0);
-                controller.getActionPopupButton().insertItemWithTitle_atIndex(StringUtils.EMPTY, index);
-                controller.getActionPopupButton().itemAtIndex(index).setImage(IconCacheFactory.<NSImage>get().iconNamed("gear.tiff"));
-                item.setView(controller.getActionPopupButton());
+                final NSPopUpButton button = controller.getActionPopupButton();
+                button.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
+                button.insertItemWithTitle_atIndex(StringUtils.EMPTY, index);
+                button.itemAtIndex(index).setImage(IconCacheFactory.<NSImage>get().iconNamed("NSActionTemplate"));
+                item.setView(button);
                 // Add a menu representation for text mode of toolbar
                 NSMenuItem toolMenu = NSMenuItem.itemWithTitle(LocaleFactory.localizedString("Action"), null, StringUtils.EMPTY);
                 NSMenu toolSubmenu = NSMenu.menu();
-                for(int i = 1; i < controller.getActionPopupButton().menu().numberOfItems().intValue(); i++) {
-                    NSMenuItem template = controller.getActionPopupButton().menu().itemAtIndex(new NSInteger(i));
+                for(int i = 1; i < button.menu().numberOfItems().intValue(); i++) {
+                    NSMenuItem template = button.menu().itemAtIndex(new NSInteger(i));
                     toolSubmenu.addItem(NSMenuItem.itemWithTitle(template.title(),
                             template.action(),
                             template.keyEquivalent()));
@@ -155,6 +169,7 @@ public class BrowserToolbarFactory implements ToolbarFactory {
                 toolMenu.setSubmenu(toolSubmenu);
                 item.setMenuFormRepresentation(toolMenu);
                 return item;
+            }
             case TOOLBAR_QUICK_CONNECT:
                 item.setLabel(LocaleFactory.localizedString(TOOLBAR_QUICK_CONNECT));
                 item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_QUICK_CONNECT));
@@ -179,66 +194,100 @@ public class BrowserToolbarFactory implements ToolbarFactory {
                 item.setMinSize(controller.getEncodingPopup().frame().size);
                 item.setMaxSize(controller.getEncodingPopup().frame().size);
                 return item;
-            case TOOLBAR_REFRESH:
+            case TOOLBAR_REFRESH: {
                 item.setLabel(LocaleFactory.localizedString(TOOLBAR_REFRESH));
                 item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_REFRESH));
                 item.setToolTip(LocaleFactory.localizedString("Refresh directory listing"));
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("reload.tiff", 32));
                 item.setTarget(controller.id());
+                final NSButton button = NSButton.buttonWithFrame(new NSRect(0, 0));
+                button.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
+                button.setImage(IconCacheFactory.<NSImage>get().iconNamed("reload.pdf"));
+                button.sizeToFit();
+                button.setTarget(controller.id());
+                button.setAction(Foundation.selector("reloadButtonClicked:"));
+                item.setView(button);
                 item.setAction(Foundation.selector("reloadButtonClicked:"));
                 return item;
-            case TOOLBAR_DOWNLOAD:
+            }
+            case TOOLBAR_DOWNLOAD: {
                 item.setLabel(LocaleFactory.localizedString(TOOLBAR_DOWNLOAD));
                 item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_DOWNLOAD));
                 item.setToolTip(LocaleFactory.localizedString("Download file"));
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("download.tiff", 32));
                 item.setTarget(controller.id());
                 item.setAction(Foundation.selector("downloadButtonClicked:"));
+                final NSButton button = NSButton.buttonWithFrame(new NSRect(0, 0));
+                button.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
+                button.setImage(IconCacheFactory.<NSImage>get().iconNamed("download.pdf"));
+                button.sizeToFit();
+                button.setTarget(controller.id());
+                button.setAction(Foundation.selector("downloadButtonClicked:"));
+                item.setView(button);
                 return item;
-            case TOOLBAR_UPLOAD:
+            }
+            case TOOLBAR_UPLOAD: {
                 item.setLabel(LocaleFactory.localizedString(TOOLBAR_UPLOAD));
                 item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_UPLOAD));
                 item.setToolTip(LocaleFactory.localizedString("Upload local file to the remote host"));
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("upload.tiff", 32));
                 item.setTarget(controller.id());
                 item.setAction(Foundation.selector("uploadButtonClicked:"));
+                final NSButton button = NSButton.buttonWithFrame(new NSRect(0, 0));
+                button.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
+                button.setImage(IconCacheFactory.<NSImage>get().iconNamed("upload.pdf"));
+                button.sizeToFit();
+                button.setTarget(controller.id());
+                button.setAction(Foundation.selector("uploadButtonClicked:"));
+                item.setView(button);
                 return item;
-            case TOOLBAR_SYNCHRONIZE:
+            }
+            case TOOLBAR_SYNCHRONIZE: {
                 item.setLabel(LocaleFactory.localizedString(TOOLBAR_SYNCHRONIZE));
                 item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_SYNCHRONIZE));
                 item.setToolTip(LocaleFactory.localizedString("Synchronize files"));
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("sync.tiff", 32));
                 item.setTarget(controller.id());
                 item.setAction(Foundation.selector("syncButtonClicked:"));
+                final NSButton button = NSButton.buttonWithFrame(new NSRect(0, 0));
+                button.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
+                button.setImage(IconCacheFactory.<NSImage>get().iconNamed("sync.pdf"));
+                button.sizeToFit();
+                button.setTarget(controller.id());
+                button.setAction(Foundation.selector("syncButtonClicked:"));
+                item.setView(button);
                 return item;
-            case TOOLBAR_GET_INFO:
+            }
+            case TOOLBAR_GET_INFO: {
                 item.setLabel(LocaleFactory.localizedString(TOOLBAR_GET_INFO));
                 item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_GET_INFO));
                 item.setToolTip(LocaleFactory.localizedString("Show file attributes"));
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("info.tiff", 32));
                 item.setTarget(controller.id());
                 item.setAction(Foundation.selector("infoButtonClicked:"));
+                final NSButton button = NSButton.buttonWithFrame(new NSRect(0, 0));
+                button.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
+                button.setImage(IconCacheFactory.<NSImage>get().iconNamed("info.pdf"));
+                button.sizeToFit();
+                button.setTarget(controller.id());
+                button.setAction(Foundation.selector("infoButtonClicked:"));
+                item.setView(button);
                 return item;
-            case TOOLBAR_WEBVIEW:
+            }
+            case TOOLBAR_WEBVIEW: {
                 item.setLabel(LocaleFactory.localizedString(TOOLBAR_WEBVIEW));
                 item.setPaletteLabel(LocaleFactory.localizedString("Open in Web Browser"));
                 item.setToolTip(LocaleFactory.localizedString("Open in Web Browser"));
-                final Application browser = SchemeHandlerFactory.get().getDefaultHandler(Scheme.http);
-                if(Application.notfound.equals(browser)) {
-                    item.setEnabled(false);
-                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed("notfound.tiff", 32));
-                }
-                else {
-                    item.setImage(IconCacheFactory.<NSImage>get().applicationIcon(browser, 32));
-                }
                 item.setTarget(controller.id());
                 item.setAction(Foundation.selector("openBrowserButtonClicked:"));
+                final NSButton button = NSButton.buttonWithFrame(new NSRect(0, 0));
+                button.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
+                button.setImage(IconCacheFactory.<NSImage>get().iconNamed("webbrowser.pdf"));
+                button.sizeToFit();
+                button.setTarget(controller.id());
+                button.setAction(Foundation.selector("openBrowserButtonClicked:"));
+                item.setView(button);
                 return item;
-            case TOOLBAR_EDIT:
+            }
+            case TOOLBAR_EDIT: {
                 item.setLabel(LocaleFactory.localizedString(TOOLBAR_EDIT));
                 item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_EDIT));
                 item.setToolTip(LocaleFactory.localizedString("Edit file in external editor"));
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("pencil.tiff"));
                 item.setTarget(controller.id());
                 item.setAction(Foundation.selector("editButtonClicked:"));
                 // Add a menu representation for text mode of toolbar
@@ -248,81 +297,138 @@ public class BrowserToolbarFactory implements ToolbarFactory {
                 editMenu.setAutoenablesItems(true);
                 editMenu.setDelegate(controller.getEditMenuDelegate().id());
                 toolbarMenu.setSubmenu(editMenu);
+                final NSButton button = NSButton.buttonWithFrame(new NSRect(0, 0));
+                button.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
+                button.setImage(IconCacheFactory.<NSImage>get().iconNamed("editor.pdf"));
+                button.sizeToFit();
+                button.setTarget(controller.id());
+                button.setAction(Foundation.selector("editButtonClicked:"));
+                item.setView(button);
                 item.setMenuFormRepresentation(toolbarMenu);
                 return item;
-            case TOOLBAR_DELETE:
+            }
+            case TOOLBAR_DELETE: {
                 item.setLabel(LocaleFactory.localizedString(TOOLBAR_DELETE));
                 item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_DELETE));
                 item.setToolTip(LocaleFactory.localizedString("Delete file"));
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("delete.tiff", 32));
                 item.setTarget(controller.id());
                 item.setAction(Foundation.selector("deleteFileButtonClicked:"));
+                final NSButton button = NSButton.buttonWithFrame(new NSRect(0, 0));
+                button.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
+                button.setImage(IconCacheFactory.<NSImage>get().iconNamed("delete.pdf"));
+                button.sizeToFit();
+                button.setTarget(controller.id());
+                button.setAction(Foundation.selector("deleteFileButtonClicked:"));
+                item.setView(button);
                 return item;
-            case TOOLBAR_NEW_FOLDER:
+            }
+            case TOOLBAR_NEW_FOLDER: {
                 item.setLabel(LocaleFactory.localizedString(TOOLBAR_NEW_FOLDER));
                 item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_NEW_FOLDER));
                 item.setToolTip(LocaleFactory.localizedString("Create New Folder"));
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("newfolder.tiff", 32));
                 item.setTarget(controller.id());
                 item.setAction(Foundation.selector("createFolderButtonClicked:"));
+                final NSButton button = NSButton.buttonWithFrame(new NSRect(0, 0));
+                button.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
+                button.setImage(IconCacheFactory.<NSImage>get().iconNamed("newfolder.pdf"));
+                button.sizeToFit();
+                button.setTarget(controller.id());
+                button.setAction(Foundation.selector("createFolderButtonClicked:"));
+                item.setView(button);
                 return item;
-            case TOOLBAR_NEW_BOOKMARK:
+            }
+            case TOOLBAR_NEW_BOOKMARK: {
                 item.setLabel(LocaleFactory.localizedString(TOOLBAR_NEW_BOOKMARK));
                 item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_NEW_BOOKMARK));
                 item.setToolTip(LocaleFactory.localizedString("New Bookmark"));
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("bookmark", 32));
                 item.setTarget(controller.id());
                 item.setAction(Foundation.selector("addBookmarkButtonClicked:"));
+                final NSButton button = NSButton.buttonWithFrame(new NSRect(0, 0));
+                button.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
+                button.setImage(IconCacheFactory.<NSImage>get().iconNamed("addbookmark.pdf"));
+                button.sizeToFit();
+                button.setTarget(controller.id());
+                button.setAction(Foundation.selector("addBookmarkButtonClicked:"));
+                item.setView(button);
                 return item;
-            case TOOLBAR_DISCONNECT:
+            }
+            case TOOLBAR_DISCONNECT: {
                 item.setLabel(LocaleFactory.localizedString(TOOLBAR_DISCONNECT));
                 item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_DISCONNECT));
                 item.setToolTip(LocaleFactory.localizedString("Disconnect from server"));
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("eject.tiff", 32));
                 item.setTarget(controller.id());
                 item.setAction(Foundation.selector("disconnectButtonClicked:"));
+                final NSButton button = NSButton.buttonWithFrame(new NSRect(0, 0));
+                button.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
+                button.setImage(IconCacheFactory.<NSImage>get().iconNamed("eject.pdf"));
+                button.sizeToFit();
+                button.setTarget(controller.id());
+                button.setAction(Foundation.selector("disconnectButtonClicked:"));
+                item.setView(button);
                 return item;
-            case TOOLBAR_TERMINAL:
+            }
+            case TOOLBAR_TERMINAL: {
                 final ApplicationFinder finder = ApplicationFinderFactory.get();
                 final Application application
                         = finder.getDescription(preferences.getProperty("terminal.bundle.identifier"));
                 item.setLabel(application.getName());
                 item.setPaletteLabel(application.getName());
-                item.setImage(IconCacheFactory.<NSImage>get().applicationIcon(application, 32));
                 item.setTarget(controller.id());
                 item.setAction(Foundation.selector("openTerminalButtonClicked:"));
+                final NSButton button = NSButton.buttonWithFrame(new NSRect(0, 0));
+                button.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
+                button.setImage(IconCacheFactory.<NSImage>get().iconNamed("terminal.pdf"));
+                button.sizeToFit();
+                button.setTarget(controller.id());
+                button.setAction(Foundation.selector("openTerminalButtonClicked:"));
+                item.setView(button);
                 return item;
-            case TOOLBAR_ARCHIVE:
+            }
+            case TOOLBAR_ARCHIVE: {
                 item.setLabel(LocaleFactory.localizedString("Archive", "Archive"));
                 item.setPaletteLabel(LocaleFactory.localizedString("Archive", "Archive"));
-                item.setImage(IconCacheFactory.<NSImage>get().applicationIcon(new Application("com.apple.archiveutility"), 32));
                 item.setTarget(controller.id());
                 item.setAction(Foundation.selector("archiveButtonClicked:"));
+                final NSButton button = NSButton.buttonWithFrame(new NSRect(0, 0));
+                button.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
+                button.setImage(IconCacheFactory.<NSImage>get().iconNamed("archive.pdf"));
+                button.sizeToFit();
+                button.setTarget(controller.id());
+                button.setAction(Foundation.selector("archiveButtonClicked:"));
+                item.setView(button);
                 return item;
-            case TOOLBAR_QUICKLOOK:
+            }
+            case TOOLBAR_QUICKLOOK: {
                 item.setLabel(LocaleFactory.localizedString(TOOLBAR_QUICKLOOK));
                 item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_QUICKLOOK));
                 if(quicklook.isAvailable()) {
-                    quicklookButton = NSButton.buttonWithFrame(new NSRect(29, 23));
-                    quicklookButton.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
-                    quicklookButton.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSQuickLookTemplate"));
-                    quicklookButton.sizeToFit();
-                    quicklookButton.setTarget(controller.id());
-                    quicklookButton.setAction(Foundation.selector("quicklookButtonClicked:"));
-                    item.setView(quicklookButton);
+                    final NSButton button = NSButton.buttonWithFrame(new NSRect(0, 0));
+                    button.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
+                    button.setImage(IconCacheFactory.<NSImage>get().iconNamed("quicklook.pdf"));
+                    button.sizeToFit();
+                    button.setTarget(controller.id());
+                    button.setAction(Foundation.selector("quicklookButtonClicked:"));
+                    item.setView(button);
                 }
                 else {
                     item.setEnabled(false);
                     item.setImage(IconCacheFactory.<NSImage>get().iconNamed("notfound.tiff", 32));
                 }
                 return item;
+            }
             case TOOLBAR_LOG:
                 item.setLabel(LocaleFactory.localizedString(TOOLBAR_LOG));
                 item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_LOG));
                 item.setToolTip(LocaleFactory.localizedString("Toggle Log Drawer"));
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("log", 32));
                 item.setTarget(controller.id());
                 item.setAction(Foundation.selector("toggleLogDrawer:"));
+                final NSButton button = NSButton.buttonWithFrame(new NSRect(0, 0));
+                button.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
+                button.setImage(IconCacheFactory.<NSImage>get().iconNamed("log.pdf"));
+                button.sizeToFit();
+                button.setTarget(controller.id());
+                button.setAction(Foundation.selector("toggleLogDrawer:"));
+                item.setView(button);
                 return item;
         }
         // Returning null will inform the toolbar this kind of item is not supported.
@@ -373,5 +479,17 @@ public class BrowserToolbarFactory implements ToolbarFactory {
                 NSToolbarItem.NSToolbarSeparatorItemIdentifier,
                 NSToolbarItem.NSToolbarFlexibleSpaceItemIdentifier
         );
+    }
+
+    private static abstract class CDToolbarItem extends NSToolbarItem {
+        private static final _Class CLASS = org.rococoa.Rococoa.createClass("CDToolbarItem", _Class.class);
+
+        public static NSToolbarItem itemWithIdentifier(String itemIdentifier) {
+            return CLASS.alloc().initWithItemIdentifier(itemIdentifier);
+        }
+
+        public interface _Class extends ObjCClass {
+            CDToolbarItem alloc();
+        }
     }
 }
