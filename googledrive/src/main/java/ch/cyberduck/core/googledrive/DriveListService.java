@@ -24,7 +24,6 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -33,8 +32,8 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.EnumSet;
 
-import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
+import com.google.api.services.drive.model.FileList;
 
 public class DriveListService implements ListService {
     private static final Logger log = Logger.getLogger(DriveListService.class);
@@ -42,34 +41,39 @@ public class DriveListService implements ListService {
     private static final String GOOGLE_APPS_PREFIX = "application/vnd.google-apps";
     private static final String DRIVE_FOLDER = String.format("%s.folder", GOOGLE_APPS_PREFIX);
 
-    private Preferences preferences
-            = PreferencesFactory.get();
-
     private final DriveSession session;
 
+    private final int pagesize;
+
     public DriveListService(final DriveSession session) {
+        this(session, PreferencesFactory.get().getInteger("google.drive.list.limit"));
+    }
+
+    public DriveListService(final DriveSession session, final int pagesize) {
         this.session = session;
+        this.pagesize = pagesize;
     }
 
     @Override
-    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws
-            BackgroundException {
+    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> children = new AttributedList<Path>();
             String page = null;
             do {
-                final Drive.Files.List list = session.getClient().files().list()
+                final FileList list = session.getClient().files().list()
                         .setQ(String.format("'%s' in parents", directory.isRoot()
                                 ? DriveHomeFinderService.ROOT_FOLDER_ID : new DriveFileidProvider(session).getFileid(directory)))
                         .setOauthToken(session.getAccessToken())
                         .setPageToken(page)
-                        .setFields("files")
-                        .setPageSize(preferences.getInteger("google.drive.list.limit"));
-                for(File f : list.execute().getFiles()) {
+                        .setFields("nextPageToken, files")
+                        .setPageSize(pagesize).execute();
+                for(File f : list.getFiles()) {
                     final PathAttributes attributes = new PathAttributes();
-                    if(f.getExplicitlyTrashed()) {
-                        log.warn(String.format("Skip file %s", f));
-                        continue;
+                    if(null != f.getExplicitlyTrashed()) {
+                        if(f.getExplicitlyTrashed()) {
+                            log.warn(String.format("Skip file %s", f));
+                            continue;
+                        }
                     }
                     if(!DRIVE_FOLDER.equals(f.getMimeType())) {
                         if(StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)) {
@@ -94,7 +98,7 @@ public class DriveListService implements ListService {
                     children.add(child);
                 }
                 listener.chunk(directory, children);
-                page = list.getPageToken();
+                page = list.getNextPageToken();
             }
             while(page != null);
             return children;
