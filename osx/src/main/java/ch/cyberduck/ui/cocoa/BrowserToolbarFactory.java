@@ -143,7 +143,6 @@ public class BrowserToolbarFactory implements ToolbarFactory {
                 button.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
                 button.setImage(IconCacheFactory.<NSImage>get().iconNamed("filetransfer.pdf"));
                 button.sizeToFit();
-                button.setTarget(controller.id());
                 button.setAction(Foundation.selector("showTransferQueueClicked:"));
                 item.setView(button);
                 return item;
