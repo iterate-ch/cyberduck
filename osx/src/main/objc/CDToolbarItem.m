@@ -30,15 +30,6 @@
         }
         [self setEnabled:enabled];
     }
-    else if ([self action])
-    {
-        if (![self target]) {
-            [self setEnabled:[[[[self view] window] firstResponder] respondsToSelector:[self action]]];
-        }
-        else {
-            [self setEnabled:[[self target] respondsToSelector:[self action]]];
-        }
-    }
     else {
         [super validate];
     }
