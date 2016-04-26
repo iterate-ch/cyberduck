@@ -94,7 +94,7 @@ public class BrowserToolbarFactory implements ToolbarFactory {
     @Override
     public NSToolbarItem create(final String itemIdentifier) {
         if(!toolbarItems.containsKey(itemIdentifier)) {
-            toolbarItems.put(itemIdentifier, NSToolbarItem.itemWithIdentifier(itemIdentifier));
+            toolbarItems.put(itemIdentifier, CDToolbarItem.itemWithIdentifier(itemIdentifier));
         }
         final NSToolbarItem item = toolbarItems.get(itemIdentifier);
         switch(itemIdentifier) {
@@ -481,7 +481,7 @@ public class BrowserToolbarFactory implements ToolbarFactory {
         );
     }
 
-    private static abstract class CDToolbarItem extends NSToolbarItem {
+    public static abstract class CDToolbarItem extends NSToolbarItem {
         private static final _Class CLASS = org.rococoa.Rococoa.createClass("CDToolbarItem", _Class.class);
 
         public static NSToolbarItem itemWithIdentifier(String itemIdentifier) {
