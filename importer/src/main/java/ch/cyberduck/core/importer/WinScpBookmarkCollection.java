@@ -21,7 +21,6 @@ package ch.cyberduck.core.importer;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -102,13 +101,13 @@ public class WinScpBookmarkCollection extends ThirdpartyBookmarkCollection {
                             continue;
                         }
                         String value = scanner.next();
-                        if("HostName".equals(name)) {
+                        if("hostname".equals(name)) {
                             current.setHostname(value);
                         }
-                        else if("UserName".equals(name)) {
+                        else if("username".equals(name)) {
                             current.getCredentials().setUsername(value);
                         }
-                        else if("PortNumber".equals(name)) {
+                        else if("portnumber".equals(name)) {
                             try {
                                 current.setPort(Integer.parseInt(value));
                             }
@@ -116,7 +115,7 @@ public class WinScpBookmarkCollection extends ThirdpartyBookmarkCollection {
                                 log.warn("Invalid Port:" + e.getMessage());
                             }
                         }
-                        else if("FSProtocol".equals(name)) {
+                        else if("fsprotocol".equals(name)) {
                             try {
                                 switch(Integer.parseInt(value)) {
                                     case 0:
