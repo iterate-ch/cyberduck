@@ -206,14 +206,6 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                     throw new RetriableAccessDeniedException(String.format("Job %s not yet loaded into cache", job), delay);
                 }
             }
-            // Still look for Retry-Afer header for non empty master object list
-            final Headers headers = response.getResponse().getHeaders();
-            for(String header : headers.keys()) {
-                if(HttpHeaders.RETRY_AFTER.equals(header)) {
-                    final Duration delay = Duration.ofSeconds(Integer.parseInt(headers.get(header).get(0)));
-                    throw new RetriableAccessDeniedException(String.format("Cache is full for job %s", job), delay);
-                }
-            }
             final MasterObjectList master = response.getMasterObjectList();
             if(log.isInfoEnabled()) {
                 log.info(String.format("Master object list with %d objects for %s", master.getObjects().size(), file));
@@ -278,7 +270,14 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
             }
             if(chunks.isEmpty()) {
                 log.error(String.format("File %s not found in object list for job %s", file.getName(), job));
-                chunks.add(status);
+                // Still look for Retry-Afer header for non empty master object list
+                final Headers headers = response.getResponse().getHeaders();
+                for(String header : headers.keys()) {
+                    if(HttpHeaders.RETRY_AFTER.equalsIgnoreCase(header)) {
+                        final Duration delay = Duration.ofSeconds(Integer.parseInt(headers.get(header).get(0)));
+                        throw new RetriableAccessDeniedException(String.format("Cache is full for job %s", job), delay);
+                    }
+                }
             }
             if(log.isInfoEnabled()) {
                 log.info(String.format("Server returned %d chunks for %s", chunks.size(), file));
