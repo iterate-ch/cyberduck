@@ -1059,6 +1059,7 @@ namespace Ch.Cyberduck.Ui.Controller
             IList<KeyValuePair<string, string>> algorithms = new List<KeyValuePair<string, string>>();
             algorithms.Add(new KeyValuePair<string, string>(NullString, LocaleFactory.localizedString("None")));
             algorithms.Add(new KeyValuePair<string, string>("AES256", LocaleFactory.localizedString("AES256", "S3")));
+            algorithms.Add(new KeyValuePair<string, string>("aws:kms", LocaleFactory.localizedString("AWS KMS–Managed Keys (SSE-KMS)", "S3")));
             View.PopulateDefaultEncryption(algorithms);
         }
 

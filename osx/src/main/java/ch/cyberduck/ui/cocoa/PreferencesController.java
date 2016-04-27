@@ -1952,6 +1952,8 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultEncryptionPopup.addItemWithTitle(LocaleFactory.localizedString("None"));
         this.defaultEncryptionPopup.addItemWithTitle(LocaleFactory.localizedString("AES256", "S3"));
         this.defaultEncryptionPopup.lastItem().setRepresentedObject("AES256");
+        this.defaultEncryptionPopup.addItemWithTitle(LocaleFactory.localizedString("AWS KMS–Managed Keys (SSE-KMS)", "S3"));
+        this.defaultEncryptionPopup.lastItem().setRepresentedObject("aws:kms");
         this.defaultEncryptionPopup.setTarget(this.id());
         this.defaultEncryptionPopup.setAction(Foundation.selector("defaultEncryptionPopupClicked:"));
         if(StringUtils.isNotBlank(preferences.getProperty("s3.encryption.algorithm"))) {
