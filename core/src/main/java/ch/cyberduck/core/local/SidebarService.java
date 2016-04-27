@@ -32,6 +32,7 @@ public interface SidebarService {
     enum List {
         volume,
         server,
-        favorite
+        favorite,
+        login
     }
 }
