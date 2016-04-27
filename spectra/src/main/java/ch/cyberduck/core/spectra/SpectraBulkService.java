@@ -30,6 +30,7 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.codec.binary.StringUtils;
+import org.apache.http.HttpHeaders;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -203,6 +204,14 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                 case RETRYLATER: {
                     final Duration delay = Duration.ofSeconds(response.getRetryAfterSeconds());
                     throw new RetriableAccessDeniedException(String.format("Job %s not yet loaded into cache", job), delay);
+                }
+            }
+            // Still look for Retry-Afer header for non empty master object list
+            final Headers headers = response.getResponse().getHeaders();
+            for(String header : headers.keys()) {
+                if(HttpHeaders.RETRY_AFTER.equals(header)) {
+                    final Duration delay = Duration.ofSeconds(Integer.parseInt(headers.get(header).get(0)));
+                    throw new RetriableAccessDeniedException(String.format("Cache is full for job %s", job), delay);
                 }
             }
             final MasterObjectList master = response.getMasterObjectList();
