@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.io.StringReader;
+import java.nio.charset.Charset;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -39,7 +40,7 @@ public class SFTPPublicKeyAuthenticationTest {
         try {
             credentials.setIdentity(key);
             new DefaultLocalTouchFeature().touch(key);
-            IOUtils.copy(new StringReader(System.getProperties().getProperty("sftp.key")), key.getOutputStream(false));
+            IOUtils.copy(new StringReader(System.getProperties().getProperty("sftp.key")), key.getOutputStream(false), Charset.forName("UTF-8"));
             final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", credentials);
             final SFTPSession session = new SFTPSession(host);
             session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -65,7 +66,7 @@ public class SFTPPublicKeyAuthenticationTest {
         try {
             credentials.setIdentity(key);
             new DefaultLocalTouchFeature().touch(key);
-            IOUtils.copy(new StringReader(System.getProperties().getProperty("sftp.key.putty")), key.getOutputStream(false));
+            IOUtils.copy(new StringReader(System.getProperties().getProperty("sftp.key.putty")), key.getOutputStream(false), Charset.forName("UTF-8"));
             final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", credentials);
             final SFTPSession session = new SFTPSession(host);
             session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -93,7 +94,7 @@ public class SFTPPublicKeyAuthenticationTest {
         try {
             credentials.setIdentity(key);
             new DefaultLocalTouchFeature().touch(key);
-            IOUtils.copy(new StringReader(System.getProperties().getProperty("sftp.key.openssh.rsa")), key.getOutputStream(false));
+            IOUtils.copy(new StringReader(System.getProperties().getProperty("sftp.key.openssh.rsa")), key.getOutputStream(false), Charset.forName("UTF-8"));
             final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", credentials);
             final SFTPSession session = new SFTPSession(host);
             session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -121,7 +122,7 @@ public class SFTPPublicKeyAuthenticationTest {
         try {
             credentials.setIdentity(key);
             new DefaultLocalTouchFeature().touch(key);
-            IOUtils.copy(new StringReader("--unknown format"), key.getOutputStream(false));
+            IOUtils.copy(new StringReader("--unknown format"), key.getOutputStream(false), Charset.forName("UTF-8"));
             final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", credentials);
             final SFTPSession session = new SFTPSession(host);
             session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
