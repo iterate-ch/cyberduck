@@ -209,7 +209,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
             // Still look for Retry-Afer header for non empty master object list
             final Headers headers = response.getResponse().getHeaders();
             for(String header : headers.keys()) {
-                if(HttpHeaders.RETRY_AFTER.equals(header)) {
+                if(HttpHeaders.RETRY_AFTER.equalsIgnoreCase(header)) {
                     final Duration delay = Duration.ofSeconds(Integer.parseInt(headers.get(header).get(0)));
                     throw new RetriableAccessDeniedException(String.format("Cache is full for job %s", job), delay);
                 }
