@@ -1487,7 +1487,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     else
                     {
                         //dummy editor which leads to an empty selection
-                        DefaultEditor = new Application(null, null);
+                        DefaultEditor = Application.notfound;
                     }
                 }
             }

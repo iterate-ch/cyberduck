@@ -1298,7 +1298,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             defaultEditor.getName()));
                 }
             }
-            editors.Add(new KeyValueIconTriple<Application, string>(new Application(null, null),
+            editors.Add(new KeyValueIconTriple<Application, string>(Application.notfound,
                 LocaleFactory.localizedString("Choose") + "…", String.Empty));
             View.PopulateEditors(editors);
             if (defaultEditor != null)
@@ -1308,7 +1308,7 @@ namespace Ch.Cyberduck.Ui.Controller
             else
             {
                 //dummy editor which leads to an empty selection
-                View.DefaultEditor = new Application(null, null);
+                View.DefaultEditor = Application.notfound;
             }
         }
     }
