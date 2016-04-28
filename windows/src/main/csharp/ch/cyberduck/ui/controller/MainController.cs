@@ -36,6 +36,7 @@ using ch.cyberduck.core.googledrive;
 using ch.cyberduck.core.googlestorage;
 using ch.cyberduck.core.importer;
 using ch.cyberduck.core.irods;
+using ch.cyberduck.core.local;
 using ch.cyberduck.core.notification;
 using ch.cyberduck.core.openstack;
 using ch.cyberduck.core.preferences;
@@ -43,6 +44,7 @@ using ch.cyberduck.core.s3;
 using ch.cyberduck.core.serializer;
 using ch.cyberduck.core.sftp;
 using ch.cyberduck.core.spectra;
+using ch.cyberduck.core.urlhandler;
 using Ch.Cyberduck.Core.Urlhandler;
 using Ch.Cyberduck.Ui.Core;
 using Ch.Cyberduck.Ui.Core.Preferences;
@@ -396,8 +398,8 @@ namespace Ch.Cyberduck.Ui.Controller
             if (PreferencesFactory.get().getBoolean("defaulthandler.reminder") &&
                 PreferencesFactory.get().getInteger("uses") > 0)
             {
-                if (!URLSchemeHandlerConfiguration.Instance.IsDefaultApplicationForFtp() ||
-                    !URLSchemeHandlerConfiguration.Instance.IsDefaultApplicationForSftp())
+                var handler = SchemeHandlerFactory.get();
+                if (!handler.isDefaultHandler(Arrays.asList(Scheme.ftp, Scheme.ftps, Scheme.sftp), new ch.cyberduck.core.local.Application(System.Windows.Forms.Application.ExecutablePath)))
                 {
                     Utils.CommandBox(LocaleFactory.localizedString("Default Protocol Handler", "Preferences"),
                         LocaleFactory.localizedString(
@@ -418,8 +420,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             switch (option)
                             {
                                 case 0:
-                                    URLSchemeHandlerConfiguration.Instance.RegisterFtpProtocol();
-                                    URLSchemeHandlerConfiguration.Instance.RegisterSftpProtocol();
+                                    handler.setDefaultHandler(Arrays.asList(Scheme.ftp, Scheme.ftps, Scheme.sftp), new ch.cyberduck.core.local.Application(System.Windows.Forms.Application.ExecutablePath));
                                     break;
                             }
                         });
