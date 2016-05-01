@@ -47,9 +47,6 @@ import org.rococoa.cocoa.foundation.NSRect;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public class BrowserToolbarFactory implements ToolbarFactory {
 
     protected static final String TOOLBAR_NEW_CONNECTION = "New Connection";

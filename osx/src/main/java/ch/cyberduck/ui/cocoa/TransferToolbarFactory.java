@@ -29,9 +29,6 @@ import org.rococoa.Foundation;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public class TransferToolbarFactory implements ToolbarFactory {
 
     private TransferController controller;
