@@ -24,6 +24,7 @@ import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Encryption;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class S3EncryptionFeature implements Encryption {
@@ -32,6 +33,11 @@ public class S3EncryptionFeature implements Encryption {
 
     public S3EncryptionFeature(final S3Session session) {
         this.session = session;
+    }
+
+    @Override
+    public List<String> getKeys() {
+        return Collections.emptyList();
     }
 
     @Override
