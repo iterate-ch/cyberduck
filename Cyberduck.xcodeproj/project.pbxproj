@@ -61,7 +61,6 @@
 		474166A606C6555E00AC0BD2 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 474166A406C6555E00AC0BD2 /* InfoPlist.strings */; };
 		4741686B06C6BA9400AC0BD2 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4741686906C6BA9400AC0BD2 /* Localizable.strings */; };
 		47472EF5177F788E0090A595 /* Rackspace US.cyberduckprofile in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4718F4AA175F432400B424AD /* Rackspace US.cyberduckprofile */; };
-		474960641CD75C9700B020C9 /* actions.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4749604B1CD75C9700B020C9 /* actions.pdf */; };
 		474960651CD75C9700B020C9 /* addbookmark.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4749604C1CD75C9700B020C9 /* addbookmark.pdf */; };
 		474960661CD75C9700B020C9 /* connect.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4749604D1CD75C9700B020C9 /* connect.pdf */; };
 		474960671CD75C9700B020C9 /* delete.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4749604E1CD75C9700B020C9 /* delete.pdf */; };
@@ -765,7 +764,6 @@
 		4749574F07EDECF800B34D53 /* sv */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = sv; path = i18n/src/main/resources/sv.lproj/Login.xib; sourceTree = "<group>"; };
 		4749575007EDED0000B34D53 /* sv */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = sv; path = i18n/src/main/resources/sv.lproj/Preferences.xib; sourceTree = "<group>"; };
 		4749575107EDED0600B34D53 /* sv */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = sv; path = i18n/src/main/resources/sv.lproj/Bookmark.xib; sourceTree = "<group>"; };
-		4749604B1CD75C9700B020C9 /* actions.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = actions.pdf; path = toolbar/actions.pdf; sourceTree = "<group>"; };
 		4749604C1CD75C9700B020C9 /* addbookmark.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = addbookmark.pdf; path = toolbar/addbookmark.pdf; sourceTree = "<group>"; };
 		4749604D1CD75C9700B020C9 /* connect.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = connect.pdf; path = toolbar/connect.pdf; sourceTree = "<group>"; };
 		4749604E1CD75C9700B020C9 /* delete.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = delete.pdf; path = toolbar/delete.pdf; sourceTree = "<group>"; };
@@ -1895,7 +1893,6 @@
 		4749604A1CD75C7200B020C9 /* toolbar */ = {
 			isa = PBXGroup;
 			children = (
-				4749604B1CD75C9700B020C9 /* actions.pdf */,
 				4749604C1CD75C9700B020C9 /* addbookmark.pdf */,
 				4749604D1CD75C9700B020C9 /* connect.pdf */,
 				4749604E1CD75C9700B020C9 /* delete.pdf */,
@@ -2251,7 +2248,6 @@
 				476730EE16108E1300B28D35 /* privatefolderbadge.tiff in Resources */,
 				474960691CD75C9700B020C9 /* editor.pdf in Resources */,
 				476730EF16108E1300B28D35 /* queue.tiff in Resources */,
-				474960641CD75C9700B020C9 /* actions.pdf in Resources */,
 				476730F016108E1300B28D35 /* readonlyfolderbadge.tiff in Resources */,
 				476730F116108E1300B28D35 /* reload.tiff in Resources */,
 				476730F216108E1300B28D35 /* remove.tiff in Resources */,
