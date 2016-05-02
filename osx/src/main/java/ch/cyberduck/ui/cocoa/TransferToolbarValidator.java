@@ -28,6 +28,8 @@ import org.rococoa.Foundation;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
+import static ch.cyberduck.ui.cocoa.TransferToolbarFactory.TransferToolbarItem.*;
+
 public class TransferToolbarValidator implements ToolbarValidator {
 
     private TransferController controller;
@@ -46,7 +48,7 @@ public class TransferToolbarValidator implements ToolbarValidator {
         if(action.equals(Foundation.selector("paste:"))) {
             return !PathPasteboardFactory.allPasteboards().isEmpty();
         }
-        if(action.equals(Foundation.selector("stopButtonClicked:"))) {
+        if(action.equals(stop.action())) {
             return this.validate(new InnerTransferValidator() {
                 @Override
                 public boolean validate(final Transfer transfer) {
@@ -54,7 +56,7 @@ public class TransferToolbarValidator implements ToolbarValidator {
                 }
             });
         }
-        if(action.equals(Foundation.selector("reloadButtonClicked:"))) {
+        if(action.equals(reload.action())) {
             return this.validate(new InnerTransferValidator() {
                 @Override
                 public boolean validate(final Transfer transfer) {
@@ -62,7 +64,7 @@ public class TransferToolbarValidator implements ToolbarValidator {
                 }
             });
         }
-        if(action.equals(Foundation.selector("deleteButtonClicked:"))) {
+        if(action.equals(remove.action())) {
             return this.validate(new InnerTransferValidator() {
                 @Override
                 public boolean validate(final Transfer transfer) {
@@ -70,7 +72,7 @@ public class TransferToolbarValidator implements ToolbarValidator {
                 }
             });
         }
-        if(action.equals(Foundation.selector("resumeButtonClicked:"))) {
+        if(action.equals(resume.action())) {
             return this.validate(new InnerTransferValidator() {
                 @Override
                 public boolean validate(final Transfer transfer) {
@@ -81,8 +83,7 @@ public class TransferToolbarValidator implements ToolbarValidator {
                 }
             });
         }
-        if(action.equals(Foundation.selector("openButtonClicked:"))
-                || action.equals(Foundation.selector("trashButtonClicked:"))) {
+        if(action.equals(open.action()) || action.equals(trash.action())) {
             return this.validate(new InnerTransferValidator() {
                 @Override
                 public boolean validate(final Transfer transfer) {
@@ -102,7 +103,7 @@ public class TransferToolbarValidator implements ToolbarValidator {
                 }
             });
         }
-        if(action.equals(Foundation.selector("revealButtonClicked:"))) {
+        if(action.equals(reveal.action())) {
             return this.validate(new InnerTransferValidator() {
                 @Override
                 public boolean validate(final Transfer transfer) {
@@ -117,7 +118,7 @@ public class TransferToolbarValidator implements ToolbarValidator {
                 }
             });
         }
-        if(action.equals(Foundation.selector("clearButtonClicked:"))) {
+        if(action.equals(cleanup.action())) {
             return controller.getTransferTable().numberOfRows().intValue() > 0;
         }
         return true;
