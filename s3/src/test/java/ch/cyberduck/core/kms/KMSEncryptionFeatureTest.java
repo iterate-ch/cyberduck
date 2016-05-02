@@ -16,6 +16,7 @@ package ch.cyberduck.core.kms;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
@@ -39,7 +40,7 @@ public class KMSEncryptionFeatureTest {
                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         final KMSEncryptionFeature kms = new KMSEncryptionFeature(new S3Session(host));
-        assertFalse(kms.getKeys().isEmpty());
+        assertFalse(kms.getKeys(new DisabledLoginCallback()).isEmpty());
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -47,7 +48,7 @@ public class KMSEncryptionFeatureTest {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
                 "key", "secret"
         ));
-        new KMSEncryptionFeature(new S3Session(host)).getKeys();
+        new KMSEncryptionFeature(new S3Session(host)).getKeys(new DisabledLoginCallback());
     }
 
     @Test(expected = ConnectionTimeoutException.class)
@@ -57,7 +58,7 @@ public class KMSEncryptionFeatureTest {
         ));
         final KMSEncryptionFeature kms = new KMSEncryptionFeature(new S3Session(host), 1);
         try {
-            kms.getKeys();
+            kms.getKeys(new DisabledLoginCallback());
             fail();
         }
         catch(BackgroundException e) {

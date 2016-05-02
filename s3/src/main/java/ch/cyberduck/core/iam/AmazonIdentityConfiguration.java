@@ -45,9 +45,9 @@ import com.amazonaws.services.identitymanagement.model.*;
 public class AmazonIdentityConfiguration implements IdentityConfiguration {
     private static final Logger log = Logger.getLogger(AmazonIdentityConfiguration.class);
 
-    private Host host;
+    private final Host host;
 
-    private AmazonIdentityManagementClient client;
+    private final AmazonIdentityManagementClient client;
 
     /**
      * Prefix in preferences

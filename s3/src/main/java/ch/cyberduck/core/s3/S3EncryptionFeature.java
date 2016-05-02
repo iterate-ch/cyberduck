@@ -18,6 +18,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
@@ -36,7 +37,7 @@ public class S3EncryptionFeature implements Encryption {
     }
 
     @Override
-    public List<String> getKeys() throws BackgroundException {
+    public List<String> getKeys(final LoginCallback prompt) throws BackgroundException {
         return Collections.emptyList();
     }
 
