@@ -17,6 +17,8 @@ package ch.cyberduck.core.kms;
 
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UseragentProvider;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.iam.AmazonServiceExceptionMappingService;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFactory;
@@ -28,6 +30,7 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.amazonaws.AmazonClientException;
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.services.kms.AWSKMSClient;
 import com.amazonaws.services.kms.model.KeyListEntry;
@@ -78,11 +81,16 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
      * @return List of IDs of KMS managed keys
      */
     @Override
-    public List<String> getKeys() {
-        final List<String> keys = new ArrayList<>();
-        for(KeyListEntry entry : client.listKeys().getKeys()) {
-            keys.add(entry.getKeyId());
+    public List<String> getKeys() throws BackgroundException {
+        try {
+            final List<String> keys = new ArrayList<>();
+            for(KeyListEntry entry : client.listKeys().getKeys()) {
+                keys.add(entry.getKeyId());
+            }
+            return keys;
         }
-        return keys;
+        catch(AmazonClientException e) {
+            throw new AmazonServiceExceptionMappingService().map("Cannot read AWSKMS configuration", e);
+        }
     }
 }

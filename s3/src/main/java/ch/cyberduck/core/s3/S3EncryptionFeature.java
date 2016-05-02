@@ -36,7 +36,7 @@ public class S3EncryptionFeature implements Encryption {
     }
 
     @Override
-    public List<String> getKeys() {
+    public List<String> getKeys() throws BackgroundException {
         return Collections.emptyList();
     }
 
