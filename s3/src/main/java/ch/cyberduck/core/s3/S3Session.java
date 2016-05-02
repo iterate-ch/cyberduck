@@ -48,6 +48,7 @@ import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.iam.AmazonIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
+import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
@@ -330,7 +331,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         if(type == Encryption.class) {
             // Only for AWS
             if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
-                return (T) new S3EncryptionFeature(this);
+                return (T) new KMSEncryptionFeature(this);
             }
             return null;
         }

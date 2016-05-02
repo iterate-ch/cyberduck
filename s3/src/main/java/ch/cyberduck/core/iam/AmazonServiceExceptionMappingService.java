@@ -40,6 +40,10 @@ public class AmazonServiceExceptionMappingService extends AbstractExceptionMappi
             final AmazonServiceException failure = (AmazonServiceException) e;
             switch(failure.getStatusCode()) {
                 case HttpStatus.SC_BAD_REQUEST:
+                    switch(failure.getErrorCode()) {
+                        case "UnrecognizedClientException":
+                            return new LoginFailureException(buffer.toString(), e);
+                    }
                     return new InteroperabilityException(buffer.toString(), e);
                 case HttpStatus.SC_METHOD_NOT_ALLOWED:
                     return new InteroperabilityException(buffer.toString(), e);

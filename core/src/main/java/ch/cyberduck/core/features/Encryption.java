@@ -15,12 +15,15 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import java.util.List;
 
 public interface Encryption {
+
+    List<String> getKeys(LoginCallback prompt) throws BackgroundException;
 
     List<String> getAlgorithms();
 
