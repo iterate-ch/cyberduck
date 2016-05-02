@@ -61,6 +61,30 @@
 		474166A606C6555E00AC0BD2 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 474166A406C6555E00AC0BD2 /* InfoPlist.strings */; };
 		4741686B06C6BA9400AC0BD2 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4741686906C6BA9400AC0BD2 /* Localizable.strings */; };
 		47472EF5177F788E0090A595 /* Rackspace US.cyberduckprofile in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4718F4AA175F432400B424AD /* Rackspace US.cyberduckprofile */; };
+		474960651CD75C9700B020C9 /* addbookmark.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4749604C1CD75C9700B020C9 /* addbookmark.pdf */; };
+		474960661CD75C9700B020C9 /* connect.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4749604D1CD75C9700B020C9 /* connect.pdf */; };
+		474960671CD75C9700B020C9 /* delete.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4749604E1CD75C9700B020C9 /* delete.pdf */; };
+		474960681CD75C9700B020C9 /* download.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4749604F1CD75C9700B020C9 /* download.pdf */; };
+		474960691CD75C9700B020C9 /* editor.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 474960501CD75C9700B020C9 /* editor.pdf */; };
+		4749606A1CD75C9700B020C9 /* filetransfer.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 474960511CD75C9700B020C9 /* filetransfer.pdf */; };
+		4749606B1CD75C9700B020C9 /* info.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 474960521CD75C9700B020C9 /* info.pdf */; };
+		4749606C1CD75C9700B020C9 /* log.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 474960531CD75C9700B020C9 /* log.pdf */; };
+		4749606D1CD75C9700B020C9 /* newfolder.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 474960541CD75C9700B020C9 /* newfolder.pdf */; };
+		4749606E1CD75C9700B020C9 /* quicklook.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 474960551CD75C9700B020C9 /* quicklook.pdf */; };
+		4749606F1CD75C9700B020C9 /* reload.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 474960561CD75C9700B020C9 /* reload.pdf */; };
+		474960701CD75C9700B020C9 /* sync.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 474960571CD75C9700B020C9 /* sync.pdf */; };
+		474960711CD75C9700B020C9 /* terminal.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 474960581CD75C9700B020C9 /* terminal.pdf */; };
+		474960721CD75C9700B020C9 /* upload.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 474960591CD75C9700B020C9 /* upload.pdf */; };
+		474960731CD75C9700B020C9 /* webbrowser.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4749605A1CD75C9700B020C9 /* webbrowser.pdf */; };
+		474960741CD75C9700B020C9 /* archive.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4749605B1CD75C9700B020C9 /* archive.pdf */; };
+		474960751CD75C9700B020C9 /* cleanup.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4749605C1CD75C9700B020C9 /* cleanup.pdf */; };
+		474960761CD75C9700B020C9 /* eject.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4749605D1CD75C9700B020C9 /* eject.pdf */; };
+		474960771CD75C9700B020C9 /* open.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4749605E1CD75C9700B020C9 /* open.pdf */; };
+		4749607A1CD75C9700B020C9 /* showinfinder.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 474960611CD75C9700B020C9 /* showinfinder.pdf */; };
+		4749607B1CD75C9700B020C9 /* stop.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 474960621CD75C9700B020C9 /* stop.pdf */; };
+		4749607C1CD75C9700B020C9 /* trash.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 474960631CD75C9700B020C9 /* trash.pdf */; };
+		4749607F1CD7679A00B020C9 /* transferremove.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4749607D1CD7679A00B020C9 /* transferremove.pdf */; };
+		474960801CD7679A00B020C9 /* transferresume.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4749607E1CD7679A00B020C9 /* transferresume.pdf */; };
 		474B843D1C15CDD1004D562C /* CDTransmitImporter.m in Sources */ = {isa = PBXBuildFile; fileRef = 474B843B1C15CDD1004D562C /* CDTransmitImporter.m */; };
 		474B843E1C15CDD1004D562C /* CDTransmitImporter.h in Headers */ = {isa = PBXBuildFile; fileRef = 474B843C1C15CDD1004D562C /* CDTransmitImporter.h */; };
 		474B84411C15DB51004D562C /* Sandbox.h in Headers */ = {isa = PBXBuildFile; fileRef = 474B843F1C15DB51004D562C /* Sandbox.h */; };
@@ -98,7 +122,6 @@
 		476730CF16108E1300B28D35 /* clean.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4767307F16108E1200B28D35 /* clean.tiff */; };
 		476730D016108E1300B28D35 /* cleanall.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4767308016108E1200B28D35 /* cleanall.tiff */; };
 		476730D116108E1300B28D35 /* column.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4767308116108E1200B28D35 /* column.tiff */; };
-		476730D216108E1300B28D35 /* connect.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4767308216108E1200B28D35 /* connect.tiff */; };
 		476730D316108E1300B28D35 /* connection-secure.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4767308316108E1200B28D35 /* connection-secure.tiff */; };
 		476730D416108E1300B28D35 /* connection.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4767308416108E1200B28D35 /* connection.tiff */; };
 		476730D516108E1300B28D35 /* delete.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4767308516108E1200B28D35 /* delete.tiff */; };
@@ -179,6 +202,8 @@
 		47CE3BFA1799309F0031DB9F /* transfer-copy.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47CE3BF71799309F0031DB9F /* transfer-copy.tiff */; };
 		47CE3BFB1799309F0031DB9F /* transfer-move.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47CE3BF81799309F0031DB9F /* transfer-move.tiff */; };
 		47CE3BFC1799309F0031DB9F /* transfer-sync.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47CE3BF91799309F0031DB9F /* transfer-sync.tiff */; };
+		47D6FFE81CCFA54A005B01C5 /* CDToolbarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 47D6FFE61CCFA54A005B01C5 /* CDToolbarItem.m */; };
+		47D6FFE91CCFA54A005B01C5 /* CDToolbarItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 47D6FFE71CCFA54A005B01C5 /* CDToolbarItem.h */; };
 		47D939CA1A268D7F0006D4AE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47D939C91A268D7F0006D4AE /* Foundation.framework */; };
 		47D93A031A27602E0006D4AE /* License.txt in Resources */ = {isa = PBXBuildFile; fileRef = 474163AF06C4F64100AC0BD2 /* License.txt */; };
 		47D93A051A2760810006D4AE /* Rackspace US.cyberduckprofile in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4718F4AA175F432400B424AD /* Rackspace US.cyberduckprofile */; };
@@ -739,6 +764,30 @@
 		4749574F07EDECF800B34D53 /* sv */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = sv; path = i18n/src/main/resources/sv.lproj/Login.xib; sourceTree = "<group>"; };
 		4749575007EDED0000B34D53 /* sv */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = sv; path = i18n/src/main/resources/sv.lproj/Preferences.xib; sourceTree = "<group>"; };
 		4749575107EDED0600B34D53 /* sv */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = sv; path = i18n/src/main/resources/sv.lproj/Bookmark.xib; sourceTree = "<group>"; };
+		4749604C1CD75C9700B020C9 /* addbookmark.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = addbookmark.pdf; path = toolbar/addbookmark.pdf; sourceTree = "<group>"; };
+		4749604D1CD75C9700B020C9 /* connect.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = connect.pdf; path = toolbar/connect.pdf; sourceTree = "<group>"; };
+		4749604E1CD75C9700B020C9 /* delete.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = delete.pdf; path = toolbar/delete.pdf; sourceTree = "<group>"; };
+		4749604F1CD75C9700B020C9 /* download.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = download.pdf; path = toolbar/download.pdf; sourceTree = "<group>"; };
+		474960501CD75C9700B020C9 /* editor.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = editor.pdf; path = toolbar/editor.pdf; sourceTree = "<group>"; };
+		474960511CD75C9700B020C9 /* filetransfer.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = filetransfer.pdf; path = toolbar/filetransfer.pdf; sourceTree = "<group>"; };
+		474960521CD75C9700B020C9 /* info.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = info.pdf; path = toolbar/info.pdf; sourceTree = "<group>"; };
+		474960531CD75C9700B020C9 /* log.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = log.pdf; path = toolbar/log.pdf; sourceTree = "<group>"; };
+		474960541CD75C9700B020C9 /* newfolder.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = newfolder.pdf; path = toolbar/newfolder.pdf; sourceTree = "<group>"; };
+		474960551CD75C9700B020C9 /* quicklook.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = quicklook.pdf; path = toolbar/quicklook.pdf; sourceTree = "<group>"; };
+		474960561CD75C9700B020C9 /* reload.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = reload.pdf; path = toolbar/reload.pdf; sourceTree = "<group>"; };
+		474960571CD75C9700B020C9 /* sync.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = sync.pdf; path = toolbar/sync.pdf; sourceTree = "<group>"; };
+		474960581CD75C9700B020C9 /* terminal.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = terminal.pdf; path = toolbar/terminal.pdf; sourceTree = "<group>"; };
+		474960591CD75C9700B020C9 /* upload.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = upload.pdf; path = toolbar/upload.pdf; sourceTree = "<group>"; };
+		4749605A1CD75C9700B020C9 /* webbrowser.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = webbrowser.pdf; path = toolbar/webbrowser.pdf; sourceTree = "<group>"; };
+		4749605B1CD75C9700B020C9 /* archive.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = archive.pdf; path = toolbar/archive.pdf; sourceTree = "<group>"; };
+		4749605C1CD75C9700B020C9 /* cleanup.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = cleanup.pdf; path = toolbar/cleanup.pdf; sourceTree = "<group>"; };
+		4749605D1CD75C9700B020C9 /* eject.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = eject.pdf; path = toolbar/eject.pdf; sourceTree = "<group>"; };
+		4749605E1CD75C9700B020C9 /* open.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = open.pdf; path = toolbar/open.pdf; sourceTree = "<group>"; };
+		474960611CD75C9700B020C9 /* showinfinder.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = showinfinder.pdf; path = toolbar/showinfinder.pdf; sourceTree = "<group>"; };
+		474960621CD75C9700B020C9 /* stop.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = stop.pdf; path = toolbar/stop.pdf; sourceTree = "<group>"; };
+		474960631CD75C9700B020C9 /* trash.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = trash.pdf; path = toolbar/trash.pdf; sourceTree = "<group>"; };
+		4749607D1CD7679A00B020C9 /* transferremove.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = transferremove.pdf; path = toolbar/transferremove.pdf; sourceTree = "<group>"; };
+		4749607E1CD7679A00B020C9 /* transferresume.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = transferresume.pdf; path = toolbar/transferresume.pdf; sourceTree = "<group>"; };
 		474B843B1C15CDD1004D562C /* CDTransmitImporter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDTransmitImporter.m; path = importer/src/main/objc/CDTransmitImporter.m; sourceTree = SOURCE_ROOT; };
 		474B843C1C15CDD1004D562C /* CDTransmitImporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDTransmitImporter.h; path = importer/src/main/objc/CDTransmitImporter.h; sourceTree = SOURCE_ROOT; };
 		474B843F1C15DB51004D562C /* Sandbox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Sandbox.h; path = core/src/main/objc/Sandbox.h; sourceTree = SOURCE_ROOT; };
@@ -893,7 +942,6 @@
 		4767307F16108E1200B28D35 /* clean.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = clean.tiff; sourceTree = "<group>"; };
 		4767308016108E1200B28D35 /* cleanall.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = cleanall.tiff; sourceTree = "<group>"; };
 		4767308116108E1200B28D35 /* column.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = column.tiff; sourceTree = "<group>"; };
-		4767308216108E1200B28D35 /* connect.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = connect.tiff; sourceTree = "<group>"; };
 		4767308316108E1200B28D35 /* connection-secure.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = "connection-secure.tiff"; sourceTree = "<group>"; };
 		4767308416108E1200B28D35 /* connection.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = connection.tiff; sourceTree = "<group>"; };
 		4767308516108E1200B28D35 /* delete.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = delete.tiff; sourceTree = "<group>"; };
@@ -1415,6 +1463,8 @@
 		47CF43D31508FCC000647729 /* ar */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = ar; path = i18n/src/main/resources/ar.lproj/Status.strings; sourceTree = "<group>"; };
 		47CF43D41508FCC000647729 /* ar */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = ar; path = i18n/src/main/resources/ar.lproj/Transfer.strings; sourceTree = "<group>"; };
 		47D4148E0F0ECFBD00BAF184 /* SecurityFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SecurityFoundation.framework; path = System/Library/Frameworks/SecurityFoundation.framework; sourceTree = SDKROOT; };
+		47D6FFE61CCFA54A005B01C5 /* CDToolbarItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDToolbarItem.m; path = osx/src/main/objc/CDToolbarItem.m; sourceTree = "<group>"; };
+		47D6FFE71CCFA54A005B01C5 /* CDToolbarItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDToolbarItem.h; path = osx/src/main/objc/CDToolbarItem.h; sourceTree = "<group>"; };
 		47D939C91A268D7F0006D4AE /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		47E2848513191D0900D03060 /* uk */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = uk; path = i18n/src/main/resources/uk.lproj/Bookmark.xib; sourceTree = "<group>"; };
 		47E2848613191D0900D03060 /* uk */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = uk; path = i18n/src/main/resources/uk.lproj/Browser.xib; sourceTree = "<group>"; };
@@ -1751,6 +1801,7 @@
 		4741653C06C4FC3F00AC0BD2 /* img */ = {
 			isa = PBXGroup;
 			children = (
+				4749604A1CD75C7200B020C9 /* toolbar */,
 				479626AE1C98057C00CEBEC0 /* googledrive.tiff */,
 				473BF0851892968E0068B4C1 /* azure.tiff */,
 				475C6D59170C9214006535BB /* googlestorage.tiff */,
@@ -1779,7 +1830,6 @@
 				4767307F16108E1200B28D35 /* clean.tiff */,
 				4767308016108E1200B28D35 /* cleanall.tiff */,
 				4767308116108E1200B28D35 /* column.tiff */,
-				4767308216108E1200B28D35 /* connect.tiff */,
 				4767308316108E1200B28D35 /* connection-secure.tiff */,
 				4767308416108E1200B28D35 /* connection.tiff */,
 				4767308516108E1200B28D35 /* delete.tiff */,
@@ -1840,6 +1890,37 @@
 			path = img;
 			sourceTree = "<group>";
 		};
+		4749604A1CD75C7200B020C9 /* toolbar */ = {
+			isa = PBXGroup;
+			children = (
+				4749604C1CD75C9700B020C9 /* addbookmark.pdf */,
+				4749604D1CD75C9700B020C9 /* connect.pdf */,
+				4749604E1CD75C9700B020C9 /* delete.pdf */,
+				4749604F1CD75C9700B020C9 /* download.pdf */,
+				474960501CD75C9700B020C9 /* editor.pdf */,
+				474960511CD75C9700B020C9 /* filetransfer.pdf */,
+				474960521CD75C9700B020C9 /* info.pdf */,
+				474960531CD75C9700B020C9 /* log.pdf */,
+				474960541CD75C9700B020C9 /* newfolder.pdf */,
+				474960551CD75C9700B020C9 /* quicklook.pdf */,
+				474960561CD75C9700B020C9 /* reload.pdf */,
+				474960571CD75C9700B020C9 /* sync.pdf */,
+				474960581CD75C9700B020C9 /* terminal.pdf */,
+				474960591CD75C9700B020C9 /* upload.pdf */,
+				4749605A1CD75C9700B020C9 /* webbrowser.pdf */,
+				4749605B1CD75C9700B020C9 /* archive.pdf */,
+				4749605C1CD75C9700B020C9 /* cleanup.pdf */,
+				4749605D1CD75C9700B020C9 /* eject.pdf */,
+				4749605E1CD75C9700B020C9 /* open.pdf */,
+				474960611CD75C9700B020C9 /* showinfinder.pdf */,
+				474960621CD75C9700B020C9 /* stop.pdf */,
+				474960631CD75C9700B020C9 /* trash.pdf */,
+				4749607D1CD7679A00B020C9 /* transferremove.pdf */,
+				4749607E1CD7679A00B020C9 /* transferresume.pdf */,
+			);
+			name = toolbar;
+			sourceTree = "<group>";
+		};
 		47F85C1D1C0F102600FDA856 /* App */ = {
 			isa = PBXGroup;
 			children = (
@@ -1858,6 +1939,8 @@
 				47F85C2A1C0F103E00FDA856 /* main.m */,
 				47F85C2E1C0F103E00FDA856 /* SNDisclosableView.h */,
 				47F85C2F1C0F103E00FDA856 /* SNDisclosableView.m */,
+				47D6FFE61CCFA54A005B01C5 /* CDToolbarItem.m */,
+				47D6FFE71CCFA54A005B01C5 /* CDToolbarItem.h */,
 			);
 			name = App;
 			sourceTree = "<group>";
@@ -1898,6 +1981,7 @@
 				47F85C301C0F103E00FDA856 /* CDBookmarkCell.h in Headers */,
 				47FB79D81C2E9E67008D3B9C /* launcher.h in Headers */,
 				47F85C361C0F103E00FDA856 /* CDOutlineView.h in Headers */,
+				47D6FFE91CCFA54A005B01C5 /* CDToolbarItem.h in Headers */,
 				47F85C3A1C0F103E00FDA856 /* CTGradientView.h in Headers */,
 				47F85C401C0F103E00FDA856 /* SNDisclosableView.h in Headers */,
 				47F85C381C0F103E00FDA856 /* CTGradient.h in Headers */,
@@ -2046,18 +2130,23 @@
 			buildActionMask = 2147483647;
 			files = (
 				474163C106C4F64100AC0BD2 /* Info.xib in Resources */,
+				4749606A1CD75C9700B020C9 /* filetransfer.pdf in Resources */,
 				474163C206C4F64100AC0BD2 /* Browser.xib in Resources */,
 				474163C306C4F64100AC0BD2 /* Main.xib in Resources */,
 				474163C706C4F64100AC0BD2 /* License.txt in Resources */,
 				474163CA06C4F64100AC0BD2 /* Connection.xib in Resources */,
 				474163CB06C4F64100AC0BD2 /* Donate.xib in Resources */,
+				474960731CD75C9700B020C9 /* webbrowser.pdf in Resources */,
 				474163CD06C4F64100AC0BD2 /* Login.xib in Resources */,
 				474163CE06C4F64100AC0BD2 /* Preferences.xib in Resources */,
+				4749606B1CD75C9700B020C9 /* info.pdf in Resources */,
 				474163CF06C4F64100AC0BD2 /* Bookmark.xib in Resources */,
 				474166A606C6555E00AC0BD2 /* InfoPlist.strings in Resources */,
 				4741686B06C6BA9400AC0BD2 /* Localizable.strings in Resources */,
+				474960761CD75C9700B020C9 /* eject.pdf in Resources */,
 				475D17B90805D54C00166B8A /* download5.icns in Resources */,
 				475D17BA0805D54C00166B8A /* download7.icns in Resources */,
+				474960711CD75C9700B020C9 /* terminal.pdf in Resources */,
 				475D17BC0805D54C00166B8A /* download8.icns in Resources */,
 				47AF48FD199B913300A580EC /* Sftp.strings in Resources */,
 				475D17BD0805D54C00166B8A /* download6.icns in Resources */,
@@ -2068,6 +2157,9 @@
 				475D17C20805D54C00166B8A /* download4.icns in Resources */,
 				4781AF410828423100B3E0FA /* download0.icns in Resources */,
 				479626AF1C98057C00CEBEC0 /* googledrive.tiff in Resources */,
+				474960801CD7679A00B020C9 /* transferresume.pdf in Resources */,
+				4749606C1CD75C9700B020C9 /* log.pdf in Resources */,
+				4749607F1CD7679A00B020C9 /* transferremove.pdf in Resources */,
 				4716C5F50872BA9900938886 /* Command.xib in Resources */,
 				47F0B7D3087AD1B100439978 /* Status.strings in Resources */,
 				4751799E097943FA008F671F /* Credentials.strings in Resources */,
@@ -2080,6 +2172,7 @@
 				47E987600D689A280077733F /* S3.strings in Resources */,
 				47B6074A0DA420880068282C /* Keychain.strings in Resources */,
 				4786CB6C0E253B800029848F /* Error.xib in Resources */,
+				474960721CD75C9700B020C9 /* upload.pdf in Resources */,
 				4786CB6D0E253B800029848F /* Activity.xib in Resources */,
 				4786CB6E0E253B800029848F /* Transcript.xib in Resources */,
 				4786CB6F0E253B800029848F /* Progress.xib in Resources */,
@@ -2089,6 +2182,8 @@
 				478426F40F9F75900068BA2E /* License.strings in Resources */,
 				47993F7811699F12000271A8 /* Transfer.strings in Resources */,
 				47993F7C11699F40000271A8 /* Transfer.xib in Resources */,
+				474960681CD75C9700B020C9 /* download.pdf in Resources */,
+				4749607B1CD75C9700B020C9 /* stop.pdf in Resources */,
 				47652D0B1202BED200745031 /* Azure.strings in Resources */,
 				471F5C2E12AD1B6B0005D323 /* Alert.strings in Resources */,
 				475EBE9412DA462C00E5C3A2 /* ServicesMenu.strings in Resources */,
@@ -2101,6 +2196,7 @@
 				47BCF18E13BB4EC700D26E4C /* setup/app/container-migration.plist in Resources */,
 				476730B716108E1300B28D35 /* add.tiff in Resources */,
 				476730B816108E1300B28D35 /* addPressed.tiff in Resources */,
+				4749606F1CD75C9700B020C9 /* reload.pdf in Resources */,
 				476730B916108E1300B28D35 /* advanced.tiff in Resources */,
 				476730BA16108E1300B28D35 /* alert.tiff in Resources */,
 				476730BB16108E1300B28D35 /* aliasbadge.tiff in Resources */,
@@ -2108,6 +2204,10 @@
 				476730C216108E1300B28D35 /* nav-backward.tiff in Resources */,
 				476730C316108E1300B28D35 /* nav-forward.tiff in Resources */,
 				476730C416108E1300B28D35 /* transfer-upload.tiff in Resources */,
+				474960671CD75C9700B020C9 /* delete.pdf in Resources */,
+				4749606D1CD75C9700B020C9 /* newfolder.pdf in Resources */,
+				474960751CD75C9700B020C9 /* cleanup.pdf in Resources */,
+				474960741CD75C9700B020C9 /* archive.pdf in Resources */,
 				476730C616108E1300B28D35 /* nav-up.tiff in Resources */,
 				476730C816108E1300B28D35 /* bandwidth.tiff in Resources */,
 				476730C916108E1300B28D35 /* book.tiff in Resources */,
@@ -2118,19 +2218,20 @@
 				476730CF16108E1300B28D35 /* clean.tiff in Resources */,
 				476730D016108E1300B28D35 /* cleanall.tiff in Resources */,
 				476730D116108E1300B28D35 /* column.tiff in Resources */,
-				476730D216108E1300B28D35 /* connect.tiff in Resources */,
 				476730D316108E1300B28D35 /* connection-secure.tiff in Resources */,
 				476730D416108E1300B28D35 /* connection.tiff in Resources */,
 				476730D516108E1300B28D35 /* delete.tiff in Resources */,
 				476730D616108E1300B28D35 /* download.tiff in Resources */,
 				476730D816108E1300B28D35 /* dropfolderbadge.tiff in Resources */,
 				476730D916108E1300B28D35 /* edit.tiff in Resources */,
+				4749607C1CD75C9700B020C9 /* trash.pdf in Resources */,
 				476730DA16108E1300B28D35 /* editPressed.tiff in Resources */,
 				476730DB16108E1300B28D35 /* eject.tiff in Resources */,
 				476730DC16108E1300B28D35 /* executable.tiff in Resources */,
 				476730DE16108E1300B28D35 /* gear.tiff in Resources */,
 				476730DF16108E1300B28D35 /* general.tiff in Resources */,
 				476730E116108E1300B28D35 /* history.tiff in Resources */,
+				474960771CD75C9700B020C9 /* open.pdf in Resources */,
 				476730E216108E1300B28D35 /* info.tiff in Resources */,
 				476730E316108E1300B28D35 /* language.tiff in Resources */,
 				476730E416108E1300B28D35 /* list.tiff in Resources */,
@@ -2145,21 +2246,26 @@
 				476730EC16108E1300B28D35 /* permissions.tiff in Resources */,
 				476730ED16108E1300B28D35 /* plus.tiff in Resources */,
 				476730EE16108E1300B28D35 /* privatefolderbadge.tiff in Resources */,
+				474960691CD75C9700B020C9 /* editor.pdf in Resources */,
 				476730EF16108E1300B28D35 /* queue.tiff in Resources */,
 				476730F016108E1300B28D35 /* readonlyfolderbadge.tiff in Resources */,
 				476730F116108E1300B28D35 /* reload.tiff in Resources */,
 				476730F216108E1300B28D35 /* remove.tiff in Resources */,
 				476730F316108E1300B28D35 /* removePressed.tiff in Resources */,
+				4749607A1CD75C9700B020C9 /* showinfinder.pdf in Resources */,
 				476730F416108E1300B28D35 /* rendezvous.tiff in Resources */,
 				476730F516108E1300B28D35 /* resume.tiff in Resources */,
 				476730F616108E1300B28D35 /* reveal.tiff in Resources */,
 				476730F916108E1300B28D35 /* site.tiff in Resources */,
 				476730FA16108E1300B28D35 /* statusBlue.tiff in Resources */,
+				474960651CD75C9700B020C9 /* addbookmark.pdf in Resources */,
 				476730FB16108E1300B28D35 /* statusGreen.tiff in Resources */,
+				4749606E1CD75C9700B020C9 /* quicklook.pdf in Resources */,
 				476730FC16108E1300B28D35 /* statusRed.tiff in Resources */,
 				476730FD16108E1300B28D35 /* statusYellow.tiff in Resources */,
 				476730FE16108E1300B28D35 /* stop.tiff in Resources */,
 				4767310016108E1300B28D35 /* sync.tiff in Resources */,
+				474960701CD75C9700B020C9 /* sync.pdf in Resources */,
 				4767310116108E1300B28D35 /* transparent.tiff in Resources */,
 				4767310216108E1300B28D35 /* trash.tiff in Resources */,
 				4767310316108E1300B28D35 /* turtle.tiff in Resources */,
@@ -2171,6 +2277,7 @@
 				47B331941668102400C9FFA0 /* swift.tiff in Resources */,
 				47A082B1167A169D004458C7 /* cyberduck-application.icns in Resources */,
 				471DF150167F2A7B00EAFE71 /* cyberduck-document.icns in Resources */,
+				474960661CD75C9700B020C9 /* connect.pdf in Resources */,
 				473BF0871892968E0068B4C1 /* azure.tiff in Resources */,
 				475C6D5A170C9214006535BB /* googlestorage.tiff in Resources */,
 				47B888A917984584004E298A /* Folder.xib in Resources */,
@@ -2287,6 +2394,7 @@
 				47F85C351C0F103E00FDA856 /* CDOutlineCell.m in Sources */,
 				47F85C411C0F103E00FDA856 /* SNDisclosableView.m in Sources */,
 				47F85C331C0F103E00FDA856 /* CDListView.m in Sources */,
+				47D6FFE81CCFA54A005B01C5 /* CDToolbarItem.m in Sources */,
 				47F85C391C0F103E00FDA856 /* CTGradient.m in Sources */,
 				47F85C3C1C0F103E00FDA856 /* main.m in Sources */,
 				47FB79D91C2E9E67008D3B9C /* launcher.m in Sources */,

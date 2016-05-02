@@ -98,9 +98,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TimeZone;
 
-/**
- * @version $Id$
- */
 public class InfoController extends ToolbarWindowController {
     private static Logger log = Logger.getLogger(InfoController.class);
 

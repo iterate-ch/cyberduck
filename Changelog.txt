@@ -4,6 +4,7 @@ http://cyberduck.io/
 Changelog. Last modified: $Date$
 
 5.0 [https://trac.cyberduck.io/milestone/5.0]
+- [Feature] New monochrome toolbar icons (Mac)
 - [Feature] Support for Google Drive (#6976)
 - [Feature] Segmented downloads with multiple connections per file (#4498)
 - [Feature] Support for Google Drive (#6976)

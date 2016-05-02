@@ -52,8 +52,6 @@ import java.util.Map;
 
 /**
  * A window controller with a toolbar populated from a tabbed view.
- *
- * @version $Id$
  */
 public abstract class ToolbarWindowController extends WindowController implements NSToolbar.Delegate, NSTabView.Delegate {
     private static Logger log = Logger.getLogger(ToolbarWindowController.class);
@@ -201,7 +199,7 @@ public abstract class ToolbarWindowController extends WindowController implement
         toolbarItem.setLabel(tab.label());
         toolbarItem.setPaletteLabel(tab.label());
         toolbarItem.setToolTip(tab.label());
-        toolbarItem.setImage(IconCacheFactory.<NSImage>get().iconNamed(itemIdentifier, 32));
+        toolbarItem.setImage(IconCacheFactory.<NSImage>get().iconNamed(String.format("%s.tiff", itemIdentifier), 32));
         toolbarItem.setTarget(this.id());
         toolbarItem.setAction(Foundation.selector("toolbarItemSelected:"));
 
