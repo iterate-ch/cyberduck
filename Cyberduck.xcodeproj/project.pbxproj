@@ -81,11 +81,11 @@
 		474960751CD75C9700B020C9 /* cleanup.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4749605C1CD75C9700B020C9 /* cleanup.pdf */; };
 		474960761CD75C9700B020C9 /* eject.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4749605D1CD75C9700B020C9 /* eject.pdf */; };
 		474960771CD75C9700B020C9 /* open.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4749605E1CD75C9700B020C9 /* open.pdf */; };
-		474960781CD75C9700B020C9 /* remove.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4749605F1CD75C9700B020C9 /* remove.pdf */; };
-		474960791CD75C9700B020C9 /* resume.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 474960601CD75C9700B020C9 /* resume.pdf */; };
 		4749607A1CD75C9700B020C9 /* showinfinder.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 474960611CD75C9700B020C9 /* showinfinder.pdf */; };
 		4749607B1CD75C9700B020C9 /* stop.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 474960621CD75C9700B020C9 /* stop.pdf */; };
 		4749607C1CD75C9700B020C9 /* trash.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 474960631CD75C9700B020C9 /* trash.pdf */; };
+		4749607F1CD7679A00B020C9 /* transferremove.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4749607D1CD7679A00B020C9 /* transferremove.pdf */; };
+		474960801CD7679A00B020C9 /* transferresume.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4749607E1CD7679A00B020C9 /* transferresume.pdf */; };
 		474B843D1C15CDD1004D562C /* CDTransmitImporter.m in Sources */ = {isa = PBXBuildFile; fileRef = 474B843B1C15CDD1004D562C /* CDTransmitImporter.m */; };
 		474B843E1C15CDD1004D562C /* CDTransmitImporter.h in Headers */ = {isa = PBXBuildFile; fileRef = 474B843C1C15CDD1004D562C /* CDTransmitImporter.h */; };
 		474B84411C15DB51004D562C /* Sandbox.h in Headers */ = {isa = PBXBuildFile; fileRef = 474B843F1C15DB51004D562C /* Sandbox.h */; };
@@ -785,11 +785,11 @@
 		4749605C1CD75C9700B020C9 /* cleanup.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = cleanup.pdf; path = toolbar/cleanup.pdf; sourceTree = "<group>"; };
 		4749605D1CD75C9700B020C9 /* eject.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = eject.pdf; path = toolbar/eject.pdf; sourceTree = "<group>"; };
 		4749605E1CD75C9700B020C9 /* open.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = open.pdf; path = toolbar/open.pdf; sourceTree = "<group>"; };
-		4749605F1CD75C9700B020C9 /* remove.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = remove.pdf; path = toolbar/remove.pdf; sourceTree = "<group>"; };
-		474960601CD75C9700B020C9 /* resume.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = resume.pdf; path = toolbar/resume.pdf; sourceTree = "<group>"; };
 		474960611CD75C9700B020C9 /* showinfinder.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = showinfinder.pdf; path = toolbar/showinfinder.pdf; sourceTree = "<group>"; };
 		474960621CD75C9700B020C9 /* stop.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = stop.pdf; path = toolbar/stop.pdf; sourceTree = "<group>"; };
 		474960631CD75C9700B020C9 /* trash.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = trash.pdf; path = toolbar/trash.pdf; sourceTree = "<group>"; };
+		4749607D1CD7679A00B020C9 /* transferremove.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = transferremove.pdf; path = toolbar/transferremove.pdf; sourceTree = "<group>"; };
+		4749607E1CD7679A00B020C9 /* transferresume.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = transferresume.pdf; path = toolbar/transferresume.pdf; sourceTree = "<group>"; };
 		474B843B1C15CDD1004D562C /* CDTransmitImporter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDTransmitImporter.m; path = importer/src/main/objc/CDTransmitImporter.m; sourceTree = SOURCE_ROOT; };
 		474B843C1C15CDD1004D562C /* CDTransmitImporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDTransmitImporter.h; path = importer/src/main/objc/CDTransmitImporter.h; sourceTree = SOURCE_ROOT; };
 		474B843F1C15DB51004D562C /* Sandbox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Sandbox.h; path = core/src/main/objc/Sandbox.h; sourceTree = SOURCE_ROOT; };
@@ -1915,11 +1915,11 @@
 				4749605C1CD75C9700B020C9 /* cleanup.pdf */,
 				4749605D1CD75C9700B020C9 /* eject.pdf */,
 				4749605E1CD75C9700B020C9 /* open.pdf */,
-				4749605F1CD75C9700B020C9 /* remove.pdf */,
-				474960601CD75C9700B020C9 /* resume.pdf */,
 				474960611CD75C9700B020C9 /* showinfinder.pdf */,
 				474960621CD75C9700B020C9 /* stop.pdf */,
 				474960631CD75C9700B020C9 /* trash.pdf */,
+				4749607D1CD7679A00B020C9 /* transferremove.pdf */,
+				4749607E1CD7679A00B020C9 /* transferresume.pdf */,
 			);
 			name = toolbar;
 			sourceTree = "<group>";
@@ -2138,7 +2138,6 @@
 				474163C306C4F64100AC0BD2 /* Main.xib in Resources */,
 				474163C706C4F64100AC0BD2 /* License.txt in Resources */,
 				474163CA06C4F64100AC0BD2 /* Connection.xib in Resources */,
-				474960791CD75C9700B020C9 /* resume.pdf in Resources */,
 				474163CB06C4F64100AC0BD2 /* Donate.xib in Resources */,
 				474960731CD75C9700B020C9 /* webbrowser.pdf in Resources */,
 				474163CD06C4F64100AC0BD2 /* Login.xib in Resources */,
@@ -2161,7 +2160,9 @@
 				475D17C20805D54C00166B8A /* download4.icns in Resources */,
 				4781AF410828423100B3E0FA /* download0.icns in Resources */,
 				479626AF1C98057C00CEBEC0 /* googledrive.tiff in Resources */,
+				474960801CD7679A00B020C9 /* transferresume.pdf in Resources */,
 				4749606C1CD75C9700B020C9 /* log.pdf in Resources */,
+				4749607F1CD7679A00B020C9 /* transferremove.pdf in Resources */,
 				4716C5F50872BA9900938886 /* Command.xib in Resources */,
 				47F0B7D3087AD1B100439978 /* Status.strings in Resources */,
 				4751799E097943FA008F671F /* Credentials.strings in Resources */,
@@ -2173,7 +2174,6 @@
 				470912ED0C36FCE00049FBCE /* Prompt.xib in Resources */,
 				47E987600D689A280077733F /* S3.strings in Resources */,
 				47B6074A0DA420880068282C /* Keychain.strings in Resources */,
-				474960781CD75C9700B020C9 /* remove.pdf in Resources */,
 				4786CB6C0E253B800029848F /* Error.xib in Resources */,
 				474960721CD75C9700B020C9 /* upload.pdf in Resources */,
 				4786CB6D0E253B800029848F /* Activity.xib in Resources */,

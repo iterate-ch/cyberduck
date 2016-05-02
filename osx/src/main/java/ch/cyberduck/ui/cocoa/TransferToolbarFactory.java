@@ -60,6 +60,11 @@ public class TransferToolbarFactory extends AbstractToolbarFactory implements To
             public Selector action() {
                 return Foundation.selector("resumeButtonClicked:");
             }
+
+            @Override
+            public NSImage image() {
+                return IconCacheFactory.<NSImage>get().iconNamed("transferresume.pdf");
+            }
         },
         reload {
             @Override
@@ -77,6 +82,11 @@ public class TransferToolbarFactory extends AbstractToolbarFactory implements To
             @Override
             public Selector action() {
                 return Foundation.selector("deleteButtonClicked:");
+            }
+
+            @Override
+            public NSImage image() {
+                return IconCacheFactory.<NSImage>get().iconNamed("transferremove.pdf");
             }
         },
         cleanup {

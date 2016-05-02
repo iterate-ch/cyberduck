@@ -72,11 +72,6 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
         },
         transfers {
             @Override
-            public String label() {
-                return LocaleFactory.localizedString("Transfers");
-            }
-
-            @Override
             public String tooltip() {
                 return LocaleFactory.localizedString("Show Transfers window");
             }
@@ -91,7 +86,7 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
                 return IconCacheFactory.<NSImage>get().iconNamed("filetransfer.pdf");
             }
         },
-        newconnection {
+        connect {
             @Override
             public String label() {
                 return LocaleFactory.localizedString("New Connection");
@@ -105,11 +100,6 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
             @Override
             public Selector action() {
                 return Foundation.selector("connectButtonClicked:");
-            }
-
-            @Override
-            public NSImage image() {
-                return IconCacheFactory.<NSImage>get().iconNamed("connect.pdf");
             }
         },
         quickconnect {
@@ -132,6 +122,11 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
             @Override
             public String label() {
                 return LocaleFactory.localizedString("Action");
+            }
+
+            @Override
+            public NSImage image() {
+                return IconCacheFactory.<NSImage>get().iconNamed("NSActionTemplate");
             }
 
             @Override
@@ -441,7 +436,7 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
                     final NSPopUpButton button = controller.getActionPopupButton();
                     button.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
                     button.insertItemWithTitle_atIndex(StringUtils.EMPTY, index);
-                    button.itemAtIndex(index).setImage(IconCacheFactory.<NSImage>get().iconNamed("NSActionTemplate"));
+                    button.itemAtIndex(index).setImage(tools.image());
                     item.setView(button);
                     // Add a menu representation for text mode of toolbar
                     NSMenuItem toolMenu = NSMenuItem.itemWithTitle(tools.label(), null, StringUtils.EMPTY);
@@ -561,7 +556,7 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
     @Override
     public NSArray getDefault() {
         return NSArray.arrayWithObjects(
-                newconnection.name(),
+                connect.name(),
                 NSToolbarItem.NSToolbarSeparatorItemIdentifier,
                 quickconnect.name(),
                 tools.name(),
@@ -576,7 +571,7 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
     @Override
     public NSArray getAllowed() {
         return NSArray.arrayWithObjects(
-                newconnection.name(),
+                connect.name(),
                 browserview.name(),
                 transfers.name(),
                 quickconnect.name(),
