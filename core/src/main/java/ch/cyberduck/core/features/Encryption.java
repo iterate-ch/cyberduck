@@ -22,6 +22,8 @@ import java.util.List;
 
 public interface Encryption {
 
+    List<String> getKeys();
+
     List<String> getAlgorithms();
 
     void setEncryption(Path file, String algorithm) throws BackgroundException;
