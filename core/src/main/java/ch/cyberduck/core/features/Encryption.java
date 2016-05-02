@@ -22,7 +22,7 @@ import java.util.List;
 
 public interface Encryption {
 
-    List<String> getKeys();
+    List<String> getKeys() throws BackgroundException;
 
     List<String> getAlgorithms();
 
