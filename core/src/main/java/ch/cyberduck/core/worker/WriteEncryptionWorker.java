@@ -29,9 +29,6 @@ import ch.cyberduck.core.features.Encryption;
 import java.text.MessageFormat;
 import java.util.List;
 
-/**
- * @version $Id:$
- */
 public class WriteEncryptionWorker extends Worker<Boolean> {
 
     /**
@@ -40,7 +37,7 @@ public class WriteEncryptionWorker extends Worker<Boolean> {
     private List<Path> files;
 
     /**
-     * Redundancy class
+     * Algorithm
      */
     private String algorithm;
 
