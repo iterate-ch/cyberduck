@@ -45,6 +45,8 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.DisabledX509HostnameVerifier;
+import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -59,6 +61,7 @@ import org.bouncycastle.util.encoders.Base64;
 import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.HttpsURLConnection;
+import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
@@ -72,9 +75,6 @@ import com.microsoft.azure.storage.StorageEvent;
 import com.microsoft.azure.storage.blob.BlobRequestOptions;
 import com.microsoft.azure.storage.blob.CloudBlobClient;
 
-/**
- * @version $Id$
- */
 public class AzureSession extends SSLSession<CloudBlobClient> {
     private static final Logger log = Logger.getLogger(AzureSession.class);
 
@@ -111,7 +111,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
             context.setLoggingEnabled(true);
             context.setLogger(LoggerFactory.getLogger(log.getName()));
             context.setUserHeaders(new HashMap<String, String>(Collections.singletonMap(
-                            HttpHeaders.USER_AGENT, new PreferencesUseragentProvider().get()))
+                    HttpHeaders.USER_AGENT, new PreferencesUseragentProvider().get()))
             );
             context.getSendingRequestEventHandler().addListener(listener = new StorageEvent<SendingRequestEvent>() {
                 @Override
@@ -123,6 +123,28 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
                     }
                 }
             });
+            final Proxy proxy = ProxyFactory.get().find(host);
+            switch(proxy.getType()) {
+                case SOCKS: {
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Configured to use SOCKS proxy %s", proxy));
+                    }
+                    final java.net.Proxy socksProxy = new java.net.Proxy(
+                            java.net.Proxy.Type.SOCKS, new InetSocketAddress(proxy.getHostname(), proxy.getPort()));
+                    context.setProxy(socksProxy);
+                    break;
+                }
+                case HTTP:
+                case HTTPS: {
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Configured to use HTTP proxy %s", proxy));
+                    }
+                    final java.net.Proxy httpProxy = new java.net.Proxy(
+                            java.net.Proxy.Type.HTTP, new InetSocketAddress(proxy.getHostname(), proxy.getPort()));
+                    context.setProxy(httpProxy);
+                    break;
+                }
+            }
             return client;
         }
         catch(URISyntaxException e) {
