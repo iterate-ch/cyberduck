@@ -3622,7 +3622,7 @@ public class BrowserController extends WindowController
     }
 
     private boolean validate(final Selector action) {
-        return new BrowserToolbarValidator(this).validate(action);
+        return browserToolbarValidator.validate(action);
     }
 
     @Override
