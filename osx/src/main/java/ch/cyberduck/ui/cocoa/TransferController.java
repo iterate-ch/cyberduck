@@ -92,6 +92,8 @@ public final class TransferController extends WindowController implements NSTool
     private final NSNotificationCenter notificationCenter
             = NSNotificationCenter.defaultCenter();
 
+    public final TransferToolbarValidator toolbarValidator = new TransferToolbarValidator(this);
+
     private NSToolbar toolbar;
 
     private RevealService reveal = RevealServiceFactory.get();
@@ -976,7 +978,7 @@ public final class TransferController extends WindowController implements NSTool
                 item.setTitle(LocaleFactory.localizedString("Paste"));
             }
         }
-        return new TransferToolbarValidator(this).validate(action);
+        return toolbarValidator.validate(action);
     }
 
     /**
@@ -985,6 +987,6 @@ public final class TransferController extends WindowController implements NSTool
     @Override
     @Action
     public boolean validateToolbarItem(final NSToolbarItem item) {
-        return new TransferToolbarValidator(this).validate(item);
+        return toolbarValidator.validate(item);
     }
 }
