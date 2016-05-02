@@ -28,7 +28,7 @@ import org.junit.Test;
 public class WsFtpBookmarkCollectionTest {
 
     @Test(expected = AccessDeniedException.class)
-    public void testParse() throws Exception {
+    public void testParseNotFound() throws Exception {
         new WsFtpBookmarkCollection().read(new Local(System.getProperty("java.io.tmpdir"), "f"));
     }
 }

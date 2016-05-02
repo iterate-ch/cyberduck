@@ -2789,7 +2789,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (PreferencesFactory.get().getBoolean("browser.move.confirm"))
             {
                 StringBuilder alertText =
-                    new StringBuilder(LocaleFactory.localizedString("Do you want to move the selected files?"));
+                    new StringBuilder(LocaleFactory.localizedString("Do you want to move the selected files?", "Duplicate"));
 
                 StringBuilder content = new StringBuilder();
                 int i = 0;

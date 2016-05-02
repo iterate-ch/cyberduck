@@ -1059,6 +1059,7 @@ namespace Ch.Cyberduck.Ui.Controller
             IList<KeyValuePair<string, string>> algorithms = new List<KeyValuePair<string, string>>();
             algorithms.Add(new KeyValuePair<string, string>(NullString, LocaleFactory.localizedString("None")));
             algorithms.Add(new KeyValuePair<string, string>("AES256", LocaleFactory.localizedString("AES256", "S3")));
+            algorithms.Add(new KeyValuePair<string, string>("aws:kms", LocaleFactory.localizedString("AWS KMS–Managed Keys (SSE-KMS)", "S3")));
             View.PopulateDefaultEncryption(algorithms);
         }
 
@@ -1297,7 +1298,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             defaultEditor.getName()));
                 }
             }
-            editors.Add(new KeyValueIconTriple<Application, string>(new Application(null, null),
+            editors.Add(new KeyValueIconTriple<Application, string>(Application.notfound,
                 LocaleFactory.localizedString("Choose") + "…", String.Empty));
             View.PopulateEditors(editors);
             if (defaultEditor != null)
@@ -1307,7 +1308,7 @@ namespace Ch.Cyberduck.Ui.Controller
             else
             {
                 //dummy editor which leads to an empty selection
-                View.DefaultEditor = new Application(null, null);
+                View.DefaultEditor = Application.notfound;
             }
         }
     }
