@@ -229,7 +229,7 @@ public class BrowserController extends WindowController
     }
 
     protected void validateToolbar() {
-        this.window().toolbar().validateVisibleItems();
+        toolbar.validateVisibleItems();
     }
 
     public static void updateBookmarkTableRowHeight() {
