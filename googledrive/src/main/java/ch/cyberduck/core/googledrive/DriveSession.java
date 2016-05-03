@@ -98,7 +98,7 @@ public class DriveSession extends HttpSession<Drive> {
         final CloseableHttpClient client = builder.build(this).build();
         transport = new ApacheHttpTransport(client);
         json = new GsonFactory();
-        return new Drive.Builder(this.transport, json, new HttpRequestInitializer() {
+        return new Drive.Builder(transport, json, new HttpRequestInitializer() {
             @Override
             public void initialize(HttpRequest httpRequest) throws IOException {
                 httpRequest.setSuppressUserAgentSuffix(true);
