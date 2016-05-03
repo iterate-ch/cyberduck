@@ -97,13 +97,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> {
                     final String base = session.getClient().getRootUrl();
                     // Initiate a resumable upload
                     final HttpEntityEnclosingRequestBase request;
-                    if(status.isExists()) {
-                        // Update existing resource
-                        request = new HttpPut(String.format("%s/upload/drive/v3/files?uploadType=resumable", base));
-                    }
-                    else {
-                        request = new HttpPost(String.format("%s/upload/drive/v3/files?uploadType=resumable", base));
-                    }
+                    request = new HttpPost(String.format("%s/upload/drive/v3/files?uploadType=resumable", base));
                     if(StringUtils.isNotBlank(status.getMime())) {
                         // Set to the media MIME type of the upload data to be transferred in subsequent requests.
                         request.addHeader("X-Upload-Content-Type", status.getMime());
