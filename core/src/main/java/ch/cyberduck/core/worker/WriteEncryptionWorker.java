@@ -79,10 +79,7 @@ public class WriteEncryptionWorker extends Worker<Boolean> {
             file.attributes().setEncryption(algorithm);
         }
         if(recursive) {
-            if(file.isVolume()) {
-                // No recursion when changing container ACL
-            }
-            else if(file.isDirectory()) {
+            if(file.isDirectory()) {
                 for(Path child : session.list(file, new ActionListProgressListener(this, listener))) {
                     this.write(session, feature, child);
                 }
