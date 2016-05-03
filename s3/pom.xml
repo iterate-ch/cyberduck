@@ -60,7 +60,12 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-iam</artifactId>
-            <version>1.10.34</version>
+            <version>1.10.74</version>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-kms</artifactId>
+            <version>1.10.74</version>
         </dependency>
     </dependencies>
 </project>

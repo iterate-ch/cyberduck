@@ -42,17 +42,12 @@ import com.amazonaws.ClientConfiguration;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClient;
 import com.amazonaws.services.identitymanagement.model.*;
 
-/**
- * @version $Id$
- */
 public class AmazonIdentityConfiguration implements IdentityConfiguration {
     private static final Logger log = Logger.getLogger(AmazonIdentityConfiguration.class);
 
-    private Host host;
+    private final Host host;
 
-    private UseragentProvider ua = new PreferencesUseragentProvider();
-
-    private AmazonIdentityManagementClient client;
+    private final AmazonIdentityManagementClient client;
 
     /**
      * Prefix in preferences
@@ -63,11 +58,12 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
         this(host, PreferencesFactory.get().getInteger("connection.timeout.seconds") * 1000);
     }
 
-    public AmazonIdentityConfiguration(final Host host, int timeout) {
+    public AmazonIdentityConfiguration(final Host host, final int timeout) {
         this.host = host;
         final ClientConfiguration configuration = new ClientConfiguration();
         configuration.setConnectionTimeout(timeout);
         configuration.setSocketTimeout(timeout);
+        final UseragentProvider ua = new PreferencesUseragentProvider();
         configuration.setUserAgent(ua.get());
         configuration.setMaxErrorRetry(0);
         configuration.setMaxConnections(1);
@@ -94,7 +90,7 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
         );
     }
 
-    private static interface Authenticated<T> extends Callable<T> {
+    private interface Authenticated<T> extends Callable<T> {
         T call() throws BackgroundException;
     }
 
