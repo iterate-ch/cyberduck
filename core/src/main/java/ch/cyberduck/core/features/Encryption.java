@@ -23,11 +23,33 @@ import java.util.List;
 
 public interface Encryption {
 
+    /**
+     * Get list of key names available for use for server side encryption
+     *
+     * @param prompt Login callback
+     * @return List of key names
+     */
     List<String> getKeys(LoginCallback prompt) throws BackgroundException;
 
+    /**
+     * @return List of supported algorithms by provider
+     */
     List<String> getAlgorithms();
 
+    /**
+     * Enable server side encryption for file
+     *
+     * @param file      File
+     * @param algorithm Algorithm to use
+     */
     void setEncryption(Path file, String algorithm) throws BackgroundException;
 
+    /**
+     * Get server side encryption algorithm
+     *
+     * @param file File
+     * @return Null if not encrypted or server side encryption algorithm used
+     * @throws BackgroundException
+     */
     String getEncryption(Path file) throws BackgroundException;
 }
