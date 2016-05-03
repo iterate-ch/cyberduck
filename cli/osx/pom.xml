@@ -80,7 +80,7 @@
                                             <groupId>com.oracle.java</groupId>
                                             <artifactId>jre</artifactId>
                                             <type>zip</type>
-                                            <version>8u77</version>
+                                            <version>8u92</version>
                                         </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${project.build.directory}</outputDirectory>
@@ -145,9 +145,6 @@
         <profile>
             <id>sign</id>
             <activation>
-                <property>
-                    <name>env.JENKINS_HOME</name>
-                </property>
                 <os>
                     <family>Mac</family>
                 </os>
