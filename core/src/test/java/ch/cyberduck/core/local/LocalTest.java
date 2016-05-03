@@ -5,7 +5,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 
-import org.junit.Ignore;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import java.util.UUID;
@@ -102,6 +102,10 @@ public class LocalTest {
         n.delete();
     }
 
+    @Test
+    public void testNormalize() throws Exception {
+        assertEquals(StringUtils.removeEnd(System.getProperty("java.io.tmpdir"), "/"), new Local(System.getProperty("java.io.tmpdir")).getAbsolute());
+    }
 
     private static class WindowsLocal extends Local {
 

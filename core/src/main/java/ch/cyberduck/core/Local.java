@@ -96,12 +96,11 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
             path = new WorkdirPrefixer().normalize(path);
         }
         try {
-            Paths.get(path);
+            this.path = Paths.get(path).toString();
         }
         catch(InvalidPathException e) {
             throw new LocalAccessDeniedException(String.format("The name %s is not a valid path for the filesystem", path), e);
         }
-        this.path = path;
         this.attributes = new LocalAttributes(path);
     }
 
