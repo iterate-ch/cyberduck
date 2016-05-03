@@ -69,11 +69,10 @@ public class WriteEncryptionWorker extends Worker<Boolean> {
         if(this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
-        if(!algorithm.equals(file.attributes().getStorageClass())) {
+        if(!algorithm.equals(file.attributes().getEncryption())) {
             listener.message(MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
                     file.getName()));
             feature.setEncryption(file, algorithm);
-            file.attributes().setEncryption(algorithm);
         }
         if(recursive) {
             if(file.isDirectory()) {
