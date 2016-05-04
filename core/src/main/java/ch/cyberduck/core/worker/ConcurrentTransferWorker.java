@@ -147,7 +147,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
                         if(diagnostics.determine(cause) == FailureDiagnostics.Type.network) {
                             // Downgrade pool to single connection
                             final int max = pool.getMaxTotal() - 1;
-                            log.warn("Lower maximum pool size to " + max + " connections.");
+                            log.warn(String.format("Lower maximum pool size to %d connections.", max));
                             pool.setMaxTotal(max);
                             pool.setMaxIdle(pool.getMaxIdle() - 1);
                             if(this.retry()) {
