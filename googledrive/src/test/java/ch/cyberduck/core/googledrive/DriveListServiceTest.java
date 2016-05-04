@@ -32,6 +32,7 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 
@@ -39,6 +40,7 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
+@IntegrationTest
 public class DriveListServiceTest {
 
     @Test

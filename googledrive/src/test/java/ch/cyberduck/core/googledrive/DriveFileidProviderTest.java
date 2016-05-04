@@ -32,6 +32,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 
@@ -41,6 +42,7 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
+@IntegrationTest
 public class DriveFileidProviderTest {
 
     @Test
