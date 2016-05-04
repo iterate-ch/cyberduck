@@ -44,7 +44,7 @@ public final class PreferencesFactory {
     private static final class DefaultLoggingMemoryPreferenes extends MemoryPreferences {
         @Override
         protected void setLogging() {
-            this.setProperty("logging.config", "log4j.xml");
+            defaults.put("logging.config", "log4j.xml");
             super.setLogging();
         }
     }
