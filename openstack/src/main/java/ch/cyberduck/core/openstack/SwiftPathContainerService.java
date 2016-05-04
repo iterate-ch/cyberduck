@@ -20,9 +20,6 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.PathContainerService;
 
-/**
- * @version $Id$
- */
 public class SwiftPathContainerService extends PathContainerService {
 
 }
