@@ -38,9 +38,6 @@ import java.text.MessageFormat;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * @version $Id$
- */
 public class LoginConnectionService implements ConnectionService {
     private static final Logger log = Logger.getLogger(LoginConnectionService.class);
 
