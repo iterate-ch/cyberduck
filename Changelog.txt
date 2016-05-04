@@ -10,6 +10,7 @@ Changelog. Last modified: $Date$
 - [Feature] Support for Google Drive (#6976)
 - [Feature] Support for Spectra BlackPearl Deep Storage Gateway (Spectra S3)
 - [Feature] Option to use AWS KMS–Managed Keys (SSE-KMS) for server side encryption (S3)
+- [Bugfix] Retry transfer for 421 error reply from server with a delay (FTP) (#9368)
 
 4.9.3
 - [Bugfix] Revert reading NTLM domain and workstation from environment (WebDAV, Windows)
@@ -24,7 +25,6 @@ Changelog. Last modified: $Date$
 - [Bugfix] Excessive memory usage when uploading many files (#9439)
 - [Bugfix] Retry transfer when authentication token expires (Backblaze B2)
 - [Bugfix] Uploads use a lot of Class C transactions (#9417) (Backblaze B2)
-- [Bugfix] Retry transfer for 421 error reply from server with a delay (FTP)
 
 4.9 [https://trac.cyberduck.io/milestone/4.9]
 - [Feature] Support for B2 Cloud Storage (Backblaze B2) (#9162)
