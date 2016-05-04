@@ -40,9 +40,6 @@ import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 
-/**
- * @version $Id$
- */
 public abstract class SessionBackgroundAction<T> extends AbstractBackgroundAction<T>
         implements ProgressListener, TranscriptListener {
     private static final Logger log = Logger.getLogger(SessionBackgroundAction.class);
@@ -247,7 +244,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     /**
      * Idle this action for some time. Blocks the caller.
      */
-    public void pause() {
+    protected void pause() {
         final int attempt = this.retry();
         final BackgroundActionPauser pauser = new BackgroundActionPauser(new BackgroundActionPauser.Callback() {
             @Override
