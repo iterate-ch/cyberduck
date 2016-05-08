@@ -26,6 +26,18 @@
             <scope>test</scope>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.ftpserver</groupId>
+            <artifactId>ftpserver</artifactId>
+            <version>1.0.6</version>
+            <type>pom</type>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>jcl-over-slf4j</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
     </dependencies>
 </project>
 

@@ -20,6 +20,7 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.ConnectionService;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
@@ -27,8 +28,12 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.pool.SessionPool;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
+import ch.cyberduck.core.threading.BackgroundActionPauser;
+import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
+import ch.cyberduck.core.threading.FailureDiagnostics;
 import ch.cyberduck.core.threading.NamedThreadFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
@@ -42,6 +47,7 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.log4j.Logger;
 
+import java.text.MessageFormat;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
@@ -61,6 +67,23 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
     private final CompletionService<TransferStatus> completion;
 
     private final AtomicInteger size = new AtomicInteger();
+
+    private final ProgressListener progress;
+
+    private final FailureDiagnostics<Exception> diagnostics
+            = new DefaultFailureDiagnostics();
+
+    private final int retry;
+
+    /**
+     * The number of times this action has been run
+     */
+    private ThreadLocal<Integer> repeat = new ThreadLocal<Integer>() {
+        @Override
+        protected Integer initialValue() {
+            return 0;
+        }
+    };
 
     public ConcurrentTransferWorker(final ConnectionService connect,
                                     final Transfer transfer, final TransferOptions options,
@@ -85,6 +108,8 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         configuration.setMaxIdle(connections);
         configuration.setBlockWhenExhausted(true);
         configuration.setMaxWaitMillis(BORROW_MAX_WAIT_INTERVAL);
+        progress = progressListener;
+        retry = Integer.max(PreferencesFactory.get().getInteger("connection.retry"), connections);
         pool = new GenericObjectPool<Session>(
                 new SessionPool(connect, trust, key, cache, transfer.getHost()), configuration) {
             @Override
@@ -117,7 +142,28 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
                         throw new ConnectionCanceledException(e);
                     }
                     if(e.getCause() instanceof BackgroundException) {
-                        throw (BackgroundException) e.getCause();
+                        final BackgroundException cause = (BackgroundException) e.getCause();
+                        log.warn(String.format("Failure %s obtaining connection for %s", cause, this));
+                        if(diagnostics.determine(cause) == FailureDiagnostics.Type.network) {
+                            // Downgrade pool to single connection
+                            final int max = pool.getMaxTotal() - 1;
+                            log.warn(String.format("Lower maximum pool size to %d connections.", max));
+                            pool.setMaxTotal(max);
+                            pool.setMaxIdle(pool.getMaxIdle() - 1);
+                            if(this.retry()) {
+                                if(log.isInfoEnabled()) {
+                                    log.info(String.format("Connect failed with failure %s", e));
+                                }
+                                // This is an automated retry. Wait some time first.
+                                this.pause();
+                                if(!isCanceled()) {
+                                    repeat.set(repeat.get() + 1);
+                                    // Retry to connect
+                                    continue;
+                                }
+                            }
+                        }
+                        throw cause;
                     }
                     if(null == e.getCause()) {
                         log.warn(String.format("Timeout borrowing session from pool %s. Wait for another %dms", pool, BORROW_MAX_WAIT_INTERVAL));
@@ -206,6 +252,38 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
             log.warn(String.format("Failure closing connection pool %s", e.getMessage()));
         }
         super.cleanup(result);
+    }
+
+
+    /**
+     * The number of times a new connection attempt should be made. Takes into
+     * account the number of times already tried.
+     *
+     * @return Greater than zero if a failed action should be repeated again
+     */
+    protected boolean retry() {
+        // The initial connection attempt does not count
+        return retry - repeat.get() > 0;
+    }
+
+    /**
+     * Idle this action for some time. Blocks the caller.
+     */
+    public void pause() {
+        final int attempt = retry - repeat.get();
+        final BackgroundActionPauser pauser = new BackgroundActionPauser(new BackgroundActionPauser.Callback() {
+            @Override
+            public boolean isCanceled() {
+                return ConcurrentTransferWorker.this.isCanceled();
+            }
+
+            @Override
+            public void progress(final Integer delay) {
+                progress.message(MessageFormat.format(LocaleFactory.localizedString("Retry again in {0} seconds ({1} more attempts)", "Status"),
+                        delay, attempt));
+            }
+        });
+        pauser.await(progress);
     }
 
     @Override
