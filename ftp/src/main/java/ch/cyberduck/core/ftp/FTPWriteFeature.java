@@ -31,9 +31,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * @version $Id$
- */
 public class FTPWriteFeature extends AppendWriteFeature {
     private static final Logger log = Logger.getLogger(FTPWriteFeature.class);
 
