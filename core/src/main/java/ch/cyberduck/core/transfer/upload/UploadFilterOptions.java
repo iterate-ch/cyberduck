@@ -21,9 +21,6 @@ package ch.cyberduck.core.transfer.upload;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-/**
- * @version $Id$
- */
 public final class UploadFilterOptions {
 
     public boolean permissions;
@@ -39,6 +36,11 @@ public final class UploadFilterOptions {
      */
     public boolean temporary;
 
+    /**
+     * Enable server side encryption if available
+     */
+    public boolean encryption;
+
     public UploadFilterOptions() {
         // Defaults
         final Preferences preferences = PreferencesFactory.get();
@@ -47,6 +49,7 @@ public final class UploadFilterOptions {
         timestamp = preferences.getBoolean("queue.upload.timestamp.change");
         temporary = preferences.getBoolean("queue.upload.file.temporary");
         metadata = preferences.getBoolean("queue.upload.file.metadata.change");
+        encryption = preferences.getBoolean("queue.upload.file.encryption.change");
     }
 
     public UploadFilterOptions(final boolean permissions, final boolean timestamp, final boolean temporary) {
@@ -74,6 +77,11 @@ public final class UploadFilterOptions {
 
     public UploadFilterOptions withMetadata(boolean enabled) {
         metadata = enabled;
+        return this;
+    }
+
+    public UploadFilterOptions withEncryption(boolean enabled) {
+        encryption = enabled;
         return this;
     }
 }

@@ -456,6 +456,7 @@ public abstract class Preferences {
          * Keep existing headers
          */
         defaults.put("queue.upload.file.metadata.change", String.valueOf(true));
+        defaults.put("queue.upload.file.encryption.change", String.valueOf(true));
 
         defaults.put("queue.upload.skip.enable", String.valueOf(true));
         defaults.put("queue.upload.skip.regex.default",
