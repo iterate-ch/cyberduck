@@ -13,6 +13,7 @@ Changelog. Last modified: $Date$
 - [Bugfix] Retry transfer for 421 error reply from server with a delay (FTP) (#9368)
 - [Bugfix] No prompt for importing WinSCP bookmarks (Windows) (#9208)
 - [Bugfix] Signature mismatch for presigned URLs with AWS4 signing (S3) (#9317, #9479)
+- [Bugfix] Unable to negotiate acceptable set of security parameters (WebDAV) (#9452)
 
 4.9.3
 - [Bugfix] Revert reading NTLM domain and workstation from environment (WebDAV, Windows)
