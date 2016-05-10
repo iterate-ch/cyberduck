@@ -25,6 +25,7 @@ import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -40,6 +41,8 @@ public class SpectraUploadFeature extends HttpUploadFeature<StorageObject, Messa
 
     private final SpectraSession session;
 
+    private final Preferences preferences = PreferencesFactory.get();
+
     public SpectraUploadFeature(final SpectraSession session, final SpectraWriteFeature write) {
         super(write);
         this.session = session;
@@ -54,10 +57,10 @@ public class SpectraUploadFeature extends HttpUploadFeature<StorageObject, Messa
         // verify the CRC after downloading the object at a later time (see Get Object). The BlackPearl gateway also
         // verifies the CRC when reading from physical data stores so the gateway can identify problems before
         // transmitting data to the client.
-        if(PreferencesFactory.get().getBoolean("spectra.upload.crc32")) {
+        if(preferences.getBoolean("spectra.upload.crc32")) {
             status.setChecksum(new CRC32ChecksumCompute().compute(local.getInputStream()));
         }
-        if(PreferencesFactory.get().getBoolean("spectra.upload.md5")) {
+        if(preferences.getBoolean("spectra.upload.md5")) {
             status.setChecksum(new MD5ChecksumCompute().compute(local.getInputStream()));
         }
         final SpectraBulkService bulk = new SpectraBulkService(session);
