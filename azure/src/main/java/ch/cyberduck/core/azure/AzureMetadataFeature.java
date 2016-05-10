@@ -23,6 +23,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
@@ -40,9 +41,6 @@ import com.microsoft.azure.storage.blob.BlobRequestOptions;
 import com.microsoft.azure.storage.blob.CloudBlobContainer;
 import com.microsoft.azure.storage.blob.CloudBlockBlob;
 
-/**
- * @version $Id$
- */
 public class AzureMetadataFeature implements Headers {
 
     private AzureSession session;
@@ -55,6 +53,11 @@ public class AzureMetadataFeature implements Headers {
     public AzureMetadataFeature(final AzureSession session, final OperationContext context) {
         this.session = session;
         this.context = context;
+    }
+
+    @Override
+    public Map<String, String> getDefault() {
+        return PreferencesFactory.get().getMap("azure.metadata.default");
     }
 
     @Override

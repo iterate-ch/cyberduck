@@ -29,11 +29,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3Object;
 
-import java.util.Map;
-
-/**
- * @version $Id$
- */
 public class S3TouchFeature implements Touch {
 
     private S3Session session;
@@ -58,11 +53,6 @@ public class S3TouchFeature implements Touch {
 
     public S3TouchFeature withEncryption(final String encryption) {
         write.withEncryption(encryption);
-        return this;
-    }
-
-    public S3TouchFeature withMetadata(final Map<String, String> metadata) {
-        write.withMetadata(metadata);
         return this;
     }
 

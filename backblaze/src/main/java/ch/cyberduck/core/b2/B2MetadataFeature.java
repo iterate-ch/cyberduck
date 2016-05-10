@@ -20,6 +20,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import java.util.Map;
 
@@ -32,6 +33,11 @@ public class B2MetadataFeature implements Headers {
 
     public B2MetadataFeature(final B2Session session) {
         this.session = session;
+    }
+
+    @Override
+    public Map<String, String> getDefault() {
+        return PreferencesFactory.get().getMap("b2.metadata.default");
     }
 
     @Override

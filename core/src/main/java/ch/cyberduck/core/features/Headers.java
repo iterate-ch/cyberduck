@@ -21,6 +21,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import java.util.Map;
 
 public interface Headers {
+    Map<String, String> getDefault();
 
     Map<String, String> getMetadata(Path file) throws BackgroundException;
 

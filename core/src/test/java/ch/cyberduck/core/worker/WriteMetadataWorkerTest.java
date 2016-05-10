@@ -37,6 +37,11 @@ public class WriteMetadataWorkerTest {
                 if(type == Headers.class) {
                     return (T) new Headers() {
                         @Override
+                        public Map<String, String> getDefault() {
+                            return Collections.emptyMap();
+                        }
+
+                        @Override
                         public Map<String, String> getMetadata(final Path file) throws BackgroundException {
                             fail();
                             return null;
@@ -74,6 +79,11 @@ public class WriteMetadataWorkerTest {
             public <T> T getFeature(final Class<T> type) {
                 if(type == Headers.class) {
                     return (T) new Headers() {
+                        @Override
+                        public Map<String, String> getDefault() {
+                            return Collections.emptyMap();
+                        }
+
                         @Override
                         public Map<String, String> getMetadata(final Path file) throws BackgroundException {
                             throw new UnsupportedOperationException();
@@ -113,6 +123,11 @@ public class WriteMetadataWorkerTest {
             public <T> T getFeature(final Class<T> type) {
                 if(type == Headers.class) {
                     return (T) new Headers() {
+                        @Override
+                        public Map<String, String> getDefault() {
+                            return Collections.emptyMap();
+                        }
+
                         @Override
                         public Map<String, String> getMetadata(final Path file) throws BackgroundException {
                             throw new UnsupportedOperationException();

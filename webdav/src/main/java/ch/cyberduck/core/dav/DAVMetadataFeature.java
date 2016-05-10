@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
 
@@ -34,9 +35,6 @@ import java.util.Map;
 import com.github.sardine.DavResource;
 import com.github.sardine.impl.SardineException;
 
-/**
- * @version $Id$
- */
 public class DAVMetadataFeature implements Headers {
     private static final Logger log = Logger.getLogger(DAVMetadataFeature.class);
 
@@ -44,6 +42,11 @@ public class DAVMetadataFeature implements Headers {
 
     public DAVMetadataFeature(final DAVSession session) {
         this.session = session;
+    }
+
+    @Override
+    public Map<String, String> getDefault() {
+        return PreferencesFactory.get().getMap("webdav.metadata.default");
     }
 
     @Override

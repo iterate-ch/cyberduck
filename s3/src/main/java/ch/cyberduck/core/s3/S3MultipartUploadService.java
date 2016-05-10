@@ -99,12 +99,6 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
     private String encryption
             = preferences.getProperty("s3.encryption.algorithm");
 
-    /**
-     * Default metadata for new files
-     */
-    private Map<String, String> metadata
-            = preferences.getMap("s3.metadata.default");
-
     public S3MultipartUploadService(final S3Session session) {
         this(session, PreferencesFactory.get().getLong("s3.upload.multipart.size"),
                 PreferencesFactory.get().getInteger("s3.upload.multipart.concurrency"));
@@ -128,11 +122,6 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
         return this;
     }
 
-    public S3MultipartUploadService withMetadata(final Map<String, String> metadata) {
-        this.metadata = metadata;
-        return this;
-    }
-
     @Override
     public StorageObject upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
                                 final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
@@ -152,7 +141,6 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 }
                 final S3Object object = new S3WriteFeature(session)
                         .withEncryption(encryption)
-                        .withMetadata(metadata)
                         .withStorage(storage)
                         .getDetails(containerService.getKey(file), status);
                 // ID for the initiated multipart upload.

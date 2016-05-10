@@ -55,9 +55,6 @@ import java.text.MessageFormat;
 import java.util.EnumSet;
 import java.util.UUID;
 
-/**
- * @version $Id$
- */
 public abstract class AbstractUploadFilter implements TransferPathFilter {
     private static final Logger log = Logger.getLogger(AbstractUploadFilter.class);
 
@@ -232,10 +229,13 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             status.setTimestamp(local.attributes().getModificationDate());
         }
         if(options.metadata) {
-            if(status.isExists()) {
-                final Headers feature = session.getFeature(Headers.class);
-                if(feature != null) {
+            final Headers feature = session.getFeature(Headers.class);
+            if(feature != null) {
+                if(status.isExists()) {
                     status.setMetadata(feature.getMetadata(file));
+                }
+                else {
+                    status.setMetadata(feature.getDefault());
                 }
             }
         }

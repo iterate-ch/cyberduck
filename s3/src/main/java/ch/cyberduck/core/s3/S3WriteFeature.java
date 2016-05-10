@@ -48,9 +48,6 @@ import org.jets3t.service.utils.ServiceUtils;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> implements Write {
     private static final Logger log = Logger.getLogger(S3WriteFeature.class);
 
@@ -80,12 +77,6 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
     private String encryption
             = preferences.getProperty("s3.encryption.algorithm");
 
-    /**
-     * Default metadata for new files
-     */
-    private Map<String, String> metadata
-            = preferences.getMap("s3.metadata.default");
-
     public S3WriteFeature(final S3Session session) {
         this(session, new S3DefaultMultipartService(session), new DefaultFindFeature(session), new DefaultAttributesFeature(session));
     }
@@ -106,11 +97,6 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
 
     public S3WriteFeature withEncryption(final String encryption) {
         this.encryption = encryption;
-        return this;
-    }
-
-    public S3WriteFeature withMetadata(final Map<String, String> metadata) {
-        this.metadata = metadata;
         return this;
     }
 
@@ -169,9 +155,6 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
         }
         if(StringUtils.isNotBlank(encryption)) {
             object.setServerSideEncryptionAlgorithm(encryption);
-        }
-        for(Map.Entry<String, String> m : metadata.entrySet()) {
-            object.addMetadata(m.getKey(), m.getValue());
         }
         for(Map.Entry<String, String> m : status.getMetadata().entrySet()) {
             object.addMetadata(m.getKey(), m.getValue());
