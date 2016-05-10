@@ -49,7 +49,7 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>net.java.dev.jets3t</groupId>
+            <groupId>ch.iterate.s3</groupId>
             <artifactId>jets3t</artifactId>
         </dependency>
         <dependency>

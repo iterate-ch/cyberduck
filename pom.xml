@@ -75,9 +75,9 @@
                 <version>2.2.2</version>
             </dependency>
             <dependency>
-                <groupId>net.java.dev.jets3t</groupId>
+                <groupId>ch.iterate.s3</groupId>
                 <artifactId>jets3t</artifactId>
-                <version>0.9.4.5</version>
+                <version>0.9.6</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
