@@ -65,6 +65,18 @@ public class S3PresignedUrlProviderTest {
         assertNotNull(url);
         final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
         assertEquals(404, connection.getResponseCode());
+
+    }
+
+    @Test
+    public void testCreateEuCentralAtSign() throws Exception {
+        final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        expiry.add(Calendar.MILLISECOND, (int) TimeUnit.DAYS.toMillis(7));
+        final String url = new S3PresignedUrlProvider().create(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"),
+                "test-eu-central-1-cyberduck", "eu-central-1", "@f", expiry.getTimeInMillis());
+        assertNotNull(url);
+        final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        assertEquals(404, connection.getResponseCode());
     }
 
     @Test
