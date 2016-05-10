@@ -148,7 +148,7 @@ public class S3UrlProvider implements UrlProvider {
      */
     protected DescriptiveUrl sign(final Path file, final int seconds) {
         // Determine expiry time for URL
-        final Calendar expiry = Calendar.getInstance(TimeZone.getDefault());
+        final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         expiry.add(Calendar.SECOND, seconds);
         final String secret = store.find(session.getHost());
         if(StringUtils.isBlank(secret)) {
