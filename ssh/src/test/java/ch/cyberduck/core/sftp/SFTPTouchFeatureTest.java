@@ -39,9 +39,6 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class SFTPTouchFeatureTest {
 
@@ -62,7 +59,7 @@ public class SFTPTouchFeatureTest {
         new SFTPTouchFeature(session).touch(test);
         final AttributedList<Path> list = session.list(home, new DisabledListProgressListener());
         assertTrue(list.contains(test));
-        assertEquals("644", list.get(test).attributes().getPermission().getMode());
+        assertEquals("664", list.get(test).attributes().getPermission().getMode());
         new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {
