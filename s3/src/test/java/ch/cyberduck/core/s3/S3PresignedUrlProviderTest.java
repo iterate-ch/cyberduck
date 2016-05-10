@@ -46,11 +46,33 @@ public class S3PresignedUrlProviderTest {
     }
 
     @Test
-    public void testCreate() throws Exception {
+    public void testCreateEuWest() throws Exception {
         final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         expiry.add(Calendar.MILLISECOND, (int) TimeUnit.DAYS.toMillis(7));
         final String url = new S3PresignedUrlProvider().create(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"),
                 "test-eu-west-1-cyberduck", "eu-west-1", "f", expiry.getTimeInMillis());
+        assertNotNull(url);
+        final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        assertEquals(404, connection.getResponseCode());
+    }
+
+    @Test
+    public void testCreateEuCentral() throws Exception {
+        final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        expiry.add(Calendar.MILLISECOND, (int) TimeUnit.DAYS.toMillis(7));
+        final String url = new S3PresignedUrlProvider().create(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"),
+                "test-eu-central-1-cyberduck", "eu-central-1", "f", expiry.getTimeInMillis());
+        assertNotNull(url);
+        final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        assertEquals(404, connection.getResponseCode());
+    }
+
+    @Test
+    public void testCreateDefault() throws Exception {
+        final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        expiry.add(Calendar.MILLISECOND, (int) TimeUnit.DAYS.toMillis(7));
+        final String url = new S3PresignedUrlProvider().create(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"),
+                "test-us-east-1-cyberduck", null, "f", expiry.getTimeInMillis());
         assertNotNull(url);
         final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
         assertEquals(404, connection.getResponseCode());
