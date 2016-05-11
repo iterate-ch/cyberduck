@@ -112,7 +112,12 @@ public class S3AttributesFeature implements Attributes {
         }
         if(object.containsMetadata("server-side-encryption-aws-kms-key-id")) {
             attributes.setEncryption(new Encryption.Algorithm(object.getServerSideEncryptionAlgorithm(),
-                    object.getMetadata("server-side-encryption-aws-kms-key-id").toString()));
+                    object.getMetadata("server-side-encryption-aws-kms-key-id").toString()) {
+                @Override
+                public String getDescription() {
+                    return String.format("SSE-KMS (%s)", key);
+                }
+            });
         }
         else {
             // AES256 or None
