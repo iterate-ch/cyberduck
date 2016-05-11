@@ -15,6 +15,7 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -58,7 +59,12 @@ public interface Encryption {
     Algorithm getEncryption(Path file) throws BackgroundException;
 
     class Algorithm {
-        public static final Algorithm NONE = new Algorithm(null, null);
+        public static final Algorithm NONE = new Algorithm(null, null) {
+            @Override
+            public String getDescription() {
+                return LocaleFactory.localizedString("None");
+            }
+        };
 
         public Algorithm(final String algorithm, final String key) {
             this.algorithm = algorithm;
