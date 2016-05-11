@@ -1949,7 +1949,7 @@ public class InfoController extends ToolbarWindowController {
 
         bucketLoggingPopup.removeAllItems();
         bucketLoggingPopup.addItemWithTitle(LocaleFactory.localizedString("None"));
-        bucketLoggingPopup.itemWithTitle(LocaleFactory.localizedString("None")).setEnabled(false);
+        bucketLoggingPopup.lastItem().setEnabled(false);
 
         s3PublicUrlField.setStringValue(LocaleFactory.localizedString("None"));
         s3PublicUrlValidityField.setStringValue(LocaleFactory.localizedString("Unknown"));
@@ -1957,13 +1957,14 @@ public class InfoController extends ToolbarWindowController {
 
         storageClassPopup.removeAllItems();
         storageClassPopup.addItemWithTitle(LocaleFactory.localizedString("Unknown"));
-        storageClassPopup.itemWithTitle(LocaleFactory.localizedString("Unknown")).setEnabled(false);
-        storageClassPopup.selectItemWithTitle(LocaleFactory.localizedString("Unknown"));
+        storageClassPopup.lastItem().setEnabled(false);
+        storageClassPopup.selectItem(storageClassPopup.lastItem());
 
         encryptionPopup.removeAllItems();
-        encryptionPopup.addItemWithTitle(LocaleFactory.localizedString("None"));
-        encryptionPopup.itemWithTitle(LocaleFactory.localizedString("None")).setEnabled(false);
-        encryptionPopup.selectItemWithTitle(LocaleFactory.localizedString("None"));
+        encryptionPopup.addItemWithTitle(Encryption.Algorithm.NONE.getDescription());
+        encryptionPopup.lastItem().setRepresentedObject(Encryption.Algorithm.NONE.toString());
+        encryptionPopup.lastItem().setEnabled(false);
+        encryptionPopup.selectItem(encryptionPopup.lastItem());
 
         final Session<?> session = controller.getSession();
 

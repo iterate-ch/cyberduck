@@ -64,6 +64,11 @@ public interface Encryption {
             public String getDescription() {
                 return LocaleFactory.localizedString("None");
             }
+
+            @Override
+            public String toString() {
+                return "none";
+            }
         };
 
         public Algorithm(final String algorithm, final String key) {
