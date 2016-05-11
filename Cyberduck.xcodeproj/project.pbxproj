@@ -67,7 +67,6 @@
 		474960681CD75C9700B020C9 /* download.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4749604F1CD75C9700B020C9 /* download.pdf */; };
 		474960691CD75C9700B020C9 /* editor.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 474960501CD75C9700B020C9 /* editor.pdf */; };
 		4749606A1CD75C9700B020C9 /* filetransfer.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 474960511CD75C9700B020C9 /* filetransfer.pdf */; };
-		4749606B1CD75C9700B020C9 /* info.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 474960521CD75C9700B020C9 /* info.pdf */; };
 		4749606C1CD75C9700B020C9 /* log.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 474960531CD75C9700B020C9 /* log.pdf */; };
 		4749606D1CD75C9700B020C9 /* newfolder.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 474960541CD75C9700B020C9 /* newfolder.pdf */; };
 		4749606E1CD75C9700B020C9 /* quicklook.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 474960551CD75C9700B020C9 /* quicklook.pdf */; };
@@ -253,6 +252,7 @@
 		47FB79DA1C2E9E67008D3B9C /* launcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 47FB79D61C2E9E67008D3B9C /* launcher.m */; };
 		47FB79DC1C2E9E67008D3B9C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 47FB79D71C2E9E67008D3B9C /* main.m */; };
 		47FC190C099FB8AF0082431D /* Crash.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47FC190A099FB8AF0082431D /* Crash.strings */; };
+		47FFEAAB1CE37DBB00BAFE41 /* fileinfo.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 47FFEAAA1CE37DBB00BAFE41 /* fileinfo.pdf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -770,7 +770,6 @@
 		4749604F1CD75C9700B020C9 /* download.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = download.pdf; path = toolbar/download.pdf; sourceTree = "<group>"; };
 		474960501CD75C9700B020C9 /* editor.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = editor.pdf; path = toolbar/editor.pdf; sourceTree = "<group>"; };
 		474960511CD75C9700B020C9 /* filetransfer.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = filetransfer.pdf; path = toolbar/filetransfer.pdf; sourceTree = "<group>"; };
-		474960521CD75C9700B020C9 /* info.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = info.pdf; path = toolbar/info.pdf; sourceTree = "<group>"; };
 		474960531CD75C9700B020C9 /* log.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = log.pdf; path = toolbar/log.pdf; sourceTree = "<group>"; };
 		474960541CD75C9700B020C9 /* newfolder.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = newfolder.pdf; path = toolbar/newfolder.pdf; sourceTree = "<group>"; };
 		474960551CD75C9700B020C9 /* quicklook.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = quicklook.pdf; path = toolbar/quicklook.pdf; sourceTree = "<group>"; };
@@ -1590,6 +1589,7 @@
 		47FFBEF2199B919D005155CB /* cs */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = cs; path = i18n/src/main/resources/cs.lproj/Sftp.strings; sourceTree = "<group>"; };
 		47FFBEF3199B91A1005155CB /* pt_PT */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = pt_PT; path = i18n/src/main/resources/pt_PT.lproj/Sftp.strings; sourceTree = "<group>"; };
 		47FFBEF4199B91A1005155CB /* ko */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = ko; path = i18n/src/main/resources/ko.lproj/Sftp.strings; sourceTree = "<group>"; };
+		47FFEAAA1CE37DBB00BAFE41 /* fileinfo.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = fileinfo.pdf; path = toolbar/fileinfo.pdf; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1899,8 +1899,8 @@
 				4749604F1CD75C9700B020C9 /* download.pdf */,
 				474960501CD75C9700B020C9 /* editor.pdf */,
 				474960511CD75C9700B020C9 /* filetransfer.pdf */,
-				474960521CD75C9700B020C9 /* info.pdf */,
 				474960531CD75C9700B020C9 /* log.pdf */,
+				47FFEAAA1CE37DBB00BAFE41 /* fileinfo.pdf */,
 				474960541CD75C9700B020C9 /* newfolder.pdf */,
 				474960551CD75C9700B020C9 /* quicklook.pdf */,
 				474960561CD75C9700B020C9 /* reload.pdf */,
@@ -2139,7 +2139,6 @@
 				474960731CD75C9700B020C9 /* webbrowser.pdf in Resources */,
 				474163CD06C4F64100AC0BD2 /* Login.xib in Resources */,
 				474163CE06C4F64100AC0BD2 /* Preferences.xib in Resources */,
-				4749606B1CD75C9700B020C9 /* info.pdf in Resources */,
 				474163CF06C4F64100AC0BD2 /* Bookmark.xib in Resources */,
 				474166A606C6555E00AC0BD2 /* InfoPlist.strings in Resources */,
 				4741686B06C6BA9400AC0BD2 /* Localizable.strings in Resources */,
@@ -2208,6 +2207,7 @@
 				4749606D1CD75C9700B020C9 /* newfolder.pdf in Resources */,
 				474960751CD75C9700B020C9 /* cleanup.pdf in Resources */,
 				474960741CD75C9700B020C9 /* archive.pdf in Resources */,
+				47FFEAAB1CE37DBB00BAFE41 /* fileinfo.pdf in Resources */,
 				476730C616108E1300B28D35 /* nav-up.tiff in Resources */,
 				476730C816108E1300B28D35 /* bandwidth.tiff in Resources */,
 				476730C916108E1300B28D35 /* book.tiff in Resources */,
