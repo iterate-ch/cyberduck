@@ -29,7 +29,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -48,7 +48,7 @@ public class S3EncryptionFeature implements Encryption {
 
     @Override
     public Set<Algorithm> getKeys(final LoginCallback prompt) throws BackgroundException {
-        return new HashSet<>(Collections.singletonList(SSE_AES256));
+        return new HashSet<>(Arrays.asList(Algorithm.NONE, SSE_AES256));
     }
 
     /**
