@@ -24,13 +24,11 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Encryption;
-import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -55,9 +53,13 @@ public class S3EncryptionFeature implements Encryption {
 
     @Override
     public Set<Algorithm> getAlgorithms() {
-        return new HashSet<>(Arrays.asList(SSE_AES256, KMSEncryptionFeature.SSE_KMS_DEFAULT));
+        return new HashSet<>(Collections.singletonList(SSE_AES256));
     }
 
+    /**
+     * @param file Default encryption setting for file
+     * @return Return custom key for AWS-KMS if set for bucket in preferences. Otherwise default SSE algorithm.
+     */
     @Override
     public Algorithm getDefault(final Path file) {
         // Return setting in preferences
@@ -65,43 +67,37 @@ public class S3EncryptionFeature implements Encryption {
         if(StringUtils.equals(SSE_AES256.algorithm, setting)) {
             return SSE_AES256;
         }
-        if(StringUtils.equals(KMSEncryptionFeature.SSE_KMS_DEFAULT.algorithm, setting)) {
-            final String key = String.format("s3.encryption.key.%s", containerService.getContainer(file).getName());
-            if(StringUtils.isNotBlank(preferences.getProperty(key))) {
-                return new Algorithm(KMSEncryptionFeature.SSE_KMS_DEFAULT.algorithm, preferences.getProperty(key));
-            }
-            return KMSEncryptionFeature.SSE_KMS_DEFAULT;
-        }
         return Algorithm.NONE;
     }
 
     /**
-     * @return Encryption algorithm used for file or null if not encrypted
+     * @param file File or bucket
+     * @return Encryption algorithm used for file or null if not encrypted. For buckets, return setting in preferences if any.
      */
     @Override
     public Algorithm getEncryption(final Path file) throws BackgroundException {
         if(file.isFile()) {
             return new S3AttributesFeature(session).find(file).getEncryption();
         }
-        return null;
+        return Algorithm.NONE;
     }
 
     /**
-     * @param file      File to copy with new setting
-     * @param algorithm A supported algorithm for server side encryption
+     * @param file    File to copy with new setting or bucket to change default preference
+     * @param setting A supported algorithm for server side encryption
      */
     @Override
-    public void setEncryption(final Path file, final Algorithm algorithm) throws BackgroundException {
+    public void setEncryption(final Path file, final Algorithm setting) throws BackgroundException {
         if(file.isFile()) {
             final S3ThresholdCopyFeature copy = new S3ThresholdCopyFeature(session);
             // Copy item in place to write new attributes
             final AclPermission feature = session.getFeature(AclPermission.class);
             if(null == feature) {
-                copy.copy(file, file, new S3StorageClassFeature(session).getClass(file), algorithm,
+                copy.copy(file, file, new S3StorageClassFeature(session).getClass(file), setting,
                         Acl.EMPTY);
             }
             else {
-                copy.copy(file, file, new S3StorageClassFeature(session).getClass(file), algorithm,
+                copy.copy(file, file, new S3StorageClassFeature(session).getClass(file), setting,
                         feature.getPermission(file));
             }
         }
