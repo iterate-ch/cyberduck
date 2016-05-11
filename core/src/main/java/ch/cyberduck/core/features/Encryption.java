@@ -87,8 +87,8 @@ public interface Encryption {
         }
 
         public static Algorithm fromString(final String value) {
-            if(StringUtils.contains(value, ':')) {
-                return new Algorithm(StringUtils.split(value, ':')[0], StringUtils.split(value, ':')[1]);
+            if(StringUtils.contains(value, '|')) {
+                return new Algorithm(StringUtils.split(value, '|')[0], StringUtils.split(value, '|')[1]);
             }
             return new Algorithm(value, null);
         }
@@ -98,7 +98,7 @@ public interface Encryption {
             if(null == key) {
                 return algorithm;
             }
-            return String.format("%s:%s", algorithm, key);
+            return String.format("%s|%s", algorithm, key);
         }
 
         public String getDescription() {
