@@ -44,7 +44,7 @@ public class S3EncryptionFeatureTest {
 
     @Test
     public void testGetAlgorithms() throws Exception {
-        assertEquals(2, new S3EncryptionFeature(null).getAlgorithms().size());
+        assertEquals(1, new S3EncryptionFeature(null).getAlgorithms().size());
     }
 
     @Test
