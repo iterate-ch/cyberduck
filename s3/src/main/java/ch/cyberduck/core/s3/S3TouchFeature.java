@@ -28,7 +28,6 @@ import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3Object;
 
@@ -51,27 +50,27 @@ public class S3TouchFeature implements Touch {
 
     @Override
     public void touch(final Path file) throws BackgroundException {
+        final TransferStatus status = new TransferStatus();
+        status.setMime(mapping.getMime(file.getName()));
+        final Encryption encryption = session.getFeature(Encryption.class);
+        if(encryption != null) {
+            status.setEncryption(encryption.getDefault(file));
+        }
+        final Redundancy redundancy = session.getFeature(Redundancy.class);
+        if(redundancy != null) {
+            status.setStorageClass(redundancy.getDefault());
+        }
+        this.touch(file, status);
+    }
+
+    protected void touch(final Path file, final TransferStatus status) throws BackgroundException {
+        final S3Object key = write.getDetails(containerService.getKey(file), status);
         try {
-            final TransferStatus status = new TransferStatus();
-            status.setMime(mapping.getMime(file.getName()));
-            final Encryption encryption = session.getFeature(Encryption.class);
-            if(encryption != null) {
-                status.setEncryption(encryption.getDefault(file));
-            }
-            final Redundancy redundancy = session.getFeature(Redundancy.class);
-            if(redundancy != null) {
-                status.setStorageClass(redundancy.getDefault());
-            }
-            this.touch(file, status);
+            session.getClient().putObject(containerService.getContainer(file).getName(), key);
         }
         catch(ServiceException e) {
             throw new ServiceExceptionMappingService().map("Cannot create file {0}", e, file);
         }
-    }
-
-    protected void touch(final Path file, final TransferStatus status) throws S3ServiceException {
-        final S3Object key = write.getDetails(containerService.getKey(file), status);
-        session.getClient().putObject(containerService.getContainer(file).getName(), key);
     }
 
     @Override
