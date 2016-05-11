@@ -163,7 +163,7 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
                 try {
                     final Set<Algorithm> keys = new HashSet<Algorithm>();
                     for(KeyListEntry entry : client.listKeys().getKeys()) {
-                        keys.add(new Algorithm(SSE_KMS_DEFAULT.algorithm, entry.getKeyId()) {
+                        keys.add(new Algorithm(SSE_KMS_DEFAULT.algorithm, entry.getKeyArn()) {
                             @Override
                             public String getDescription() {
                                 return String.format("SSE-KMS (%s)", entry.getKeyId());
