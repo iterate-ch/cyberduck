@@ -126,4 +126,30 @@ public class S3EncryptionFeatureTest {
         });
         session.close();
     }
+
+    @Test
+    public void testSetEncryptionKMSCustomKeySignatureVersionV4() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                        new Credentials(
+                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+                        )));
+        session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
+        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        new S3TouchFeature(session).touch(test);
+        final S3EncryptionFeature feature = new S3EncryptionFeature(session);
+        feature.setEncryption(test, new Encryption.Algorithm("aws:kms", "arn:aws:kms:eu-west-1:930717317329:key/015fa0af-f95e-483e-8fb6-abffb46fb783"));
+        final Encryption.Algorithm value = feature.getEncryption(test);
+        assertEquals("aws:kms", value.algorithm);
+        assertEquals("arn:aws:kms:eu-west-1:930717317329:key/015fa0af-f95e-483e-8fb6-abffb46fb783", value.key);
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
+        session.close();
+    }
 }

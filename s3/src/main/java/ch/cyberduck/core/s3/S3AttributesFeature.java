@@ -110,9 +110,9 @@ public class S3AttributesFeature implements Attributes {
         if(object instanceof S3Object) {
             attributes.setVersionId(((S3Object) object).getVersionId());
         }
-        if(object.containsMetadata("x-amz-server-side-encryption-aws-kms-key-id")) {
+        if(object.containsMetadata("server-side-encryption-aws-kms-key-id")) {
             attributes.setEncryption(new Encryption.Algorithm(object.getServerSideEncryptionAlgorithm(),
-                    object.getMetadata("x-amz-server-side-encryption-aws-kms-key-id").toString()));
+                    object.getMetadata("server-side-encryption-aws-kms-key-id").toString()));
         }
         else {
             // AES256 or None
