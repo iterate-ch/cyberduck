@@ -30,13 +30,12 @@ import org.apache.log4j.Logger;
 
 import java.util.Objects;
 
-/**
- * @version $Id$
- */
 public class FilesystemWorker extends MountWorker {
     private static final Logger log = Logger.getLogger(FilesystemWorker.class);
 
     private final Filesystem fs;
+
+    private Filesystem.Options options = Filesystem.Options.readwrite;
 
     public FilesystemWorker(final Filesystem fs) {
         this(fs, PathCache.empty());
@@ -54,8 +53,13 @@ public class FilesystemWorker extends MountWorker {
     @Override
     public Path run(final Session<?> session) throws BackgroundException {
         final Path workdir = super.run(session);
-        fs.mount(workdir);
+        fs.mount(workdir, options);
         return workdir;
+    }
+
+    public FilesystemWorker withOptions(final Filesystem.Options options) {
+        this.options = options;
+        return this;
     }
 
     @Override

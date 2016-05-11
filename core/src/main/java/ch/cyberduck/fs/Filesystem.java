@@ -22,16 +22,18 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
-/**
- * @version $Id$
- */
 public interface Filesystem {
 
-    void mount(final Path workdir) throws BackgroundException;
+    void mount(Path workdir, Options options) throws BackgroundException;
 
     void unmount() throws BackgroundException;
 
     Host getHost();
 
     Local getMountpoint();
+
+    enum Options {
+        readwrite,
+        readonly
+    }
 }
