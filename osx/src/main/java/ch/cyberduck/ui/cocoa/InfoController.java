@@ -61,7 +61,6 @@ import ch.cyberduck.core.logging.LoggingConfiguration;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
-import ch.cyberduck.core.s3.S3EncryptionFeature;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.threading.BrowserControllerBackgroundAction;
 import ch.cyberduck.core.threading.WindowMainAction;
@@ -93,10 +92,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.TimeZone;
 
 public class InfoController extends ToolbarWindowController {
@@ -388,22 +389,21 @@ public class InfoController extends ToolbarWindowController {
     }
 
     @Outlet
-    private NSButton encryptionButton;
+    private NSPopUpButton encryptionPopup;
 
-    public void setEncryptionButton(NSButton b) {
-        this.encryptionButton = b;
-        this.encryptionButton.setTarget(this.id());
-        this.encryptionButton.setAction(Foundation.selector("encryptionButtonClicked:"));
+    public void setEncryptionPopup(NSPopUpButton b) {
+        this.encryptionPopup = b;
+        this.encryptionPopup.setTarget(this.id());
+        this.encryptionPopup.setAction(Foundation.selector("encryptionPopupClicked:"));
     }
 
     @Action
-    public void encryptionButtonClicked(final NSButton sender) {
+    public void encryptionPopupClicked(final NSPopUpButton sender) {
         if(this.toggleS3Settings(false)) {
             final Encryption feature = controller.getSession().getFeature(Encryption.class);
-            final Encryption.Properties algorithm = encryptionButton.state() == NSCell.NSOnState ?
-                    S3EncryptionFeature.SSE_AES256 : Encryption.Properties.NONE;
+            final Encryption.Algorithm encryption = Encryption.Algorithm.fromString(sender.selectedItem().representedObject());
             this.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
-                            new WriteEncryptionWorker(files, algorithm, true, controller) {
+                    new WriteEncryptionWorker(files, encryption, true, controller) {
                                 @Override
                                 public void cleanup(final Boolean v) {
                                     toggleS3Settings(true);
@@ -1913,7 +1913,7 @@ public class InfoController extends ToolbarWindowController {
             storageclass = session.getFeature(Redundancy.class) != null;
         }
         storageClassPopup.setEnabled(stop && enable && storageclass);
-        encryptionButton.setEnabled(stop && enable && encryption);
+        encryptionPopup.setEnabled(stop && enable && encryption);
         bucketVersioningButton.setEnabled(stop && enable && versioning);
         bucketMfaButton.setEnabled(stop && enable && versioning
                 && bucketVersioningButton.state() == NSCell.NSOnState);
@@ -1960,6 +1960,11 @@ public class InfoController extends ToolbarWindowController {
         storageClassPopup.itemWithTitle(LocaleFactory.localizedString("Unknown")).setEnabled(false);
         storageClassPopup.selectItemWithTitle(LocaleFactory.localizedString("Unknown"));
 
+        encryptionPopup.removeAllItems();
+        encryptionPopup.addItemWithTitle(LocaleFactory.localizedString("Unknown"));
+        encryptionPopup.itemWithTitle(LocaleFactory.localizedString("Unknown")).setEnabled(false);
+        encryptionPopup.selectItemWithTitle(LocaleFactory.localizedString("Unknown"));
+
         final Session<?> session = controller.getSession();
 
         if(this.toggleS3Settings(false)) {
@@ -1967,6 +1972,12 @@ public class InfoController extends ToolbarWindowController {
                 for(String redundancy : session.getFeature(Redundancy.class).getClasses()) {
                     storageClassPopup.addItemWithTitle(LocaleFactory.localizedString(redundancy, "S3"));
                     storageClassPopup.lastItem().setRepresentedObject(redundancy);
+                }
+            }
+            if(session.getFeature(Encryption.class) != null) {
+                for(Encryption.Algorithm algorithm : session.getFeature(Encryption.class).getAlgorithms()) {
+                    encryptionPopup.addItemWithTitle(LocaleFactory.localizedString(algorithm.getDescription(), "S3"));
+                    encryptionPopup.lastItem().setRepresentedObject(algorithm.toString());
                 }
             }
             if(this.numberOfFiles() > 1) {
@@ -2000,8 +2011,8 @@ public class InfoController extends ToolbarWindowController {
                 Location.Name location;
                 LoggingConfiguration logging;
                 VersioningConfiguration versioning;
-                List<String> containers = new ArrayList<String>();
-                Encryption.Properties encryption;
+                Set<String> containers = new HashSet<String>();
+                Encryption.Algorithm encryption;
                 LifecycleConfiguration lifecycle;
                 Credentials credentials;
 
@@ -2023,14 +2034,17 @@ public class InfoController extends ToolbarWindowController {
                     if(session.getFeature(Lifecycle.class) != null) {
                         lifecycle = session.getFeature(Lifecycle.class).getConfiguration(container);
                     }
-                    if(session.getFeature(AnalyticsProvider.class) != null) {
-                        if(session.getFeature(IdentityConfiguration.class) != null) {
-                            credentials = session.getFeature(IdentityConfiguration.class).getCredentials(
-                                    session.getFeature(AnalyticsProvider.class).getName());
-                        }
+                    if(session.getFeature(AnalyticsProvider.class) != null && session.getFeature(IdentityConfiguration.class) != null) {
+                        credentials = session.getFeature(IdentityConfiguration.class)
+                                .getCredentials(session.getFeature(AnalyticsProvider.class).getName());
                     }
                     if(numberOfFiles() == 1) {
                         if(session.getFeature(Encryption.class) != null) {
+                            // Add additional keys stored in KMS
+                            for(Encryption.Algorithm algorithm : session.getFeature(Encryption.class).getKeys(prompt)) {
+                                encryptionPopup.addItemWithTitle(LocaleFactory.localizedString(algorithm.getDescription(), "S3"));
+                                encryptionPopup.lastItem().setRepresentedObject(algorithm.toString());
+                            }
                             encryption = session.getFeature(Encryption.class).getEncryption(getSelected());
                         }
                     }
@@ -2064,7 +2078,9 @@ public class InfoController extends ToolbarWindowController {
                         bucketVersioningButton.setState(versioning.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
                         bucketMfaButton.setState(versioning.isMultifactor() ? NSCell.NSOnState : NSCell.NSOffState);
                     }
-                    encryptionButton.setState(Encryption.Properties.NONE.equals(encryption) ? NSCell.NSOffState : NSCell.NSOnState);
+                    if(encryption != null) {
+                        encryptionPopup.selectItemAtIndex(encryptionPopup.indexOfItemWithRepresentedObject(encryption.toString()));
+                    }
                     if(null != credentials) {
                         bucketAnalyticsSetupUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(
                                 session.getFeature(AnalyticsProvider.class).getSetup(session.getHost().getProtocol().getDefaultHostname(),
