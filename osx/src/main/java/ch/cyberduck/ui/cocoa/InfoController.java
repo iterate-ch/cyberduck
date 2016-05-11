@@ -1961,9 +1961,9 @@ public class InfoController extends ToolbarWindowController {
         storageClassPopup.selectItemWithTitle(LocaleFactory.localizedString("Unknown"));
 
         encryptionPopup.removeAllItems();
-        encryptionPopup.addItemWithTitle(LocaleFactory.localizedString("Unknown"));
-        encryptionPopup.itemWithTitle(LocaleFactory.localizedString("Unknown")).setEnabled(false);
-        encryptionPopup.selectItemWithTitle(LocaleFactory.localizedString("Unknown"));
+        encryptionPopup.addItemWithTitle(LocaleFactory.localizedString("None"));
+        encryptionPopup.itemWithTitle(LocaleFactory.localizedString("None")).setEnabled(false);
+        encryptionPopup.selectItemWithTitle(LocaleFactory.localizedString("None"));
 
         final Session<?> session = controller.getSession();
 
