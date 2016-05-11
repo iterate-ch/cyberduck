@@ -2035,11 +2035,17 @@ public class InfoController extends ToolbarWindowController {
                     if(numberOfFiles() == 1) {
                         if(session.getFeature(Encryption.class) != null) {
                             // Add additional keys stored in KMS
-                            for(Encryption.Algorithm algorithm : session.getFeature(Encryption.class).getKeys(prompt)) {
+                            final Set<Encryption.Algorithm> keys = session.getFeature(Encryption.class).getKeys(prompt);
+                            for(Encryption.Algorithm algorithm : keys) {
                                 encryptionPopup.addItemWithTitle(LocaleFactory.localizedString(algorithm.getDescription(), "S3"));
                                 encryptionPopup.lastItem().setRepresentedObject(algorithm.toString());
                             }
                             encryption = session.getFeature(Encryption.class).getEncryption(getSelected());
+                            if(!keys.contains(encryption)) {
+                                // Add default KMS key not in list
+                                encryptionPopup.addItemWithTitle(LocaleFactory.localizedString(encryption.getDescription(), "S3"));
+                                encryptionPopup.lastItem().setRepresentedObject(encryption.toString());
+                            }
                         }
                     }
                     return null;
