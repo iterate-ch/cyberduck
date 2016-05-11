@@ -290,7 +290,9 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
     }
 
     @Override
-    protected void post(final Path file, final MessageDigest digest, final StorageObject part) throws BackgroundException {
-        this.verify(file, digest, Checksum.parse(part.getETag()));
+    protected void post(final Path file, final MessageDigest digest, final StorageObject multipart) throws BackgroundException {
+        if(null == multipart.getServerSideEncryptionAlgorithm()) {
+            this.verify(file, digest, Checksum.parse(multipart.getETag()));
+        }
     }
 }
