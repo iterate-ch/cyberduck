@@ -46,6 +46,7 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
+import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
@@ -53,6 +54,7 @@ import ch.cyberduck.core.local.FileDescriptorFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
+import ch.cyberduck.core.s3.S3EncryptionFeature;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.WindowMainAction;
@@ -1950,18 +1952,14 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultEncryptionPopup.setAutoenablesItems(false);
         this.defaultEncryptionPopup.removeAllItems();
         this.defaultEncryptionPopup.addItemWithTitle(LocaleFactory.localizedString("None"));
-        this.defaultEncryptionPopup.addItemWithTitle(LocaleFactory.localizedString("AES256", "S3"));
-        this.defaultEncryptionPopup.lastItem().setRepresentedObject("AES256");
-        this.defaultEncryptionPopup.addItemWithTitle(LocaleFactory.localizedString("AWS KMS–Managed Keys (SSE-KMS)", "S3"));
-        this.defaultEncryptionPopup.lastItem().setRepresentedObject("aws:kms");
+        this.defaultEncryptionPopup.lastItem().setRepresentedObject(S3EncryptionFeature.Algorithm.NONE.toString());
+        this.defaultEncryptionPopup.addItemWithTitle(LocaleFactory.localizedString(S3EncryptionFeature.SSE_AES256.getDescription(), "S3"));
+        this.defaultEncryptionPopup.lastItem().setRepresentedObject(S3EncryptionFeature.SSE_AES256.toString());
+        this.defaultEncryptionPopup.addItemWithTitle(LocaleFactory.localizedString(KMSEncryptionFeature.SSE_KMS_DEFAULT.getDescription(), "S3"));
+        this.defaultEncryptionPopup.lastItem().setRepresentedObject(KMSEncryptionFeature.SSE_KMS_DEFAULT.toString());
         this.defaultEncryptionPopup.setTarget(this.id());
         this.defaultEncryptionPopup.setAction(Foundation.selector("defaultEncryptionPopupClicked:"));
-        if(StringUtils.isNotBlank(preferences.getProperty("s3.encryption.algorithm"))) {
-            this.defaultEncryptionPopup.selectItemWithTitle(LocaleFactory.localizedString(preferences.getProperty("s3.encryption.algorithm"), "S3"));
-        }
-        else {
-            this.defaultEncryptionPopup.selectItemWithTitle(LocaleFactory.localizedString("None"));
-        }
+        this.defaultEncryptionPopup.selectItemAtIndex(this.defaultEncryptionPopup.indexOfItemWithRepresentedObject(preferences.getProperty("s3.encryption.algorithm")));
     }
 
     @Action
