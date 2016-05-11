@@ -178,6 +178,10 @@ public class HostDictionary {
             if(volumeObj != null) {
                 bookmark.setVolume(LocalFactory.get(volumeObj.toString()));
             }
+            Object readonlyObj = dict.stringForKey("Readonly");
+            if(readonlyObj != null) {
+                bookmark.setReadonly(Boolean.valueOf(readonlyObj.toString()));
+            }
             return bookmark;
         }
         else {
