@@ -52,7 +52,7 @@ public class S3CopyFeature implements Copy {
             // Keep same storage class
             final String storageClass = source.attributes().getStorageClass();
             // Keep encryption setting
-            final Encryption.Properties encryption = source.attributes().getEncryption();
+            final Encryption.Algorithm encryption = source.attributes().getEncryption();
             // Apply non standard ACL
             if(null == accessControlListFeature) {
                 this.copy(source, copy, storageClass, encryption, Acl.EMPTY);
@@ -64,7 +64,7 @@ public class S3CopyFeature implements Copy {
         }
     }
 
-    protected void copy(final Path source, final Path copy, final String storageClass, final Encryption.Properties encryption,
+    protected void copy(final Path source, final Path copy, final String storageClass, final Encryption.Algorithm encryption,
                         final Acl acl) throws BackgroundException {
         if(source.isFile()) {
             final StorageObject destination = new StorageObject(containerService.getKey(copy));

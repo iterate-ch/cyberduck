@@ -173,7 +173,7 @@ public class S3VersioningFeature implements Versioning {
                 final S3Object destination = new S3Object(containerService.getKey(file));
                 // Keep same storage class
                 destination.setStorageClass(file.attributes().getStorageClass());
-                final Encryption.Properties encryption = file.attributes().getEncryption();
+                final Encryption.Algorithm encryption = file.attributes().getEncryption();
                 destination.setServerSideEncryptionAlgorithm(encryption.algorithm);
                 if(encryption.key != null) {
                     // Set custom key id stored in KMS

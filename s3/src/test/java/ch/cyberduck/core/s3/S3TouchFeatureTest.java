@@ -70,7 +70,7 @@ public class S3TouchFeatureTest {
         final Path container = new Path("test.encryption.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final S3TouchFeature touch = new S3TouchFeature(session)
-                .withEncryption(Encryption.Properties.NONE);
+                .withEncryption(Encryption.Algorithm.NONE);
         touch.touch(test);
     }
 

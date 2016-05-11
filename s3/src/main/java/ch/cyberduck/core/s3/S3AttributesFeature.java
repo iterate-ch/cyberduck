@@ -111,12 +111,12 @@ public class S3AttributesFeature implements Attributes {
             attributes.setVersionId(((S3Object) object).getVersionId());
         }
         if(object.containsMetadata("x-amz-server-side-encryption-aws-kms-key-id")) {
-            attributes.setEncryption(new Encryption.Properties(object.getServerSideEncryptionAlgorithm(),
+            attributes.setEncryption(new Encryption.Algorithm(object.getServerSideEncryptionAlgorithm(),
                     object.getMetadata("x-amz-server-side-encryption-aws-kms-key-id").toString()));
         }
         else {
             // AES256 or None
-            attributes.setEncryption(new Encryption.Properties(object.getServerSideEncryptionAlgorithm(), null));
+            attributes.setEncryption(new Encryption.Algorithm(object.getServerSideEncryptionAlgorithm(), null));
         }
         final HashMap<String, String> metadata = new HashMap<String, String>();
         final Map<String, Object> source = object.getModifiableMetadata();

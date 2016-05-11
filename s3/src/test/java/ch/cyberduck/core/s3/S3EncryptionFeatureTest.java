@@ -27,6 +27,8 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Encryption;
+import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -37,6 +39,7 @@ import java.util.EnumSet;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 @Category(IntegrationTest.class)
 public class S3EncryptionFeatureTest {
@@ -60,7 +63,9 @@ public class S3EncryptionFeatureTest {
         new S3TouchFeature(session).touch(test);
         final S3EncryptionFeature feature = new S3EncryptionFeature(session);
         feature.setEncryption(test, S3EncryptionFeature.SSE_AES256);
-        assertEquals("AES256", feature.getEncryption(test).algorithm);
+        final Encryption.Algorithm value = feature.getEncryption(test);
+        assertEquals("AES256", value.algorithm);
+        assertNull(value.key);
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {
@@ -84,7 +89,7 @@ public class S3EncryptionFeatureTest {
         new S3TouchFeature(session).touch(test);
         try {
             final S3EncryptionFeature feature = new S3EncryptionFeature(session);
-            feature.setEncryption(test, S3EncryptionFeature.SSE_KMS_DEFAULT);
+            feature.setEncryption(test, KMSEncryptionFeature.SSE_KMS_DEFAULT);
         }
         finally {
             new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
@@ -110,8 +115,10 @@ public class S3EncryptionFeatureTest {
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test);
         final S3EncryptionFeature feature = new S3EncryptionFeature(session);
-        feature.setEncryption(test, S3EncryptionFeature.SSE_KMS_DEFAULT);
-        assertEquals("aws:kms", feature.getEncryption(test).algorithm);
+        feature.setEncryption(test, KMSEncryptionFeature.SSE_KMS_DEFAULT);
+        final Encryption.Algorithm value = feature.getEncryption(test);
+        assertEquals("aws:kms", value.algorithm);
+        assertNull(value.key);
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {

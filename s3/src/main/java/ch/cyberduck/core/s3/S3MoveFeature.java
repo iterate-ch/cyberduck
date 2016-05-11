@@ -59,7 +59,7 @@ public class S3MoveFeature implements Move {
                 // Keep encryption setting
                 final Encryption encryptionFeature = session.getFeature(Encryption.class);
                 if(encryptionFeature != null) {
-                    final Encryption.Properties encryption = encryptionFeature.getEncryption(source);
+                    final Encryption.Algorithm encryption = encryptionFeature.getEncryption(source);
                     destination.setServerSideEncryptionAlgorithm(encryption.algorithm);
                     if(encryption.key != null) {
                         // Set custom key id stored in KMS

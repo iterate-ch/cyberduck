@@ -42,7 +42,7 @@ public class S3TouchFeature implements Touch {
 
     private final S3WriteFeature write;
 
-    private Encryption.Properties encryption = Encryption.Properties.NONE;
+    private Encryption.Algorithm encryption = Encryption.Algorithm.NONE;
 
     private String storageClass;
 
@@ -56,7 +56,7 @@ public class S3TouchFeature implements Touch {
         return this;
     }
 
-    public S3TouchFeature withEncryption(final Encryption.Properties encryption) {
+    public S3TouchFeature withEncryption(final Encryption.Algorithm encryption) {
         this.encryption = encryption;
         return this;
     }

@@ -132,7 +132,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
                 object.setStorageClass(status.getStorageClass());
             }
         }
-        final Encryption.Properties encryption = status.getEncryption();
+        final Encryption.Algorithm encryption = status.getEncryption();
         object.setServerSideEncryptionAlgorithm(encryption.algorithm);
         if(encryption.key != null) {
             // If the x-amz-server-side-encryption is present and has the value of aws:kms, this header specifies the ID of the

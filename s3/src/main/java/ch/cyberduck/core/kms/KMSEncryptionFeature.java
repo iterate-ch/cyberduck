@@ -34,8 +34,8 @@ import ch.cyberduck.core.s3.S3Session;
 
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.Callable;
 
 import com.amazonaws.AmazonClientException;
@@ -110,14 +110,19 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
      * @return List of IDs of KMS managed keys
      */
     @Override
-    public List<String> getKeys(final LoginCallback prompt) throws BackgroundException {
-        return this.authenticated(new Authenticated<List<String>>() {
+    public Set<Algorithm> getKeys(final LoginCallback prompt) throws BackgroundException {
+        return this.authenticated(new Authenticated<Set<Algorithm>>() {
             @Override
-            public List<String> call() throws BackgroundException {
+            public Set<Algorithm> call() throws BackgroundException {
                 try {
-                    final List<String> keys = new ArrayList<>();
+                    final Set<Algorithm> keys = new HashSet<Algorithm>();
                     for(KeyListEntry entry : client.listKeys().getKeys()) {
-                        keys.add(entry.getKeyId());
+                        keys.add(new Algorithm(SSE_KMS_DEFAULT.algorithm, entry.getKeyId()) {
+                            @Override
+                            public String getDescription() {
+                                return String.format("SSE-KMS (%s)", entry.getKeyId());
+                            }
+                        });
                     }
                     return keys;
                 }
@@ -127,4 +132,14 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
             }
         }, prompt);
     }
+
+    /**
+     * Default KMS Managed SSE with default key
+     */
+    public static final Algorithm SSE_KMS_DEFAULT = new Algorithm("aws:kms", null) {
+        @Override
+        public String getDescription() {
+            return "SSE-KMS (Default Key)";
+        }
+    };
 }

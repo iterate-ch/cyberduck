@@ -88,7 +88,7 @@ public class S3MetadataFeature implements Headers {
                 }
                 final Encryption encryptionFeature = session.getFeature(Encryption.class);
                 if(encryptionFeature != null) {
-                    final Encryption.Properties encryption = encryptionFeature.getEncryption(file);
+                    final Encryption.Algorithm encryption = encryptionFeature.getEncryption(file);
                     target.setServerSideEncryptionAlgorithm(encryption.algorithm);
                     if(encryption.key != null) {
                         // Set custom key id stored in KMS
