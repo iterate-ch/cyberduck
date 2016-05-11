@@ -156,7 +156,8 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
      */
     @Override
     public Set<Algorithm> getKeys(final LoginCallback prompt) throws BackgroundException {
-        return this.authenticated(new Authenticated<Set<Algorithm>>() {
+        final Set<Algorithm> keys = super.getKeys(prompt);
+        keys.addAll(this.authenticated(new Authenticated<Set<Algorithm>>() {
             @Override
             public Set<Algorithm> call() throws BackgroundException {
                 try {
@@ -178,7 +179,8 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
                     throw new AmazonServiceExceptionMappingService().map("Cannot read AWS KMS configuration", e);
                 }
             }
-        }, prompt);
+        }, prompt));
+        return keys;
     }
 
     /**
