@@ -79,7 +79,7 @@ public class PathAttributes extends Attributes implements Serializable {
     /**
      * Server side encryption (SSE) algorithm and key or null
      */
-    private Encryption.Properties encryption = Encryption.Properties.NONE;
+    private Encryption.Algorithm encryption = Encryption.Algorithm.NONE;
 
     /**
      * Unique identifier for a given version of a file
@@ -251,11 +251,11 @@ public class PathAttributes extends Attributes implements Serializable {
         this.storageClass = storageClass;
     }
 
-    public Encryption.Properties getEncryption() {
+    public Encryption.Algorithm getEncryption() {
         return encryption;
     }
 
-    public void setEncryption(final Encryption.Properties encryption) {
+    public void setEncryption(final Encryption.Algorithm encryption) {
         this.encryption = encryption;
     }
 

@@ -19,8 +19,10 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
-import java.util.List;
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Objects;
+import java.util.Set;
 
 public interface Encryption {
 
@@ -30,12 +32,12 @@ public interface Encryption {
      * @param prompt Login callback
      * @return List of key names
      */
-    List<String> getKeys(LoginCallback prompt) throws BackgroundException;
+    Set<Algorithm> getKeys(LoginCallback prompt) throws BackgroundException;
 
     /**
      * @return List of supported algorithms by provider
      */
-    List<Encryption.Properties> getAlgorithms();
+    Set<Algorithm> getAlgorithms();
 
     /**
      * Enable server side encryption for file
@@ -43,13 +45,13 @@ public interface Encryption {
      * @param file      File
      * @param algorithm Algorithm to use
      */
-    void setEncryption(Path file, Properties algorithm) throws BackgroundException;
+    void setEncryption(Path file, Algorithm algorithm) throws BackgroundException;
 
     /**
      * @param file Default encryption setting for file
      * @return Default server side algorithm to use or null if SSE is disabled
      */
-    Properties getDefault(final Path file);
+    Algorithm getDefault(final Path file);
 
     /**
      * Get server side encryption algorithm
@@ -58,28 +60,28 @@ public interface Encryption {
      * @return Null if not encrypted or server side encryption algorithm used
      * @throws BackgroundException
      */
-    Properties getEncryption(Path file) throws BackgroundException;
+    Algorithm getEncryption(Path file) throws BackgroundException;
 
-    final class Properties {
-        public static final Properties NONE = new Properties(null, null);
+    class Algorithm {
+        public static final Algorithm NONE = new Algorithm(null, null);
 
-        public Properties(final String algorithm, final String key) {
+        public Algorithm(final String algorithm, final String key) {
             this.algorithm = algorithm;
             this.key = key;
         }
 
-        public String algorithm;
-        public String key;
+        public final String algorithm;
+        public final String key;
 
         @Override
         public boolean equals(final Object o) {
             if(this == o) {
                 return true;
             }
-            if(!(o instanceof Properties)) {
+            if(!(o instanceof Algorithm)) {
                 return false;
             }
-            final Properties that = (Properties) o;
+            final Algorithm that = (Algorithm) o;
             return Objects.equals(algorithm, that.algorithm) &&
                     Objects.equals(key, that.key);
         }
@@ -87,6 +89,25 @@ public interface Encryption {
         @Override
         public int hashCode() {
             return Objects.hash(algorithm, key);
+        }
+
+        public static Algorithm fromString(final String value) {
+            if(StringUtils.contains(value, ':')) {
+                return new Algorithm(StringUtils.split(value, ':')[0], StringUtils.split(value, ':')[1]);
+            }
+            return new Algorithm(value, null);
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%s:%s", algorithm, key != null ? key : StringUtils.EMPTY);
+        }
+
+        public String getDescription() {
+            if(null == key) {
+                return algorithm;
+            }
+            return key;
         }
     }
 }

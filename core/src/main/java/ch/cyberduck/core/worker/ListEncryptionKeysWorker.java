@@ -25,8 +25,9 @@ import ch.cyberduck.core.features.Encryption;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
-public class ListEncryptionKeysWorker extends Worker<List<String>> {
+public class ListEncryptionKeysWorker extends Worker<Set<Encryption.Algorithm>> {
 
     /**
      * Selected files.
@@ -41,15 +42,15 @@ public class ListEncryptionKeysWorker extends Worker<List<String>> {
     }
 
     @Override
-    public List<String> run(final Session<?> session) throws BackgroundException {
+    public Set<Encryption.Algorithm> run(final Session<?> session) throws BackgroundException {
         final Encryption feature = session.getFeature(Encryption.class);
         return feature.getKeys(prompt);
     }
 
 
     @Override
-    public List<String> initialize() {
-        return Collections.emptyList();
+    public Set<Encryption.Algorithm> initialize() {
+        return Collections.emptySet();
     }
 
     @Override

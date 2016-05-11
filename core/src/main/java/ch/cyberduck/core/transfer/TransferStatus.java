@@ -119,7 +119,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      */
     private Acl acl = Acl.EMPTY;
 
-    private Encryption.Properties encryption = Encryption.Properties.NONE;
+    private Encryption.Algorithm encryption = Encryption.Algorithm.NONE;
 
     /**
      * Storage class parameter
@@ -371,11 +371,11 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         this.acl = acl;
     }
 
-    public Encryption.Properties getEncryption() {
+    public Encryption.Algorithm getEncryption() {
         return encryption;
     }
 
-    public void setEncryption(final Encryption.Properties encryption) {
+    public void setEncryption(final Encryption.Algorithm encryption) {
         this.encryption = encryption;
     }
 
