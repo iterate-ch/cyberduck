@@ -35,6 +35,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Move;
@@ -237,6 +238,12 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 else {
                     status.setMetadata(feature.getDefault());
                 }
+            }
+        }
+        if(options.encryption) {
+            final Encryption feature = session.getFeature(Encryption.class);
+            if(feature != null) {
+                status.setEncryption(feature.getDefault(file));
             }
         }
         return status;

@@ -59,8 +59,8 @@ public class S3EncryptionFeatureTest {
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test);
         final S3EncryptionFeature feature = new S3EncryptionFeature(session);
-        feature.setEncryption(test, "AES256");
-        assertEquals("AES256", feature.getEncryption(test));
+        feature.setEncryption(test, S3EncryptionFeature.SSE_AES256);
+        assertEquals("AES256", feature.getEncryption(test).algorithm);
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {
@@ -84,7 +84,7 @@ public class S3EncryptionFeatureTest {
         new S3TouchFeature(session).touch(test);
         try {
             final S3EncryptionFeature feature = new S3EncryptionFeature(session);
-            feature.setEncryption(test, "aws:kms");
+            feature.setEncryption(test, S3EncryptionFeature.SSE_KMS_DEFAULT);
         }
         finally {
             new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
@@ -110,8 +110,8 @@ public class S3EncryptionFeatureTest {
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test);
         final S3EncryptionFeature feature = new S3EncryptionFeature(session);
-        feature.setEncryption(test, "aws:kms");
-        assertEquals("aws:kms", feature.getEncryption(test));
+        feature.setEncryption(test, S3EncryptionFeature.SSE_KMS_DEFAULT);
+        assertEquals("aws:kms", feature.getEncryption(test).algorithm);
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {

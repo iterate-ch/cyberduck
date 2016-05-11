@@ -64,12 +64,6 @@ public class S3MultipartWriteFeature implements Write {
     private String storage
             = preferences.getProperty("s3.storage.class");
 
-    /**
-     * Encryption algorithm
-     */
-    private String encryption
-            = preferences.getProperty("s3.encryption.algorithm");
-
     public S3MultipartWriteFeature(final S3Session session) {
         this(session, new DefaultFindFeature(session), new DefaultAttributesFeature(session));
     }
@@ -86,16 +80,10 @@ public class S3MultipartWriteFeature implements Write {
         return this;
     }
 
-    public S3MultipartWriteFeature withEncryption(final String encryption) {
-        this.encryption = encryption;
-        return this;
-    }
-
     @Override
     public ResponseOutputStream<List<MultipartPart>> write(final Path file, final TransferStatus status) throws BackgroundException {
         final S3Object object = new S3WriteFeature(session)
                 .withStorage(storage)
-                .withEncryption(encryption)
                 .getDetails(containerService.getKey(file), status);
         // ID for the initiated multipart upload.
         final MultipartUpload multipart;

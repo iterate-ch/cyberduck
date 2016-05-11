@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.serializer.Serializer;
 
@@ -76,9 +77,9 @@ public class PathAttributes extends Attributes implements Serializable {
     private String storageClass;
 
     /**
-     * Server side encryption algorithm or null
+     * Server side encryption (SSE) algorithm and key or null
      */
-    private String encryption;
+    private Encryption.Properties encryption = Encryption.Properties.NONE;
 
     /**
      * Unique identifier for a given version of a file
@@ -250,11 +251,11 @@ public class PathAttributes extends Attributes implements Serializable {
         this.storageClass = storageClass;
     }
 
-    public String getEncryption() {
+    public Encryption.Properties getEncryption() {
         return encryption;
     }
 
-    public void setEncryption(final String encryption) {
+    public void setEncryption(final Encryption.Properties encryption) {
         this.encryption = encryption;
     }
 

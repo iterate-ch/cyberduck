@@ -20,6 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import java.util.List;
+import java.util.Objects;
 
 public interface Encryption {
 
@@ -34,7 +35,7 @@ public interface Encryption {
     /**
      * @return List of supported algorithms by provider
      */
-    List<String> getAlgorithms();
+    List<Encryption.Properties> getAlgorithms();
 
     /**
      * Enable server side encryption for file
@@ -42,7 +43,13 @@ public interface Encryption {
      * @param file      File
      * @param algorithm Algorithm to use
      */
-    void setEncryption(Path file, String algorithm) throws BackgroundException;
+    void setEncryption(Path file, Properties algorithm) throws BackgroundException;
+
+    /**
+     * @param file Default encryption setting for file
+     * @return Default server side algorithm to use or null if SSE is disabled
+     */
+    Properties getDefault(final Path file);
 
     /**
      * Get server side encryption algorithm
@@ -51,5 +58,35 @@ public interface Encryption {
      * @return Null if not encrypted or server side encryption algorithm used
      * @throws BackgroundException
      */
-    String getEncryption(Path file) throws BackgroundException;
+    Properties getEncryption(Path file) throws BackgroundException;
+
+    final class Properties {
+        public static final Properties NONE = new Properties(null, null);
+
+        public Properties(final String algorithm, final String key) {
+            this.algorithm = algorithm;
+            this.key = key;
+        }
+
+        public String algorithm;
+        public String key;
+
+        @Override
+        public boolean equals(final Object o) {
+            if(this == o) {
+                return true;
+            }
+            if(!(o instanceof Properties)) {
+                return false;
+            }
+            final Properties that = (Properties) o;
+            return Objects.equals(algorithm, that.algorithm) &&
+                    Objects.equals(key, that.key);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(algorithm, key);
+        }
+    }
 }

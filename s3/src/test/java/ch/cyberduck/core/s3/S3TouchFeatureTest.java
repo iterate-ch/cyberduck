@@ -10,6 +10,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -24,9 +25,6 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class S3TouchFeatureTest {
 
@@ -72,7 +70,7 @@ public class S3TouchFeatureTest {
         final Path container = new Path("test.encryption.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final S3TouchFeature touch = new S3TouchFeature(session)
-                .withEncryption(null);
+                .withEncryption(Encryption.Properties.NONE);
         touch.touch(test);
     }
 
@@ -86,7 +84,7 @@ public class S3TouchFeatureTest {
         final Path container = new Path("test.encryption.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final S3TouchFeature touch = new S3TouchFeature(session)
-                .withEncryption("AES256");
+                .withEncryption(S3EncryptionFeature.SSE_AES256);
         touch.touch(test);
     }
 

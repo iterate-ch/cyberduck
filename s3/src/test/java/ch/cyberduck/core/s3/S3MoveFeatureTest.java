@@ -24,9 +24,6 @@ import java.util.UUID;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class S3MoveFeatureTest {
 
@@ -141,7 +138,7 @@ public class S3MoveFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.encryption.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session).withEncryption("AES256").touch(test);
+        new S3TouchFeature(session).withEncryption(S3EncryptionFeature.SSE_AES256).touch(test);
         assertTrue(new S3FindFeature(session).find(test));
         final Path renamed = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3MoveFeature(session).move(test, renamed, false, new Delete.Callback() {

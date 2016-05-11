@@ -23,6 +23,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamProgress;
@@ -83,6 +84,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      * Transfer size. May be less than the file size in attributes or 0 if creating symbolic links.
      */
     private long length = 0L;
+
     /**
      * The transfer has been canceled by the user.
      */
@@ -96,6 +98,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
             = new CountDownLatch(1);
 
     private Checksum checksum;
+
     /**
      * MIME type
      */
@@ -105,14 +108,19 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      * Current remote attributes of existing file including UNIX permissions, timestamp and ACL
      */
     private PathAttributes remote = new PathAttributes();
+
     /**
      * Target UNIX permissions to set when transfer is complete
      */
     private Permission permission = Permission.EMPTY;
+
     /**
      * Target ACL to set when transfer is complete
      */
     private Acl acl = Acl.EMPTY;
+
+    private Encryption.Properties encryption = Encryption.Properties.NONE;
+
     /**
      * Target timestamp to set when transfer is complete
      */
@@ -356,6 +364,14 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
 
     public void setAcl(Acl acl) {
         this.acl = acl;
+    }
+
+    public Encryption.Properties getEncryption() {
+        return encryption;
+    }
+
+    public void setEncryption(final Encryption.Properties encryption) {
+        this.encryption = encryption;
     }
 
     public Long getTimestamp() {

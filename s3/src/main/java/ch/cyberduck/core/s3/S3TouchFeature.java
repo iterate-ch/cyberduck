@@ -23,6 +23,7 @@ import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -31,15 +32,17 @@ import org.jets3t.service.model.S3Object;
 
 public class S3TouchFeature implements Touch {
 
-    private S3Session session;
+    private final S3Session session;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new S3PathContainerService();
 
-    private MimeTypeService mapping
+    private final MimeTypeService mapping
             = new MappingMimeTypeService();
 
-    private S3WriteFeature write;
+    private final S3WriteFeature write;
+
+    private Encryption.Properties encryption = Encryption.Properties.NONE;
 
     public S3TouchFeature(final S3Session session) {
         this.session = session;
@@ -51,8 +54,8 @@ public class S3TouchFeature implements Touch {
         return this;
     }
 
-    public S3TouchFeature withEncryption(final String encryption) {
-        write.withEncryption(encryption);
+    public S3TouchFeature withEncryption(final Encryption.Properties encryption) {
+        this.encryption = encryption;
         return this;
     }
 
@@ -61,6 +64,7 @@ public class S3TouchFeature implements Touch {
         try {
             final TransferStatus status = new TransferStatus();
             status.setMime(mapping.getMime(file.getName()));
+            status.setEncryption(encryption);
             final S3Object key = write.getDetails(containerService.getKey(file), status);
             session.getClient().putObject(containerService.getContainer(file).getName(), key);
         }

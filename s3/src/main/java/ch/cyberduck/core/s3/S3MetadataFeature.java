@@ -88,7 +88,12 @@ public class S3MetadataFeature implements Headers {
                 }
                 final Encryption encryptionFeature = session.getFeature(Encryption.class);
                 if(encryptionFeature != null) {
-                    target.setServerSideEncryptionAlgorithm(encryptionFeature.getEncryption(file));
+                    final Encryption.Properties encryption = encryptionFeature.getEncryption(file);
+                    target.setServerSideEncryptionAlgorithm(encryption.algorithm);
+                    if(encryption.key != null) {
+                        // Set custom key id stored in KMS
+                        target.addMetadata("x-amz-server-side-encryption-aws-kms-key-id", encryption.key);
+                    }
                 }
                 session.getClient().updateObjectMetadata(containerService.getContainer(file).getName(), target);
             }

@@ -822,7 +822,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (ToggleS3Settings(false))
             {
                 Encryption feature = (Encryption)_controller.Session.getFeature(typeof(Encryption));
-                String encryption = View.Encryption ? (string) feature.getAlgorithms().iterator().next() : null;
+                Encryption.Properties encryption = View.Encryption ? S3EncryptionFeature.SSE_AES256 : Encryption.Properties.NONE;
                 _controller.Background(new SetEncryptionBackgroundAction(_controller, this, _files, encryption));
             }
         }
@@ -1713,7 +1713,7 @@ namespace Ch.Cyberduck.Ui.Controller
             private readonly Path _selected;
             private readonly IInfoView _view;
             private Credentials _credentials;
-            private String _encryption;
+            private Encryption.Properties _encryption;
             private LifecycleConfiguration _lifecycle;
             private Location.Name _location;
             private LoggingConfiguration _logging;
@@ -1764,7 +1764,10 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 if (_infoController.NumberOfFiles == 1)
                 {
-                    _encryption = _selected.attributes().getEncryption();
+                    if (s.getFeature(typeof (IdentityConfiguration)) != null)
+                    {
+                        _encryption = _selected.attributes().getEncryption();
+                    }
                 }
                 return true;
             }
@@ -1791,19 +1794,19 @@ namespace Ch.Cyberduck.Ui.Controller
                             _view.BucketLoggingPopup = _selected.getName();
                         }
                     }
-
                     if (_location != null)
                     {
                         _view.BucketLocation = LocaleFactory.localizedString(_location.toString(), "S3");
                     }
-
                     if (_versioning != null)
                     {
                         _view.BucketVersioning = _versioning.isEnabled();
                         _view.BucketMfa = _versioning.isMultifactor();
                     }
-
-                    _view.Encryption = Utils.IsNotBlank(_encryption);
+                    if (_encryption != null)
+                    {
+                        _view.Encryption = !Encryption.Properties.NONE.equals(_encryption);
+                    }
                     if (null != _credentials)
                     {
                         Session s = BrowserController.Session;

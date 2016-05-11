@@ -93,12 +93,6 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
     private String storage
             = preferences.getProperty("s3.storage.class");
 
-    /**
-     * Encryption algorithm
-     */
-    private String encryption
-            = preferences.getProperty("s3.encryption.algorithm");
-
     public S3MultipartUploadService(final S3Session session) {
         this(session, PreferencesFactory.get().getLong("s3.upload.multipart.size"),
                 PreferencesFactory.get().getInteger("s3.upload.multipart.concurrency"));
@@ -114,11 +108,6 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
 
     public S3MultipartUploadService withStorage(final String storage) {
         this.storage = storage;
-        return this;
-    }
-
-    public S3MultipartUploadService withEncryption(final String encryption) {
-        this.encryption = encryption;
         return this;
     }
 
@@ -140,7 +129,6 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     log.info("No pending multipart upload found");
                 }
                 final S3Object object = new S3WriteFeature(session)
-                        .withEncryption(encryption)
                         .withStorage(storage)
                         .getDetails(containerService.getKey(file), status);
                 // ID for the initiated multipart upload.

@@ -61,6 +61,7 @@ import ch.cyberduck.core.logging.LoggingConfiguration;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
+import ch.cyberduck.core.s3.S3EncryptionFeature;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.threading.BrowserControllerBackgroundAction;
 import ch.cyberduck.core.threading.WindowMainAction;
@@ -399,8 +400,8 @@ public class InfoController extends ToolbarWindowController {
     public void encryptionButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
             final Encryption feature = controller.getSession().getFeature(Encryption.class);
-            final String algorithm = encryptionButton.state() == NSCell.NSOnState ?
-                    feature.getAlgorithms().iterator().next() : null;
+            final Encryption.Properties algorithm = encryptionButton.state() == NSCell.NSOnState ?
+                    S3EncryptionFeature.SSE_AES256 : Encryption.Properties.NONE;
             this.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
                             new WriteEncryptionWorker(files, algorithm, true, controller) {
                                 @Override
@@ -1665,7 +1666,7 @@ public class InfoController extends ToolbarWindowController {
                 }
                 else {
                     this.updateField(modifiedField, UserDateFormatterFactory.get().getLongFormat(
-                                    file.attributes().getModificationDate()),
+                            file.attributes().getModificationDate()),
                             TRUNCATE_MIDDLE_ATTRIBUTES
                     );
                 }
@@ -1674,7 +1675,7 @@ public class InfoController extends ToolbarWindowController {
                 }
                 else {
                     this.updateField(createdField, UserDateFormatterFactory.get().getLongFormat(
-                                    file.attributes().getCreationDate()),
+                            file.attributes().getCreationDate()),
                             TRUNCATE_MIDDLE_ATTRIBUTES
                     );
                 }
@@ -2000,7 +2001,7 @@ public class InfoController extends ToolbarWindowController {
                 LoggingConfiguration logging;
                 VersioningConfiguration versioning;
                 List<String> containers = new ArrayList<String>();
-                String encryption;
+                Encryption.Properties encryption;
                 LifecycleConfiguration lifecycle;
                 Credentials credentials;
 
@@ -2063,7 +2064,7 @@ public class InfoController extends ToolbarWindowController {
                         bucketVersioningButton.setState(versioning.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
                         bucketMfaButton.setState(versioning.isMultifactor() ? NSCell.NSOnState : NSCell.NSOffState);
                     }
-                    encryptionButton.setState(StringUtils.isNotBlank(encryption) ? NSCell.NSOnState : NSCell.NSOffState);
+                    encryptionButton.setState(Encryption.Properties.NONE.equals(encryption) ? NSCell.NSOffState : NSCell.NSOnState);
                     if(null != credentials) {
                         bucketAnalyticsSetupUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(
                                 session.getFeature(AnalyticsProvider.class).getSetup(session.getHost().getProtocol().getDefaultHostname(),

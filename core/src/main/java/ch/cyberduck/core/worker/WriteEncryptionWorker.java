@@ -39,7 +39,7 @@ public class WriteEncryptionWorker extends Worker<Boolean> {
     /**
      * Algorithm
      */
-    private String algorithm;
+    private Encryption.Properties algorithm;
 
     /**
      * Descend into directories
@@ -48,8 +48,8 @@ public class WriteEncryptionWorker extends Worker<Boolean> {
 
     private ProgressListener listener;
 
-    public WriteEncryptionWorker(final List<Path> files,
-                                 final String algorithm, final boolean recursive, final ProgressListener listener) {
+    public WriteEncryptionWorker(final List<Path> files, final Encryption.Properties algorithm,
+                                 final boolean recursive, final ProgressListener listener) {
         this.files = files;
         this.algorithm = algorithm;
         this.recursive = recursive;
