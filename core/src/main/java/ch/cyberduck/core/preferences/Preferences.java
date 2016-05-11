@@ -630,6 +630,7 @@ public abstract class Preferences {
         defaults.put("s3.location", "us-east-1");
         defaults.put("s3.bucket.virtualhost.disable", String.valueOf(false));
         defaults.put("s3.bucket.requesterpays", String.valueOf(true));
+        defaults.put("s3.domain", "amazonaws.com");
         defaults.put("s3.hostname.default", "s3.amazonaws.com");
 
         defaults.put("s3.bucket.acl.default", "public-read");
