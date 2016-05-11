@@ -94,7 +94,7 @@ public class KMSEncryptionFeatureTest {
         feature.setEncryption(test, KMSEncryptionFeature.SSE_KMS_DEFAULT);
         final Encryption.Algorithm value = feature.getEncryption(test);
         assertEquals("aws:kms", value.algorithm);
-        assertNull(value.key);
+        assertNotNull(value.key);
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {
