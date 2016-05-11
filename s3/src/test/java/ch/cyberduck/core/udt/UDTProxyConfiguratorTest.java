@@ -58,6 +58,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -233,7 +234,7 @@ public class UDTProxyConfiguratorTest {
 
         final String random = RandomStringUtils.random(1000);
         final OutputStream out = local.getOutputStream(false);
-        IOUtils.write(random, out);
+        IOUtils.write(random, out, Charset.defaultCharset());
         out.close();
         status.setLength(random.getBytes().length);
 
