@@ -1974,12 +1974,6 @@ public class InfoController extends ToolbarWindowController {
                     storageClassPopup.lastItem().setRepresentedObject(redundancy);
                 }
             }
-            if(session.getFeature(Encryption.class) != null) {
-                for(Encryption.Algorithm algorithm : session.getFeature(Encryption.class).getAlgorithms()) {
-                    encryptionPopup.addItemWithTitle(LocaleFactory.localizedString(algorithm.getDescription(), "S3"));
-                    encryptionPopup.lastItem().setRepresentedObject(algorithm.toString());
-                }
-            }
             if(this.numberOfFiles() > 1) {
                 s3PublicUrlField.setStringValue("(" + LocaleFactory.localizedString("Multiple files") + ")");
                 s3PublicUrlField.setToolTip(StringUtils.EMPTY);
