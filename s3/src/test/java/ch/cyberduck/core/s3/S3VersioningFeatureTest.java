@@ -89,7 +89,7 @@ public class S3VersioningFeatureTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new S3DirectoryFeature(session).mkdir(container, null);
+        new S3DirectoryFeature(session).mkdir(container);
         final Versioning feature = new S3VersioningFeature(session);
         feature.setConfiguration(container, new DisabledLoginCallback(), new VersioningConfiguration(true, false));
         assertTrue(feature.getConfiguration(container).isEnabled());

@@ -24,9 +24,11 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Encryption;
+import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3Object;
 
@@ -42,23 +44,9 @@ public class S3TouchFeature implements Touch {
 
     private final S3WriteFeature write;
 
-    private Encryption.Algorithm encryption = Encryption.Algorithm.NONE;
-
-    private String storageClass;
-
     public S3TouchFeature(final S3Session session) {
         this.session = session;
         this.write = new S3WriteFeature(session);
-    }
-
-    public S3TouchFeature withStorage(final String storageClass) {
-        this.storageClass = storageClass;
-        return this;
-    }
-
-    public S3TouchFeature withEncryption(final Encryption.Algorithm encryption) {
-        this.encryption = encryption;
-        return this;
     }
 
     @Override
@@ -66,14 +54,24 @@ public class S3TouchFeature implements Touch {
         try {
             final TransferStatus status = new TransferStatus();
             status.setMime(mapping.getMime(file.getName()));
-            status.setEncryption(encryption);
-            status.setStorageClass(storageClass);
-            final S3Object key = write.getDetails(containerService.getKey(file), status);
-            session.getClient().putObject(containerService.getContainer(file).getName(), key);
+            final Encryption encryption = session.getFeature(Encryption.class);
+            if(encryption != null) {
+                status.setEncryption(encryption.getDefault(file));
+            }
+            final Redundancy redundancy = session.getFeature(Redundancy.class);
+            if(redundancy != null) {
+                status.setStorageClass(redundancy.getDefault());
+            }
+            this.touch(file, status);
         }
         catch(ServiceException e) {
             throw new ServiceExceptionMappingService().map("Cannot create file {0}", e, file);
         }
+    }
+
+    protected void touch(final Path file, final TransferStatus status) throws S3ServiceException {
+        final S3Object key = write.getDetails(containerService.getKey(file), status);
+        session.getClient().putObject(containerService.getContainer(file).getName(), key);
     }
 
     @Override

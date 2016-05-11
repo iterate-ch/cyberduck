@@ -11,6 +11,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Encryption;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -69,9 +70,10 @@ public class S3TouchFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.encryption.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final S3TouchFeature touch = new S3TouchFeature(session)
-                .withEncryption(Encryption.Algorithm.NONE);
-        touch.touch(test);
+        final S3TouchFeature touch = new S3TouchFeature(session);
+        final TransferStatus status = new TransferStatus();
+        status.setEncryption(Encryption.Algorithm.NONE);
+        touch.touch(test, status);
     }
 
     public void testSuccessWithServerSideEncryptionBucketPolicy() throws Exception {
@@ -83,9 +85,10 @@ public class S3TouchFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.encryption.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final S3TouchFeature touch = new S3TouchFeature(session)
-                .withEncryption(S3EncryptionFeature.SSE_AES256);
-        touch.touch(test);
+        final S3TouchFeature touch = new S3TouchFeature(session);
+        final TransferStatus status = new TransferStatus();
+        status.setEncryption(S3EncryptionFeature.SSE_AES256);
+        touch.touch(test, status);
     }
 
     @Test

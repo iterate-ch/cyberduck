@@ -12,6 +12,7 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.googlestorage.GoogleStorageProtocol;
 import ch.cyberduck.core.googlestorage.GoogleStorageSession;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -138,7 +139,10 @@ public class S3MoveFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.encryption.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session).withEncryption(S3EncryptionFeature.SSE_AES256).touch(test);
+        final S3TouchFeature touch = new S3TouchFeature(session);
+        final TransferStatus status = new TransferStatus();
+        status.setEncryption(S3EncryptionFeature.SSE_AES256);
+        touch.touch(test, status);
         assertTrue(new S3FindFeature(session).find(test));
         final Path renamed = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3MoveFeature(session).move(test, renamed, false, new Delete.Callback() {

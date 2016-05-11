@@ -27,9 +27,6 @@ import java.util.UUID;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class S3DefaultDeleteFeatureTest {
 
@@ -66,7 +63,7 @@ public class S3DefaultDeleteFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new S3DirectoryFeature(session).mkdir(test, null);
+        new S3DirectoryFeature(session).mkdir(test);
         test.setType(EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         assertTrue(new S3FindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
@@ -90,7 +87,7 @@ public class S3DefaultDeleteFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("US");
-        new S3DirectoryFeature(session).mkdir(container, null);
+        new S3DirectoryFeature(session).mkdir(container);
         assertTrue(new S3FindFeature(session).find(container));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
@@ -121,7 +118,7 @@ public class S3DefaultDeleteFeatureTest {
         }, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("US");
-        new S3DirectoryFeature(session).mkdir(container, null);
+        new S3DirectoryFeature(session).mkdir(container);
         assertTrue(new S3FindFeature(session).find(container));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
