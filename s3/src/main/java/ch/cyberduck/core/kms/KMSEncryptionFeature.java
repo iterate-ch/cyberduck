@@ -117,13 +117,6 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
     }
 
     @Override
-    public Set<Algorithm> getAlgorithms() {
-        final Set<Algorithm> list = super.getAlgorithms();
-        list.add(SSE_KMS_DEFAULT);
-        return list;
-    }
-
-    @Override
     public Algorithm getDefault(final Path file) {
         final String setting = preferences.getProperty("s3.encryption.algorithm");
         if(StringUtils.equals(KMSEncryptionFeature.SSE_KMS_DEFAULT.algorithm, setting)) {
@@ -175,6 +168,9 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
                                 return String.format("SSE-KMS (%s)", entry.getKeyId());
                             }
                         });
+                    }
+                    if(keys.isEmpty()) {
+                        keys.add(SSE_KMS_DEFAULT);
                     }
                     return keys;
                 }

@@ -35,11 +35,6 @@ public interface Encryption {
     Set<Algorithm> getKeys(LoginCallback prompt) throws BackgroundException;
 
     /**
-     * @return List of supported algorithms by provider
-     */
-    Set<Algorithm> getAlgorithms();
-
-    /**
      * Enable server side encryption for file
      *
      * @param file      File
@@ -100,7 +95,10 @@ public interface Encryption {
 
         @Override
         public String toString() {
-            return String.format("%s:%s", algorithm, key != null ? key : StringUtils.EMPTY);
+            if(null == key) {
+                return algorithm;
+            }
+            return String.format("%s:%s", algorithm, key);
         }
 
         public String getDescription() {

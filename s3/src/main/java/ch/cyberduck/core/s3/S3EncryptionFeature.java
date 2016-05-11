@@ -48,11 +48,6 @@ public class S3EncryptionFeature implements Encryption {
 
     @Override
     public Set<Algorithm> getKeys(final LoginCallback prompt) throws BackgroundException {
-        return Collections.emptySet();
-    }
-
-    @Override
-    public Set<Algorithm> getAlgorithms() {
         return new HashSet<>(Collections.singletonList(SSE_AES256));
     }
 
