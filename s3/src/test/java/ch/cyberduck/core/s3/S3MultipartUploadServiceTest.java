@@ -35,9 +35,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class S3MultipartUploadServiceTest {
 
@@ -50,8 +47,7 @@ public class S3MultipartUploadServiceTest {
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final S3MultipartUploadService m = new S3MultipartUploadService(session, 5 * 1024L, 2);
-        m.withStorage(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
+        final S3MultipartUploadService service = new S3MultipartUploadService(session, 5 * 1024L, 2);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString() + ".txt";
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
@@ -61,7 +57,8 @@ public class S3MultipartUploadServiceTest {
         final TransferStatus status = new TransferStatus();
         status.setLength((long) random.getBytes().length);
         status.setMime("text/plain");
-        m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        status.setStorageClass(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
+        service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertEquals((long) random.getBytes().length, status.getOffset(), 0L);
         assertTrue(status.isComplete());

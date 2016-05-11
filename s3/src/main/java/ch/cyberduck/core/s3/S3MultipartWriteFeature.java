@@ -58,12 +58,6 @@ public class S3MultipartWriteFeature implements Write {
     private Preferences preferences
             = PreferencesFactory.get();
 
-    /**
-     * Storage class
-     */
-    private String storage
-            = preferences.getProperty("s3.storage.class");
-
     public S3MultipartWriteFeature(final S3Session session) {
         this(session, new DefaultFindFeature(session), new DefaultAttributesFeature(session));
     }
@@ -75,15 +69,9 @@ public class S3MultipartWriteFeature implements Write {
         this.attributes = attributes;
     }
 
-    public S3MultipartWriteFeature withStorage(final String storage) {
-        this.storage = storage;
-        return this;
-    }
-
     @Override
     public ResponseOutputStream<List<MultipartPart>> write(final Path file, final TransferStatus status) throws BackgroundException {
         final S3Object object = new S3WriteFeature(session)
-                .withStorage(storage)
                 .getDetails(containerService.getKey(file), status);
         // ID for the initiated multipart upload.
         final MultipartUpload multipart;

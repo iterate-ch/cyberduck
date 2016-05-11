@@ -41,6 +41,11 @@ public final class UploadFilterOptions {
      */
     public boolean encryption;
 
+    /**
+     * Set storage class
+     */
+    public boolean redundancy;
+
     public UploadFilterOptions() {
         // Defaults
         final Preferences preferences = PreferencesFactory.get();
@@ -50,6 +55,7 @@ public final class UploadFilterOptions {
         temporary = preferences.getBoolean("queue.upload.file.temporary");
         metadata = preferences.getBoolean("queue.upload.file.metadata.change");
         encryption = preferences.getBoolean("queue.upload.file.encryption.change");
+        redundancy = preferences.getBoolean("queue.upload.file.redundancy.change");
     }
 
     public UploadFilterOptions(final boolean permissions, final boolean timestamp, final boolean temporary) {
@@ -82,6 +88,11 @@ public final class UploadFilterOptions {
 
     public UploadFilterOptions withEncryption(boolean enabled) {
         encryption = enabled;
+        return this;
+    }
+
+    public UploadFilterOptions withRedundancy(boolean enabled) {
+        redundancy = enabled;
         return this;
     }
 }

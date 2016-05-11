@@ -66,12 +66,6 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
 
     private Attributes attributes;
 
-    /**
-     * Storage class
-     */
-    private String storage
-            = preferences.getProperty("s3.storage.class");
-
     public S3WriteFeature(final S3Session session) {
         this(session, new S3DefaultMultipartService(session), new DefaultFindFeature(session), new DefaultAttributesFeature(session));
     }
@@ -83,11 +77,6 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
         this.multipartService = multipartService;
         this.finder = finder;
         this.attributes = attributes;
-    }
-
-    public S3WriteFeature withStorage(final String storage) {
-        this.storage = storage;
-        return this;
     }
 
     @Override
@@ -137,10 +126,10 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
                     break;
             }
         }
-        if(StringUtils.isNotBlank(storage)) {
-            if(!S3Object.STORAGE_CLASS_STANDARD.equals(storage)) {
+        if(StringUtils.isNotBlank(status.getStorageClass())) {
+            if(!S3Object.STORAGE_CLASS_STANDARD.equals(status.getStorageClass())) {
                 // The default setting is STANDARD.
-                object.setStorageClass(storage);
+                object.setStorageClass(status.getStorageClass());
             }
         }
         final Encryption.Properties encryption = status.getEncryption();

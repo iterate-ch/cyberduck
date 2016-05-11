@@ -39,6 +39,7 @@ import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.preferences.Preferences;
@@ -244,6 +245,12 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             final Encryption feature = session.getFeature(Encryption.class);
             if(feature != null) {
                 status.setEncryption(feature.getDefault(file));
+            }
+        }
+        if(options.redundancy) {
+            final Redundancy feature = session.getFeature(Redundancy.class);
+            if(feature != null) {
+                status.setStorageClass(feature.getDefault());
             }
         }
         return status;

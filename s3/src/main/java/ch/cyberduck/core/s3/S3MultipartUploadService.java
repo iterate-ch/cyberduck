@@ -87,28 +87,17 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
     private Preferences preferences
             = PreferencesFactory.get();
 
-    /**
-     * Storage class
-     */
-    private String storage
-            = preferences.getProperty("s3.storage.class");
-
     public S3MultipartUploadService(final S3Session session) {
         this(session, PreferencesFactory.get().getLong("s3.upload.multipart.size"),
                 PreferencesFactory.get().getInteger("s3.upload.multipart.concurrency"));
     }
 
     public S3MultipartUploadService(final S3Session session, final Long partsize, final Integer concurrency) {
-        super(new S3WriteFeature(session).withStorage(null));
+        super(new S3WriteFeature(session));
         this.session = session;
         this.pool = new DefaultThreadPool(concurrency, "multipart");
         this.multipartService = new S3DefaultMultipartService(session);
         this.partsize = partsize;
-    }
-
-    public S3MultipartUploadService withStorage(final String storage) {
-        this.storage = storage;
-        return this;
     }
 
     @Override
@@ -129,7 +118,6 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     log.info("No pending multipart upload found");
                 }
                 final S3Object object = new S3WriteFeature(session)
-                        .withStorage(storage)
                         .getDetails(containerService.getKey(file), status);
                 // ID for the initiated multipart upload.
                 multipart = session.getClient().multipartStartUpload(

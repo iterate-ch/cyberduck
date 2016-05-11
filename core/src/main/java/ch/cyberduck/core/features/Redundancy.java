@@ -21,15 +21,29 @@ import ch.cyberduck.core.exception.BackgroundException;
 import java.util.List;
 
 /**
- * Storage class
- *
- * @version $Id$
+ * Storage class for files
  */
 public interface Redundancy {
 
+    /**
+     * @return Default storage class for new files
+     */
+    String getDefault();
+
+    /**
+     * @return List of supported redundancy settings
+     */
     List<String> getClasses();
 
+    /**
+     * @param file       File
+     * @param redundancy New storage class setting
+     */
     void setClass(Path file, String redundancy) throws BackgroundException;
 
+    /**
+     * @param file File
+     * @return Storage class setting for file
+     */
     String getClass(Path file) throws BackgroundException;
 }

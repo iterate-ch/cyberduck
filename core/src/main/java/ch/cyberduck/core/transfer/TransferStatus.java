@@ -122,6 +122,11 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     private Encryption.Properties encryption = Encryption.Properties.NONE;
 
     /**
+     * Storage class parameter
+     */
+    private String storageClass;
+
+    /**
      * Target timestamp to set when transfer is complete
      */
     private Long timestamp;
@@ -372,6 +377,14 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
 
     public void setEncryption(final Encryption.Properties encryption) {
         this.encryption = encryption;
+    }
+
+    public String getStorageClass() {
+        return storageClass;
+    }
+
+    public void setStorageClass(final String storageClass) {
+        this.storageClass = storageClass;
     }
 
     public Long getTimestamp() {

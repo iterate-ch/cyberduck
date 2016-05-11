@@ -44,13 +44,15 @@ public class S3TouchFeature implements Touch {
 
     private Encryption.Properties encryption = Encryption.Properties.NONE;
 
+    private String storageClass;
+
     public S3TouchFeature(final S3Session session) {
         this.session = session;
         this.write = new S3WriteFeature(session);
     }
 
-    public S3TouchFeature withStorage(final String storage) {
-        write.withStorage(storage);
+    public S3TouchFeature withStorage(final String storageClass) {
+        this.storageClass = storageClass;
         return this;
     }
 
@@ -65,6 +67,7 @@ public class S3TouchFeature implements Touch {
             final TransferStatus status = new TransferStatus();
             status.setMime(mapping.getMime(file.getName()));
             status.setEncryption(encryption);
+            status.setStorageClass(storageClass);
             final S3Object key = write.getDetails(containerService.getKey(file), status);
             session.getClient().putObject(containerService.getContainer(file).getName(), key);
         }
