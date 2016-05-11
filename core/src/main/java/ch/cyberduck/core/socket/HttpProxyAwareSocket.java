@@ -31,6 +31,7 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.SocketImpl;
+import java.nio.charset.Charset;
 
 /**
  * @version $Id$
@@ -75,8 +76,7 @@ public class HttpProxyAwareSocket extends Socket {
             super.connect(proxy.address(), timeout);
             final InetSocketAddress address = (InetSocketAddress) endpoint;
             final OutputStream out = this.getOutputStream();
-            IOUtils.write(String.format("CONNECT %s:%d HTTP/1.0\n\n", address.getHostName(), address.getPort()),
-                    out);
+            IOUtils.write(String.format("CONNECT %s:%d HTTP/1.0\n\n", address.getHostName(), address.getPort()), out, Charset.defaultCharset());
             final InputStream in = this.getInputStream();
             final String response = new LineNumberReader(new InputStreamReader(in)).readLine();
             if(null == response) {

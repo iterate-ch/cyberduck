@@ -266,6 +266,11 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
             }
 
             @Override
+            public NSImage image() {
+                return IconCacheFactory.<NSImage>get().iconNamed(String.format("%s.pdf", "fileinfo"));
+            }
+
+            @Override
             public Selector action() {
                 return Foundation.selector("infoButtonClicked:");
             }

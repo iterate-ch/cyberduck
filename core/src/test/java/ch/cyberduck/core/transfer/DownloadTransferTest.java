@@ -19,6 +19,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -179,7 +180,7 @@ public class DownloadTransferTest {
         final Local local = new Local(System.getProperty("java.io.tmpdir") + "/transfer/" + UUID.randomUUID().toString());
         LocalTouchFactory.get().touch(local);
         final OutputStream out = local.getOutputStream(false);
-        IOUtils.write("test", out);
+        IOUtils.write("test", out, Charset.defaultCharset());
         out.close();
         final Transfer transfer = new DownloadTransfer(host, test, local) {
             @Override
