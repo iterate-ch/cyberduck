@@ -120,8 +120,15 @@ public class S3AttributesFeature implements Attributes {
             });
         }
         else {
-            // AES256 or None
-            attributes.setEncryption(new Encryption.Algorithm(object.getServerSideEncryptionAlgorithm(), null));
+            if(null != object.getServerSideEncryptionAlgorithm()) {
+                // AES256
+                attributes.setEncryption(new Encryption.Algorithm(object.getServerSideEncryptionAlgorithm(), null) {
+                    @Override
+                    public String getDescription() {
+                        return "SSE-S3 (AES-256)";
+                    }
+                });
+            }
         }
         final HashMap<String, String> metadata = new HashMap<String, String>();
         final Map<String, Object> source = object.getModifiableMetadata();
