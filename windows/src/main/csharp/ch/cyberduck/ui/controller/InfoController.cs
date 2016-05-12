@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
+using System.Linq;
 using System.Media;
 using System.Windows.Forms;
 using ch.cyberduck.core;
@@ -822,8 +823,8 @@ namespace Ch.Cyberduck.Ui.Controller
             if (ToggleS3Settings(false))
             {
                 Encryption feature = (Encryption)_controller.Session.getFeature(typeof(Encryption));
-                Encryption.Properties encryption = View.Encryption ? S3EncryptionFeature.SSE_AES256 : Encryption.Properties.NONE;
-                _controller.Background(new SetEncryptionBackgroundAction(_controller, this, _files, encryption));
+                Encryption.Algorithm algorithm = Encryption.Algorithm.fromString(View.Encryption);
+                _controller.Background(new SetEncryptionBackgroundAction(_controller, this, _files, algorithm));
             }
         }
 
@@ -1196,6 +1197,12 @@ namespace Ch.Cyberduck.Ui.Controller
             classes.Add(new KeyValuePair<string, string>(LocaleFactory.localizedString("Unknown"), "Unknown"));
             View.PopulateStorageClass(classes);
             View.StorageClass = "Unknown";
+
+            IList<KeyValuePair<string, string>> algorithms = new List<KeyValuePair<string, string>>();
+            algorithms.Add(new KeyValuePair<string, string>(Encryption.Algorithm.NONE.getDescription(), Encryption.Algorithm.NONE.ToString()));
+            View.PopulateEncryption(algorithms);
+            View.Encryption = Encryption.Algorithm.NONE.toString();
+            
             PopulateLifecycleTransitionPeriod();
             PopulateLifecycleDeletePeriod();
 
@@ -1214,7 +1221,6 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     View.PopulateStorageClass(classes);
                 }
-
                 if (NumberOfFiles > 1)
                 {
                     View.S3PublicUrl = _multipleFilesString;
@@ -1708,12 +1714,12 @@ namespace Ch.Cyberduck.Ui.Controller
         private class FetchS3BackgroundAction : BrowserControllerBackgroundAction
         {
             private readonly Path _container;
-            private readonly IList<string> _containers = new List<string>();
+            private readonly HashSet<string> _containers = new HashSet<string>();
             private readonly InfoController _infoController;
             private readonly Path _selected;
             private readonly IInfoView _view;
             private Credentials _credentials;
-            private Encryption.Properties _encryption;
+            private Encryption.Algorithm _encryption;
             private LifecycleConfiguration _lifecycle;
             private Location.Name _location;
             private LoggingConfiguration _logging;
@@ -1753,20 +1759,33 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     _lifecycle = ((Lifecycle) s.getFeature(typeof (Lifecycle))).getConfiguration(_container);
                 }
-                if (s.getFeature(typeof (AnalyticsProvider)) != null)
+                if (s.getFeature(typeof (AnalyticsProvider)) != null && s.getFeature(typeof(IdentityConfiguration)) != null)
                 {
-                    if (s.getFeature(typeof (IdentityConfiguration)) != null)
-                    {
-                        _credentials =
-                            ((IdentityConfiguration) s.getFeature(typeof (IdentityConfiguration))).getCredentials(
-                                ((AnalyticsProvider) s.getFeature(typeof (AnalyticsProvider))).getName());
-                    }
+                    _credentials =
+                        ((IdentityConfiguration) s.getFeature(typeof (IdentityConfiguration))).getCredentials(
+                            ((AnalyticsProvider) s.getFeature(typeof (AnalyticsProvider))).getName());
                 }
                 if (_infoController.NumberOfFiles == 1)
                 {
-                    if (s.getFeature(typeof (IdentityConfiguration)) != null)
+                    if (s.getFeature(typeof (Encryption)) != null)
                     {
-                        _encryption = _selected.attributes().getEncryption();
+                        IList<KeyValuePair<string, string>> algorithms = new List<KeyValuePair<string, string>>();
+                        Set keys = ((Encryption) session.getFeature(typeof (Encryption))).getKeys(_infoController._prompt);
+                        Iterator iterator = keys.iterator();
+                        while (iterator.hasNext())
+                        {
+                            Encryption.Algorithm algorithm = (Encryption.Algorithm) iterator.next();
+                            algorithms.Add(new KeyValuePair<string, string>(LocaleFactory.localizedString(algorithm.getDescription(), "S3"),
+                                algorithm.ToString()));
+                        }
+                        Encryption.Algorithm encryption = ((Encryption)session.getFeature(typeof(Encryption))).getEncryption(_infoController.SelectedPath);
+                        if (!keys.contains(encryption))
+                        {
+                            // Add default KMS key not in list
+                            algorithms.Add(new KeyValuePair<string, string>(LocaleFactory.localizedString(encryption.getDescription(), "S3"),
+                                encryption.ToString()));
+                        }
+                        _infoController.View.PopulateEncryption(algorithms);
                     }
                 }
                 return true;
@@ -1782,7 +1801,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         _view.BucketLoggingCheckbox = _logging.isEnabled();
                         if (_containers.Count > 0)
                         {
-                            _view.PopulateBucketLogging(_containers);
+                            _view.PopulateBucketLogging(_containers.ToList());
                         }
                         if (_logging.isEnabled())
                         {
@@ -1805,7 +1824,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     if (_encryption != null)
                     {
-                        _view.Encryption = !Encryption.Properties.NONE.equals(_encryption);
+                        _view.Encryption = _encryption.ToString();
                     }
                     if (null != _credentials)
                     {
@@ -2413,7 +2432,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private class SetEncryptionBackgroundAction : WorkerBackgroundAction
         {
-            public SetEncryptionBackgroundAction(BrowserController controller, InfoController infoController, IList<Path> files, String algorithm)
+            public SetEncryptionBackgroundAction(BrowserController controller, InfoController infoController, IList<Path> files, Encryption.Algorithm algorithm)
                 : base(controller, controller.Session, controller.Cache, new InnerWriteEncryptionWorker(controller, infoController, Utils.ConvertToJavaList(files), algorithm))
             {
             }
@@ -2422,7 +2441,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 private readonly InfoController _infoController;
 
-                public InnerWriteEncryptionWorker(BrowserController controller, InfoController infoController, List files, String algorithm)
+                public InnerWriteEncryptionWorker(BrowserController controller, InfoController infoController, List files, Encryption.Algorithm algorithm)
                     : base(files, algorithm, true, controller)
                 {
                     _infoController = infoController;
