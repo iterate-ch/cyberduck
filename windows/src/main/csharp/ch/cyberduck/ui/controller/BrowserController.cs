@@ -503,7 +503,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_OpenInTerminal()
         {
-            Host host = Session.getHost();
             Path workdir = null;
             if (SelectedPaths.Count == 1)
             {
@@ -517,21 +516,8 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 workdir = Workdir;
             }
-            if (!File.Exists(PreferencesFactory.get().getProperty("terminal.command.ssh")))
-            {
-                OpenFileDialog selectDialog = new OpenFileDialog();
-                selectDialog.Filter = "PuTTY executable (.exe)|*.exe";
-                selectDialog.FilterIndex = 1;
-                if (selectDialog.ShowDialog() == DialogResult.OK)
-                {
-                    PreferencesFactory.get().setProperty("terminal.command.ssh", selectDialog.FileName);
-                }
-                else
-                {
-                    return;
-                }
-            }
-            new SshTerminalService().open(host, workdir);
+            TerminalService terminal = TerminalServiceFactory.get();
+            terminal.open(Session.getHost(), workdir);
         }
 
         private void View_SetComparator(BrowserComparator comparator)
@@ -970,7 +956,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         args.DropTargetLocation = DropTargetLocation.None;
                         return;
                     }
-                    Move move = (Move)Session.getFeature(typeof(Move));
+                    Move move = (Move) Session.getFeature(typeof (Move));
                     if (!move.isSupported(sourcePath))
                     {
                         args.Effect = DragDropEffects.None;
@@ -2120,18 +2106,18 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     editor = EditorFactory.instance().create(this, Session, new Application(exe, null), selected);
                 }
-                this.edit(editor);
+                edit(editor);
             }
         }
 
         public void edit(Path file)
         {
-            this.edit(EditorFactory.instance().create(this, Session, file));
+            edit(EditorFactory.instance().create(this, Session, file));
         }
 
         public void edit(Editor editor)
         {
-            this.background(new WorkerBackgroundAction(this, Session,
+            background(new WorkerBackgroundAction(this, Session,
                 editor.open(new DisabledApplicationQuitCallback(), new DisabledTransferErrorCallback(),
                     new DefaultEditorListener(this, Session, editor))));
         }
@@ -2492,7 +2478,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         return;
                     }
                 }
-                this.background(new ListAction(this, workdir, folder, selected, _cache, _limitListener));
+                background(new ListAction(this, workdir, folder, selected, _cache, _limitListener));
             }
             SetStatus();
         }
@@ -2789,7 +2775,8 @@ namespace Ch.Cyberduck.Ui.Controller
             if (PreferencesFactory.get().getBoolean("browser.move.confirm"))
             {
                 StringBuilder alertText =
-                    new StringBuilder(LocaleFactory.localizedString("Do you want to move the selected files?", "Duplicate"));
+                    new StringBuilder(LocaleFactory.localizedString("Do you want to move the selected files?",
+                        "Duplicate"));
 
                 StringBuilder content = new StringBuilder();
                 int i = 0;
