@@ -31,8 +31,7 @@ namespace Ch.Cyberduck.Core
     {
         public void open(Host host, Path workdir)
         {
-            String sshCommand = PreferencesFactory.get().getProperty("terminal.command.ssh");
-            if (!File.Exists(sshCommand))
+            if (!File.Exists(PreferencesFactory.get().getProperty("terminal.command.ssh")))
             {
                 OpenFileDialog selectDialog = new OpenFileDialog();
                 selectDialog.Filter = "PuTTY executable (.exe)|*.exe";
@@ -58,7 +57,7 @@ namespace Ch.Cyberduck.Core
                 Convert.ToString(host.getPort()), tempFile);
             ApplicationLauncherFactory.get()
                 .open(
-                    new Application(sshCommand, null), ssh);
+                    new Application(PreferencesFactory.get().getProperty("terminal.command.ssh"), null), ssh);
         }
     }
 }
