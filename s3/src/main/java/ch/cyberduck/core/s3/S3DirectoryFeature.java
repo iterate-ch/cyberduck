@@ -21,6 +21,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Encryption;
+import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -44,28 +46,40 @@ public class S3DirectoryFeature implements Directory {
 
     @Override
     public void mkdir(final Path file) throws BackgroundException {
-        this.mkdir(file, null);
+        this.mkdir(file, StringUtils.EMPTY);
     }
 
     @Override
     public void mkdir(final Path file, final String region) throws BackgroundException {
-        try {
-            if(containerService.isContainer(file)) {
-                final S3BucketCreateService service = new S3BucketCreateService(session);
-                if(StringUtils.isBlank(region)) {
-                    service.create(file, PreferencesFactory.get().getProperty("s3.location"));
-                }
-                else {
-                    service.create(file, region);
-                }
+        if(containerService.isContainer(file)) {
+            final S3BucketCreateService service = new S3BucketCreateService(session);
+            if(StringUtils.isBlank(region)) {
+                service.create(file, PreferencesFactory.get().getProperty("s3.location"));
             }
             else {
-                // Add placeholder object
-                final TransferStatus status = new TransferStatus();
-                status.setMime("application/x-directory");
-                final S3Object key = write.getDetails(containerService.getKey(file).concat(String.valueOf(Path.DELIMITER)), status);
-                session.getClient().putObject(containerService.getContainer(file).getName(), key);
+                service.create(file, region);
             }
+        }
+        else {
+            // Add placeholder object
+            final TransferStatus status = new TransferStatus();
+            status.setMime("application/x-directory");
+            final Encryption encryption = session.getFeature(Encryption.class);
+            if(encryption != null) {
+                status.setEncryption(encryption.getDefault(file));
+            }
+            final Redundancy redundancy = session.getFeature(Redundancy.class);
+            if(redundancy != null) {
+                status.setStorageClass(redundancy.getDefault());
+            }
+            this.mkdir(file, status);
+        }
+    }
+
+    protected void mkdir(final Path file, final TransferStatus status) throws BackgroundException {
+        final S3Object key = write.getDetails(containerService.getKey(file).concat(String.valueOf(Path.DELIMITER)), status);
+        try {
+            session.getClient().putObject(containerService.getContainer(file).getName(), key);
         }
         catch(ServiceException e) {
             throw new ServiceExceptionMappingService().map("Cannot create folder {0}", e, file);

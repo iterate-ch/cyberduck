@@ -60,7 +60,8 @@ public class SwiftWriteFeatureTest {
         container.attributes().setRegion("DFW");
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
         final SwiftRegionService regionService = new SwiftRegionService(session);
-        final OutputStream out = new SwiftWriteFeature(session, regionService).withMetadata(Collections.singletonMap("C", "duck")).write(test, status);
+        status.setMetadata(Collections.singletonMap("C", "duck"));
+        final OutputStream out = new SwiftWriteFeature(session, regionService).write(test, status);
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();

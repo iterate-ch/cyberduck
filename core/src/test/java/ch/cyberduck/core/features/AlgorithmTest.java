@@ -15,15 +15,18 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
+import org.junit.Test;
 
-import java.util.Map;
+import static org.junit.Assert.assertEquals;
 
-public interface Headers {
-    Map<String, String> getDefault();
+public class AlgorithmTest {
 
-    Map<String, String> getMetadata(Path file) throws BackgroundException;
+    @Test
+    public void testFromString() throws Exception {
+        assertEquals(new Encryption.Algorithm("aws:kms", null), Encryption.Algorithm.fromString("aws:kms"));
+        assertEquals(new Encryption.Algorithm("aws:kms", "k"), Encryption.Algorithm.fromString("aws:kms|k"));
+        assertEquals(new Encryption.Algorithm("AES256", null), Encryption.Algorithm.fromString("AES256"));
+        assertEquals(new Encryption.Algorithm("a", "b"), Encryption.Algorithm.fromString("a|b"));
+    }
 
-    void setMetadata(Path file, Map<String, String> metadata) throws BackgroundException;
 }

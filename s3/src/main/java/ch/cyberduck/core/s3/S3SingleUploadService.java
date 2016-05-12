@@ -107,6 +107,11 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
 
     @Override
     protected void post(final Path file, final MessageDigest digest, final StorageObject part) throws BackgroundException {
-        this.verify(file, digest, Checksum.parse(part.getETag()));
+        if(null == part.getServerSideEncryptionAlgorithm()) {
+            this.verify(file, digest, Checksum.parse(part.getETag()));
+        }
+        else {
+            log.warn(String.format("Skip checksum verification for %s with server side encryption enabled", file));
+        }
     }
 }

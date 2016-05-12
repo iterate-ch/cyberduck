@@ -109,7 +109,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.label33 = new System.Windows.Forms.Label();
             this.bucketLoggingComboBox = new System.Windows.Forms.ComboBox();
             this.label34 = new System.Windows.Forms.Label();
-            this.encryptionCheckBox = new System.Windows.Forms.CheckBox();
             this.label35 = new System.Windows.Forms.Label();
             this.bucketAnalyticsCheckBox = new System.Windows.Forms.CheckBox();
             this.bucketAnalyticsSetupUrlLinkLabel = new Ch.Cyberduck.Ui.Winforms.Controls.ClickLinkLabel();
@@ -168,6 +167,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.authenticatedUrlLinkLabel = new Ch.Cyberduck.Ui.Winforms.Controls.ClickLinkLabel();
             this.aclAnimation = new System.Windows.Forms.PictureBox();
             this.managedS3Panel = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
+            this.encryptionComboBox = new System.Windows.Forms.ComboBox();
             this.toolStrip.SuspendLayout();
             this.distributionLayoutPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.distributionAnimation)).BeginInit();
@@ -1016,7 +1016,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.s3LayoutPanel.Controls.Add(this.label33, 2, 12);
             this.s3LayoutPanel.Controls.Add(this.bucketLoggingComboBox, 2, 13);
             this.s3LayoutPanel.Controls.Add(this.label34, 0, 4);
-            this.s3LayoutPanel.Controls.Add(this.encryptionCheckBox, 2, 4);
             this.s3LayoutPanel.Controls.Add(this.label35, 0, 15);
             this.s3LayoutPanel.Controls.Add(this.bucketAnalyticsCheckBox, 2, 15);
             this.s3LayoutPanel.Controls.Add(this.bucketAnalyticsSetupUrlLinkLabel, 2, 16);
@@ -1026,6 +1025,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.s3LayoutPanel.Controls.Add(this.lifecycleTransitionComboBox, 2, 25);
             this.s3LayoutPanel.Controls.Add(this.lifecycleDeleteCheckBox, 2, 26);
             this.s3LayoutPanel.Controls.Add(this.lifecycleDeleteComboBox, 2, 27);
+            this.s3LayoutPanel.Controls.Add(this.encryptionComboBox, 2, 4);
             this.s3LayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.s3LayoutPanel.Location = new System.Drawing.Point(0, 0);
             this.s3LayoutPanel.Name = "s3LayoutPanel";
@@ -1094,7 +1094,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.label19.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label19.AutoSize = true;
             this.s3LayoutPanel.SetColumnSpan(this.label19, 2);
-            this.label19.Location = new System.Drawing.Point(13, 114);
+            this.label19.Location = new System.Drawing.Point(13, 116);
             this.label19.Name = "label19";
             this.label19.Size = new System.Drawing.Size(67, 15);
             this.label19.TabIndex = 1;
@@ -1106,7 +1106,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.label20.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label20.AutoSize = true;
             this.s3LayoutPanel.SetColumnSpan(this.label20, 2);
-            this.label20.Location = new System.Drawing.Point(13, 154);
+            this.label20.Location = new System.Drawing.Point(13, 156);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(70, 15);
             this.label20.TabIndex = 2;
@@ -1130,7 +1130,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.s3PublicUrlLinkLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.s3PublicUrlLinkLabel.AutoEllipsis = true;
             this.s3LayoutPanel.SetColumnSpan(this.s3PublicUrlLinkLabel, 2);
-            this.s3PublicUrlLinkLabel.Location = new System.Drawing.Point(96, 115);
+            this.s3PublicUrlLinkLabel.Location = new System.Drawing.Point(96, 117);
             this.s3PublicUrlLinkLabel.Name = "s3PublicUrlLinkLabel";
             this.s3PublicUrlLinkLabel.Size = new System.Drawing.Size(391, 13);
             this.s3PublicUrlLinkLabel.TabIndex = 6;
@@ -1143,7 +1143,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.s3TorrentUrlLinkLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.s3TorrentUrlLinkLabel.AutoEllipsis = true;
             this.s3LayoutPanel.SetColumnSpan(this.s3TorrentUrlLinkLabel, 2);
-            this.s3TorrentUrlLinkLabel.Location = new System.Drawing.Point(96, 155);
+            this.s3TorrentUrlLinkLabel.Location = new System.Drawing.Point(96, 157);
             this.s3TorrentUrlLinkLabel.Name = "s3TorrentUrlLinkLabel";
             this.s3TorrentUrlLinkLabel.Size = new System.Drawing.Size(391, 13);
             this.s3TorrentUrlLinkLabel.TabIndex = 7;
@@ -1166,7 +1166,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.s3PublicUrlValidityLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.s3PublicUrlValidityLabel.AutoSize = true;
-            this.s3PublicUrlValidityLabel.Location = new System.Drawing.Point(96, 129);
+            this.s3PublicUrlValidityLabel.Location = new System.Drawing.Point(96, 131);
             this.s3PublicUrlValidityLabel.Name = "s3PublicUrlValidityLabel";
             this.s3PublicUrlValidityLabel.Size = new System.Drawing.Size(44, 15);
             this.s3PublicUrlValidityLabel.TabIndex = 26;
@@ -1189,7 +1189,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.bucketLoggingCheckBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.bucketLoggingCheckBox.AutoSize = true;
             this.s3LayoutPanel.SetColumnSpan(this.bucketLoggingCheckBox, 2);
-            this.bucketLoggingCheckBox.Location = new System.Drawing.Point(96, 182);
+            this.bucketLoggingCheckBox.Location = new System.Drawing.Point(96, 184);
             this.bucketLoggingCheckBox.Name = "bucketLoggingCheckBox";
             this.bucketLoggingCheckBox.Size = new System.Drawing.Size(148, 19);
             this.bucketLoggingCheckBox.TabIndex = 4;
@@ -1202,7 +1202,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.bucketVersioningCheckBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.bucketVersioningCheckBox.AutoSize = true;
             this.s3LayoutPanel.SetColumnSpan(this.bucketVersioningCheckBox, 2);
-            this.bucketVersioningCheckBox.Location = new System.Drawing.Point(96, 334);
+            this.bucketVersioningCheckBox.Location = new System.Drawing.Point(96, 336);
             this.bucketVersioningCheckBox.Name = "bucketVersioningCheckBox";
             this.bucketVersioningCheckBox.Size = new System.Drawing.Size(121, 19);
             this.bucketVersioningCheckBox.TabIndex = 27;
@@ -1216,7 +1216,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.label21.AutoSize = true;
             this.s3LayoutPanel.SetColumnSpan(this.label21, 2);
             this.label21.ForeColor = System.Drawing.SystemColors.GrayText;
-            this.label21.Location = new System.Drawing.Point(96, 356);
+            this.label21.Location = new System.Drawing.Point(96, 358);
             this.label21.Name = "label21";
             this.label21.Size = new System.Drawing.Size(373, 30);
             this.label21.TabIndex = 28;
@@ -1228,7 +1228,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.bucketMfaCheckBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.bucketMfaCheckBox.AutoSize = true;
             this.s3LayoutPanel.SetColumnSpan(this.bucketMfaCheckBox, 2);
-            this.bucketMfaCheckBox.Location = new System.Drawing.Point(96, 399);
+            this.bucketMfaCheckBox.Location = new System.Drawing.Point(96, 401);
             this.bucketMfaCheckBox.Name = "bucketMfaCheckBox";
             this.bucketMfaCheckBox.Size = new System.Drawing.Size(246, 19);
             this.bucketMfaCheckBox.TabIndex = 29;
@@ -1241,7 +1241,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.label31.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label31.AutoSize = true;
             this.s3LayoutPanel.SetColumnSpan(this.label31, 2);
-            this.label31.Location = new System.Drawing.Point(13, 184);
+            this.label31.Location = new System.Drawing.Point(13, 186);
             this.label31.Name = "label31";
             this.label31.Size = new System.Drawing.Size(51, 15);
             this.label31.TabIndex = 31;
@@ -1253,7 +1253,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.label32.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label32.AutoSize = true;
             this.s3LayoutPanel.SetColumnSpan(this.label32, 2);
-            this.label32.Location = new System.Drawing.Point(13, 336);
+            this.label32.Location = new System.Drawing.Point(13, 338);
             this.label32.Name = "label32";
             this.label32.Size = new System.Drawing.Size(63, 15);
             this.label32.TabIndex = 32;
@@ -1265,7 +1265,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.label33.AutoSize = true;
             this.s3LayoutPanel.SetColumnSpan(this.label33, 2);
             this.label33.ForeColor = System.Drawing.SystemColors.GrayText;
-            this.label33.Location = new System.Drawing.Point(96, 204);
+            this.label33.Location = new System.Drawing.Point(96, 206);
             this.label33.Name = "label33";
             this.label33.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
             this.label33.Size = new System.Drawing.Size(213, 20);
@@ -1278,7 +1278,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.s3LayoutPanel.SetColumnSpan(this.bucketLoggingComboBox, 2);
             this.bucketLoggingComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.bucketLoggingComboBox.FormattingEnabled = true;
-            this.bucketLoggingComboBox.Location = new System.Drawing.Point(96, 227);
+            this.bucketLoggingComboBox.Location = new System.Drawing.Point(96, 229);
             this.bucketLoggingComboBox.Name = "bucketLoggingComboBox";
             this.bucketLoggingComboBox.Size = new System.Drawing.Size(391, 23);
             this.bucketLoggingComboBox.TabIndex = 38;
@@ -1289,32 +1289,19 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.label34.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label34.AutoSize = true;
             this.s3LayoutPanel.SetColumnSpan(this.label34, 2);
-            this.label34.Location = new System.Drawing.Point(13, 84);
+            this.label34.Location = new System.Drawing.Point(13, 85);
             this.label34.Name = "label34";
             this.label34.Size = new System.Drawing.Size(64, 15);
             this.label34.TabIndex = 39;
             this.label34.Text = "Encryption";
             this.label34.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // encryptionCheckBox
-            // 
-            this.encryptionCheckBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.encryptionCheckBox.AutoSize = true;
-            this.s3LayoutPanel.SetColumnSpan(this.encryptionCheckBox, 2);
-            this.encryptionCheckBox.Location = new System.Drawing.Point(96, 82);
-            this.encryptionCheckBox.Name = "encryptionCheckBox";
-            this.encryptionCheckBox.Size = new System.Drawing.Size(143, 19);
-            this.encryptionCheckBox.TabIndex = 31;
-            this.encryptionCheckBox.Text = "Server Side Encryption";
-            this.encryptionCheckBox.UseVisualStyleBackColor = true;
-            this.encryptionCheckBox.CheckedChanged += new System.EventHandler(this.encryptionCheckBox_CheckedChanged);
-            // 
             // label35
             // 
             this.label35.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label35.AutoSize = true;
             this.s3LayoutPanel.SetColumnSpan(this.label35, 2);
-            this.label35.Location = new System.Drawing.Point(13, 268);
+            this.label35.Location = new System.Drawing.Point(13, 270);
             this.label35.Name = "label35";
             this.label35.Size = new System.Drawing.Size(55, 15);
             this.label35.TabIndex = 40;
@@ -1326,7 +1313,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.bucketAnalyticsCheckBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.bucketAnalyticsCheckBox.AutoSize = true;
             this.s3LayoutPanel.SetColumnSpan(this.bucketAnalyticsCheckBox, 2);
-            this.bucketAnalyticsCheckBox.Location = new System.Drawing.Point(96, 266);
+            this.bucketAnalyticsCheckBox.Location = new System.Drawing.Point(96, 268);
             this.bucketAnalyticsCheckBox.Name = "bucketAnalyticsCheckBox";
             this.bucketAnalyticsCheckBox.Size = new System.Drawing.Size(164, 19);
             this.bucketAnalyticsCheckBox.TabIndex = 41;
@@ -1339,7 +1326,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.bucketAnalyticsSetupUrlLinkLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.bucketAnalyticsSetupUrlLinkLabel.AutoEllipsis = true;
             this.s3LayoutPanel.SetColumnSpan(this.bucketAnalyticsSetupUrlLinkLabel, 2);
-            this.bucketAnalyticsSetupUrlLinkLabel.Location = new System.Drawing.Point(96, 288);
+            this.bucketAnalyticsSetupUrlLinkLabel.Location = new System.Drawing.Point(96, 290);
             this.bucketAnalyticsSetupUrlLinkLabel.Margin = new System.Windows.Forms.Padding(3, 0, 3, 5);
             this.bucketAnalyticsSetupUrlLinkLabel.Name = "bucketAnalyticsSetupUrlLinkLabel";
             this.bucketAnalyticsSetupUrlLinkLabel.Size = new System.Drawing.Size(391, 13);
@@ -1354,7 +1341,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.label36.AutoSize = true;
             this.s3LayoutPanel.SetColumnSpan(this.label36, 2);
             this.label36.ForeColor = System.Drawing.SystemColors.GrayText;
-            this.label36.Location = new System.Drawing.Point(96, 306);
+            this.label36.Location = new System.Drawing.Point(96, 308);
             this.label36.Name = "label36";
             this.label36.Size = new System.Drawing.Size(279, 15);
             this.label36.TabIndex = 43;
@@ -1365,7 +1352,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.lifecycleTransitionCheckBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lifecycleTransitionCheckBox.AutoSize = true;
             this.s3LayoutPanel.SetColumnSpan(this.lifecycleTransitionCheckBox, 2);
-            this.lifecycleTransitionCheckBox.Location = new System.Drawing.Point(96, 434);
+            this.lifecycleTransitionCheckBox.Location = new System.Drawing.Point(96, 436);
             this.lifecycleTransitionCheckBox.Name = "lifecycleTransitionCheckBox";
             this.lifecycleTransitionCheckBox.Size = new System.Drawing.Size(132, 19);
             this.lifecycleTransitionCheckBox.TabIndex = 45;
@@ -1378,7 +1365,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.label38.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label38.AutoSize = true;
             this.s3LayoutPanel.SetColumnSpan(this.label38, 2);
-            this.label38.Location = new System.Drawing.Point(13, 436);
+            this.label38.Location = new System.Drawing.Point(13, 438);
             this.label38.Name = "label38";
             this.label38.Size = new System.Drawing.Size(53, 15);
             this.label38.TabIndex = 44;
@@ -1391,7 +1378,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.s3LayoutPanel.SetColumnSpan(this.lifecycleTransitionComboBox, 2);
             this.lifecycleTransitionComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.lifecycleTransitionComboBox.FormattingEnabled = true;
-            this.lifecycleTransitionComboBox.Location = new System.Drawing.Point(96, 459);
+            this.lifecycleTransitionComboBox.Location = new System.Drawing.Point(96, 461);
             this.lifecycleTransitionComboBox.Name = "lifecycleTransitionComboBox";
             this.lifecycleTransitionComboBox.Size = new System.Drawing.Size(391, 23);
             this.lifecycleTransitionComboBox.TabIndex = 46;
@@ -1401,7 +1388,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.lifecycleDeleteCheckBox.AutoSize = true;
             this.s3LayoutPanel.SetColumnSpan(this.lifecycleDeleteCheckBox, 2);
-            this.lifecycleDeleteCheckBox.Location = new System.Drawing.Point(96, 488);
+            this.lifecycleDeleteCheckBox.Location = new System.Drawing.Point(96, 490);
             this.lifecycleDeleteCheckBox.Name = "lifecycleDeleteCheckBox";
             this.lifecycleDeleteCheckBox.Size = new System.Drawing.Size(83, 19);
             this.lifecycleDeleteCheckBox.TabIndex = 47;
@@ -1415,7 +1402,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.s3LayoutPanel.SetColumnSpan(this.lifecycleDeleteComboBox, 2);
             this.lifecycleDeleteComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.lifecycleDeleteComboBox.FormattingEnabled = true;
-            this.lifecycleDeleteComboBox.Location = new System.Drawing.Point(96, 513);
+            this.lifecycleDeleteComboBox.Location = new System.Drawing.Point(96, 515);
             this.lifecycleDeleteComboBox.Name = "lifecycleDeleteComboBox";
             this.lifecycleDeleteComboBox.Size = new System.Drawing.Size(391, 23);
             this.lifecycleDeleteComboBox.TabIndex = 48;
@@ -1515,7 +1502,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.addHeaderButton.Image = global::Ch.Cyberduck.ResourcesBundle.gear;
             this.addHeaderButton.Location = new System.Drawing.Point(13, -16);
             this.addHeaderButton.Name = "addHeaderButton";
-            this.addHeaderButton.Size = new System.Drawing.Size(38, 24);
+            this.addHeaderButton.Size = new System.Drawing.Size(24, 6);
             this.addHeaderButton.SplitMenuStrip = this.addMetadataContextMenuStrip;
             this.addHeaderButton.TabIndex = 30;
             this.addHeaderButton.UseVisualStyleBackColor = true;
@@ -1876,7 +1863,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.addAclButton.Image = global::Ch.Cyberduck.ResourcesBundle.gear;
             this.addAclButton.Location = new System.Drawing.Point(13, -16);
             this.addAclButton.Name = "addAclButton";
-            this.addAclButton.Size = new System.Drawing.Size(1, 24);
+            this.addAclButton.Size = new System.Drawing.Size(1, 6);
             this.addAclButton.SplitMenuStrip = this.addAclContextMenuStrip;
             this.addAclButton.TabIndex = 30;
             this.addAclButton.UseVisualStyleBackColor = true;
@@ -1957,6 +1944,17 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.managedS3Panel.Name = "managedS3Panel";
             this.managedS3Panel.Size = new System.Drawing.Size(500, 548);
             this.managedS3Panel.Text = "managedPanel1";
+            // 
+            // encryptionComboBox
+            // 
+            this.encryptionComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.s3LayoutPanel.SetColumnSpan(this.encryptionComboBox, 2);
+            this.encryptionComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.encryptionComboBox.FormattingEnabled = true;
+            this.encryptionComboBox.Location = new System.Drawing.Point(96, 82);
+            this.encryptionComboBox.Name = "encryptionComboBox";
+            this.encryptionComboBox.Size = new System.Drawing.Size(391, 23);
+            this.encryptionComboBox.TabIndex = 31;
             // 
             // InfoForm
             // 
@@ -2141,7 +2139,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.Label label33;
         private System.Windows.Forms.ComboBox bucketLoggingComboBox;
         private System.Windows.Forms.Label label34;
-        private System.Windows.Forms.CheckBox encryptionCheckBox;
         private System.Windows.Forms.Label label35;
         private System.Windows.Forms.CheckBox bucketAnalyticsCheckBox;
         private ClickLinkLabel bucketAnalyticsSetupUrlLinkLabel;
@@ -2154,5 +2151,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.ComboBox lifecycleTransitionComboBox;
         private System.Windows.Forms.CheckBox lifecycleDeleteCheckBox;
         private System.Windows.Forms.ComboBox lifecycleDeleteComboBox;
+        private System.Windows.Forms.ComboBox encryptionComboBox;
     }
 }

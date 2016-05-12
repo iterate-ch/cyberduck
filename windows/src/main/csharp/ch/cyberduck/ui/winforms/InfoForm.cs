@@ -775,21 +775,29 @@ namespace Ch.Cyberduck.Ui.Winforms
             storageClassComboBox.ValueMember = "Value";
         }
 
+        public void PopulateEncryption(IList<KeyValuePair<string, string>> algorithms)
+        {
+            encryptionComboBox.DataSource = null;
+            encryptionComboBox.DataSource = algorithms;
+            encryptionComboBox.DisplayMember = "Key";
+            encryptionComboBox.ValueMember = "Value";
+        }
+
         public string BucketLocation
         {
             set { bucketLocationLabel.Text = value; }
         }
 
-        public bool Encryption
+        public string Encryption
         {
-            set { encryptionCheckBox.Checked = value; }
-            get { return encryptionCheckBox.Checked; }
+            get { return (string)encryptionComboBox.SelectedValue; }
+            set { encryptionComboBox.SelectedValue = value; }
         }
 
         public bool EncryptionEnabled
         {
-            get { return encryptionCheckBox.Enabled; }
-            set { encryptionCheckBox.Enabled = value; }
+            get { return encryptionComboBox.Enabled; }
+            set { encryptionComboBox.Enabled = value; }
         }
 
         public string StorageClass

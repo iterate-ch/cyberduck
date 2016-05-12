@@ -23,6 +23,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.DefaultThreadPool;
 import ch.cyberduck.core.threading.ThreadPool;
@@ -43,9 +44,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-/**
- * @version $Id$
- */
 public class S3MultipartCopyFeature extends S3CopyFeature {
     private static final Logger log = Logger.getLogger(S3MultipartCopyFeature.class);
 
@@ -76,13 +74,17 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
     }
 
     protected void copy(final Path source, final Path copy, final String storageClass,
-                        final String encryptionAlgorithm,
+                        final Encryption.Algorithm encryption,
                         final Acl acl) throws BackgroundException {
         if(source.isFile()) {
             final S3Object destination = new S3Object(containerService.getKey(copy));
             // Copying object applying the metadata of the original
             destination.setStorageClass(storageClass);
-            destination.setServerSideEncryptionAlgorithm(encryptionAlgorithm);
+            destination.setServerSideEncryptionAlgorithm(encryption.algorithm);
+            if(encryption.key != null) {
+                // Set custom key id stored in KMS
+                destination.addMetadata("x-amz-server-side-encryption-aws-kms-key-id", encryption.key);
+            }
             destination.setAcl(accessControlListFeature.convert(acl));
             try {
                 final List<MultipartPart> completed = new ArrayList<MultipartPart>();

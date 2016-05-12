@@ -25,6 +25,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.io.Checksum;
 
@@ -109,7 +110,26 @@ public class S3AttributesFeature implements Attributes {
         if(object instanceof S3Object) {
             attributes.setVersionId(((S3Object) object).getVersionId());
         }
-        attributes.setEncryption(object.getServerSideEncryptionAlgorithm());
+        if(object.containsMetadata("server-side-encryption-aws-kms-key-id")) {
+            attributes.setEncryption(new Encryption.Algorithm(object.getServerSideEncryptionAlgorithm(),
+                    object.getMetadata("server-side-encryption-aws-kms-key-id").toString()) {
+                @Override
+                public String getDescription() {
+                    return String.format("SSE-KMS (%s)", key);
+                }
+            });
+        }
+        else {
+            if(null != object.getServerSideEncryptionAlgorithm()) {
+                // AES256
+                attributes.setEncryption(new Encryption.Algorithm(object.getServerSideEncryptionAlgorithm(), null) {
+                    @Override
+                    public String getDescription() {
+                        return "SSE-S3 (AES-256)";
+                    }
+                });
+            }
+        }
         final HashMap<String, String> metadata = new HashMap<String, String>();
         final Map<String, Object> source = object.getModifiableMetadata();
         for(Map.Entry<String, Object> entry : source.entrySet()) {

@@ -23,6 +23,7 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
@@ -48,43 +49,22 @@ import org.jets3t.service.utils.ServiceUtils;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> implements Write {
     private static final Logger log = Logger.getLogger(S3WriteFeature.class);
 
-    private S3Session session;
+    private final Preferences preferences
+            = PreferencesFactory.get();
 
-    private PathContainerService containerService
+    private final S3Session session;
+
+    private final PathContainerService containerService
             = new S3PathContainerService();
 
-    private S3MultipartService multipartService;
+    private final S3MultipartService multipartService;
 
     private Find finder;
 
     private Attributes attributes;
-
-    private Preferences preferences
-            = PreferencesFactory.get();
-
-    /**
-     * Storage class
-     */
-    private String storage
-            = preferences.getProperty("s3.storage.class");
-
-    /**
-     * Encryption algorithm
-     */
-    private String encryption
-            = preferences.getProperty("s3.encryption.algorithm");
-
-    /**
-     * Default metadata for new files
-     */
-    private Map<String, String> metadata
-            = preferences.getMap("s3.metadata.default");
 
     public S3WriteFeature(final S3Session session) {
         this(session, new S3DefaultMultipartService(session), new DefaultFindFeature(session), new DefaultAttributesFeature(session));
@@ -97,21 +77,6 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
         this.multipartService = multipartService;
         this.finder = finder;
         this.attributes = attributes;
-    }
-
-    public S3WriteFeature withStorage(final String storage) {
-        this.storage = storage;
-        return this;
-    }
-
-    public S3WriteFeature withEncryption(final String encryption) {
-        this.encryption = encryption;
-        return this;
-    }
-
-    public S3WriteFeature withMetadata(final Map<String, String> metadata) {
-        this.metadata = metadata;
-        return this;
     }
 
     @Override
@@ -161,17 +126,18 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
                     break;
             }
         }
-        if(StringUtils.isNotBlank(storage)) {
-            if(!S3Object.STORAGE_CLASS_STANDARD.equals(storage)) {
+        if(StringUtils.isNotBlank(status.getStorageClass())) {
+            if(!S3Object.STORAGE_CLASS_STANDARD.equals(status.getStorageClass())) {
                 // The default setting is STANDARD.
-                object.setStorageClass(storage);
+                object.setStorageClass(status.getStorageClass());
             }
         }
-        if(StringUtils.isNotBlank(encryption)) {
-            object.setServerSideEncryptionAlgorithm(encryption);
-        }
-        for(Map.Entry<String, String> m : metadata.entrySet()) {
-            object.addMetadata(m.getKey(), m.getValue());
+        final Encryption.Algorithm encryption = status.getEncryption();
+        object.setServerSideEncryptionAlgorithm(encryption.algorithm);
+        if(encryption.key != null) {
+            // If the x-amz-server-side-encryption is present and has the value of aws:kms, this header specifies the ID of the
+            // AWS Key Management Service (KMS) master encryption key that was used for the object.
+            object.addMetadata("x-amz-server-side-encryption-aws-kms-key-id", encryption.key);
         }
         for(Map.Entry<String, String> m : status.getMetadata().entrySet()) {
             object.addMetadata(m.getKey(), m.getValue());

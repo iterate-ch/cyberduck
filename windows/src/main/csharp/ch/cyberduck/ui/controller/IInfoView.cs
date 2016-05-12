@@ -139,7 +139,7 @@ namespace Ch.Cyberduck.Ui.Controller
         bool DistributionAnalyticsSetupUrlEnabled { set; }
 
         string BucketLocation { set; }
-        bool Encryption { set; get; }
+        string Encryption { set; get; }
         bool EncryptionEnabled { set; get; }
         string StorageClass { set; get; }
         bool StorageClassEnabled { set; }
@@ -210,6 +210,7 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler DistributionInvalidateObjects;
 
         void PopulateStorageClass(IList<KeyValuePair<string, string>> classes);
+        void PopulateEncryption(IList<KeyValuePair<string, string>> algorithms);
 
         event VoidHandler BucketLoggingCheckboxChanged;
         event VoidHandler BucketAnalyticsCheckboxChanged;
