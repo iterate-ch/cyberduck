@@ -23,13 +23,11 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.features.Encryption;
 
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.StorageObject;
 
-/**
- * @version $Id$
- */
 public class S3CopyFeature implements Copy {
 
     private final S3Session session;
@@ -54,24 +52,28 @@ public class S3CopyFeature implements Copy {
             // Keep same storage class
             final String storageClass = source.attributes().getStorageClass();
             // Keep encryption setting
-            final String encryptionAlgorithm = source.attributes().getEncryption();
+            final Encryption.Algorithm encryption = source.attributes().getEncryption();
             // Apply non standard ACL
             if(null == accessControlListFeature) {
-                this.copy(source, copy, storageClass, encryptionAlgorithm, Acl.EMPTY);
+                this.copy(source, copy, storageClass, encryption, Acl.EMPTY);
             }
             else {
                 final Acl acl = accessControlListFeature.getPermission(source);
-                this.copy(source, copy, storageClass, encryptionAlgorithm, acl);
+                this.copy(source, copy, storageClass, encryption, acl);
             }
         }
     }
 
-    protected void copy(final Path source, final Path copy, final String storageClass, final String encryptionAlgorithm,
+    protected void copy(final Path source, final Path copy, final String storageClass, final Encryption.Algorithm encryption,
                         final Acl acl) throws BackgroundException {
         if(source.isFile()) {
             final StorageObject destination = new StorageObject(containerService.getKey(copy));
             destination.setStorageClass(storageClass);
-            destination.setServerSideEncryptionAlgorithm(encryptionAlgorithm);
+            destination.setServerSideEncryptionAlgorithm(encryption.algorithm);
+            if(encryption.key != null) {
+                // Set custom key id stored in KMS
+                destination.addMetadata("x-amz-server-side-encryption-aws-kms-key-id", encryption.key);
+            }
             if(null == accessControlListFeature) {
                 destination.setAcl(null);
             }

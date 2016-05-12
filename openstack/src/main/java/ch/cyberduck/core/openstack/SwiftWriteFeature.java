@@ -44,14 +44,10 @@ import java.io.IOException;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.StorageObject;
 
-/**
- * @version $Id$
- */
 public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> implements Write {
     private static final Logger log = Logger.getLogger(SwiftSession.class);
 
@@ -71,8 +67,6 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
     private Preferences preferences
             = PreferencesFactory.get();
 
-    private Map<String, String> metadata
-            = preferences.getMap("openstack.metadata.default");
     private SwiftRegionService regionService;
 
     public SwiftWriteFeature(final SwiftSession session, final SwiftRegionService regionService) {
@@ -104,11 +98,6 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
         this.attributes = attributes;
     }
 
-    public SwiftWriteFeature withMetadata(final Map<String, String> metadata) {
-        this.metadata = metadata;
-        return this;
-    }
-
     @Override
     public ResponseOutputStream<StorageObject> write(final Path file, final TransferStatus status) throws BackgroundException {
         // Submit store run to background thread
@@ -120,7 +109,6 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
             public StorageObject call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
                     final HashMap<String, String> headers = new HashMap<>();
-                    headers.putAll(metadata); // Default
                     headers.putAll(status.getMetadata()); // Previous
                     final String checksum = session.getClient().storeObject(
                             regionService.lookup(file),

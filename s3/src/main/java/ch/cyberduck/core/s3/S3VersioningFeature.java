@@ -29,6 +29,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -172,8 +173,12 @@ public class S3VersioningFeature implements Versioning {
                 final S3Object destination = new S3Object(containerService.getKey(file));
                 // Keep same storage class
                 destination.setStorageClass(file.attributes().getStorageClass());
-                // Keep encryption setting
-                destination.setServerSideEncryptionAlgorithm(file.attributes().getEncryption());
+                final Encryption.Algorithm encryption = file.attributes().getEncryption();
+                destination.setServerSideEncryptionAlgorithm(encryption.algorithm);
+                if(encryption.key != null) {
+                    // Set custom key id stored in KMS
+                    destination.addMetadata("x-amz-server-side-encryption-aws-kms-key-id", encryption.key);
+                }
                 // Apply non standard ACL
                 if(null == accessControlListFeature) {
                     destination.setAcl(null);

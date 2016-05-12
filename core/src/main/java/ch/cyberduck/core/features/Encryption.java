@@ -15,19 +15,108 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
-import java.util.List;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Objects;
+import java.util.Set;
 
 public interface Encryption {
 
-    List<String> getKeys(LoginCallback prompt) throws BackgroundException;
+    /**
+     * Get list of key names available for use for server side encryption
+     *
+     * @param prompt Login callback
+     * @return List of key names
+     */
+    Set<Algorithm> getKeys(LoginCallback prompt) throws BackgroundException;
 
-    List<String> getAlgorithms();
+    /**
+     * Enable server side encryption for file
+     *
+     * @param file      File
+     * @param algorithm Algorithm to use
+     */
+    void setEncryption(Path file, Algorithm algorithm) throws BackgroundException;
 
-    void setEncryption(Path file, String algorithm) throws BackgroundException;
+    /**
+     * @param file Default encryption setting for file
+     * @return Default server side algorithm to use or null if SSE is disabled
+     */
+    Algorithm getDefault(final Path file);
 
-    String getEncryption(Path file) throws BackgroundException;
+    /**
+     * Get server side encryption algorithm
+     *
+     * @param file File
+     * @return Null if not encrypted or server side encryption algorithm used
+     * @throws BackgroundException
+     */
+    Algorithm getEncryption(Path file) throws BackgroundException;
+
+    class Algorithm {
+        public static final Algorithm NONE = new Algorithm(null, null) {
+            @Override
+            public String getDescription() {
+                return LocaleFactory.localizedString("None");
+            }
+
+            @Override
+            public String toString() {
+                return "none";
+            }
+        };
+
+        public Algorithm(final String algorithm, final String key) {
+            this.algorithm = algorithm;
+            this.key = key;
+        }
+
+        public final String algorithm;
+        public final String key;
+
+        @Override
+        public boolean equals(final Object o) {
+            if(this == o) {
+                return true;
+            }
+            if(!(o instanceof Algorithm)) {
+                return false;
+            }
+            final Algorithm that = (Algorithm) o;
+            return Objects.equals(algorithm, that.algorithm) &&
+                    Objects.equals(key, that.key);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(algorithm, key);
+        }
+
+        public static Algorithm fromString(final String value) {
+            if(StringUtils.contains(value, '|')) {
+                return new Algorithm(StringUtils.split(value, '|')[0], StringUtils.split(value, '|')[1]);
+            }
+            return new Algorithm(value, null);
+        }
+
+        @Override
+        public String toString() {
+            if(null == key) {
+                return algorithm;
+            }
+            return String.format("%s|%s", algorithm, key);
+        }
+
+        public String getDescription() {
+            if(null == key) {
+                return algorithm;
+            }
+            return key;
+        }
+    }
 }

@@ -35,9 +35,11 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.preferences.Preferences;
@@ -55,9 +57,6 @@ import java.text.MessageFormat;
 import java.util.EnumSet;
 import java.util.UUID;
 
-/**
- * @version $Id$
- */
 public abstract class AbstractUploadFilter implements TransferPathFilter {
     private static final Logger log = Logger.getLogger(AbstractUploadFilter.class);
 
@@ -232,11 +231,26 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             status.setTimestamp(local.attributes().getModificationDate());
         }
         if(options.metadata) {
-            if(status.isExists()) {
-                final Headers feature = session.getFeature(Headers.class);
-                if(feature != null) {
+            final Headers feature = session.getFeature(Headers.class);
+            if(feature != null) {
+                if(status.isExists()) {
                     status.setMetadata(feature.getMetadata(file));
                 }
+                else {
+                    status.setMetadata(feature.getDefault());
+                }
+            }
+        }
+        if(options.encryption) {
+            final Encryption feature = session.getFeature(Encryption.class);
+            if(feature != null) {
+                status.setEncryption(feature.getDefault(file));
+            }
+        }
+        if(options.redundancy) {
+            final Redundancy feature = session.getFeature(Redundancy.class);
+            if(feature != null) {
+                status.setStorageClass(feature.getDefault());
             }
         }
         return status;

@@ -16,6 +16,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -26,6 +27,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Map;
@@ -35,9 +37,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class S3MultipartUploadServiceTest {
 
@@ -50,18 +49,18 @@ public class S3MultipartUploadServiceTest {
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final S3MultipartUploadService m = new S3MultipartUploadService(session, 5 * 1024L, 2);
-        m.withStorage(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
+        final S3MultipartUploadService service = new S3MultipartUploadService(session, 5 * 1024L, 2);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString() + ".txt";
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
         final String random = RandomStringUtils.random(1000);
-        IOUtils.write(random, local.getOutputStream(false));
+        IOUtils.write(random, local.getOutputStream(false), Charset.defaultCharset());
         final TransferStatus status = new TransferStatus();
         status.setLength((long) random.getBytes().length);
         status.setMime("text/plain");
-        m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        status.setStorageClass(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
+        service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertEquals((long) random.getBytes().length, status.getOffset(), 0L);
         assertTrue(status.isComplete());
@@ -72,6 +71,50 @@ public class S3MultipartUploadServiceTest {
         final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertEquals("text/plain", metadata.get("Content-Type"));
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+                //
+            }
+        });
+        session.close();
+    }
+
+    @Test
+    public void testUploadSinglePartEncrypted
+            () throws Exception {
+        final S3Session session = new S3Session(
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                        new Credentials(
+                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+                        )));
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final S3MultipartUploadService service = new S3MultipartUploadService(session, 5 * 1024L, 2);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final String name = UUID.randomUUID().toString() + ".txt";
+        final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
+        final String random = RandomStringUtils.random(1000);
+        IOUtils.write(random, local.getOutputStream(false), Charset.defaultCharset());
+        final TransferStatus status = new TransferStatus();
+        status.setEncryption(KMSEncryptionFeature.SSE_KMS_DEFAULT);
+        status.setLength((long) random.getBytes().length);
+        status.setMime("text/plain");
+        status.setStorageClass(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
+        service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+                new DisabledStreamListener(), status, new DisabledLoginCallback());
+        assertEquals((long) random.getBytes().length, status.getOffset(), 0L);
+        assertTrue(status.isComplete());
+        assertTrue(new S3FindFeature(session).find(test));
+        final PathAttributes attributes = new S3AttributesFeature(session).find(test);
+        assertEquals(random.getBytes().length, attributes.getSize());
+        assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, new S3StorageClassFeature(session).getClass(test));
+        final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);
+        assertFalse(metadata.isEmpty());
+        assertEquals("text/plain", metadata.get("Content-Type"));
+        assertEquals("aws:kms", metadata.get("server-side-encryption"));
+        assertNotNull(metadata.get("server-side-encryption-aws-kms-key-id"));
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {

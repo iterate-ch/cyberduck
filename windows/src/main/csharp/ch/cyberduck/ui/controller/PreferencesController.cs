@@ -23,6 +23,7 @@ using ch.cyberduck.core.editor;
 using ch.cyberduck.core.features;
 using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.io;
+using ch.cyberduck.core.kms;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.s3;
@@ -229,9 +230,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_DefaultEncryptionChangedEvent()
         {
-            PreferencesFactory.get()
-                .setProperty("s3.encryption.algorithm",
-                    NullString.Equals(View.DefaultEncryption) ? null : View.DefaultEncryption);
+            PreferencesFactory.get().setProperty("s3.encryption.algorithm", View.DefaultEncryption);
         }
 
         private void View_AlwaysUseDefaultEditorChangedEvent()
@@ -994,7 +993,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.DefaultStorageClass = PreferencesFactory.get().getProperty("s3.storage.class");
             PopulateDefaultEncryption();
             String algorithm = PreferencesFactory.get().getProperty("s3.encryption.algorithm");
-            View.DefaultEncryption = Utils.IsNotBlank(algorithm) ? algorithm : NullString;
+            View.DefaultEncryption = Utils.IsNotBlank(algorithm) ? algorithm : Encryption.Algorithm.NONE.ToString();
 
             #endregion
 
@@ -1057,9 +1056,12 @@ namespace Ch.Cyberduck.Ui.Controller
         private void PopulateDefaultEncryption()
         {
             IList<KeyValuePair<string, string>> algorithms = new List<KeyValuePair<string, string>>();
-            algorithms.Add(new KeyValuePair<string, string>(NullString, LocaleFactory.localizedString("None")));
-            algorithms.Add(new KeyValuePair<string, string>("AES256", LocaleFactory.localizedString("AES256", "S3")));
-            algorithms.Add(new KeyValuePair<string, string>("aws:kms", LocaleFactory.localizedString("AWS KMS–Managed Keys (SSE-KMS)", "S3")));
+            algorithms.Add(new KeyValuePair<string, string>(Encryption.Algorithm.NONE.ToString(), 
+                LocaleFactory.localizedString("None")));
+            algorithms.Add(new KeyValuePair<string, string>(S3EncryptionFeature.SSE_AES256.ToString(), 
+                LocaleFactory.localizedString(S3EncryptionFeature.SSE_AES256.getDescription(), "S3")));
+            algorithms.Add(new KeyValuePair<string, string>(KMSEncryptionFeature.SSE_KMS_DEFAULT.ToString(), 
+                LocaleFactory.localizedString(KMSEncryptionFeature.SSE_KMS_DEFAULT.getDescription(), "S3")));
             View.PopulateDefaultEncryption(algorithms);
         }
 

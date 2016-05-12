@@ -10,6 +10,8 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Encryption;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -24,9 +26,6 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class S3TouchFeatureTest {
 
@@ -71,9 +70,10 @@ public class S3TouchFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.encryption.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final S3TouchFeature touch = new S3TouchFeature(session)
-                .withEncryption(null);
-        touch.touch(test);
+        final S3TouchFeature touch = new S3TouchFeature(session);
+        final TransferStatus status = new TransferStatus();
+        status.setEncryption(Encryption.Algorithm.NONE);
+        touch.touch(test, status);
     }
 
     public void testSuccessWithServerSideEncryptionBucketPolicy() throws Exception {
@@ -85,9 +85,10 @@ public class S3TouchFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.encryption.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final S3TouchFeature touch = new S3TouchFeature(session)
-                .withEncryption("AES256");
-        touch.touch(test);
+        final S3TouchFeature touch = new S3TouchFeature(session);
+        final TransferStatus status = new TransferStatus();
+        status.setEncryption(S3EncryptionFeature.SSE_AES256);
+        touch.touch(test, status);
     }
 
     @Test

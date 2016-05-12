@@ -25,6 +25,7 @@ import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Redundancy;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
@@ -35,9 +36,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-/**
- * @version $Id$
- */
 public class S3MetadataFeature implements Headers {
     private static final Logger log = Logger.getLogger(S3MetadataFeature.class);
 
@@ -55,6 +53,11 @@ public class S3MetadataFeature implements Headers {
     public S3MetadataFeature(final S3Session session, final S3AccessControlListFeature accessControlListFeature) {
         this.session = session;
         this.accessControlListFeature = accessControlListFeature;
+    }
+
+    @Override
+    public Map<String, String> getDefault() {
+        return PreferencesFactory.get().getMap("s3.metadata.default");
     }
 
     @Override
@@ -85,7 +88,12 @@ public class S3MetadataFeature implements Headers {
                 }
                 final Encryption encryptionFeature = session.getFeature(Encryption.class);
                 if(encryptionFeature != null) {
-                    target.setServerSideEncryptionAlgorithm(encryptionFeature.getEncryption(file));
+                    final Encryption.Algorithm encryption = encryptionFeature.getEncryption(file);
+                    target.setServerSideEncryptionAlgorithm(encryption.algorithm);
+                    if(encryption.key != null) {
+                        // Set custom key id stored in KMS
+                        target.addMetadata("x-amz-server-side-encryption-aws-kms-key-id", encryption.key);
+                    }
                 }
                 session.getClient().updateObjectMetadata(containerService.getContainer(file).getName(), target);
             }

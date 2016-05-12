@@ -40,9 +40,6 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class S3MetadataFeatureTest {
 
@@ -106,8 +103,8 @@ public class S3MetadataFeatureTest {
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, storage.getClass(test));
 
         final S3EncryptionFeature encryption = new S3EncryptionFeature(session);
-        encryption.setEncryption(test, "AES256");
-        assertEquals("AES256", encryption.getEncryption(test));
+        encryption.setEncryption(test, S3EncryptionFeature.SSE_AES256);
+        assertEquals("AES256", encryption.getEncryption(test).algorithm);
 
         final S3MetadataFeature feature = new S3MetadataFeature(session);
         feature.setMetadata(test, Collections.singletonMap("Test", v));
@@ -117,7 +114,7 @@ public class S3MetadataFeatureTest {
         assertEquals(v, metadata.get("test"));
 
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, storage.getClass(test));
-        assertEquals("AES256", encryption.getEncryption(test));
+        assertEquals("AES256", encryption.getEncryption(test).algorithm);
 
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
             @Override

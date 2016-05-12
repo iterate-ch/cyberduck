@@ -456,6 +456,8 @@ public abstract class Preferences {
          * Keep existing headers
          */
         defaults.put("queue.upload.file.metadata.change", String.valueOf(true));
+        defaults.put("queue.upload.file.encryption.change", String.valueOf(true));
+        defaults.put("queue.upload.file.redundancy.change", String.valueOf(true));
 
         defaults.put("queue.upload.skip.enable", String.valueOf(true));
         defaults.put("queue.upload.skip.regex.default",
@@ -798,6 +800,8 @@ public abstract class Preferences {
 
         defaults.put("b2.delete.concurrency", String.valueOf(10));
 
+        defaults.put("b2.metadata.default", StringUtils.EMPTY);
+
         defaults.put("spectra.upload.md5", String.valueOf(false));
         defaults.put("spectra.upload.crc32", String.valueOf(true));
 
@@ -822,6 +826,7 @@ public abstract class Preferences {
         defaults.put("webdav.redirect.PROPFIND.follow", String.valueOf(true));
 
         defaults.put("webdav.upload.md5", String.valueOf(false));
+        defaults.put("webdav.metadata.default", StringUtils.EMPTY);
 
         defaults.put("analytics.provider.qloudstat.setup", "https://qloudstat.com/configuration/add");
         defaults.put("analytics.provider.qloudstat.iam.policy",

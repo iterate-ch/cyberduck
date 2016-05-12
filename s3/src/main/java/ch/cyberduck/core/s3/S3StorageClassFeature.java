@@ -24,15 +24,13 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Redundancy;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.jets3t.service.model.S3Object;
 
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class S3StorageClassFeature implements Redundancy {
 
     private final S3Session session;
@@ -46,6 +44,11 @@ public class S3StorageClassFeature implements Redundancy {
     public S3StorageClassFeature(final S3Session session, final S3AccessControlListFeature accessControlListFeature) {
         this.session = session;
         this.accessControlListFeature = accessControlListFeature;
+    }
+
+    @Override
+    public String getDefault() {
+        return PreferencesFactory.get().getProperty("s3.storage.class");
     }
 
     @Override

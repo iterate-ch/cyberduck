@@ -21,12 +21,10 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-/**
- * @version $Id$
- */
 public class S3ThresholdCopyFeature implements Copy {
 
     private Preferences preferences
@@ -51,13 +49,13 @@ public class S3ThresholdCopyFeature implements Copy {
         }
     }
 
-    protected void copy(final Path source, final Path copy, final String storageClass, final String encryptionAlgorithm,
+    protected void copy(final Path source, final Path copy, final String storageClass, final Encryption.Algorithm encryption,
                         final Acl acl) throws BackgroundException {
         if(source.attributes().getSize() > multipartThreshold) {
-            new S3MultipartCopyFeature(session).copy(source, copy, storageClass, encryptionAlgorithm, acl);
+            new S3MultipartCopyFeature(session).copy(source, copy, storageClass, encryption, acl);
         }
         else {
-            new S3CopyFeature(session).copy(source, copy, storageClass, encryptionAlgorithm, acl);
+            new S3CopyFeature(session).copy(source, copy, storageClass, encryption, acl);
         }
     }
 }

@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9532" systemVersion="15D21" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10117" systemVersion="15E65" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" customObjectInstantitationMethod="direct">
     <dependencies>
-        <deployment version="1050" identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9532"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10117"/>
     </dependencies>
     <objects>
-        <customObject id="-2" userLabel="File's Owner" customClass="CDInfoController">
+        <customObject id="-2" userLabel="File's Owner" customClass="InfoController">
             <connections>
                 <outlet property="aclAddButton" destination="253" id="271"/>
                 <outlet property="aclProgress" destination="268" id="272"/>
@@ -36,7 +35,7 @@
                 <outlet property="distributionProgress" destination="104" id="297"/>
                 <outlet property="distributionStatusField" destination="105" id="298"/>
                 <outlet property="distributionUrlField" destination="80" id="299"/>
-                <outlet property="encryptionButton" destination="118" id="300"/>
+                <outlet property="encryptionPopup" destination="J76-U1-cuI" id="300"/>
                 <outlet property="filenameField" destination="221" id="301"/>
                 <outlet property="groupField" destination="185" id="302"/>
                 <outlet property="groupr" destination="42" id="303"/>
@@ -104,7 +103,7 @@
                             <tabViewItem label="Général" identifier="info" id="6">
                                 <view key="view" id="7">
                                     <rect key="frame" x="0.0" y="0.0" width="393" height="346"/>
-                                    <autoresizingMask key="autoresizingMask"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="Permissions" identifier="permissions" id="8">
@@ -569,14 +568,6 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <button id="118">
-                    <rect key="frame" x="139" y="488" width="243" height="18"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                    <buttonCell key="cell" type="check" title="Cryptage côté serveur" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="119">
-                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                        <font key="font" metaFont="smallSystem"/>
-                    </buttonCell>
-                </button>
                 <textField verticalHuggingPriority="750" id="120">
                     <rect key="frame" x="17" y="490" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask"/>
@@ -803,6 +794,15 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
+                <popUpButton verticalHuggingPriority="750" id="J76-U1-cuI">
+                    <rect key="frame" x="140" y="484" width="244" height="22"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                    <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="rGT-5o-1kv">
+                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="smallSystem"/>
+                        <menu key="menu" title="OtherViews" id="uYp-L3-jMv"/>
+                    </popUpButtonCell>
+                </popUpButton>
             </subviews>
         </customView>
         <customView id="175">
@@ -1260,8 +1260,8 @@
         </customView>
     </objects>
     <resources>
-        <image name="addPressed" width="128" height="128"/>
-        <image name="remove" width="128" height="128"/>
-        <image name="removePressed" width="128" height="128"/>
+        <image name="addPressed" width="23" height="22"/>
+        <image name="remove" width="22" height="22"/>
+        <image name="removePressed" width="22" height="22"/>
     </resources>
 </document>

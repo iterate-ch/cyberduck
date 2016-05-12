@@ -37,7 +37,6 @@ import org.apache.log4j.Logger;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.util.HashMap;
-import java.util.Map;
 
 import com.microsoft.azure.storage.AccessCondition;
 import com.microsoft.azure.storage.OperationContext;
@@ -46,9 +45,6 @@ import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.BlobRequestOptions;
 import com.microsoft.azure.storage.blob.CloudBlockBlob;
 
-/**
- * @version $Id$
- */
 public class AzureWriteFeature implements Write {
     private static final Logger log = Logger.getLogger(AzureWriteFeature.class);
 
@@ -64,18 +60,10 @@ public class AzureWriteFeature implements Write {
     private Preferences preferences
             = PreferencesFactory.get();
 
-    private Map<String, String> metadata
-            = preferences.getMap("azure.metadata.default");
-
     public AzureWriteFeature(final AzureSession session, final OperationContext context) {
         this.session = session;
         this.context = context;
         this.finder = new DefaultFindFeature(session);
-    }
-
-    public AzureWriteFeature withMetadata(final Map<String, String> metadata) {
-        this.metadata = metadata;
-        return this;
     }
 
     @Override
@@ -105,8 +93,6 @@ public class AzureWriteFeature implements Write {
                 blob.getProperties().setContentType(status.getMime());
             }
             final HashMap<String, String> headers = new HashMap<>();
-            // Add default metadata
-            headers.putAll(metadata);
             // Add previous metadata when overwriting file
             headers.putAll(status.getMetadata());
             blob.setMetadata(headers);

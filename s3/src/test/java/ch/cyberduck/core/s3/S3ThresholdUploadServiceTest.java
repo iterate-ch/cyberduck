@@ -27,6 +27,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Map;
@@ -57,7 +58,7 @@ public class S3ThresholdUploadServiceTest {
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
         final String random = RandomStringUtils.random(1000);
-        IOUtils.write(random, local.getOutputStream(false));
+        IOUtils.write(random, local.getOutputStream(false), Charset.defaultCharset());
         final TransferStatus status = new TransferStatus();
         status.setLength((long) random.getBytes().length);
         status.setMime("text/plain");
