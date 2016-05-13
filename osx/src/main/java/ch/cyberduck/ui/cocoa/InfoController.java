@@ -403,7 +403,7 @@ public class InfoController extends ToolbarWindowController {
             final Encryption feature = controller.getSession().getFeature(Encryption.class);
             final Encryption.Algorithm encryption = Encryption.Algorithm.fromString(sender.selectedItem().representedObject());
             this.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
-                    new WriteEncryptionWorker(files, encryption, true, controller) {
+                    new WriteEncryptionWorker(files, encryption, false, controller) {
                                 @Override
                                 public void cleanup(final Boolean v) {
                                     toggleS3Settings(true);
