@@ -4,7 +4,7 @@ http://cyberduck.io/
 Changelog. Last modified: $Date$
 
 5.0 [https://trac.cyberduck.io/milestone/5.0]
-- [Feature] New monochrome toolbar icons (Mac)
+- [Feature] Updated user interface; new monochrome toolbar icons (Mac)
 - [Feature] Support for Google Drive (#6976)
 - [Feature] Segmented downloads with multiple connections per file (#4498)
 - [Feature] Support for Google Drive (#6976)
@@ -14,6 +14,7 @@ Changelog. Last modified: $Date$
 - [Bugfix] No prompt for importing WinSCP bookmarks (Windows) (#9208)
 - [Bugfix] Signature mismatch for presigned URLs with AWS4 signing (S3) (#9317, #9479)
 - [Bugfix] Unable to negotiate acceptable set of security parameters (WebDAV) (#9452)
+- [Bugfix] Interoperability with Atlassian Confluence (WebDAV)
 
 4.9.3
 - [Bugfix] Revert reading NTLM domain and workstation from environment (WebDAV, Windows)
