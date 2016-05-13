@@ -31,10 +31,12 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -46,6 +48,7 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
+@Category(IntegrationTest.class)
 public class B2LargeUploadServiceTest {
 
     @Test
