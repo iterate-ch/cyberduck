@@ -41,6 +41,8 @@ public class AmazonServiceExceptionMappingService extends AbstractExceptionMappi
             switch(failure.getStatusCode()) {
                 case HttpStatus.SC_BAD_REQUEST:
                     switch(failure.getErrorCode()) {
+                        case "AccessDeniedException":
+                            return new AccessDeniedException(buffer.toString(), e);
                         case "UnrecognizedClientException":
                             return new LoginFailureException(buffer.toString(), e);
                     }
