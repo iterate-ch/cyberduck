@@ -63,6 +63,25 @@
                                     <outputDirectory>${project.build.directory}</outputDirectory>
                                 </configuration>
                             </execution>
+                            <execution>
+                                <id>unpack-jre</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>unpack</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>com.oracle.java</groupId>
+                                            <artifactId>jre</artifactId>
+                                            <type>zip</type>
+                                            <version>8u92</version>
+                                        </artifactItem>
+                                    </artifactItems>
+                                    <excludes>**/*.dylib</excludes>
+                                    <outputDirectory>${project.build.directory}</outputDirectory>
+                                </configuration>
+                            </execution>
                         </executions>
                     </plugin>
                     <plugin>
@@ -111,7 +130,7 @@
                     <artifactId>sunec</artifactId>
                     <classifier>native</classifier>
                     <type>dll</type>
-                    <version>8.0.40.26</version>
+                    <version>8.0.920.14</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
