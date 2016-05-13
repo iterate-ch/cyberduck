@@ -23,7 +23,6 @@ import ch.cyberduck.binding.application.NSButtonCell;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSMenu;
 import ch.cyberduck.binding.application.NSMenuItem;
-import ch.cyberduck.binding.application.NSPopUpButton;
 import ch.cyberduck.binding.application.NSSegmentedControl;
 import ch.cyberduck.binding.application.NSToolbarItem;
 import ch.cyberduck.binding.foundation.NSArray;
@@ -41,7 +40,6 @@ import ch.cyberduck.ui.cocoa.quicklook.QuickLookFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.Foundation;
 import org.rococoa.Selector;
-import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSRect;
 
 import java.util.HashMap;
@@ -126,7 +124,7 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
 
             @Override
             public NSImage image() {
-                return IconCacheFactory.<NSImage>get().iconNamed("NSActionTemplate");
+                return IconCacheFactory.<NSImage>get().iconNamed("actions.pdf");
             }
 
             @Override
@@ -437,23 +435,22 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
                 case tools: {
                     item.setLabel(tools.label());
                     item.setPaletteLabel(tools.label());
-                    final NSInteger index = new NSInteger(0);
-                    final NSPopUpButton button = controller.getActionPopupButton();
-                    button.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
-                    button.insertItemWithTitle_atIndex(StringUtils.EMPTY, index);
-                    button.itemAtIndex(index).setImage(tools.image());
-                    item.setView(button);
+                    item.setToolTip(tools.tooltip());
+                    item.setTarget(controller.id());
+                    item.setAction(tools.action());
+                    final NSMenu menu = controller.getSelectedBrowserView().menu();
                     // Add a menu representation for text mode of toolbar
-                    NSMenuItem toolMenu = NSMenuItem.itemWithTitle(tools.label(), null, StringUtils.EMPTY);
-                    NSMenu toolSubmenu = NSMenu.menu();
-                    for(int i = 1; i < button.menu().numberOfItems().intValue(); i++) {
-                        NSMenuItem template = button.menu().itemAtIndex(new NSInteger(i));
-                        toolSubmenu.addItem(NSMenuItem.itemWithTitle(template.title(),
-                                template.action(),
-                                template.keyEquivalent()));
-                    }
-                    toolMenu.setSubmenu(toolSubmenu);
-                    item.setMenuFormRepresentation(toolMenu);
+                    NSMenuItem toolbarMenu = NSMenuItem.itemWithTitle(tools.label(), null, StringUtils.EMPTY);
+                    toolbarMenu.setSubmenu(menu);
+                    final NSSegmentedControl button = NSSegmentedControl.segmentedControl();
+                    button.setSegmentCount(1);
+                    button.setImage_forSegment(tools.image(), 0);
+                    button.setMenu_forSegment(menu, 0);
+                    button.sizeToFit();
+                    button.setTarget(controller.id());
+                    button.setAction(tools.action());
+                    item.setView(button);
+                    item.setMenuFormRepresentation(toolbarMenu);
                     return item;
                 }
                 case quickconnect:
