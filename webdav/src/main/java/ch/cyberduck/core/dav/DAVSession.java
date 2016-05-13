@@ -176,7 +176,9 @@ public class DAVSession extends HttpSession<DAVClient> {
                 preferences.getProperty("webdav.ntlm.domain"));
         if(preferences.getBoolean("webdav.basic.preemptive")) {
             // Enable preemptive authentication. See HttpState#setAuthenticationPreemptive
-            client.enablePreemptiveAuthentication(this.getHost().getHostname());
+            client.enablePreemptiveAuthentication(this.getHost().getHostname(),
+                    this.getHost().getPort(),
+                    this.getHost().getPort());
         }
         else {
             client.disablePreemptiveAuthentication();
