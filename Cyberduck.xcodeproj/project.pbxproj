@@ -186,6 +186,7 @@
 		47A082B1167A169D004458C7 /* cyberduck-application.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47A082B0167A169D004458C7 /* cyberduck-application.icns */; };
 		47A88FBB0B931D9C00DB9D87 /* Configuration.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47A88FB90B931D9C00DB9D87 /* Configuration.strings */; };
 		47AA19690AF09F810059C736 /* Error.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47AA19670AF09F810059C736 /* Error.strings */; };
+		47AE90DF1CE61ECF00A85D7B /* actions.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 47AE90DE1CE61ECF00A85D7B /* actions.pdf */; };
 		47AF48FD199B913300A580EC /* Sftp.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47AF48FB199B913300A580EC /* Sftp.strings */; };
 		47B3318C16680FF100C9FFA0 /* ftp.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47B3318B16680FF100C9FFA0 /* ftp.tiff */; };
 		47B331931668102400C9FFA0 /* s3.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47B331911668102400C9FFA0 /* s3.tiff */; };
@@ -240,10 +241,6 @@
 		47F85C351C0F103E00FDA856 /* CDOutlineCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F85C231C0F103E00FDA856 /* CDOutlineCell.m */; };
 		47F85C361C0F103E00FDA856 /* CDOutlineView.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F85C241C0F103E00FDA856 /* CDOutlineView.h */; };
 		47F85C371C0F103E00FDA856 /* CDOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F85C251C0F103E00FDA856 /* CDOutlineView.m */; };
-		47F85C381C0F103E00FDA856 /* CTGradient.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F85C261C0F103E00FDA856 /* CTGradient.h */; };
-		47F85C391C0F103E00FDA856 /* CTGradient.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F85C271C0F103E00FDA856 /* CTGradient.m */; };
-		47F85C3A1C0F103E00FDA856 /* CTGradientView.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F85C281C0F103E00FDA856 /* CTGradientView.h */; };
-		47F85C3B1C0F103E00FDA856 /* CTGradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F85C291C0F103E00FDA856 /* CTGradientView.m */; };
 		47F85C3C1C0F103E00FDA856 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F85C2A1C0F103E00FDA856 /* main.m */; };
 		47F85C401C0F103E00FDA856 /* SNDisclosableView.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F85C2E1C0F103E00FDA856 /* SNDisclosableView.h */; };
 		47F85C411C0F103E00FDA856 /* SNDisclosableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F85C2F1C0F103E00FDA856 /* SNDisclosableView.m */; };
@@ -1186,6 +1183,7 @@
 		47AA197F0AF0ABA80059C736 /* tr */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = tr; path = i18n/src/main/resources/tr.lproj/Error.strings; sourceTree = "<group>"; };
 		47AA19800AF0ABA80059C736 /* zh_CN */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = zh_CN; path = i18n/src/main/resources/zh_CN.lproj/Error.strings; sourceTree = "<group>"; };
 		47AA19820AF0ABA80059C736 /* ca */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = ca; path = i18n/src/main/resources/ca.lproj/Error.strings; sourceTree = "<group>"; };
+		47AE90DE1CE61ECF00A85D7B /* actions.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = actions.pdf; path = toolbar/actions.pdf; sourceTree = "<group>"; };
 		47AF48FC199B913300A580EC /* lv */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = lv; path = i18n/src/main/resources/lv.lproj/Sftp.strings; sourceTree = "<group>"; };
 		47B000941A234981003941A0 /* pt_BR */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = pt_BR; path = i18n/src/main/resources/pt_BR.lproj/Alert.strings; sourceTree = "<group>"; };
 		47B000951A234981003941A0 /* pt_BR */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = pt_BR; path = i18n/src/main/resources/pt_BR.lproj/Archive.strings; sourceTree = "<group>"; };
@@ -1539,10 +1537,6 @@
 		47F85C231C0F103E00FDA856 /* CDOutlineCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDOutlineCell.m; path = osx/src/main/objc/CDOutlineCell.m; sourceTree = "<group>"; };
 		47F85C241C0F103E00FDA856 /* CDOutlineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDOutlineView.h; path = osx/src/main/objc/CDOutlineView.h; sourceTree = "<group>"; };
 		47F85C251C0F103E00FDA856 /* CDOutlineView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDOutlineView.m; path = osx/src/main/objc/CDOutlineView.m; sourceTree = "<group>"; };
-		47F85C261C0F103E00FDA856 /* CTGradient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CTGradient.h; path = osx/src/main/objc/CTGradient.h; sourceTree = "<group>"; };
-		47F85C271C0F103E00FDA856 /* CTGradient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CTGradient.m; path = osx/src/main/objc/CTGradient.m; sourceTree = "<group>"; };
-		47F85C281C0F103E00FDA856 /* CTGradientView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CTGradientView.h; path = osx/src/main/objc/CTGradientView.h; sourceTree = "<group>"; };
-		47F85C291C0F103E00FDA856 /* CTGradientView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CTGradientView.m; path = osx/src/main/objc/CTGradientView.m; sourceTree = "<group>"; };
 		47F85C2A1C0F103E00FDA856 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = osx/src/main/objc/main.m; sourceTree = "<group>"; };
 		47F85C2E1C0F103E00FDA856 /* SNDisclosableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SNDisclosableView.h; path = osx/src/main/objc/SNDisclosableView.h; sourceTree = "<group>"; };
 		47F85C2F1C0F103E00FDA856 /* SNDisclosableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SNDisclosableView.m; path = osx/src/main/objc/SNDisclosableView.m; sourceTree = "<group>"; };
@@ -1893,6 +1887,7 @@
 		4749604A1CD75C7200B020C9 /* toolbar */ = {
 			isa = PBXGroup;
 			children = (
+				47AE90DE1CE61ECF00A85D7B /* actions.pdf */,
 				4749604C1CD75C9700B020C9 /* addbookmark.pdf */,
 				4749604D1CD75C9700B020C9 /* connect.pdf */,
 				4749604E1CD75C9700B020C9 /* delete.pdf */,
@@ -1932,10 +1927,6 @@
 				47F85C231C0F103E00FDA856 /* CDOutlineCell.m */,
 				47F85C241C0F103E00FDA856 /* CDOutlineView.h */,
 				47F85C251C0F103E00FDA856 /* CDOutlineView.m */,
-				47F85C261C0F103E00FDA856 /* CTGradient.h */,
-				47F85C271C0F103E00FDA856 /* CTGradient.m */,
-				47F85C281C0F103E00FDA856 /* CTGradientView.h */,
-				47F85C291C0F103E00FDA856 /* CTGradientView.m */,
 				47F85C2A1C0F103E00FDA856 /* main.m */,
 				47F85C2E1C0F103E00FDA856 /* SNDisclosableView.h */,
 				47F85C2F1C0F103E00FDA856 /* SNDisclosableView.m */,
@@ -1982,9 +1973,7 @@
 				47FB79D81C2E9E67008D3B9C /* launcher.h in Headers */,
 				47F85C361C0F103E00FDA856 /* CDOutlineView.h in Headers */,
 				47D6FFE91CCFA54A005B01C5 /* CDToolbarItem.h in Headers */,
-				47F85C3A1C0F103E00FDA856 /* CTGradientView.h in Headers */,
 				47F85C401C0F103E00FDA856 /* SNDisclosableView.h in Headers */,
-				47F85C381C0F103E00FDA856 /* CTGradient.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2229,6 +2218,7 @@
 				476730DB16108E1300B28D35 /* eject.tiff in Resources */,
 				476730DC16108E1300B28D35 /* executable.tiff in Resources */,
 				476730DE16108E1300B28D35 /* gear.tiff in Resources */,
+				47AE90DF1CE61ECF00A85D7B /* actions.pdf in Resources */,
 				476730DF16108E1300B28D35 /* general.tiff in Resources */,
 				476730E116108E1300B28D35 /* history.tiff in Resources */,
 				474960771CD75C9700B020C9 /* open.pdf in Resources */,
@@ -2395,10 +2385,8 @@
 				47F85C411C0F103E00FDA856 /* SNDisclosableView.m in Sources */,
 				47F85C331C0F103E00FDA856 /* CDListView.m in Sources */,
 				47D6FFE81CCFA54A005B01C5 /* CDToolbarItem.m in Sources */,
-				47F85C391C0F103E00FDA856 /* CTGradient.m in Sources */,
 				47F85C3C1C0F103E00FDA856 /* main.m in Sources */,
 				47FB79D91C2E9E67008D3B9C /* launcher.m in Sources */,
-				47F85C3B1C0F103E00FDA856 /* CTGradientView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
