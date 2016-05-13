@@ -428,7 +428,7 @@ CA
                         <items>
                             <menuItem title="Toggle Bookmarks" keyEquivalent="b" id="324">
                                 <connections>
-                                    <action selector="bookmarkSwitchClicked:" target="-1" id="417"/>
+                                    <action selector="bookmarkSwitchMenuClicked:" target="-1" id="417"/>
                                 </connections>
                             </menuItem>
                             <menuItem title="Sort By" id="325">
