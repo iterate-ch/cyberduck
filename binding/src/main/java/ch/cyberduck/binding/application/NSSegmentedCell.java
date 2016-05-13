@@ -172,7 +172,7 @@ public abstract class NSSegmentedCell extends NSActionCell {
      * Original signature : <code>void setMenu(NSMenu*, NSInteger)</code><br>
      * <i>native declaration : :93</i>
      */
-    public abstract void setMenu_forSegment(com.sun.jna.Pointer menu, int segment);
+    public abstract void setMenu_forSegment(NSMenu menu, int segment);
 
     /**
      * Original signature : <code>NSMenu* menuForSegment(NSInteger)</code><br>
@@ -184,7 +184,7 @@ public abstract class NSSegmentedCell extends NSActionCell {
      * Original signature : <code>void setToolTip(NSString*, NSInteger)</code><br>
      * <i>native declaration : :96</i>
      */
-    public abstract void setToolTip_forSegment(com.sun.jna.Pointer toolTip, int segment);
+    public abstract void setToolTip_forSegment(String toolTip, int segment);
 
     /**
      * Original signature : <code>NSString* toolTipForSegment(NSInteger)</code><br>
