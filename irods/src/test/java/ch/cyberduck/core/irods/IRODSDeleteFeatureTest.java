@@ -33,6 +33,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.BeforeClass;
@@ -70,7 +71,7 @@ public class IRODSDeleteFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
 
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        session.getFeature(Directory.class).mkdir(test);
+        session.getFeature(Directory.class).mkdir(test, new TransferStatus());
         assertTrue(session.getFeature(Find.class).find(test));
 
         new IRODSDeleteFeature(session).delete(Arrays.asList(test), new DisabledLoginCallback(), new Delete.Callback() {

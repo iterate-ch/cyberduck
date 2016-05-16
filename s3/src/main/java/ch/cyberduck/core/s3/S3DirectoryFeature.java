@@ -50,12 +50,12 @@ public class S3DirectoryFeature implements Directory {
     }
 
     @Override
-    public void mkdir(final Path file) throws BackgroundException {
-        this.mkdir(file, StringUtils.EMPTY);
+    public void mkdir(final Path file, final TransferStatus status) throws BackgroundException {
+        this.mkdir(file, StringUtils.EMPTY, status);
     }
 
     @Override
-    public void mkdir(final Path file, final String region) throws BackgroundException {
+    public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
         if(containerService.isContainer(file)) {
             final S3BucketCreateService service = new S3BucketCreateService(session);
             if(StringUtils.isBlank(region)) {
@@ -67,7 +67,6 @@ public class S3DirectoryFeature implements Directory {
         }
         else {
             // Add placeholder object
-            final TransferStatus status = new TransferStatus();
             status.setMime("application/x-directory");
             final Encryption encryption = session.getFeature(Encryption.class);
             if(encryption != null) {
@@ -77,17 +76,13 @@ public class S3DirectoryFeature implements Directory {
             if(redundancy != null) {
                 status.setStorageClass(redundancy.getDefault());
             }
-            this.mkdir(file, status);
-        }
-    }
-
-    protected void mkdir(final Path file, final TransferStatus status) throws BackgroundException {
-        final S3Object key = write.getDetails(containerService.getKey(file).concat(String.valueOf(Path.DELIMITER)), status);
-        try {
-            session.getClient().putObject(containerService.getContainer(file).getName(), key);
-        }
-        catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot create folder {0}", e, file);
+            final S3Object key = write.getDetails(containerService.getKey(file).concat(String.valueOf(Path.DELIMITER)), status);
+            try {
+                session.getClient().putObject(containerService.getContainer(file).getName(), key);
+            }
+            catch(ServiceException e) {
+                throw new ServiceExceptionMappingService().map("Cannot create folder {0}", e, file);
+            }
         }
     }
 }

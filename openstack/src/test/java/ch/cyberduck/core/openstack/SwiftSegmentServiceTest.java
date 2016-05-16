@@ -16,6 +16,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.UUID;
@@ -81,7 +82,7 @@ public class SwiftSegmentServiceTest {
         b.setMd5sum("m2");
         b.setSize(1L);
         final Checksum checksum = service.checksum(new MD5ChecksumCompute(), Arrays.asList(a, b));
-        assertEquals(new MD5ChecksumCompute().compute(IOUtils.toInputStream("m1m2")), checksum);
+        assertEquals(new MD5ChecksumCompute().compute(IOUtils.toInputStream("m1m2", Charset.defaultCharset())), checksum);
     }
 
     @Test
