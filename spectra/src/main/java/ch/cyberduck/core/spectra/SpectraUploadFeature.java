@@ -41,13 +41,10 @@ public class SpectraUploadFeature extends HttpUploadFeature<StorageObject, Messa
 
     private final Preferences preferences = PreferencesFactory.get();
 
-    private final SpectraSession session;
-
     private final SpectraBulkService bulk;
 
     public SpectraUploadFeature(final SpectraSession session, final SpectraWriteFeature write) {
         super(write);
-        this.session = session;
         this.bulk = new SpectraBulkService(session);
     }
 
