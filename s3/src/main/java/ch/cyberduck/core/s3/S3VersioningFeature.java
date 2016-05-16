@@ -55,6 +55,7 @@ public class S3VersioningFeature implements Versioning {
 
     private final S3AccessControlListFeature accessControlListFeature;
 
+    @SuppressWarnings("unchecked")
     private Map<Path, VersioningConfiguration> cache
             = Collections.synchronizedMap(new LRUMap(10));
 

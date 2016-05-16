@@ -43,9 +43,6 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id$
- */
 public abstract class Session<C> implements TranscriptListener {
     private static final Logger log = Logger.getLogger(Session.class);
 
@@ -292,6 +289,7 @@ public abstract class Session<C> implements TranscriptListener {
      */
     public abstract AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException;
 
+    @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
         if(type == Upload.class) {
             return (T) new DefaultUploadFeature(this);

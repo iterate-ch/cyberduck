@@ -57,6 +57,7 @@ public class SpectraSession extends S3Session {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
         if(type == Bulk.class) {
             return (T) new SpectraBulkService(this);

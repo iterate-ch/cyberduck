@@ -114,6 +114,7 @@ public class B2Session extends HttpSession<B2ApiClient> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
         if(type == Touch.class) {
             return (T) new B2TouchFeature(this);
