@@ -170,7 +170,6 @@
 		4781AF410828423100B3E0FA /* download0.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4781AF400828423100B3E0FA /* download0.icns */; };
 		478426F40F9F75900068BA2E /* License.strings in Resources */ = {isa = PBXBuildFile; fileRef = 478426F20F9F75900068BA2E /* License.strings */; };
 		4786AA14162F4AED006156A0 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47983764072AD73700FA3CDB /* Security.framework */; };
-		4786CB6C0E253B800029848F /* Error.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4786CB660E253B800029848F /* Error.xib */; };
 		4786CB6D0E253B800029848F /* Activity.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4786CB670E253B800029848F /* Activity.xib */; };
 		4786CB6E0E253B800029848F /* Transcript.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4786CB680E253B800029848F /* Transcript.xib */; };
 		4786CB6F0E253B800029848F /* Progress.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4786CB690E253B800029848F /* Progress.xib */; };
@@ -1012,7 +1011,6 @@
 		4784271F0F9F76230068BA2E /* sk */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sk; path = i18n/src/main/resources/sk.lproj/License.strings; sourceTree = "<group>"; };
 		478427210F9F76280068BA2E /* tr */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = tr; path = i18n/src/main/resources/tr.lproj/License.strings; sourceTree = "<group>"; };
 		478427220F9F762A0068BA2E /* de */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = de; path = i18n/src/main/resources/de.lproj/License.strings; sourceTree = "<group>"; };
-		4786CB660E253B800029848F /* Error.xib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = Error.xib; path = resources/Error.xib; sourceTree = "<group>"; };
 		4786CB670E253B800029848F /* Activity.xib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = Activity.xib; path = resources/Activity.xib; sourceTree = "<group>"; };
 		4786CB680E253B800029848F /* Transcript.xib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = Transcript.xib; path = resources/Transcript.xib; sourceTree = "<group>"; };
 		4786CB690E253B800029848F /* Progress.xib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = Progress.xib; path = resources/Progress.xib; sourceTree = "<group>"; };
@@ -1745,7 +1743,6 @@
 				4718F499175F432400B424AD /* profiles */,
 				470C646C1328CBF300146FB6 /* bookmarks */,
 				4741653C06C4FC3F00AC0BD2 /* img */,
-				4786CB660E253B800029848F /* Error.xib */,
 				4786CB670E253B800029848F /* Activity.xib */,
 				4786CB680E253B800029848F /* Transcript.xib */,
 				4786CB690E253B800029848F /* Progress.xib */,
@@ -2159,7 +2156,6 @@
 				470912ED0C36FCE00049FBCE /* Prompt.xib in Resources */,
 				47E987600D689A280077733F /* S3.strings in Resources */,
 				47B6074A0DA420880068282C /* Keychain.strings in Resources */,
-				4786CB6C0E253B800029848F /* Error.xib in Resources */,
 				474960721CD75C9700B020C9 /* upload.pdf in Resources */,
 				4786CB6D0E253B800029848F /* Activity.xib in Resources */,
 				4786CB6E0E253B800029848F /* Transcript.xib in Resources */,
