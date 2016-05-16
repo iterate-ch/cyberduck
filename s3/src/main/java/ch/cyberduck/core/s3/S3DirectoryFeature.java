@@ -32,12 +32,12 @@ import org.jets3t.service.model.S3Object;
 
 public class S3DirectoryFeature implements Directory {
 
-    private S3Session session;
+    private final S3Session session;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new S3PathContainerService();
 
-    private S3WriteFeature write;
+    private final S3WriteFeature write;
 
     public S3DirectoryFeature(final S3Session session) {
         this.session = session;
