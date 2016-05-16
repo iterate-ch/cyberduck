@@ -43,9 +43,13 @@ public class SpectraUploadFeature extends HttpUploadFeature<StorageObject, Messa
 
     private final SpectraBulkService bulk;
 
-    public SpectraUploadFeature(final SpectraSession session, final SpectraWriteFeature write) {
-        super(write);
-        this.bulk = new SpectraBulkService(session);
+    public SpectraUploadFeature(final SpectraSession session, final SpectraWriteFeature writer) {
+        this(writer, new SpectraBulkService(session));
+    }
+
+    public SpectraUploadFeature(final SpectraWriteFeature writer, final SpectraBulkService bulk) {
+        super(writer);
+        this.bulk = bulk;
     }
 
     @Override
