@@ -44,6 +44,11 @@ public class S3DirectoryFeature implements Directory {
         this.write = new S3WriteFeature(session);
     }
 
+    public S3DirectoryFeature(final S3Session session, final S3WriteFeature write) {
+        this.session = session;
+        this.write = write;
+    }
+
     @Override
     public void mkdir(final Path file) throws BackgroundException {
         this.mkdir(file, StringUtils.EMPTY);

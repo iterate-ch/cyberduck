@@ -22,6 +22,7 @@ import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Move;
@@ -31,6 +32,7 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.proxy.ProxyFinder;
+import ch.cyberduck.core.s3.S3DirectoryFeature;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.shared.DefaultDownloadFeature;
@@ -63,6 +65,9 @@ public class SpectraSession extends S3Session {
         }
         if(type == Touch.class) {
             return (T) new SpectraTouchFeature(this);
+        }
+        if(type == Directory.class) {
+            return (T) new S3DirectoryFeature(this, new SpectraWriteFeature(this));
         }
         if(type == Move.class) {
             return (T) new DisabledMoveFeature();
