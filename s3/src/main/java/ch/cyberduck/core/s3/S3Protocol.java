@@ -27,9 +27,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * @version $Id$
- */
 public final class S3Protocol extends AbstractProtocol {
     @Override
     public String getName() {

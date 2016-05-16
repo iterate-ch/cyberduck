@@ -31,9 +31,6 @@ import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3BucketLoggingStatus;
 import org.jets3t.service.model.StorageBucketLoggingStatus;
 
-/**
- * @version $Id$
- */
 public class S3LoggingFeature implements Logging {
     private static final Logger log = Logger.getLogger(S3LoggingFeature.class);
 

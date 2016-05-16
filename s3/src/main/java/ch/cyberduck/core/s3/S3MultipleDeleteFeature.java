@@ -41,9 +41,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public class S3MultipleDeleteFeature implements Delete {
     private static final Logger log = Logger.getLogger(S3MultipleDeleteFeature.class);
 
