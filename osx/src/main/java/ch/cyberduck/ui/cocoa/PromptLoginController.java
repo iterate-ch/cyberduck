@@ -32,7 +32,9 @@ import ch.cyberduck.binding.application.NSSecureTextField;
 import ch.cyberduck.binding.application.NSTextField;
 import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
+import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSAttributedString;
+import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.binding.foundation.NSObject;
@@ -57,10 +59,8 @@ import ch.cyberduck.core.resources.IconCacheFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
+import org.rococoa.cocoa.foundation.NSSize;
 
-/**
- * @version $Id$
- */
 public final class PromptLoginController implements LoginCallback {
     private static final Logger log = Logger.getLogger(PromptLoginController.class);
 
@@ -130,6 +130,13 @@ public final class PromptLoginController implements LoginCallback {
             }
 
             @Override
+            public void setWindow(final NSWindow window) {
+                super.setWindow(window);
+                window.setContentMinSize(window.frame().size);
+                window.setContentMaxSize(new NSSize(600, window.frame().size.height.doubleValue()));
+            }
+
+            @Override
             public void helpButtonClicked(NSButton sender) {
                 new DefaultProviderHelpService().help(bookmark.getProtocol());
             }
@@ -147,10 +154,6 @@ public final class PromptLoginController implements LoginCallback {
 
             public void setUsernameLabel(NSTextField usernameLabel) {
                 this.usernameLabel = usernameLabel;
-                this.usernameLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                        StringUtils.isNotBlank(credentials.getUsernamePlaceholder()) ? String.format("%s:",
-                                credentials.getUsernamePlaceholder()) : StringUtils.EMPTY,
-                        TRUNCATE_MIDDLE_ATTRIBUTES));
             }
 
             @Outlet
@@ -308,27 +311,31 @@ public final class PromptLoginController implements LoginCallback {
                 this.usernameField.setEnabled(options.user && !credentials.isAnonymousLogin());
                 this.usernameField.cell().setPlaceholderString(credentials.getUsernamePlaceholder());
 
+                this.usernameLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
+                        StringUtils.isNotBlank(credentials.getUsernamePlaceholder()) ? String.format("%s:",
+                                credentials.getUsernamePlaceholder()) : StringUtils.EMPTY,
+                        NSDictionary.dictionaryWithObjectsForKeys(
+                                NSArray.arrayWithObject(TableCellAttributes.PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL),
+                                NSArray.arrayWithObject(NSAttributedString.ParagraphStyleAttributeName))
+                ));
+
                 this.passwordField.setEnabled(options.password && !credentials.isAnonymousLogin());
                 this.passwordField.cell().setPlaceholderString(credentials.getPasswordPlaceholder());
 
                 this.passwordLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
                         StringUtils.isNotBlank(credentials.getPasswordPlaceholder()) ? String.format("%s:",
                                 credentials.getPasswordPlaceholder()) : StringUtils.EMPTY,
-                        TRUNCATE_MIDDLE_ATTRIBUTES));
-                {
-                    boolean enable = options.keychain && !credentials.isAnonymousLogin();
-                    this.keychainCheckbox.setEnabled(enable);
-                    if(!enable) {
-                        this.keychainCheckbox.setState(NSCell.NSOffState);
-                    }
-                }
+                        NSDictionary.dictionaryWithObjectsForKeys(
+                                NSArray.arrayWithObject(TableCellAttributes.PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL),
+                                NSArray.arrayWithObject(NSAttributedString.ParagraphStyleAttributeName))
+                ));
+
+                this.keychainCheckbox.setEnabled(options.keychain && !credentials.isAnonymousLogin());
+                this.keychainCheckbox.setState(!(!options.keychain || credentials.isAnonymousLogin()) ? NSCell.NSOnState : NSCell.NSOffState);
+
                 this.anonymousCheckbox.setEnabled(options.anonymous);
-                if(options.anonymous && credentials.isAnonymousLogin()) {
-                    this.anonymousCheckbox.setState(NSCell.NSOnState);
-                }
-                else {
-                    this.anonymousCheckbox.setState(NSCell.NSOffState);
-                }
+                this.anonymousCheckbox.setState(options.anonymous && credentials.isAnonymousLogin() ? NSCell.NSOnState : NSCell.NSOffState);
+
                 this.pkCheckbox.setEnabled(options.publickey);
                 if(options.publickey && credentials.isPublicKeyAuthentication()) {
                     this.pkCheckbox.setState(NSCell.NSOnState);
