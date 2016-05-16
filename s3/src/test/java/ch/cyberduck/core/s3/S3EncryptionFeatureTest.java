@@ -44,7 +44,7 @@ public class S3EncryptionFeatureTest {
 
     @Test
     public void testGetAlgorithms() throws Exception {
-        assertEquals(1, new S3EncryptionFeature(null).getKeys(new DisabledLoginCallback()).size());
+        assertEquals(2, new S3EncryptionFeature(null).getKeys(new DisabledLoginCallback()).size());
     }
 
     @Test
