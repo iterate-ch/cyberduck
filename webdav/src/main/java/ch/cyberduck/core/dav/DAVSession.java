@@ -290,6 +290,7 @@ public class DAVSession extends HttpSession<DAVClient> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
         if(type == Directory.class) {
             return (T) new DAVDirectoryFeature(this);

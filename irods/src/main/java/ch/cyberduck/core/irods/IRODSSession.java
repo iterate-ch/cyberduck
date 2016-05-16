@@ -169,6 +169,7 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
         if(type == Directory.class) {
             return (T) new IRODSDirectoryFeature(this);

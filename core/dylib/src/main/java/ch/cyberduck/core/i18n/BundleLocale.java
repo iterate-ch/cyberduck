@@ -28,13 +28,11 @@ import org.apache.commons.collections.map.LRUMap;
 import java.util.Collections;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public class BundleLocale implements Locale {
 
     private NSBundle bundle;
 
+    @SuppressWarnings("unchecked")
     private Map<String, String> cache
             = Collections.<String, String>synchronizedMap(new LRUMap(1000));
 

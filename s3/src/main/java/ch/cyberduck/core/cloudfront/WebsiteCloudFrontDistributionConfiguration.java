@@ -164,6 +164,7 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type, final Distribution.Method method) {
         if(type == Index.class) {
             if(method.equals(Distribution.WEBSITE)) {

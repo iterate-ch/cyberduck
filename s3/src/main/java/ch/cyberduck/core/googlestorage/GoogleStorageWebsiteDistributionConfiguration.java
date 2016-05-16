@@ -148,6 +148,7 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type, final Distribution.Method method) {
         if(type == Index.class) {
             return (T) this;
