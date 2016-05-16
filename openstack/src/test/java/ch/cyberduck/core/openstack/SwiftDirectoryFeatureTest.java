@@ -28,6 +28,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Ignore;
@@ -62,7 +63,7 @@ public class SwiftDirectoryFeatureTest {
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final SwiftDirectoryFeature feature = new SwiftDirectoryFeature(session);
         for(Region region : session.getClient().getRegions()) {
-            feature.mkdir(container, region.getRegionId());
+            feature.mkdir(container, region.getRegionId(), new TransferStatus());
             assertTrue(new SwiftFindFeature(session).find(container));
             new SwiftDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.Callback() {
                 @Override

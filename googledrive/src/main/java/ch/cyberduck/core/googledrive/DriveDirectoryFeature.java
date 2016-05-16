@@ -18,6 +18,7 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -34,12 +35,12 @@ public class DriveDirectoryFeature implements Directory {
     }
 
     @Override
-    public void mkdir(final Path file) throws BackgroundException {
-        this.mkdir(file, null);
+    public void mkdir(final Path file, final TransferStatus status) throws BackgroundException {
+        this.mkdir(file, null, status);
     }
 
     @Override
-    public void mkdir(final Path file, final String region) throws BackgroundException {
+    public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
         try {
             // Identified by the special folder MIME type application/vnd.google-apps.folder
             final Drive.Files.Create insert = session.getClient().files().create(new File()

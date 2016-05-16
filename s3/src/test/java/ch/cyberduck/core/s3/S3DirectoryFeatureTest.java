@@ -29,6 +29,7 @@ import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.shared.DefaultFindFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Ignore;
@@ -59,7 +60,7 @@ public class S3DirectoryFeatureTest {
         for(Location.Name region : new S3Protocol().getRegions()) {
             final Path test = new Path(new S3HomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
             test.attributes().setRegion(region.getIdentifier());
-            feature.mkdir(test, region.getIdentifier());
+            feature.mkdir(test, region.getIdentifier(), new TransferStatus());
             assertTrue(new S3FindFeature(session).find(test));
             new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
                 @Override
@@ -91,7 +92,7 @@ public class S3DirectoryFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, name, EnumSet.of(Path.Type.directory));
-        new S3DirectoryFeature(session).mkdir(test);
+        new S3DirectoryFeature(session).mkdir(test, new TransferStatus());
         assertTrue(b.get());
         test.setType(EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         assertTrue(new S3FindFeature(session).find(test));
