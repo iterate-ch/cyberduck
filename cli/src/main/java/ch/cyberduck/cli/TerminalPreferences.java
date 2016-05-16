@@ -31,6 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 /**
  * @version $Id$
@@ -99,7 +100,7 @@ public class TerminalPreferences extends MemoryPreferences {
             case linux: {
                 try {
                     final Process echo = Runtime.getRuntime().exec(new String[]{"/bin/sh", "-c", "echo ~"});
-                    defaults.put("local.user.home", StringUtils.strip(IOUtils.toString(echo.getInputStream())));
+                    defaults.put("local.user.home", StringUtils.strip(IOUtils.toString(echo.getInputStream(), Charset.defaultCharset())));
                 }
                 catch(IOException e) {
                     log.warn("Failure determining user home with `echo ~`");
