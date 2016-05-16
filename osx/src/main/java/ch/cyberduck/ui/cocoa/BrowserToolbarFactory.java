@@ -536,13 +536,11 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
                     item.setLabel(type.label());
                     item.setPaletteLabel(LocaleFactory.localizedString(type.label()));
                     item.setToolTip(type.tooltip());
-                    item.setTarget(controller.id());
                     item.setAction(type.action());
                     final NSButton button = NSButton.buttonWithFrame(new NSRect(0, 0));
                     button.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
                     button.setImage(type.image());
                     button.sizeToFit();
-                    button.setTarget(controller.id());
                     button.setAction(type.action());
                     item.setView(button);
                     return item;
