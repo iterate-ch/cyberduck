@@ -299,6 +299,11 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
             public Selector action() {
                 return Foundation.selector("disconnectButtonClicked:");
             }
+
+            @Override
+            public NSImage image() {
+                return IconCacheFactory.<NSImage>get().iconNamed("transferstop.pdf");
+            }
         },
         disconnect {
             @Override
