@@ -77,6 +77,7 @@ public class WriteMetadataWorkerTest {
         };
         worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
+            @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
                 if(type == Headers.class) {
                     return (T) new Headers() {
@@ -121,6 +122,7 @@ public class WriteMetadataWorkerTest {
         };
         worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
+            @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
                 if(type == Headers.class) {
                     return (T) new Headers() {
