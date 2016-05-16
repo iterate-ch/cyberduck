@@ -916,13 +916,12 @@ public class BrowserController extends WindowController
         this.bookmarkSwitchView.setImage_forSegment(BookmarkSwitchSegement.browser.image(), BookmarkSwitchSegement.browser.ordinal());
         cell.setToolTip_forSegment(LocaleFactory.localizedString("Bookmarks"), BookmarkSwitchSegement.bookmarks.ordinal());
         this.bookmarkSwitchView.setImage_forSegment(BookmarkSwitchSegement.bookmarks.image(), BookmarkSwitchSegement.bookmarks.ordinal());
-        cell.setToolTip_forSegment(LocaleFactory.localizedString("History"), BookmarkSwitchSegement.bookmarks.ordinal());
+        cell.setToolTip_forSegment(LocaleFactory.localizedString("History"), BookmarkSwitchSegement.history.ordinal());
         this.bookmarkSwitchView.setImage_forSegment(BookmarkSwitchSegement.history.image(), BookmarkSwitchSegement.history.ordinal());
-        cell.setToolTip_forSegment(LocaleFactory.localizedString("Bonjour"), BookmarkSwitchSegement.bookmarks.ordinal());
+        cell.setToolTip_forSegment(LocaleFactory.localizedString("Bonjour"), BookmarkSwitchSegement.rendezvous.ordinal());
         this.bookmarkSwitchView.setImage_forSegment(BookmarkSwitchSegement.rendezvous.image(), BookmarkSwitchSegement.rendezvous.ordinal());
         this.bookmarkSwitchView.setTarget(this.id());
         this.bookmarkSwitchView.setAction(Foundation.selector("bookmarkSwitchButtonClicked:"));
-        this.bookmarkSwitchView.setSelectedSegment(BookmarkSwitchSegement.bookmarks.ordinal());
     }
 
     @Action
@@ -2203,10 +2202,25 @@ public class BrowserController extends WindowController
         return navigation;
     }
 
-    private static final int NAVIGATION_LEFT_SEGMENT_BUTTON = 0;
-    private static final int NAVIGATION_RIGHT_SEGMENT_BUTTON = 1;
+    private enum NavigationSegment {
+        back(0),
+        forward(1),
+        up(0);
 
-    private static final int NAVIGATION_UP_SEGMENT_BUTTON = 0;
+        private final int position;
+
+        NavigationSegment(final int position) {
+            this.position = position;
+        }
+
+        public int position() {
+            return position;
+        }
+
+        public static NavigationSegment byPosition(final int position) {
+            return NavigationSegment.values()[position];
+        }
+    }
 
     private NSSegmentedControl navigationButton;
 
@@ -2214,23 +2228,24 @@ public class BrowserController extends WindowController
         this.navigationButton = navigationButton;
         this.navigationButton.setTarget(this.id());
         this.navigationButton.setAction(Foundation.selector("navigationButtonClicked:"));
+        final NSSegmentedCell cell = Rococoa.cast(this.navigationButton.cell(), NSSegmentedCell.class);
         this.navigationButton.setImage_forSegment(IconCacheFactory.<NSImage>get().iconNamed("nav-backward.tiff"),
-                NAVIGATION_LEFT_SEGMENT_BUTTON);
+                NavigationSegment.back.position());
+        cell.setToolTip_forSegment(LocaleFactory.localizedString("Back", "Main"), NavigationSegment.back.position());
         this.navigationButton.setImage_forSegment(IconCacheFactory.<NSImage>get().iconNamed("nav-forward.tiff"),
-                NAVIGATION_RIGHT_SEGMENT_BUTTON);
+                NavigationSegment.forward.position());
+        cell.setToolTip_forSegment(LocaleFactory.localizedString("Forward", "Main"), NavigationSegment.forward.position());
     }
 
     @Action
     public void navigationButtonClicked(NSSegmentedControl sender) {
-        switch(sender.selectedSegment()) {
-            case NAVIGATION_LEFT_SEGMENT_BUTTON: {
+        switch(NavigationSegment.byPosition(sender.selectedSegment())) {
+            case back:
                 this.backButtonClicked(sender.id());
                 break;
-            }
-            case NAVIGATION_RIGHT_SEGMENT_BUTTON: {
+            case forward:
                 this.forwardButtonClicked(sender.id());
                 break;
-            }
         }
     }
 
@@ -2264,7 +2279,7 @@ public class BrowserController extends WindowController
         this.upButton.setTarget(this.id());
         this.upButton.setAction(Foundation.selector("upButtonClicked:"));
         this.upButton.setImage_forSegment(IconCacheFactory.<NSImage>get().iconNamed("nav-up.tiff"),
-                NAVIGATION_UP_SEGMENT_BUTTON);
+                NavigationSegment.up.position());
     }
 
     @Action
@@ -3242,9 +3257,9 @@ public class BrowserController extends WindowController
             this.addNavigation(p);
         }
         pathPopupButton.setEnabled(enabled);
-        navigationButton.setEnabled_forSegment(enabled && navigation.getBack().size() > 1, NAVIGATION_LEFT_SEGMENT_BUTTON);
-        navigationButton.setEnabled_forSegment(enabled && navigation.getForward().size() > 0, NAVIGATION_RIGHT_SEGMENT_BUTTON);
-        upButton.setEnabled_forSegment(enabled && !workdir.isRoot(), NAVIGATION_UP_SEGMENT_BUTTON);
+        navigationButton.setEnabled_forSegment(enabled && navigation.getBack().size() > 1, NavigationSegment.back.position());
+        navigationButton.setEnabled_forSegment(enabled && navigation.getForward().size() > 0, NavigationSegment.forward.position());
+        upButton.setEnabled_forSegment(enabled && !workdir.isRoot(), NavigationSegment.up.position());
     }
 
     private void addNavigation(final Path p) {
