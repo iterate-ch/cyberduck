@@ -20,14 +20,12 @@ package ch.cyberduck.core.irods;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.irods.jargon.core.exception.JargonException;
 import org.irods.jargon.core.pub.IRODSFileSystemAO;
 import org.irods.jargon.core.pub.io.IRODSFile;
 
-/**
- * @version $Id$
- */
 public class IRODSDirectoryFeature implements Directory {
 
     private IRODSSession session;
@@ -37,12 +35,12 @@ public class IRODSDirectoryFeature implements Directory {
     }
 
     @Override
-    public void mkdir(final Path file) throws BackgroundException {
-        this.mkdir(file, null);
+    public void mkdir(final Path file, final TransferStatus status) throws BackgroundException {
+        this.mkdir(file, null, status);
     }
 
     @Override
-    public void mkdir(final Path file, final String region) throws BackgroundException {
+    public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
         try {
             final IRODSFileSystemAO fs = session.filesystem();
             final IRODSFile f = fs.getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());

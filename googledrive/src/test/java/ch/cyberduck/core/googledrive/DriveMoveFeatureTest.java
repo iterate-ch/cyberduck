@@ -32,6 +32,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -77,7 +78,7 @@ public class DriveMoveFeatureTest {
         final Path test = new Path(new DriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DriveTouchFeature(session).touch(test);
         final Path folder = new Path(new DriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new DriveDirectoryFeature(session).mkdir(folder);
+        new DriveDirectoryFeature(session).mkdir(folder, new TransferStatus());
         final Path target = new Path(folder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DriveMoveFeature(session).move(test, target, false, new Delete.Callback() {
             @Override

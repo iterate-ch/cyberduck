@@ -22,6 +22,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.entity.ByteArrayEntity;
 
@@ -46,12 +47,12 @@ public class B2DirectoryFeature implements Directory {
     }
 
     @Override
-    public void mkdir(final Path file) throws BackgroundException {
-        this.mkdir(file, BucketType.valueOf(PreferencesFactory.get().getProperty("b2.bucket.acl.default")).name());
+    public void mkdir(final Path file, final TransferStatus status) throws BackgroundException {
+        this.mkdir(file, BucketType.valueOf(PreferencesFactory.get().getProperty("b2.bucket.acl.default")).name(), status);
     }
 
     @Override
-    public void mkdir(final Path file, final String type) throws BackgroundException {
+    public void mkdir(final Path file, final String type, final TransferStatus status) throws BackgroundException {
         try {
             if(containerService.isContainer(file)) {
                 final B2BucketResponse response = session.getClient().createBucket(containerService.getContainer(file).getName(), BucketType.valueOf(type));
