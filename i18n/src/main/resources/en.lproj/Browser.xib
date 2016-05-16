@@ -129,7 +129,7 @@
                                         </scrollView>
                                         <progressIndicator horizontalHuggingPriority="750" verticalHuggingPriority="750" minValue="16" maxValue="100" doubleValue="16" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" style="spinning" id="28">
                                             <rect key="frame" x="284" y="184" width="32" height="32"/>
-                                            <autoresizingMask key="autoresizingMask"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                         </progressIndicator>
                                     </subviews>
                                 </view>
@@ -230,7 +230,7 @@
                             <button id="47">
                                 <rect key="frame" x="562" y="2" width="18" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                                <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="567A92BB-3014-45EB-B8DB-BAC331609FED" imagePosition="only" alignment="left" id="48">
+                                <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="2ABA8F4C-0D7F-457D-89A7-593AA9F0E0D4" imagePosition="only" alignment="left" id="48">
                                     <behavior key="behavior" lightByContents="YES"/>
                                     <font key="font" metaFont="label"/>
                                 </buttonCell>
@@ -575,7 +575,7 @@ DQ
         </button>
     </objects>
     <resources>
-        <image name="567A92BB-3014-45EB-B8DB-BAC331609FED" width="1" height="1">
+        <image name="2ABA8F4C-0D7F-457D-89A7-593AA9F0E0D4" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPT5YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQrLjE3OlUkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw

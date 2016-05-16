@@ -69,10 +69,14 @@ run() {
 }
 
 nib() {
-	#Changes to the .strings has precedence over the NIBs
-	import_strings;
+    if [ $language != $base_language ]; then
+    {
+        #Changes to the .strings has precedence over the NIBs
+        import_strings;
+	}
+	fi
 	#Update the .strings with new values from NIBs
-	#export_strings;
+	export_strings;
 }
 
 import_strings() {
@@ -125,22 +129,18 @@ update() {
 		echo "*** Updating all localizations...";
 		for lproj in `ls . | grep lproj`; do
 			language=$lproj;
-			if [ $language != $base_language ]; then
-			{
-				echo "*** Updating $language Localization...";
-				if [ "$nibfile" = "all" ] ; then
-					echo "*** Updating all NIBs...";
-					for nibfile in `ls $language | grep $extension`; do
-						nib=`basename $nibfile $extension`
-						nib;
-					done;
-				fi;
-				if [ "$nibfile" != "all" ] ; then
-						nib=`basename $nibfile $extension`
-						nib;
-				fi;
-			}
-			fi;
+            echo "*** Updating $language Localization...";
+            if [ "$nibfile" = "all" ] ; then
+                echo "*** Updating all NIBs...";
+                for nibfile in `ls $language | grep $extension`; do
+                    nib=`basename $nibfile $extension`
+                    nib;
+                done;
+            fi;
+            if [ "$nibfile" != "all" ] ; then
+                    nib=`basename $nibfile $extension`
+                    nib;
+            fi;
 		done;
 	}
 	else
