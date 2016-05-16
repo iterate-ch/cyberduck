@@ -39,6 +39,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.EnumSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -77,7 +78,7 @@ public class AbstractEditorTest {
                         @Override
                         public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
                             t.set(true);
-                            return IOUtils.toInputStream("content");
+                            return IOUtils.toInputStream("content", Charset.defaultCharset());
                         }
 
                         @Override
