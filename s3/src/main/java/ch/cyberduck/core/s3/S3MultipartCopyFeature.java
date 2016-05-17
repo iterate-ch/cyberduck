@@ -76,7 +76,7 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
     protected void copy(final Path source, final Path copy, final String storageClass,
                         final Encryption.Algorithm encryption,
                         final Acl acl) throws BackgroundException {
-        if(source.isFile()) {
+        if(source.isFile() || source.isPlaceholder()) {
             final S3Object destination = new S3Object(containerService.getKey(copy));
             // Copying object applying the metadata of the original
             destination.setStorageClass(storageClass);
