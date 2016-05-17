@@ -16,7 +16,6 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.dav.DAVProtocol;
-import ch.cyberduck.core.googlestorage.GoogleStorageProtocol;
 import ch.cyberduck.core.s3.S3Protocol;
 
 import org.junit.Test;
@@ -25,9 +24,6 @@ import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 public class FTPProtocolTest {
 
     @Test
@@ -44,8 +40,6 @@ public class FTPProtocolTest {
         assertTrue(new FTPProtocol().isPortConfigurable());
         assertTrue(new DAVProtocol().isHostnameConfigurable());
         assertTrue(new DAVProtocol().isPortConfigurable());
-        assertFalse(new GoogleStorageProtocol().isHostnameConfigurable());
-        assertFalse(new GoogleStorageProtocol().isPortConfigurable());
     }
 
     @Test
