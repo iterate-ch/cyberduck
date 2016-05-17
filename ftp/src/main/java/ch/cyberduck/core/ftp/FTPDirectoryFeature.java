@@ -36,8 +36,8 @@ public class FTPDirectoryFeature implements Directory {
     }
 
     @Override
-    public void mkdir(final Path file, final TransferStatus status) throws BackgroundException {
-        this.mkdir(file, null, status);
+    public void mkdir(final Path file) throws BackgroundException {
+        this.mkdir(file, null, null);
     }
 
     @Override

@@ -37,13 +37,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
-/**
- * The Status class is the model of a download's status.
- * The wrapper for any status informations of a transfer as the size and transferred
- * bytes.
- *
- * @version $Id$
- */
 public class TransferStatus implements StreamCancelation, StreamProgress {
     private static final Logger log = Logger.getLogger(TransferStatus.class);
 

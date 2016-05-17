@@ -25,7 +25,6 @@ import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -52,7 +51,7 @@ public class B2BucketListServiceTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path bucket = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new B2DirectoryFeature(session).mkdir(bucket, new TransferStatus());
+        new B2DirectoryFeature(session).mkdir(bucket);
         bucket.attributes().setVersionId(new B2FileidProvider(session).getFileid(bucket));
         final List<Path> list = new B2BucketListService(session).list(new DisabledListProgressListener());
         assertFalse(list.isEmpty());

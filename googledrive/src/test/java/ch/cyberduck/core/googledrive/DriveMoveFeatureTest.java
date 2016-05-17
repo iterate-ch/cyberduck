@@ -32,7 +32,6 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
-import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -79,7 +78,7 @@ public class DriveMoveFeatureTest {
         final Path test = new Path(new DriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DriveTouchFeature(session).touch(test);
         final Path folder = new Path(new DriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new DriveDirectoryFeature(session).mkdir(folder, new TransferStatus());
+        new DriveDirectoryFeature(session).mkdir(folder);
         final Path target = new Path(folder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DriveMoveFeature(session).move(test, target, false, new Delete.Callback() {
             @Override
@@ -126,7 +125,7 @@ public class DriveMoveFeatureTest {
                 new DisabledTranscriptListener()).connect(session, PathCache.empty());
         final Path sourceDirectory = new Path(new DriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path targetDirectory = new Path(new DriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new DriveDirectoryFeature(session).mkdir(sourceDirectory, new TransferStatus());
+        new DriveDirectoryFeature(session).mkdir(sourceDirectory);
         final Path sourceFile = new Path(sourceDirectory, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DriveTouchFeature(session).touch(sourceFile);
         final Path targetFile = new Path(targetDirectory, sourceFile.getName(), EnumSet.of(Path.Type.file));

@@ -21,7 +21,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 public interface Directory {
 
-    void mkdir(Path file, final TransferStatus status) throws BackgroundException;
+    void mkdir(Path file) throws BackgroundException;
 
     /**
      * @param file   File

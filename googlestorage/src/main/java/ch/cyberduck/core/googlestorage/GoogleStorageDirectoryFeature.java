@@ -37,15 +37,15 @@ public class GoogleStorageDirectoryFeature implements Directory {
     }
 
     @Override
-    public void mkdir(final Path file, final TransferStatus status) throws BackgroundException {
-        this.mkdir(file, null, status);
+    public void mkdir(final Path file) throws BackgroundException {
+        this.mkdir(file, null, null);
     }
 
     @Override
     public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
         if(containerService.isContainer(file)) {
             final GoogleStorageBucketCreateService service = new GoogleStorageBucketCreateService(session);
-            service.create(file, null);
+            service.create(file, region);
         }
         else {
             new S3DirectoryFeature(session).mkdir(file, region, status);

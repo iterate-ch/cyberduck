@@ -50,32 +50,30 @@ public class S3DirectoryFeature implements Directory {
     }
 
     @Override
-    public void mkdir(final Path file, final TransferStatus status) throws BackgroundException {
-        this.mkdir(file, StringUtils.EMPTY, status);
+    public void mkdir(final Path file) throws BackgroundException {
+        this.mkdir(file, null, null);
     }
 
     @Override
-    public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
+    public void mkdir(final Path file, final String region, TransferStatus status) throws BackgroundException {
         if(containerService.isContainer(file)) {
             final S3BucketCreateService service = new S3BucketCreateService(session);
-            if(StringUtils.isBlank(region)) {
-                service.create(file, PreferencesFactory.get().getProperty("s3.location"));
-            }
-            else {
-                service.create(file, region);
-            }
+            service.create(file, StringUtils.isBlank(region) ? PreferencesFactory.get().getProperty("s3.location") : region);
         }
         else {
+            if(null == status) {
+                status = new TransferStatus();
+                final Encryption encryption = session.getFeature(Encryption.class);
+                if(encryption != null) {
+                    status.setEncryption(encryption.getDefault(file));
+                }
+                final Redundancy redundancy = session.getFeature(Redundancy.class);
+                if(redundancy != null) {
+                    status.setStorageClass(redundancy.getDefault());
+                }
+            }
             // Add placeholder object
             status.setMime("application/x-directory");
-            final Encryption encryption = session.getFeature(Encryption.class);
-            if(encryption != null) {
-                status.setEncryption(encryption.getDefault(file));
-            }
-            final Redundancy redundancy = session.getFeature(Redundancy.class);
-            if(redundancy != null) {
-                status.setStorageClass(redundancy.getDefault());
-            }
             final S3Object key = write.getDetails(containerService.getKey(file).concat(String.valueOf(Path.DELIMITER)), status);
             try {
                 session.getClient().putObject(containerService.getContainer(file).getName(), key);

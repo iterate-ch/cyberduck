@@ -238,7 +238,7 @@ public class CopyTransfer extends Transfer {
             if(!status.isExists()) {
                 progressListener.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
                         copy.getName()));
-                destination.getFeature(Directory.class).mkdir(copy, status);
+                destination.getFeature(Directory.class).mkdir(copy, null, status);
             }
         }
     }

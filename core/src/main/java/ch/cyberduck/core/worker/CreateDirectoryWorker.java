@@ -22,9 +22,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.transfer.TransferStatus;
-
-import org.apache.commons.lang3.StringUtils;
 
 import java.text.MessageFormat;
 
@@ -49,12 +46,7 @@ public class CreateDirectoryWorker extends Worker<Boolean> {
     @Override
     public Boolean run(final Session<?> session) throws BackgroundException {
         final Directory feature = session.getFeature(Directory.class);
-        if(StringUtils.isNotBlank(region)) {
-            feature.mkdir(folder, region, new TransferStatus());
-        }
-        else {
-            feature.mkdir(folder, new TransferStatus());
-        }
+        feature.mkdir(folder, region, null);
         return true;
     }
 

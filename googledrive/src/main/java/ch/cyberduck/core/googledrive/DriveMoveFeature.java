@@ -41,7 +41,7 @@ public class DriveMoveFeature implements Move {
     @Override
     public void move(final Path file, final Path renamed, final boolean exists, final Delete.Callback callback) throws BackgroundException {
         if(file.isDirectory()) {
-            new DriveDirectoryFeature(session).mkdir(renamed, new TransferStatus());
+            new DriveDirectoryFeature(session).mkdir(renamed, null, new TransferStatus());
             for(Path i : session.list(file, new DisabledListProgressListener())) {
                 this.move(i, new Path(renamed, i.getName(), i.getType()), false, callback);
             }
