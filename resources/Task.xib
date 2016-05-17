@@ -22,7 +22,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
             <subviews>
                 <textField verticalHuggingPriority="750" id="4">
-                    <rect key="frame" x="2" y="8" width="289" height="14"/>
+                    <rect key="frame" x="45" y="8" width="246" height="14"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" id="5">
                         <font key="font" metaFont="smallSystem"/>
@@ -31,7 +31,7 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" id="6">
-                    <rect key="frame" x="2" y="23" width="289" height="14"/>
+                    <rect key="frame" x="45" y="23" width="246" height="14"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" id="7">
                         <font key="font" metaFont="smallSystemBold"/>
@@ -48,8 +48,8 @@
                     </buttonCell>
                 </button>
                 <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" bezeled="NO" indeterminate="YES" style="spinning" id="10">
-                    <rect key="frame" x="296" y="4" width="32" height="32"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                    <rect key="frame" x="7" y="4" width="32" height="32"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                 </progressIndicator>
             </subviews>
         </customView>
