@@ -26,6 +26,7 @@
         <module>irods</module>
         <module>spectra</module>
         <module>s3</module>
+        <module>googlestorage</module>
         <module>openstack</module>
         <module>webdav</module>
         <module>azure</module>
