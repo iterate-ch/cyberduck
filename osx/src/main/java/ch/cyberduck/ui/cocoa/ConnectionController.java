@@ -55,9 +55,6 @@ import org.rococoa.ID;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSSize;
 
-/**
- * @version $Id$
- */
 public class ConnectionController extends SheetController {
     private static Logger log = Logger.getLogger(ConnectionController.class);
 
@@ -169,6 +166,16 @@ public class ConnectionController extends SheetController {
         hostField.cell().setPlaceholderString(protocol.getDefaultHostname());
         usernameField.cell().setPlaceholderString(protocol.getUsernamePlaceholder());
         passField.cell().setPlaceholderString(protocol.getPasswordPlaceholder());
+        usernameLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
+                StringUtils.isNotBlank(protocol.getUsernamePlaceholder()) ? String.format("%s:",
+                        protocol.getUsernamePlaceholder()) : StringUtils.EMPTY,
+                LABEL_ATTRIBUTES
+        ));
+        passwordLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
+                StringUtils.isNotBlank(protocol.getPasswordPlaceholder()) ? String.format("%s:",
+                        protocol.getPasswordPlaceholder()) : StringUtils.EMPTY,
+                LABEL_ATTRIBUTES
+        ));
         connectmodePopup.setEnabled(protocol.getType() == Protocol.Type.ftp);
         if(!protocol.isEncodingConfigurable()) {
             encodingPopup.selectItemWithTitle(DEFAULT);
@@ -264,7 +271,7 @@ public class ConnectionController extends SheetController {
 
     private void hostChanged(final Host host) {
         this.updateField(hostField, host.getHostname());
-        this.protocolPopup.selectItemAtIndex(
+        protocolPopup.selectItemAtIndex(
                 protocolPopup.indexOfItemWithRepresentedObject(String.valueOf(host.getProtocol().hashCode()))
         );
         this.updateField(portField, String.valueOf(host.getPort()));
@@ -385,6 +392,20 @@ public class ConnectionController extends SheetController {
 
     public void setPassField(NSTextField passField) {
         this.passField = passField;
+    }
+
+    @Outlet
+    private NSTextField usernameLabel;
+
+    public void setUsernameLabel(NSTextField usernameLabel) {
+        this.usernameLabel = usernameLabel;
+    }
+
+    @Outlet
+    private NSTextField passwordLabel;
+
+    public void setPasswordLabel(NSTextField passwordLabel) {
+        this.passwordLabel = passwordLabel;
     }
 
     @Outlet

@@ -32,9 +32,7 @@ import ch.cyberduck.binding.application.NSSecureTextField;
 import ch.cyberduck.binding.application.NSTextField;
 import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
-import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSAttributedString;
-import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.binding.foundation.NSObject;
@@ -314,9 +312,7 @@ public final class PromptLoginController implements LoginCallback {
                 this.usernameLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
                         StringUtils.isNotBlank(credentials.getUsernamePlaceholder()) ? String.format("%s:",
                                 credentials.getUsernamePlaceholder()) : StringUtils.EMPTY,
-                        NSDictionary.dictionaryWithObjectsForKeys(
-                                NSArray.arrayWithObject(TableCellAttributes.PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL),
-                                NSArray.arrayWithObject(NSAttributedString.ParagraphStyleAttributeName))
+                        LABEL_ATTRIBUTES
                 ));
 
                 this.passwordField.setEnabled(options.password && !credentials.isAnonymousLogin());
@@ -325,9 +321,7 @@ public final class PromptLoginController implements LoginCallback {
                 this.passwordLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
                         StringUtils.isNotBlank(credentials.getPasswordPlaceholder()) ? String.format("%s:",
                                 credentials.getPasswordPlaceholder()) : StringUtils.EMPTY,
-                        NSDictionary.dictionaryWithObjectsForKeys(
-                                NSArray.arrayWithObject(TableCellAttributes.PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL),
-                                NSArray.arrayWithObject(NSAttributedString.ParagraphStyleAttributeName))
+                        LABEL_ATTRIBUTES
                 ));
 
                 this.keychainCheckbox.setEnabled(options.keychain && !credentials.isAnonymousLogin());
