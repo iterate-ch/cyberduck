@@ -2008,6 +2008,7 @@ public class InfoController extends ToolbarWindowController {
                 LoggingConfiguration logging;
                 VersioningConfiguration versioning;
                 Set<String> containers = new HashSet<String>();
+                Set<Encryption.Algorithm> keys = new HashSet<Encryption.Algorithm>();
                 Encryption.Algorithm encryption;
                 LifecycleConfiguration lifecycle;
                 Credentials credentials;
@@ -2043,21 +2044,11 @@ public class InfoController extends ToolbarWindowController {
                                 break;
                             }
                         }
-                        if(selected.size() <= 1) {
+                        if(selected.size() == 1) {
                             // Add additional keys stored in KMS
-                            final Set<Encryption.Algorithm> keys = session.getFeature(Encryption.class).getKeys(prompt);
+                            keys = session.getFeature(Encryption.class).getKeys(prompt);
                             keys.addAll(selected);
-                            for(Encryption.Algorithm algorithm : keys) {
-                                encryptionPopup.addItemWithTitle(LocaleFactory.localizedString(algorithm.getDescription(), "S3"));
-                                encryptionPopup.lastItem().setRepresentedObject(algorithm.toString());
-                            }
-                            encryption = selected.size() == 1 ? selected.iterator().next() : Encryption.Algorithm.NONE;
-                        }
-                        else {
-                            encryptionPopup.removeAllItems();
-                            encryptionPopup.addItemWithTitle(LocaleFactory.localizedString("Unknown"));
-                            encryptionPopup.lastItem().setEnabled(false);
-                            encryptionPopup.selectItem(encryptionPopup.lastItem());
+                            encryption = selected.iterator().next();
                         }
                     }
                     return null;
@@ -2091,7 +2082,16 @@ public class InfoController extends ToolbarWindowController {
                         bucketMfaButton.setState(versioning.isMultifactor() ? NSCell.NSOnState : NSCell.NSOffState);
                     }
                     if(encryption != null) {
+                        for(Encryption.Algorithm algorithm : keys) {
+                            encryptionPopup.addItemWithTitle(LocaleFactory.localizedString(algorithm.getDescription(), "S3"));
+                            encryptionPopup.lastItem().setRepresentedObject(algorithm.toString());
+                        }
                         encryptionPopup.selectItemAtIndex(encryptionPopup.indexOfItemWithRepresentedObject(encryption.toString()));
+                    } else {
+                        encryptionPopup.removeAllItems();
+                        encryptionPopup.addItemWithTitle(LocaleFactory.localizedString("Unknown"));
+                        encryptionPopup.lastItem().setEnabled(false);
+                        encryptionPopup.selectItem(encryptionPopup.lastItem());
                     }
                     if(null != credentials) {
                         bucketAnalyticsSetupUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(
