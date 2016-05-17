@@ -399,20 +399,21 @@ public class InfoController extends ToolbarWindowController {
 
     @Action
     public void encryptionPopupClicked(final NSPopUpButton sender) {
-        if(this.toggleS3Settings(false)) {
             final Encryption feature = controller.getSession().getFeature(Encryption.class);
-            final Encryption.Algorithm encryption = Encryption.Algorithm.fromString(sender.selectedItem().representedObject());
-            this.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
-                    new WriteEncryptionWorker(files, encryption, false, controller) {
-                                @Override
-                                public void cleanup(final Boolean v) {
-                                    toggleS3Settings(true);
-                                    initS3();
+            final String algorithm = sender.selectedItem().representedObject();
+            if(null != algorithm && this.toggleS3Settings(false)) {
+                final Encryption.Algorithm encryption = Encryption.Algorithm.fromString(algorithm);
+                this.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
+                                new WriteEncryptionWorker(files, encryption, false, controller) {
+                                    @Override
+                                    public void cleanup(final Boolean v) {
+                                        toggleS3Settings(true);
+                                        initS3();
+                                    }
                                 }
-                            }
-                    )
-            );
-        }
+                        )
+                );
+            }
     }
 
     @Outlet
@@ -1244,7 +1245,7 @@ public class InfoController extends ToolbarWindowController {
                 update.put(header.getName(), header.getValue());
             }
             this.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
-                    new WriteMetadataWorker(files, update, true, controller) {
+                            new WriteMetadataWorker(files, update, true, controller) {
                                 @Override
                                 public void cleanup(final Boolean v) {
                                     toggleMetadataSettings(true);
@@ -2033,19 +2034,30 @@ public class InfoController extends ToolbarWindowController {
                         credentials = session.getFeature(IdentityConfiguration.class)
                                 .getCredentials(session.getFeature(AnalyticsProvider.class).getName());
                     }
-                    if(numberOfFiles() == 1) {
+                    if(numberOfFiles() >= 1) {
                         if(session.getFeature(Encryption.class) != null) {
-                            // Add additional keys stored in KMS
-                            final Set<Encryption.Algorithm> keys = session.getFeature(Encryption.class).getKeys(prompt);
-                            for(Encryption.Algorithm algorithm : keys) {
-                                encryptionPopup.addItemWithTitle(LocaleFactory.localizedString(algorithm.getDescription(), "S3"));
-                                encryptionPopup.lastItem().setRepresentedObject(algorithm.toString());
+                            final Set<Encryption.Algorithm> selected = new HashSet<>();
+                            for(final Path p : files) {
+                                final Encryption.Algorithm algorithm = session.getFeature(Encryption.class).getEncryption(p);
+                                selected.add(algorithm);
+                                if(selected.size() > 1) {
+                                    break;
+                                }
                             }
-                            encryption = session.getFeature(Encryption.class).getEncryption(getSelected());
-                            if(!keys.contains(encryption)) {
-                                // Add default KMS key not in list
-                                encryptionPopup.addItemWithTitle(LocaleFactory.localizedString(encryption.getDescription(), "S3"));
-                                encryptionPopup.lastItem().setRepresentedObject(encryption.toString());
+                            if(selected.size() <= 1) {
+                                // Add additional keys stored in KMS
+                                final Set<Encryption.Algorithm> keys = session.getFeature(Encryption.class).getKeys(prompt);
+                                keys.addAll(selected);
+                                for(Encryption.Algorithm algorithm : keys) {
+                                    encryptionPopup.addItemWithTitle(LocaleFactory.localizedString(algorithm.getDescription(), "S3"));
+                                    encryptionPopup.lastItem().setRepresentedObject(algorithm.toString());
+                                }
+                                encryption = selected.size() == 1 ? selected.iterator().next() : Encryption.Algorithm.NONE;
+                            } else {
+                                encryptionPopup.removeAllItems();
+                                encryptionPopup.addItemWithTitle(LocaleFactory.localizedString("Unknown"));
+                                encryptionPopup.lastItem().setEnabled(false);
+                                encryptionPopup.selectItem(encryptionPopup.lastItem());
                             }
                         }
                     }
