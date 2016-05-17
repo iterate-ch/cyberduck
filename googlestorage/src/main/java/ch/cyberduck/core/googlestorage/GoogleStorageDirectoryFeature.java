@@ -23,10 +23,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.s3.S3DirectoryFeature;
 import ch.cyberduck.core.s3.S3PathContainerService;
+import ch.cyberduck.core.transfer.TransferStatus;
 
-/**
- * @version $Id$
- */
 public class GoogleStorageDirectoryFeature implements Directory {
 
     private GoogleStorageSession session;
@@ -39,18 +37,18 @@ public class GoogleStorageDirectoryFeature implements Directory {
     }
 
     @Override
-    public void mkdir(final Path file) throws BackgroundException {
-        this.mkdir(file, null);
+    public void mkdir(final Path file, final TransferStatus status) throws BackgroundException {
+        this.mkdir(file, null, status);
     }
 
     @Override
-    public void mkdir(final Path file, final String region) throws BackgroundException {
+    public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
         if(containerService.isContainer(file)) {
             final GoogleStorageBucketCreateService service = new GoogleStorageBucketCreateService(session);
             service.create(file, null);
         }
         else {
-            new S3DirectoryFeature(session).mkdir(file, region);
+            new S3DirectoryFeature(session).mkdir(file, region, status);
         }
     }
 }

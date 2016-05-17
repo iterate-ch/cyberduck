@@ -376,6 +376,7 @@ public class SFTPSession extends Session<SSHClient> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
         if(type == Attributes.class) {
             return (T) new SFTPAttributesFeature(this);

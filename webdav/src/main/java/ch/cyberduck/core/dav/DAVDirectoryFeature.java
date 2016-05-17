@@ -21,14 +21,12 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 
 import com.github.sardine.impl.SardineException;
 
-/**
- * @version $Id$
- */
 public class DAVDirectoryFeature implements Directory {
 
     private DAVSession session;
@@ -38,12 +36,12 @@ public class DAVDirectoryFeature implements Directory {
     }
 
     @Override
-    public void mkdir(final Path file) throws BackgroundException {
-        this.mkdir(file, null);
+    public void mkdir(final Path file, final TransferStatus status) throws BackgroundException {
+        this.mkdir(file, null, status);
     }
 
     @Override
-    public void mkdir(final Path file, final String region) throws BackgroundException {
+    public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
         try {
             session.getClient().createDirectory(new DAVPathEncoder().encode(file));
         }

@@ -33,6 +33,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -163,6 +164,6 @@ public class SwiftSegmentService {
         for(StorageObject s : objects) {
             concatenated.append(s.getMd5sum());
         }
-        return checksum.compute(IOUtils.toInputStream(concatenated.toString()));
+        return checksum.compute(IOUtils.toInputStream(concatenated.toString(), Charset.defaultCharset()));
     }
 }

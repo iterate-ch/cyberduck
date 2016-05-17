@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7706" systemVersion="15A204h" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10117" systemVersion="15E65" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
-        <deployment version="1050" identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7706"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10117"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="CDLoginController">
@@ -25,18 +24,17 @@
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customObject id="2" customClass="NSApplication"/>
         <window title="Login" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" visibleAtLaunch="NO" frameAutosaveName="Login" animationBehavior="default" id="3" customClass="NSPanel">
-            <windowStyleMask key="styleMask" titled="YES" closable="YES"/>
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="242" y="431" width="507" height="266"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
+            <rect key="contentRect" x="242" y="431" width="420" height="266"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1366" height="745"/>
             <view key="contentView" id="4">
-                <rect key="frame" x="0.0" y="0.0" width="507" height="266"/>
+                <rect key="frame" x="0.0" y="0.0" width="420" height="266"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <textField verticalHuggingPriority="750" id="5">
+                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="5">
                         <rect key="frame" x="17" y="145" width="133" height="14"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
-                        <animations/>
+                        <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Benutzername:" id="6">
                             <font key="font" metaFont="smallSystem"/>
                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -44,9 +42,8 @@
                         </textFieldCell>
                     </textField>
                     <textField verticalHuggingPriority="750" id="7">
-                        <rect key="frame" x="155" y="143" width="332" height="19"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                        <animations/>
+                        <rect key="frame" x="155" y="143" width="245" height="19"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="left" drawsBackground="YES" id="8">
                             <font key="font" metaFont="smallSystem"/>
                             <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
@@ -56,20 +53,18 @@
                             <outlet property="nextKeyView" destination="17" id="46"/>
                         </connections>
                     </textField>
-                    <textField verticalHuggingPriority="750" id="9">
-                        <rect key="frame" x="89" y="229" width="396" height="17"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <animations/>
+                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="9">
+                        <rect key="frame" x="89" y="229" width="314" height="17"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="10">
                             <font key="font" metaFont="systemBold"/>
                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <textField verticalHuggingPriority="750" id="11">
-                        <rect key="frame" x="89" y="179" width="401" height="42"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <animations/>
+                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="11">
+                        <rect key="frame" x="89" y="179" width="314" height="42"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="12">
                             <font key="font" metaFont="smallSystem"/>
                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -77,9 +72,8 @@
                         </textFieldCell>
                     </textField>
                     <button verticalHuggingPriority="750" tag="1" id="13">
-                        <rect key="frame" x="396" y="12" width="97" height="32"/>
+                        <rect key="frame" x="309" y="12" width="97" height="32"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                        <animations/>
                         <buttonCell key="cell" type="push" title="Login" bezelStyle="rounded" alignment="center" borderStyle="border" tag="1" inset="2" id="14">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -92,9 +86,8 @@ DQ
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" id="15">
-                        <rect key="frame" x="288" y="12" width="108" height="32"/>
+                        <rect key="frame" x="227" y="12" width="82" height="32"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                        <animations/>
                         <buttonCell key="cell" type="push" title="Abbrechen" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="16">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -107,9 +100,8 @@ Gw
                         </connections>
                     </button>
                     <secureTextField verticalHuggingPriority="750" id="17">
-                        <rect key="frame" x="155" y="116" width="332" height="19"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                        <animations/>
+                        <rect key="frame" x="155" y="116" width="245" height="19"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                         <secureTextFieldCell key="cell" controlSize="small" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" alignment="left" drawsBackground="YES" id="18">
                             <font key="font" metaFont="smallSystem"/>
                             <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
@@ -122,10 +114,9 @@ Gw
                             <outlet property="nextKeyView" destination="7" id="47"/>
                         </connections>
                     </secureTextField>
-                    <textField verticalHuggingPriority="750" id="19">
+                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="19">
                         <rect key="frame" x="17" y="118" width="133" height="14"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
-                        <animations/>
+                        <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Passwort:" id="20">
                             <font key="font" metaFont="smallSystem"/>
                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -135,13 +126,11 @@ Gw
                     <imageView id="21">
                         <rect key="frame" x="20" y="182" width="64" height="64"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <animations/>
                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSApplicationIcon" id="22"/>
                     </imageView>
                     <button id="23">
-                        <rect key="frame" x="18" y="21" width="221" height="18"/>
+                        <rect key="frame" x="18" y="21" width="125" height="18"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <animations/>
                         <buttonCell key="cell" type="check" title="Zum Schlüsselbund hinzufügen" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="24">
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                             <font key="font" metaFont="system"/>
@@ -149,8 +138,7 @@ Gw
                     </button>
                     <button id="25">
                         <rect key="frame" x="152" y="92" width="250" height="18"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
-                        <animations/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                         <buttonCell key="cell" type="check" title="Anonymer Login" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="26">
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                             <font key="font" metaFont="smallSystem"/>
@@ -158,17 +146,15 @@ Gw
                     </button>
                     <button id="27">
                         <rect key="frame" x="152" y="72" width="250" height="18"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                        <animations/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                         <buttonCell key="cell" type="check" title="Public Key Authentisierung verwenden" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" enabled="NO" inset="2" id="28">
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                             <font key="font" metaFont="smallSystem"/>
                         </buttonCell>
                     </button>
-                    <textField verticalHuggingPriority="750" id="29">
+                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="29">
                         <rect key="frame" x="170" y="60" width="233" height="11"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                        <animations/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" controlSize="mini" sendsActionOnEndEditing="YES" alignment="left" title=" " id="30">
                             <font key="font" metaFont="miniSystem"/>
                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -176,9 +162,8 @@ Gw
                         </textFieldCell>
                     </textField>
                     <button horizontalHuggingPriority="750" verticalHuggingPriority="750" id="31">
-                        <rect key="frame" x="260" y="16" width="25" height="25"/>
+                        <rect key="frame" x="199" y="16" width="25" height="25"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                        <animations/>
                         <buttonCell key="cell" type="help" bezelStyle="helpButton" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="32">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -188,7 +173,6 @@ Gw
                         </connections>
                     </button>
                 </subviews>
-                <animations/>
             </view>
             <connections>
                 <outlet property="initialFirstResponder" destination="17" id="45"/>

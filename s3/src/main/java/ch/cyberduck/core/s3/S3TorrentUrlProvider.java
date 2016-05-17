@@ -23,9 +23,6 @@ import ch.cyberduck.core.Host;
 import org.jets3t.service.utils.RestUtils;
 import org.jets3t.service.utils.ServiceUtils;
 
-/**
- * @version $Id$
- */
 public class S3TorrentUrlProvider {
 
     private Host endpoint;

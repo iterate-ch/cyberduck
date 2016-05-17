@@ -24,6 +24,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -55,12 +56,12 @@ public class AzureDirectoryFeature implements Directory {
     }
 
     @Override
-    public void mkdir(Path file) throws BackgroundException {
-        this.mkdir(file, null);
+    public void mkdir(Path file, final TransferStatus status) throws BackgroundException {
+        this.mkdir(file, null, status);
     }
 
     @Override
-    public void mkdir(final Path file, final String region) throws BackgroundException {
+    public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
         try {
             final BlobRequestOptions options = new BlobRequestOptions();
             options.setRetryPolicyFactory(new RetryNoRetry());

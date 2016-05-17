@@ -35,7 +35,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-
 public class S3MetadataFeature implements Headers {
     private static final Logger log = Logger.getLogger(S3MetadataFeature.class);
 

@@ -1,5 +1,20 @@
 package ch.cyberduck.core.googlestorage;
 
+/*
+ * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -24,15 +39,13 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class GoogleStorageSessionTest {
 
@@ -133,7 +146,7 @@ public class GoogleStorageSessionTest {
         catch(BackgroundException e) {
 //            assertEquals("Access denied. 4082461033721 is not a valid project id spec. Please contact your web hosting service provider for assistance. Please contact your web hosting service provider for assistance.", e.getDetail());
 //            assertEquals("Invalid argument. Please contact your web hosting service provider for assistance.", e.getDetail());
-            assertEquals("Login failed", e.getMessage());
+            Assert.assertEquals("Login failed", e.getMessage());
             throw e;
         }
     }
@@ -151,7 +164,7 @@ public class GoogleStorageSessionTest {
             @Override
             public void prompt(final Host bookmark, final Credentials credentials,
                                final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                assertEquals("OAuth2 Authentication", title);
+                Assert.assertEquals("OAuth2 Authentication", title);
                 throw new LoginCanceledException();
             }
         }, null);

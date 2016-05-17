@@ -73,6 +73,7 @@ public class NullSession extends Session<Void> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T getFeature(Class<T> type) {
         if(type == Write.class) {
             return (T) new AppendWriteFeature(this) {

@@ -270,8 +270,7 @@ public class BrowserController extends WindowController
         if(LicenseFactory.find().equals(LicenseFactory.EMPTY_LICENSE)) {
             this.addDonateWindowTitle();
         }
-        this.setNavigation(false);
-        this.selectBookmarks();
+        this.selectBookmarks(BookmarkSwitchSegement.bookmarks);
     }
 
     protected Comparator<Path> getComparator() {
@@ -319,7 +318,7 @@ public class BrowserController extends WindowController
      */
     private void getFocus() {
         NSView view;
-        if(this.getSelectedTabView() == TAB_BOOKMARKS) {
+        if(this.getSelectedTabView() == BrowserTab.bookmarks) {
             view = bookmarkTable;
         }
         else {
@@ -344,7 +343,7 @@ public class BrowserController extends WindowController
         else {
             final NSTableView browser = this.getSelectedBrowserView();
             final BrowserTableDataSource model = this.getSelectedBrowserModel();
-            model.render(browser, Collections.<Path>emptyList());
+            model.render(browser, Collections.emptyList());
             this.setStatus();
         }
     }
@@ -386,12 +385,12 @@ public class BrowserController extends WindowController
         final NSTableView browser = this.getSelectedBrowserView();
         if(folders.isEmpty()) {
             // Render empty browser
-            model.render(browser, Collections.<Path>emptyList());
+            model.render(browser, Collections.emptyList());
         }
         if(null == workdir) {
             this.setNavigation(false);
             // Render empty browser
-            model.render(browser, Collections.<Path>emptyList());
+            model.render(browser, Collections.emptyList());
         }
         else {
             for(final Path folder : folders) {
@@ -576,7 +575,7 @@ public class BrowserController extends WindowController
         window.setMiniwindowImage(IconCacheFactory.<NSImage>get().iconNamed("cyberduck-document.icns"));
         window.setMovableByWindowBackground(true);
         window.setCollectionBehavior(window.collectionBehavior() | NSWindow.NSWindowCollectionBehavior.NSWindowCollectionBehaviorFullScreenPrimary);
-        window.setContentMinSize(new NSSize(400d, 200d));
+        window.setContentMinSize(new NSSize(600d, 200d));
         super.setWindow(window);
         // Accept file promises from history tab
         window.registerForDraggedTypes(NSArray.arrayWithObject(NSPasteboard.FilesPromisePboardType));
@@ -610,11 +609,8 @@ public class BrowserController extends WindowController
         if(pasteboard.types().indexOfObject(NSString.stringWithString(NSPasteboard.FilesPromisePboardType)) != null) {
             final NSView hit = sender.draggingDestinationWindow().contentView().hitTest(sender.draggingLocation());
             if(hit != null) {
-                if(hit.equals(bookmarkButton)) {
-                    if(historyButton.state() == NSCell.NSOnState
-                            || bonjourButton.state() == NSCell.NSOnState) {
-                        return NSDraggingInfo.NSDragOperationCopy;
-                    }
+                if(hit.equals(bookmarkSwitchView)) {
+                    return NSDraggingInfo.NSDragOperationCopy;
                 }
             }
         }
@@ -705,12 +701,18 @@ public class BrowserController extends WindowController
         donateButton.removeFromSuperview();
     }
 
-    protected static final int TAB_BOOKMARKS = 0;
-    protected static final int TAB_LIST_VIEW = 1;
-    protected static final int TAB_OUTLINE_VIEW = 2;
+    protected enum BrowserTab {
+        bookmarks,
+        list,
+        outline;
 
-    protected int getSelectedTabView() {
-        return browserTabView.indexOfTabViewItem(browserTabView.selectedTabViewItem());
+        public static BrowserTab byPosition(final int position) {
+            return BrowserTab.values()[position];
+        }
+    }
+
+    protected BrowserTab getSelectedTabView() {
+        return BrowserTab.byPosition(browserTabView.indexOfTabViewItem(browserTabView.selectedTabViewItem()));
     }
 
     private NSTabView browserTabView;
@@ -723,42 +725,36 @@ public class BrowserController extends WindowController
      * @return The currently selected browser view (which is either an outlineview or a plain tableview)
      */
     public NSTableView getSelectedBrowserView() {
-        switch(preferences.getInteger("browser.view")) {
-            case SWITCH_LIST_VIEW: {
+        switch(BrowserSwitchSegement.byPosition(preferences.getInteger("browser.view"))) {
+            case list:
                 return browserListView;
-            }
-            case SWITCH_OUTLINE_VIEW: {
+            case outline:
+            default:
                 return browserOutlineView;
-            }
         }
-        throw new FactoryException("No selected browser view");
     }
 
     /**
      * @return The datasource of the currently selected browser view
      */
     public BrowserTableDataSource getSelectedBrowserModel() {
-        switch(this.browserSwitchView.selectedSegment()) {
-            case SWITCH_LIST_VIEW: {
+        switch(BrowserSwitchSegement.byPosition(preferences.getInteger("browser.view"))) {
+            case list:
                 return browserListModel;
-            }
-            case SWITCH_OUTLINE_VIEW: {
+            case outline:
+            default:
                 return browserOutlineModel;
-            }
         }
-        throw new FactoryException("No selected browser view");
     }
 
     public AbstractBrowserTableDelegate getSelectedBrowserDelegate() {
-        switch(this.browserSwitchView.selectedSegment()) {
-            case SWITCH_LIST_VIEW: {
+        switch(BrowserSwitchSegement.byPosition(preferences.getInteger("browser.view"))) {
+            case list:
                 return browserListViewDelegate;
-            }
-            case SWITCH_OUTLINE_VIEW: {
+            case outline:
+            default:
                 return browserOutlineViewDelegate;
-            }
         }
-        throw new FactoryException("No selected browser view");
     }
 
     @Outlet
@@ -862,60 +858,6 @@ public class BrowserController extends WindowController
         this.archiveMenu.setDelegate(archiveMenuDelegate.id());
     }
 
-    @Outlet
-    private NSButton bonjourButton;
-
-    public void setBonjourButton(NSButton bonjourButton) {
-        this.bonjourButton = bonjourButton;
-        NSImage img = IconCacheFactory.<NSImage>get().iconNamed("rendezvous.tiff", 16);
-        img.setTemplate(false);
-        this.bonjourButton.setImage(img);
-        this.setRecessedBezelStyle(this.bonjourButton);
-        this.bonjourButton.setTarget(this.id());
-        this.bonjourButton.setAction(Foundation.selector("bookmarkButtonClicked:"));
-    }
-
-    @Outlet
-    private NSButton historyButton;
-
-    public void setHistoryButton(NSButton historyButton) {
-        this.historyButton = historyButton;
-        NSImage img = IconCacheFactory.<NSImage>get().iconNamed("history.tiff", 16);
-        img.setTemplate(false);
-        this.historyButton.setImage(img);
-        this.setRecessedBezelStyle(this.historyButton);
-        this.historyButton.setTarget(this.id());
-        this.historyButton.setAction(Foundation.selector("bookmarkButtonClicked:"));
-    }
-
-    @Outlet
-    private NSButton bookmarkButton;
-
-    public void setBookmarkButton(NSButton bookmarkButton) {
-        this.bookmarkButton = bookmarkButton;
-        NSImage img = IconCacheFactory.<NSImage>get().iconNamed("bookmarks.tiff", 16);
-        img.setTemplate(false);
-        this.bookmarkButton.setImage(img);
-        this.setRecessedBezelStyle(this.bookmarkButton);
-        this.bookmarkButton.setTarget(this.id());
-        this.bookmarkButton.setAction(Foundation.selector("bookmarkButtonClicked:"));
-        this.bookmarkButton.setState(NSCell.NSOnState); // Set as default selected bookmark source
-    }
-
-    public void bookmarkButtonClicked(final NSButton sender) {
-        if(sender != bonjourButton) {
-            bonjourButton.setState(NSCell.NSOffState);
-        }
-        if(sender != historyButton) {
-            historyButton.setState(NSCell.NSOffState);
-        }
-        if(sender != bookmarkButton) {
-            bookmarkButton.setState(NSCell.NSOffState);
-        }
-        sender.setState(NSCell.NSOnState);
-        this.selectBookmarks();
-    }
-
     private void setRecessedBezelStyle(final NSButton b) {
         b.setBezelStyle(NSButton.NSRecessedBezelStyle);
         b.setButtonType(NSButton.NSMomentaryPushButtonButton);
@@ -944,50 +886,93 @@ public class BrowserController extends WindowController
 
     private NSSegmentedControl bookmarkSwitchView;
 
-    private static final int SWITCH_BOOKMARK_VIEW = 0;
+    private enum BookmarkSwitchSegement {
+        browser {
+            @Override
+            public NSImage image() {
+                final NSImage image = IconCacheFactory.<NSImage>get().iconNamed(String.format("%s.tiff", "outline"), 16);
+                image.setTemplate(true);
+                return image;
+            }
+        },
+        bookmarks,
+        history,
+        rendezvous;
+
+        public NSImage image() {
+            return IconCacheFactory.<NSImage>get().iconNamed(String.format("%s.tiff", name()), 16);
+        }
+
+        public static BookmarkSwitchSegement byPosition(final int position) {
+            return BookmarkSwitchSegement.values()[position];
+        }
+    }
 
     public void setBookmarkSwitchView(NSSegmentedControl bookmarkSwitchView) {
         this.bookmarkSwitchView = bookmarkSwitchView;
-        this.bookmarkSwitchView.setSegmentCount(1);
-        this.bookmarkSwitchView.setToolTip(LocaleFactory.localizedString("Bookmarks"));
-        final NSImage image = IconCacheFactory.<NSImage>get().iconNamed("book.tiff");
-        this.bookmarkSwitchView.setImage_forSegment(image, SWITCH_BOOKMARK_VIEW);
+        this.bookmarkSwitchView.setSegmentCount(4);
         final NSSegmentedCell cell = Rococoa.cast(this.bookmarkSwitchView.cell(), NSSegmentedCell.class);
-        cell.setTrackingMode(NSSegmentedCell.NSSegmentSwitchTrackingSelectAny);
-        cell.setControlSize(NSCell.NSRegularControlSize);
+        cell.setToolTip_forSegment(LocaleFactory.localizedString("Browser"), BookmarkSwitchSegement.browser.ordinal());
+        this.bookmarkSwitchView.setImage_forSegment(BookmarkSwitchSegement.browser.image(), BookmarkSwitchSegement.browser.ordinal());
+        cell.setToolTip_forSegment(LocaleFactory.localizedString("Bookmarks"), BookmarkSwitchSegement.bookmarks.ordinal());
+        this.bookmarkSwitchView.setImage_forSegment(BookmarkSwitchSegement.bookmarks.image(), BookmarkSwitchSegement.bookmarks.ordinal());
+        cell.setToolTip_forSegment(LocaleFactory.localizedString("History"), BookmarkSwitchSegement.history.ordinal());
+        this.bookmarkSwitchView.setImage_forSegment(BookmarkSwitchSegement.history.image(), BookmarkSwitchSegement.history.ordinal());
+        cell.setToolTip_forSegment(LocaleFactory.localizedString("Bonjour"), BookmarkSwitchSegement.rendezvous.ordinal());
+        this.bookmarkSwitchView.setImage_forSegment(BookmarkSwitchSegement.rendezvous.image(), BookmarkSwitchSegement.rendezvous.ordinal());
         this.bookmarkSwitchView.setTarget(this.id());
-        this.bookmarkSwitchView.setAction(Foundation.selector("bookmarkSwitchClicked:"));
-        this.bookmarkSwitchView.setSelectedSegment(SWITCH_BOOKMARK_VIEW);
+        this.bookmarkSwitchView.setAction(Foundation.selector("bookmarkSwitchButtonClicked:"));
     }
 
     @Action
-    public void bookmarkSwitchClicked(final ID sender) {
-        // Toggle
-        final boolean open = this.getSelectedTabView() != TAB_BOOKMARKS;
-        bookmarkSwitchView.setSelected_forSegment(open, SWITCH_BOOKMARK_VIEW);
-        this.setNavigation(!open && this.isMounted());
-        if(open) {
-            this.selectBookmarks();
+    public void bookmarkSwitchMenuClicked(final NSMenuItem sender) {
+        switch(this.getSelectedTabView()) {
+            case bookmarks:
+                this.selectBrowser(BrowserSwitchSegement.byPosition(preferences.getInteger("browser.view")));
+                break;
+            case list:
+            case outline:
+                this.selectBookmarks(BookmarkSwitchSegement.bookmarks);
+                break;
         }
-        else {
-            this.selectBrowser(preferences.getInteger("browser.view"));
+    }
+
+    @Action
+    public void bookmarkSwitchButtonClicked(final ID sender) {
+        // Toggle
+        final BookmarkSwitchSegement selected = BookmarkSwitchSegement.byPosition(bookmarkSwitchView.selectedSegment());
+        switch(selected) {
+            case browser:
+                this.selectBrowser(BrowserSwitchSegement.outline);
+                break;
+            case bookmarks:
+            case history:
+            case rendezvous:
+                this.selectBookmarks(selected);
+                break;
         }
     }
 
     private NSSegmentedControl browserSwitchView;
 
-    private static final int SWITCH_LIST_VIEW = 0;
-    private static final int SWITCH_OUTLINE_VIEW = 1;
+    private enum BrowserSwitchSegement {
+        list,
+        outline;
+
+        public NSImage image() {
+            return IconCacheFactory.<NSImage>get().iconNamed(String.format("%s.tiff", name()), 16);
+        }
+
+        public static BrowserSwitchSegement byPosition(final int position) {
+            return BrowserSwitchSegement.values()[position];
+        }
+    }
 
     public void setBrowserSwitchView(NSSegmentedControl view) {
         browserSwitchView = view;
         browserSwitchView.setSegmentCount(2); // list, outline
-        final NSImage list = IconCacheFactory.<NSImage>get().iconNamed("list.tiff");
-        list.setTemplate(true);
-        browserSwitchView.setImage_forSegment(list, SWITCH_LIST_VIEW);
-        final NSImage outline = IconCacheFactory.<NSImage>get().iconNamed("outline.tiff");
-        outline.setTemplate(true);
-        browserSwitchView.setImage_forSegment(outline, SWITCH_OUTLINE_VIEW);
+        browserSwitchView.setImage_forSegment(BrowserSwitchSegement.list.image(), BrowserSwitchSegement.list.ordinal());
+        browserSwitchView.setImage_forSegment(BrowserSwitchSegement.outline.image(), BrowserSwitchSegement.outline.ordinal());
         browserSwitchView.setTarget(this.id());
         browserSwitchView.setAction(Foundation.selector("browserSwitchButtonClicked:"));
         final NSSegmentedCell cell = Rococoa.cast(browserSwitchView.cell(), NSSegmentedCell.class);
@@ -1003,28 +988,29 @@ public class BrowserController extends WindowController
     @Action
     public void browserSwitchButtonClicked(final NSSegmentedControl sender) {
         // Highlight selected browser view
-        this.selectBrowser(sender.selectedSegment());
+        this.selectBrowser(BrowserSwitchSegement.byPosition(sender.selectedSegment()));
     }
 
     @Action
     public void browserSwitchMenuClicked(final NSMenuItem sender) {
         // Highlight selected browser view
-        this.selectBrowser(sender.tag());
+        this.selectBrowser(BrowserSwitchSegement.byPosition(sender.tag()));
     }
 
-    private void selectBrowser(int selected) {
-        bookmarkSwitchView.setSelected_forSegment(false, SWITCH_BOOKMARK_VIEW);
-        browserSwitchView.setSelectedSegment(selected);
+    private void selectBrowser(final BrowserSwitchSegement selected) {
+        bookmarkSwitchView.setSelectedSegment(BookmarkSwitchSegement.browser.ordinal());
+        this.setNavigation(this.isMounted());
         switch(selected) {
-            case SWITCH_LIST_VIEW:
-                browserTabView.selectTabViewItemAtIndex(TAB_LIST_VIEW);
+            case list:
+                browserSwitchView.setSelectedSegment(BookmarkSwitchSegement.browser.ordinal());
+                browserTabView.selectTabViewItemAtIndex(BrowserTab.list.ordinal());
                 break;
-            case SWITCH_OUTLINE_VIEW:
-                browserTabView.selectTabViewItemAtIndex(TAB_OUTLINE_VIEW);
+            case outline:
+                browserTabView.selectTabViewItemAtIndex(BrowserTab.outline.ordinal());
                 break;
         }
         // Save selected browser view
-        preferences.setProperty("browser.view", selected);
+        preferences.setProperty("browser.view", selected.ordinal());
         // Remove any custom file filter
         this.setFilter(null);
         // Update from model
@@ -1033,22 +1019,24 @@ public class BrowserController extends WindowController
         this.getFocus();
     }
 
-    private void selectBookmarks() {
-        bookmarkSwitchView.setSelected_forSegment(true, SWITCH_BOOKMARK_VIEW);
+    private void selectBookmarks(final BookmarkSwitchSegement selected) {
+        bookmarkSwitchView.setSelectedSegment(selected.ordinal());
+        this.setNavigation(false);
         // Display bookmarks
-        browserTabView.selectTabViewItemAtIndex(TAB_BOOKMARKS);
+        browserTabView.selectTabViewItemAtIndex(BrowserTab.bookmarks.ordinal());
         final AbstractHostCollection source;
-        if(bookmarkButton.state() == NSCell.NSOnState) {
-            source = bookmarks;
-        }
-        else if(bonjourButton.state() == NSCell.NSOnState) {
-            source = RendezvousCollection.defaultCollection();
-        }
-        else if(historyButton.state() == NSCell.NSOnState) {
-            source = HistoryCollection.defaultCollection();
-        }
-        else {
-            source = AbstractHostCollection.empty();
+        switch(selected) {
+            case history:
+                source = HistoryCollection.defaultCollection();
+                break;
+            case rendezvous:
+                source = RendezvousCollection.defaultCollection();
+                break;
+            case bookmarks:
+            default:
+                source = bookmarks;
+                break;
+
         }
         if(!source.isLoaded()) {
             browserSpinner.startAnimation(null);
@@ -1904,19 +1892,6 @@ public class BrowserController extends WindowController
     }
 
     @Outlet
-    private NSPopUpButton actionPopupButton;
-
-    public void setActionPopupButton(NSPopUpButton actionPopupButton) {
-        this.actionPopupButton = actionPopupButton;
-        this.actionPopupButton.setPullsDown(true);
-        this.actionPopupButton.setAutoenablesItems(true);
-    }
-
-    public NSPopUpButton getActionPopupButton() {
-        return actionPopupButton;
-    }
-
-    @Outlet
     private NSComboBox quickConnectPopup;
 
     private ProxyController quickConnectPopupModel = new QuickConnectModel();
@@ -2010,23 +1985,24 @@ public class BrowserController extends WindowController
     public void searchFieldTextDidChange(NSNotification notification) {
         final String input = searchField.stringValue();
         switch(this.getSelectedTabView()) {
-            case TAB_BOOKMARKS:
+            case bookmarks:
                 this.setBookmarkFilter(input);
                 break;
-            case TAB_LIST_VIEW:
-            case TAB_OUTLINE_VIEW:
+            case list:
+            case outline:
                 // Setup search filter
                 this.setFilter(SearchFilterFactory.create(input, showHiddenFiles));
                 // Reload with current cache
                 this.reload();
+                break;
         }
     }
 
     @Action
     public void searchFieldTextDidEndEditing(NSNotification notification) {
         switch(this.getSelectedTabView()) {
-            case TAB_LIST_VIEW:
-            case TAB_OUTLINE_VIEW:
+            case list:
+            case outline:
                 // Setup search filter
                 final String input = searchField.stringValue();
                 // Setup search filter
@@ -2123,7 +2099,7 @@ public class BrowserController extends WindowController
     @Action
     public void duplicateBookmarkButtonClicked(final ID sender) {
         final Host selected = bookmarkModel.getSource().get(bookmarkTable.selectedRow().intValue());
-        this.selectBookmarks();
+        this.selectBookmarks(BookmarkSwitchSegement.bookmarks);
         final Host duplicate = new HostDictionary().deserialize(selected.serialize(SerializerFactory.get()));
         // Make sure a new UUID is asssigned for duplicate
         duplicate.setUuid(null);
@@ -2157,7 +2133,7 @@ public class BrowserController extends WindowController
                     preferences.getProperty("connection.hostname.default"),
                     preferences.getInteger("connection.port.default"));
         }
-        this.selectBookmarks();
+        this.selectBookmarks(BookmarkSwitchSegement.bookmarks);
         this.addBookmark(bookmark);
     }
 
@@ -2226,10 +2202,25 @@ public class BrowserController extends WindowController
         return navigation;
     }
 
-    private static final int NAVIGATION_LEFT_SEGMENT_BUTTON = 0;
-    private static final int NAVIGATION_RIGHT_SEGMENT_BUTTON = 1;
+    private enum NavigationSegment {
+        back(0),
+        forward(1),
+        up(0);
 
-    private static final int NAVIGATION_UP_SEGMENT_BUTTON = 0;
+        private final int position;
+
+        NavigationSegment(final int position) {
+            this.position = position;
+        }
+
+        public int position() {
+            return position;
+        }
+
+        public static NavigationSegment byPosition(final int position) {
+            return NavigationSegment.values()[position];
+        }
+    }
 
     private NSSegmentedControl navigationButton;
 
@@ -2237,23 +2228,24 @@ public class BrowserController extends WindowController
         this.navigationButton = navigationButton;
         this.navigationButton.setTarget(this.id());
         this.navigationButton.setAction(Foundation.selector("navigationButtonClicked:"));
+        final NSSegmentedCell cell = Rococoa.cast(this.navigationButton.cell(), NSSegmentedCell.class);
         this.navigationButton.setImage_forSegment(IconCacheFactory.<NSImage>get().iconNamed("nav-backward.tiff"),
-                NAVIGATION_LEFT_SEGMENT_BUTTON);
+                NavigationSegment.back.position());
+        cell.setToolTip_forSegment(LocaleFactory.localizedString("Back", "Main"), NavigationSegment.back.position());
         this.navigationButton.setImage_forSegment(IconCacheFactory.<NSImage>get().iconNamed("nav-forward.tiff"),
-                NAVIGATION_RIGHT_SEGMENT_BUTTON);
+                NavigationSegment.forward.position());
+        cell.setToolTip_forSegment(LocaleFactory.localizedString("Forward", "Main"), NavigationSegment.forward.position());
     }
 
     @Action
     public void navigationButtonClicked(NSSegmentedControl sender) {
-        switch(sender.selectedSegment()) {
-            case NAVIGATION_LEFT_SEGMENT_BUTTON: {
+        switch(NavigationSegment.byPosition(sender.selectedSegment())) {
+            case back:
                 this.backButtonClicked(sender.id());
                 break;
-            }
-            case NAVIGATION_RIGHT_SEGMENT_BUTTON: {
+            case forward:
                 this.forwardButtonClicked(sender.id());
                 break;
-            }
         }
     }
 
@@ -2287,7 +2279,7 @@ public class BrowserController extends WindowController
         this.upButton.setTarget(this.id());
         this.upButton.setAction(Foundation.selector("upButtonClicked:"));
         this.upButton.setImage_forSegment(IconCacheFactory.<NSImage>get().iconNamed("nav-up.tiff"),
-                NAVIGATION_UP_SEGMENT_BUTTON);
+                NavigationSegment.up.position());
     }
 
     @Action
@@ -2451,7 +2443,7 @@ public class BrowserController extends WindowController
                     TRUNCATE_MIDDLE_ATTRIBUTES));
         }
         else {
-            if(getSelectedTabView() == TAB_BOOKMARKS) {
+            if(getSelectedTabView() == BrowserTab.bookmarks) {
                 statusLabel.setAttributedStringValue(
                         NSAttributedString.attributedStringWithAttributes(String.format("%s %s", bookmarkTable.numberOfRows(),
                                 LocaleFactory.localizedString("Bookmarks")),
@@ -2528,8 +2520,8 @@ public class BrowserController extends WindowController
     public void reloadButtonClicked(final ID sender) {
         if(this.isMounted()) {
             final Set<Path> folders = new HashSet<Path>();
-            switch(browserSwitchView.selectedSegment()) {
-                case SWITCH_OUTLINE_VIEW: {
+            switch(BrowserSwitchSegement.byPosition(preferences.getInteger("browser.view"))) {
+                case outline: {
                     for(int i = 0; i < browserOutlineView.numberOfRows().intValue(); i++) {
                         final NSObject item = browserOutlineView.itemAtRow(new NSInteger(i));
                         if(browserOutlineView.isItemExpanded(item)) {
@@ -2607,7 +2599,7 @@ public class BrowserController extends WindowController
     public void createFolderButtonClicked(final ID sender) {
         final Location feature = session.getFeature(Location.class);
         final SheetController sheet = new FolderController(this, cache,
-                feature != null ? feature.getLocations() : Collections.<Location.Name>emptySet());
+                feature != null ? feature.getLocations() : Collections.emptySet());
         sheet.beginSheet();
     }
 
@@ -2720,7 +2712,7 @@ public class BrowserController extends WindowController
                 for(Path file : this.getSelectedPaths()) {
                     downloads.add(new TransferItem(file, LocalFactory.get(target, file.getName())));
                 }
-                this.transfer(new DownloadTransfer(session.getHost(), downloads), Collections.<Path>emptyList());
+                this.transfer(new DownloadTransfer(session.getHost(), downloads), Collections.emptyList());
             }
         }
         downloadToPanel = null;
@@ -2749,7 +2741,7 @@ public class BrowserController extends WindowController
                 new DownloadDirectoryFinder().save(session.getHost(), target.getParent());
                 final List<TransferItem> downloads
                         = Collections.singletonList(new TransferItem(this.getSelectedPath(), target));
-                this.transfer(new DownloadTransfer(session.getHost(), downloads), Collections.<Path>emptyList());
+                this.transfer(new DownloadTransfer(session.getHost(), downloads), Collections.emptyList());
             }
         }
     }
@@ -2808,7 +2800,7 @@ public class BrowserController extends WindowController
             downloads.add(new TransferItem(
                     file, LocalFactory.get(folder, file.getName())));
         }
-        this.transfer(new DownloadTransfer(session.getHost(), downloads), Collections.<Path>emptyList());
+        this.transfer(new DownloadTransfer(session.getHost(), downloads), Collections.emptyList());
     }
 
     private NSOpenPanel uploadPanel;
@@ -2969,10 +2961,10 @@ public class BrowserController extends WindowController
             @Override
             public void run() {
                 if(preferences.getBoolean("browser.disconnect.bookmarks.show")) {
-                    selectBookmarks();
+                    selectBookmarks(BookmarkSwitchSegement.bookmarks);
                 }
                 else {
-                    selectBrowser(preferences.getInteger("browser.view"));
+                    selectBrowser(BrowserSwitchSegement.byPosition(preferences.getInteger("browser.view")));
                 }
             }
         });
@@ -3219,7 +3211,7 @@ public class BrowserController extends WindowController
     }
 
     public void setWorkdir(final Path directory) {
-        this.setWorkdir(directory, Collections.<Path>emptyList());
+        this.setWorkdir(directory, Collections.emptyList());
     }
 
     public void setWorkdir(final Path directory, Path selected) {
@@ -3241,7 +3233,7 @@ public class BrowserController extends WindowController
         final NSTableView browser = this.getSelectedBrowserView();
         window.endEditingFor(browser);
         if(null == directory) {
-            this.reload(null, Collections.<Path>emptySet(), selected, false);
+            this.reload(null, Collections.emptySet(), selected, false);
         }
         else {
             this.reload(directory, Collections.singleton(directory), selected, false);
@@ -3265,9 +3257,9 @@ public class BrowserController extends WindowController
             this.addNavigation(p);
         }
         pathPopupButton.setEnabled(enabled);
-        navigationButton.setEnabled_forSegment(enabled && navigation.getBack().size() > 1, NAVIGATION_LEFT_SEGMENT_BUTTON);
-        navigationButton.setEnabled_forSegment(enabled && navigation.getForward().size() > 0, NAVIGATION_RIGHT_SEGMENT_BUTTON);
-        upButton.setEnabled_forSegment(enabled && !workdir.isRoot(), NAVIGATION_UP_SEGMENT_BUTTON);
+        navigationButton.setEnabled_forSegment(enabled && navigation.getBack().size() > 1, NavigationSegment.back.position());
+        navigationButton.setEnabled_forSegment(enabled && navigation.getForward().size() > 0, NavigationSegment.forward.position());
+        upButton.setEnabled_forSegment(enabled && !workdir.isRoot(), NavigationSegment.up.position());
     }
 
     private void addNavigation(final Path p) {
@@ -3332,14 +3324,14 @@ public class BrowserController extends WindowController
                                     // Set the working directory
                                     setWorkdir(workdir);
                                     // Close bookmarks
-                                    selectBrowser(preferences.getInteger("browser.view"));
+                                    selectBrowser(BrowserSwitchSegement.byPosition(preferences.getInteger("browser.view")));
                                     // Set the window title
                                     window.setRepresentedFilename(HistoryCollection.defaultCollection().getFile(host).getAbsolute());
                                     if(preferences.getBoolean("browser.disconnect.confirm")) {
                                         window.setDocumentEdited(true);
                                     }
-                                    securityLabel.setImage(session.isSecured() ? IconCacheFactory.<NSImage>get().iconNamed("locked.tiff")
-                                            : IconCacheFactory.<NSImage>get().iconNamed("unlocked.tiff"));
+                                    securityLabel.setImage(session.isSecured() ? IconCacheFactory.<NSImage>get().iconNamed("NSLockLockedTemplate")
+                                            : IconCacheFactory.<NSImage>get().iconNamed("NSLockUnlockedTemplate"));
                                     securityLabel.setEnabled(session instanceof SSLSession);
                                 }
                             }

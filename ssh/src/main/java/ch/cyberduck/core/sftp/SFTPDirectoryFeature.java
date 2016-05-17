@@ -22,14 +22,12 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 
 import net.schmizz.sshj.sftp.FileAttributes;
 
-/**
- * @version $Id$
- */
 public class SFTPDirectoryFeature implements Directory {
 
     private SFTPSession session;
@@ -39,12 +37,12 @@ public class SFTPDirectoryFeature implements Directory {
     }
 
     @Override
-    public void mkdir(final Path file) throws BackgroundException {
-        this.mkdir(file, null);
+    public void mkdir(final Path file, final TransferStatus status) throws BackgroundException {
+        this.mkdir(file, null, status);
     }
 
     @Override
-    public void mkdir(final Path file, final String region) throws BackgroundException {
+    public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
         try {
             final FileAttributes attrs = new FileAttributes.Builder().withPermissions(
                     Integer.parseInt(new Permission(PreferencesFactory.get().getInteger("queue.upload.permissions.folder.default")).getMode(), 8)

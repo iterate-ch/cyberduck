@@ -30,9 +30,6 @@ import ch.cyberduck.core.FactoryException;
 
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id$
- */
 public abstract class BundleController extends ProxyController {
     private static Logger log = Logger.getLogger(BundleController.class);
 

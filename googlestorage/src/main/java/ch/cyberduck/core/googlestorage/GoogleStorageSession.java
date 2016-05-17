@@ -1,9 +1,8 @@
 package ch.cyberduck.core.googlestorage;
 
 /*
- * Copyright (c) 2002-2010 David Kocher. All rights reserved.
- *
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,9 +13,6 @@ package ch.cyberduck.core.googlestorage;
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to:
- * dkocher@cyberduck.ch
  */
 
 import ch.cyberduck.core.Cache;
@@ -79,14 +75,6 @@ import java.net.URI;
 import java.util.Date;
 import java.util.EnumSet;
 
-/**
- * Google Storage for Developers is a new service for developers to store and
- * access data in Google's cloud. It offers developers direct access to Google's
- * scalable storage and networking infrastructure as well as powerful authentication
- * and data sharing mechanisms.
- *
- * @version $Id$
- */
 public class GoogleStorageSession extends S3Session {
     private static final Logger log = Logger.getLogger(GoogleStorageSession.class);
 
@@ -257,6 +245,7 @@ public class GoogleStorageSession extends S3Session {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
         if(type == Upload.class) {
             return (T) new S3SingleUploadService(this);

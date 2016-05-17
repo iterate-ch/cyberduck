@@ -77,6 +77,11 @@ public class TransferToolbarFactory extends AbstractToolbarFactory implements To
             public Selector action() {
                 return Foundation.selector("stopButtonClicked:");
             }
+
+            @Override
+            public NSImage image() {
+                return IconCacheFactory.<NSImage>get().iconNamed("transferstop.pdf");
+            }
         },
         remove {
             @Override

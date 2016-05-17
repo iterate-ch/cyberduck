@@ -30,9 +30,6 @@ import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 
-/**
- * @version $Id$
- */
 public class S3FindFeature implements Find {
     private static final Logger log = Logger.getLogger(S3AttributesFeature.class);
 

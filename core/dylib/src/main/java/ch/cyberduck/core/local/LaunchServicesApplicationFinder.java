@@ -36,9 +36,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public final class LaunchServicesApplicationFinder implements ApplicationFinder {
     private static final Logger log = Logger.getLogger(LaunchServicesApplicationFinder.class);
 
@@ -77,12 +74,14 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
      * Caching map between application bundle identifier and
      * display name of application
      */
+    @SuppressWarnings("unchecked")
     private static Map<String, Application> applicationNameCache
             = Collections.<String, Application>synchronizedMap(new LRUMap(20));
 
     /**
      *
      */
+    @SuppressWarnings("unchecked")
     private static Map<String, Application> defaultApplicationCache
             = Collections.<String, Application>synchronizedMap(new LRUMap(20));
 
@@ -90,6 +89,7 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
      * Caching map between application bundle identifiers and
      * file type extensions.
      */
+    @SuppressWarnings("unchecked")
     private static Map<String, List<Application>> defaultApplicationListCache
             = Collections.<String, List<Application>>synchronizedMap(new LRUMap(20));
 

@@ -18,12 +18,12 @@ package ch.cyberduck.core.serializer.impl.jna;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.binding.foundation.NSEnumerator;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSString;
+import ch.cyberduck.core.serializer.Deserializer;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
@@ -31,9 +31,6 @@ import org.rococoa.Rococoa;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class PlistDeserializer implements Deserializer<NSDictionary> {
     private static final Logger log = Logger.getLogger(PlistDeserializer.class);
 
@@ -78,6 +75,7 @@ public class PlistDeserializer implements Deserializer<NSDictionary> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> List<T> listForKey(final String key) {
         final NSObject value = dict.objectForKey(key);
         if(null == value) {

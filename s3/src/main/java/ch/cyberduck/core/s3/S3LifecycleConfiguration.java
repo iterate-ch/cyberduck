@@ -31,9 +31,6 @@ import org.jets3t.service.model.LifecycleConfig;
 
 import java.util.UUID;
 
-/**
- * @version $Id$
- */
 public class S3LifecycleConfiguration implements Lifecycle {
     private static final Logger log = Logger.getLogger(S3LifecycleConfiguration.class);
 

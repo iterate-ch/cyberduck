@@ -39,13 +39,17 @@ import java.util.List;
 public class SpectraUploadFeature extends HttpUploadFeature<StorageObject, MessageDigest> {
     private static final Logger log = Logger.getLogger(SpectraUploadFeature.class);
 
-    private final SpectraSession session;
-
     private final Preferences preferences = PreferencesFactory.get();
 
-    public SpectraUploadFeature(final SpectraSession session, final SpectraWriteFeature write) {
-        super(write);
-        this.session = session;
+    private final SpectraBulkService bulk;
+
+    public SpectraUploadFeature(final SpectraSession session, final SpectraWriteFeature writer) {
+        this(writer, new SpectraBulkService(session));
+    }
+
+    public SpectraUploadFeature(final SpectraWriteFeature writer, final SpectraBulkService bulk) {
+        super(writer);
+        this.bulk = bulk;
     }
 
     @Override
@@ -63,7 +67,6 @@ public class SpectraUploadFeature extends HttpUploadFeature<StorageObject, Messa
         if(preferences.getBoolean("spectra.upload.md5")) {
             status.setChecksum(new MD5ChecksumCompute().compute(local.getInputStream()));
         }
-        final SpectraBulkService bulk = new SpectraBulkService(session);
         // Make sure file is available in cache
         final List<TransferStatus> chunks = bulk.query(Transfer.Type.upload, file, status);
         StorageObject stored = null;

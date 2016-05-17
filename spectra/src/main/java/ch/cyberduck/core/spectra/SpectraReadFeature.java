@@ -41,13 +41,19 @@ public class SpectraReadFeature implements Read {
 
     private final SpectraSession session;
 
+    private final SpectraBulkService bulk;
+
     public SpectraReadFeature(final SpectraSession session) {
+        this(session, new SpectraBulkService(session));
+    }
+
+    public SpectraReadFeature(final SpectraSession session, final SpectraBulkService bulk) {
         this.session = session;
+        this.bulk = bulk;
     }
 
     @Override
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
-        final SpectraBulkService bulk = new SpectraBulkService(session);
         // Make sure file is available in cache
         final List<TransferStatus> chunks = bulk.query(Transfer.Type.download, file, status);
         final List<InputStream> streams = new ArrayList<InputStream>();

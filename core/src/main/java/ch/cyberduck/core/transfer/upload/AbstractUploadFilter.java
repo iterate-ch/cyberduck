@@ -164,6 +164,9 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             }
             status.setMime(mapping.getMime(file.getName()));
         }
+        if(local.isDirectory()) {
+            status.setLength(0L);
+        }
         if(options.permissions) {
             final Permission permission;
             if(status.isExists()) {
@@ -242,15 +245,19 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             }
         }
         if(options.encryption) {
-            final Encryption feature = session.getFeature(Encryption.class);
-            if(feature != null) {
-                status.setEncryption(feature.getDefault(file));
+            if(local.isFile()) {
+                final Encryption feature = session.getFeature(Encryption.class);
+                if(feature != null) {
+                    status.setEncryption(feature.getDefault(file));
+                }
             }
         }
         if(options.redundancy) {
-            final Redundancy feature = session.getFeature(Redundancy.class);
-            if(feature != null) {
-                status.setStorageClass(feature.getDefault());
+            if(local.isFile()) {
+                final Redundancy feature = session.getFeature(Redundancy.class);
+                if(feature != null) {
+                    status.setStorageClass(feature.getDefault());
+                }
             }
         }
         return status;

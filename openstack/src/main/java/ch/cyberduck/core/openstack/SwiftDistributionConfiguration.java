@@ -166,6 +166,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type, final Distribution.Method method) {
         if(type == Purge.class) {
             return (T) new SwiftDistributionPurgeFeature(session, regionService);

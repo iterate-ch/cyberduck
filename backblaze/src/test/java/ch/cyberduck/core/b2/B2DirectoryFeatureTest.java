@@ -25,6 +25,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -49,7 +50,7 @@ public class B2DirectoryFeatureTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path bucket = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new B2DirectoryFeature(session).mkdir(bucket);
+        new B2DirectoryFeature(session).mkdir(bucket, new TransferStatus());
         new B2DeleteFeature(session).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {
@@ -69,7 +70,7 @@ public class B2DirectoryFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path bucket = new Path("/test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         try {
-            new B2DirectoryFeature(session).mkdir(bucket);
+            new B2DirectoryFeature(session).mkdir(bucket, new TransferStatus());
         }
         catch(InteroperabilityException e) {
             assertEquals("Bucket name is already in use. Please contact your web hosting service provider for assistance.", e.getDetail());
@@ -89,7 +90,7 @@ public class B2DirectoryFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path bucket = new Path("/test.cyberduck.io", EnumSet.of(Path.Type.directory, Path.Type.volume));
         try {
-            new B2DirectoryFeature(session).mkdir(bucket);
+            new B2DirectoryFeature(session).mkdir(bucket, new TransferStatus());
         }
         catch(InteroperabilityException e) {
             assertEquals("Invalid characters in bucketName: must be alphanumeric or '-'. Please contact your web hosting service provider for assistance.", e.getDetail());

@@ -69,8 +69,12 @@ run() {
 }
 
 nib() {
-	#Changes to the .strings has precedence over the NIBs
-	import_strings;
+    if [ $language != $base_language ]; then
+    {
+        #Changes to the .strings has precedence over the NIBs
+        import_strings;
+	}
+	fi
 	#Update the .strings with new values from NIBs
 	export_strings;
 }
@@ -80,22 +84,26 @@ import_strings() {
 	{
 		# force update
 		echo "*** Updating $nib... (force) in $language..."
-		$nibtool --reference-external-strings-file \
-		        --write $language/$nibfile \
-		        --import-strings-file $language/$nib.strings \
-		        $base_language/$nibfile
+		$nibtool    --reference-external-strings-file \
+                    --write $language/$nibfile \
+                    --import-strings-file $language/$nib.strings \
+                    $base_language/$nibfile
 	}
-	else
+    else
 	{
+	    # Checkout previous version from base language
+        git show `git log -2 --format="%H" $base_language/$nibfile | tail -n 1`:./$base_language/$nibfile > $base_language/$nibfile.prev
 		# incremental update
 		echo "*** Updating $nib... (incremental) in $language..."
-		$nibtool --write $language/$nibfile \
-		        --incremental-file $language/$nibfile \
-		        --previous-file $base_language/$nibfile \
-				--import-strings-file $language/$nib.strings \
-				--localize-incremental $base_language/$nibfile
+		$nibtool    --write $language/$nibfile \
+                    --incremental-file $language/$nibfile \
+                    --previous-file $base_language/$nibfile.prev \
+                    --import-strings-file $language/$nib.strings \
+                    --localize-incremental \
+                    $base_language/$nibfile
+        rm $base_language/$nibfile.prev
 	}
-	fi;
+    fi;
 }
 
 export_strings() {
@@ -121,24 +129,18 @@ update() {
 		echo "*** Updating all localizations...";
 		for lproj in `ls . | grep lproj`; do
 			language=$lproj;
-			if [ $language != $base_language ]; then
-			{
-				echo "*** Updating $language Localization...";
-				if [ "$nibfile" = "all" ] ; then
-					echo "*** Updating all NIBs...";
-					for nibfile in `ls $language | grep $extension`; do
-						nib=`basename $nibfile $extension`
-						$nibtool --export-strings-file $base_language/$nib.strings $base_language/$nibfile
-						nib;
-					done;
-				fi;
-				if [ "$nibfile" != "all" ] ; then
-						nib=`basename $nibfile $extension`
-						$nibtool --export-strings-file $base_language/$nib.strings $base_language/$nibfile
-						nib;
-				fi;
-			}
-			fi;
+            echo "*** Updating $language Localization...";
+            if [ "$nibfile" = "all" ] ; then
+                echo "*** Updating all NIBs...";
+                for nibfile in `ls $language | grep $extension`; do
+                    nib=`basename $nibfile $extension`
+                    nib;
+                done;
+            fi;
+            if [ "$nibfile" != "all" ] ; then
+                    nib=`basename $nibfile $extension`
+                    nib;
+            fi;
 		done;
 	}
 	else
@@ -148,14 +150,12 @@ update() {
 			echo "*** Updating all NIBs...";
 			for nibfile in `ls $language | grep $extension`; do
 				nib=`basename $nibfile $extension`;
-                $nibtool --export-strings-file $base_language/$nib.strings $base_language/$nibfile
 				nib;
 			done;
 		fi;
 		if [ "$nibfile" != "all" ] ; then
 		{
 			nib=`basename $nibfile $extension`;
-            $nibtool --export-strings-file $base_language/$nib.strings $base_language/$nibfile
 			nib;
 		}
 		fi;

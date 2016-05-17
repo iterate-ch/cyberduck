@@ -74,6 +74,8 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
     private static final String REQUEST_PARAMETER_JOBID_IDENTIFIER = "job";
     private static final String REQUEST_PARAMETER_OFFSET = "offset";
 
+    private MasterObjectList cache = new MasterObjectList();
+
     public SpectraBulkService(final SpectraSession session) {
         this(session, session.getFeature(Delete.class));
     }
@@ -81,6 +83,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
     public SpectraBulkService(final SpectraSession session, final Delete delete) {
         this.session = session;
         this.delete = delete;
+        this.cache.setObjects(Collections.emptyList());
     }
 
     /**
@@ -118,6 +121,14 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                         break;
                 }
                 objects.get(container).add(new Ds3Object(containerService.getKey(file), status.getLength()));
+            }
+            if(file.isDirectory()) {
+                switch(type) {
+                    case upload:
+                        objects.get(container).add(new Ds3Object(containerService.getKey(file).concat(String.valueOf(Path.DELIMITER)), 0L));
+                        // Do not include folders when creating a GET job
+                        break;
+                }
             }
         }
         try {
@@ -187,100 +198,50 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Query status for job %s", job));
             }
-            final Ds3Client client = new SpectraClientBuilder().wrap(session);
-            // For GET, the client may need to issue multiple GET requests for a single object if it has
-            // been broken up into multiple pieces due to its large size
-            // For PUT, This will allocate a working window of job chunks, if possible, and return a list of
-            // the job chunks that the client can upload. The client should PUT all of the object parts
-            // from the list of job chunks returned and repeat this process until all chunks are transferred
-            final GetAvailableJobChunksResponse response =
-                    // GetJobChunksReadyForClientProcessing
-                    client.getAvailableJobChunks(new GetAvailableJobChunksRequest(UUID.fromString(job))
-                            .withPreferredNumberOfChunks(Integer.MAX_VALUE));
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Job status %s for job %s", response.getStatus(), job));
-            }
-            switch(response.getStatus()) {
-                case RETRYLATER: {
-                    final Duration delay = Duration.ofSeconds(response.getRetryAfterSeconds());
-                    throw new RetriableAccessDeniedException(String.format("Job %s not yet loaded into cache", job), delay);
-                }
-            }
-            final MasterObjectList master = response.getMasterObjectList();
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Master object list with %d objects for %s", master.getObjects().size(), file));
-                log.info(String.format("Master object list status %s for %s", master.getStatus(), file));
-            }
-            final List<TransferStatus> chunks = new ArrayList<TransferStatus>();
-            for(Objects objects : master.getObjects()) {
-                final UUID nodeId = objects.getNodeId();
-                if(null == nodeId) {
-                    log.warn(String.format("No node returned in master object list for file %s", file));
-                }
-                else {
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Determined node %s for %s", nodeId, file));
-                    }
-                }
-                for(Node node : master.getNodes()) {
-                    if(node.getId().equals(nodeId)) {
-                        final Host host = session.getHost();
-                        // The IP address or DNS name of the BlackPearl node.
-                        if(StringUtils.equals(node.getEndpoint(), host.getHostname())) {
-                            break;
-                        }
-                        if(StringUtils.equals(node.getEndpoint(), new Resolver().resolve(host.getHostname()).getHostAddress())) {
-                            break;
-                        }
-                        log.warn(String.format("Redirect to %s for file %s", node.getEndpoint(), file));
-                    }
-                }
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Object list with %d objects for job %s", objects.getObjects().size(), job));
-                }
-                for(BulkObject object : objects) {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Found object %s looking for %s", object, file));
-                    }
-                    if(object.getName().equals(containerService.getKey(file))) {
-                        if(log.isInfoEnabled()) {
-                            log.info(String.format("Found chunk %s matching file %s", object, file));
-                        }
-                        final TransferStatus chunk = new TransferStatus()
-                                .exists(status.isExists())
-                                .metadata(status.getMetadata())
-                                .parameters(status.getParameters());
-                        // Server sends multiple chunks with offsets
-                        if(object.getOffset() > 0L) {
-                            chunk.setAppend(true);
-                        }
-                        chunk.setLength(object.getLength());
-                        chunk.setOffset(object.getOffset());
-                        // Job parameter already present from #pre
-                        final Map<String, String> parameters = new HashMap<>(chunk.getParameters());
-                        // Set offset for chunk.
-                        parameters.put(REQUEST_PARAMETER_OFFSET, Long.toString(chunk.getOffset()));
-                        chunk.setParameters(parameters);
-                        if(log.isInfoEnabled()) {
-                            log.info(String.format("Add chunk %s for file %s", chunk, file));
-                        }
-                        chunks.add(chunk);
-                    }
-                }
-            }
+            List<TransferStatus> chunks = this.query(file, status, job, cache);
             if(chunks.isEmpty()) {
-                log.error(String.format("File %s not found in object list for job %s", file.getName(), job));
-                // Still look for Retry-Afer header for non empty master object list
-                final Headers headers = response.getResponse().getHeaders();
-                for(String header : headers.keys()) {
-                    if(HttpHeaders.RETRY_AFTER.equalsIgnoreCase(header)) {
-                        final Duration delay = Duration.ofSeconds(Integer.parseInt(headers.get(header).get(0)));
-                        throw new RetriableAccessDeniedException(String.format("Cache is full for job %s", job), delay);
+                // Fetch current list from server
+                final Ds3Client client = new SpectraClientBuilder().wrap(session);
+                // For GET, the client may need to issue multiple GET requests for a single object if it has
+                // been broken up into multiple pieces due to its large size
+                // For PUT, This will allocate a working window of job chunks, if possible, and return a list of
+                // the job chunks that the client can upload. The client should PUT all of the object parts
+                // from the list of job chunks returned and repeat this process until all chunks are transferred
+                final GetAvailableJobChunksResponse response =
+                        // GetJobChunksReadyForClientProcessing
+                        client.getAvailableJobChunks(new GetAvailableJobChunksRequest(UUID.fromString(job))
+                                .withPreferredNumberOfChunks(Integer.MAX_VALUE));
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Job status %s for job %s", response.getStatus(), job));
+                }
+                switch(response.getStatus()) {
+                    case RETRYLATER: {
+                        final Duration delay = Duration.ofSeconds(response.getRetryAfterSeconds());
+                        throw new RetriableAccessDeniedException(String.format("Job %s not yet loaded into cache", job), delay);
                     }
                 }
-            }
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Server returned %d chunks for %s", chunks.size(), file));
+                final MasterObjectList master = response.getMasterObjectList();
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Master object list with %d objects for %s", master.getObjects().size(), file));
+                    log.info(String.format("Master object list status %s for %s", master.getStatus(), file));
+                }
+                // Update cache
+                cache = master;
+                chunks = this.query(file, status, job, master);
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Server returned %d chunks for %s", chunks.size(), file));
+                }
+                if(chunks.isEmpty()) {
+                    log.error(String.format("File %s not found in object list for job %s", file.getName(), job));
+                    // Still look for Retry-Afer header for non empty master object list
+                    final Headers headers = response.getResponse().getHeaders();
+                    for(String header : headers.keys()) {
+                        if(HttpHeaders.RETRY_AFTER.equalsIgnoreCase(header)) {
+                            final Duration delay = Duration.ofSeconds(Integer.parseInt(headers.get(header).get(0)));
+                            throw new RetriableAccessDeniedException(String.format("Cache is full for job %s", job), delay);
+                        }
+                    }
+                }
             }
             return chunks;
         }
@@ -293,5 +254,68 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
         catch(SignatureException e) {
             throw new BackgroundException(e);
         }
+    }
+
+    private List<TransferStatus> query(final Path file, final TransferStatus status, final String job,
+                                       final MasterObjectList master) throws BackgroundException {
+        final List<TransferStatus> chunks = new ArrayList<TransferStatus>();
+        for(Objects objects : master.getObjects()) {
+            final UUID nodeId = objects.getNodeId();
+            if(null == nodeId) {
+                log.warn(String.format("No node returned in master object list for file %s", file));
+            }
+            else {
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Determined node %s for %s", nodeId, file));
+                }
+            }
+            for(Node node : master.getNodes()) {
+                if(node.getId().equals(nodeId)) {
+                    final Host host = session.getHost();
+                    // The IP address or DNS name of the BlackPearl node.
+                    if(StringUtils.equals(node.getEndpoint(), host.getHostname())) {
+                        break;
+                    }
+                    if(StringUtils.equals(node.getEndpoint(), new Resolver().resolve(host.getHostname()).getHostAddress())) {
+                        break;
+                    }
+                    log.warn(String.format("Redirect to %s for file %s", node.getEndpoint(), file));
+                }
+            }
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Object list with %d objects for job %s", objects.getObjects().size(), job));
+            }
+            for(BulkObject object : objects) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Found object %s looking for %s", object, file));
+                }
+                if(file.isDirectory() ? object.getName().equals(containerService.getKey(file).concat(String.valueOf(Path.DELIMITER)))
+                        : object.getName().equals(containerService.getKey(file))) {
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Found chunk %s matching file %s", object, file));
+                    }
+                    final TransferStatus chunk = new TransferStatus()
+                            .exists(status.isExists())
+                            .metadata(status.getMetadata())
+                            .parameters(status.getParameters());
+                    // Server sends multiple chunks with offsets
+                    if(object.getOffset() > 0L) {
+                        chunk.setAppend(true);
+                    }
+                    chunk.setLength(object.getLength());
+                    chunk.setOffset(object.getOffset());
+                    // Job parameter already present from #pre
+                    final Map<String, String> parameters = new HashMap<>(chunk.getParameters());
+                    // Set offset for chunk.
+                    parameters.put(REQUEST_PARAMETER_OFFSET, Long.toString(chunk.getOffset()));
+                    chunk.setParameters(parameters);
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Add chunk %s for file %s", chunk, file));
+                    }
+                    chunks.add(chunk);
+                }
+            }
+        }
+        return chunks;
     }
 }
