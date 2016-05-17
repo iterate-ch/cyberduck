@@ -31,4 +31,10 @@ public class GoogleStorageProtocolTest {
     public void testPassword() {
         assertFalse(new GoogleStorageProtocol().isPasswordConfigurable());
     }
+
+    @Test
+    public void testConfigurable() {
+        assertFalse(new GoogleStorageProtocol().isHostnameConfigurable());
+        assertFalse(new GoogleStorageProtocol().isPortConfigurable());
+    }
 }
