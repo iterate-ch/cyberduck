@@ -28,6 +28,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.jets3t.service.model.S3Object;
@@ -41,10 +42,6 @@ import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 
-
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class S3StorageClassFeatureTest {
 
@@ -70,7 +67,7 @@ public class S3StorageClassFeatureTest {
     }
 
     @Test
-    public void testSetClass() throws Exception {
+    public void testSetClassFile() throws Exception {
         final S3Session session = new S3Session(
                 new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                         new Credentials(
@@ -89,6 +86,32 @@ public class S3StorageClassFeatureTest {
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, feature.getClass(test));
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, session.list(container,
                 new DisabledListProgressListener()).get(test).attributes().getStorageClass());
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
+        session.close();
+    }
+
+    @Test
+    public void testSetClassPlaceholder() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                        new Credentials(
+                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+                        )));
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
+        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        new S3DirectoryFeature(session).mkdir(test, new TransferStatus());
+        final S3StorageClassFeature feature = new S3StorageClassFeature(session);
+        assertEquals(S3Object.STORAGE_CLASS_STANDARD, feature.getClass(test));
+        feature.setClass(test, "STANDARD_IA");
+        assertEquals("STANDARD_IA", feature.getClass(test));
+        feature.setClass(test, S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
+        assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, feature.getClass(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {

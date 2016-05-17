@@ -18,14 +18,13 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.model.S3Object;
 
 import java.util.Arrays;
@@ -63,13 +62,13 @@ public class S3StorageClassFeature implements Redundancy {
     @Override
     public String getClass(final Path file) throws BackgroundException {
         if(file.isFile() || file.isPlaceholder()) {
-            // HEAD request does not include storage class header
-            final Path list = new S3ObjectListService(session).list(
-                    file.getParent(), new DisabledListProgressListener()).get(file);
-            if(null == list) {
-                throw new NotfoundException(file.getAbsolute());
+            // HEAD request provides storage class information of the object.
+            // S3 returns this header for all objects except for Standard storage class objects.
+            final String redundancy = new S3AttributesFeature(session).find(file).getStorageClass();
+            if(StringUtils.isBlank(redundancy)) {
+                return S3Object.STORAGE_CLASS_STANDARD;
             }
-            return list.attributes().getStorageClass();
+            return redundancy;
         }
         return null;
     }
