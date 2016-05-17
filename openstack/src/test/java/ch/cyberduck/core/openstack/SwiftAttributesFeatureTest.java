@@ -13,7 +13,6 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -112,7 +111,7 @@ public class SwiftAttributesFeatureTest {
         container.attributes().setRegion("DFW");
         final String name = UUID.randomUUID().toString();
         final Path file = new Path(container, name, EnumSet.of(Path.Type.directory));
-        new SwiftDirectoryFeature(session).mkdir(file, new TransferStatus());
+        new SwiftDirectoryFeature(session).mkdir(file);
         final PathAttributes attributes = new SwiftAttributesFeature(session).find(file);
         // Test wrong type
         try {

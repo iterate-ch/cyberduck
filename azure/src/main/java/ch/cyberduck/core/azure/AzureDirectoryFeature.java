@@ -56,8 +56,8 @@ public class AzureDirectoryFeature implements Directory {
     }
 
     @Override
-    public void mkdir(Path file, final TransferStatus status) throws BackgroundException {
-        this.mkdir(file, null, status);
+    public void mkdir(Path file) throws BackgroundException {
+        this.mkdir(file, null, null);
     }
 
     @Override
