@@ -71,7 +71,7 @@ public class S3EncryptionFeature implements Encryption {
      */
     @Override
     public Algorithm getEncryption(final Path file) throws BackgroundException {
-        if(file.isFile()) {
+        if(file.isFile() || file.isPlaceholder()) {
             return new S3AttributesFeature(session).find(file).getEncryption();
         }
         return Algorithm.NONE;
@@ -83,7 +83,7 @@ public class S3EncryptionFeature implements Encryption {
      */
     @Override
     public void setEncryption(final Path file, final Algorithm setting) throws BackgroundException {
-        if(file.isFile()) {
+        if(file.isFile() || file.isPlaceholder()) {
             final S3ThresholdCopyFeature copy = new S3ThresholdCopyFeature(session);
             // Copy item in place to write new attributes
             final AclPermission feature = session.getFeature(AclPermission.class);
