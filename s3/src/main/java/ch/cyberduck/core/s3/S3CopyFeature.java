@@ -66,7 +66,7 @@ public class S3CopyFeature implements Copy {
 
     protected void copy(final Path source, final Path copy, final String storageClass, final Encryption.Algorithm encryption,
                         final Acl acl) throws BackgroundException {
-        if(source.isFile()) {
+        if(source.isFile() || source.isPlaceholder()) {
             final StorageObject destination = new StorageObject(containerService.getKey(copy));
             destination.setStorageClass(storageClass);
             destination.setServerSideEncryptionAlgorithm(encryption.algorithm);

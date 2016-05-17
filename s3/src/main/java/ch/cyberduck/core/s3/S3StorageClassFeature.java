@@ -62,7 +62,7 @@ public class S3StorageClassFeature implements Redundancy {
 
     @Override
     public String getClass(final Path file) throws BackgroundException {
-        if(file.isFile()) {
+        if(file.isFile() || file.isPlaceholder()) {
             // HEAD request does not include storage class header
             final Path list = new S3ObjectListService(session).list(
                     file.getParent(), new DisabledListProgressListener()).get(file);
@@ -76,7 +76,7 @@ public class S3StorageClassFeature implements Redundancy {
 
     @Override
     public void setClass(final Path file, final String redundancy) throws BackgroundException {
-        if(file.isFile()) {
+        if(file.isFile() || file.isPlaceholder()) {
             final S3ThresholdCopyFeature copy = new S3ThresholdCopyFeature(session);
             if(null == accessControlListFeature) {
                 copy.copy(file, file, redundancy, new S3EncryptionFeature(session).getEncryption(file),
