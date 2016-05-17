@@ -38,6 +38,11 @@ public abstract class BundleController extends ProxyController {
             NSArray.arrayWithObject(NSAttributedString.ParagraphStyleAttributeName)
     );
 
+    public static final NSDictionary LABEL_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
+            NSArray.arrayWithObject(TableCellAttributes.PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL),
+            NSArray.arrayWithObject(NSAttributedString.ParagraphStyleAttributeName)
+    );
+
     public static final NSDictionary FIXED_WITH_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
             NSArray.arrayWithObject(NSFont.userFixedPitchFontOfSize(9.0f)),
             NSArray.arrayWithObject(NSAttributedString.FontAttributeName)

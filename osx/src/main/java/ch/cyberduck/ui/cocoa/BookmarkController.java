@@ -22,6 +22,7 @@ import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.application.*;
 import ch.cyberduck.binding.foundation.NSArray;
+import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.binding.foundation.NSData;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
@@ -65,9 +66,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.TimeZone;
 
-/**
- * @version $Id$
- */
 public class BookmarkController extends WindowController {
     private static Logger log = Logger.getLogger(BookmarkController.class);
 
@@ -231,6 +229,13 @@ public class BookmarkController extends WindowController {
                 Foundation.selector("usernameInputDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
                 this.usernameField);
+    }
+
+    @Outlet
+    private NSTextField usernameLabel;
+
+    public void setUsernameLabel(NSTextField usernameLabel) {
+        this.usernameLabel = usernameLabel;
     }
 
     @Outlet
@@ -761,6 +766,11 @@ public class BookmarkController extends WindowController {
         this.updateField(usernameField, host.getCredentials().getUsername());
         usernameField.cell().setPlaceholderString(host.getProtocol().getUsernamePlaceholder());
         usernameField.setEnabled(!host.getCredentials().isAnonymousLogin());
+        usernameLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
+                StringUtils.isNotBlank(host.getCredentials().getUsernamePlaceholder()) ? String.format("%s:",
+                        host.getCredentials().getUsernamePlaceholder()) : StringUtils.EMPTY,
+                LABEL_ATTRIBUTES
+        ));
         anonymousCheckbox.setEnabled(host.getProtocol().isAnonymousConfigurable());
         anonymousCheckbox.setState(host.getCredentials().isAnonymousLogin() ? NSCell.NSOnState : NSCell.NSOffState);
         protocolPopup.selectItemAtIndex(

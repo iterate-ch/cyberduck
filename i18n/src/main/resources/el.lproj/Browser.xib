@@ -128,7 +128,7 @@
                                         </scrollView>
                                         <progressIndicator horizontalHuggingPriority="750" verticalHuggingPriority="750" minValue="16" maxValue="100" doubleValue="16" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" style="spinning" id="28">
                                             <rect key="frame" x="284" y="184" width="32" height="32"/>
-                                            <autoresizingMask key="autoresizingMask"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                         </progressIndicator>
                                     </subviews>
                                 </view>
@@ -229,7 +229,7 @@
                             <button id="47">
                                 <rect key="frame" x="562" y="2" width="18" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                                <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="E769163D-E589-47D3-B2AC-201E6743004D" imagePosition="only" alignment="left" id="48">
+                                <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="240DDF2C-7821-4915-84A8-CE7C0F4B3B7A" imagePosition="only" alignment="left" id="48">
                                     <behavior key="behavior" lightByContents="YES"/>
                                     <font key="font" metaFont="label"/>
                                 </buttonCell>
@@ -468,7 +468,7 @@ CA
         <comboBox verticalHuggingPriority="750" id="118">
             <rect key="frame" x="0.0" y="0.0" width="167" height="26"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-            <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" drawsBackground="YES" numberOfVisibleItems="5" id="119">
+            <comboBoxCell key="cell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" drawsBackground="YES" numberOfVisibleItems="5" id="119">
                 <font key="font" metaFont="system"/>
                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -538,10 +538,10 @@ DQ
             </items>
         </menu>
         <popUpButton verticalHuggingPriority="750" id="120">
-            <rect key="frame" x="0.0" y="0.0" width="119" height="26"/>
+            <rect key="frame" x="0.0" y="0.0" width="119" height="25"/>
             <autoresizingMask key="autoresizingMask"/>
-            <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="123" id="121">
-                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+            <popUpButtonCell key="cell" type="roundTextured" title=" " bezelStyle="texturedRounded" alignment="center" lineBreakMode="clipping" state="on" borderStyle="border" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="123" id="121">
+                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                 <font key="font" metaFont="menu"/>
                 <menu key="menu" title="ΆλλεςΠροβολές" id="122">
                     <items>
@@ -574,7 +574,7 @@ DQ
         </button>
     </objects>
     <resources>
-        <image name="E769163D-E589-47D3-B2AC-201E6743004D" width="1" height="1">
+        <image name="240DDF2C-7821-4915-84A8-CE7C0F4B3B7A" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPT5YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQrLjE3OlUkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
