@@ -405,7 +405,7 @@ public class InfoController extends ToolbarWindowController {
         if(null != algorithm && this.toggleS3Settings(false)) {
             final Encryption.Algorithm encryption = Encryption.Algorithm.fromString(algorithm);
             this.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
-                            new WriteEncryptionWorker(files, encryption, false, controller) {
+                    new WriteEncryptionWorker(files, encryption, true, controller) {
                                 @Override
                                 public void cleanup(final Boolean v) {
                                     toggleS3Settings(true);
