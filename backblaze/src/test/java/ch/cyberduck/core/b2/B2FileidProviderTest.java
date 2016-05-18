@@ -81,7 +81,7 @@ public class B2FileidProviderTest {
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener());
         service.connect(session, PathCache.empty());
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         new B2DirectoryFeature(session).mkdir(file);
         assertNotNull(new B2FileidProvider(session).getFileid(file));
         try {
