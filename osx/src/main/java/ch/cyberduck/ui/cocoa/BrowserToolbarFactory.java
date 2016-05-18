@@ -65,7 +65,7 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
 
             @Override
             public Selector action() {
-                return Foundation.selector("browserSwitchMenuClicked:");
+                return Foundation.selector("browserSwitchButtonClicked:");
             }
         },
         transfers {
@@ -421,20 +421,28 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
                     item.setLabel(browserview.label());
                     item.setPaletteLabel(browserview.label());
                     item.setToolTip(browserview.tooltip());
-                    final NSSegmentedControl control = controller.getBrowserSwitchView();
-                    control.setSegmentStyle(NSSegmentedControl.NSSegmentStyleCapsule);
-                    item.setView(control);
+                    item.setTarget(controller.id());
+                    item.setAction(browserview.action());
+                    final NSSegmentedControl button = NSSegmentedControl.segmentedControl();
+                    button.setSegmentCount(2); // list, outline
+                    button.setImage_forSegment(BrowserController.BrowserSwitchSegement.list.image(), BrowserController.BrowserSwitchSegement.list.ordinal());
+                    button.setImage_forSegment(BrowserController.BrowserSwitchSegement.outline.image(), BrowserController.BrowserSwitchSegement.outline.ordinal());
+                    button.sizeToFit();
+                    button.setTarget(controller.id());
+                    button.setAction(browserview.action());
+                    button.setSelectedSegment(preferences.getInteger("browser.view"));
+                    NSMenu menu = NSMenu.menu();
                     // Add a menu representation for text mode of toolbar
-                    NSMenuItem viewMenu = NSMenuItem.itemWithTitle(browserview.label(), null, StringUtils.EMPTY);
-                    NSMenu viewSubmenu = NSMenu.menu();
-                    viewSubmenu.addItemWithTitle_action_keyEquivalent(LocaleFactory.localizedString("List"),
-                            browserview.action(), StringUtils.EMPTY);
-                    viewSubmenu.itemWithTitle(LocaleFactory.localizedString("List")).setTag(0);
-                    viewSubmenu.addItemWithTitle_action_keyEquivalent(LocaleFactory.localizedString("Outline"),
-                            browserview.action(), StringUtils.EMPTY);
-                    viewSubmenu.itemWithTitle(LocaleFactory.localizedString("Outline")).setTag(1);
-                    viewMenu.setSubmenu(viewSubmenu);
-                    item.setMenuFormRepresentation(viewMenu);
+                    NSMenuItem toolbarMenu = NSMenuItem.itemWithTitle(browserview.label(), null, StringUtils.EMPTY);
+                    menu.addItemWithTitle_action_keyEquivalent(LocaleFactory.localizedString("List"),
+                            Foundation.selector("browserSwitchMenuClicked:"), StringUtils.EMPTY);
+                    menu.itemWithTitle(LocaleFactory.localizedString("List")).setTag(BrowserController.BrowserSwitchSegement.list.ordinal());
+                    menu.addItemWithTitle_action_keyEquivalent(LocaleFactory.localizedString("Outline"),
+                            Foundation.selector("browserSwitchMenuClicked:"), StringUtils.EMPTY);
+                    menu.itemWithTitle(LocaleFactory.localizedString("Outline")).setTag(BrowserController.BrowserSwitchSegement.outline.ordinal());
+                    toolbarMenu.setSubmenu(menu);
+                    item.setView(button);
+                    item.setMenuFormRepresentation(toolbarMenu);
                     return item;
                 }
                 case tools: {
@@ -450,8 +458,8 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
                     final NSSegmentedControl button = NSSegmentedControl.segmentedControl();
                     button.setSegmentCount(1);
                     button.setImage_forSegment(tools.image(), 0);
-                    button.setMenu_forSegment(menu, 0);
                     button.sizeToFit();
+                    button.setMenu_forSegment(menu, 0);
                     button.setTarget(controller.id());
                     button.setAction(tools.action());
                     item.setView(button);
@@ -472,7 +480,7 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
                     // Add a menu representation for text mode of toolbar
                     NSMenuItem encodingMenu = NSMenuItem.itemWithTitle(LocaleFactory.localizedString(encoding.label()),
                             encoding.action(), StringUtils.EMPTY);
-                    String[] charsets = new DefaultCharsetProvider().availableCharsets();
+                    final String[] charsets = new DefaultCharsetProvider().availableCharsets();
                     NSMenu charsetMenu = NSMenu.menu();
                     for(String charset : charsets) {
                         charsetMenu.addItemWithTitle_action_keyEquivalent(charset, encoding.action(), StringUtils.EMPTY);

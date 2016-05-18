@@ -14,7 +14,6 @@
                 <outlet property="browserListView" destination="33" id="134"/>
                 <outlet property="browserOutlineView" destination="41" id="135"/>
                 <outlet property="browserSpinner" destination="28" id="136"/>
-                <outlet property="browserSwitchView" destination="112" id="137"/>
                 <outlet property="browserTabView" destination="5" id="138"/>
                 <outlet property="deleteBookmarkButton" destination="13" id="139"/>
                 <outlet property="donateButton" destination="124" id="140"/>
@@ -229,7 +228,7 @@
                             <button id="47">
                                 <rect key="frame" x="562" y="2" width="18" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                                <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="CC033B57-66BF-460F-948E-65FF79141027" imagePosition="only" alignment="left" id="48">
+                                <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="99FC8273-28CC-4887-9941-6B2E61A6E7EA" imagePosition="only" alignment="left" id="48">
                                     <behavior key="behavior" lightByContents="YES"/>
                                     <font key="font" metaFont="label"/>
                                 </buttonCell>
@@ -551,11 +550,6 @@ DQ
             </popUpButtonCell>
             <point key="canvasLocation" x="382" y="785.5"/>
         </popUpButton>
-        <customView id="112" customClass="NSSegmentedControl">
-            <rect key="frame" x="0.0" y="0.0" width="71" height="24"/>
-            <autoresizingMask key="autoresizingMask"/>
-            <point key="canvasLocation" x="198.5" y="720"/>
-        </customView>
         <drawer preferredEdge="minY" leadingOffset="10" trailingOffset="15" id="113">
             <size key="contentSize" width="200" height="200"/>
             <size key="minContentSize" width="50" height="50"/>
@@ -574,7 +568,7 @@ DQ
         </button>
     </objects>
     <resources>
-        <image name="CC033B57-66BF-460F-948E-65FF79141027" width="1" height="1">
+        <image name="99FC8273-28CC-4887-9941-6B2E61A6E7EA" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPT5YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQrLjE3OlUkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
