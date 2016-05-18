@@ -44,9 +44,6 @@ import org.apache.log4j.Logger;
 
 import com.barchart.udt.ExceptionUDT;
 
-/**
- * @version $Id$
- */
 public class S3ThresholdDownloadService extends DefaultDownloadFeature {
     private static final Logger log = Logger.getLogger(S3ThresholdDownloadService.class);
 

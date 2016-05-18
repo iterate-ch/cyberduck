@@ -80,7 +80,6 @@
 		474960761CD75C9700B020C9 /* eject.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4749605D1CD75C9700B020C9 /* eject.pdf */; };
 		474960771CD75C9700B020C9 /* open.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4749605E1CD75C9700B020C9 /* open.pdf */; };
 		4749607A1CD75C9700B020C9 /* showinfinder.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 474960611CD75C9700B020C9 /* showinfinder.pdf */; };
-		4749607B1CD75C9700B020C9 /* stop.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 474960621CD75C9700B020C9 /* stop.pdf */; };
 		4749607C1CD75C9700B020C9 /* trash.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 474960631CD75C9700B020C9 /* trash.pdf */; };
 		4749607F1CD7679A00B020C9 /* transferremove.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4749607D1CD7679A00B020C9 /* transferremove.pdf */; };
 		474960801CD7679A00B020C9 /* transferresume.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4749607E1CD7679A00B020C9 /* transferresume.pdf */; };
@@ -170,7 +169,6 @@
 		4781AF410828423100B3E0FA /* download0.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4781AF400828423100B3E0FA /* download0.icns */; };
 		478426F40F9F75900068BA2E /* License.strings in Resources */ = {isa = PBXBuildFile; fileRef = 478426F20F9F75900068BA2E /* License.strings */; };
 		4786AA14162F4AED006156A0 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47983764072AD73700FA3CDB /* Security.framework */; };
-		4786CB6C0E253B800029848F /* Error.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4786CB660E253B800029848F /* Error.xib */; };
 		4786CB6D0E253B800029848F /* Activity.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4786CB670E253B800029848F /* Activity.xib */; };
 		4786CB6E0E253B800029848F /* Transcript.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4786CB680E253B800029848F /* Transcript.xib */; };
 		4786CB6F0E253B800029848F /* Progress.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4786CB690E253B800029848F /* Progress.xib */; };
@@ -186,6 +184,7 @@
 		47A082B1167A169D004458C7 /* cyberduck-application.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47A082B0167A169D004458C7 /* cyberduck-application.icns */; };
 		47A88FBB0B931D9C00DB9D87 /* Configuration.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47A88FB90B931D9C00DB9D87 /* Configuration.strings */; };
 		47AA19690AF09F810059C736 /* Error.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47AA19670AF09F810059C736 /* Error.strings */; };
+		47AE90DF1CE61ECF00A85D7B /* actions.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 47AE90DE1CE61ECF00A85D7B /* actions.pdf */; };
 		47AF48FD199B913300A580EC /* Sftp.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47AF48FB199B913300A580EC /* Sftp.strings */; };
 		47B3318C16680FF100C9FFA0 /* ftp.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47B3318B16680FF100C9FFA0 /* ftp.tiff */; };
 		47B331931668102400C9FFA0 /* s3.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47B331911668102400C9FFA0 /* s3.tiff */; };
@@ -226,6 +225,7 @@
 		47D93A171A2762A40006D4AE /* Support.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47990FD0195C63AE009EBB7C /* Support.strings */; };
 		47DD99831CAA766100960EAF /* B2.cyberduckprofile in CopyFiles */ = {isa = PBXBuildFile; fileRef = 479421BB1C8DF2A800444CD7 /* B2.cyberduckprofile */; };
 		47E987600D689A280077733F /* S3.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47E9875E0D689A280077733F /* S3.strings */; };
+		47ED775F1CEA1314009EBA0A /* transferstop.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 47ED775E1CEA1314009EBA0A /* transferstop.pdf */; };
 		47F0B7D3087AD1B100439978 /* Status.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47F0B7D2087AD1AE00439978 /* Status.strings */; };
 		47F85C121C0F0E8900FDA856 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 477CFC7E1AF0FAFB001E81AF /* Cocoa.framework */; };
 		47F85C191C0F101F00FDA856 /* UKCrashReporter.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F85C151C0F101F00FDA856 /* UKCrashReporter.h */; };
@@ -240,10 +240,6 @@
 		47F85C351C0F103E00FDA856 /* CDOutlineCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F85C231C0F103E00FDA856 /* CDOutlineCell.m */; };
 		47F85C361C0F103E00FDA856 /* CDOutlineView.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F85C241C0F103E00FDA856 /* CDOutlineView.h */; };
 		47F85C371C0F103E00FDA856 /* CDOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F85C251C0F103E00FDA856 /* CDOutlineView.m */; };
-		47F85C381C0F103E00FDA856 /* CTGradient.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F85C261C0F103E00FDA856 /* CTGradient.h */; };
-		47F85C391C0F103E00FDA856 /* CTGradient.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F85C271C0F103E00FDA856 /* CTGradient.m */; };
-		47F85C3A1C0F103E00FDA856 /* CTGradientView.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F85C281C0F103E00FDA856 /* CTGradientView.h */; };
-		47F85C3B1C0F103E00FDA856 /* CTGradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F85C291C0F103E00FDA856 /* CTGradientView.m */; };
 		47F85C3C1C0F103E00FDA856 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F85C2A1C0F103E00FDA856 /* main.m */; };
 		47F85C401C0F103E00FDA856 /* SNDisclosableView.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F85C2E1C0F103E00FDA856 /* SNDisclosableView.h */; };
 		47F85C411C0F103E00FDA856 /* SNDisclosableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F85C2F1C0F103E00FDA856 /* SNDisclosableView.m */; };
@@ -783,7 +779,6 @@
 		4749605D1CD75C9700B020C9 /* eject.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = eject.pdf; path = toolbar/eject.pdf; sourceTree = "<group>"; };
 		4749605E1CD75C9700B020C9 /* open.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = open.pdf; path = toolbar/open.pdf; sourceTree = "<group>"; };
 		474960611CD75C9700B020C9 /* showinfinder.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = showinfinder.pdf; path = toolbar/showinfinder.pdf; sourceTree = "<group>"; };
-		474960621CD75C9700B020C9 /* stop.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = stop.pdf; path = toolbar/stop.pdf; sourceTree = "<group>"; };
 		474960631CD75C9700B020C9 /* trash.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = trash.pdf; path = toolbar/trash.pdf; sourceTree = "<group>"; };
 		4749607D1CD7679A00B020C9 /* transferremove.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = transferremove.pdf; path = toolbar/transferremove.pdf; sourceTree = "<group>"; };
 		4749607E1CD7679A00B020C9 /* transferresume.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = transferresume.pdf; path = toolbar/transferresume.pdf; sourceTree = "<group>"; };
@@ -1015,7 +1010,6 @@
 		4784271F0F9F76230068BA2E /* sk */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sk; path = i18n/src/main/resources/sk.lproj/License.strings; sourceTree = "<group>"; };
 		478427210F9F76280068BA2E /* tr */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = tr; path = i18n/src/main/resources/tr.lproj/License.strings; sourceTree = "<group>"; };
 		478427220F9F762A0068BA2E /* de */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = de; path = i18n/src/main/resources/de.lproj/License.strings; sourceTree = "<group>"; };
-		4786CB660E253B800029848F /* Error.xib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = Error.xib; path = resources/Error.xib; sourceTree = "<group>"; };
 		4786CB670E253B800029848F /* Activity.xib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = Activity.xib; path = resources/Activity.xib; sourceTree = "<group>"; };
 		4786CB680E253B800029848F /* Transcript.xib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = Transcript.xib; path = resources/Transcript.xib; sourceTree = "<group>"; };
 		4786CB690E253B800029848F /* Progress.xib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = Progress.xib; path = resources/Progress.xib; sourceTree = "<group>"; };
@@ -1186,6 +1180,7 @@
 		47AA197F0AF0ABA80059C736 /* tr */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = tr; path = i18n/src/main/resources/tr.lproj/Error.strings; sourceTree = "<group>"; };
 		47AA19800AF0ABA80059C736 /* zh_CN */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = zh_CN; path = i18n/src/main/resources/zh_CN.lproj/Error.strings; sourceTree = "<group>"; };
 		47AA19820AF0ABA80059C736 /* ca */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = ca; path = i18n/src/main/resources/ca.lproj/Error.strings; sourceTree = "<group>"; };
+		47AE90DE1CE61ECF00A85D7B /* actions.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = actions.pdf; path = toolbar/actions.pdf; sourceTree = "<group>"; };
 		47AF48FC199B913300A580EC /* lv */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = lv; path = i18n/src/main/resources/lv.lproj/Sftp.strings; sourceTree = "<group>"; };
 		47B000941A234981003941A0 /* pt_BR */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = pt_BR; path = i18n/src/main/resources/pt_BR.lproj/Alert.strings; sourceTree = "<group>"; };
 		47B000951A234981003941A0 /* pt_BR */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = pt_BR; path = i18n/src/main/resources/pt_BR.lproj/Archive.strings; sourceTree = "<group>"; };
@@ -1490,6 +1485,7 @@
 		47E284E11319333000D03060 /* uk */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = uk; path = i18n/src/main/resources/uk.lproj/Status.strings; sourceTree = "<group>"; };
 		47E284E21319333000D03060 /* uk */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = uk; path = i18n/src/main/resources/uk.lproj/Transfer.strings; sourceTree = "<group>"; };
 		47E9875F0D689A280077733F /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = en; path = i18n/src/main/resources/en.lproj/S3.strings; sourceTree = "<group>"; };
+		47ED775E1CEA1314009EBA0A /* transferstop.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = transferstop.pdf; path = toolbar/transferstop.pdf; sourceTree = "<group>"; };
 		47EF0EC50D6DBF3F00AC2F94 /* ca */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = ca; path = i18n/src/main/resources/ca.lproj/S3.strings; sourceTree = "<group>"; };
 		47EF0EC60D6DBF3F00AC2F94 /* cs */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = cs; path = i18n/src/main/resources/cs.lproj/S3.strings; sourceTree = "<group>"; };
 		47EF0EC80D6DBF3F00AC2F94 /* da */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = da; path = i18n/src/main/resources/da.lproj/S3.strings; sourceTree = "<group>"; };
@@ -1539,10 +1535,6 @@
 		47F85C231C0F103E00FDA856 /* CDOutlineCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDOutlineCell.m; path = osx/src/main/objc/CDOutlineCell.m; sourceTree = "<group>"; };
 		47F85C241C0F103E00FDA856 /* CDOutlineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDOutlineView.h; path = osx/src/main/objc/CDOutlineView.h; sourceTree = "<group>"; };
 		47F85C251C0F103E00FDA856 /* CDOutlineView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDOutlineView.m; path = osx/src/main/objc/CDOutlineView.m; sourceTree = "<group>"; };
-		47F85C261C0F103E00FDA856 /* CTGradient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CTGradient.h; path = osx/src/main/objc/CTGradient.h; sourceTree = "<group>"; };
-		47F85C271C0F103E00FDA856 /* CTGradient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CTGradient.m; path = osx/src/main/objc/CTGradient.m; sourceTree = "<group>"; };
-		47F85C281C0F103E00FDA856 /* CTGradientView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CTGradientView.h; path = osx/src/main/objc/CTGradientView.h; sourceTree = "<group>"; };
-		47F85C291C0F103E00FDA856 /* CTGradientView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CTGradientView.m; path = osx/src/main/objc/CTGradientView.m; sourceTree = "<group>"; };
 		47F85C2A1C0F103E00FDA856 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = osx/src/main/objc/main.m; sourceTree = "<group>"; };
 		47F85C2E1C0F103E00FDA856 /* SNDisclosableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SNDisclosableView.h; path = osx/src/main/objc/SNDisclosableView.h; sourceTree = "<group>"; };
 		47F85C2F1C0F103E00FDA856 /* SNDisclosableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SNDisclosableView.m; path = osx/src/main/objc/SNDisclosableView.m; sourceTree = "<group>"; };
@@ -1751,7 +1743,6 @@
 				4718F499175F432400B424AD /* profiles */,
 				470C646C1328CBF300146FB6 /* bookmarks */,
 				4741653C06C4FC3F00AC0BD2 /* img */,
-				4786CB660E253B800029848F /* Error.xib */,
 				4786CB670E253B800029848F /* Activity.xib */,
 				4786CB680E253B800029848F /* Transcript.xib */,
 				4786CB690E253B800029848F /* Progress.xib */,
@@ -1893,6 +1884,7 @@
 		4749604A1CD75C7200B020C9 /* toolbar */ = {
 			isa = PBXGroup;
 			children = (
+				47AE90DE1CE61ECF00A85D7B /* actions.pdf */,
 				4749604C1CD75C9700B020C9 /* addbookmark.pdf */,
 				4749604D1CD75C9700B020C9 /* connect.pdf */,
 				4749604E1CD75C9700B020C9 /* delete.pdf */,
@@ -1913,10 +1905,10 @@
 				4749605D1CD75C9700B020C9 /* eject.pdf */,
 				4749605E1CD75C9700B020C9 /* open.pdf */,
 				474960611CD75C9700B020C9 /* showinfinder.pdf */,
-				474960621CD75C9700B020C9 /* stop.pdf */,
 				474960631CD75C9700B020C9 /* trash.pdf */,
 				4749607D1CD7679A00B020C9 /* transferremove.pdf */,
 				4749607E1CD7679A00B020C9 /* transferresume.pdf */,
+				47ED775E1CEA1314009EBA0A /* transferstop.pdf */,
 			);
 			name = toolbar;
 			sourceTree = "<group>";
@@ -1932,10 +1924,6 @@
 				47F85C231C0F103E00FDA856 /* CDOutlineCell.m */,
 				47F85C241C0F103E00FDA856 /* CDOutlineView.h */,
 				47F85C251C0F103E00FDA856 /* CDOutlineView.m */,
-				47F85C261C0F103E00FDA856 /* CTGradient.h */,
-				47F85C271C0F103E00FDA856 /* CTGradient.m */,
-				47F85C281C0F103E00FDA856 /* CTGradientView.h */,
-				47F85C291C0F103E00FDA856 /* CTGradientView.m */,
 				47F85C2A1C0F103E00FDA856 /* main.m */,
 				47F85C2E1C0F103E00FDA856 /* SNDisclosableView.h */,
 				47F85C2F1C0F103E00FDA856 /* SNDisclosableView.m */,
@@ -1982,9 +1970,7 @@
 				47FB79D81C2E9E67008D3B9C /* launcher.h in Headers */,
 				47F85C361C0F103E00FDA856 /* CDOutlineView.h in Headers */,
 				47D6FFE91CCFA54A005B01C5 /* CDToolbarItem.h in Headers */,
-				47F85C3A1C0F103E00FDA856 /* CTGradientView.h in Headers */,
 				47F85C401C0F103E00FDA856 /* SNDisclosableView.h in Headers */,
-				47F85C381C0F103E00FDA856 /* CTGradient.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2060,7 +2046,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 0700;
+				LastUpgradeCheck = 0730;
 				ORGANIZATIONNAME = Cyberduck;
 				TargetAttributes = {
 					47C2AD7F1A268C880047B67A = {
@@ -2132,6 +2118,7 @@
 				474163C106C4F64100AC0BD2 /* Info.xib in Resources */,
 				4749606A1CD75C9700B020C9 /* filetransfer.pdf in Resources */,
 				474163C206C4F64100AC0BD2 /* Browser.xib in Resources */,
+				47ED775F1CEA1314009EBA0A /* transferstop.pdf in Resources */,
 				474163C306C4F64100AC0BD2 /* Main.xib in Resources */,
 				474163C706C4F64100AC0BD2 /* License.txt in Resources */,
 				474163CA06C4F64100AC0BD2 /* Connection.xib in Resources */,
@@ -2170,7 +2157,6 @@
 				470912ED0C36FCE00049FBCE /* Prompt.xib in Resources */,
 				47E987600D689A280077733F /* S3.strings in Resources */,
 				47B6074A0DA420880068282C /* Keychain.strings in Resources */,
-				4786CB6C0E253B800029848F /* Error.xib in Resources */,
 				474960721CD75C9700B020C9 /* upload.pdf in Resources */,
 				4786CB6D0E253B800029848F /* Activity.xib in Resources */,
 				4786CB6E0E253B800029848F /* Transcript.xib in Resources */,
@@ -2182,7 +2168,6 @@
 				47993F7811699F12000271A8 /* Transfer.strings in Resources */,
 				47993F7C11699F40000271A8 /* Transfer.xib in Resources */,
 				474960681CD75C9700B020C9 /* download.pdf in Resources */,
-				4749607B1CD75C9700B020C9 /* stop.pdf in Resources */,
 				47652D0B1202BED200745031 /* Azure.strings in Resources */,
 				471F5C2E12AD1B6B0005D323 /* Alert.strings in Resources */,
 				475EBE9412DA462C00E5C3A2 /* ServicesMenu.strings in Resources */,
@@ -2229,6 +2214,7 @@
 				476730DB16108E1300B28D35 /* eject.tiff in Resources */,
 				476730DC16108E1300B28D35 /* executable.tiff in Resources */,
 				476730DE16108E1300B28D35 /* gear.tiff in Resources */,
+				47AE90DF1CE61ECF00A85D7B /* actions.pdf in Resources */,
 				476730DF16108E1300B28D35 /* general.tiff in Resources */,
 				476730E116108E1300B28D35 /* history.tiff in Resources */,
 				474960771CD75C9700B020C9 /* open.pdf in Resources */,
@@ -2395,10 +2381,8 @@
 				47F85C411C0F103E00FDA856 /* SNDisclosableView.m in Sources */,
 				47F85C331C0F103E00FDA856 /* CDListView.m in Sources */,
 				47D6FFE81CCFA54A005B01C5 /* CDToolbarItem.m in Sources */,
-				47F85C391C0F103E00FDA856 /* CTGradient.m in Sources */,
 				47F85C3C1C0F103E00FDA856 /* main.m in Sources */,
 				47FB79D91C2E9E67008D3B9C /* launcher.m in Sources */,
-				47F85C3B1C0F103E00FDA856 /* CTGradientView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3792,6 +3776,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_LDFLAGS = "";
+				PRODUCT_BUNDLE_IDENTIFIER = sh.duck;
 				PRODUCT_MODULE_NAME = duck;
 				PRODUCT_NAME = duck;
 				SKIP_INSTALL = YES;
@@ -3813,6 +3798,7 @@
 				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
 				INFOPLIST_FILE = setup/app/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = ch.sudo.cyberduck;
 				PRODUCT_NAME = Cyberduck;
 				WRAPPER_EXTENSION = app;
 			};
@@ -3828,7 +3814,6 @@
 				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/lib\"";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DEBUGGING_SYMBOLS = default;
-				GCC_ENABLE_OBJC_GC = unsupported;
 				HEADER_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers\"";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_LDFLAGS = (
@@ -3856,7 +3841,6 @@
 				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/lib\"";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DEBUGGING_SYMBOLS = default;
-				GCC_ENABLE_OBJC_GC = unsupported;
 				HEADER_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers\"";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				SDKROOT = macosx;
@@ -3882,6 +3866,7 @@
 				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
 				INFOPLIST_FILE = setup/app/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = ch.sudo.cyberduck;
 				PRODUCT_NAME = Cyberduck;
 				WRAPPER_EXTENSION = app;
 			};
@@ -3936,6 +3921,7 @@
 				MACH_O_TYPE = mh_execute;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = sh.duck;
 				PRODUCT_MODULE_NAME = duck;
 				PRODUCT_NAME = duck;
 				SKIP_INSTALL = YES;

@@ -102,7 +102,12 @@ public class S3AttributesFeature implements Attributes {
         if(lastmodified != null) {
             attributes.setModificationDate(lastmodified.getTime());
         }
-        attributes.setStorageClass(object.getStorageClass());
+        if(StringUtils.isNotBlank(object.getStorageClass())) {
+            attributes.setStorageClass(object.getStorageClass());
+        }
+        else if(object.containsMetadata("storage-class")) {
+            attributes.setStorageClass(object.getMetadataMap().get("storage-class").toString());
+        }
         if(StringUtils.isNotBlank(object.getETag())) {
             attributes.setChecksum(Checksum.parse(object.getETag()));
             attributes.setETag(object.getETag());

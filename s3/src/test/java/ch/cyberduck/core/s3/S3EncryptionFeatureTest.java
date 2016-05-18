@@ -44,7 +44,7 @@ public class S3EncryptionFeatureTest {
 
     @Test
     public void testGetAlgorithms() throws Exception {
-        assertEquals(1, new S3EncryptionFeature(null).getKeys(new DisabledLoginCallback()).size());
+        assertEquals(2, new S3EncryptionFeature(null).getKeys(new DisabledLoginCallback()).size());
     }
 
     @Test
@@ -59,6 +59,31 @@ public class S3EncryptionFeatureTest {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test);
+        final S3EncryptionFeature feature = new S3EncryptionFeature(session);
+        feature.setEncryption(test, S3EncryptionFeature.SSE_AES256);
+        final Encryption.Algorithm value = feature.getEncryption(test);
+        assertEquals("AES256", value.algorithm);
+        assertNull(value.key);
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
+        session.close();
+    }
+
+    @Test
+    public void testSetEncryptionAES256Placeholder() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                        new Credentials(
+                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+                        )));
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
+        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        new S3DirectoryFeature(session).mkdir(test);
         final S3EncryptionFeature feature = new S3EncryptionFeature(session);
         feature.setEncryption(test, S3EncryptionFeature.SSE_AES256);
         final Encryption.Algorithm value = feature.getEncryption(test);

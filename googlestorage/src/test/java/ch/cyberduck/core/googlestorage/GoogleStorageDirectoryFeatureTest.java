@@ -1,8 +1,8 @@
 package ch.cyberduck.core.googlestorage;
 
 /*
- * Copyright (c) 2002-2013 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,8 +13,6 @@ package ch.cyberduck.core.googlestorage;
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
 import ch.cyberduck.core.Credentials;
@@ -42,9 +40,6 @@ import java.util.UUID;
 
 import static org.junit.Assert.assertTrue;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class GoogleStorageDirectoryFeatureTest {
 
@@ -68,7 +63,7 @@ public class GoogleStorageDirectoryFeatureTest {
             }
         }, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path(new S3HomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new GoogleStorageDirectoryFeature(session).mkdir(test, null);
+        new GoogleStorageDirectoryFeature(session).mkdir(test);
         assertTrue(new S3FindFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
@@ -99,7 +94,7 @@ public class GoogleStorageDirectoryFeatureTest {
         }, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path(new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume)),
                 UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new GoogleStorageDirectoryFeature(session).mkdir(test, null);
+        new GoogleStorageDirectoryFeature(session).mkdir(test);
         test.setType(EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         assertTrue(new S3FindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));

@@ -18,6 +18,7 @@ import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.cdn.features.Purge;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.identity.IdentityConfiguration;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -97,7 +98,7 @@ public class SwiftDistributionConfigurationTest {
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("ORD");
-        new SwiftDirectoryFeature(session).mkdir(container, "ORD");
+        new SwiftDirectoryFeature(session).mkdir(container, "ORD", new TransferStatus());
         configuration.write(container, new Distribution(Distribution.DOWNLOAD, true), new DisabledLoginCallback());
         assertTrue(configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginCallback()).isEnabled());
         new SwiftDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.Callback() {

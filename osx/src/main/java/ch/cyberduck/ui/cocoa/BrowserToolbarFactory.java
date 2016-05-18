@@ -23,7 +23,6 @@ import ch.cyberduck.binding.application.NSButtonCell;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSMenu;
 import ch.cyberduck.binding.application.NSMenuItem;
-import ch.cyberduck.binding.application.NSPopUpButton;
 import ch.cyberduck.binding.application.NSSegmentedControl;
 import ch.cyberduck.binding.application.NSToolbarItem;
 import ch.cyberduck.binding.foundation.NSArray;
@@ -41,7 +40,6 @@ import ch.cyberduck.ui.cocoa.quicklook.QuickLookFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.Foundation;
 import org.rococoa.Selector;
-import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSRect;
 
 import java.util.HashMap;
@@ -67,7 +65,7 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
 
             @Override
             public Selector action() {
-                return Foundation.selector("browserSwitchMenuClicked:");
+                return Foundation.selector("browserSwitchButtonClicked:");
             }
         },
         transfers {
@@ -126,7 +124,7 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
 
             @Override
             public NSImage image() {
-                return IconCacheFactory.<NSImage>get().iconNamed("NSActionTemplate");
+                return IconCacheFactory.<NSImage>get().iconNamed("actions.pdf");
             }
 
             @Override
@@ -301,6 +299,11 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
             public Selector action() {
                 return Foundation.selector("disconnectButtonClicked:");
             }
+
+            @Override
+            public NSImage image() {
+                return IconCacheFactory.<NSImage>get().iconNamed("transferstop.pdf");
+            }
         },
         disconnect {
             @Override
@@ -418,42 +421,49 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
                     item.setLabel(browserview.label());
                     item.setPaletteLabel(browserview.label());
                     item.setToolTip(browserview.tooltip());
-                    final NSSegmentedControl control = controller.getBrowserSwitchView();
-                    control.setSegmentStyle(NSSegmentedControl.NSSegmentStyleCapsule);
-                    item.setView(control);
+                    item.setTarget(controller.id());
+                    item.setAction(browserview.action());
+                    final NSSegmentedControl button = NSSegmentedControl.segmentedControl();
+                    button.setSegmentCount(2); // list, outline
+                    button.setImage_forSegment(BrowserController.BrowserSwitchSegement.list.image(), BrowserController.BrowserSwitchSegement.list.ordinal());
+                    button.setImage_forSegment(BrowserController.BrowserSwitchSegement.outline.image(), BrowserController.BrowserSwitchSegement.outline.ordinal());
+                    button.sizeToFit();
+                    button.setTarget(controller.id());
+                    button.setAction(browserview.action());
+                    button.setSelectedSegment(preferences.getInteger("browser.view"));
+                    NSMenu menu = NSMenu.menu();
                     // Add a menu representation for text mode of toolbar
-                    NSMenuItem viewMenu = NSMenuItem.itemWithTitle(browserview.label(), null, StringUtils.EMPTY);
-                    NSMenu viewSubmenu = NSMenu.menu();
-                    viewSubmenu.addItemWithTitle_action_keyEquivalent(LocaleFactory.localizedString("List"),
-                            browserview.action(), StringUtils.EMPTY);
-                    viewSubmenu.itemWithTitle(LocaleFactory.localizedString("List")).setTag(0);
-                    viewSubmenu.addItemWithTitle_action_keyEquivalent(LocaleFactory.localizedString("Outline"),
-                            browserview.action(), StringUtils.EMPTY);
-                    viewSubmenu.itemWithTitle(LocaleFactory.localizedString("Outline")).setTag(1);
-                    viewMenu.setSubmenu(viewSubmenu);
-                    item.setMenuFormRepresentation(viewMenu);
+                    NSMenuItem toolbarMenu = NSMenuItem.itemWithTitle(browserview.label(), null, StringUtils.EMPTY);
+                    menu.addItemWithTitle_action_keyEquivalent(LocaleFactory.localizedString("List"),
+                            Foundation.selector("browserSwitchMenuClicked:"), StringUtils.EMPTY);
+                    menu.itemWithTitle(LocaleFactory.localizedString("List")).setTag(BrowserController.BrowserSwitchSegement.list.ordinal());
+                    menu.addItemWithTitle_action_keyEquivalent(LocaleFactory.localizedString("Outline"),
+                            Foundation.selector("browserSwitchMenuClicked:"), StringUtils.EMPTY);
+                    menu.itemWithTitle(LocaleFactory.localizedString("Outline")).setTag(BrowserController.BrowserSwitchSegement.outline.ordinal());
+                    toolbarMenu.setSubmenu(menu);
+                    item.setView(button);
+                    item.setMenuFormRepresentation(toolbarMenu);
                     return item;
                 }
                 case tools: {
                     item.setLabel(tools.label());
                     item.setPaletteLabel(tools.label());
-                    final NSInteger index = new NSInteger(0);
-                    final NSPopUpButton button = controller.getActionPopupButton();
-                    button.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
-                    button.insertItemWithTitle_atIndex(StringUtils.EMPTY, index);
-                    button.itemAtIndex(index).setImage(tools.image());
-                    item.setView(button);
+                    item.setToolTip(tools.tooltip());
+                    item.setTarget(controller.id());
+                    item.setAction(tools.action());
+                    final NSMenu menu = controller.getSelectedBrowserView().menu();
                     // Add a menu representation for text mode of toolbar
-                    NSMenuItem toolMenu = NSMenuItem.itemWithTitle(tools.label(), null, StringUtils.EMPTY);
-                    NSMenu toolSubmenu = NSMenu.menu();
-                    for(int i = 1; i < button.menu().numberOfItems().intValue(); i++) {
-                        NSMenuItem template = button.menu().itemAtIndex(new NSInteger(i));
-                        toolSubmenu.addItem(NSMenuItem.itemWithTitle(template.title(),
-                                template.action(),
-                                template.keyEquivalent()));
-                    }
-                    toolMenu.setSubmenu(toolSubmenu);
-                    item.setMenuFormRepresentation(toolMenu);
+                    NSMenuItem toolbarMenu = NSMenuItem.itemWithTitle(tools.label(), null, StringUtils.EMPTY);
+                    toolbarMenu.setSubmenu(menu);
+                    final NSSegmentedControl button = NSSegmentedControl.segmentedControl();
+                    button.setSegmentCount(1);
+                    button.setImage_forSegment(tools.image(), 0);
+                    button.sizeToFit();
+                    button.setMenu_forSegment(menu, 0);
+                    button.setTarget(controller.id());
+                    button.setAction(tools.action());
+                    item.setView(button);
+                    item.setMenuFormRepresentation(toolbarMenu);
                     return item;
                 }
                 case quickconnect:
@@ -470,7 +480,7 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
                     // Add a menu representation for text mode of toolbar
                     NSMenuItem encodingMenu = NSMenuItem.itemWithTitle(LocaleFactory.localizedString(encoding.label()),
                             encoding.action(), StringUtils.EMPTY);
-                    String[] charsets = new DefaultCharsetProvider().availableCharsets();
+                    final String[] charsets = new DefaultCharsetProvider().availableCharsets();
                     NSMenu charsetMenu = NSMenu.menu();
                     for(String charset : charsets) {
                         charsetMenu.addItemWithTitle_action_keyEquivalent(charset, encoding.action(), StringUtils.EMPTY);
@@ -539,13 +549,11 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
                     item.setLabel(type.label());
                     item.setPaletteLabel(LocaleFactory.localizedString(type.label()));
                     item.setToolTip(type.tooltip());
-                    item.setTarget(controller.id());
                     item.setAction(type.action());
                     final NSButton button = NSButton.buttonWithFrame(new NSRect(0, 0));
                     button.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
                     button.setImage(type.image());
                     button.sizeToFit();
-                    button.setTarget(controller.id());
                     button.setAction(type.action());
                     item.setView(button);
                     return item;

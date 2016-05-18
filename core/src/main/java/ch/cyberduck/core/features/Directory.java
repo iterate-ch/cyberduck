@@ -17,6 +17,7 @@ package ch.cyberduck.core.features;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 public interface Directory {
 
@@ -25,6 +26,7 @@ public interface Directory {
     /**
      * @param file   File
      * @param region Location
+     * @param status Transfer status
      */
-    void mkdir(Path file, String region) throws BackgroundException;
+    void mkdir(Path file, String region, final TransferStatus status) throws BackgroundException;
 }

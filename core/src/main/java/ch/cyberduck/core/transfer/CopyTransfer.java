@@ -238,7 +238,7 @@ public class CopyTransfer extends Transfer {
             if(!status.isExists()) {
                 progressListener.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
                         copy.getName()));
-                destination.getFeature(Directory.class).mkdir(copy);
+                destination.getFeature(Directory.class).mkdir(copy, null, status);
             }
         }
     }
@@ -260,6 +260,7 @@ public class CopyTransfer extends Transfer {
             if(file.isFile()) {
                 status.setChecksum(file.attributes().getChecksum());
                 in = new ThrottledInputStream(session.getFeature(Read.class).read(file, status), throttle);
+                // Make sure to use S3MultipartWriteFeature, see #9362
                 out = new ThrottledOutputStream(target.getFeature(Write.class).write(copy, status), throttle);
                 new StreamCopier(status, status)
                         .withLimit(status.getLength())

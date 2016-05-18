@@ -49,9 +49,6 @@ import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class S3ObjectListService implements ListService {
     private static final Logger log = Logger.getLogger(S3ObjectListService.class);
 

@@ -32,57 +32,55 @@ import org.jets3t.service.model.S3Object;
 
 public class S3DirectoryFeature implements Directory {
 
-    private S3Session session;
+    private final S3Session session;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new S3PathContainerService();
 
-    private S3WriteFeature write;
+    private final S3WriteFeature write;
 
     public S3DirectoryFeature(final S3Session session) {
         this.session = session;
         this.write = new S3WriteFeature(session);
     }
 
+    public S3DirectoryFeature(final S3Session session, final S3WriteFeature write) {
+        this.session = session;
+        this.write = write;
+    }
+
     @Override
     public void mkdir(final Path file) throws BackgroundException {
-        this.mkdir(file, StringUtils.EMPTY);
+        this.mkdir(file, null, null);
     }
 
     @Override
-    public void mkdir(final Path file, final String region) throws BackgroundException {
+    public void mkdir(final Path file, final String region, TransferStatus status) throws BackgroundException {
         if(containerService.isContainer(file)) {
             final S3BucketCreateService service = new S3BucketCreateService(session);
-            if(StringUtils.isBlank(region)) {
-                service.create(file, PreferencesFactory.get().getProperty("s3.location"));
-            }
-            else {
-                service.create(file, region);
-            }
+            service.create(file, StringUtils.isBlank(region) ? PreferencesFactory.get().getProperty("s3.location") : region);
         }
         else {
+            if(null == status) {
+                status = new TransferStatus();
+                final Encryption encryption = session.getFeature(Encryption.class);
+                if(encryption != null) {
+                    status.setEncryption(encryption.getDefault(file));
+                }
+                final Redundancy redundancy = session.getFeature(Redundancy.class);
+                if(redundancy != null) {
+                    status.setStorageClass(redundancy.getDefault());
+                }
+            }
             // Add placeholder object
-            final TransferStatus status = new TransferStatus();
             status.setMime("application/x-directory");
-            final Encryption encryption = session.getFeature(Encryption.class);
-            if(encryption != null) {
-                status.setEncryption(encryption.getDefault(file));
+            final S3Object key = write.getDetails(containerService.getKey(file).concat(String.valueOf(Path.DELIMITER)), status);
+            try {
+                session.getClient().putObject(containerService.getContainer(file).getName(), key);
             }
-            final Redundancy redundancy = session.getFeature(Redundancy.class);
-            if(redundancy != null) {
-                status.setStorageClass(redundancy.getDefault());
+            catch(ServiceException e) {
+                throw new ServiceExceptionMappingService().map("Cannot create folder {0}", e, file);
             }
-            this.mkdir(file, status);
-        }
-    }
-
-    protected void mkdir(final Path file, final TransferStatus status) throws BackgroundException {
-        final S3Object key = write.getDetails(containerService.getKey(file).concat(String.valueOf(Path.DELIMITER)), status);
-        try {
-            session.getClient().putObject(containerService.getContainer(file).getName(), key);
-        }
-        catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot create folder {0}", e, file);
         }
     }
 }

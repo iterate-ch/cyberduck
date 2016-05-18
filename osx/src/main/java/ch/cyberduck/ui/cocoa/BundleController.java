@@ -30,14 +30,16 @@ import ch.cyberduck.core.FactoryException;
 
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id$
- */
 public abstract class BundleController extends ProxyController {
     private static Logger log = Logger.getLogger(BundleController.class);
 
     public static final NSDictionary TRUNCATE_MIDDLE_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
             NSArray.arrayWithObject(TableCellAttributes.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE),
+            NSArray.arrayWithObject(NSAttributedString.ParagraphStyleAttributeName)
+    );
+
+    public static final NSDictionary LABEL_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
+            NSArray.arrayWithObject(TableCellAttributes.PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL),
             NSArray.arrayWithObject(NSAttributedString.ParagraphStyleAttributeName)
     );
 

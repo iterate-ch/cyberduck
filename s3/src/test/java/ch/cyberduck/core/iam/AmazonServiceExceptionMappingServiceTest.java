@@ -27,9 +27,6 @@ import com.amazonaws.AmazonServiceException;
 
 import static org.junit.Assert.assertTrue;
 
-/**
- * @version $Id$
- */
 public class AmazonServiceExceptionMappingServiceTest {
 
     @Test

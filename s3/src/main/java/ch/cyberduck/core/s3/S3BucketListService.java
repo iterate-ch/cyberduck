@@ -38,9 +38,6 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class S3BucketListService implements RootListService {
     private static final Logger log = Logger.getLogger(S3BucketListService.class);
 

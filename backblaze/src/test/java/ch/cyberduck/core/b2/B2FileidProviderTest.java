@@ -27,8 +27,10 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -36,6 +38,7 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
+@Category(IntegrationTest.class)
 public class B2FileidProviderTest {
 
     @Test
@@ -78,7 +81,7 @@ public class B2FileidProviderTest {
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener());
         service.connect(session, PathCache.empty());
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         new B2DirectoryFeature(session).mkdir(file);
         assertNotNull(new B2FileidProvider(session).getFileid(file));
         try {

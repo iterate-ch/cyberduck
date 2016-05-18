@@ -34,9 +34,6 @@ import org.jets3t.service.impl.rest.httpclient.RegionEndpointCache;
 import java.util.Collections;
 import java.util.Set;
 
-/**
- * @version $Id$
- */
 public class S3LocationFeature implements Location {
     private static final Logger log = Logger.getLogger(S3LocationFeature.class);
 

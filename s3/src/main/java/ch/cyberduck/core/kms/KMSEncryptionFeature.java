@@ -25,6 +25,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UseragentProvider;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.iam.AmazonServiceExceptionMappingService;
@@ -157,29 +158,35 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
     @Override
     public Set<Algorithm> getKeys(final LoginCallback prompt) throws BackgroundException {
         final Set<Algorithm> keys = super.getKeys(prompt);
-        keys.addAll(this.authenticated(new Authenticated<Set<Algorithm>>() {
-            @Override
-            public Set<Algorithm> call() throws BackgroundException {
-                try {
-                    final Set<Algorithm> keys = new HashSet<Algorithm>();
-                    for(KeyListEntry entry : client.listKeys().getKeys()) {
-                        keys.add(new Algorithm(SSE_KMS_DEFAULT.algorithm, entry.getKeyArn()) {
-                            @Override
-                            public String getDescription() {
-                                return String.format("SSE-KMS (%s)", entry.getKeyArn());
-                            }
-                        });
+        try {
+            keys.addAll(this.authenticated(new Authenticated<Set<Algorithm>>() {
+                @Override
+                public Set<Algorithm> call() throws BackgroundException {
+                    try {
+                        final Set<Algorithm> keys = new HashSet<Algorithm>();
+                        for(KeyListEntry entry : client.listKeys().getKeys()) {
+                            keys.add(new Algorithm(SSE_KMS_DEFAULT.algorithm, entry.getKeyArn()) {
+                                @Override
+                                public String getDescription() {
+                                    return String.format("SSE-KMS (%s)", entry.getKeyArn());
+                                }
+                            });
+                        }
+                        if(keys.isEmpty()) {
+                            keys.add(SSE_KMS_DEFAULT);
+                        }
+                        return keys;
                     }
-                    if(keys.isEmpty()) {
-                        keys.add(SSE_KMS_DEFAULT);
+                    catch(AmazonClientException e) {
+                        throw new AmazonServiceExceptionMappingService().map("Cannot read AWS KMS configuration", e);
                     }
-                    return keys;
                 }
-                catch(AmazonClientException e) {
-                    throw new AmazonServiceExceptionMappingService().map("Cannot read AWS KMS configuration", e);
-                }
-            }
-        }, prompt));
+            }, prompt));
+        }
+        catch(AccessDeniedException e) {
+            log.warn(String.format("Ignore failure reading keys from KMS. %s", e.getMessage()));
+            keys.add(SSE_KMS_DEFAULT);
+        }
         return keys;
     }
 

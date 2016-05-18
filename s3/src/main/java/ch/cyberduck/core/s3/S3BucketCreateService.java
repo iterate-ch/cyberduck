@@ -28,9 +28,6 @@ import org.jets3t.service.ServiceException;
 import org.jets3t.service.acl.AccessControlList;
 import org.jets3t.service.utils.ServiceUtils;
 
-/**
- * @version $Id$
- */
 public class S3BucketCreateService {
 
     private S3Session session;

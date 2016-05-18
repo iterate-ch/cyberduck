@@ -37,9 +37,6 @@ import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class S3DefaultMultipartService implements S3MultipartService {
     /**
      * The maximum allowed parts in a multipart upload.
@@ -53,7 +50,7 @@ public class S3DefaultMultipartService implements S3MultipartService {
     private PathContainerService containerService
             = new S3PathContainerService();
 
-    public S3DefaultMultipartService(S3Session session) {
+    public S3DefaultMultipartService(final S3Session session) {
         this.session = session;
     }
 

@@ -75,7 +75,7 @@ public class DriveDirectoryFeatureTest {
                 }, new DisabledProgressListener(),
                 new DisabledTranscriptListener()).connect(session, PathCache.empty());
         final Path test = new Path(new DriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new DriveDirectoryFeature(session).mkdir(test, null);
+        new DriveDirectoryFeature(session).mkdir(test);
         test.attributes().setVersionId(new DriveFileidProvider(session).getFileid(test));
         assertTrue(new DefaultFindFeature(session).find(test));
         new DriveDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(),

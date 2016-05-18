@@ -335,14 +335,24 @@ public class BrowserToolbarValidator implements ToolbarValidator {
      * @return Browser tab active
      */
     protected boolean isBrowser() {
-        return controller.getSelectedTabView() == BrowserController.TAB_LIST_VIEW
-                || controller.getSelectedTabView() == BrowserController.TAB_OUTLINE_VIEW;
+        switch(controller.getSelectedTabView()) {
+            case list:
+            case outline:
+                return true;
+            default:
+                return false;
+        }
     }
 
     /**
      * @return Bookmarks tab active
      */
     protected boolean isBookmarks() {
-        return controller.getSelectedTabView() == BrowserController.TAB_BOOKMARKS;
+        switch(controller.getSelectedTabView()) {
+            case bookmarks:
+                return true;
+            default:
+                return false;
+        }
     }
 }

@@ -38,7 +38,7 @@ public class AzureDirectoryFeatureTest {
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new AzureDirectoryFeature(session, null).mkdir(container, null);
+        new AzureDirectoryFeature(session, null).mkdir(container);
         assertTrue(new AzureFindFeature(session, null).find(container));
         new AzureDeleteFeature(session, null).delete(Collections.<Path>singletonList(container), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
@@ -60,7 +60,7 @@ public class AzureDirectoryFeatureTest {
         final Path container = new Path("/cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path placeholder = new Path(container, UUID.randomUUID().toString(),
                 EnumSet.of(Path.Type.directory));
-        new AzureDirectoryFeature(session, null).mkdir(placeholder, null);
+        new AzureDirectoryFeature(session, null).mkdir(placeholder);
         placeholder.setType(EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         assertTrue(new AzureFindFeature(session, null).find(placeholder));
         new AzureDeleteFeature(session, null).delete(Collections.<Path>singletonList(placeholder), new DisabledLoginCallback(), new Delete.Callback() {

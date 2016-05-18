@@ -95,12 +95,15 @@ public class SpectraBulkServiceTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         final Map<Path, TransferStatus> files = new HashMap<>();
         final Path directory = new Path(String.format("/test.cyberduck.ch/%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory));
-        files.put(directory, new TransferStatus().length(0L));
-        files.put(new Path(directory, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)),
-                new TransferStatus().length(1L)
-        );
-        final Set<UUID> set = new SpectraBulkService(session).pre(Transfer.Type.upload, files);
+        final TransferStatus directoryStatus = new TransferStatus().length(0L);
+        files.put(directory, directoryStatus);
+        final TransferStatus fileStatus = new TransferStatus().length(1L);
+        files.put(new Path(directory, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), fileStatus);
+        final SpectraBulkService service = new SpectraBulkService(session);
+        final Set<UUID> set = service.pre(Transfer.Type.upload, files);
         assertEquals(1, set.size());
+        assertEquals(1, service.query(Transfer.Type.upload, directory, directoryStatus).size());
+        assertEquals(1, service.query(Transfer.Type.upload, directory, fileStatus).size());
         new SpectraDeleteFeature(session).delete(new ArrayList<Path>(files.keySet()), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {

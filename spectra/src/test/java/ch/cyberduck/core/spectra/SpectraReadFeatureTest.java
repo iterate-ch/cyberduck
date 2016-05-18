@@ -112,6 +112,16 @@ public class SpectraReadFeatureTest {
 
     @Test
     public void testOffsetSupport() throws Exception {
-        assertFalse(new SpectraReadFeature(null).offset(null));
+        final Host host = new Host(new SpectraProtocol() {
+            @Override
+            public Scheme getScheme() {
+                return Scheme.http;
+            }
+        }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
+                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
+        ));
+        final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
+                new DefaultX509KeyManager());
+        assertFalse(new SpectraReadFeature(session).offset(null));
     }
 }
