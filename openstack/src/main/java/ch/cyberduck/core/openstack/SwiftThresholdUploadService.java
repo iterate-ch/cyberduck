@@ -70,7 +70,7 @@ public class SwiftThresholdUploadService implements Upload {
 
     @Override
     public Write.Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
-        return session.getFeature(Write.class).append(file, length, cache);
+        return new SwiftWriteFeature(session, regionService).append(file, length, cache);
     }
 
     @Override

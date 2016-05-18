@@ -211,10 +211,7 @@ public class SwiftSession extends HttpSession<Client> {
             return (T) new SwiftReadFeature(this, regionService);
         }
         if(type == Write.class) {
-            if(preferences.getBoolean("openstack.write.largeupload")) {
-                return (T) new SwiftLargeUploadWriteFeature(this, regionService, new SwiftSegmentService(this, regionService));
-            }
-            return (T) new SwiftWriteFeature(this, regionService);
+            return (T) new SwiftLargeUploadWriteFeature(this, regionService, new SwiftSegmentService(this, regionService));
         }
         if(type == Upload.class) {
             return (T) new SwiftThresholdUploadService(this, regionService);
