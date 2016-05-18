@@ -346,12 +346,12 @@ public class B2ObjectListServiceTest {
         folder1.attributes().setVersionId(new B2FileidProvider(session).getFileid(folder1));
         assertTrue(list.contains(folder1));
 
-//        new B2DeleteFeature(session).delete(Arrays.asList(file1, folder1, bucket), new DisabledLoginCallback(), new Delete.Callback() {
-//            @Override
-//            public void delete(final Path file) {
-//                //
-//            }
-//        });
+        new B2DeleteFeature(session).delete(Arrays.asList(file1, folder1, bucket), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+                //
+            }
+        });
         session.close();
     }
 }
