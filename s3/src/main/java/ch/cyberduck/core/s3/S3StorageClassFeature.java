@@ -70,7 +70,7 @@ public class S3StorageClassFeature implements Redundancy {
             }
             return redundancy;
         }
-        return null;
+        return S3Object.STORAGE_CLASS_STANDARD;
     }
 
     @Override
