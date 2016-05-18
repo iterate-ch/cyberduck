@@ -123,7 +123,7 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
         if(StringUtils.equals(KMSEncryptionFeature.SSE_KMS_DEFAULT.algorithm, setting)) {
             final String key = String.format("s3.encryption.key.%s", containerService.getContainer(file).getName());
             if(StringUtils.isNotBlank(preferences.getProperty(key))) {
-                return new Algorithm(KMSEncryptionFeature.SSE_KMS_DEFAULT.algorithm, preferences.getProperty(key));
+                return Algorithm.fromString(preferences.getProperty(key));
             }
             return KMSEncryptionFeature.SSE_KMS_DEFAULT;
         }
@@ -135,7 +135,7 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
         if(containerService.isContainer(file)) {
             final String key = String.format("s3.encryption.key.%s", containerService.getContainer(file).getName());
             if(StringUtils.isNotBlank(preferences.getProperty(key))) {
-                return new Algorithm(KMSEncryptionFeature.SSE_KMS_DEFAULT.algorithm, preferences.getProperty(key));
+                return Algorithm.fromString(preferences.getProperty(key));
             }
         }
         return super.getEncryption(file);
@@ -146,7 +146,7 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
         if(containerService.isContainer(file)) {
             if(StringUtils.isNotBlank(setting.key)) {
                 final String key = String.format("s3.encryption.key.%s", containerService.getContainer(file).getName());
-                preferences.setProperty(key, setting.key);
+                preferences.setProperty(key, setting.toString());
             }
         }
         super.setEncryption(file, setting);
