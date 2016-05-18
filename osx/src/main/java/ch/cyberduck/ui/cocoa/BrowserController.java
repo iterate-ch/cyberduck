@@ -953,9 +953,7 @@ public class BrowserController extends WindowController
         }
     }
 
-    private NSSegmentedControl browserSwitchView;
-
-    private enum BrowserSwitchSegement {
+    protected enum BrowserSwitchSegement {
         list,
         outline;
 
@@ -966,23 +964,6 @@ public class BrowserController extends WindowController
         public static BrowserSwitchSegement byPosition(final int position) {
             return BrowserSwitchSegement.values()[position];
         }
-    }
-
-    public void setBrowserSwitchView(NSSegmentedControl view) {
-        browserSwitchView = view;
-        browserSwitchView.setSegmentCount(2); // list, outline
-        browserSwitchView.setImage_forSegment(BrowserSwitchSegement.list.image(), BrowserSwitchSegement.list.ordinal());
-        browserSwitchView.setImage_forSegment(BrowserSwitchSegement.outline.image(), BrowserSwitchSegement.outline.ordinal());
-        browserSwitchView.setTarget(this.id());
-        browserSwitchView.setAction(Foundation.selector("browserSwitchButtonClicked:"));
-        final NSSegmentedCell cell = Rococoa.cast(browserSwitchView.cell(), NSSegmentedCell.class);
-        cell.setTrackingMode(NSSegmentedCell.NSSegmentSwitchTrackingSelectOne);
-        cell.setControlSize(NSCell.NSRegularControlSize);
-        browserSwitchView.setSelectedSegment(preferences.getInteger("browser.view"));
-    }
-
-    public NSSegmentedControl getBrowserSwitchView() {
-        return browserSwitchView;
     }
 
     @Action
@@ -1002,7 +983,6 @@ public class BrowserController extends WindowController
         this.setNavigation(this.isMounted());
         switch(selected) {
             case list:
-                browserSwitchView.setSelectedSegment(BookmarkSwitchSegement.browser.ordinal());
                 browserTabView.selectTabViewItemAtIndex(BrowserTab.list.ordinal());
                 break;
             case outline:
