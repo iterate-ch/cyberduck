@@ -19,9 +19,11 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Redundancy;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +37,11 @@ public class S3StorageClassFeature implements Redundancy {
     private final S3Session session;
 
     private final S3AccessControlListFeature accessControlListFeature;
+
+    private final Preferences preferences = PreferencesFactory.get();
+
+    private final PathContainerService containerService
+            = new S3PathContainerService();
 
     public S3StorageClassFeature(final S3Session session) {
         this(session, (S3AccessControlListFeature) session.getFeature(AclPermission.class));
@@ -70,11 +77,21 @@ public class S3StorageClassFeature implements Redundancy {
             }
             return redundancy;
         }
+        if(containerService.isContainer(file)) {
+            final String key = String.format("s3.storageclass.%s", containerService.getContainer(file).getName());
+            if(StringUtils.isNotBlank(preferences.getProperty(key))) {
+                return preferences.getProperty(key);
+            }
+        }
         return S3Object.STORAGE_CLASS_STANDARD;
     }
 
     @Override
     public void setClass(final Path file, final String redundancy) throws BackgroundException {
+        if(containerService.isContainer(file)) {
+            final String key = String.format("s3.storageclass.%s", containerService.getContainer(file).getName());
+            preferences.setProperty(key, redundancy);
+        }
         if(file.isFile() || file.isPlaceholder()) {
             final S3ThresholdCopyFeature copy = new S3ThresholdCopyFeature(session);
             if(null == accessControlListFeature) {
