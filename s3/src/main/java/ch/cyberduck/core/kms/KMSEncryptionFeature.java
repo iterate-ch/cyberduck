@@ -144,10 +144,8 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
     @Override
     public void setEncryption(final Path file, final Algorithm setting) throws BackgroundException {
         if(containerService.isContainer(file)) {
-            if(StringUtils.isNotBlank(setting.key)) {
-                final String key = String.format("s3.encryption.key.%s", containerService.getContainer(file).getName());
-                preferences.setProperty(key, setting.toString());
-            }
+            final String key = String.format("s3.encryption.key.%s", containerService.getContainer(file).getName());
+            preferences.setProperty(key, setting.toString());
         }
         super.setEncryption(file, setting);
     }
@@ -196,7 +194,7 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
     public static final Algorithm SSE_KMS_DEFAULT = new Algorithm("aws:kms", null) {
         @Override
         public String getDescription() {
-            return "SSE-KMS (Default Key)";
+            return "SSE-KMS";
         }
     };
 }
