@@ -376,8 +376,7 @@ public class InfoController extends ToolbarWindowController {
             final Redundancy feature = controller.getSession().getFeature(Redundancy.class);
             final String redundancy = sender.selectedItem().representedObject();
             this.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
-                            new WriteRedundancyWorker(
-                                    files, redundancy, true, controller) {
+                    new WriteRedundancyWorker(files, redundancy, true, controller) {
                                 @Override
                                 public void cleanup(final Boolean v) {
                                     toggleS3Settings(true);
@@ -2407,8 +2406,7 @@ public class InfoController extends ToolbarWindowController {
     private void changePermissions(final Permission permission, final boolean recursive) {
         if(this.togglePermissionSettings(false)) {
             this.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
-                            new WritePermissionWorker(
-                                    files, permission, recursive, controller) {
+                    new WritePermissionWorker(files, permission, recursive, controller) {
                                 @Override
                                 public void cleanup(final Boolean v) {
                                     togglePermissionSettings(true);
