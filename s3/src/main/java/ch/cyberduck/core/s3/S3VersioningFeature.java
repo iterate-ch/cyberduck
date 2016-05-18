@@ -176,10 +176,8 @@ public class S3VersioningFeature implements Versioning {
                 destination.setStorageClass(file.attributes().getStorageClass());
                 final Encryption.Algorithm encryption = file.attributes().getEncryption();
                 destination.setServerSideEncryptionAlgorithm(encryption.algorithm);
-                if(encryption.key != null) {
-                    // Set custom key id stored in KMS
-                    destination.addMetadata("x-amz-server-side-encryption-aws-kms-key-id", encryption.key);
-                }
+                // Set custom key id stored in KMS
+                destination.setServerSideEncryptionKmsKeyId(encryption.key);
                 // Apply non standard ACL
                 if(null == accessControlListFeature) {
                     destination.setAcl(null);
