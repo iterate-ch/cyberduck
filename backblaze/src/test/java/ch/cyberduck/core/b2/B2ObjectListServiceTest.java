@@ -321,4 +321,37 @@ public class B2ObjectListServiceTest {
                     new B2ObjectListService(null).virtual(directory, filename));
         }
     }
+
+    @Test
+    public void testIdenticalNamingFileFolder() throws Exception {
+        final B2Session session = new B2Session(
+                new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
+                        new Credentials(
+                                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
+                        )));
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path bucket = new Path(String.format("test-%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory, Path.Type.volume));
+        new B2DirectoryFeature(session).mkdir(bucket);
+        final String name = UUID.randomUUID().toString();
+        final Path folder1 = new Path(bucket, name, EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        final Path file1 = new Path(bucket, name, EnumSet.of(Path.Type.file));
+        new B2DirectoryFeature(session).mkdir(folder1);
+        new B2TouchFeature(session).touch(file1);
+
+        final AttributedList<Path> list = new B2ObjectListService(session).list(bucket, new DisabledListProgressListener());
+        assertEquals(2, list.size());
+        file1.attributes().setVersionId(new B2FileidProvider(session).getFileid(file1));
+        assertTrue(list.contains(file1));
+        folder1.attributes().setVersionId(new B2FileidProvider(session).getFileid(folder1));
+        assertTrue(list.contains(folder1));
+
+//        new B2DeleteFeature(session).delete(Arrays.asList(file1, folder1, bucket), new DisabledLoginCallback(), new Delete.Callback() {
+//            @Override
+//            public void delete(final Path file) {
+//                //
+//            }
+//        });
+        session.close();
+    }
 }
