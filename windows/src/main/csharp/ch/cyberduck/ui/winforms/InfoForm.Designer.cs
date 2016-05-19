@@ -1955,6 +1955,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.encryptionComboBox.Name = "encryptionComboBox";
             this.encryptionComboBox.Size = new System.Drawing.Size(391, 23);
             this.encryptionComboBox.TabIndex = 31;
+            this.encryptionComboBox.SelectionChangeCommitted += new System.EventHandler(this.encryptionCheckBox_CheckedChanged);
             // 
             // InfoForm
             // 

@@ -823,7 +823,10 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 Encryption feature = (Encryption) _controller.Session.getFeature(typeof (Encryption));
                 Encryption.Algorithm algorithm = Encryption.Algorithm.fromString(View.Encryption);
-                _controller.Background(new SetEncryptionBackgroundAction(_controller, this, _files, algorithm));
+                if (algorithm.key != null)
+                {
+                    _controller.Background(new SetEncryptionBackgroundAction(_controller, this, _files, algorithm));
+                }
             }
         }
 
@@ -1198,10 +1201,9 @@ namespace Ch.Cyberduck.Ui.Controller
             View.StorageClass = "Unknown";
 
             IList<KeyValuePair<string, string>> algorithms = new List<KeyValuePair<string, string>>();
-            algorithms.Add(new KeyValuePair<string, string>(Encryption.Algorithm.NONE.getDescription(),
-                Encryption.Algorithm.NONE.ToString()));
+            algorithms.Add(new KeyValuePair<string, string>(LocaleFactory.localizedString("Unknown"), "Unknown"));
             View.PopulateEncryption(algorithms);
-            View.Encryption = Encryption.Algorithm.NONE.toString();
+            View.Encryption = "Unknown";
 
             PopulateLifecycleTransitionPeriod();
             PopulateLifecycleDeletePeriod();
@@ -1719,7 +1721,11 @@ namespace Ch.Cyberduck.Ui.Controller
             private readonly Path _selected;
             private readonly IInfoView _view;
             private Credentials _credentials;
-            private Encryption.Algorithm _encryption;
+            private String _encryption;
+
+            private readonly HashSet<KeyValuePair<string, string>> _encryptionKeys =
+                new HashSet<KeyValuePair<string, string>>();
+
             private LifecycleConfiguration _lifecycle;
             private Location.Name _location;
             private LoggingConfiguration _logging;
@@ -1766,34 +1772,40 @@ namespace Ch.Cyberduck.Ui.Controller
                         ((IdentityConfiguration) s.getFeature(typeof (IdentityConfiguration))).getCredentials(
                             ((AnalyticsProvider) s.getFeature(typeof (AnalyticsProvider))).getName());
                 }
-                if (_infoController.NumberOfFiles == 1)
+                Encryption encryptionFeature = (Encryption) s.getFeature(typeof (Encryption));
+                if (encryptionFeature != null)
                 {
-                    if (s.getFeature(typeof (Encryption)) != null)
+                    HashSet<Encryption.Algorithm> selectedEncryptionKeys = new HashSet<Encryption.Algorithm>();
+                    foreach (Path file in _infoController.Files)
                     {
-                        IList<KeyValuePair<string, string>> algorithms = new List<KeyValuePair<string, string>>();
-                        Set keys =
-                            ((Encryption) session.getFeature(typeof (Encryption))).getKeys(_infoController._prompt);
+                        Encryption.Algorithm algorithm = encryptionFeature.getEncryption(file);
+                        selectedEncryptionKeys.Add(algorithm);
+                        _encryptionKeys.Add(
+                            new KeyValuePair<string, string>(
+                                LocaleFactory.localizedString(algorithm.getDescription(), "S3"), algorithm.ToString()));
+                        _encryption = algorithm.ToString();
+                        if (selectedEncryptionKeys.Count > 1)
+                        {
+                            _encryptionKeys.Clear();
+                            _encryptionKeys.Add(
+                                new KeyValuePair<string, string>(LocaleFactory.localizedString("Multiple"), "Multiple"));
+                            _encryption = "Multiple";
+                            break;
+                        }
+                    }
+                    if (selectedEncryptionKeys.Count == 1)
+                    {
+                        // Add additional keys stored in KMS
+                        Set keys = encryptionFeature.getKeys(_infoController._prompt);
                         Iterator iterator = keys.iterator();
                         while (iterator.hasNext())
                         {
                             Encryption.Algorithm algorithm = (Encryption.Algorithm) iterator.next();
-                            algorithms.Add(
+                            _encryptionKeys.Add(
                                 new KeyValuePair<string, string>(
                                     LocaleFactory.localizedString(algorithm.getDescription(), "S3"),
                                     algorithm.ToString()));
                         }
-                        Encryption.Algorithm encryption =
-                            ((Encryption) session.getFeature(typeof (Encryption))).getEncryption(
-                                _infoController.SelectedPath);
-                        if (!keys.contains(encryption))
-                        {
-                            // Add default KMS key not in list
-                            algorithms.Add(
-                                new KeyValuePair<string, string>(
-                                    LocaleFactory.localizedString(encryption.getDescription(), "S3"),
-                                    encryption.ToString()));
-                        }
-                        _infoController.View.PopulateEncryption(algorithms);
                     }
                 }
                 return true;
@@ -1832,7 +1844,8 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     if (_encryption != null)
                     {
-                        _view.Encryption = _encryption.ToString();
+                        _view.PopulateEncryption(_encryptionKeys.ToList());
+                        _view.Encryption = _encryption;
                     }
                     if (null != _credentials)
                     {
