@@ -233,7 +233,7 @@ public class S3MultipartUploadServiceTest {
         status.setLength(random.length);
         final AtomicBoolean interrupt = new AtomicBoolean();
         try {
-            new S3MultipartUploadService(session, 10485760L, 1).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener() {
+            new S3MultipartUploadService(session, 10L * 1024L * 1024L, 1).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener() {
                 long count;
 
                 @Override
@@ -255,7 +255,7 @@ public class S3MultipartUploadServiceTest {
         assertFalse(new S3FindFeature(session).find(test));
 
         final TransferStatus append = new TransferStatus().append(true).length(random.length);
-        new S3MultipartUploadService(session, 10485760L, 1).upload(test, local,
+        new S3MultipartUploadService(session, 10L * 1024L * 1024L, 1).upload(test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
                 new DisabledLoginCallback());
         assertEquals(random.length, append.getOffset(), 0L);
