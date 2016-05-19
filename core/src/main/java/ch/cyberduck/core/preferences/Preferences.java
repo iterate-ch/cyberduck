@@ -674,8 +674,6 @@ public abstract class Preferences {
 
         defaults.put("s3.upload.expect-continue", String.valueOf(true));
 
-        defaults.put("s3.write.multipart", String.valueOf(false));
-
         /**
          * Transfer thresholds for qloudsonic.io
          */
@@ -723,8 +721,6 @@ public abstract class Preferences {
         defaults.put("openstack.container.size.preload", String.valueOf(true));
 
         defaults.put("openstack.upload.md5", String.valueOf(true));
-
-        defaults.put("openstack.write.largeupload", String.valueOf(false));
 
         defaults.put("openstack.upload.largeobject", String.valueOf(true));
         defaults.put("openstack.upload.largeobject.concurrency", String.valueOf(5));

@@ -101,7 +101,7 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
 
     @Override
     public Write.Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
-        return session.getFeature(Write.class).append(file, length, cache);
+        return new S3WriteFeature(session).append(file, length, cache);
     }
 
     @Override
