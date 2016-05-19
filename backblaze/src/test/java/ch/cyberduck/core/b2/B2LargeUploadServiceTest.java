@@ -62,7 +62,6 @@ public class B2LargeUploadServiceTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
 
         final Path test = new Path(bucket, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
-
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
 
         // Each segment, except the last, must be larger than 100MB.
@@ -98,6 +97,7 @@ public class B2LargeUploadServiceTest {
             public void delete(final Path file) {
             }
         });
+        local.delete();
         session.close();
     }
 }

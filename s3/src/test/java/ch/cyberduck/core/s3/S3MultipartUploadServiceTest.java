@@ -77,6 +77,7 @@ public class S3MultipartUploadServiceTest {
                 //
             }
         });
+        local.delete();
         session.close();
     }
 
@@ -121,6 +122,7 @@ public class S3MultipartUploadServiceTest {
                 //
             }
         });
+        local.delete();
         session.close();
     }
 
@@ -172,6 +174,7 @@ public class S3MultipartUploadServiceTest {
                 //
             }
         });
+        local.delete();
         session.close();
     }
 
@@ -207,6 +210,7 @@ public class S3MultipartUploadServiceTest {
                 //
             }
         });
+        local.delete();
         session.close();
     }
 
@@ -270,6 +274,7 @@ public class S3MultipartUploadServiceTest {
                 //
             }
         });
+        local.delete();
         session.close();
     }
 
@@ -332,6 +337,7 @@ public class S3MultipartUploadServiceTest {
             public void delete(final Path file) {
             }
         });
+        local.delete();
         session.close();
     }
 }
