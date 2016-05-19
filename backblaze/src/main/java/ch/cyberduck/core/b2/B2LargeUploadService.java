@@ -76,6 +76,10 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
         this(session, new B2PartWriteFeature(session), partSize, PreferencesFactory.get().getInteger("b2.upload.largeobject.concurrency"));
     }
 
+    public B2LargeUploadService(final B2Session session, final Long partSize, final Integer concurrency) {
+        this(session, new B2PartWriteFeature(session), partSize, concurrency);
+    }
+
     public B2LargeUploadService(final B2Session session, final B2PartWriteFeature writer) {
         this(session, writer, PreferencesFactory.get().getLong("b2.upload.largeobject.size"),
                 PreferencesFactory.get().getInteger("b2.upload.largeobject.concurrency"));
