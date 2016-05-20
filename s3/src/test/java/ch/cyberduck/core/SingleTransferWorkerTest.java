@@ -76,9 +76,9 @@ public class SingleTransferWorkerTest {
                         protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
                             if(failed.get()) {
                                 // Second attempt successful
-                                return in;
+                                return super.decorate(in, digest);
                             }
-                            return new CountingInputStream(in) {
+                            return new CountingInputStream(super.decorate(in, digest)) {
                                 @Override
                                 protected void beforeRead(final int n) throws IOException {
                                     super.beforeRead(n);
