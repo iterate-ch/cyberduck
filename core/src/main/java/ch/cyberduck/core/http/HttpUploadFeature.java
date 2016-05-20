@@ -28,10 +28,8 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamCancelation;
-import ch.cyberduck.core.io.StreamCloser;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
@@ -73,55 +71,17 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
             InputStream in = null;
             ResponseOutputStream<Output> out = null;
             final Digest digest = this.digest();
-            final BytecountStreamListener count = new BytecountStreamListener() {
-                @Override
-                public void recv(long bytes) {
-                    super.recv(bytes);
-                    listener.recv(bytes);
-                }
-
-                @Override
-                public void sent(long bytes) {
-                    super.sent(bytes);
-                    listener.sent(bytes);
-                }
-            };
-            try {
-                // Wrap with digest stream if available
-                in = this.decorate(local.getInputStream(), digest);
-                out = writer.write(file, status);
-                new StreamCopier(cancel, progress)
-                        .withOffset(status.getOffset())
-                        .withLimit(status.getLength())
-                        .withListener(count)
-                        .transfer(in, new ThrottledOutputStream(out, throttle));
-            }
-            finally {
-                final StreamCloser c = new DefaultStreamCloser();
-                try {
-                    c.close(in);
-                    c.close(out);
-                }
-                catch(BackgroundException e) {
-                    // Reset file offset for broken pipe (B2)
-                    status.setOffset(0L); // status.getOffset() - count.getSent()
-                    // Discard sent bytes if there is an error reply.
-                    listener.sent(-count.getSent());
-                    throw e;
-                }
-            }
-            try {
-                final Output response = out.getResponse();
-                this.post(file, digest, response);
-                return response;
-            }
-            catch(BackgroundException e) {
-                // Reset file offset for error reply after entity is sent
-                status.setOffset(0L); // status.getOffset() - count.getSent()
-                // Discard sent bytes if there is an error reply.
-                listener.sent(-count.getSent());
-                throw e;
-            }
+            // Wrap with digest stream if available
+            in = this.decorate(local.getInputStream(), digest);
+            out = writer.write(file, status);
+            new StreamCopier(cancel, progress)
+                    .withOffset(status.getOffset())
+                    .withLimit(status.getLength())
+                    .withListener(listener)
+                    .transfer(in, new ThrottledOutputStream(out, throttle));
+            final Output response = out.getResponse();
+            this.post(file, digest, response);
+            return response;
         }
         catch(IOException e) {
             throw new HttpExceptionMappingService().map("Upload {0} failed", e, file);
@@ -165,26 +125,4 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
         }
     }
 
-    private static class BytecountStreamListener implements StreamListener {
-        private long sent = 0L;
-        private long recv = 0L;
-
-        @Override
-        public void sent(long bytes) {
-            sent += bytes;
-        }
-
-        @Override
-        public void recv(long bytes) {
-            recv += bytes;
-        }
-
-        private long getRecv() {
-            return recv;
-        }
-
-        public long getSent() {
-            return sent;
-        }
-    }
 }

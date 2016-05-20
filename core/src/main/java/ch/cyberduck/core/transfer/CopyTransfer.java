@@ -17,7 +17,20 @@ package ch.cyberduck.core.transfer;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.Filter;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.NullComparator;
+import ch.cyberduck.core.NullFilter;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.Serializable;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Copy;
@@ -26,7 +39,8 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.DefaultStreamCloser;
+import ch.cyberduck.core.io.DelegateStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.ThrottledInputStream;
@@ -36,10 +50,8 @@ import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.transfer.copy.ChecksumFilter;
 import ch.cyberduck.core.transfer.copy.OverwriteFilter;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.MessageFormat;
@@ -264,21 +276,18 @@ public class CopyTransfer extends Transfer {
                 out = new ThrottledOutputStream(target.getFeature(Write.class).write(copy, status), throttle);
                 new StreamCopier(status, status)
                         .withLimit(status.getLength())
-                        .withListener(new DisabledStreamListener() {
+                        .withListener(new DelegateStreamListener(streamListener) {
                             @Override
-                            public void sent(long bytes) {
+                            public void sent(final long bytes) {
                                 addTransferred(bytes);
-                                streamListener.sent(bytes);
+                                super.sent(bytes);
                             }
                         }).transfer(in, out);
             }
         }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot copy {0}", e, file);
-        }
         finally {
-            IOUtils.closeQuietly(in);
-            IOUtils.closeQuietly(out);
+            new DefaultStreamCloser().close(in);
+            new DefaultStreamCloser().close(out);
         }
     }
 }

@@ -56,8 +56,8 @@ public class CopyTransferTest {
         assertEquals(t.roots, serialized.getRoots());
         assertEquals(t.files, ((CopyTransfer) serialized).files);
         assertEquals(t.getBandwidth(), serialized.getBandwidth());
-        assertEquals(4L, serialized.getSize());
-        assertEquals(3L, serialized.getTransferred());
+        assertEquals(4L, serialized.getSize(), 0L);
+        assertEquals(3L, serialized.getTransferred(), 0L);
     }
 
     @Test

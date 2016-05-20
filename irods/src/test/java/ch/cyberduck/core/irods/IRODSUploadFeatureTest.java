@@ -113,6 +113,7 @@ public class IRODSUploadFeatureTest {
             public void delete(final Path file) {
             }
         });
+        local.delete();
         session.close();
     }
 
