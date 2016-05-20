@@ -97,6 +97,7 @@ public class DefaultUploadFeatureTest {
             public void delete(final Path file) {
             }
         });
+        local.delete();
         session.close();
     }
 }
