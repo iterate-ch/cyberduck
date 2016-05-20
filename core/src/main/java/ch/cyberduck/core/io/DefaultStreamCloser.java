@@ -25,9 +25,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-/**
- * @version $Id$
- */
 public class DefaultStreamCloser implements StreamCloser {
 
     @Override
@@ -49,6 +46,7 @@ public class DefaultStreamCloser implements StreamCloser {
             return;
         }
         try {
+            out.flush();
             out.close();
         }
         catch(IOException e) {

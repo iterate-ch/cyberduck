@@ -18,7 +18,6 @@ package ch.cyberduck.core.shared;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
@@ -26,20 +25,14 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.DefaultStreamCloser;
-import ch.cyberduck.core.io.StreamCloser;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.ThrottledInputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-/**
- * @version $Id$
- */
 public class DefaultDownloadFeature implements Download {
 
     private final Read reader;
@@ -55,27 +48,13 @@ public class DefaultDownloadFeature implements Download {
     @Override
     public void download(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
                          final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        try {
-            InputStream in = null;
-            OutputStream out = null;
-            try {
-                in = reader.read(file, status);
-                out = local.getOutputStream(status.isAppend());
-                new StreamCopier(status, status)
-                        .withOffset(0L)
-                        .withLimit(status.getLength())
-                        .withListener(listener)
-                        .transfer(new ThrottledInputStream(in, throttle), out);
-            }
-            finally {
-                final StreamCloser c = new DefaultStreamCloser();
-                c.close(in);
-                c.close(out);
-            }
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Download {0} failed", e, file);
-        }
+        final InputStream in = reader.read(file, status);
+        final OutputStream out = local.getOutputStream(status.isAppend());
+        new StreamCopier(status, status)
+                .withOffset(0L)
+                .withLimit(status.getLength())
+                .withListener(listener)
+                .transfer(new ThrottledInputStream(in, throttle), out);
     }
 
     @Override

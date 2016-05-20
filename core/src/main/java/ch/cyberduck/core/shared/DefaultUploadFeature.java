@@ -19,7 +19,6 @@ package ch.cyberduck.core.shared;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
@@ -28,14 +27,11 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.DefaultStreamCloser;
-import ch.cyberduck.core.io.StreamCloser;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -55,28 +51,14 @@ public class DefaultUploadFeature implements Upload<Void> {
     public Void upload(final Path file, final Local local, final BandwidthThrottle throttle,
                        final StreamListener listener, final TransferStatus status,
                        final ConnectionCallback callback) throws BackgroundException {
-        try {
-            InputStream in = null;
-            OutputStream out = null;
-            try {
-                in = local.getInputStream();
-                out = writer.write(file, status);
-                new StreamCopier(status, status)
-                        .withOffset(status.getOffset())
-                        .withLimit(status.getLength())
-                        .withListener(listener)
-                        .transfer(in, new ThrottledOutputStream(out, throttle));
-                return null;
-            }
-            finally {
-                final StreamCloser c = new DefaultStreamCloser();
-                c.close(in);
-                c.close(out);
-            }
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
-        }
+        final InputStream in = local.getInputStream();
+        final OutputStream out = writer.write(file, status);
+        new StreamCopier(status, status)
+                .withOffset(status.getOffset())
+                .withLimit(status.getLength())
+                .withListener(listener)
+                .transfer(in, new ThrottledOutputStream(out, throttle));
+        return null;
     }
 
     @Override

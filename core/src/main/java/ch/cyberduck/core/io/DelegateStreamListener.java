@@ -1,8 +1,8 @@
 package ch.cyberduck.core.io;
 
 /*
- * Copyright (c) 2002-2015 David Kocher. All rights reserved.
- * http://cyberduck.io/
+ * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,18 +13,23 @@ package ch.cyberduck.core.io;
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to:
- * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.exception.BackgroundException;
+public abstract class DelegateStreamListener implements StreamListener {
 
-import java.io.InputStream;
-import java.io.OutputStream;
+    private final StreamListener delegate;
 
-public interface StreamCloser {
-    void close(InputStream in) throws BackgroundException;
+    public DelegateStreamListener(final StreamListener delegate) {
+        this.delegate = delegate;
+    }
 
-    void close(OutputStream out) throws BackgroundException;
+    @Override
+    public void sent(final long bytes) {
+        delegate.sent(bytes);
+    }
+
+    @Override
+    public void recv(final long bytes) {
+        delegate.recv(bytes);
+    }
 }
