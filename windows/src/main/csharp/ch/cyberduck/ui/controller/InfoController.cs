@@ -811,7 +811,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void StorageClassChanged()
         {
-            if (ToggleS3Settings(false))
+            if (!"Multiple".Equals(View.StorageClass) && ToggleS3Settings(false))
             {
                 _controller.Background(new SetStorageClassBackgroundAction(_controller, this, _files, View.StorageClass));
             }
@@ -819,14 +819,10 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void EncryptionChanged()
         {
-            if (ToggleS3Settings(false))
+            if (!"Multiple".Equals(View.Encryption) && ToggleS3Settings(false))
             {
-                Encryption feature = (Encryption) _controller.Session.getFeature(typeof (Encryption));
                 Encryption.Algorithm algorithm = Encryption.Algorithm.fromString(View.Encryption);
-                if (algorithm.key != null)
-                {
-                    _controller.Background(new SetEncryptionBackgroundAction(_controller, this, _files, algorithm));
-                }
+                _controller.Background(new SetEncryptionBackgroundAction(_controller, this, _files, algorithm));
             }
         }
 
@@ -1212,17 +1208,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
             if (ToggleS3Settings(false))
             {
-                if (session.getFeature(typeof (Redundancy)) != null)
-                {
-                    List list = ((Redundancy) session.getFeature(typeof (Redundancy))).getClasses();
-                    for (int i = 0; i < list.size(); i++)
-                    {
-                        string redundancy = (string) list.get(i);
-                        classes.Add(new KeyValuePair<string, string>(LocaleFactory.localizedString(redundancy, "S3"),
-                            redundancy));
-                    }
-                    View.PopulateStorageClass(classes);
-                }
                 if (NumberOfFiles > 1)
                 {
                     View.S3PublicUrl = _multipleFilesString;
@@ -1233,12 +1218,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 else
                 {
                     Path file = SelectedPath;
-                    String redundancy = file.attributes().getStorageClass();
-                    if (Utils.IsNotBlank(redundancy))
-                    {
-                        View.PopulateStorageClass(classes);
-                        View.StorageClass = redundancy;
-                    }
                     if (file.isFile())
                     {
                         if (session.getHost().getProtocol().getType() == Protocol.Type.s3)
@@ -1717,18 +1696,24 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             private readonly Path _container;
             private readonly HashSet<string> _containers = new HashSet<string>();
-            private readonly InfoController _infoController;
-            private readonly Path _selected;
-            private readonly IInfoView _view;
-            private Credentials _credentials;
-            private String _encryption;
 
             private readonly HashSet<KeyValuePair<string, string>> _encryptionKeys =
                 new HashSet<KeyValuePair<string, string>>();
 
+            private readonly InfoController _infoController;
+            private readonly Path _selected;
+
+            private readonly HashSet<KeyValuePair<string, string>> _storageClasses =
+                new HashSet<KeyValuePair<string, string>>();
+
+            private readonly IInfoView _view;
+            private Credentials _credentials;
+            private String _encryption;
+
             private LifecycleConfiguration _lifecycle;
             private Location.Name _location;
             private LoggingConfiguration _logging;
+            private String _storageClass;
             private VersioningConfiguration _versioning;
 
             public FetchS3BackgroundAction(BrowserController browserController, InfoController infoController)
@@ -1772,6 +1757,29 @@ namespace Ch.Cyberduck.Ui.Controller
                         ((IdentityConfiguration) s.getFeature(typeof (IdentityConfiguration))).getCredentials(
                             ((AnalyticsProvider) s.getFeature(typeof (AnalyticsProvider))).getName());
                 }
+                if (session.getFeature(typeof (Redundancy)) != null)
+                {
+                    List list = ((Redundancy) session.getFeature(typeof (Redundancy))).getClasses();
+                    for (int i = 0; i < list.size(); i++)
+                    {
+                        string redundancy = (string) list.get(i);
+                        _storageClasses.Add(
+                            new KeyValuePair<string, string>(LocaleFactory.localizedString(redundancy, "S3"), redundancy));
+                    }
+                    HashSet<String> selectedClasses = new HashSet<string>();
+                    foreach (Path file in _infoController.Files)
+                    {
+                        string storageClass = file.attributes().getStorageClass();
+                        selectedClasses.Add(storageClass);
+                        _storageClass = storageClass;
+                    }
+                    if (selectedClasses.Count > 1)
+                    {
+                        _storageClasses.Add(new KeyValuePair<string, string>(LocaleFactory.localizedString("Multiple"),
+                            "Multiple"));
+                        _storageClass = "Multiple";
+                    }
+                }
                 Encryption encryptionFeature = (Encryption) s.getFeature(typeof (Encryption));
                 if (encryptionFeature != null)
                 {
@@ -1784,28 +1792,23 @@ namespace Ch.Cyberduck.Ui.Controller
                             new KeyValuePair<string, string>(
                                 LocaleFactory.localizedString(algorithm.getDescription(), "S3"), algorithm.ToString()));
                         _encryption = algorithm.ToString();
-                        if (selectedEncryptionKeys.Count > 1)
-                        {
-                            _encryptionKeys.Clear();
-                            _encryptionKeys.Add(
-                                new KeyValuePair<string, string>(LocaleFactory.localizedString("Multiple"), "Multiple"));
-                            _encryption = "Multiple";
-                            break;
-                        }
                     }
-                    if (selectedEncryptionKeys.Count == 1)
+                    // Add additional keys stored in KMS
+                    Set keys = encryptionFeature.getKeys(_infoController._prompt);
+                    Iterator iterator = keys.iterator();
+                    while (iterator.hasNext())
                     {
-                        // Add additional keys stored in KMS
-                        Set keys = encryptionFeature.getKeys(_infoController._prompt);
-                        Iterator iterator = keys.iterator();
-                        while (iterator.hasNext())
-                        {
-                            Encryption.Algorithm algorithm = (Encryption.Algorithm) iterator.next();
-                            _encryptionKeys.Add(
-                                new KeyValuePair<string, string>(
-                                    LocaleFactory.localizedString(algorithm.getDescription(), "S3"),
-                                    algorithm.ToString()));
-                        }
+                        Encryption.Algorithm algorithm = (Encryption.Algorithm) iterator.next();
+                        _encryptionKeys.Add(
+                            new KeyValuePair<string, string>(
+                                LocaleFactory.localizedString(algorithm.getDescription(), "S3"),
+                                algorithm.ToString()));
+                    }
+                    if (selectedEncryptionKeys.Count > 1)
+                    {
+                        _encryptionKeys.Add(
+                            new KeyValuePair<string, string>(LocaleFactory.localizedString("Multiple"), "Multiple"));
+                        _encryption = "Multiple";
                     }
                 }
                 return true;
@@ -1846,6 +1849,11 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         _view.PopulateEncryption(_encryptionKeys.ToList());
                         _view.Encryption = _encryption;
+                    }
+                    if (_storageClass != null)
+                    {
+                        _view.PopulateStorageClass(_storageClasses.ToList());
+                        _view.StorageClass = _storageClass;
                     }
                     if (null != _credentials)
                     {
@@ -1896,6 +1904,12 @@ namespace Ch.Cyberduck.Ui.Controller
                     _infoController.ToggleS3Settings(true);
                     _infoController.AttachS3Handlers();
                 }
+            }
+
+            public override string getActivity()
+            {
+                return MessageFormat.format(LocaleFactory.localizedString("Reading metadata of {0}", "Status"),
+                    toString(Utils.ConvertToJavaList(_infoController.Files)));
             }
         }
 
