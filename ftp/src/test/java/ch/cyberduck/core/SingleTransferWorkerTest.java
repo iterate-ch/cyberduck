@@ -23,6 +23,7 @@ import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.ftp.FTPWriteFeature;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferItemCallback;
@@ -113,13 +114,14 @@ public class SingleTransferWorkerTest {
                 new DisabledProgressListener(), counter, new DisabledLoginCallback(), TransferItemCache.empty()) {
 
         }.run(session));
+        local.delete();
+        assertEquals(62768L, counter.getSent(), 0L);
+        assertEquals(62768L, new DefaultAttributesFeature(session).find(test).getSize());
+        assertTrue(failed.get());
         new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {
             }
         });
-        local.delete();
-        assertEquals(62768L, counter.getSent(), 0L);
-        assertTrue(failed.get());
     }
 }

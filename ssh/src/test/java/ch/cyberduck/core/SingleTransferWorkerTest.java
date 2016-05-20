@@ -19,6 +19,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.sftp.SFTPAttributesFeature;
 import ch.cyberduck.core.sftp.SFTPDeleteFeature;
 import ch.cyberduck.core.sftp.SFTPHomeDirectoryService;
 import ch.cyberduck.core.sftp.SFTPProtocol;
@@ -113,13 +114,14 @@ public class SingleTransferWorkerTest {
                 new DisabledProgressListener(), counter, new DisabledLoginCallback(), TransferItemCache.empty()) {
 
         }.run(session));
+        local.delete();
+        assertEquals(62768L, counter.getSent(), 0L);
+        assertTrue(failed.get());
+        assertEquals(62768L, new SFTPAttributesFeature(session).find(test).getSize());
         new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {
             }
         });
-        local.delete();
-        assertEquals(62768L, counter.getSent(), 0L);
-        assertTrue(failed.get());
     }
 }

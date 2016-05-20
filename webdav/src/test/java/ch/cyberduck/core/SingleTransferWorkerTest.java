@@ -15,6 +15,7 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.dav.DAVAttributesFeature;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSession;
@@ -111,13 +112,14 @@ public class SingleTransferWorkerTest {
                 new DisabledProgressListener(), counter, new DisabledLoginCallback(), TransferItemCache.empty()) {
 
         }.run(session));
+        local.delete();
+        assertEquals(62768L, counter.getSent(), 0L);
+        assertEquals(62768L, new DAVAttributesFeature(session).find(test).getSize());
+        assertTrue(failed.get());
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {
             }
         });
-        local.delete();
-        assertEquals(62768L, counter.getSent(), 0L);
-        assertTrue(failed.get());
     }
 }
