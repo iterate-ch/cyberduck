@@ -1717,14 +1717,15 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             private readonly Path _container;
             private readonly HashSet<string> _containers = new HashSet<string>();
+
+            private readonly HashSet<KeyValuePair<string, string>> _encryptionKeys =
+                new HashSet<KeyValuePair<string, string>>();
+
             private readonly InfoController _infoController;
             private readonly Path _selected;
             private readonly IInfoView _view;
             private Credentials _credentials;
             private String _encryption;
-
-            private readonly HashSet<KeyValuePair<string, string>> _encryptionKeys =
-                new HashSet<KeyValuePair<string, string>>();
 
             private LifecycleConfiguration _lifecycle;
             private Location.Name _location;
@@ -1896,6 +1897,12 @@ namespace Ch.Cyberduck.Ui.Controller
                     _infoController.ToggleS3Settings(true);
                     _infoController.AttachS3Handlers();
                 }
+            }
+
+            public override string getActivity()
+            {
+                return MessageFormat.format(LocaleFactory.localizedString("Reading metadata of {0}", "Status"),
+                    toString(Utils.ConvertToJavaList(_infoController.Files)));
             }
         }
 
