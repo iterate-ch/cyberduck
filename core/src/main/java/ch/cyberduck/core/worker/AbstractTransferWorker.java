@@ -247,7 +247,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
         }
         final TransferItem item = new TransferItem(file, local);
         if(prompt.isSelected(item)) {
-            this.submit(new RepeatableTransferCallable() {
+            this.submit(new RetryTransferCallable() {
                 @Override
                 public TransferStatus call() throws BackgroundException {
                     final Session<?> session = borrow();
@@ -361,7 +361,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
             final List<TransferStatus> segments = status.getSegments();
             for(final Iterator<TransferStatus> iter = segments.iterator(); iter.hasNext(); ) {
                 final TransferStatus segment = iter.next();
-                this.submit(new RepeatableTransferCallable() {
+                this.submit(new RetryTransferCallable() {
                     @Override
                     public TransferStatus call() throws BackgroundException {
                         // Transfer
