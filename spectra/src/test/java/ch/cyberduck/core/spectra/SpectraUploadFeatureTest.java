@@ -93,6 +93,7 @@ public class SpectraUploadFeatureTest {
             public void delete(final Path file) {
             }
         });
+        local.delete();
         session.close();
     }
 
@@ -148,6 +149,8 @@ public class SpectraUploadFeatureTest {
             public void delete(final Path file) {
             }
         });
+        local1.delete();
+        local2.delete();
         session.close();
     }
 }
