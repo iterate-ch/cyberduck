@@ -70,9 +70,8 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
         /// Make OnExpanding accessible for non subclasses
         /// </summary>
         /// <param name="model"></param>
-        public void OnExpanding(object model)
+        public void OnExpanding(TreeBranchExpandingEventArgs args)
         {
-            TreeBranchExpandingEventArgs args = new TreeBranchExpandingEventArgs(model, null);
             base.OnExpanding(args);
         }
 

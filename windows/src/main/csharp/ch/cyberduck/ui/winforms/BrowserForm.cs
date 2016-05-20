@@ -2520,7 +2520,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 {
                     if (null != _currentDropTarget)
                     {
-                        form.browser.OnExpanding(_currentDropTarget);
+                        form.browser.OnExpanding(new TreeBranchExpandingEventArgs(_currentDropTarget, null));
                         ((TreeListView) ListView).Expand(_currentDropTarget);
                     }
                     _timer.Stop();
