@@ -17,6 +17,9 @@ package ch.cyberduck.core.io;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.BytecountStreamListener;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -26,9 +29,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-/**
- * @version $Id$
- */
 public final class StreamCopier {
     private static final Logger log = Logger.getLogger(StreamCopier.class);
 
@@ -36,8 +36,8 @@ public final class StreamCopier {
 
     private StreamProgress progress;
 
-    private StreamListener listener
-            = new DisabledStreamListener();
+    private BytecountStreamListener listener
+            = new BytecountStreamListener(new DisabledStreamListener());
 
     /**
      * Buffer size
@@ -49,17 +49,9 @@ public final class StreamCopier {
 
     private Long limit = -1L;
 
-    private boolean keepFlushing
-            = PreferencesFactory.get().getBoolean("connection.flush");
-
     public StreamCopier(final StreamCancelation cancel, final StreamProgress progress) {
         this.cancel = cancel;
         this.progress = progress;
-    }
-
-    public StreamCopier withFlushing(boolean keepFlushing) {
-        this.keepFlushing = keepFlushing;
-        return this;
     }
 
     public StreamCopier withChunksize(final Integer chunksize) {
@@ -68,7 +60,7 @@ public final class StreamCopier {
     }
 
     public StreamCopier withListener(final StreamListener listener) {
-        this.listener = listener;
+        this.listener = new BytecountStreamListener(listener);
         return this;
     }
 
@@ -92,12 +84,11 @@ public final class StreamCopier {
      * @param in  The stream to read from
      * @param out The stream to write to
      */
-    public void transfer(final InputStream in, final OutputStream out)
-            throws IOException, ConnectionCanceledException {
-        if(offset > 0) {
-            skip(in, offset);
-        }
+    public void transfer(final InputStream in, final OutputStream out) throws BackgroundException {
         try {
+            if(offset > 0) {
+                skip(in, offset);
+            }
             final byte[] buffer = new byte[chunksize];
             long total = 0;
             int len = chunksize;
@@ -117,9 +108,6 @@ public final class StreamCopier {
                 else {
                     listener.recv(read);
                     out.write(buffer, 0, read);
-                    if(keepFlushing) {
-                        out.flush();
-                    }
                     progress.progress(read);
                     listener.sent(read);
                     total += read;
@@ -136,10 +124,19 @@ public final class StreamCopier {
                 }
             }
         }
+        catch(IOException e) {
+            // Discard sent bytes if there is an error reply.
+            final long sent = listener.getSent();
+            progress.progress(-sent);
+            listener.sent(-sent);
+            final long recv = listener.getRecv();
+            listener.recv(-recv);
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
         finally {
-            if(!keepFlushing) {
-                out.flush();
-            }
+            final StreamCloser c = new DefaultStreamCloser();
+            c.close(in);
+            c.close(out);
         }
         if(cancel.isCanceled()) {
             throw new ConnectionCanceledException();
