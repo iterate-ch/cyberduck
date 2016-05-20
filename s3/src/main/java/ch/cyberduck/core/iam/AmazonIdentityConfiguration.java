@@ -66,6 +66,7 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
         this.configuration.setUserAgent(ua.get());
         this.configuration.setMaxErrorRetry(0);
         this.configuration.setMaxConnections(1);
+        this.configuration.setUseGzip(PreferencesFactory.get().getBoolean("http.compression.enable"));
         final Proxy proxy = ProxyFactory.get().find(host);
         switch(proxy.getType()) {
             case HTTP:

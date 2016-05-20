@@ -70,10 +70,8 @@ public class S3CopyFeature implements Copy {
             final StorageObject destination = new StorageObject(containerService.getKey(copy));
             destination.setStorageClass(storageClass);
             destination.setServerSideEncryptionAlgorithm(encryption.algorithm);
-            if(encryption.key != null) {
-                // Set custom key id stored in KMS
-                destination.addMetadata("x-amz-server-side-encryption-aws-kms-key-id", encryption.key);
-            }
+            // Set custom key id stored in KMS
+            destination.setServerSideEncryptionKmsKeyId(encryption.key);
             if(null == accessControlListFeature) {
                 destination.setAcl(null);
             }

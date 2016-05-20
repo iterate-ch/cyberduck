@@ -61,10 +61,8 @@ public class S3MoveFeature implements Move {
                 if(encryptionFeature != null) {
                     final Encryption.Algorithm encryption = encryptionFeature.getEncryption(source);
                     destination.setServerSideEncryptionAlgorithm(encryption.algorithm);
-                    if(encryption.key != null) {
-                        // Set custom key id stored in KMS
-                        destination.addMetadata("x-amz-server-side-encryption-aws-kms-key-id", encryption.key);
-                    }
+                    // Set custom key id stored in KMS
+                    destination.setServerSideEncryptionKmsKeyId(encryption.key);
                 }
                 // Apply non standard ACL
                 final S3AccessControlListFeature accessControlListFeature = (S3AccessControlListFeature) session.getFeature(AclPermission.class);

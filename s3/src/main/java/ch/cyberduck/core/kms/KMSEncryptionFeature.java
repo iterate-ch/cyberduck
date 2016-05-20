@@ -75,6 +75,7 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
         configuration.setUserAgent(ua.get());
         configuration.setMaxErrorRetry(0);
         configuration.setMaxConnections(1);
+        configuration.setUseGzip(PreferencesFactory.get().getBoolean("http.compression.enable"));
         final Proxy proxy = ProxyFactory.get().find(host);
         switch(proxy.getType()) {
             case HTTP:
@@ -108,7 +109,7 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
         if(StringUtils.equals(KMSEncryptionFeature.SSE_KMS_DEFAULT.algorithm, setting)) {
             final String key = String.format("s3.encryption.key.%s", containerService.getContainer(file).getName());
             if(StringUtils.isNotBlank(preferences.getProperty(key))) {
-                return new Algorithm(KMSEncryptionFeature.SSE_KMS_DEFAULT.algorithm, preferences.getProperty(key));
+                return Algorithm.fromString(preferences.getProperty(key));
             }
             return KMSEncryptionFeature.SSE_KMS_DEFAULT;
         }
@@ -120,7 +121,7 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
         if(containerService.isContainer(file)) {
             final String key = String.format("s3.encryption.key.%s", containerService.getContainer(file).getName());
             if(StringUtils.isNotBlank(preferences.getProperty(key))) {
-                return new Algorithm(KMSEncryptionFeature.SSE_KMS_DEFAULT.algorithm, preferences.getProperty(key));
+                return Algorithm.fromString(preferences.getProperty(key));
             }
         }
         return super.getEncryption(file);
@@ -129,10 +130,8 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
     @Override
     public void setEncryption(final Path file, final Algorithm setting) throws BackgroundException {
         if(containerService.isContainer(file)) {
-            if(StringUtils.isNotBlank(setting.key)) {
-                final String key = String.format("s3.encryption.key.%s", containerService.getContainer(file).getName());
-                preferences.setProperty(key, setting.key);
-            }
+            final String key = String.format("s3.encryption.key.%s", containerService.getContainer(file).getName());
+            preferences.setProperty(key, setting.toString());
         }
         super.setEncryption(file, setting);
     }
@@ -198,7 +197,7 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
     public static final Algorithm SSE_KMS_DEFAULT = new Algorithm("aws:kms", null) {
         @Override
         public String getDescription() {
-            return "SSE-KMS (Default Key)";
+            return "SSE-KMS";
         }
     };
 }

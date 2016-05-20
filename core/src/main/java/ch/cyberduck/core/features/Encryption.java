@@ -98,6 +98,9 @@ public interface Encryption {
         }
 
         public static Algorithm fromString(final String value) {
+            if(StringUtils.equals(NONE.toString(), value)) {
+                return NONE;
+            }
             if(StringUtils.contains(value, '|')) {
                 return new Algorithm(StringUtils.split(value, '|')[0], StringUtils.split(value, '|')[1]);
             }

@@ -367,6 +367,7 @@ public class InfoController extends ToolbarWindowController {
         this.storageClassPopup = b;
         this.storageClassPopup.setTarget(this.id());
         this.storageClassPopup.setAction(Foundation.selector("storageClassPopupClicked:"));
+        this.storageClassPopup.setAllowsMixedState(true);
     }
 
     @Action
@@ -375,8 +376,7 @@ public class InfoController extends ToolbarWindowController {
             final Redundancy feature = controller.getSession().getFeature(Redundancy.class);
             final String redundancy = sender.selectedItem().representedObject();
             this.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
-                            new WriteRedundancyWorker(
-                                    files, redundancy, true, controller) {
+                    new WriteRedundancyWorker(files, redundancy, true, controller) {
                                 @Override
                                 public void cleanup(final Boolean v) {
                                     toggleS3Settings(true);
@@ -395,13 +395,15 @@ public class InfoController extends ToolbarWindowController {
         this.encryptionPopup = b;
         this.encryptionPopup.setTarget(this.id());
         this.encryptionPopup.setAction(Foundation.selector("encryptionPopupClicked:"));
+        this.encryptionPopup.setAllowsMixedState(true);
     }
 
     @Action
     public void encryptionPopupClicked(final NSPopUpButton sender) {
-        if(this.toggleS3Settings(false)) {
-            final Encryption feature = controller.getSession().getFeature(Encryption.class);
-            final Encryption.Algorithm encryption = Encryption.Algorithm.fromString(sender.selectedItem().representedObject());
+        final Encryption feature = controller.getSession().getFeature(Encryption.class);
+        final String algorithm = sender.selectedItem().representedObject();
+        if(null != algorithm && this.toggleS3Settings(false)) {
+            final Encryption.Algorithm encryption = Encryption.Algorithm.fromString(algorithm);
             this.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
                     new WriteEncryptionWorker(files, encryption, true, controller) {
                                 @Override
@@ -1244,7 +1246,7 @@ public class InfoController extends ToolbarWindowController {
                 update.put(header.getName(), header.getValue());
             }
             this.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
-                    new WriteMetadataWorker(files, update, true, controller) {
+                            new WriteMetadataWorker(files, update, true, controller) {
                                 @Override
                                 public void cleanup(final Boolean v) {
                                     toggleMetadataSettings(true);
@@ -1621,7 +1623,7 @@ public class InfoController extends ToolbarWindowController {
     private String getName() {
         final int count = this.numberOfFiles();
         if(count > 1) {
-            return "(" + LocaleFactory.localizedString("Multiple files") + ")";
+            return String.format("(%s)", LocaleFactory.localizedString("Multiple files"));
         }
         return this.getSelected().getName();
     }
@@ -1649,16 +1651,16 @@ public class InfoController extends ToolbarWindowController {
             this.updateField(pathField, path, TRUNCATE_MIDDLE_ATTRIBUTES);
             pathField.setToolTip(path);
             if(count > 1) {
-                kindField.setStringValue("(" + LocaleFactory.localizedString("Multiple files") + ")");
-                checksumField.setStringValue("(" + LocaleFactory.localizedString("Multiple files") + ")");
+                kindField.setStringValue(String.format("(%s)", LocaleFactory.localizedString("Multiple files")));
+                checksumField.setStringValue(String.format("(%s)", LocaleFactory.localizedString("Multiple files")));
             }
             else {
                 this.updateField(kindField, descriptor.getKind(file), TRUNCATE_MIDDLE_ATTRIBUTES);
             }
             // Timestamps
             if(count > 1) {
-                modifiedField.setStringValue("(" + LocaleFactory.localizedString("Multiple files") + ")");
-                createdField.setStringValue("(" + LocaleFactory.localizedString("Multiple files") + ")");
+                modifiedField.setStringValue(String.format("(%s)", LocaleFactory.localizedString("Multiple files")));
+                createdField.setStringValue(String.format("(%s)", LocaleFactory.localizedString("Multiple files")));
             }
             else {
                 if(-1 == file.attributes().getModificationDate()) {
@@ -1681,11 +1683,11 @@ public class InfoController extends ToolbarWindowController {
                 }
             }
             // Owner
-            this.updateField(ownerField, count > 1 ? "(" + LocaleFactory.localizedString("Multiple files") + ")" :
+            this.updateField(ownerField, count > 1 ? String.format("(%s)", LocaleFactory.localizedString("Multiple files")) :
                             StringUtils.isBlank(file.attributes().getOwner()) ? LocaleFactory.localizedString("Unknown") : file.attributes().getOwner(),
                     TRUNCATE_MIDDLE_ATTRIBUTES
             );
-            this.updateField(groupField, count > 1 ? "(" + LocaleFactory.localizedString("Multiple files") + ")" :
+            this.updateField(groupField, count > 1 ? String.format("(%s)", LocaleFactory.localizedString("Multiple files")) :
                             StringUtils.isBlank(file.attributes().getGroup()) ? LocaleFactory.localizedString("Unknown") : file.attributes().getGroup(),
                     TRUNCATE_MIDDLE_ATTRIBUTES
             );
@@ -1712,7 +1714,7 @@ public class InfoController extends ToolbarWindowController {
     private void initWebUrl() {
         // Web URL
         if(this.numberOfFiles() > 1) {
-            this.updateField(webUrlField, "(" + LocaleFactory.localizedString("Multiple files") + ")");
+            this.updateField(webUrlField, String.format("(%s)", LocaleFactory.localizedString("Multiple files")));
             webUrlField.setToolTip(StringUtils.EMPTY);
         }
         else {
@@ -1766,7 +1768,7 @@ public class InfoController extends ToolbarWindowController {
         }
         final int count = permissions.size();
         if(count > 1) {
-            permissionsField.setStringValue("(" + LocaleFactory.localizedString("Multiple files") + ")");
+            permissionsField.setStringValue(String.format("(%s)", LocaleFactory.localizedString("Multiple files")));
         }
         else {
             for(Permission permission : permissions) {
@@ -1869,7 +1871,7 @@ public class InfoController extends ToolbarWindowController {
 
     private void initChecksum() {
         if(this.numberOfFiles() > 1) {
-            checksumField.setStringValue("(" + LocaleFactory.localizedString("Multiple files") + ")");
+            checksumField.setStringValue(String.format("(%s)", LocaleFactory.localizedString("Multiple files")));
         }
         else {
             final Path file = this.getSelected();
@@ -1961,8 +1963,7 @@ public class InfoController extends ToolbarWindowController {
         storageClassPopup.selectItem(storageClassPopup.lastItem());
 
         encryptionPopup.removeAllItems();
-        encryptionPopup.addItemWithTitle(Encryption.Algorithm.NONE.getDescription());
-        encryptionPopup.lastItem().setRepresentedObject(Encryption.Algorithm.NONE.toString());
+        encryptionPopup.addItemWithTitle(LocaleFactory.localizedString("Unknown"));
         encryptionPopup.lastItem().setEnabled(false);
         encryptionPopup.selectItem(encryptionPopup.lastItem());
 
@@ -1976,30 +1977,23 @@ public class InfoController extends ToolbarWindowController {
                 }
             }
             if(this.numberOfFiles() > 1) {
-                s3PublicUrlField.setStringValue("(" + LocaleFactory.localizedString("Multiple files") + ")");
+                s3PublicUrlField.setStringValue(String.format("(%s)", LocaleFactory.localizedString("Multiple files")));
                 s3PublicUrlField.setToolTip(StringUtils.EMPTY);
-                s3torrentUrlField.setStringValue("(" + LocaleFactory.localizedString("Multiple files") + ")");
+                s3torrentUrlField.setStringValue(String.format("(%s)", LocaleFactory.localizedString("Multiple files")));
                 s3torrentUrlField.setToolTip(StringUtils.EMPTY);
             }
             else {
                 Path file = this.getSelected();
-                final String redundancy = file.attributes().getStorageClass();
-                if(StringUtils.isNotEmpty(redundancy)) {
-                    storageClassPopup.removeItemWithTitle(LocaleFactory.localizedString("Unknown"));
-                    storageClassPopup.selectItemWithTitle(LocaleFactory.localizedString(redundancy, "S3"));
+                final DescriptiveUrl signed = session.getFeature(UrlProvider.class).toUrl(file).find(DescriptiveUrl.Type.signed);
+                if(!signed.equals(DescriptiveUrl.EMPTY)) {
+                    s3PublicUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(signed));
+                    s3PublicUrlField.setToolTip(signed.getHelp());
+                    s3PublicUrlValidityField.setStringValue(signed.getHelp());
                 }
-                if(file.isFile()) {
-                    final DescriptiveUrl signed = session.getFeature(UrlProvider.class).toUrl(file).find(DescriptiveUrl.Type.signed);
-                    if(!signed.equals(DescriptiveUrl.EMPTY)) {
-                        s3PublicUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(signed));
-                        s3PublicUrlField.setToolTip(signed.getHelp());
-                        s3PublicUrlValidityField.setStringValue(signed.getHelp());
-                    }
-                    final DescriptiveUrl torrent = session.getFeature(UrlProvider.class).toUrl(file).find(DescriptiveUrl.Type.torrent);
-                    if(!torrent.equals(DescriptiveUrl.EMPTY)) {
-                        s3torrentUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(torrent));
-                        s3torrentUrlField.setToolTip(torrent.getHelp());
-                    }
+                final DescriptiveUrl torrent = session.getFeature(UrlProvider.class).toUrl(file).find(DescriptiveUrl.Type.torrent);
+                if(!torrent.equals(DescriptiveUrl.EMPTY)) {
+                    s3torrentUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(torrent));
+                    s3torrentUrlField.setToolTip(torrent.getHelp());
                 }
             }
             this.background(new BrowserControllerBackgroundAction<Void>(controller) {
@@ -2007,7 +2001,10 @@ public class InfoController extends ToolbarWindowController {
                 LoggingConfiguration logging;
                 VersioningConfiguration versioning;
                 Set<String> containers = new HashSet<String>();
-                Encryption.Algorithm encryption;
+                // Available encryption keys in KMS
+                Set<Encryption.Algorithm> managedEncryptionKeys = new HashSet<Encryption.Algorithm>();
+                Set<Encryption.Algorithm> selectedEncryptionKeys = new HashSet<Encryption.Algorithm>();
+                Set<String> selectedStorageClasses = new HashSet<String>();
                 LifecycleConfiguration lifecycle;
                 Credentials credentials;
 
@@ -2033,21 +2030,18 @@ public class InfoController extends ToolbarWindowController {
                         credentials = session.getFeature(IdentityConfiguration.class)
                                 .getCredentials(session.getFeature(AnalyticsProvider.class).getName());
                     }
-                    if(numberOfFiles() == 1) {
-                        if(session.getFeature(Encryption.class) != null) {
-                            // Add additional keys stored in KMS
-                            final Set<Encryption.Algorithm> keys = session.getFeature(Encryption.class).getKeys(prompt);
-                            for(Encryption.Algorithm algorithm : keys) {
-                                encryptionPopup.addItemWithTitle(LocaleFactory.localizedString(algorithm.getDescription(), "S3"));
-                                encryptionPopup.lastItem().setRepresentedObject(algorithm.toString());
-                            }
-                            encryption = session.getFeature(Encryption.class).getEncryption(getSelected());
-                            if(!keys.contains(encryption)) {
-                                // Add default KMS key not in list
-                                encryptionPopup.addItemWithTitle(LocaleFactory.localizedString(encryption.getDescription(), "S3"));
-                                encryptionPopup.lastItem().setRepresentedObject(encryption.toString());
-                            }
+                    if(session.getFeature(Redundancy.class) != null) {
+                        for(final Path file : files) {
+                            selectedStorageClasses.add(session.getFeature(Redundancy.class).getClass(file));
                         }
+                    }
+                    if(session.getFeature(Encryption.class) != null) {
+                        // Add additional keys stored in KMS
+                        managedEncryptionKeys = session.getFeature(Encryption.class).getKeys(prompt);
+                        for(final Path file : files) {
+                            selectedEncryptionKeys.add(session.getFeature(Encryption.class).getEncryption(file));
+                        }
+                        managedEncryptionKeys.addAll(selectedEncryptionKeys);
                     }
                     return null;
                 }
@@ -2079,9 +2073,40 @@ public class InfoController extends ToolbarWindowController {
                         bucketVersioningButton.setState(versioning.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
                         bucketMfaButton.setState(versioning.isMultifactor() ? NSCell.NSOnState : NSCell.NSOffState);
                     }
-                    if(encryption != null) {
-                        encryptionPopup.selectItemAtIndex(encryptionPopup.indexOfItemWithRepresentedObject(encryption.toString()));
+
+                    for(Encryption.Algorithm algorithm : managedEncryptionKeys) {
+                        encryptionPopup.addItemWithTitle(LocaleFactory.localizedString(algorithm.getDescription(), "S3"));
+                        encryptionPopup.lastItem().setRepresentedObject(algorithm.toString());
                     }
+                    if(!selectedEncryptionKeys.isEmpty()) {
+                        encryptionPopup.selectItemAtIndex(new NSInteger(-1));
+                        if(-1 != encryptionPopup.indexOfItemWithTitle(LocaleFactory.localizedString("Unknown")).intValue()) {
+                            encryptionPopup.removeItemWithTitle(LocaleFactory.localizedString("Unknown"));
+                        }
+
+                    }
+                    for(Encryption.Algorithm algorithm : selectedEncryptionKeys) {
+                        encryptionPopup.selectItemAtIndex(encryptionPopup.indexOfItemWithRepresentedObject(algorithm.toString()));
+                    }
+                    for(Encryption.Algorithm algorithm : selectedEncryptionKeys) {
+                        encryptionPopup.itemAtIndex(encryptionPopup.indexOfItemWithRepresentedObject(algorithm.toString()))
+                                .setState(selectedEncryptionKeys.size() == 1 ? NSCell.NSOnState : NSCell.NSMixedState);
+                    }
+
+                    if(!selectedStorageClasses.isEmpty()) {
+                        storageClassPopup.selectItemAtIndex(new NSInteger(-1));
+                        if(-1 != storageClassPopup.indexOfItemWithTitle(LocaleFactory.localizedString("Unknown")).intValue()) {
+                            storageClassPopup.removeItemWithTitle(LocaleFactory.localizedString("Unknown"));
+                        }
+                    }
+                    for(String storageClass : selectedStorageClasses) {
+                        storageClassPopup.selectItemAtIndex(storageClassPopup.indexOfItemWithRepresentedObject(storageClass));
+                    }
+                    for(String storageClass : selectedStorageClasses) {
+                        storageClassPopup.itemAtIndex(storageClassPopup.indexOfItemWithRepresentedObject(storageClass))
+                                .setState(selectedStorageClasses.size() == 1 ? NSCell.NSOnState : NSCell.NSMixedState);
+                    }
+
                     if(null != credentials) {
                         bucketAnalyticsSetupUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(
                                 session.getFeature(AnalyticsProvider.class).getSetup(session.getHost().getProtocol().getDefaultHostname(),
@@ -2386,8 +2411,7 @@ public class InfoController extends ToolbarWindowController {
     private void changePermissions(final Permission permission, final boolean recursive) {
         if(this.togglePermissionSettings(false)) {
             this.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
-                            new WritePermissionWorker(
-                                    files, permission, recursive, controller) {
+                    new WritePermissionWorker(files, permission, recursive, controller) {
                                 @Override
                                 public void cleanup(final Boolean v) {
                                     togglePermissionSettings(true);
@@ -2641,9 +2665,9 @@ public class InfoController extends ToolbarWindowController {
                     }
                     // Concatenate URLs
                     if(numberOfFiles() > 1) {
-                        distributionUrlField.setStringValue("(" + LocaleFactory.localizedString("Multiple files") + ")");
+                        distributionUrlField.setStringValue(String.format("(%s)", LocaleFactory.localizedString("Multiple files")));
                         distributionUrlField.setToolTip(StringUtils.EMPTY);
-                        distributionCnameUrlField.setStringValue("(" + LocaleFactory.localizedString("Multiple files") + ")");
+                        distributionCnameUrlField.setStringValue(String.format("(%s)", LocaleFactory.localizedString("Multiple files")));
                     }
                     else {
                         final DescriptiveUrl url = cdn.toUrl(file).find(DescriptiveUrl.Type.cdn);

@@ -79,11 +79,11 @@ public class SingleTransferWorkerTest {
                     return new CountingInputStream(in) {
                         @Override
                         protected void beforeRead(final int n) throws IOException {
+                            super.beforeRead(n);
                             if(this.getByteCount() >= 32768L) {
                                 failed.set(true);
                                 throw new SocketTimeoutException();
                             }
-                            super.beforeRead(n);
                         }
                     };
                 }
