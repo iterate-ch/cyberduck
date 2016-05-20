@@ -32,9 +32,6 @@ import java.net.URI;
 import java.text.MessageFormat;
 import java.util.Locale;
 
-/**
- * @version $Id$
- */
 public class DefaultUrlProvider implements UrlProvider {
 
     private Host host;
@@ -46,9 +43,6 @@ public class DefaultUrlProvider implements UrlProvider {
     @Override
     public DescriptiveUrlBag toUrl(final Path file) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
-        if(file.isVolume()) {
-            return list;
-        }
         list.add(new DescriptiveUrl(URI.create(String.format("%s%s",
                 new HostUrlProvider(false).get(host), URIEncoder.encode(file.getAbsolute()))),
                 DescriptiveUrl.Type.provider,

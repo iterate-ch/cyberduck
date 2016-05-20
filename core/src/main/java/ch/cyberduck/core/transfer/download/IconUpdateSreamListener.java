@@ -19,7 +19,8 @@ package ch.cyberduck.core.transfer.download;
  */
 
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.DelegateStreamListener;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.local.IconService;
 import ch.cyberduck.core.local.IconServiceFactory;
 import ch.cyberduck.core.preferences.Preferences;
@@ -29,10 +30,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-/**
- * @version $Id$
- */
-public class IconUpdateSreamListener extends DisabledStreamListener {
+public class IconUpdateSreamListener extends DelegateStreamListener {
 
     private TransferStatus status;
 
@@ -53,7 +51,8 @@ public class IconUpdateSreamListener extends DisabledStreamListener {
 
     private boolean enabled = preferences.getBoolean("queue.download.icon.update");
 
-    public IconUpdateSreamListener(final TransferStatus status, final Local file) {
+    public IconUpdateSreamListener(final StreamListener delegate, final TransferStatus status, final Local file) {
+        super(delegate);
         this.status = status;
         this.threshold = status.getLength() > preferences.getLong("queue.download.icon.threshold");
         this.file = file;
@@ -69,5 +68,6 @@ public class IconUpdateSreamListener extends DisabledStreamListener {
                 step++;
             }
         }
+        super.recv(bytes);
     }
 }

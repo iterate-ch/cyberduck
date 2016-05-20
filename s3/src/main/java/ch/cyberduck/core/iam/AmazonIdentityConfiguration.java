@@ -47,12 +47,11 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
 
     private final Host host;
 
-    private final AmazonIdentityManagementClient client;
-
     /**
      * Prefix in preferences
      */
     private static final String prefix = "iam.";
+    public ClientConfiguration configuration;
 
     public AmazonIdentityConfiguration(final Host host) {
         this(host, PreferencesFactory.get().getInteger("connection.timeout.seconds") * 1000);
@@ -60,35 +59,21 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
 
     public AmazonIdentityConfiguration(final Host host, final int timeout) {
         this.host = host;
-        final ClientConfiguration configuration = new ClientConfiguration();
-        configuration.setConnectionTimeout(timeout);
-        configuration.setSocketTimeout(timeout);
+        this.configuration = new ClientConfiguration();
+        this.configuration.setConnectionTimeout(timeout);
+        this.configuration.setSocketTimeout(timeout);
         final UseragentProvider ua = new PreferencesUseragentProvider();
-        configuration.setUserAgent(ua.get());
-        configuration.setMaxErrorRetry(0);
-        configuration.setMaxConnections(1);
-        configuration.setUseGzip(PreferencesFactory.get().getBoolean("http.compression.enable"));
+        this.configuration.setUserAgent(ua.get());
+        this.configuration.setMaxErrorRetry(0);
+        this.configuration.setMaxConnections(1);
+        this.configuration.setUseGzip(PreferencesFactory.get().getBoolean("http.compression.enable"));
         final Proxy proxy = ProxyFactory.get().find(host);
         switch(proxy.getType()) {
             case HTTP:
             case HTTPS:
-                configuration.setProxyHost(proxy.getHostname());
-                configuration.setProxyPort(proxy.getPort());
+                this.configuration.setProxyHost(proxy.getHostname());
+                this.configuration.setProxyPort(proxy.getPort());
         }
-        // Create new IAM credentials
-        client = new AmazonIdentityManagementClient(
-                new com.amazonaws.auth.AWSCredentials() {
-                    @Override
-                    public String getAWSAccessKeyId() {
-                        return host.getCredentials().getUsername();
-                    }
-
-                    @Override
-                    public String getAWSSecretKey() {
-                        return host.getCredentials().getPassword();
-                    }
-                }, configuration
-        );
     }
 
     private interface Authenticated<T> extends Callable<T> {
@@ -118,6 +103,20 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
             @Override
             public Void call() throws BackgroundException {
                 PreferencesFactory.get().deleteProperty(String.format("%s%s", prefix, username));
+                // Create new IAM credentials
+                final AmazonIdentityManagementClient client = new AmazonIdentityManagementClient(
+                        new com.amazonaws.auth.AWSCredentials() {
+                            @Override
+                            public String getAWSAccessKeyId() {
+                                return host.getCredentials().getUsername();
+                            }
+
+                            @Override
+                            public String getAWSSecretKey() {
+                                return host.getCredentials().getPassword();
+                            }
+                        }, configuration
+                );
                 try {
                     final ListAccessKeysResult keys
                             = client.listAccessKeys(new ListAccessKeysRequest().withUserName(username));
@@ -143,6 +142,9 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
                 }
                 catch(AmazonClientException e) {
                     throw new AmazonServiceExceptionMappingService().map("Cannot write user configuration", e);
+                }
+                finally {
+                    client.shutdown();
                 }
                 return null;
             }
@@ -172,6 +174,20 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
         this.authenticated(new Authenticated<Void>() {
             @Override
             public Void call() throws BackgroundException {
+                // Create new IAM credentials
+                final AmazonIdentityManagementClient client = new AmazonIdentityManagementClient(
+                        new com.amazonaws.auth.AWSCredentials() {
+                            @Override
+                            public String getAWSAccessKeyId() {
+                                return host.getCredentials().getUsername();
+                            }
+
+                            @Override
+                            public String getAWSSecretKey() {
+                                return host.getCredentials().getPassword();
+                            }
+                        }, configuration
+                );
                 try {
                     // Create new IAM credentials
                     User user;
@@ -201,6 +217,9 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
                 }
                 catch(AmazonClientException e) {
                     throw new AmazonServiceExceptionMappingService().map("Cannot write user configuration", e);
+                }
+                finally {
+                    client.shutdown();
                 }
                 return null;
             }

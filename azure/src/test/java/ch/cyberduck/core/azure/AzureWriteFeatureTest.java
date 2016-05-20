@@ -58,7 +58,6 @@ public class AzureWriteFeatureTest {
         final OutputStream out = new AzureWriteFeature(session, context).write(test, status);
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        out.close();
         assertTrue(new AzureFindFeature(session, context).find(test));
         final PathAttributes attributes = new AzureAttributesFeature(session, context).find(test);
         assertEquals(content.length, attributes.getSize());

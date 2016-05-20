@@ -41,7 +41,7 @@ import static org.junit.Assert.*;
 public class SwiftLargeObjectUploadFeatureTest {
 
     @Test
-    public void testUploadRax() throws Exception {
+    public void testUpload() throws Exception {
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                 new Credentials(
                         System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")));
@@ -52,7 +52,6 @@ public class SwiftLargeObjectUploadFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
 
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
-
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
 
         // Each segment, except the last, must be larger than 1048576 bytes.
@@ -104,6 +103,7 @@ public class SwiftLargeObjectUploadFeatureTest {
             public void delete(final Path file) {
             }
         });
+        local.delete();
         session.close();
     }
 }

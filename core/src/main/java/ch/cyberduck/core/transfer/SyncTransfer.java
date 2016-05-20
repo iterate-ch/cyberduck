@@ -143,7 +143,7 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
-    public long getTransferred() {
+    public Long getTransferred() {
         // Include super for serialized state.
         return super.getTransferred() + download.getTransferred() + upload.getTransferred();
     }

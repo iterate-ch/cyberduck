@@ -97,6 +97,7 @@ public class S3SingleUploadServiceTest {
             public void delete(final Path file) {
             }
         });
+        local.delete();
         session.close();
     }
 
@@ -137,6 +138,7 @@ public class S3SingleUploadServiceTest {
             public void delete(final Path file) {
             }
         });
+        local.delete();
         session.close();
     }
 
@@ -176,6 +178,7 @@ public class S3SingleUploadServiceTest {
             public void delete(final Path file) {
             }
         });
+        local.delete();
         session.close();
     }
 

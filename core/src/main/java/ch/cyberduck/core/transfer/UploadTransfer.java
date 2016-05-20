@@ -36,7 +36,7 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.filter.UploadRegexFilter;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.DelegateStreamListener;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.normalizer.UploadRootPathsNormalizer;
@@ -239,11 +239,10 @@ public class UploadTransfer extends Transfer {
                     file.getName()));
             // Transfer
             final Upload upload = session.getFeature(Upload.class);
-            upload.upload(file, local, bandwidth, new DisabledStreamListener() {
+            upload.upload(file, local, bandwidth, new DelegateStreamListener(streamListener) {
                 @Override
-                public void sent(long bytes) {
+                public void sent(final long bytes) {
                     addTransferred(bytes);
-                    streamListener.sent(bytes);
                     super.sent(bytes);
                 }
             }, status, callback);

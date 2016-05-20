@@ -141,6 +141,6 @@ public class ConcurrentTransferWorkerTest {
                 new CertificateStoreX509KeyManager(new DisabledCertificateStore()), PathCache.empty(),
                 connections);
         assertTrue(worker.run(null));
-        assertEquals(0L, transfer.getTransferred());
+        assertEquals(0L, transfer.getTransferred(), 0L);
     }
 }

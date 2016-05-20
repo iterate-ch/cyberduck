@@ -256,11 +256,10 @@ public class DownloadTransfer extends Transfer {
             }
             // Transfer
             final Download download = session.getFeature(Download.class);
-            download.download(file, local, bandwidth, new IconUpdateSreamListener(status, local) {
+            download.download(file, local, bandwidth, new IconUpdateSreamListener(streamListener, status, local) {
                 @Override
-                public void recv(long bytes) {
+                public void recv(final long bytes) {
                     addTransferred(bytes);
-                    streamListener.recv(bytes);
                     super.recv(bytes);
                 }
             }, status, callback);

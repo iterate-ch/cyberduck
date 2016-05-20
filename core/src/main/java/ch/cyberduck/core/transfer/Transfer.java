@@ -41,7 +41,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
 
 public abstract class Transfer implements Serializable {
     private static final Logger log = Logger.getLogger(Transfer.class);
@@ -54,12 +56,12 @@ public abstract class Transfer implements Serializable {
     /**
      * The sum of the file length of all files in the <code>queue</code> or null if unknown
      */
-    private Long size;
+    private AtomicLong size;
 
     /**
      * The number bytes already transferred of the files in the <code>queue</code> or null if unknown
      */
-    private Long transferred;
+    private AtomicLong transferred;
 
     public abstract Type getType();
 
@@ -343,43 +345,49 @@ public abstract class Transfer implements Serializable {
         if(null == size || null == transferred) {
             return false;
         }
-        return this.getSize() == this.getTransferred();
+        return Objects.equals(this.getSize(), this.getTransferred());
     }
 
     /**
      * @return The sum of all file lengths in this transfer.
      */
-    public synchronized long getSize() {
+    public Long getSize() {
         if(null == size) {
             return 0L;
         }
-        return size;
+        return size.get();
     }
 
-    public synchronized void addSize(final long bytes) {
+    public void addSize(final long bytes) {
         if(null == size) {
             // Initialize
-            size = 0L;
+            size = new AtomicLong(0L);
         }
-        size += bytes;
+        size.addAndGet(bytes);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Size set to %d bytes", size.get()));
+        }
     }
 
     /**
      * @return The number of bytes transferred of all files.
      */
-    public synchronized long getTransferred() {
+    public Long getTransferred() {
         if(null == transferred) {
             return 0L;
         }
-        return transferred;
+        return transferred.get();
     }
 
-    public synchronized void addTransferred(final long bytes) {
+    public void addTransferred(final long bytes) {
         if(null == transferred) {
             // Initialize
-            transferred = 0L;
+            transferred = new AtomicLong(0L);
         }
-        transferred += bytes;
+        transferred.addAndGet(bytes);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Transferred set to %d bytes", transferred.get()));
+        }
     }
 
     public String getUuid() {
@@ -393,16 +401,24 @@ public abstract class Transfer implements Serializable {
         this.uuid = uuid;
     }
 
-    public void setTimestamp(Date timestamp) {
+    public void setTimestamp(final Date timestamp) {
         this.timestamp = timestamp;
     }
 
-    public synchronized void setSize(long size) {
-        this.size = size;
+    public void setSize(final Long bytes) {
+        if(null == size) {
+            // Initialize
+            size = new AtomicLong(0L);
+        }
+        size.set(bytes);
     }
 
-    public synchronized void setTransferred(long transferred) {
-        this.transferred = transferred;
+    public void setTransferred(final Long bytes) {
+        if(null == transferred) {
+            // Initialize
+            transferred = new AtomicLong(0L);
+        }
+        transferred.set(bytes);
     }
 
     @Override

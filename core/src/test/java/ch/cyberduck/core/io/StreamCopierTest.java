@@ -11,7 +11,6 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
@@ -156,9 +155,6 @@ public class StreamCopierTest {
 
                         }
                     }).transfer(new NullInputStream(status.getLength()), new NullOutputStream());
-                }
-                catch(IOException e) {
-                    fail();
                 }
                 catch(BackgroundException e) {
                     assertTrue(e instanceof ConnectionCanceledException);
