@@ -226,7 +226,7 @@ public class S3MultipartUploadServiceTest {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        final byte[] random = new byte[20 * 1024 * 1024];
+        final byte[] random = new byte[12 * 1024 * 1024];
         new Random().nextBytes(random);
         IOUtils.write(random, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus();
@@ -258,11 +258,10 @@ public class S3MultipartUploadServiceTest {
         new S3MultipartUploadService(session, 10L * 1024L * 1024L, 1).upload(test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
                 new DisabledLoginCallback());
-        assertEquals(random.length, append.getOffset(), 0L);
+        assertEquals(2L * 1024L * 1024L, append.getOffset(), 0L);
         assertTrue(append.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
-        assertEquals(random.length, session.list(container,
-                new DisabledListProgressListener()).get(test).attributes().getSize());
+        assertEquals(12L * 1024L * 1024L, new S3AttributesFeature(session).find(test).getSize(), 0L);
         final byte[] buffer = new byte[random.length];
         final InputStream in = new S3ReadFeature(session).read(test, new TransferStatus());
         IOUtils.readFully(in, buffer);
