@@ -197,18 +197,18 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     }
 
     /**
-     * @param offset The already transferred bytes
+     * @param bytes The already transferred bytes
      */
-    public void setOffset(final long offset) {
-        this.offset.set(offset);
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Transferred bytes set to %d bytes", offset));
+    public void setOffset(final long bytes) {
+        offset.set(bytes);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Transferred bytes set to %d bytes", bytes));
         }
     }
 
     @Override
     public void progress(final long bytes) {
-        offset.set(offset.get() + bytes);
+        this.setOffset(offset.get() + bytes);
     }
 
     public TransferStatus skip(final long bytes) {
