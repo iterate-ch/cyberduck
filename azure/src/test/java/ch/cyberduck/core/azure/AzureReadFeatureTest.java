@@ -65,7 +65,6 @@ public class AzureReadFeatureTest {
         final OutputStream out = new AzureWriteFeature(session, null).write(test, new TransferStatus().length(content.length));
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        out.close();
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);
