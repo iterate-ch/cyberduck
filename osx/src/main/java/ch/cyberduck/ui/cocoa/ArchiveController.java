@@ -22,8 +22,8 @@ import ch.cyberduck.core.Archive;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Compress;
-import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.threading.BrowserControllerBackgroundAction;
+import ch.cyberduck.core.threading.DefaultMainAction;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,7 +44,7 @@ public class ArchiveController extends ProxyController {
         new OverwriteController(parent).overwrite(Collections.singletonList(format.getArchive(selected)), new DefaultMainAction() {
             @Override
             public void run() {
-                background(new BrowserControllerBackgroundAction(parent) {
+                parent.background(new BrowserControllerBackgroundAction(parent) {
                     @Override
                     public Boolean run() throws BackgroundException {
                         final Compress feature = parent.getSession().getFeature(Compress.class);
@@ -79,7 +79,7 @@ public class ArchiveController extends ProxyController {
             new OverwriteController(parent).overwrite(archive.getExpanded(Collections.singletonList(s)), new DefaultMainAction() {
                 @Override
                 public void run() {
-                    background(new BrowserControllerBackgroundAction(parent) {
+                    parent.background(new BrowserControllerBackgroundAction(parent) {
                         @Override
                         public Boolean run() throws BackgroundException {
                             final Compress feature = parent.getSession().getFeature(Compress.class);

@@ -24,9 +24,6 @@ import ch.cyberduck.core.worker.RevertWorker;
 
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class RevertController extends ProxyController {
 
     private BrowserController parent;
@@ -36,7 +33,7 @@ public class RevertController extends ProxyController {
     }
 
     public void revert(final List<Path> files) {
-        this.background(new WorkerBackgroundAction<List<Path>>(parent, parent.getSession(), parent.getCache(),
+        parent.background(new WorkerBackgroundAction<List<Path>>(parent, parent.getSession(), parent.getCache(),
                 new RevertWorker(files) {
                     @Override
                     public void cleanup(final List<Path> result) {

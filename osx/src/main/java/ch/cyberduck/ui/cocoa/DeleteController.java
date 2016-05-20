@@ -31,9 +31,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class DeleteController extends ProxyController {
 
     private BrowserController parent;
@@ -90,7 +87,7 @@ public class DeleteController extends ProxyController {
     }
 
     private void run(final List<Path> files) {
-        this.background(new WorkerBackgroundAction<Boolean>(parent, parent.getSession(), parent.getCache(),
+        parent.background(new WorkerBackgroundAction<Boolean>(parent, parent.getSession(), parent.getCache(),
                         new DeleteWorker(LoginCallbackFactory.get(parent), files, parent) {
                             @Override
                             public void cleanup(final Boolean done) {
