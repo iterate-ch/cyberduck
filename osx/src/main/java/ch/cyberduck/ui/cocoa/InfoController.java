@@ -2080,7 +2080,10 @@ public class InfoController extends ToolbarWindowController {
                     }
                     if(!selectedEncryptionKeys.isEmpty()) {
                         encryptionPopup.selectItemAtIndex(new NSInteger(-1));
-                        encryptionPopup.removeItemWithTitle(LocaleFactory.localizedString("Unknown"));
+                        if(-1 != encryptionPopup.indexOfItemWithTitle(LocaleFactory.localizedString("Unknown")).intValue()) {
+                            encryptionPopup.removeItemWithTitle(LocaleFactory.localizedString("Unknown"));
+                        }
+
                     }
                     for(Encryption.Algorithm algorithm : selectedEncryptionKeys) {
                         encryptionPopup.selectItemAtIndex(encryptionPopup.indexOfItemWithRepresentedObject(algorithm.toString()));
@@ -2092,7 +2095,9 @@ public class InfoController extends ToolbarWindowController {
 
                     if(!selectedStorageClasses.isEmpty()) {
                         storageClassPopup.selectItemAtIndex(new NSInteger(-1));
-                        storageClassPopup.removeItemWithTitle(LocaleFactory.localizedString("Unknown"));
+                        if(-1 != storageClassPopup.indexOfItemWithTitle(LocaleFactory.localizedString("Unknown")).intValue()) {
+                            storageClassPopup.removeItemWithTitle(LocaleFactory.localizedString("Unknown"));
+                        }
                     }
                     for(String storageClass : selectedStorageClasses) {
                         storageClassPopup.selectItemAtIndex(storageClassPopup.indexOfItemWithRepresentedObject(storageClass));
