@@ -20,7 +20,7 @@ package ch.cyberduck.core.threading;
 
 public interface FailureDiagnostics<T> {
 
-    public enum Type {
+    enum Type {
         network,
         application
     }
