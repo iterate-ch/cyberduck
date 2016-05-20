@@ -105,6 +105,7 @@ public class DAVUploadFeatureTest {
             public void delete(final Path file) {
             }
         });
+        local.delete();
         session.close();
     }
 }
