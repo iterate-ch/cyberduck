@@ -244,7 +244,6 @@ public class UploadTransfer extends Transfer {
                 public void sent(long bytes) {
                     addTransferred(bytes);
                     streamListener.sent(bytes);
-                    super.sent(bytes);
                 }
             }, status, callback);
         }

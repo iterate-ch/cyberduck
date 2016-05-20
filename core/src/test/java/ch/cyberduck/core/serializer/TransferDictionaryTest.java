@@ -46,7 +46,7 @@ import ch.cyberduck.core.worker.SingleTransferWorker;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
@@ -69,8 +69,8 @@ public class TransferDictionaryTest {
         assertNotSame(t, serialized);
         assertEquals(t.getRoots(), serialized.getRoots());
         assertEquals(t.getBandwidth(), serialized.getBandwidth());
-        assertEquals(4L, serialized.getSize());
-        assertEquals(3L, serialized.getTransferred());
+        assertEquals(4L, serialized.getSize(), 0L);
+        assertEquals(3L, serialized.getTransferred(), 0L);
         assertFalse(serialized.isComplete());
     }
 
@@ -85,8 +85,8 @@ public class TransferDictionaryTest {
         assertNotSame(t, serialized);
         assertEquals(t.getRoots(), serialized.getRoots());
         assertEquals(t.getBandwidth(), serialized.getBandwidth());
-        assertEquals(4L, serialized.getSize());
-        assertEquals(3L, serialized.getTransferred());
+        assertEquals(4L, serialized.getSize(), 0L);
+        assertEquals(3L, serialized.getTransferred(), 0L);
     }
 
     @Test
@@ -99,8 +99,8 @@ public class TransferDictionaryTest {
         assertNotSame(t, serialized);
         assertEquals(t.getRoots(), serialized.getRoots());
         assertEquals(t.getBandwidth(), serialized.getBandwidth());
-        assertEquals(4L, serialized.getSize());
-        assertEquals(3L, serialized.getTransferred());
+        assertEquals(4L, serialized.getSize(), 0L);
+        assertEquals(3L, serialized.getTransferred(), 0L);
     }
 
     @Test
@@ -114,7 +114,7 @@ public class TransferDictionaryTest {
 
             @Override
             public AttributedList<Local> list() throws LocalAccessDeniedException {
-                return new AttributedList<Local>(Arrays.<Local>asList(new NullLocal("p", "a")));
+                return new AttributedList<Local>(Collections.singletonList(new NullLocal("p", "a")));
             }
         }));
         transfer.action(null, true, false, new DisabledTransferPrompt() {
