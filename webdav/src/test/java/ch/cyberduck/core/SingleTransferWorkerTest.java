@@ -68,29 +68,31 @@ public class SingleTransferWorkerTest {
         host.setDefaultPath("/dav/basic");
         final AtomicBoolean failed = new AtomicBoolean();
         final DAVSession session = new DAVSession(host) {
+            final DAVUploadFeature upload = new DAVUploadFeature(this) {
+                @Override
+                protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
+                    if(failed.get()) {
+                        // Second attempt successful
+                        return in;
+                    }
+                    return new CountingInputStream(in) {
+                        @Override
+                        protected void beforeRead(final int n) throws IOException {
+                            if(this.getByteCount() >= 32768L) {
+                                failed.set(true);
+                                throw new SocketTimeoutException();
+                            }
+                            super.beforeRead(n);
+                        }
+                    };
+                }
+            };
+
             @Override
             @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
                 if(type == Upload.class) {
-                    return (T) new DAVUploadFeature(this) {
-                        @Override
-                        protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
-                            if(failed.get()) {
-                                // Second attempt successful
-                                return in;
-                            }
-                            return new CountingInputStream(in) {
-                                @Override
-                                protected void beforeRead(final int n) throws IOException {
-                                    if(this.getByteCount() >= 32768L) {
-                                        failed.set(true);
-                                        throw new SocketTimeoutException();
-                                    }
-                                    super.beforeRead(n);
-                                }
-                            };
-                        }
-                    };
+                    return (T) upload;
                 }
                 return super.getFeature(type);
             }

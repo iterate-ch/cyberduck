@@ -67,32 +67,34 @@ public class SingleTransferWorkerTest {
         ));
         final AtomicBoolean failed = new AtomicBoolean();
         final SFTPSession session = new SFTPSession(host) {
+            final SFTPWriteFeature write = new SFTPWriteFeature(this) {
+                @Override
+                public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
+                    final OutputStream out = super.write(file, status);
+                    if(failed.get()) {
+                        // Second attempt successful
+                        return out;
+                    }
+                    return new CountingOutputStream(out) {
+                        @Override
+                        protected void afterWrite(final int n) throws IOException {
+                            super.afterWrite(n);
+                            if(this.getByteCount() >= 42768L) {
+                                // Buffer size
+                                assertEquals(32768L, status.getOffset());
+                                failed.set(true);
+                                throw new SocketTimeoutException();
+                            }
+                        }
+                    };
+                }
+            };
+
             @Override
             @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
                 if(type == Write.class) {
-                    return (T) new SFTPWriteFeature(this) {
-                        @Override
-                        public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
-                            final OutputStream out = super.write(file, status);
-                            if(failed.get()) {
-                                // Second attempt successful
-                                return out;
-                            }
-                            return new CountingOutputStream(out) {
-                                @Override
-                                protected void afterWrite(final int n) throws IOException {
-                                    super.afterWrite(n);
-                                    if(this.getByteCount() >= 42768L) {
-                                        // Buffer size
-                                        assertEquals(32768L, status.getOffset());
-                                        failed.set(true);
-                                        throw new SocketTimeoutException();
-                                    }
-                                }
-                            };
-                        }
-                    };
+                    return (T) write;
                 }
                 return super.getFeature(type);
             }
