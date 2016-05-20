@@ -54,12 +54,12 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
 
     private final Host host;
 
-    private final AWSKMSClient client;
-
     private final Preferences preferences = PreferencesFactory.get();
 
     private final PathContainerService containerService
             = new S3PathContainerService();
+
+    private final ClientConfiguration configuration;
 
     public KMSEncryptionFeature(final S3Session session) {
         this(session, PreferencesFactory.get().getInteger("connection.timeout.seconds") * 1000);
@@ -67,8 +67,8 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
 
     public KMSEncryptionFeature(final S3Session session, final int timeout) {
         super(session);
-        this.host = session.getHost();
-        final ClientConfiguration configuration = new ClientConfiguration();
+        host = session.getHost();
+        configuration = new ClientConfiguration();
         configuration.setConnectionTimeout(timeout);
         configuration.setSocketTimeout(timeout);
         final UseragentProvider ua = new PreferencesUseragentProvider();
@@ -82,21 +82,6 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
                 configuration.setProxyHost(proxy.getHostname());
                 configuration.setProxyPort(proxy.getPort());
         }
-        // Create new IAM credentials
-        client = new AWSKMSClient(
-                new com.amazonaws.auth.AWSCredentials() {
-                    @Override
-                    public String getAWSAccessKeyId() {
-                        return host.getCredentials().getUsername();
-                    }
-
-                    @Override
-                    public String getAWSSecretKey() {
-                        return host.getCredentials().getPassword();
-                    }
-                }, configuration
-        );
-
     }
 
     private interface Authenticated<T> extends Callable<T> {
@@ -162,6 +147,20 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
             keys.addAll(this.authenticated(new Authenticated<Set<Algorithm>>() {
                 @Override
                 public Set<Algorithm> call() throws BackgroundException {
+                    // Create new IAM credentials
+                    final AWSKMSClient client = new AWSKMSClient(
+                            new com.amazonaws.auth.AWSCredentials() {
+                                @Override
+                                public String getAWSAccessKeyId() {
+                                    return host.getCredentials().getUsername();
+                                }
+
+                                @Override
+                                public String getAWSSecretKey() {
+                                    return host.getCredentials().getPassword();
+                                }
+                            }, configuration
+                    );
                     try {
                         final Set<Algorithm> keys = new HashSet<Algorithm>();
                         for(KeyListEntry entry : client.listKeys().getKeys()) {
@@ -179,6 +178,9 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
                     }
                     catch(AmazonClientException e) {
                         throw new AmazonServiceExceptionMappingService().map("Cannot read AWS KMS configuration", e);
+                    }
+                    finally {
+                        client.shutdown();
                     }
                 }
             }, prompt));
