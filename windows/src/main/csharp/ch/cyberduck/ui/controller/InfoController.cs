@@ -819,14 +819,10 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void EncryptionChanged()
         {
-            if (ToggleS3Settings(false))
+            if (!"Multiple".Equals(View.Encryption) && ToggleS3Settings(false))
             {
-                Encryption feature = (Encryption) _controller.Session.getFeature(typeof (Encryption));
                 Encryption.Algorithm algorithm = Encryption.Algorithm.fromString(View.Encryption);
-                if (algorithm.key != null)
-                {
-                    _controller.Background(new SetEncryptionBackgroundAction(_controller, this, _files, algorithm));
-                }
+                _controller.Background(new SetEncryptionBackgroundAction(_controller, this, _files, algorithm));
             }
         }
 
@@ -1785,28 +1781,23 @@ namespace Ch.Cyberduck.Ui.Controller
                             new KeyValuePair<string, string>(
                                 LocaleFactory.localizedString(algorithm.getDescription(), "S3"), algorithm.ToString()));
                         _encryption = algorithm.ToString();
-                        if (selectedEncryptionKeys.Count > 1)
-                        {
-                            _encryptionKeys.Clear();
-                            _encryptionKeys.Add(
-                                new KeyValuePair<string, string>(LocaleFactory.localizedString("Multiple"), "Multiple"));
-                            _encryption = "Multiple";
-                            break;
-                        }
                     }
-                    if (selectedEncryptionKeys.Count == 1)
+                    // Add additional keys stored in KMS
+                    Set keys = encryptionFeature.getKeys(_infoController._prompt);
+                    Iterator iterator = keys.iterator();
+                    while (iterator.hasNext())
                     {
-                        // Add additional keys stored in KMS
-                        Set keys = encryptionFeature.getKeys(_infoController._prompt);
-                        Iterator iterator = keys.iterator();
-                        while (iterator.hasNext())
-                        {
-                            Encryption.Algorithm algorithm = (Encryption.Algorithm) iterator.next();
-                            _encryptionKeys.Add(
-                                new KeyValuePair<string, string>(
-                                    LocaleFactory.localizedString(algorithm.getDescription(), "S3"),
-                                    algorithm.ToString()));
-                        }
+                        Encryption.Algorithm algorithm = (Encryption.Algorithm) iterator.next();
+                        _encryptionKeys.Add(
+                            new KeyValuePair<string, string>(
+                                LocaleFactory.localizedString(algorithm.getDescription(), "S3"),
+                                algorithm.ToString()));
+                    }
+                    if (selectedEncryptionKeys.Count > 1)
+                    {
+                        _encryptionKeys.Add(
+                            new KeyValuePair<string, string>(LocaleFactory.localizedString("Multiple"), "Multiple"));
+                        _encryption = "Multiple";
                     }
                 }
                 return true;
