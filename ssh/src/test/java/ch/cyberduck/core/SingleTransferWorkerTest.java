@@ -84,6 +84,8 @@ public class SingleTransferWorkerTest {
                                 protected void afterWrite(final int n) throws IOException {
                                     super.afterWrite(n);
                                     if(this.getByteCount() >= 42768L) {
+                                        // Buffer size
+                                        assertEquals(32768L, status.getOffset());
                                         failed.set(true);
                                         throw new SocketTimeoutException();
                                     }
