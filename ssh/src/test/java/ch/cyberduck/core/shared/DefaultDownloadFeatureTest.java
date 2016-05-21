@@ -53,9 +53,6 @@ import java.util.UUID;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertNotNull;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class DefaultDownloadFeatureTest {
 
@@ -94,7 +91,49 @@ public class DefaultDownloadFeatureTest {
                     status,
                     new DisabledConnectionCallback());
         }
-        final byte[] buffer = new byte[39864];
+        final byte[] buffer = new byte[content.length];
+        final InputStream in = local.getInputStream();
+        IOUtils.readFully(in, buffer);
+        in.close();
+        assertArrayEquals(content, buffer);
+        final Delete delete = session.getFeature(Delete.class);
+        delete.delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
+        session.close();
+    }
+
+    @Test
+    public void testTransferUnknownSize() throws Exception {
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
+                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
+        ));
+        final SFTPSession session = new SFTPSession(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+
+        final Path test = new Path(new SFTPHomeDirectoryService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        new DefaultTouchFeature(session).touch(test);
+        final byte[] content = new byte[1];
+        new Random().nextBytes(content);
+        {
+            final TransferStatus status = new TransferStatus().length(content.length);
+            final OutputStream out = session.getFeature(Write.class).write(test, status);
+            assertNotNull(out);
+            new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
+            out.close();
+        }
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        {
+            final TransferStatus status = new TransferStatus().length(-1L);
+            new DefaultDownloadFeature(session).download(
+                    test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                    status,
+                    new DisabledConnectionCallback());
+        }
+        final byte[] buffer = new byte[content.length];
         final InputStream in = local.getInputStream();
         IOUtils.readFully(in, buffer);
         in.close();
