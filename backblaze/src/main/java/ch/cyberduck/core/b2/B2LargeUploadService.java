@@ -17,6 +17,7 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -29,6 +30,7 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.DefaultThreadPool;
+import ch.cyberduck.core.threading.RetryCallable;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -42,7 +44,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -205,25 +206,35 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
         if(log.isInfoEnabled()) {
             log.info(String.format("Submit part %d of %s to queue with offset %d and length %d", partNumber, file, offset, length));
         }
-        return pool.execute(new Callable<B2UploadPartResponse>() {
+        return pool.execute(new RetryCallable<B2UploadPartResponse>() {
             @Override
             public B2UploadPartResponse call() throws BackgroundException {
-                if(overall.isCanceled()) {
-                    return null;
-                }
-                final TransferStatus status = new TransferStatus()
-                        .length(length)
-                        .skip(offset);
-                final InputStream in = new BoundedInputStream(local.getInputStream(), offset + length);
                 try {
-                    StreamCopier.skip(in, offset);
+                    if(overall.isCanceled()) {
+                        return null;
+                    }
+                    final TransferStatus status = new TransferStatus()
+                            .length(length)
+                            .skip(offset);
+                    final InputStream in = new BoundedInputStream(local.getInputStream(), offset + length);
+                    try {
+                        StreamCopier.skip(in, offset);
+                    }
+                    catch(IOException e) {
+                        throw new DefaultIOExceptionMappingService().map(e);
+                    }
+                    status.setChecksum(new SHA1ChecksumCompute().compute(in));
+                    status.setPart(partNumber);
+                    return B2LargeUploadService.super.upload(file, local, throttle, listener, status, overall, overall);
                 }
-                catch(IOException e) {
-                    throw new DefaultIOExceptionMappingService().map(e);
+                catch(BackgroundException e) {
+                    if(this.retry(e, new DisabledProgressListener(), overall)) {
+                        return this.call();
+                    }
+                    else {
+                        throw e;
+                    }
                 }
-                status.setChecksum(new SHA1ChecksumCompute().compute(in));
-                status.setPart(partNumber);
-                return B2LargeUploadService.super.upload(file, local, throttle, listener, status, overall, overall);
             }
         });
     }
