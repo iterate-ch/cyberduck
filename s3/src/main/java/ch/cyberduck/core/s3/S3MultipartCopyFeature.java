@@ -81,10 +81,8 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
             // Copying object applying the metadata of the original
             destination.setStorageClass(storageClass);
             destination.setServerSideEncryptionAlgorithm(encryption.algorithm);
-            if(encryption.key != null) {
-                // Set custom key id stored in KMS
-                destination.addMetadata("x-amz-server-side-encryption-aws-kms-key-id", encryption.key);
-            }
+            // Set custom key id stored in KMS
+            destination.setServerSideEncryptionKmsKeyId(encryption.key);
             destination.setAcl(accessControlListFeature.convert(acl));
             try {
                 final List<MultipartPart> completed = new ArrayList<MultipartPart>();

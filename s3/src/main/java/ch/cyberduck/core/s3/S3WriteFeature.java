@@ -134,11 +134,9 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
         }
         final Encryption.Algorithm encryption = status.getEncryption();
         object.setServerSideEncryptionAlgorithm(encryption.algorithm);
-        if(encryption.key != null) {
-            // If the x-amz-server-side-encryption is present and has the value of aws:kms, this header specifies the ID of the
-            // AWS Key Management Service (KMS) master encryption key that was used for the object.
-            object.addMetadata("x-amz-server-side-encryption-aws-kms-key-id", encryption.key);
-        }
+        // If the x-amz-server-side-encryption is present and has the value of aws:kms, this header specifies the ID of the
+        // AWS Key Management Service (KMS) master encryption key that was used for the object.
+        object.setServerSideEncryptionKmsKeyId(encryption.key);
         for(Map.Entry<String, String> m : status.getMetadata().entrySet()) {
             object.addMetadata(m.getKey(), m.getValue());
         }

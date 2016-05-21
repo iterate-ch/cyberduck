@@ -27,6 +27,7 @@ public class AlgorithmTest {
         assertEquals(new Encryption.Algorithm("aws:kms", "k"), Encryption.Algorithm.fromString("aws:kms|k"));
         assertEquals(new Encryption.Algorithm("AES256", null), Encryption.Algorithm.fromString("AES256"));
         assertEquals(new Encryption.Algorithm("a", "b"), Encryption.Algorithm.fromString("a|b"));
+        assertEquals(Encryption.Algorithm.NONE, Encryption.Algorithm.fromString("none"));
     }
 
 }
