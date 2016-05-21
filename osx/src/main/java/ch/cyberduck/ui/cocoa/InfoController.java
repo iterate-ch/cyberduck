@@ -375,7 +375,7 @@ public class InfoController extends ToolbarWindowController {
         if(this.toggleS3Settings(false)) {
             final Redundancy feature = controller.getSession().getFeature(Redundancy.class);
             final String redundancy = sender.selectedItem().representedObject();
-            this.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
+            controller.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
                     new WriteRedundancyWorker(files, redundancy, true, controller) {
                                 @Override
                                 public void cleanup(final Boolean v) {
@@ -404,7 +404,7 @@ public class InfoController extends ToolbarWindowController {
         final String algorithm = sender.selectedItem().representedObject();
         if(null != algorithm && this.toggleS3Settings(false)) {
             final Encryption.Algorithm encryption = Encryption.Algorithm.fromString(algorithm);
-            this.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
+            controller.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
                     new WriteEncryptionWorker(files, encryption, true, controller) {
                                 @Override
                                 public void cleanup(final Boolean v) {
@@ -428,7 +428,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void bucketLoggingButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
-            this.background(new BrowserControllerBackgroundAction(controller) {
+            controller.background(new BrowserControllerBackgroundAction(controller) {
                 @Override
                 public Boolean run() throws BackgroundException {
                     controller.getSession().getFeature(Logging.class).setConfiguration(containerService.getContainer(getSelected()),
@@ -483,7 +483,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void bucketAnalyticsButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
-            this.background(new BrowserControllerBackgroundAction<Void>(controller) {
+            controller.background(new BrowserControllerBackgroundAction<Void>(controller) {
                 @Override
                 public Void run() throws BackgroundException {
                     final Session<?> session = controller.getSession();
@@ -528,7 +528,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void bucketVersioningButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
-            this.background(new BrowserControllerBackgroundAction<Void>(controller) {
+            controller.background(new BrowserControllerBackgroundAction<Void>(controller) {
                 @Override
                 public Void run() throws BackgroundException {
                     controller.getSession().getFeature(Versioning.class).setConfiguration(containerService.getContainer(getSelected()), prompt,
@@ -560,7 +560,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void bucketMfaButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
-            this.background(new BrowserControllerBackgroundAction<Void>(controller) {
+            controller.background(new BrowserControllerBackgroundAction<Void>(controller) {
                 @Override
                 public Void run() throws BackgroundException {
                     controller.getSession().getFeature(Versioning.class).setConfiguration(containerService.getContainer(getSelected()),
@@ -653,7 +653,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void lifecyclePopupClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
-            this.background(new BrowserControllerBackgroundAction<Void>(controller) {
+            controller.background(new BrowserControllerBackgroundAction<Void>(controller) {
                 @Override
                 public Void run() throws BackgroundException {
                     controller.getSession().getFeature(Lifecycle.class).setConfiguration(containerService.getContainer(getSelected()),
@@ -955,7 +955,7 @@ public class InfoController extends ToolbarWindowController {
 
     private void aclInputDidEndEditing() {
         if(this.toggleAclSettings(false)) {
-            this.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
+            controller.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
                             new WriteAclWorker(files, new Acl(acl.toArray(new Acl.UserAndRole[acl.size()])), true, controller) {
                                 @Override
                                 public void cleanup(final Boolean v) {
@@ -1245,7 +1245,7 @@ public class InfoController extends ToolbarWindowController {
             for(Header header : metadata) {
                 update.put(header.getName(), header.getValue());
             }
-            this.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
+            controller.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
                             new WriteMetadataWorker(files, update, true, controller) {
                                 @Override
                                 public void cleanup(final Boolean v) {
@@ -1736,7 +1736,7 @@ public class InfoController extends ToolbarWindowController {
         permissionsField.setStringValue(LocaleFactory.localizedString("Unknown"));
         // Disable Apply button and start progress indicator
         if(this.togglePermissionSettings(false)) {
-            this.background(new WorkerBackgroundAction<List<Permission>>(controller, controller.getSession(), controller.getCache(),
+            controller.background(new WorkerBackgroundAction<List<Permission>>(controller, controller.getSession(), controller.getCache(),
                     new ReadPermissionWorker(files) {
                         @Override
                         public void cleanup(final List<Permission> permissions) {
@@ -1851,7 +1851,7 @@ public class InfoController extends ToolbarWindowController {
      */
     private void initSize() {
         if(this.toggleSizeSettings(false)) {
-            this.background(new WorkerBackgroundAction<Long>(controller, controller.getSession(), controller.getCache(),
+            controller.background(new WorkerBackgroundAction<Long>(controller, controller.getSession(), controller.getCache(),
                     new ReadSizeWorker(files) {
                         @Override
                         public void cleanup(final Long size) {
@@ -1996,7 +1996,7 @@ public class InfoController extends ToolbarWindowController {
                     s3torrentUrlField.setToolTip(torrent.getHelp());
                 }
             }
-            this.background(new BrowserControllerBackgroundAction<Void>(controller) {
+            controller.background(new BrowserControllerBackgroundAction<Void>(controller) {
                 Location.Name location;
                 LoggingConfiguration logging;
                 VersioningConfiguration versioning;
@@ -2205,7 +2205,7 @@ public class InfoController extends ToolbarWindowController {
     private void initMetadata() {
         this.setMetadata(Collections.<Header>emptyList());
         if(this.toggleMetadataSettings(false)) {
-            this.background(new WorkerBackgroundAction<Map<String, String>>(controller, controller.getSession(), controller.getCache(),
+            controller.background(new WorkerBackgroundAction<Map<String, String>>(controller, controller.getSession(), controller.getCache(),
                     new ReadMetadataWorker(files) {
                         @Override
                         public void cleanup(final Map<String, String> updated) {
@@ -2260,7 +2260,7 @@ public class InfoController extends ToolbarWindowController {
                     }
                 }
             }
-            this.background(new WorkerBackgroundAction<List<Acl.UserAndRole>>(controller, controller.getSession(), controller.getCache(),
+            controller.background(new WorkerBackgroundAction<List<Acl.UserAndRole>>(controller, controller.getSession(), controller.getCache(),
                     new ReadAclWorker(files) {
                         @Override
                         public void cleanup(final List<Acl.UserAndRole> updated) {
@@ -2410,7 +2410,7 @@ public class InfoController extends ToolbarWindowController {
      */
     private void changePermissions(final Permission permission, final boolean recursive) {
         if(this.togglePermissionSettings(false)) {
-            this.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
+            controller.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
                     new WritePermissionWorker(files, permission, recursive, controller) {
                                 @Override
                                 public void cleanup(final Boolean v) {
@@ -2521,7 +2521,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void distributionInvalidateObjectsButtonClicked(final ID sender) {
         if(this.toggleDistributionSettings(false)) {
-            this.background(new BrowserControllerBackgroundAction<Void>(controller) {
+            controller.background(new BrowserControllerBackgroundAction<Void>(controller) {
                 @Override
                 public Void run() throws BackgroundException {
                     final Session<?> session = controller.getSession();
@@ -2560,7 +2560,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void distributionApplyButtonClicked(final ID sender) {
         if(this.toggleDistributionSettings(false)) {
-            this.background(new BrowserControllerBackgroundAction<Void>(controller) {
+            controller.background(new BrowserControllerBackgroundAction<Void>(controller) {
                 @Override
                 public Void run() throws BackgroundException {
                     final Session<?> session = controller.getSession();
@@ -2600,7 +2600,7 @@ public class InfoController extends ToolbarWindowController {
                     = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
             final List<Path> rootDocuments = new ArrayList<Path>();
             final Session<?> session = controller.getSession();
-            this.background(new BrowserControllerBackgroundAction<Distribution>(controller) {
+            controller.background(new BrowserControllerBackgroundAction<Distribution>(controller) {
                 private Distribution distribution = new Distribution(method, false);
 
                 @Override
@@ -2745,7 +2745,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void distributionAnalyticsButtonClicked(final NSButton sender) {
         if(this.toggleDistributionSettings(false)) {
-            this.background(new BrowserControllerBackgroundAction<Void>(controller) {
+            controller.background(new BrowserControllerBackgroundAction<Void>(controller) {
                 @Override
                 public Void run() throws BackgroundException {
                     final Session<?> session = controller.getSession();
@@ -2781,7 +2781,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void calculateSizeButtonClicked(final ID sender) {
         if(this.toggleSizeSettings(false)) {
-            this.background(new WorkerBackgroundAction<Long>(controller, controller.getSession(), controller.getCache(),
+            controller.background(new WorkerBackgroundAction<Long>(controller, controller.getSession(), controller.getCache(),
                     new CalculateSizeWorker(files, controller) {
                         @Override
                         public void cleanup(final Long size) {
