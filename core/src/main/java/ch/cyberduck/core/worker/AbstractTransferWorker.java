@@ -395,7 +395,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                                     // Retry immediately
                                     return call();
                                 }
-                                if(table.size() == 0) {
+                                if(table.size() == 1) {
                                     throw e;
                                 }
                                 // Prompt to continue or abort for application errors
