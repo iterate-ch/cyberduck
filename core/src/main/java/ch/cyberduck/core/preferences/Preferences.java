@@ -903,6 +903,9 @@ public abstract class Preferences {
          * Retry to connect after a I/O failure automatically
          */
         defaults.put("connection.retry", String.valueOf(1));
+        /**
+         * In seconds
+         */
         defaults.put("connection.retry.delay", String.valueOf(0));
 
         defaults.put("connection.hostname.default", StringUtils.EMPTY);

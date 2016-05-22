@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -36,6 +37,7 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.DefaultThreadPool;
+import ch.cyberduck.core.threading.RetryCallable;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -60,7 +62,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -225,41 +226,51 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
         if(log.isInfoEnabled()) {
             log.info(String.format("Submit part %d of %s to queue with offset %d and length %d", partNumber, file, offset, length));
         }
-        return pool.execute(new Callable<MultipartPart>() {
+        return pool.execute(new RetryCallable<MultipartPart>() {
             @Override
             public MultipartPart call() throws BackgroundException {
-                if(overall.isCanceled()) {
-                    return null;
+                try {
+                    if(overall.isCanceled()) {
+                        return null;
+                    }
+                    final Map<String, String> requestParameters = new HashMap<String, String>();
+                    requestParameters.put("uploadId", multipart.getUploadId());
+                    requestParameters.put("partNumber", String.valueOf(partNumber));
+                    final TransferStatus status = new TransferStatus()
+                            .length(length)
+                            .skip(offset)
+                            .parameters(requestParameters);
+                    switch(session.getSignatureVersion()) {
+                        case AWS4HMACSHA256:
+                            final InputStream in = new BoundedInputStream(local.getInputStream(), offset + length);
+                            try {
+                                StreamCopier.skip(in, offset);
+                            }
+                            catch(IOException e) {
+                                throw new DefaultIOExceptionMappingService().map(e);
+                            }
+                            status.setChecksum(new SHA256ChecksumCompute().compute(in));
+                            break;
+                    }
+                    final StorageObject part = S3MultipartUploadService.super.upload(
+                            file, local, throttle, listener, status, overall, overall);
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Received response %s for part number %d", part, partNumber));
+                    }
+                    // Populate part with response data that is accessible via the object's metadata
+                    return new MultipartPart(partNumber,
+                            null == part.getLastModifiedDate() ? new Date(System.currentTimeMillis()) : part.getLastModifiedDate(),
+                            null == part.getETag() ? StringUtils.EMPTY : part.getETag(),
+                            part.getContentLength());
                 }
-                final Map<String, String> requestParameters = new HashMap<String, String>();
-                requestParameters.put("uploadId", multipart.getUploadId());
-                requestParameters.put("partNumber", String.valueOf(partNumber));
-                final TransferStatus status = new TransferStatus()
-                        .length(length)
-                        .skip(offset)
-                        .parameters(requestParameters);
-                switch(session.getSignatureVersion()) {
-                    case AWS4HMACSHA256:
-                        final InputStream in = new BoundedInputStream(local.getInputStream(), offset + length);
-                        try {
-                            StreamCopier.skip(in, offset);
-                        }
-                        catch(IOException e) {
-                            throw new DefaultIOExceptionMappingService().map(e);
-                        }
-                        status.setChecksum(new SHA256ChecksumCompute().compute(in));
-                        break;
+                catch(BackgroundException e) {
+                    if(this.retry(e, new DisabledProgressListener(), overall)) {
+                        return this.call();
+                    }
+                    else {
+                        throw e;
+                    }
                 }
-                final StorageObject part = S3MultipartUploadService.super.upload(
-                        file, local, throttle, listener, status, overall, overall);
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Received response %s for part number %d", part, partNumber));
-                }
-                // Populate part with response data that is accessible via the object's metadata
-                return new MultipartPart(partNumber,
-                        null == part.getLastModifiedDate() ? new Date(System.currentTimeMillis()) : part.getLastModifiedDate(),
-                        null == part.getETag() ? StringUtils.EMPTY : part.getETag(),
-                        part.getContentLength());
             }
         });
     }

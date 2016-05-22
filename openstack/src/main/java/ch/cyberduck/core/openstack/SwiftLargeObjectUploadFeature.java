@@ -21,6 +21,7 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -33,6 +34,7 @@ import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.DefaultThreadPool;
+import ch.cyberduck.core.threading.RetryCallable;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -44,7 +46,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -198,17 +199,27 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
     private Future<StorageObject> submit(final Path segment, final Local local,
                                          final BandwidthThrottle throttle, final StreamListener listener,
                                          final TransferStatus overall, final Long offset, final Long length) {
-        return pool.execute(new Callable<StorageObject>() {
+        return pool.execute(new RetryCallable<StorageObject>() {
             @Override
             public StorageObject call() throws BackgroundException {
-                if(overall.isCanceled()) {
-                    return null;
+                try {
+                    if(overall.isCanceled()) {
+                        return null;
+                    }
+                    final TransferStatus status = new TransferStatus()
+                            .length(length)
+                            .skip(offset);
+                    return SwiftLargeObjectUploadFeature.super.upload(
+                            segment, local, throttle, listener, status, overall, overall);
                 }
-                final TransferStatus status = new TransferStatus()
-                        .length(length)
-                        .skip(offset);
-                return SwiftLargeObjectUploadFeature.super.upload(
-                        segment, local, throttle, listener, status, overall, overall);
+                catch(BackgroundException e) {
+                    if(this.retry(e, new DisabledProgressListener(), overall)) {
+                        return this.call();
+                    }
+                    else {
+                        throw e;
+                    }
+                }
             }
         });
     }

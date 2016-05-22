@@ -15,21 +15,10 @@ package ch.cyberduck.core.worker;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.threading.RetryCallable;
+import ch.cyberduck.core.transfer.TransferStatus;
 
-public abstract class RepeatableTransferCallable implements TransferWorker.TransferCallable {
-
-    /**
-     * The number of times this action has been run
-     */
-    protected int count = 0;
-
-    /**
-     * @param e Failure
-     * @return Increment counter and return true if retry attempt should be made for a failed transfer
-     */
-    public boolean retry(final BackgroundException e) {
-        return ++count <= PreferencesFactory.get().getInteger("connection.retry");
-    }
+public abstract class RetryTransferCallable
+        extends RetryCallable<TransferStatus>
+        implements TransferWorker.TransferCallable {
 }
