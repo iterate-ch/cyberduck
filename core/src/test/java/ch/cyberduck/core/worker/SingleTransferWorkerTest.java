@@ -28,9 +28,6 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 public class SingleTransferWorkerTest {
 
     @Test
