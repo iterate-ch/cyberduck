@@ -11,6 +11,7 @@ Changelog. Last modified: $Date$
 - [Feature] Support for Spectra BlackPearl Deep Storage Gateway (Spectra S3)
 - [Feature] Option to use AWS KMS–Managed Keys (SSE-KMS) for server side encryption (S3)
 - [Feature] Default to use AWS4 signature version for authentication (S3)
+- [Feature] Repeat failed transfers for single segments of multipart large file transfer (S3, OpenStack Swift, Backblaze B2)
 - [Bugfix] Retry transfer for 421 error reply from server with a delay (FTP) (#9368)
 - [Bugfix] No prompt for importing WinSCP bookmarks (Windows) (#9208)
 - [Bugfix] Signature mismatch for presigned URLs with AWS4 signing (S3) (#9317, #9479)
