@@ -41,7 +41,7 @@ public class S3AttributesFeatureTest {
         };
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test);
         final S3AttributesFeature f = new S3AttributesFeature(session);
@@ -74,7 +74,7 @@ public class S3AttributesFeatureTest {
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new S3AttributesFeature(session).find(container);
         assertEquals(-1L, attributes.getSize());
         assertEquals(EnumSet.of(Path.Type.directory, Path.Type.volume), container.getType());
@@ -96,7 +96,7 @@ public class S3AttributesFeatureTest {
         };
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final S3AttributesFeature f = new S3AttributesFeature(session);
         f.find(test);
@@ -111,7 +111,7 @@ public class S3AttributesFeatureTest {
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         new S3DirectoryFeature(session).mkdir(test);
         final PathAttributes attributes = new S3AttributesFeature(session).find(test);
@@ -137,9 +137,9 @@ public class S3AttributesFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final PathAttributes attributes = new PathAttributes();
         // Retrieve latest object version
-        attributes.setVersionId("xtgd1iPdpb1L0c87oe.3KVul2rcxRyqh");
+        attributes.setVersionId("a.wvRLBNdY1MncqxF5Jt.hPn3NejhheK");
         assertEquals("PqdhUBWLxRHb.rtPQNpdc3PgRJ05ZVte", new S3AttributesFeature(session).find(
-                new Path("/versioning.test.cyberduck.ch/test", EnumSet.of(AbstractPath.Type.file))).getVersionId());
+                new Path("/versioning-test-us-east-1-cyberduck/test", EnumSet.of(AbstractPath.Type.file))).getVersionId());
         session.close();
     }
 }
