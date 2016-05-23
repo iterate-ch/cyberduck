@@ -229,17 +229,17 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
         return pool.execute(new RetryCallable<MultipartPart>() {
             @Override
             public MultipartPart call() throws BackgroundException {
+                final Map<String, String> requestParameters = new HashMap<String, String>();
+                requestParameters.put("uploadId", multipart.getUploadId());
+                requestParameters.put("partNumber", String.valueOf(partNumber));
+                final TransferStatus status = new TransferStatus()
+                        .length(length)
+                        .skip(offset)
+                        .parameters(requestParameters);
                 try {
                     if(overall.isCanceled()) {
                         return null;
                     }
-                    final Map<String, String> requestParameters = new HashMap<String, String>();
-                    requestParameters.put("uploadId", multipart.getUploadId());
-                    requestParameters.put("partNumber", String.valueOf(partNumber));
-                    final TransferStatus status = new TransferStatus()
-                            .length(length)
-                            .skip(offset)
-                            .parameters(requestParameters);
                     switch(session.getSignatureVersion()) {
                         case AWS4HMACSHA256:
                             final InputStream in = new BoundedInputStream(local.getInputStream(), offset + length);
@@ -264,6 +264,9 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                             part.getContentLength());
                 }
                 catch(BackgroundException e) {
+                    // Discard sent bytes in overall progress if there is an error reply for segment.
+                    final long sent = status.getOffset();
+                    overall.progress(-sent);
                     if(this.retry(e, new DisabledProgressListener(), overall)) {
                         return this.call();
                     }

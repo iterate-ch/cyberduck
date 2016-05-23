@@ -209,13 +209,13 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
         return pool.execute(new RetryCallable<B2UploadPartResponse>() {
             @Override
             public B2UploadPartResponse call() throws BackgroundException {
+                final TransferStatus status = new TransferStatus()
+                        .length(length)
+                        .skip(offset);
                 try {
                     if(overall.isCanceled()) {
                         return null;
                     }
-                    final TransferStatus status = new TransferStatus()
-                            .length(length)
-                            .skip(offset);
                     final InputStream in = new BoundedInputStream(local.getInputStream(), offset + length);
                     try {
                         StreamCopier.skip(in, offset);
@@ -228,6 +228,9 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
                     return B2LargeUploadService.super.upload(file, local, throttle, listener, status, overall, overall);
                 }
                 catch(BackgroundException e) {
+                    // Discard sent bytes in overall progress if there is an error reply for segment.
+                    final long sent = status.getOffset();
+                    overall.progress(-sent);
                     if(this.retry(e, new DisabledProgressListener(), overall)) {
                         return this.call();
                     }
