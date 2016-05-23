@@ -21,9 +21,7 @@ using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using ch.cyberduck.core;
-using ch.cyberduck.core.exception;
-using ch.cyberduck.core.transfer;
-using ch.cyberduck.ui;
+using ch.cyberduck.core.worker;
 
 namespace Ch.Cyberduck.Ui.Winforms.Threading
 {
@@ -52,7 +50,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
                         _controller.View.CommandBox(LocaleFactory.localizedString("Apply changes recursively"),
                                                     LocaleFactory.localizedString("Apply changes recursively"),
                                                     String.Format(LocaleFactory.localizedString("Do you want to set {0} on {1} recursively for all contained files?"),
-                                                                                value, directory.getName()),
+                                                                                value, directory.getName(),
                                                     null, null, null,
                                                     LocaleFactory.localizedString("Always"),
                                                     LocaleFactory.localizedString("Continue", "Credentials")), true, SysIcons.Warning, SysIcons.Information,
