@@ -44,15 +44,25 @@ public class WriteEncryptionWorker extends Worker<Boolean> {
     /**
      * Descend into directories
      */
-    private boolean recursive;
+    private RecursiveCallback callback;
 
     private ProgressListener listener;
 
     public WriteEncryptionWorker(final List<Path> files, final Encryption.Algorithm algorithm,
                                  final boolean recursive, final ProgressListener listener) {
+        this(files, algorithm, new RecursiveCallback() {
+            @Override
+            public boolean recurse() {
+                return recursive;
+            }
+        }, listener);
+    }
+
+    public WriteEncryptionWorker(final List<Path> files, final Encryption.Algorithm algorithm,
+                                 final RecursiveCallback callback, final ProgressListener listener) {
         this.files = files;
         this.algorithm = algorithm;
-        this.recursive = recursive;
+        this.callback = callback;
         this.listener = listener;
     }
 
@@ -72,8 +82,8 @@ public class WriteEncryptionWorker extends Worker<Boolean> {
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
                 file.getName()));
         feature.setEncryption(file, algorithm);
-        if(recursive) {
-            if(file.isDirectory()) {
+        if(file.isDirectory()) {
+            if(callback.recurse()) {
                 for(Path child : session.list(file, new ActionListProgressListener(this, listener))) {
                     this.write(session, feature, child);
                 }

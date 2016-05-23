@@ -85,4 +85,11 @@ public abstract class Worker<T> {
     public void reset() throws BackgroundException {
         //
     }
+
+    public interface RecursiveCallback {
+        /**
+         * @return True to descend into directories
+         */
+        boolean recurse();
+    }
 }
