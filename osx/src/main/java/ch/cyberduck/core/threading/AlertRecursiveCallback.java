@@ -46,13 +46,13 @@ public class AlertRecursiveCallback<T> implements Worker.RecursiveCallback<T> {
             return option;
         }
         if(controller.isVisible()) {
-            final AtomicBoolean c = new AtomicBoolean(true);
+            final AtomicBoolean c = new AtomicBoolean(false);
             final NSAlert alert = NSAlert.alert(
                     LocaleFactory.localizedString("Apply changes recursively"),
                     MessageFormat.format(LocaleFactory.localizedString("Do you want to set {0} on {1} recursively for all contained files?"), value, directory),
-                    LocaleFactory.localizedString("Cancel"), // default button
+                    LocaleFactory.localizedString("Continue", "Credentials"), // default button
                     null, //other button
-                    LocaleFactory.localizedString("Continue", "Credentials") // alternate button
+                    LocaleFactory.localizedString("Cancel") // alternate button
             );
             alert.setShowsSuppressionButton(true);
             alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
@@ -70,7 +70,7 @@ public class AlertRecursiveCallback<T> implements Worker.RecursiveCallback<T> {
                 @Override
                 public void callback(final int returncode) {
                     if(returncode == SheetCallback.DEFAULT_OPTION) {
-                        c.set(false);
+                        c.set(true);
                     }
                     if(alert.suppressionButton().state() == NSCell.NSOnState) {
                         suppressed = true;
