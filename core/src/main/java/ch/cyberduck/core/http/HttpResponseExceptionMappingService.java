@@ -33,34 +33,34 @@ import org.apache.http.client.HttpResponseException;
 public class HttpResponseExceptionMappingService extends AbstractExceptionMappingService<HttpResponseException> {
 
     @Override
-    public BackgroundException map(final HttpResponseException e) {
+    public BackgroundException map(final HttpResponseException failure) {
         final StringBuilder buffer = new StringBuilder();
-        this.append(buffer, e.getMessage());
-        final int statusCode = e.getStatusCode();
+        this.append(buffer, failure.getMessage());
+        final int statusCode = failure.getStatusCode();
         switch(statusCode) {
             case HttpStatus.SC_UNAUTHORIZED:
-                return new LoginFailureException(buffer.toString(), e);
+                return new LoginFailureException(buffer.toString(), failure);
             case HttpStatus.SC_FORBIDDEN:
-                return new AccessDeniedException(buffer.toString(), e);
+                return new AccessDeniedException(buffer.toString(), failure);
             case HttpStatus.SC_NOT_FOUND:
-                return new NotfoundException(buffer.toString(), e);
+                return new NotfoundException(buffer.toString(), failure);
             case HttpStatus.SC_INSUFFICIENT_SPACE_ON_RESOURCE:
-                return new QuotaException(buffer.toString(), e);
+                return new QuotaException(buffer.toString(), failure);
             case HttpStatus.SC_INSUFFICIENT_STORAGE:
-                return new QuotaException(buffer.toString(), e);
+                return new QuotaException(buffer.toString(), failure);
             case HttpStatus.SC_PAYMENT_REQUIRED:
-                return new QuotaException(buffer.toString(), e);
+                return new QuotaException(buffer.toString(), failure);
             case HttpStatus.SC_BAD_REQUEST:
-                return new InteroperabilityException(buffer.toString(), e);
+                return new InteroperabilityException(buffer.toString(), failure);
             case HttpStatus.SC_METHOD_NOT_ALLOWED:
-                return new InteroperabilityException(buffer.toString(), e);
+                return new InteroperabilityException(buffer.toString(), failure);
             case HttpStatus.SC_NOT_IMPLEMENTED:
-                return new InteroperabilityException(buffer.toString(), e);
+                return new InteroperabilityException(buffer.toString(), failure);
             case HttpStatus.SC_INTERNAL_SERVER_ERROR:
-                return new InteroperabilityException(buffer.toString(), e);
+                return new InteroperabilityException(buffer.toString(), failure);
             case HttpStatus.SC_SERVICE_UNAVAILABLE:
-                return new ConnectionRefusedException(buffer.toString(), e);
+                return new ConnectionRefusedException(buffer.toString(), failure);
         }
-        return this.wrap(e, buffer);
+        return this.wrap(failure, buffer);
     }
 }
