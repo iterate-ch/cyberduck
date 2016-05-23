@@ -53,9 +53,6 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class S3ObjectListServiceTest {
 
@@ -68,7 +65,7 @@ public class S3ObjectListServiceTest {
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
+        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
         container.attributes().setRegion("us-east-1");
         final List<Path> list = new S3ObjectListService(session).list(container, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
@@ -94,7 +91,7 @@ public class S3ObjectListServiceTest {
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
+        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
         final List<Path> list = new S3ObjectListService(session).list(new Path(container, "empty", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
                 new DisabledListProgressListener());
         assertTrue(list.isEmpty());
@@ -177,13 +174,13 @@ public class S3ObjectListServiceTest {
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final AttributedList<Path> list = new S3ObjectListService(session).list(new Path("versioning.test.cyberduck.ch",
+        final AttributedList<Path> list = new S3ObjectListService(session).list(new Path("versioning.test-us-east-1-cyberduck",
                         EnumSet.of(Path.Type.directory, Path.Type.volume)),
                 new DisabledListProgressListener());
         final PathAttributes att = new PathAttributes();
-        assertTrue(list.contains(new Path("/versioning.test.cyberduck.ch/test", EnumSet.of(Path.Type.file), att)));
+        assertTrue(list.contains(new Path("/versioning.test-us-east-1-cyberduck/test", EnumSet.of(Path.Type.file), att)));
         att.setVersionId("xtgd1iPdpb1L0c87oe.3KVul2rcxRyqh");
-        assertTrue(list.contains(new Path("/versioning.test.cyberduck.ch/test", EnumSet.of(Path.Type.file), att)));
+        assertTrue(list.contains(new Path("/versioning.test-us-east-1-cyberduck/test", EnumSet.of(Path.Type.file), att)));
         session.close();
     }
 
@@ -196,7 +193,7 @@ public class S3ObjectListServiceTest {
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("us-east-1");
         final Path placeholder = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new S3DirectoryFeature(session).mkdir(placeholder);
@@ -226,7 +223,7 @@ public class S3ObjectListServiceTest {
         };
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("cyberduck-frankfurt", EnumSet.of(Path.Type.volume));
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume));
         final AttributedList<Path> list = new S3ObjectListService(session).list(container, new DisabledListProgressListener());
         session.close();
     }
@@ -245,7 +242,7 @@ public class S3ObjectListServiceTest {
         };
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("cyberduck-frankfurt", EnumSet.of(Path.Type.volume));
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume));
         final AttributedList<Path> list = new S3ObjectListService(session).list(container, new DisabledListProgressListener());
         session.close();
     }
@@ -271,12 +268,12 @@ public class S3ObjectListServiceTest {
         };
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("cyberduck-frankfurt", EnumSet.of(Path.Type.volume));
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume));
         try {
             final AttributedList<Path> list = new S3ObjectListService(session).list(container, new DisabledListProgressListener());
         }
         catch(BackgroundException e) {
-            assertEquals("Listing directory cyberduck-frankfurt failed.", e.getMessage());
+            assertEquals("Listing directory test-eu-central-1-cyberduck failed.", e.getMessage());
             assertEquals("Received redirect response HTTP/1.1 301 Moved Permanently but no location header.", e.getDetail());
             throw e;
         }
@@ -302,7 +299,7 @@ public class S3ObjectListServiceTest {
                 new KeychainX509KeyManager(new DisabledCertificateStore()), new DisabledProxyFinder());
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         new S3ObjectListService(session).list(
-                new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
+                new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
         session.close();
     }
 }
