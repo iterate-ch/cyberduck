@@ -33,9 +33,6 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public class WriteMetadataWorker extends Worker<Boolean> {
 
     /**
@@ -51,16 +48,27 @@ public class WriteMetadataWorker extends Worker<Boolean> {
     /**
      * Descend into directories
      */
-    private boolean recursive;
+    private RecursiveCallback<String> callback;
 
     private ProgressListener listener;
 
     protected WriteMetadataWorker(final List<Path> files, final Map<String, String> metadata,
                                   final boolean recursive,
                                   final ProgressListener listener) {
+        this(files, metadata, new RecursiveCallback<String>() {
+            @Override
+            public boolean recurse(final Path directory, final String value) {
+                return recursive;
+            }
+        }, listener);
+    }
+
+    protected WriteMetadataWorker(final List<Path> files, final Map<String, String> metadata,
+                                  final RecursiveCallback<String> callback,
+                                  final ProgressListener listener) {
         this.files = files;
         this.metadata = metadata;
-        this.recursive = recursive;
+        this.callback = callback;
         this.listener = listener;
     }
 
@@ -89,8 +97,8 @@ public class WriteMetadataWorker extends Worker<Boolean> {
                     file.getName()));
             feature.setMetadata(file, metadata);
             file.attributes().setMetadata(metadata);
-            if(recursive) {
-                if(file.isDirectory()) {
+            if(file.isDirectory()) {
+                if(callback.recurse(file, LocaleFactory.localizedString("Metadata", "Info"))) {
                     for(Path child : session.list(file, new ActionListProgressListener(this, listener))) {
                         this.write(session, feature, child);
                     }

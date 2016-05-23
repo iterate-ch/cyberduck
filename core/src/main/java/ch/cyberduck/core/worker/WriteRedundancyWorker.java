@@ -47,15 +47,29 @@ public class WriteRedundancyWorker extends Worker<Boolean> {
     /**
      * Descend into directories
      */
-    private boolean recursive;
+    private RecursiveCallback<String> callback;
 
     private ProgressListener listener;
 
     public WriteRedundancyWorker(final List<Path> files,
-                                 final String level, final boolean recursive, final ProgressListener listener) {
+                                 final String level,
+                                 final boolean recursive,
+                                 final ProgressListener listener) {
+        this(files, level, new RecursiveCallback<String>() {
+            @Override
+            public boolean recurse(final Path directory, final String value) {
+                return recursive;
+            }
+        }, listener);
+    }
+
+    public WriteRedundancyWorker(final List<Path> files,
+                                 final String level,
+                                 final RecursiveCallback<String> callback,
+                                 final ProgressListener listener) {
         this.files = files;
         this.level = level;
-        this.recursive = recursive;
+        this.callback = callback;
         this.listener = listener;
     }
 
@@ -78,8 +92,8 @@ public class WriteRedundancyWorker extends Worker<Boolean> {
             feature.setClass(file, level);
             file.attributes().setStorageClass(level);
         }
-        if(recursive) {
-            if(file.isDirectory()) {
+        if(file.isDirectory()) {
+            if(callback.recurse(file, level)) {
                 for(Path child : session.list(file, new ActionListProgressListener(this, listener))) {
                     this.write(session, feature, child);
                 }
