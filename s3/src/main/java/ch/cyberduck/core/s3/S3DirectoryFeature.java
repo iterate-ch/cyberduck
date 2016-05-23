@@ -79,7 +79,7 @@ public class S3DirectoryFeature implements Directory {
                 session.getClient().putObject(containerService.getContainer(file).getName(), key);
             }
             catch(ServiceException e) {
-                throw new ServiceExceptionMappingService().map("Cannot create folder {0}", e, file);
+                throw new S3ExceptionMappingService().map("Cannot create folder {0}", e, file);
             }
         }
     }

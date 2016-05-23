@@ -215,7 +215,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
             }
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Upload {0} failed", e, file);
+            throw new S3ExceptionMappingService().map("Upload {0} failed", e, file);
         }
     }
 

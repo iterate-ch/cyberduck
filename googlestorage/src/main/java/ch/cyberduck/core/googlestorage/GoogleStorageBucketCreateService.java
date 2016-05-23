@@ -20,8 +20,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.s3.S3ExceptionMappingService;
 import ch.cyberduck.core.s3.S3PathContainerService;
-import ch.cyberduck.core.s3.ServiceExceptionMappingService;
 
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.acl.AccessControlList;
@@ -52,7 +52,7 @@ public class GoogleStorageBucketCreateService {
             session.getClient().createBucket(new S3PathContainerService().getContainer(bucket).getName(), location, acl);
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot create folder {0}", e, bucket);
+            throw new S3ExceptionMappingService().map("Cannot create folder {0}", e, bucket);
         }
     }
 }

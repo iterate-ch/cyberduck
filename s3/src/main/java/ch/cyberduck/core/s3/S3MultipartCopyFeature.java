@@ -135,7 +135,7 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
                 }
             }
             catch(ServiceException e) {
-                throw new ServiceExceptionMappingService().map("Cannot copy {0}", e, source);
+                throw new S3ExceptionMappingService().map("Cannot copy {0}", e, source);
             }
             finally {
                 pool.shutdown();
@@ -165,7 +165,7 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
                             part.getSize());
                 }
                 catch(S3ServiceException e) {
-                    throw new ServiceExceptionMappingService().map("Cannot copy {0}", e, source);
+                    throw new S3ExceptionMappingService().map("Cannot copy {0}", e, source);
                 }
             }
         });

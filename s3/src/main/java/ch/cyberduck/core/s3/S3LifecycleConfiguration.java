@@ -60,7 +60,7 @@ public class S3LifecycleConfiguration implements Lifecycle {
             }
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Failure to write attributes of {0}", e);
+            throw new S3ExceptionMappingService().map("Failure to write attributes of {0}", e);
         }
     }
 
@@ -88,7 +88,7 @@ public class S3LifecycleConfiguration implements Lifecycle {
         }
         catch(ServiceException e) {
             try {
-                throw new ServiceExceptionMappingService().map(e);
+                throw new S3ExceptionMappingService().map(e);
             }
             catch(AccessDeniedException l) {
                 log.warn(String.format("Missing permission to read lifecycle configuration for %s %s", container, e.getMessage()));

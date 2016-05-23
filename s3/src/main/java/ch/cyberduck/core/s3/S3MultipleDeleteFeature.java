@@ -99,7 +99,7 @@ public class S3MultipleDeleteFeature implements Delete {
                         session.getClient().deleteBucket(containerService.getContainer(file).getName());
                     }
                     catch(ServiceException e) {
-                        throw new ServiceExceptionMappingService().map("Cannot delete {0}", e, file);
+                        throw new S3ExceptionMappingService().map("Cannot delete {0}", e, file);
                     }
                 }
             }
@@ -146,7 +146,7 @@ public class S3MultipleDeleteFeature implements Delete {
                         final ServiceException failure = new ServiceException();
                         failure.setErrorCode(error.getErrorCode());
                         failure.setErrorMessage(error.getMessage());
-                        throw new ServiceExceptionMappingService().map("Cannot delete {0}", failure,
+                        throw new S3ExceptionMappingService().map("Cannot delete {0}", failure,
                                 new Path(container, error.getKey(), EnumSet.of(Path.Type.file)));
                     }
                 }
@@ -167,7 +167,7 @@ public class S3MultipleDeleteFeature implements Delete {
                             final ServiceException failure = new ServiceException();
                             failure.setErrorCode(error.getErrorCode());
                             failure.setErrorMessage(error.getMessage());
-                            throw new ServiceExceptionMappingService().map("Cannot delete {0}", failure,
+                            throw new S3ExceptionMappingService().map("Cannot delete {0}", failure,
                                     new Path(container, error.getKey(), EnumSet.of(Path.Type.file)));
                         }
                     }
@@ -175,7 +175,7 @@ public class S3MultipleDeleteFeature implements Delete {
             }
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot delete {0}", e, container);
+            throw new S3ExceptionMappingService().map("Cannot delete {0}", e, container);
         }
     }
 }

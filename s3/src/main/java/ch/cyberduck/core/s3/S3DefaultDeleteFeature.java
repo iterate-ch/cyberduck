@@ -55,7 +55,7 @@ public class S3DefaultDeleteFeature implements Delete {
             }
             catch(ServiceException e) {
                 try {
-                    throw new ServiceExceptionMappingService().map("Cannot delete {0}", e, file);
+                    throw new S3ExceptionMappingService().map("Cannot delete {0}", e, file);
                 }
                 catch(NotfoundException n) {
                     // Ignore

@@ -89,7 +89,7 @@ public class S3MoveFeature implements Move {
             }
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot rename {0}", e, source);
+            throw new S3ExceptionMappingService().map("Cannot rename {0}", e, source);
         }
     }
 

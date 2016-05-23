@@ -81,7 +81,7 @@ public class S3MultipartWriteFeature implements Write {
             }
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Upload {0} failed", e, file);
+            throw new S3ExceptionMappingService().map("Upload {0} failed", e, file);
         }
         final MultipartOutputStream stream = new MultipartOutputStream(multipart, file);
         return new ResponseOutputStream<List<MultipartPart>>(new BufferedOutputStream(stream,

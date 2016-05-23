@@ -50,7 +50,7 @@ public class S3LoggingFeature implements Logging {
         }
         catch(ServiceException e) {
             try {
-                throw new ServiceExceptionMappingService().map("Cannot read bucket logging status", e);
+                throw new S3ExceptionMappingService().map("Cannot read bucket logging status", e);
             }
             catch(AccessDeniedException l) {
                 log.warn(String.format("Missing permission to read logging configuration for %s %s", container, e.getMessage()));
@@ -76,7 +76,7 @@ public class S3LoggingFeature implements Logging {
             session.getClient().setBucketLoggingStatus(container.getName(), status, true);
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Failure to write attributes of {0}", e);
+            throw new S3ExceptionMappingService().map("Failure to write attributes of {0}", e);
         }
     }
 }

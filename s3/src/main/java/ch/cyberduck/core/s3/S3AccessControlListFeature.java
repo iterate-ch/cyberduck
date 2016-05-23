@@ -81,7 +81,7 @@ public class S3AccessControlListFeature implements AclPermission {
         }
         catch(ServiceException e) {
             try {
-                throw new ServiceExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+                throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
             }
             catch(AccessDeniedException l) {
                 log.warn(String.format("Missing permission to read ACL for %s %s", file, e.getMessage()));
@@ -112,7 +112,7 @@ public class S3AccessControlListFeature implements AclPermission {
             }
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot change permissions of {0}", e, file);
+            throw new S3ExceptionMappingService().map("Cannot change permissions of {0}", e, file);
         }
     }
 

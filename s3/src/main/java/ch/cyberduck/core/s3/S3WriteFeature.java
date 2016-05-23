@@ -93,7 +93,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
                     }
                 }
                 catch(ServiceException e) {
-                    throw new ServiceExceptionMappingService().map("Upload {0} failed", e, file);
+                    throw new S3ExceptionMappingService().map("Upload {0} failed", e, file);
                 }
                 return object;
             }

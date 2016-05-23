@@ -18,8 +18,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.s3.S3ExceptionMappingService;
 import ch.cyberduck.core.s3.S3PathContainerService;
-import ch.cyberduck.core.s3.ServiceExceptionMappingService;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -79,7 +79,7 @@ public class SpectraReadFeature implements Read {
             return new SequenceInputStream(Collections.enumeration(streams));
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Download {0} failed", e, file);
+            throw new S3ExceptionMappingService().map("Download {0} failed", e, file);
         }
     }
 

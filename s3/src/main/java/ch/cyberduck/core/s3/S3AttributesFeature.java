@@ -85,13 +85,13 @@ public class S3AttributesFeature implements Attributes {
             }
         }
         catch(ServiceException e) {
-            if(new ServiceExceptionMappingService().map(e) instanceof AccessDeniedException) {
+            if(new S3ExceptionMappingService().map(e) instanceof AccessDeniedException) {
                 log.warn(String.format("Missing permission to read object details for %s %s", file, e.getMessage()));
                 final StorageObject object = new StorageObject(containerService.getKey(file));
                 object.setBucketName(container);
                 return object;
             }
-            throw new ServiceExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+            throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
     }
 

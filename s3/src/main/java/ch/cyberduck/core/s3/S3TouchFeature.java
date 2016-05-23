@@ -69,7 +69,7 @@ public class S3TouchFeature implements Touch {
             session.getClient().putObject(containerService.getContainer(file).getName(), key);
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot create file {0}", e, file);
+            throw new S3ExceptionMappingService().map("Cannot create file {0}", e, file);
         }
     }
 

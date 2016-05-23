@@ -34,8 +34,8 @@ import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.logging.LoggingConfiguration;
 import ch.cyberduck.core.s3.S3BucketListService;
+import ch.cyberduck.core.s3.S3ExceptionMappingService;
 import ch.cyberduck.core.s3.S3PathContainerService;
-import ch.cyberduck.core.s3.ServiceExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.ServiceException;
@@ -138,7 +138,7 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
             }
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot write website configuration", e);
+            throw new S3ExceptionMappingService().map("Cannot write website configuration", e);
         }
     }
 

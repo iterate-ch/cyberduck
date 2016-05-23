@@ -30,8 +30,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3BucketListService;
+import ch.cyberduck.core.s3.S3ExceptionMappingService;
 import ch.cyberduck.core.s3.S3Session;
-import ch.cyberduck.core.s3.ServiceExceptionMappingService;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
@@ -147,7 +147,7 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
                 }
             }
             catch(S3ServiceException e) {
-                throw new ServiceExceptionMappingService().map("Cannot write website configuration", e);
+                throw new S3ExceptionMappingService().map("Cannot write website configuration", e);
             }
         }
         else {

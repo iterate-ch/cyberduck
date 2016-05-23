@@ -20,8 +20,8 @@ import ch.cyberduck.core.cdn.features.DistributionLogging;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.logging.LoggingConfiguration;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.s3.S3ExceptionMappingService;
 import ch.cyberduck.core.s3.S3LoggingFeature;
-import ch.cyberduck.core.s3.ServiceExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.ServiceException;
@@ -59,7 +59,7 @@ public class GoogleStorageLoggingFeature extends S3LoggingFeature implements Dis
             session.getClient().setBucketLoggingStatusImpl(container.getName(), status);
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Failure to write attributes of {0}", e);
+            throw new S3ExceptionMappingService().map("Failure to write attributes of {0}", e);
         }
     }
 }

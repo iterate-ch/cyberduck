@@ -134,7 +134,7 @@ public class S3BucketListService implements RootListService {
             }
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Listing directory {0} failed", e,
+            throw new S3ExceptionMappingService().map("Listing directory {0} failed", e,
                     new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)));
         }
     }

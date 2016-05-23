@@ -35,7 +35,7 @@ import org.jets3t.service.ServiceException;
 
 import java.io.IOException;
 
-public class ServiceExceptionMappingService extends AbstractExceptionMappingService<ServiceException> {
+public class S3ExceptionMappingService extends AbstractExceptionMappingService<ServiceException> {
 
     @Override
     public BackgroundException map(final ServiceException e) {

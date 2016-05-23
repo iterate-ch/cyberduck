@@ -102,7 +102,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             client.shutdown();
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map(e);
+            throw new S3ExceptionMappingService().map(e);
         }
     }
 

@@ -62,7 +62,7 @@ public class S3BucketCreateService {
             session.getClient().createBucket(containerService.getContainer(bucket).getName(), region, acl);
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot create folder {0}", e, bucket);
+            throw new S3ExceptionMappingService().map("Cannot create folder {0}", e, bucket);
         }
     }
 }

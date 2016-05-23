@@ -80,7 +80,7 @@ public class S3FindFeature implements Find {
         catch(ServiceException e) {
             switch(session.getSignatureVersion()) {
                 case AWS4HMACSHA256:
-                    if(new ServiceExceptionMappingService().map(e) instanceof InteroperabilityException) {
+                    if(new S3ExceptionMappingService().map(e) instanceof InteroperabilityException) {
                         log.warn("Workaround HEAD failure using GET because the expected AWS region cannot be determined " +
                                 "from the HEAD error message if using AWS4-HMAC-SHA256 with the wrong region specifier " +
                                 "in the authentication header.");
@@ -92,7 +92,7 @@ public class S3FindFeature implements Find {
                             return true;
                         }
                         catch(ServiceException f) {
-                            if(new ServiceExceptionMappingService().map(f) instanceof NotfoundException) {
+                            if(new S3ExceptionMappingService().map(f) instanceof NotfoundException) {
                                 list.attributes().addHidden(file);
                                 return false;
                             }
@@ -103,7 +103,7 @@ public class S3FindFeature implements Find {
                         }
                     }
             }
-            throw new ServiceExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+            throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
     }
 

@@ -85,7 +85,7 @@ public class S3CopyFeature implements Copy {
                         containerService.getContainer(copy).getName(), destination, false);
             }
             catch(ServiceException e) {
-                throw new ServiceExceptionMappingService().map("Cannot copy {0}", e, source);
+                throw new S3ExceptionMappingService().map("Cannot copy {0}", e, source);
             }
         }
     }

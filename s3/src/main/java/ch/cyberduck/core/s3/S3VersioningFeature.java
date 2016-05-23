@@ -131,7 +131,7 @@ public class S3VersioningFeature implements Versioning {
             cache.remove(container);
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Failure to write attributes of {0}", e);
+            throw new S3ExceptionMappingService().map("Failure to write attributes of {0}", e);
         }
     }
 
@@ -150,7 +150,7 @@ public class S3VersioningFeature implements Versioning {
         }
         catch(ServiceException e) {
             try {
-                throw new ServiceExceptionMappingService().map("Cannot read bucket versioning status", e);
+                throw new S3ExceptionMappingService().map("Cannot read bucket versioning status", e);
             }
             catch(AccessDeniedException l) {
                 log.warn(String.format("Missing permission to read versioning configuration for %s %s", container, e.getMessage()));
@@ -189,7 +189,7 @@ public class S3VersioningFeature implements Versioning {
                         containerService.getContainer(file).getName(), containerService.getKey(file), containerService.getContainer(file).getName(), destination, false);
             }
             catch(ServiceException e) {
-                throw new ServiceExceptionMappingService().map("Cannot revert file", e, file);
+                throw new S3ExceptionMappingService().map("Cannot revert file", e, file);
             }
         }
     }
