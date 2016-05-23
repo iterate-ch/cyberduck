@@ -49,7 +49,8 @@ public class AlertRecursiveCallback<T> implements Worker.RecursiveCallback<T> {
             final AtomicBoolean c = new AtomicBoolean(false);
             final NSAlert alert = NSAlert.alert(
                     LocaleFactory.localizedString("Apply changes recursively"),
-                    MessageFormat.format(LocaleFactory.localizedString("Do you want to set {0} on {1} recursively for all contained files?"), value, directory),
+                    MessageFormat.format(LocaleFactory.localizedString("Do you want to set {0} on {1} recursively for all contained files?"),
+                            value, directory.getName()),
                     LocaleFactory.localizedString("Continue", "Credentials"), // default button
                     null, //other button
                     LocaleFactory.localizedString("Cancel") // alternate button
