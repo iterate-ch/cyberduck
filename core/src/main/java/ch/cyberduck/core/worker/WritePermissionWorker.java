@@ -117,8 +117,8 @@ public class WritePermissionWorker extends Worker<Boolean> {
         else {
             this.write(feature, file, permission);
         }
-        if(callback.recurse(file, permission)) {
-            if(file.isDirectory()) {
+        if(file.isDirectory()) {
+            if(callback.recurse(file, permission)) {
                 for(Path child : session.list(file, new ActionListProgressListener(this, listener))) {
                     this.write(session, feature, child);
                 }

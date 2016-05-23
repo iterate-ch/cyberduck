@@ -97,11 +97,11 @@ public class WriteMetadataWorker extends Worker<Boolean> {
                     file.getName()));
             feature.setMetadata(file, metadata);
             file.attributes().setMetadata(metadata);
-            if(file.isDirectory()) {
-                if(callback.recurse(file, LocaleFactory.localizedString("Metadata", "Info"))) {
-                    for(Path child : session.list(file, new ActionListProgressListener(this, listener))) {
-                        this.write(session, feature, child);
-                    }
+        }
+        if(file.isDirectory()) {
+            if(callback.recurse(file, LocaleFactory.localizedString("Metadata", "Info"))) {
+                for(Path child : session.list(file, new ActionListProgressListener(this, listener))) {
+                    this.write(session, feature, child);
                 }
             }
         }
