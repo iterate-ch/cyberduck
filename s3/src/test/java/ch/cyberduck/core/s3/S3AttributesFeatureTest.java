@@ -138,7 +138,7 @@ public class S3AttributesFeatureTest {
         final PathAttributes attributes = new PathAttributes();
         // Retrieve latest object version
         attributes.setVersionId("a.wvRLBNdY1MncqxF5Jt.hPn3NejhheK");
-        assertEquals("PqdhUBWLxRHb.rtPQNpdc3PgRJ05ZVte", new S3AttributesFeature(session).find(
+        assertEquals("a.wvRLBNdY1MncqxF5Jt.hPn3NejhheK", new S3AttributesFeature(session).find(
                 new Path("/versioning-test-us-east-1-cyberduck/test", EnumSet.of(AbstractPath.Type.file))).getVersionId());
         session.close();
     }
