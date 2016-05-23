@@ -52,17 +52,12 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
                         _controller.View.CommandBox(LocaleFactory.localizedString("Error"),
                                                     failure.getMessage() ?? LocaleFactory.localizedString("Unknown"),
                                                     failure.getDetail() ?? LocaleFactory.localizedString("Unknown"),
-                                                    null,
-                                                    null,
+                                                    null, null,
                                                     LocaleFactory.localizedString("Always"),
-                                                    String.Format("{0}|{1}",
-                                                                  LocaleFactory.localizedString("Continue",
-                                                                                                "Credentials"),
-                                                                  LocaleFactory.localizedString("Cancel")), false,
-                                                    SysIcons.Warning, SysIcons.Information,
+                                                    LocaleFactory.localizedString("Continue", "Credentials"), true, SysIcons.Warning, SysIcons.Information,
                                                     delegate(int opt, bool verificationChecked)
                                                         {
-                                                            if (opt == 1)
+                                                            if (opt == 0)
                                                             {
                                                                 c.SetValue(false);
                                                             }
