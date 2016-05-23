@@ -170,9 +170,6 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
                                 }
                             });
                         }
-                        if(keys.isEmpty()) {
-                            keys.add(SSE_KMS_DEFAULT);
-                        }
                         return keys;
                     }
                     catch(AmazonClientException e) {
