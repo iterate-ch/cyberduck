@@ -55,7 +55,7 @@ public class WriteAclWorker extends Worker<Boolean> {
                           final ProgressListener listener) {
         this(files, acl, new RecursiveCallback<Acl>() {
             @Override
-            public boolean recurse(final Acl value) {
+            public boolean recurse(final Path directory, final Acl value) {
                 return recursive;
             }
         }, listener);
@@ -91,7 +91,7 @@ public class WriteAclWorker extends Worker<Boolean> {
             // No recursion when changing container ACL
         }
         else if(file.isDirectory()) {
-            if(callback.recurse(acl)) {
+            if(callback.recurse(file, acl)) {
                 for(Path child : session.list(file, new ActionListProgressListener(this, listener))) {
                     this.write(session, feature, child);
                 }

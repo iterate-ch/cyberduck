@@ -57,7 +57,7 @@ public class WriteMetadataWorker extends Worker<Boolean> {
                                   final ProgressListener listener) {
         this(files, metadata, new RecursiveCallback<String>() {
             @Override
-            public boolean recurse(final String value) {
+            public boolean recurse(final Path directory, final String value) {
                 return recursive;
             }
         }, listener);
@@ -98,7 +98,7 @@ public class WriteMetadataWorker extends Worker<Boolean> {
             feature.setMetadata(file, metadata);
             file.attributes().setMetadata(metadata);
             if(file.isDirectory()) {
-                if(callback.recurse(LocaleFactory.localizedString("Metadata", "Info"))) {
+                if(callback.recurse(file, LocaleFactory.localizedString("Metadata", "Info"))) {
                     for(Path child : session.list(file, new ActionListProgressListener(this, listener))) {
                         this.write(session, feature, child);
                     }

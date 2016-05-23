@@ -54,7 +54,7 @@ public class WritePermissionWorker extends Worker<Boolean> {
                                  final ProgressListener listener) {
         this(files, permission, new RecursiveCallback<Permission>() {
             @Override
-            public boolean recurse(final Permission value) {
+            public boolean recurse(final Path directory, final Permission value) {
                 return recursive;
             }
         }, listener);
@@ -82,7 +82,7 @@ public class WritePermissionWorker extends Worker<Boolean> {
         if(this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
-        if(callback.recurse(permission) && file.isFile()) {
+        if(callback.recurse(file, permission) && file.isFile()) {
             // Do not write executable bit for files if not already set when recursively updating directory. See #1787
             final Permission modified = new Permission(permission.getMode());
             if(!file.attributes().getPermission().getUser().implies(Permission.Action.execute)) {
@@ -98,7 +98,7 @@ public class WritePermissionWorker extends Worker<Boolean> {
                 this.write(feature, file, modified);
             }
         }
-        else if(file.isDirectory() && callback.recurse(permission)) {
+        else if(file.isDirectory() && callback.recurse(file, permission)) {
             // Do not remove executable bit for folders. See #7316
             final Permission modified = new Permission(permission.getMode());
             if(file.attributes().getPermission().getUser().implies(Permission.Action.execute)) {
@@ -117,7 +117,7 @@ public class WritePermissionWorker extends Worker<Boolean> {
         else {
             this.write(feature, file, permission);
         }
-        if(callback.recurse(permission)) {
+        if(callback.recurse(file, permission)) {
             if(file.isDirectory()) {
                 for(Path child : session.list(file, new ActionListProgressListener(this, listener))) {
                     this.write(session, feature, child);

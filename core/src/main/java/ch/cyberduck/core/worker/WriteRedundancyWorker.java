@@ -57,7 +57,7 @@ public class WriteRedundancyWorker extends Worker<Boolean> {
                                  final ProgressListener listener) {
         this(files, level, new RecursiveCallback<String>() {
             @Override
-            public boolean recurse(final String value) {
+            public boolean recurse(final Path directory, final String value) {
                 return recursive;
             }
         }, listener);
@@ -93,7 +93,7 @@ public class WriteRedundancyWorker extends Worker<Boolean> {
             file.attributes().setStorageClass(level);
         }
         if(file.isDirectory()) {
-            if(callback.recurse(level)) {
+            if(callback.recurse(file, level)) {
                 for(Path child : session.list(file, new ActionListProgressListener(this, listener))) {
                     this.write(session, feature, child);
                 }

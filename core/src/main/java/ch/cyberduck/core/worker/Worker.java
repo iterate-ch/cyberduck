@@ -90,6 +90,6 @@ public abstract class Worker<T> {
         /**
          * @return True to descend into directories
          */
-        boolean recurse(T value);
+        boolean recurse(Path directory, T value);
     }
 }
