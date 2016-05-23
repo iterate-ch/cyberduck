@@ -62,6 +62,7 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.s3.S3Protocol;
+import ch.cyberduck.core.threading.AlertRecursiveCallback;
 import ch.cyberduck.core.threading.BrowserControllerBackgroundAction;
 import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
@@ -376,7 +377,7 @@ public class InfoController extends ToolbarWindowController {
             final Redundancy feature = controller.getSession().getFeature(Redundancy.class);
             final String redundancy = sender.selectedItem().representedObject();
             controller.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
-                    new WriteRedundancyWorker(files, redundancy, true, controller) {
+                    new WriteRedundancyWorker(files, redundancy, new AlertRecursiveCallback<String>(this), controller) {
                                 @Override
                                 public void cleanup(final Boolean v) {
                                     toggleS3Settings(true);
@@ -405,7 +406,7 @@ public class InfoController extends ToolbarWindowController {
         if(null != algorithm && this.toggleS3Settings(false)) {
             final Encryption.Algorithm encryption = Encryption.Algorithm.fromString(algorithm);
             controller.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
-                    new WriteEncryptionWorker(files, encryption, true, controller) {
+                    new WriteEncryptionWorker(files, encryption, new AlertRecursiveCallback<Encryption.Algorithm>(this), controller) {
                                 @Override
                                 public void cleanup(final Boolean v) {
                                     toggleS3Settings(true);
@@ -956,7 +957,7 @@ public class InfoController extends ToolbarWindowController {
     private void aclInputDidEndEditing() {
         if(this.toggleAclSettings(false)) {
             controller.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
-                            new WriteAclWorker(files, new Acl(acl.toArray(new Acl.UserAndRole[acl.size()])), true, controller) {
+                    new WriteAclWorker(files, new Acl(acl.toArray(new Acl.UserAndRole[acl.size()])), new AlertRecursiveCallback<Acl>(this), controller) {
                                 @Override
                                 public void cleanup(final Boolean v) {
                                     toggleAclSettings(true);
@@ -1246,7 +1247,7 @@ public class InfoController extends ToolbarWindowController {
                 update.put(header.getName(), header.getValue());
             }
             controller.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
-                            new WriteMetadataWorker(files, update, true, controller) {
+                    new WriteMetadataWorker(files, update, new AlertRecursiveCallback<String>(this), controller) {
                                 @Override
                                 public void cleanup(final Boolean v) {
                                     toggleMetadataSettings(true);
