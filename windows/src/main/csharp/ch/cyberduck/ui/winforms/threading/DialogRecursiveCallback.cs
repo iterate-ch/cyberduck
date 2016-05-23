@@ -56,7 +56,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
                                                     LocaleFactory.localizedString("Continue", "Credentials"), true, SysIcons.Warning, SysIcons.Information,
                                                     delegate(int opt, bool verificationChecked)
                                                         {
-                                                            if (opt == 1)
+                                                            if (opt == 0)
                                                             {
                                                                 c.SetValue(true);
                                                             }
