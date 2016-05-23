@@ -50,10 +50,10 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
                         _controller.View.CommandBox(LocaleFactory.localizedString("Apply changes recursively"),
                                                     LocaleFactory.localizedString("Apply changes recursively"),
                                                     String.Format(LocaleFactory.localizedString("Do you want to set {0} on {1} recursively for all contained files?"),
-                                                                                value, directory.getName(),
-                                                    null, null, null,
+                                                                                value, directory.getName()),
+                                                    null, null,
                                                     LocaleFactory.localizedString("Always"),
-                                                    LocaleFactory.localizedString("Continue", "Credentials")), true, SysIcons.Warning, SysIcons.Information,
+                                                    LocaleFactory.localizedString("Continue", "Credentials"), true, SysIcons.Warning, SysIcons.Information,
                                                     delegate(int opt, bool verificationChecked)
                                                         {
                                                             if (opt == 1)
