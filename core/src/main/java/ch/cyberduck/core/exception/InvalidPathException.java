@@ -1,3 +1,5 @@
+package ch.cyberduck.core.exception;
+
 /*
  * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
@@ -12,8 +14,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-
-package ch.cyberduck.core.exception;
 
 public class InvalidPathException extends LocalAccessDeniedException {
 

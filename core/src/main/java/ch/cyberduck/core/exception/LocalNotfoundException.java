@@ -17,9 +17,6 @@ package ch.cyberduck.core.exception;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-/**
- * @version $Id$
- */
 public class LocalNotfoundException extends NotfoundException {
 
     public LocalNotfoundException(final String detail) {

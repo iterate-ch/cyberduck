@@ -19,9 +19,6 @@ package ch.cyberduck.core.exception;
 
 import ch.cyberduck.core.LocaleFactory;
 
-/**
- * @version $Id$
- */
 public class ResolveFailedException extends BackgroundException {
     private static final long serialVersionUID = 5213700700233301556L;
 

@@ -20,9 +20,6 @@ package ch.cyberduck.core.exception;
 
 import ch.cyberduck.core.LocaleFactory;
 
-/**
- * @version $Id$
- */
 public class ConnectionTimeoutException extends BackgroundException {
     private static final long serialVersionUID = -7408164299912691588L;
 

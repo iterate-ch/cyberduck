@@ -21,9 +21,6 @@ package ch.cyberduck.core.exception;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Path;
 
-/**
- * @version $Id$
- */
 public class ListCanceledException extends ConnectionCanceledException {
     private static final long serialVersionUID = 7637613473871074200L;
 

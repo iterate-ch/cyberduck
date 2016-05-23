@@ -20,9 +20,6 @@ package ch.cyberduck.core.exception;
 
 import ch.cyberduck.core.LocaleFactory;
 
-/**
- * @version $Id$
- */
 public class LoginFailureException extends BackgroundException {
     private static final long serialVersionUID = -7628228280711158915L;
 

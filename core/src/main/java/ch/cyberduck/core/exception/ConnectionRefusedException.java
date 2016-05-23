@@ -20,9 +20,6 @@ package ch.cyberduck.core.exception;
 
 import ch.cyberduck.core.LocaleFactory;
 
-/**
- * @version $Id$
- */
 public class ConnectionRefusedException extends BackgroundException {
     private static final long serialVersionUID = 869260616523191099L;
 

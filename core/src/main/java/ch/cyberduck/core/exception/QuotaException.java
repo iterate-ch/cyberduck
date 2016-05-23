@@ -20,9 +20,6 @@ package ch.cyberduck.core.exception;
 
 import ch.cyberduck.core.LocaleFactory;
 
-/**
- * @version $Id$
- */
 public class QuotaException extends BackgroundException {
     private static final long serialVersionUID = -4529261484333237702L;
 
