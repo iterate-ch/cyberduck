@@ -37,9 +37,6 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class S3LocationFeatureTest {
 
@@ -52,8 +49,15 @@ public class S3LocationFeatureTest {
                         )));
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertEquals(new S3LocationFeature.S3Region("eu-west-1"), new S3LocationFeature(session).getLocation(
-                new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory))
+        final S3LocationFeature feature = new S3LocationFeature(session);
+        assertEquals(new S3LocationFeature.S3Region("eu-west-1"), feature.getLocation(
+                new Path("test-eu-west-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory))
+        ));
+        assertEquals(new S3LocationFeature.S3Region("eu-central-1"), feature.getLocation(
+                new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory))
+        ));
+        assertEquals(new S3LocationFeature.S3Region("us-east-1"), feature.getLocation(
+                new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory))
         ));
         session.close();
     }
@@ -85,7 +89,7 @@ public class S3LocationFeatureTest {
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertEquals(new S3LocationFeature.S3Region("eu-central-1"), new S3LocationFeature(session).getLocation(
-                new Path("cyberduck-frankfurt", EnumSet.of(Path.Type.directory))
+                new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory))
         ));
         session.close();
     }
@@ -112,7 +116,7 @@ public class S3LocationFeatureTest {
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertEquals(new S3LocationFeature.S3Region("eu-central-1"), new S3LocationFeature(session).getLocation(
-                new Path("cyberduck-frankfurt", EnumSet.of(Path.Type.directory))
+                new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory))
         ));
         session.close();
     }
