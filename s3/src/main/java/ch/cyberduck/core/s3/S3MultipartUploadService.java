@@ -265,7 +265,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 }
                 catch(BackgroundException e) {
                     // Discard sent bytes in overall progress if there is an error reply for segment.
-                    final long sent = status.getOffset();
+                    final long sent = status.getOffset() - offset;
                     overall.progress(-sent);
                     if(this.retry(e, new DisabledProgressListener(), overall)) {
                         return this.call();
