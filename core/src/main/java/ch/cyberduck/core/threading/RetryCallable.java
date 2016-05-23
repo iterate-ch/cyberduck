@@ -19,9 +19,9 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.RetriableAccessDeniedException;
+import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
 import java.util.concurrent.Callable;
@@ -43,10 +43,10 @@ public abstract class RetryCallable<T> implements Callable<T> {
     /**
      * @param e        Failure
      * @param progress Listener
-     * @param status   Progress callback
+     * @param cancel   Progress callback
      * @return Increment counter and return true if retry attempt should be made for a failed transfer
      */
-    public boolean retry(final BackgroundException e, final ProgressListener progress, final TransferStatus status) {
+    public boolean retry(final BackgroundException e, final ProgressListener progress, final StreamCancelation cancel) {
         if(++count > preferences.getInteger("connection.retry")) {
             return false;
 
@@ -66,7 +66,7 @@ public abstract class RetryCallable<T> implements Callable<T> {
                 final BackgroundActionPauser pause = new BackgroundActionPauser(new BackgroundActionPauser.Callback() {
                     @Override
                     public boolean isCanceled() {
-                        return status.isCanceled();
+                        return cancel.isCanceled();
                     }
 
                     @Override

@@ -19,6 +19,7 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
@@ -101,10 +102,11 @@ public class BackgroundActionPauser {
         }
     }
 
-    public interface Callback {
+    public interface Callback extends StreamCancelation {
         /**
          * @return True if task should be cancled and wait interrupted.
          */
+        @Override
         boolean isCanceled();
 
         /**
