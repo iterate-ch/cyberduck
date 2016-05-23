@@ -39,6 +39,7 @@ using ch.cyberduck.core.threading;
 using ch.cyberduck.core.worker;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller.Threading;
+using Ch.Cyberduck.Ui.Winforms.Threading;
 using java.lang;
 using java.text;
 using java.util;
@@ -2482,7 +2483,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public InnerWriteEncryptionWorker(BrowserController controller, InfoController infoController,
                     List files, Encryption.Algorithm algorithm)
-                    : base(files, algorithm, true, controller)
+                    : base(files, algorithm, new DialogRecursiveCallback(infoController), controller)
                 {
                     _infoController = infoController;
                 }
@@ -2512,7 +2513,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public InnerWriteRedundancyWorker(BrowserController controller, InfoController infoController,
                     List files, String redundancy)
-                    : base(files, redundancy, true, controller)
+                    : base(files, redundancy, new DialogRecursiveCallback(infoController), controller)
                 {
                     _infoController = infoController;
                 }
@@ -2589,7 +2590,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly InfoController _infoController;
 
                 public InnerWriteAclWorker(BrowserController controller, InfoController infoController, List files,
-                    Acl acl) : base(files, acl, true, controller)
+                    Acl acl) : base(files, acl, new DialogRecursiveCallback(infoController), controller)
                 {
                     _infoController = infoController;
                 }
@@ -2673,7 +2674,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly InfoController _infoController;
 
                 public InnerWriteMetadataWorker(InfoController infoController, List files, Map metadata)
-                    : base(files, metadata, true, infoController._controller)
+                    : base(files, metadata, new DialogRecursiveCallback(infoController), infoController._controller)
                 {
                     _infoController = infoController;
                 }
