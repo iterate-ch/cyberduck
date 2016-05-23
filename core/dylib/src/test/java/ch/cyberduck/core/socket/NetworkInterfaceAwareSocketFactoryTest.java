@@ -21,6 +21,7 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -31,10 +32,7 @@ import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
-@IntegrationTest
+@Category(IntegrationTest.class)
 public class NetworkInterfaceAwareSocketFactoryTest {
 
     @Test
