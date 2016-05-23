@@ -46,7 +46,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.security.cert.X509Certificate;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
@@ -68,7 +68,6 @@ public class S3ObjectListServiceTest {
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
         container.attributes().setRegion("us-east-1");
         final List<Path> list = new S3ObjectListService(session).list(container, new DisabledListProgressListener());
-        assertFalse(list.isEmpty());
         for(Path p : list) {
             assertEquals(container, p.getParent());
             assertEquals("us-east-1", p.attributes().getRegion());
@@ -174,13 +173,13 @@ public class S3ObjectListServiceTest {
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final AttributedList<Path> list = new S3ObjectListService(session).list(new Path("versioning.test-us-east-1-cyberduck",
+        final AttributedList<Path> list = new S3ObjectListService(session).list(new Path("versioning-test-us-east-1-cyberduck",
                         EnumSet.of(Path.Type.directory, Path.Type.volume)),
                 new DisabledListProgressListener());
         final PathAttributes att = new PathAttributes();
-        assertTrue(list.contains(new Path("/versioning.test-us-east-1-cyberduck/test", EnumSet.of(Path.Type.file), att)));
-        att.setVersionId("xtgd1iPdpb1L0c87oe.3KVul2rcxRyqh");
-        assertTrue(list.contains(new Path("/versioning.test-us-east-1-cyberduck/test", EnumSet.of(Path.Type.file), att)));
+        assertTrue(list.contains(new Path("/versioning-test-us-east-1-cyberduck/test", EnumSet.of(Path.Type.file), att)));
+        att.setVersionId("VLphaWnNt9MNseMuYVsLSmCFe6EuJJAq");
+        assertTrue(list.contains(new Path("/versioning-test-us-east-1-cyberduck/test", EnumSet.of(Path.Type.file), att)));
         session.close();
     }
 
@@ -200,7 +199,7 @@ public class S3ObjectListServiceTest {
         placeholder.setType(EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         final AttributedList<Path> list = new S3ObjectListService(session).list(placeholder, new DisabledListProgressListener());
         assertTrue(list.isEmpty());
-        new S3DefaultDeleteFeature(session).delete(Arrays.asList(placeholder), new DisabledLoginCallback(), new Delete.Callback() {
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {
             }
