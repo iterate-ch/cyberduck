@@ -295,12 +295,12 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                                 if(isCanceled()) {
                                     throw new ConnectionCanceledException(e);
                                 }
-                                if(table.size() == 0) {
-                                    throw e;
-                                }
                                 if(this.retry(e, progress, new TransferStatus())) {
                                     // Retry immediately
                                     return call();
+                                }
+                                if(table.size() == 0) {
+                                    throw e;
                                 }
                                 // Prompt to continue or abort for application errors
                                 else if(error.prompt(e)) {
