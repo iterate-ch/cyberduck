@@ -188,6 +188,8 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
             }
             final B2FinishLargeFileResponse response = session.getClient().finishLargeFileUpload(fileid, checksums.toArray(new String[checksums.size()]));
             log.info(String.format("Finished large file upload %s", response.getFileId()));
+            // Mark parent status as complete
+            status.setComplete();
             return null;
         }
         catch(B2ApiException e) {

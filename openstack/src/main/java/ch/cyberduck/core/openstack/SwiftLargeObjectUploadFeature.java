@@ -169,6 +169,8 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         finally {
             pool.shutdown();
         }
+        // Mark parent status as complete
+        status.setComplete();
         // Create and upload the large object manifest. It is best to upload all the segments first and
         // then create or update the manifest.
         try {

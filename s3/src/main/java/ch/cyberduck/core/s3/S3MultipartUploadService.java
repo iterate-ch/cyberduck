@@ -205,6 +205,8 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                             MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
                                     expected, reference));
                 }
+                // Mark parent status as complete
+                status.setComplete();
                 final StorageObject object = new StorageObject(containerService.getKey(file));
                 object.setETag(complete.getEtag());
                 return object;
