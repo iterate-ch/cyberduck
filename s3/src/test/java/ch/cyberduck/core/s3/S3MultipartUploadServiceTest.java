@@ -2,6 +2,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -11,6 +12,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -21,11 +23,13 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.CountingInputStream;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jets3t.service.model.S3Object;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Collections;
@@ -224,40 +228,54 @@ public class S3MultipartUploadServiceTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final String name = UUID.randomUUID().toString();
+        final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
         final byte[] random = new byte[12 * 1024 * 1024];
         new Random().nextBytes(random);
+        Local local = new Local(System.getProperty("java.io.tmpdir"), name);
         IOUtils.write(random, local.getOutputStream(false));
-        final TransferStatus status = new TransferStatus();
+        final AtomicBoolean started = new AtomicBoolean();
+        final TransferStatus status = new TransferStatus() {
+            @Override
+            public void progress(long bytes) {
+                super.progress(bytes);
+                started.set(true);
+            }
+        };
         status.setLength(random.length);
         final AtomicBoolean interrupt = new AtomicBoolean();
         try {
-            new S3MultipartUploadService(session, 10L * 1024L * 1024L, 1).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener() {
-                long count;
-
-                @Override
-                public void sent(final long bytes) {
-                    count += bytes;
-                    if(count >= 11L * 1024L * 1024L) {
-                        throw new RuntimeException();
-                    }
-                }
-            }, status, new DisabledLoginCallback());
+            new S3MultipartUploadService(session, 10L * 1024L * 1024L, 1).upload(test, new Local(System.getProperty("java.io.tmpdir"), name) {
+                        @Override
+                        public InputStream getInputStream() throws AccessDeniedException {
+                            return new CountingInputStream(super.getInputStream()) {
+                                @Override
+                                protected void beforeRead(int n) throws IOException {
+                                    if(started.get()) {
+                                        if(this.getByteCount() >= 11L * 1024L * 1024L) {
+                                            throw new IOException();
+                                        }
+                                    }
+                                }
+                            };
+                        }
+                    },
+                    new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), status,
+                    new DisabledLoginCallback());
         }
         catch(BackgroundException e) {
             // Expected
             interrupt.set(true);
         }
         assertTrue(interrupt.get());
-        assertEquals(11L * 1024L * 1024L, status.getOffset(), 0L);
-//        assertFalse(status.isComplete());
+        assertEquals(10L * 1024L * 1024L, status.getOffset(), 0L);
+        assertFalse(status.isComplete());
         assertFalse(new S3FindFeature(session).find(test));
 
         final TransferStatus append = new TransferStatus().append(true).length(random.length);
         new S3MultipartUploadService(session, 10L * 1024L * 1024L, 1).upload(test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
-                new DisabledLoginCallback());
+                new DisabledConnectionCallback());
         assertEquals(2L * 1024L * 1024L, append.getOffset(), 0L);
         assertTrue(append.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
@@ -287,40 +305,53 @@ public class S3MultipartUploadServiceTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        String name = UUID.randomUUID().toString();
+        final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
         final byte[] random = new byte[32769];
         new Random().nextBytes(random);
         IOUtils.write(random, local.getOutputStream(false));
-        final TransferStatus status = new TransferStatus();
+        final AtomicBoolean started = new AtomicBoolean();
+        final TransferStatus status = new TransferStatus() {
+            @Override
+            public void progress(long bytes) {
+                super.progress(bytes);
+                started.set(true);
+            }
+        };
         status.setLength(random.length);
         final AtomicBoolean interrupt = new AtomicBoolean();
         try {
-            new S3MultipartUploadService(session, 10485760L, 1).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener() {
-                long count;
-
-                @Override
-                public void sent(final long bytes) {
-                    count += bytes;
-                    if(count >= 32768) {
-                        throw new RuntimeException();
-                    }
-                }
-            }, status, new DisabledLoginCallback());
+            new S3MultipartUploadService(session, 10485760L, 1).upload(test, new Local(System.getProperty("java.io.tmpdir"), name) {
+                        @Override
+                        public InputStream getInputStream() throws AccessDeniedException {
+                            return new CountingInputStream(super.getInputStream()) {
+                                @Override
+                                protected void beforeRead(int n) throws IOException {
+                                    if(started.get()) {
+                                        if(this.getByteCount() >= 32768) {
+                                            throw new IOException();
+                                        }
+                                    }
+                                }
+                            };
+                        }
+                    }, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), status,
+                    new DisabledConnectionCallback());
         }
         catch(BackgroundException e) {
             // Expected
             interrupt.set(true);
         }
         assertTrue(interrupt.get());
-        assertEquals(32768L, status.getOffset(), 0L);
+        assertEquals(0L, status.getOffset(), 0L);
         assertFalse(status.isComplete());
 
         final TransferStatus append = new TransferStatus().append(true).length(random.length);
         new S3MultipartUploadService(session, 10485760L, 1).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), append,
-                new DisabledLoginCallback());
+                new DisabledConnectionCallback());
         assertEquals(32769L, append.getOffset(), 0L);
         assertTrue(append.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
