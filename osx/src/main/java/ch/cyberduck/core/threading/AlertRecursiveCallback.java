@@ -16,6 +16,8 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.binding.application.NSAlert;
+import ch.cyberduck.binding.application.NSCell;
+import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -30,12 +32,19 @@ public class AlertRecursiveCallback<T> implements Worker.RecursiveCallback<T> {
 
     private final WindowController controller;
 
+    private boolean suppressed;
+
+    private boolean option;
+
     public AlertRecursiveCallback(final WindowController controller) {
         this.controller = controller;
     }
 
     @Override
     public boolean recurse(final Path directory, final T value) {
+        if(suppressed) {
+            return option;
+        }
         if(controller.isVisible()) {
             final AtomicBoolean c = new AtomicBoolean(true);
             final NSAlert alert = NSAlert.alert(
@@ -45,11 +54,27 @@ public class AlertRecursiveCallback<T> implements Worker.RecursiveCallback<T> {
                     null, //other button
                     LocaleFactory.localizedString("Continue", "Credentials") // alternate button
             );
+            alert.setShowsSuppressionButton(true);
+            alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
             final AlertController sheet = new AlertController(controller, alert) {
+                @Override
+                protected void beginSheet(final NSWindow window) {
+                    if(suppressed) {
+                        c.set(option);
+                    }
+                    else {
+                        super.beginSheet(window);
+                    }
+                }
+
                 @Override
                 public void callback(final int returncode) {
                     if(returncode == SheetCallback.DEFAULT_OPTION) {
                         c.set(false);
+                    }
+                    if(alert.suppressionButton().state() == NSCell.NSOnState) {
+                        suppressed = true;
+                        option = c.get();
                     }
                 }
             };
