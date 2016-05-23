@@ -1698,23 +1698,23 @@ namespace Ch.Cyberduck.Ui.Controller
             private readonly Path _container;
             private readonly HashSet<string> _containers = new HashSet<string>();
 
+            private String _encryption;
             private readonly HashSet<KeyValuePair<string, string>> _encryptionKeys =
                 new HashSet<KeyValuePair<string, string>>();
 
             private readonly InfoController _infoController;
             private readonly Path _selected;
 
+            private String _storageClass;
             private readonly HashSet<KeyValuePair<string, string>> _storageClasses =
                 new HashSet<KeyValuePair<string, string>>();
 
             private readonly IInfoView _view;
             private Credentials _credentials;
-            private String _encryption;
 
             private LifecycleConfiguration _lifecycle;
             private Location.Name _location;
             private LoggingConfiguration _logging;
-            private String _storageClass;
             private VersioningConfiguration _versioning;
 
             public FetchS3BackgroundAction(BrowserController browserController, InfoController infoController)
@@ -1758,9 +1758,10 @@ namespace Ch.Cyberduck.Ui.Controller
                         ((IdentityConfiguration) s.getFeature(typeof (IdentityConfiguration))).getCredentials(
                             ((AnalyticsProvider) s.getFeature(typeof (AnalyticsProvider))).getName());
                 }
-                if (session.getFeature(typeof (Redundancy)) != null)
+                Redundancy redundancyFeature = (Redundancy)session.getFeature(typeof (Redundancy));
+                if (redundancyFeature != null)
                 {
-                    List list = ((Redundancy) session.getFeature(typeof (Redundancy))).getClasses();
+                    List list = redundancyFeature.getClasses();
                     for (int i = 0; i < list.size(); i++)
                     {
                         string redundancy = (string) list.get(i);
@@ -1770,7 +1771,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     HashSet<String> selectedClasses = new HashSet<string>();
                     foreach (Path file in _infoController.Files)
                     {
-                        string storageClass = file.attributes().getStorageClass();
+                        string storageClass = redundancyFeature.getClass(file);
                         selectedClasses.Add(storageClass);
                         _storageClass = storageClass;
                     }
@@ -1856,7 +1857,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         _view.PopulateStorageClass(_storageClasses.ToList());
                         _view.StorageClass = _storageClass;
                     }
-                    if (null != _credentials)
+                    if (_credentials != null)
                     {
                         Session s = BrowserController.Session;
                         _view.BucketAnalyticsSetupUrl =
