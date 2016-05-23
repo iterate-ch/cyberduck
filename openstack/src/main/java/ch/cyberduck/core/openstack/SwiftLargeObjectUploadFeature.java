@@ -32,6 +32,7 @@ import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.DefaultThreadPool;
 import ch.cyberduck.core.threading.RetryCallable;
@@ -212,12 +213,21 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                         return null;
                     }
                     return SwiftLargeObjectUploadFeature.super.upload(
-                            segment, local, throttle, listener, status, overall, overall);
+                            segment, local, throttle, listener, status, overall, new StreamProgress() {
+                                @Override
+                                public void progress(final long bytes) {
+                                    status.progress(bytes);
+                                    // Discard sent bytes in overall progress if there is an error reply for segment.
+                                    overall.progress(bytes);
+                                }
+
+                                @Override
+                                public void setComplete() {
+                                    status.setComplete();
+                                }
+                            });
                 }
                 catch(BackgroundException e) {
-                    // Discard sent bytes in overall progress if there is an error reply for segment.
-                    final long sent = status.getOffset() - offset;
-                    overall.progress(-sent);
                     if(this.retry(e, new DisabledProgressListener(), overall)) {
                         return this.call();
                     }

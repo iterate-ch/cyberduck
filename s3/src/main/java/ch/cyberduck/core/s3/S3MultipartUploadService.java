@@ -34,6 +34,7 @@ import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.DefaultThreadPool;
@@ -255,7 +256,19 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                             break;
                     }
                     final StorageObject part = S3MultipartUploadService.super.upload(
-                            file, local, throttle, listener, status, overall, overall);
+                            file, local, throttle, listener, status, overall, new StreamProgress() {
+                                @Override
+                                public void progress(final long bytes) {
+                                    status.progress(bytes);
+                                    // Discard sent bytes in overall progress if there is an error reply for segment.
+                                    overall.progress(bytes);
+                                }
+
+                                @Override
+                                public void setComplete() {
+                                    status.setComplete();
+                                }
+                            });
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Received response %s for part number %d", part, partNumber));
                     }
@@ -266,9 +279,6 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                             part.getContentLength());
                 }
                 catch(BackgroundException e) {
-                    // Discard sent bytes in overall progress if there is an error reply for segment.
-                    final long sent = status.getOffset() - offset;
-                    overall.progress(-sent);
                     if(this.retry(e, new DisabledProgressListener(), overall)) {
                         return this.call();
                     }

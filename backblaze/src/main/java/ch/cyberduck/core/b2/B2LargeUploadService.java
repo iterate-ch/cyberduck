@@ -28,6 +28,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.SHA1ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.DefaultThreadPool;
 import ch.cyberduck.core.threading.RetryCallable;
@@ -227,12 +228,21 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
                     }
                     status.setChecksum(new SHA1ChecksumCompute().compute(in));
                     status.setPart(partNumber);
-                    return B2LargeUploadService.super.upload(file, local, throttle, listener, status, overall, overall);
+                    return B2LargeUploadService.super.upload(file, local, throttle, listener, status, overall, new StreamProgress() {
+                        @Override
+                        public void progress(final long bytes) {
+                            status.progress(bytes);
+                            // Discard sent bytes in overall progress if there is an error reply for segment.
+                            overall.progress(bytes);
+                        }
+
+                        @Override
+                        public void setComplete() {
+                            status.setComplete();
+                        }
+                    });
                 }
                 catch(BackgroundException e) {
-                    // Discard sent bytes in overall progress if there is an error reply for segment.
-                    final long sent = status.getOffset() - offset;
-                    overall.progress(-sent);
                     if(this.retry(e, new DisabledProgressListener(), overall)) {
                         return this.call();
                     }
