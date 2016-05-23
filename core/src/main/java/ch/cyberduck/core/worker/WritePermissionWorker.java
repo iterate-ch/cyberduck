@@ -45,23 +45,23 @@ public class WritePermissionWorker extends Worker<Boolean> {
     /**
      * Descend into directories
      */
-    private RecursiveCallback callback;
+    private RecursiveCallback<Permission> callback;
 
     private ProgressListener listener;
 
     public WritePermissionWorker(final List<Path> files,
                                  final Permission permission, final boolean recursive,
                                  final ProgressListener listener) {
-        this(files, permission, new RecursiveCallback() {
+        this(files, permission, new RecursiveCallback<Permission>() {
             @Override
-            public boolean recurse() {
+            public boolean recurse(final Permission value) {
                 return recursive;
             }
         }, listener);
     }
 
     public WritePermissionWorker(final List<Path> files,
-                                 final Permission permission, final RecursiveCallback callback,
+                                 final Permission permission, final RecursiveCallback<Permission> callback,
                                  final ProgressListener listener) {
         this.files = files;
         this.permission = permission;
@@ -82,7 +82,7 @@ public class WritePermissionWorker extends Worker<Boolean> {
         if(this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
-        if(callback.recurse() && file.isFile()) {
+        if(callback.recurse(permission) && file.isFile()) {
             // Do not write executable bit for files if not already set when recursively updating directory. See #1787
             final Permission modified = new Permission(permission.getMode());
             if(!file.attributes().getPermission().getUser().implies(Permission.Action.execute)) {
@@ -98,7 +98,7 @@ public class WritePermissionWorker extends Worker<Boolean> {
                 this.write(feature, file, modified);
             }
         }
-        else if(file.isDirectory() && callback.recurse()) {
+        else if(file.isDirectory() && callback.recurse(permission)) {
             // Do not remove executable bit for folders. See #7316
             final Permission modified = new Permission(permission.getMode());
             if(file.attributes().getPermission().getUser().implies(Permission.Action.execute)) {
@@ -117,7 +117,7 @@ public class WritePermissionWorker extends Worker<Boolean> {
         else {
             this.write(feature, file, permission);
         }
-        if(callback.recurse()) {
+        if(callback.recurse(permission)) {
             if(file.isDirectory()) {
                 for(Path child : session.list(file, new ActionListProgressListener(this, listener))) {
                     this.write(session, feature, child);

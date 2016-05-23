@@ -48,23 +48,23 @@ public class WriteMetadataWorker extends Worker<Boolean> {
     /**
      * Descend into directories
      */
-    private RecursiveCallback callback;
+    private RecursiveCallback<String> callback;
 
     private ProgressListener listener;
 
     protected WriteMetadataWorker(final List<Path> files, final Map<String, String> metadata,
                                   final boolean recursive,
                                   final ProgressListener listener) {
-        this(files, metadata, new RecursiveCallback() {
+        this(files, metadata, new RecursiveCallback<String>() {
             @Override
-            public boolean recurse() {
+            public boolean recurse(final String value) {
                 return recursive;
             }
         }, listener);
     }
 
     protected WriteMetadataWorker(final List<Path> files, final Map<String, String> metadata,
-                                  final RecursiveCallback callback,
+                                  final RecursiveCallback<String> callback,
                                   final ProgressListener listener) {
         this.files = files;
         this.metadata = metadata;
@@ -98,7 +98,7 @@ public class WriteMetadataWorker extends Worker<Boolean> {
             feature.setMetadata(file, metadata);
             file.attributes().setMetadata(metadata);
             if(file.isDirectory()) {
-                if(callback.recurse()) {
+                if(callback.recurse(LocaleFactory.localizedString("Metadata", "Info"))) {
                     for(Path child : session.list(file, new ActionListProgressListener(this, listener))) {
                         this.write(session, feature, child);
                     }

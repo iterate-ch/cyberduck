@@ -46,23 +46,23 @@ public class WriteAclWorker extends Worker<Boolean> {
     /**
      * Descend into directories
      */
-    private RecursiveCallback callback;
+    private RecursiveCallback<Acl> callback;
 
     private ProgressListener listener;
 
     public WriteAclWorker(final List<Path> files,
                           final Acl acl, final boolean recursive,
                           final ProgressListener listener) {
-        this(files, acl, new RecursiveCallback() {
+        this(files, acl, new RecursiveCallback<Acl>() {
             @Override
-            public boolean recurse() {
+            public boolean recurse(final Acl value) {
                 return recursive;
             }
         }, listener);
     }
 
     public WriteAclWorker(final List<Path> files,
-                          final Acl acl, final RecursiveCallback callback,
+                          final Acl acl, final RecursiveCallback<Acl> callback,
                           final ProgressListener listener) {
         this.files = files;
         this.acl = acl;
@@ -91,7 +91,7 @@ public class WriteAclWorker extends Worker<Boolean> {
             // No recursion when changing container ACL
         }
         else if(file.isDirectory()) {
-            if(callback.recurse()) {
+            if(callback.recurse(acl)) {
                 for(Path child : session.list(file, new ActionListProgressListener(this, listener))) {
                     this.write(session, feature, child);
                 }

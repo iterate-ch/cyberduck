@@ -50,9 +50,9 @@ public class WriteEncryptionWorker extends Worker<Boolean> {
 
     public WriteEncryptionWorker(final List<Path> files, final Encryption.Algorithm algorithm,
                                  final boolean recursive, final ProgressListener listener) {
-        this(files, algorithm, new RecursiveCallback() {
+        this(files, algorithm, new RecursiveCallback<Encryption.Algorithm>() {
             @Override
-            public boolean recurse() {
+            public boolean recurse(Encryption.Algorithm value) {
                 return recursive;
             }
         }, listener);
@@ -83,7 +83,7 @@ public class WriteEncryptionWorker extends Worker<Boolean> {
                 file.getName()));
         feature.setEncryption(file, algorithm);
         if(file.isDirectory()) {
-            if(callback.recurse()) {
+            if(callback.recurse(algorithm)) {
                 for(Path child : session.list(file, new ActionListProgressListener(this, listener))) {
                     this.write(session, feature, child);
                 }

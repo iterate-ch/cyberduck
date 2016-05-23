@@ -86,10 +86,10 @@ public abstract class Worker<T> {
         //
     }
 
-    public interface RecursiveCallback {
+    public interface RecursiveCallback<T> {
         /**
          * @return True to descend into directories
          */
-        boolean recurse();
+        boolean recurse(T value);
     }
 }
