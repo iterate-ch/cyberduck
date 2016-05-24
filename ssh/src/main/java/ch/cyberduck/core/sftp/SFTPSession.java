@@ -57,6 +57,7 @@ import java.security.PublicKey;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import net.schmizz.concurrent.Promise;
@@ -140,7 +141,7 @@ public class SFTPSession extends Session<SSHClient> {
                         new NoneCompression.Factory()));
             }
             else {
-                configuration.setCompressionFactories(new NoneCompression.Factory());
+                configuration.setCompressionFactories(Collections.singletonList(new NoneCompression.Factory()));
             }
             configuration.setVersion(new PreferencesUseragentProvider().get());
             final KeepAliveProvider heartbeat;
