@@ -10,8 +10,6 @@ import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
@@ -109,7 +107,7 @@ public class SwiftLargeObjectUploadFeatureTest {
         session.close();
     }
 
-    @Test(expected = InteroperabilityException.class)
+    @Test
     public void testUploadOracle() throws Exception {
         final SwiftProtocol protocol = new SwiftProtocol() {
             @Override
@@ -148,18 +146,37 @@ public class SwiftLargeObjectUploadFeatureTest {
                 new SwiftObjectListService(session, regionService),
                 new SwiftSegmentService(session, "segments/"),
                 new SwiftWriteFeature(session, regionService), (long) (content.length / 2), 1);
-        try {
-            upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                    status, new DisabledConnectionCallback());
-        }
-        catch(BackgroundException e) {
-            assertEquals(0L, status.getOffset(), 0L);
-            assertFalse(status.isComplete());
-            throw e;
-        }
-        finally {
-            local.delete();
-            session.close();
-        }
+        final StorageObject object = upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                status, new DisabledConnectionCallback());
+        assertNull(Checksum.parse(object.getMd5sum()));
+        assertNull(new SwiftAttributesFeature(session).find(test).getChecksum());
+        assertNotNull(new DefaultAttributesFeature(session).find(test).getChecksum());
+
+        assertTrue(status.isComplete());
+        assertFalse(status.isCanceled());
+        assertEquals(content.length, status.getOffset());
+
+        assertTrue(new SwiftFindFeature(session).find(test));
+        final InputStream in = new SwiftReadFeature(session, regionService).read(test, new TransferStatus());
+        final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
+        new StreamCopier(status, status).transfer(in, buffer);
+        in.close();
+        buffer.close();
+        assertArrayEquals(content, buffer.toByteArray());
+        final Map<String, String> metadata = new SwiftMetadataFeature(session).getMetadata(test);
+        assertFalse(metadata.isEmpty());
+        final List<Path> segments = new SwiftSegmentService(session).list(test);
+        assertFalse(segments.isEmpty());
+        assertEquals(3, segments.size());
+        assertEquals(1048576L, segments.get(0).attributes().getSize());
+        assertEquals(1048576L, segments.get(1).attributes().getSize());
+        assertEquals(1L, segments.get(2).attributes().getSize());
+        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+            }
+        });
+        local.delete();
+        session.close();
     }
 }
