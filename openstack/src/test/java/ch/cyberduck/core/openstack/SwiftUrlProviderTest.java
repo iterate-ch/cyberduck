@@ -113,7 +113,7 @@ public class SwiftUrlProviderTest {
         final Path file2 = new Path(file, "key2", EnumSet.of(Path.Type.file));
         final SwiftUrlProvider provider = new SwiftUrlProvider(session, accounts);
         final Iterator<DescriptiveUrl> iterator = provider.sign(region, file2, 1379500716).iterator();
-        assertEquals("http://storage101.hkg1.clouddrive.com/v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test%20w.cyberduck.ch/key%20f%2Fkey2?temp_url_sig=a079831228bfea78853f1951e4d10f2599782219&temp_url_expires=1379500716",
+        assertEquals("http://storage101.hkg1.clouddrive.com/v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test%20w.cyberduck.ch/key%20f/key2?temp_url_sig=a079831228bfea78853f1951e4d10f2599782219&temp_url_expires=1379500716",
                 iterator.next().getUrl());
     }
 }
