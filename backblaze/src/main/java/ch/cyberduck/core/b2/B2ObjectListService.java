@@ -62,13 +62,12 @@ public class B2ObjectListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> objects = new AttributedList<Path>();
-            String nextFileid = null;
-            String nextFilename;
+            Marker marker;
             if(containerService.isContainer(directory)) {
-                nextFilename = null;
+                marker = new Marker(null, null);
             }
             else {
-                nextFilename = String.format("%s%s", containerService.getKey(directory), Path.DELIMITER);
+                marker = new Marker(String.format("%s%s", containerService.getKey(directory), Path.DELIMITER), null);
             }
             // Seen placeholders
             final Map<String, Integer> revisions = new HashMap<String, Integer>();
@@ -77,13 +76,11 @@ public class B2ObjectListService implements ListService {
                 // versions of files with the same name.
                 final B2ListFilesResponse response = session.getClient().listFileVersions(
                         new B2FileidProvider(session).getFileid(containerService.getContainer(directory)),
-                        nextFilename, nextFileid, chunksize);
-                this.parse(directory, objects, response, revisions);
-                nextFilename = response.getNextFileName();
-                nextFileid = response.getNextFileId();
+                        marker.nextFilename, marker.nextFileId, chunksize);
+                marker = this.parse(directory, objects, response, revisions);
                 listener.chunk(directory, objects);
             }
-            while(nextFileid != null);
+            while(marker.hasNext());
             return objects;
         }
         catch(B2ApiException e) {
@@ -94,8 +91,8 @@ public class B2ObjectListService implements ListService {
         }
     }
 
-    protected AttributedList<Path> parse(final Path directory, final AttributedList<Path> objects,
-                                         final B2ListFilesResponse response, final Map<String, Integer> revisions) {
+    protected Marker parse(final Path directory, final AttributedList<Path> objects,
+                           final B2ListFilesResponse response, final Map<String, Integer> revisions) {
         for(B2FileInfoResponse file : response.getFiles()) {
             final PathAttributes attributes = this.parse(directory, file, revisions);
             if(attributes == null) {
@@ -120,7 +117,7 @@ public class B2ObjectListService implements ListService {
                 objects.add(new Path(directory, PathNormalizer.name(file.getFileName()), EnumSet.of(Path.Type.file), attributes));
             }
         }
-        return objects;
+        return new Marker(response.getNextFileName(), response.getNextFileId());
     }
 
     protected PathAttributes parse(final Path directory, final B2FileInfoResponse response, final Map<String, Integer> revisions) {
@@ -172,5 +169,19 @@ public class B2ObjectListService implements ListService {
             return directory;
         }
         return new Path(directory, name, EnumSet.of(Path.Type.directory));
+    }
+
+    private static final class Marker {
+        public String nextFilename;
+        public String nextFileId;
+
+        public Marker(final String nextFilename, final String nextFileId) {
+            this.nextFilename = nextFilename;
+            this.nextFileId = nextFileId;
+        }
+
+        public boolean hasNext() {
+            return nextFilename != null;
+        }
     }
 }
