@@ -110,7 +110,7 @@ public class WebsiteCloudFrontDistributionConfigurationTest {
         final WebsiteCloudFrontDistributionConfiguration configuration
                 = new WebsiteCloudFrontDistributionConfiguration(session,
                 new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Distribution distribution = configuration.read(container, Distribution.WEBSITE, new DisabledLoginCallback());
         assertEquals("The specified bucket does not have a website configuration", distribution.getStatus());
     }
