@@ -21,9 +21,6 @@ import ch.cyberduck.core.exception.ChecksumException;
 
 import java.io.InputStream;
 
-/**
- * @version $Id$
- */
 public final class ChecksumComputeFactory {
 
     private ChecksumComputeFactory() {

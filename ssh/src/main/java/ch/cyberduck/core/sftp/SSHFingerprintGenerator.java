@@ -18,7 +18,8 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.exception.ChecksumException;
-import ch.cyberduck.core.io.MD5ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -53,7 +54,7 @@ public class SSHFingerprintGenerator {
      * @return The fingerprint is the MD5 of the Base64-encoded public key
      */
     public String fingerprint(final InputStream in) throws ChecksumException {
-        final String undelimited = new MD5ChecksumCompute().compute(in).hash;
+        final String undelimited = ChecksumComputeFactory.get(HashAlgorithm.md5).compute(in).hash;
         final StringBuilder fp = new StringBuilder(undelimited.substring(0, 2));
         for(int i = 2; i <= undelimited.length() - 2; i += 2) {
             fp.append(":").append(undelimited.substring(i, i + 2));

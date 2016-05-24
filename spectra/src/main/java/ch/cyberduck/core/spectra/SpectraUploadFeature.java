@@ -20,8 +20,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.CRC32ChecksumCompute;
-import ch.cyberduck.core.io.MD5ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
@@ -62,10 +62,10 @@ public class SpectraUploadFeature extends HttpUploadFeature<StorageObject, Messa
         // verifies the CRC when reading from physical data stores so the gateway can identify problems before
         // transmitting data to the client.
         if(preferences.getBoolean("spectra.upload.crc32")) {
-            status.setChecksum(new CRC32ChecksumCompute().compute(local.getInputStream()));
+            status.setChecksum(ChecksumComputeFactory.get(HashAlgorithm.crc32).compute(local.getInputStream()));
         }
         if(preferences.getBoolean("spectra.upload.md5")) {
-            status.setChecksum(new MD5ChecksumCompute().compute(local.getInputStream()));
+            status.setChecksum(ChecksumComputeFactory.get(HashAlgorithm.md5).compute(local.getInputStream()));
         }
         // Make sure file is available in cache
         final List<TransferStatus> chunks = bulk.query(Transfer.Type.upload, file, status);

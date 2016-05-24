@@ -26,7 +26,8 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.io.MD5ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
@@ -164,7 +165,7 @@ public abstract class AbstractEditor implements Editor {
             public void cleanup(final Transfer download) {
                 // Save checksum before edit
                 try {
-                    checksum = new MD5ChecksumCompute().compute(local.getInputStream());
+                    checksum = ChecksumComputeFactory.get(HashAlgorithm.md5).compute(local.getInputStream());
                 }
                 catch(BackgroundException e) {
                     log.warn(String.format("Error computing checksum for %s", local));
@@ -215,7 +216,7 @@ public abstract class AbstractEditor implements Editor {
         try {
             listener.message(MessageFormat.format(
                     LocaleFactory.localizedString("Compute MD5 hash of {0}", "Status"), local.getName()));
-            current = new MD5ChecksumCompute().compute(local.getInputStream());
+            current = ChecksumComputeFactory.get(HashAlgorithm.md5).compute(local.getInputStream());
         }
         catch(BackgroundException e) {
             log.warn(String.format("Error computing checksum for %s", local));

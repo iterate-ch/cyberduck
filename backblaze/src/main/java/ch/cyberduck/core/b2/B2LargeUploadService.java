@@ -25,7 +25,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.SHA1ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
@@ -226,7 +227,7 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
                     catch(IOException e) {
                         throw new DefaultIOExceptionMappingService().map(e);
                     }
-                    status.setChecksum(new SHA1ChecksumCompute().compute(in));
+                    status.setChecksum(ChecksumComputeFactory.get(HashAlgorithm.sha1).compute(in));
                     status.setPart(partNumber);
                     return B2LargeUploadService.super.upload(file, local, throttle, listener, status, overall, new StreamProgress() {
                         @Override

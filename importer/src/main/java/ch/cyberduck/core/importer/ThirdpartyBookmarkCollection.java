@@ -28,8 +28,8 @@ import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
-import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
@@ -81,7 +81,7 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
             }
             Checksum current = null;
             try {
-                current = new MD5ChecksumCompute().compute(file.getInputStream());
+                current = ChecksumComputeFactory.get(HashAlgorithm.md5).compute(file.getInputStream());
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Current checksum for %s is %s", file, current));
                 }

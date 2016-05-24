@@ -31,9 +31,6 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-/**
- * @version $Id$
- */
 public abstract class AbstractChecksumCompute implements ChecksumCompute {
 
     public Checksum compute(final String data) throws ChecksumException {

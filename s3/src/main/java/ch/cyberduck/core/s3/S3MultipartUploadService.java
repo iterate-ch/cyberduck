@@ -30,8 +30,9 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
-import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
@@ -252,7 +253,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                             catch(IOException e) {
                                 throw new DefaultIOExceptionMappingService().map(e);
                             }
-                            status.setChecksum(new SHA256ChecksumCompute().compute(in));
+                            status.setChecksum(ChecksumComputeFactory.get(HashAlgorithm.sha256).compute(in));
                             break;
                     }
                     final StorageObject part = S3MultipartUploadService.super.upload(

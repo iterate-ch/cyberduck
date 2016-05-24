@@ -11,8 +11,9 @@ import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.ResponseOutputStream;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
-import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFeature;
@@ -130,7 +131,7 @@ public class S3MultipartWriteFeature implements Write {
                 final TransferStatus status = new TransferStatus().parameters(parameters).length(len);
                 switch(session.getSignatureVersion()) {
                     case AWS4HMACSHA256:
-                        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(b, off, len)));
+                        status.setChecksum(ChecksumComputeFactory.get(HashAlgorithm.sha256).compute(new ByteArrayInputStream(b, off, len)));
                         break;
                 }
                 final S3Object part = new S3WriteFeature(session).getDetails(containerService.getKey(file), status);
