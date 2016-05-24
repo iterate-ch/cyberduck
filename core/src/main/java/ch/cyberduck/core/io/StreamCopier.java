@@ -141,6 +141,7 @@ public final class StreamCopier {
             listener.sent(-sent);
             final long recv = listener.getRecv();
             listener.recv(-recv);
+            throw e;
         }
         if(cancel.isCanceled()) {
             throw new ConnectionCanceledException();
