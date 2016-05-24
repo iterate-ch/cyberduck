@@ -40,8 +40,7 @@ public class BackgroundActionPauser {
     private final Callback callback;
 
     public BackgroundActionPauser(final Callback callback) {
-        this.callback = callback;
-        this.delay = PreferencesFactory.get().getInteger("connection.retry.delay");
+        this(callback, PreferencesFactory.get().getInteger("connection.retry.delay"));
     }
 
     /**
