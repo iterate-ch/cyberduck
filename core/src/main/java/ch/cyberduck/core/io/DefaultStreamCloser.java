@@ -36,6 +36,9 @@ public class DefaultStreamCloser implements StreamCloser {
             in.close();
         }
         catch(IOException e) {
+            if(e.getCause() instanceof BackgroundException) {
+                throw (BackgroundException) e.getCause();
+            }
             throw new DefaultIOExceptionMappingService().map(e);
         }
     }
@@ -50,6 +53,9 @@ public class DefaultStreamCloser implements StreamCloser {
             out.close();
         }
         catch(IOException e) {
+            if(e.getCause() instanceof BackgroundException) {
+                throw (BackgroundException) e.getCause();
+            }
             throw new DefaultIOExceptionMappingService().map(e);
         }
     }
