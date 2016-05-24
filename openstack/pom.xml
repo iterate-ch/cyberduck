@@ -41,7 +41,7 @@
         <dependency>
             <groupId>ch.iterate.openstack</groupId>
             <artifactId>swift</artifactId>
-            <version>2.5.5</version>
+            <version>2.5.6</version>
         </dependency>
     </dependencies>
 
