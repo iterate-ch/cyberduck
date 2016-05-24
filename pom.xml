@@ -212,6 +212,7 @@
                     <version>3.5.1</version>
                     <configuration>
                         <encoding>UTF-8</encoding>
+                        <compilerArgument>-Xlint:unchecked</compilerArgument>
                         <compilerArguments>
                             <profile>compact3</profile>
                         </compilerArguments>
