@@ -10,6 +10,8 @@ import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
@@ -105,5 +107,59 @@ public class SwiftLargeObjectUploadFeatureTest {
         });
         local.delete();
         session.close();
+    }
+
+    @Test(expected = InteroperabilityException.class)
+    public void testUploadOracle() throws Exception {
+        final SwiftProtocol protocol = new SwiftProtocol() {
+            @Override
+            public String getContext() {
+                return "/auth/v1.0";
+            }
+        };
+        final Host host = new Host(protocol, "cyduck.storage.oraclecloud.com",
+                new Credentials(
+                        "Storage-cyduck:dkocher@cyberduck.io",
+                        "hooWoy3C"
+                )
+        );
+        final Path container = new Path("TRAC-9223", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final SwiftSession session = new SwiftSession(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+
+        final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+
+        // Each segment, except the last, must be larger than 1048576 bytes.
+        //2MB + 1
+        final byte[] content = new byte[1048576 + 1048576 + 1];
+        new Random().nextBytes(content);
+
+        final OutputStream out = local.getOutputStream(false);
+        IOUtils.write(content, out);
+        out.close();
+        final TransferStatus status = new TransferStatus();
+        status.setLength(content.length);
+
+        final SwiftRegionService regionService = new SwiftRegionService(session);
+        final SwiftLargeObjectUploadFeature upload = new SwiftLargeObjectUploadFeature(session,
+                regionService,
+                new SwiftObjectListService(session, regionService),
+                new SwiftSegmentService(session, "segments/"),
+                new SwiftWriteFeature(session, regionService), (long) (content.length / 2), 1);
+        try {
+            upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                    status, new DisabledConnectionCallback());
+        }
+        catch(BackgroundException e) {
+            assertEquals(0L, status.getOffset(), 0L);
+            assertFalse(status.isComplete());
+            throw e;
+        }
+        finally {
+            local.delete();
+            session.close();
+        }
     }
 }
