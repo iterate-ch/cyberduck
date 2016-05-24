@@ -98,7 +98,7 @@ public class S3SessionTest {
         final PathCache cache = new PathCache(1);
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), cache);
         assertTrue(cache.containsKey(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume))));
-        assertTrue(cache.get(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume))));
+        assertTrue(cache.get(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(new Path("/test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume))));
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
@@ -114,13 +114,13 @@ public class S3SessionTest {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
-        host.setDefaultPath("/test.cyberduck.ch");
+        host.setDefaultPath("/test-us-east-1-cyberduck");
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         final PathCache cache = new PathCache(1);
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), cache);
         assertFalse(cache.containsKey(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume))));
-        assertTrue(cache.containsKey(new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume))));
+        assertTrue(cache.containsKey(new Path("/test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume))));
         session.close();
     }
 
@@ -173,7 +173,7 @@ public class S3SessionTest {
 
     @Test(expected = AccessDeniedException.class)
     public void testCustomHostname() throws Exception {
-        final Host host = new Host(new S3Protocol(), "test.cyberduck.ch", new Credentials(
+        final Host host = new Host(new S3Protocol(), "test-us-east-1-cyberduck", new Credentials(
                 System.getProperties().getProperty("s3.key"), "s"
         ));
         final AtomicBoolean set = new AtomicBoolean();
@@ -182,7 +182,7 @@ public class S3SessionTest {
             @Override
             public boolean verify(final String hostname, final int port, final PublicKey key)
                     throws ConnectionCanceledException {
-                assertEquals("test.cyberduck.ch", hostname);
+                assertEquals("test-us-east-1-cyberduck", hostname);
                 return true;
             }
         }, new TranscriptListener() {
@@ -190,7 +190,7 @@ public class S3SessionTest {
             public void log(final boolean request, final String message) {
                 if(request) {
                     if(message.contains("Host:")) {
-                        assertEquals("Host: test.cyberduck.ch:443", message);
+                        assertEquals("Host: test-us-east-1-cyberduck:443", message);
                         set.set(true);
                     }
                 }
@@ -253,7 +253,7 @@ public class S3SessionTest {
 
     @Test
     public void testBucketVirtualHostStyleCustomHost() throws Exception {
-        final Host host = new Host(new S3Protocol(), "test.cyberduck.ch");
+        final Host host = new Host(new S3Protocol(), "test-us-east-1-cyberduck");
         assertTrue(new S3Session(host).configure().getBoolProperty("s3service.disable-dns-buckets", true));
     }
 

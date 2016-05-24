@@ -44,7 +44,7 @@ public class S3MultipartWriteFeatureTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final S3MultipartWriteFeature feature = new S3MultipartWriteFeature(session);
-        final Path container = new Path("test.eu-central-1.cyberduck.ch", EnumSet.of(Path.Type.volume));
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume));
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -82,7 +82,7 @@ public class S3MultipartWriteFeatureTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final S3MultipartWriteFeature feature = new S3MultipartWriteFeature(session);
-        final Path container = new Path("test.eu-central-1.cyberduck.ch", EnumSet.of(Path.Type.volume));
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume));
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));

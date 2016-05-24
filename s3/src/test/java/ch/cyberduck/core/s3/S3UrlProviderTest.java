@@ -35,26 +35,26 @@ public class S3UrlProviderTest {
     @Test
     public void testProviderUriWithKey() throws Exception {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
-        final Iterator<DescriptiveUrl> provider = new S3UrlProvider(session).toUrl(new Path("/test.cyberduck.ch/key",
+        final Iterator<DescriptiveUrl> provider = new S3UrlProvider(session).toUrl(new Path("/test-us-east-1-cyberduck/key",
                 EnumSet.of(Path.Type.file))).filter(DescriptiveUrl.Type.provider).iterator();
-        assertEquals("https://s3.amazonaws.com/test.cyberduck.ch/key", provider.next().getUrl());
-        assertEquals("s3://test.cyberduck.ch/key", provider.next().getUrl());
+        assertEquals("https://s3.amazonaws.com/test-us-east-1-cyberduck/key", provider.next().getUrl());
+        assertEquals("s3://test-us-east-1-cyberduck/key", provider.next().getUrl());
     }
 
     @Test
     public void testProviderUriRoot() throws Exception {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
-        final Iterator<DescriptiveUrl> provider = new S3UrlProvider(session).toUrl(new Path("/test.cyberduck.ch",
+        final Iterator<DescriptiveUrl> provider = new S3UrlProvider(session).toUrl(new Path("/test-us-east-1-cyberduck",
                 EnumSet.of(Path.Type.directory))).filter(DescriptiveUrl.Type.provider).iterator();
-        assertEquals("https://s3.amazonaws.com/test.cyberduck.ch", provider.next().getUrl());
-        assertEquals("s3://test.cyberduck.ch/", provider.next().getUrl());
+        assertEquals("https://s3.amazonaws.com/test-us-east-1-cyberduck", provider.next().getUrl());
+        assertEquals("s3://test-us-east-1-cyberduck/", provider.next().getUrl());
     }
 
     @Test
     public void testHttpUri() throws Exception {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
-        assertEquals("https://test.cyberduck.ch.s3.amazonaws.com/key",
-                new S3UrlProvider(session).toUrl(new Path("/test.cyberduck.ch/key", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.http).getUrl());
+        assertEquals("https://test-us-east-1-cyberduck.s3.amazonaws.com/key",
+                new S3UrlProvider(session).toUrl(new Path("/test-us-east-1-cyberduck/key", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.http).getUrl());
     }
 
     @Test
@@ -67,7 +67,7 @@ public class S3UrlProviderTest {
                     public String find(final Host host) {
                         return "k";
                     }
-                }).toUrl(new Path("/test.cyberduck.ch/test f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.signed)
+                }).toUrl(new Path("/test-us-east-1-cyberduck/test f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.signed)
         );
     }
 
@@ -82,7 +82,7 @@ public class S3UrlProviderTest {
             }
         });
         assertNotNull(
-                provider.toUrl(new Path("/test.cyberduck.ch/test", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.signed)
+                provider.toUrl(new Path("/test-us-east-1-cyberduck/test", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.signed)
         );
     }
 
@@ -97,23 +97,23 @@ public class S3UrlProviderTest {
                 return "k";
             }
         });
-        assertTrue(provider.sign(new Path("/test.cyberduck.ch/test", EnumSet.of(Path.Type.file)), 30).getUrl().startsWith(
-                "https://test.cyberduck.ch.s3.amazonaws.com/test?AWSAccessKeyId=AKIAIGNLFZ2PXC6H2UPQ&Expires="));
+        assertTrue(provider.sign(new Path("/test-us-east-1-cyberduck/test", EnumSet.of(Path.Type.file)), 30).getUrl().startsWith(
+                "https://test-us-east-1-cyberduck.s3.amazonaws.com/test?AWSAccessKeyId=AKIAIGNLFZ2PXC6H2UPQ&Expires="));
     }
 
     @Test
     public void testToTorrentUrl() throws Exception {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                 new Credentials("anonymous", null)));
-        assertEquals(new DescriptiveUrl(URI.create("http://test.cyberduck.ch.s3.amazonaws.com/test%20f?torrent"), DescriptiveUrl.Type.torrent),
-                new S3UrlProvider(session).toUrl(new Path("/test.cyberduck.ch/test f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.torrent));
+        assertEquals(new DescriptiveUrl(URI.create("http://test-us-east-1-cyberduck.s3.amazonaws.com/test%20f?torrent"), DescriptiveUrl.Type.torrent),
+                new S3UrlProvider(session).toUrl(new Path("/test-us-east-1-cyberduck/test f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.torrent));
     }
 
     @Test
     public void testToTorrentUrlThirdparty() throws Exception {
-        final S3Session session = new S3Session(new Host(new S3Protocol(), "test.cyberduck.ch",
+        final S3Session session = new S3Session(new Host(new S3Protocol(), "test-us-east-1-cyberduck",
                 new Credentials("anonymous", null)));
-        assertEquals(new DescriptiveUrl(URI.create("http://test.cyberduck.ch/c/test%20f?torrent"), DescriptiveUrl.Type.torrent),
+        assertEquals(new DescriptiveUrl(URI.create("http://test-us-east-1-cyberduck/c/test%20f?torrent"), DescriptiveUrl.Type.torrent),
                 new S3UrlProvider(session).toUrl(new Path("/c/test f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.torrent));
     }
 
@@ -123,6 +123,6 @@ public class S3UrlProviderTest {
                 System.getProperties().getProperty("s3.key"), null
         )));
         assertTrue(
-                new S3UrlProvider(session).toUrl(new Path("/test.cyberduck.ch/test", EnumSet.of(Path.Type.directory))).filter(DescriptiveUrl.Type.signed).isEmpty());
+                new S3UrlProvider(session).toUrl(new Path("/test-us-east-1-cyberduck/test", EnumSet.of(Path.Type.directory))).filter(DescriptiveUrl.Type.signed).isEmpty());
     }
 }
