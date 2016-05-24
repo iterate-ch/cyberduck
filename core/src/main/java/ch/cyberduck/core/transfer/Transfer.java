@@ -385,8 +385,8 @@ public abstract class Transfer implements Serializable {
             transferred = new AtomicLong(0L);
         }
         transferred.addAndGet(bytes);
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Transferred set to %d bytes", transferred.get()));
+        if(log.isTraceEnabled()) {
+            log.trace(String.format("Transferred set to %d bytes", transferred.get()));
         }
     }
 
