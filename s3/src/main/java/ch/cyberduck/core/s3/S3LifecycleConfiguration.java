@@ -41,7 +41,7 @@ public class S3LifecycleConfiguration implements Lifecycle {
     }
 
     @Override
-    public void setConfiguration(final Path container, final LifecycleConfiguration configuration) throws BackgroundException {
+    public void setConfiguration(final Path bucket, final LifecycleConfiguration configuration) throws BackgroundException {
         try {
             if(configuration.getTransition() != null || configuration.getExpiration() != null) {
                 final LifecycleConfig config = new LifecycleConfig();
@@ -53,22 +53,22 @@ public class S3LifecycleConfiguration implements Lifecycle {
                 if(configuration.getExpiration() != null) {
                     rule.newExpiration().setDays(configuration.getExpiration());
                 }
-                session.getClient().setLifecycleConfig(container.getName(), config);
+                session.getClient().setLifecycleConfig(bucket.getName(), config);
             }
             else {
-                session.getClient().deleteLifecycleConfig(container.getName());
+                session.getClient().deleteLifecycleConfig(bucket.getName());
             }
         }
         catch(ServiceException e) {
-            throw new S3ExceptionMappingService().map("Failure to write attributes of {0}", e);
+            throw new S3ExceptionMappingService().map("Failure to write attributes of {0}", e, bucket);
         }
     }
 
 
     @Override
-    public LifecycleConfiguration getConfiguration(final Path container) throws BackgroundException {
+    public LifecycleConfiguration getConfiguration(final Path bucket) throws BackgroundException {
         try {
-            final LifecycleConfig status = session.getClient().getLifecycleConfig(container.getName());
+            final LifecycleConfig status = session.getClient().getLifecycleConfig(bucket.getName());
             if(null != status) {
                 Integer transition = null;
                 Integer expiration = null;
@@ -88,14 +88,14 @@ public class S3LifecycleConfiguration implements Lifecycle {
         }
         catch(ServiceException e) {
             try {
-                throw new S3ExceptionMappingService().map(e);
+                throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, bucket);
             }
             catch(AccessDeniedException l) {
-                log.warn(String.format("Missing permission to read lifecycle configuration for %s %s", container, e.getMessage()));
+                log.warn(String.format("Missing permission to read lifecycle configuration for %s %s", bucket, e.getMessage()));
                 return LifecycleConfiguration.empty();
             }
             catch(InteroperabilityException i) {
-                log.warn(String.format("Not supported to read lifecycle configuration for %s %s", container, e.getMessage()));
+                log.warn(String.format("Not supported to read lifecycle configuration for %s %s", bucket, e.getMessage()));
                 return LifecycleConfiguration.empty();
             }
         }
