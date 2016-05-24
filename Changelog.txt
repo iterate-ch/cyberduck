@@ -16,6 +16,7 @@ Changelog. Last modified: $Date$
 - [Bugfix] Signature mismatch for presigned URLs with AWS4 signing (S3) (#9317, #9479)
 - [Bugfix] Unable to negotiate acceptable set of security parameters (WebDAV) (#9452)
 - [Bugfix] Interoperability with Atlassian Confluence (WebDAV)
+- [Bugfix] Interoperability with Oracle Cloud (OpenStack Swift) (#9223)
 
 4.9.3
 - [Bugfix] Revert reading NTLM domain and workstation from environment (WebDAV, Windows)
