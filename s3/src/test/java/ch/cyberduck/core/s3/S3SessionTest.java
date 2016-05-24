@@ -3,7 +3,6 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
@@ -171,9 +170,9 @@ public class S3SessionTest {
         }
     }
 
-    @Test(expected = AccessDeniedException.class)
+    @Test(expected = BackgroundException.class)
     public void testCustomHostname() throws Exception {
-        final Host host = new Host(new S3Protocol(), "test-us-east-1-cyberduck", new Credentials(
+        final Host host = new Host(new S3Protocol(), "cyberduck.io", new Credentials(
                 System.getProperties().getProperty("s3.key"), "s"
         ));
         final AtomicBoolean set = new AtomicBoolean();
@@ -182,7 +181,7 @@ public class S3SessionTest {
             @Override
             public boolean verify(final String hostname, final int port, final PublicKey key)
                     throws ConnectionCanceledException {
-                assertEquals("test-us-east-1-cyberduck", hostname);
+                assertEquals("cyberduck.io", hostname);
                 return true;
             }
         }, new TranscriptListener() {
@@ -190,7 +189,7 @@ public class S3SessionTest {
             public void log(final boolean request, final String message) {
                 if(request) {
                     if(message.contains("Host:")) {
-                        assertEquals("Host: test-us-east-1-cyberduck:443", message);
+                        assertEquals("Host: cyberduck.io:443", message);
                         set.set(true);
                     }
                 }
