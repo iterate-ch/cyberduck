@@ -3,10 +3,8 @@ http://cyberduck.io/
 
 Changelog. Last modified: $Date$
 
-5.0 [https://trac.cyberduck.io/milestone/5.0]
-- [Feature] Segmented downloads with multiple connections per file (#4498)
-- [Feature] Support for Google Drive (#6976)
-- [Feature] Support for Spectra BlackPearl Deep Storage Gateway (Spectra S3)
+4.9.4
+- [Bugfix] Unable to negotiate acceptable set of security parameters (WebDAV) (#9452)
 
 4.9.3
 - [Bugfix] Revert reading NTLM domain and workstation from environment (WebDAV, Windows)
