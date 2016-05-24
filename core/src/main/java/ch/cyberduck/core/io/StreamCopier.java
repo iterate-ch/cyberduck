@@ -86,57 +86,61 @@ public final class StreamCopier {
      */
     public void transfer(final InputStream in, final OutputStream out) throws BackgroundException {
         try {
-            if(offset > 0) {
-                skip(in, offset);
-            }
-            final byte[] buffer = new byte[chunksize];
-            long total = 0;
-            int len = chunksize;
-            if(limit > 0 && limit < chunksize) {
-                // Cast will work because chunk size is int
-                len = limit.intValue();
-            }
-            while(len > 0 && !cancel.isCanceled()) {
-                final int read = in.read(buffer, 0, len);
-                if(-1 == read) {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("End of file reached with %d bytes read from stream", total));
+            try {
+                if(offset > 0) {
+                    skip(in, offset);
+                }
+                final byte[] buffer = new byte[chunksize];
+                long total = 0;
+                int len = chunksize;
+                if(limit > 0 && limit < chunksize) {
+                    // Cast will work because chunk size is int
+                    len = limit.intValue();
+                }
+                while(len > 0 && !cancel.isCanceled()) {
+                    final int read = in.read(buffer, 0, len);
+                    if(-1 == read) {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("End of file reached with %d bytes read from stream", total));
+                        }
+                        progress.setComplete();
+                        break;
                     }
-                    progress.setComplete();
-                    break;
-                }
-                else {
-                    listener.recv(read);
-                    out.write(buffer, 0, read);
-                    progress.progress(read);
-                    listener.sent(read);
-                    total += read;
-                }
-                if(limit > 0) {
-                    // Only adjust if not reading to the end of the stream. Cast will work because chunk size is int
-                    len = (int) Math.min(limit - total, chunksize);
-                }
-                if(limit == total) {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Limit %d reached reading from stream", limit));
+                    else {
+                        listener.recv(read);
+                        out.write(buffer, 0, read);
+                        progress.progress(read);
+                        listener.sent(read);
+                        total += read;
                     }
-                    progress.setComplete();
+                    if(limit > 0) {
+                        // Only adjust if not reading to the end of the stream. Cast will work because chunk size is int
+                        len = (int) Math.min(limit - total, chunksize);
+                    }
+                    if(limit == total) {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Limit %d reached reading from stream", limit));
+                        }
+                        progress.setComplete();
+                    }
                 }
+            }
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map(e);
+            }
+            finally {
+                final StreamCloser c = new DefaultStreamCloser();
+                c.close(in);
+                c.close(out);
             }
         }
-        catch(IOException e) {
+        catch(BackgroundException e) {
             // Discard sent bytes if there is an error reply.
             final long sent = listener.getSent();
             progress.progress(-sent);
             listener.sent(-sent);
             final long recv = listener.getRecv();
             listener.recv(-recv);
-            throw new DefaultIOExceptionMappingService().map(e);
-        }
-        finally {
-            final StreamCloser c = new DefaultStreamCloser();
-            c.close(in);
-            c.close(out);
         }
         if(cancel.isCanceled()) {
             throw new ConnectionCanceledException();
