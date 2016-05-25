@@ -17,7 +17,6 @@ package ch.cyberduck.core.irods;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -30,7 +29,6 @@ import org.irods.jargon.core.pub.io.IRODSFile;
 import org.irods.jargon.core.pub.io.IRODSFileFactory;
 import org.irods.jargon.core.pub.io.PackingIrodsInputStream;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -52,12 +50,7 @@ public class IRODSReadFeature implements Read {
             if(f.exists()) {
                 final InputStream in = new PackingIrodsInputStream(factory.instanceIRODSFileInputStream(f));
                 if(status.isAppend()) {
-                    try {
-                        StreamCopier.skip(in, status.getOffset());
-                    }
-                    catch(IOException e) {
-                        throw new DefaultIOExceptionMappingService().map(e);
-                    }
+                    return StreamCopier.skip(in, status.getOffset());
                 }
                 return in;
             }

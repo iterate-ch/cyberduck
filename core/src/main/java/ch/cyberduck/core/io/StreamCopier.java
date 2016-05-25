@@ -148,14 +148,20 @@ public final class StreamCopier {
         }
     }
 
-    public static void skip(final InputStream bi, final long offset) throws IOException {
-        long skipped = bi.skip(offset);
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Skipping %d bytes", skipped));
+    public static InputStream skip(final InputStream in, final long offset) throws BackgroundException {
+        try {
+            long skipped = in.skip(offset);
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Skipping %d bytes", skipped));
+            }
+            if(skipped < offset) {
+                throw new IOResumeException(String.format("Skipped %d bytes instead of %d",
+                        skipped, offset));
+            }
+            return in;
         }
-        if(skipped < offset) {
-            throw new IOResumeException(String.format("Skipped %d bytes instead of %d",
-                    skipped, offset));
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
         }
     }
 }

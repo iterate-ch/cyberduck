@@ -18,7 +18,6 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -27,7 +26,6 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 
@@ -72,14 +70,11 @@ public class AzureReadFeature implements Read {
             final BlobInputStream in = blob.openInputStream(AccessCondition.generateEmptyCondition(), options, context);
             if(status.isAppend()) {
                 try {
-                    StreamCopier.skip(in, status.getOffset());
+                    return StreamCopier.skip(in, status.getOffset());
                 }
                 catch(IndexOutOfBoundsException e) {
                     // If offset is invalid
                     throw new BackgroundException(e);
-                }
-                catch(IOException e) {
-                    throw new DefaultIOExceptionMappingService().map(e);
                 }
             }
             return in;

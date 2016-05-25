@@ -40,7 +40,6 @@ import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -220,14 +219,9 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
                     if(overall.isCanceled()) {
                         return null;
                     }
-                    final InputStream in = new BoundedInputStream(local.getInputStream(), offset + length);
-                    try {
-                        StreamCopier.skip(in, offset);
-                    }
-                    catch(IOException e) {
-                        throw new DefaultIOExceptionMappingService().map(e);
-                    }
-                    status.setChecksum(ChecksumComputeFactory.get(HashAlgorithm.sha1).compute(in));
+                    status.setChecksum(ChecksumComputeFactory.get(HashAlgorithm.sha1).compute(
+                            StreamCopier.skip(new BoundedInputStream(local.getInputStream(), offset + length), offset)
+                    ));
                     status.setPart(partNumber);
                     return B2LargeUploadService.super.upload(file, local, throttle, listener, status, overall, new StreamProgress() {
                         @Override

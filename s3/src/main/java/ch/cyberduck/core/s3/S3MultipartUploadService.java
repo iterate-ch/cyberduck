@@ -18,7 +18,6 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
@@ -246,14 +245,9 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     }
                     switch(session.getSignatureVersion()) {
                         case AWS4HMACSHA256:
-                            final InputStream in = new BoundedInputStream(local.getInputStream(), offset + length);
-                            try {
-                                StreamCopier.skip(in, offset);
-                            }
-                            catch(IOException e) {
-                                throw new DefaultIOExceptionMappingService().map(e);
-                            }
-                            status.setChecksum(ChecksumComputeFactory.get(HashAlgorithm.sha256).compute(in));
+                            status.setChecksum(ChecksumComputeFactory.get(HashAlgorithm.sha256).compute(
+                                    StreamCopier.skip(new BoundedInputStream(local.getInputStream(), offset + length), offset)
+                            ));
                             break;
                     }
                     final StorageObject part = S3MultipartUploadService.super.upload(
