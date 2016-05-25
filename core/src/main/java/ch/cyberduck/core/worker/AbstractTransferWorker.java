@@ -295,7 +295,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                                 if(isCanceled()) {
                                     throw new ConnectionCanceledException(e);
                                 }
-                                if(this.retry(e, progress, new TransferStatus())) {
+                                if(this.retry(e, progress, parent)) {
                                     // Retry immediately
                                     return call();
                                 }
