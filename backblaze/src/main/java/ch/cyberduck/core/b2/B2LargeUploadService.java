@@ -176,7 +176,7 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
                 throw new BackgroundException(e);
             }
             finally {
-                pool.shutdown();
+                pool.shutdown(false);
             }
             completed.sort(new Comparator<B2UploadPartResponse>() {
                 @Override

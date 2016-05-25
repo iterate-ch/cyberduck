@@ -168,7 +168,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
             throw new BackgroundException(e);
         }
         finally {
-            pool.shutdown();
+            pool.shutdown(false);
         }
         // Mark parent status as complete
         status.setComplete();

@@ -138,7 +138,7 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
                 throw new S3ExceptionMappingService().map("Cannot copy {0}", e, source);
             }
             finally {
-                pool.shutdown();
+                pool.shutdown(false);
             }
         }
     }

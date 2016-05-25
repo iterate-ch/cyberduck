@@ -215,7 +215,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
             }
             finally {
                 // Cancel future tasks
-                pool.shutdown();
+                pool.shutdown(false);
             }
         }
         catch(ServiceException e) {
