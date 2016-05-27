@@ -25,6 +25,7 @@ import java.io.IOException;
 
 import com.google.api.client.auth.oauth2.TokenErrorResponse;
 import com.google.api.client.auth.oauth2.TokenResponseException;
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpResponseException;
 
 public class DriveExceptionMappingService extends DefaultIOExceptionMappingService {
@@ -37,9 +38,13 @@ public class DriveExceptionMappingService extends DefaultIOExceptionMappingServi
             this.append(buffer, details.getError());
             return new LoginFailureException(buffer.toString(), failure);
         }
+        final StringBuilder buffer = new StringBuilder();
+        if(failure instanceof GoogleJsonResponseException) {
+            final GoogleJsonResponseException error = (GoogleJsonResponseException) failure;
+            this.append(buffer, error.getDetails().getMessage());
+        }
         if(failure instanceof HttpResponseException) {
             final HttpResponseException response = (HttpResponseException) failure;
-            final StringBuilder buffer = new StringBuilder();
             this.append(buffer, response.getStatusMessage());
             if(response.getStatusCode() == 401) {
                 // Invalid Credentials. Refresh the access token using the long-lived refresh token
