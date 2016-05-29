@@ -26,8 +26,8 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.codec.binary.StringUtils;
 import org.apache.commons.io.input.ProxyInputStream;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;

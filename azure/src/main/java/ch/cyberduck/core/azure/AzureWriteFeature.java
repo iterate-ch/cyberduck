@@ -121,7 +121,7 @@ public class AzureWriteFeature implements Write {
                         super.close();
                     }
                     catch(IOException e) {
-                        if(org.apache.commons.codec.binary.StringUtils.equals(SR.STREAM_CLOSED, e.getMessage())) {
+                        if(StringUtils.equals(SR.STREAM_CLOSED, e.getMessage())) {
                             return;
                         }
                         throw e;
