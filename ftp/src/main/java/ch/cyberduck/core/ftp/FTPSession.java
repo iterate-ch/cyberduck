@@ -66,11 +66,6 @@ import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.TimeZone;
 
-/**
- * Opens a connection to the remote server via ftp protocol
- *
- * @version $Id$
- */
 public class FTPSession extends SSLSession<FTPClient> {
     private static final Logger log = Logger.getLogger(FTPSession.class);
 
