@@ -32,9 +32,6 @@ import com.microsoft.azure.storage.OperationContext;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class AzureWriteFeatureTest {
 
@@ -74,7 +71,9 @@ public class AzureWriteFeatureTest {
                 .length("overwrite".getBytes("UTF-8").length).metadata(Collections.singletonMap("Content-Type", "text/plain")));
         new StreamCopier(new TransferStatus(), new TransferStatus())
                 .transfer(new ByteArrayInputStream("overwrite".getBytes("UTF-8")), overwrite);
-        IOUtils.closeQuietly(overwrite);
+        overwrite.close();
+        // Test double close
+        overwrite.close();
         assertEquals("overwrite".getBytes("UTF-8").length, new AzureAttributesFeature(session, context).find(test).getSize());
         new AzureDeleteFeature(session, context).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
             @Override

@@ -31,9 +31,6 @@ import java.util.UUID;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertNotNull;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class AzureReadFeatureTest {
 
@@ -76,6 +73,8 @@ public class AzureReadFeatureTest {
         final byte[] reference = new byte[content.length - 100];
         System.arraycopy(content, 100, reference, 0, content.length - 100);
         assertArrayEquals(reference, buffer.toByteArray());
+        in.close();
+        // Test double close
         in.close();
         new AzureDeleteFeature(session, null).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
             @Override

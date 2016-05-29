@@ -30,10 +30,12 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.io.output.ProxyOutputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -42,8 +44,10 @@ import com.microsoft.azure.storage.AccessCondition;
 import com.microsoft.azure.storage.OperationContext;
 import com.microsoft.azure.storage.RetryNoRetry;
 import com.microsoft.azure.storage.StorageException;
+import com.microsoft.azure.storage.blob.BlobOutputStream;
 import com.microsoft.azure.storage.blob.BlobRequestOptions;
 import com.microsoft.azure.storage.blob.CloudBlockBlob;
+import com.microsoft.azure.storage.core.SR;
 
 public class AzureWriteFeature implements Write {
     private static final Logger log = Logger.getLogger(AzureWriteFeature.class);
@@ -109,7 +113,21 @@ public class AzureWriteFeature implements Write {
             options.setConcurrentRequestCount(1);
             options.setRetryPolicyFactory(new RetryNoRetry());
             options.setStoreBlobContentMD5(preferences.getBoolean("azure.upload.md5"));
-            return blob.openOutputStream(AccessCondition.generateEmptyCondition(), options, context);
+            final BlobOutputStream out = blob.openOutputStream(AccessCondition.generateEmptyCondition(), options, context);
+            return new ProxyOutputStream(out) {
+                @Override
+                public void close() throws IOException {
+                    try {
+                        super.close();
+                    }
+                    catch(IOException e) {
+                        if(org.apache.commons.codec.binary.StringUtils.equals(SR.STREAM_CLOSED, e.getMessage())) {
+                            return;
+                        }
+                        throw e;
+                    }
+                }
+            };
         }
         catch(StorageException e) {
             throw new AzureExceptionMappingService().map("Upload {0} failed", e, file);

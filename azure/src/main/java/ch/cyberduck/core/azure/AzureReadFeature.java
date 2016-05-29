@@ -26,6 +26,10 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.codec.binary.StringUtils;
+import org.apache.commons.io.input.ProxyInputStream;
+
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 
@@ -36,10 +40,8 @@ import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.BlobInputStream;
 import com.microsoft.azure.storage.blob.BlobRequestOptions;
 import com.microsoft.azure.storage.blob.CloudBlockBlob;
+import com.microsoft.azure.storage.core.SR;
 
-/**
- * @version $Id$
- */
 public class AzureReadFeature implements Read {
 
     private AzureSession session;
@@ -77,7 +79,20 @@ public class AzureReadFeature implements Read {
                     throw new BackgroundException(e);
                 }
             }
-            return in;
+            return new ProxyInputStream(in) {
+                @Override
+                public void close() throws IOException {
+                    try {
+                        super.close();
+                    }
+                    catch(IOException e) {
+                        if(StringUtils.equals(SR.STREAM_CLOSED, e.getMessage())) {
+                            return;
+                        }
+                        throw e;
+                    }
+                }
+            };
         }
         catch(StorageException e) {
             throw new AzureExceptionMappingService().map("Download {0} failed", e, file);
