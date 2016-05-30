@@ -1,5 +1,6 @@
 package ch.cyberduck.core.s3;
 
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -18,6 +19,7 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
+import ch.cyberduck.core.threading.RetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -84,7 +86,7 @@ public class S3MultipartWriteFeature implements Write {
         catch(ServiceException e) {
             throw new S3ExceptionMappingService().map("Upload {0} failed", e, file);
         }
-        final MultipartOutputStream stream = new MultipartOutputStream(multipart, file);
+        final MultipartOutputStream stream = new MultipartOutputStream(multipart, file, status);
         return new ResponseOutputStream<List<MultipartPart>>(new BufferedOutputStream(stream,
                 preferences.getInteger("s3.upload.multipart.partsize.minimum"))) {
             @Override
@@ -103,14 +105,16 @@ public class S3MultipartWriteFeature implements Write {
 
         private final MultipartUpload multipart;
         private final Path file;
+        private final TransferStatus status;
 
         private int partNumber;
 
         private final AtomicBoolean close = new AtomicBoolean();
 
-        public MultipartOutputStream(final MultipartUpload multipart, final Path file) {
+        public MultipartOutputStream(final MultipartUpload multipart, final Path file, final TransferStatus status) {
             this.multipart = multipart;
             this.file = file;
+            this.status = status;
         }
 
         public List<MultipartPart> getCompleted() {
@@ -125,31 +129,43 @@ public class S3MultipartWriteFeature implements Write {
         @Override
         public void write(final byte[] b, final int off, final int len) throws IOException {
             try {
-                final Map<String, String> parameters = new HashMap<String, String>();
-                parameters.put("uploadId", multipart.getUploadId());
-                parameters.put("partNumber", String.valueOf(++partNumber));
-                final TransferStatus status = new TransferStatus().parameters(parameters).length(len);
-                switch(session.getSignatureVersion()) {
-                    case AWS4HMACSHA256:
-                        status.setChecksum(ChecksumComputeFactory.get(HashAlgorithm.sha256).compute(new ByteArrayInputStream(b, off, len)));
-                        break;
-                }
-                final S3Object part = new S3WriteFeature(session).getDetails(containerService.getKey(file), status);
-                session.getClient().putObjectWithRequestEntityImpl(
-                        containerService.getContainer(file).getName(), part,
-                        new ByteArrayEntity(b, off, len), parameters);
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Saved object %s with checksum %s", file, part.getETag()));
-                }
-                completed.add(new MultipartPart(partNumber,
-                        null == part.getLastModifiedDate() ? new Date(System.currentTimeMillis()) : part.getLastModifiedDate(),
-                        null == part.getETag() ? StringUtils.EMPTY : part.getETag(),
-                        part.getContentLength()));
+                completed.add(new RetryCallable<MultipartPart>() {
+                    @Override
+                    public MultipartPart call() throws Exception {
+                        try {
+                            final Map<String, String> parameters = new HashMap<String, String>();
+                            parameters.put("uploadId", multipart.getUploadId());
+                            parameters.put("partNumber", String.valueOf(++partNumber));
+                            final TransferStatus status = new TransferStatus().parameters(parameters).length(len);
+                            switch(session.getSignatureVersion()) {
+                                case AWS4HMACSHA256:
+                                    status.setChecksum(ChecksumComputeFactory.get(HashAlgorithm.sha256).compute(new ByteArrayInputStream(b, off, len)));
+                                    break;
+                            }
+                            final S3Object part = new S3WriteFeature(session).getDetails(containerService.getKey(file), status);
+                            session.getClient().putObjectWithRequestEntityImpl(
+                                    containerService.getContainer(file).getName(), part,
+                                    new ByteArrayEntity(b, off, len), parameters);
+                            if(log.isDebugEnabled()) {
+                                log.debug(String.format("Saved object %s with checksum %s", file, part.getETag()));
+                            }
+                            return new MultipartPart(partNumber,
+                                    null == part.getLastModifiedDate() ? new Date(System.currentTimeMillis()) : part.getLastModifiedDate(),
+                                    null == part.getETag() ? StringUtils.EMPTY : part.getETag(),
+                                    part.getContentLength());
+                        }
+                        catch(BackgroundException e) {
+                            if(this.retry(e, new DisabledProgressListener(), status)) {
+                                return this.call();
+                            }
+                            else {
+                                throw e;
+                            }
+                        }
+                    }
+                }.call());
             }
-            catch(ServiceException e) {
-                throw new IOException(e.getErrorMessage(), e);
-            }
-            catch(BackgroundException e) {
+            catch(Exception e) {
                 throw new IOException(e.getMessage(), e);
             }
         }
