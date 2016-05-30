@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,15 +13,16 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System;
+using System.Windows.Forms;
+using ch.cyberduck.core;
+using ch.cyberduck.core.worker;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
-using ch.cyberduck.core;
-using ch.cyberduck.core.worker;
 
 namespace Ch.Cyberduck.Ui.Winforms.Threading
 {
@@ -46,28 +47,31 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
             {
                 AtomicBoolean c = new AtomicBoolean(false);
                 _controller.Invoke(delegate
-                    {
+                {
+                    DialogResult result =
                         _controller.View.CommandBox(LocaleFactory.localizedString("Apply changes recursively"),
-                                                    LocaleFactory.localizedString("Apply changes recursively"),
-                                                    String.Format(LocaleFactory.localizedString("Do you want to set {0} on {1} recursively for all contained files?"),
-                                                                                value, directory.getName()),
-                                                    null, null,
-                                                    LocaleFactory.localizedString("Always"),
-                                                    LocaleFactory.localizedString("Continue", "Credentials"), true, SysIcons.Warning, SysIcons.Information,
-                                                    delegate(int opt, bool verificationChecked)
-                                                        {
-                                                            if (opt == 0)
-                                                            {
-                                                                c.SetValue(true);
-                                                            }
-
-                                                            if (verificationChecked)
-                                                            {
-                                                                _supressed = true;
-                                                                _option = c.Value;
-                                                            }
-                                                        });
-                    }, true);
+                            LocaleFactory.localizedString("Apply changes recursively"),
+                            String.Format(
+                                LocaleFactory.localizedString(
+                                    "Do you want to set {0} on {1} recursively for all contained files?"),
+                                value, directory.getName()),
+                            null, null,
+                            LocaleFactory.localizedString("Always"),
+                            LocaleFactory.localizedString("Continue", "Credentials"), true, SysIcons.Warning,
+                            SysIcons.Information,
+                            delegate(int opt, bool verificationChecked)
+                            {
+                                if (verificationChecked)
+                                {
+                                    _supressed = true;
+                                    _option = c.Value;
+                                }
+                            });
+                    if (result == DialogResult.Cancel)
+                    {
+                        c.SetValue(false);
+                    }
+                }, true);
                 return c.Value;
             }
             // Abort
