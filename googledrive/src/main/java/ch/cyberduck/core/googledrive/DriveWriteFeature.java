@@ -103,7 +103,6 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> {
                         request.addHeader("X-Upload-Content-Type", status.getMime());
                     }
                     request.addHeader(HTTP.CONTENT_TYPE, Json.MEDIA_TYPE);
-                    request.addHeader(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", session.getAccessToken()));
                     request.setEntity(new StringEntity("{\"name\": \""
                             + file.getName() + "\", \"parents\": [\""
                             + new DriveFileidProvider(session).getFileid(file.getParent()) + "\"]}"));

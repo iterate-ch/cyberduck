@@ -22,9 +22,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UrlProvider;
@@ -41,7 +39,7 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
-import ch.cyberduck.core.local.BrowserLauncherFactory;
+import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
@@ -49,22 +47,12 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.log4j.Logger;
-import org.jets3t.service.utils.oauth.OAuthConstants;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.Collections;
 
-import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
-import com.google.api.client.auth.oauth2.BearerToken;
-import com.google.api.client.auth.oauth2.ClientParametersAuthentication;
-import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.googleapis.auth.oauth2.GoogleOAuthConstants;
-import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.HttpTransport;
@@ -79,12 +67,16 @@ public class DriveSession extends HttpSession<Drive> {
 
     private HttpTransport transport;
 
-    private JsonFactory json = new GsonFactory();
+    private final JsonFactory json = new GsonFactory();
 
-    private Credential tokens;
-
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
+
+    private final OAuth2AuthorizationService tokens = new OAuth2AuthorizationService(
+            GoogleOAuthConstants.TOKEN_SERVER_URL, GoogleOAuthConstants.AUTHORIZATION_SERVER_URL,
+            preferences.getProperty("google.drive.client.id"),
+            preferences.getProperty("google.drive.client.secret"),
+            Collections.singletonList(DriveScopes.DRIVE)).withLegacyPrefix(host.getProtocol().getDescription());
 
     private final UseragentProvider useragent
             = new PreferencesUseragentProvider();
@@ -95,14 +87,12 @@ public class DriveSession extends HttpSession<Drive> {
 
     @Override
     protected Drive connect(final HostKeyCallback callback) throws BackgroundException {
-        final CloseableHttpClient client = builder.build(this).build();
-        transport = new ApacheHttpTransport(client);
-        json = new GsonFactory();
+        transport = new ApacheHttpTransport(builder.build(this).build());
         return new Drive.Builder(transport, json, new HttpRequestInitializer() {
             @Override
-            public void initialize(HttpRequest httpRequest) throws IOException {
-                httpRequest.setSuppressUserAgentSuffix(true);
-                tokens.initialize(httpRequest);
+            public void initialize(HttpRequest request) throws IOException {
+                request.setSuppressUserAgentSuffix(true);
+                tokens.initialize(request);
             }
         })
                 .setApplicationName(useragent.get())
@@ -112,83 +102,13 @@ public class DriveSession extends HttpSession<Drive> {
     @Override
     public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
                       final Cache<Path> cache) throws BackgroundException {
-        final String accesstoken = keychain.getPassword(host.getProtocol().getScheme(),
-                host.getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google Drive OAuth2 Access Token");
-        final String refreshtoken = keychain.getPassword(host.getProtocol().getScheme(),
-                host.getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google Drive OAuth2 Refresh Token");
-        if(StringUtils.isEmpty(accesstoken) || StringUtils.isEmpty(refreshtoken)) {
-            final AuthorizationCodeFlow flow = new AuthorizationCodeFlow.Builder(
-                    BearerToken.authorizationHeaderAccessMethod(),
-                    transport, json,
-                    new GenericUrl(GoogleOAuthConstants.TOKEN_SERVER_URL),
-                    new ClientParametersAuthentication(
-                            preferences.getProperty("google.drive.client.id"),
-                            preferences.getProperty("google.drive.client.secret")
-                    ),
-                    preferences.getProperty("google.drive.client.id"),
-                    GoogleOAuthConstants.AUTHORIZATION_SERVER_URL)
-                    .setScopes(Collections.singletonList(DriveScopes.DRIVE))
-                    .build();
-            // Direct the user to an authorization page to grant access to their protected data.
-            final String url = flow.newAuthorizationUrl()
-                    .setRedirectUri(GoogleOAuthConstants.OOB_REDIRECT_URI).build();
-            if(preferences.getBoolean("google.drive.oauth.openbrowser")) {
-                BrowserLauncherFactory.get().open(url);
-            }
-            prompt.prompt(host, host.getCredentials(),
-                    LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"), url,
-                    new LoginOptions().keychain(false).user(false)
-            );
-            try {
-                // Swap the given authorization token for access/refresh tokens
-                final TokenResponse response = flow.newTokenRequest(host.getCredentials().getPassword())
-                        .setRedirectUri(GoogleOAuthConstants.OOB_REDIRECT_URI).execute();
-                tokens = new Credential.Builder(BearerToken.authorizationHeaderAccessMethod())
-                        .setTransport(transport)
-                        .setClientAuthentication(new ClientParametersAuthentication(
-                                preferences.getProperty("google.drive.client.id"),
-                                preferences.getProperty("google.drive.client.secret")
-                        ))
-                        .setTokenServerEncodedUrl(GoogleOAuthConstants.TOKEN_SERVER_URL)
-                        .setJsonFactory(json).build()
-                        .setFromTokenResponse(response);
-
-                // Save for future use
-                keychain.addPassword(host.getProtocol().getScheme(),
-                        host.getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(),
-                        "Google Drive OAuth2 Access Token", tokens.getAccessToken());
-                keychain.addPassword(host.getProtocol().getScheme(),
-                        host.getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(),
-                        "Google Drive OAuth2 Refresh Token", tokens.getRefreshToken());
-
-                // Save expiry
-                preferences.setProperty("google.storage.oauth.expiry", tokens.getExpirationTimeMilliseconds());
-            }
-            catch(IOException e) {
-                throw new DriveExceptionMappingService().map(e);
-            }
-        }
-        else {
-            final Credential.AccessMethod tokens = BearerToken.authorizationHeaderAccessMethod();
-            this.tokens = new Credential.Builder(tokens)
-                    .setTransport(transport)
-                    .setClientAuthentication(new ClientParametersAuthentication(
-                            preferences.getProperty("google.drive.client.id"),
-                            preferences.getProperty("google.drive.client.secret")
-                    ))
-                    .setTokenServerEncodedUrl(GoogleOAuthConstants.TOKEN_SERVER_URL)
-                    .setJsonFactory(json).build()
-                    .setAccessToken(accesstoken)
-                    .setRefreshToken(refreshtoken)
-                    .setExpirationTimeMilliseconds(preferences.getLong("google.drive.oauth.expiry"));
-        }
+        tokens.authorize(this, keychain, prompt);
         if(host.getCredentials().isPassed()) {
             log.warn(String.format("Skip verifying credentials with previous successful authentication event for %s", this));
             return;
         }
         try {
-            this.getClient().files().list()
-                    .setOauthToken(this.tokens.getAccessToken()).executeUsingHead();
+            client.files().list().executeUsingHead();
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService().map(e);
@@ -247,9 +167,5 @@ public class DriveSession extends HttpSession<Drive> {
             return (T) new DriveFileidProvider(this);
         }
         return super.getFeature(type);
-    }
-
-    public String getAccessToken() {
-        return tokens.getAccessToken();
     }
 }

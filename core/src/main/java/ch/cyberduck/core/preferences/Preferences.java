@@ -689,7 +689,6 @@ public abstract class Preferences {
 
         defaults.put("google.storage.oauth.clientid", "996125414232.apps.googleusercontent.com");
         defaults.put("google.storage.oauth.secret", "YdaFjo2t74-Q0sThsXgeTv3l");
-        defaults.put("google.storage.oauth.openbrowser", String.valueOf(true));
 
         final int month = 60 * 60 * 24 * 30; //30 days in seconds
         defaults.put("s3.cache.seconds", String.valueOf(month));
@@ -735,7 +734,6 @@ public abstract class Preferences {
 
         defaults.put("openstack.delete.multiple.partition", String.valueOf(10000));
 
-        defaults.put("google.drive.oauth.openbrowser", String.valueOf(true));
         defaults.put("google.drive.client.id", "996125414232.apps.googleusercontent.com");
         defaults.put("google.drive.client.secret", "YdaFjo2t74-Q0sThsXgeTv3l");
         defaults.put("google.drive.list.limit", String.valueOf(100));

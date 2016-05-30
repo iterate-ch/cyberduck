@@ -16,13 +16,10 @@ package ch.cyberduck.core.googlestorage;
  */
 
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostPasswordStore;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
@@ -38,10 +35,9 @@ import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
 import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
-import ch.cyberduck.core.local.BrowserLauncherFactory;
+import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
@@ -53,8 +49,6 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.log4j.Logger;
 import org.jets3t.service.Jets3tProperties;
@@ -71,7 +65,7 @@ import org.jets3t.service.utils.oauth.OAuthUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
+import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
 
@@ -80,6 +74,13 @@ public class GoogleStorageSession extends S3Session {
 
     private Preferences preferences
             = PreferencesFactory.get();
+
+    public final OAuth2AuthorizationService tokens = new OAuth2AuthorizationService(OAuthConstants.GSOAuth2_10.Endpoints.Token,
+            OAuthConstants.GSOAuth2_10.Endpoints.Authorization,
+            preferences.getProperty("google.storage.oauth.clientid"),
+            preferences.getProperty("google.storage.oauth.secret"),
+            Collections.singletonList(OAuthConstants.GSOAuth2_10.Scopes.FullControl.toString())
+    ).withLegacyPrefix("Google");
 
     public GoogleStorageSession(final Host h) {
         super(h);
@@ -124,7 +125,7 @@ public class GoogleStorageSession extends S3Session {
     }
 
     @Override
-    public void login(final HostPasswordStore keychain, final LoginCallback controller,
+    public void login(final HostPasswordStore keychain, final LoginCallback prompt,
                       final CancelCallback cancel, final Cache<Path> cache) throws BackgroundException {
         // Project ID needs OAuth2 authentication
         final OAuth2Credentials oauth = new OAuth2Credentials(
@@ -133,50 +134,13 @@ public class GoogleStorageSession extends S3Session {
                         preferences.getProperty("google.storage.oauth.clientid"),
                         preferences.getProperty("google.storage.oauth.secret")),
                 preferences.getProperty("application.name"));
-        final String accesstoken = keychain.getPassword(host.getProtocol().getScheme(),
-                host.getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google OAuth2 Access Token");
-        final String refreshtoken = keychain.getPassword(host.getProtocol().getScheme(),
-                host.getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google OAuth2 Refresh Token");
-        if(StringUtils.isEmpty(accesstoken) || StringUtils.isEmpty(refreshtoken)) {
-            // Query access token from URL to visit in browser
-            final String url = oauth.generateBrowserUrlToAuthorizeNativeApplication(
-                    OAuthConstants.GSOAuth2_10.Scopes.FullControl
-            );
-            if(preferences.getBoolean("google.storage.oauth.openbrowser")) {
-                BrowserLauncherFactory.get().open(url);
-            }
-            final LoginOptions options = new LoginOptions().keychain(false);
-            controller.prompt(host, host.getCredentials(),
-                    LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"), url, options);
 
-            try {
-                // Swap the given authorization token for access/refresh tokens
-                oauth.retrieveOAuth2TokensFromAuthorization(host.getCredentials().getPassword());
-                final OAuth2Tokens tokens = oauth.getOAuth2Tokens();
-                // Save for future use
-                keychain.addPassword(host.getProtocol().getScheme(),
-                        host.getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(),
-                        "Google OAuth2 Access Token", tokens.getAccessToken());
-                keychain.addPassword(host.getProtocol().getScheme(),
-                        host.getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(),
-                        "Google OAuth2 Refresh Token", tokens.getRefreshToken());
+        final OAuth2AuthorizationService.Tokens tokens = this.tokens.authorize(
+                this, keychain, prompt);
+        oauth.setOAuth2Tokens(new OAuth2Tokens(tokens.accesstoken, tokens.refreshtoken, new Date(tokens.expiry)));
 
-                // Save expiry
-                preferences.setProperty("google.storage.oauth.expiry", tokens.getExpiry().getTime());
-            }
-            catch(HttpResponseException e) {
-                throw new HttpResponseExceptionMappingService().map(e);
-            }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map(e);
-            }
-        }
-        else {
-            // Re-use authentication tokens from last use
-            oauth.setOAuth2Tokens(new OAuth2Tokens(accesstoken, refreshtoken,
-                    new Date(preferences.getLong("google.storage.oauth.expiry"))));
-        }
         client.setProviderCredentials(oauth);
+
         if(host.getCredentials().isPassed()) {
             log.warn(String.format("Skip verifying credentials with previous successful authentication event for %s", this));
             return;

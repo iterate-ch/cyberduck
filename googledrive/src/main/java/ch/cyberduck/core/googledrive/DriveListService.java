@@ -62,7 +62,6 @@ public class DriveListService implements ListService {
             do {
                 final FileList list = session.getClient().files().list()
                         .setQ(String.format("'%s' in parents", new DriveFileidProvider(session).getFileid(directory)))
-                        .setOauthToken(session.getAccessToken())
                         .setPageToken(page)
                         .setFields("nextPageToken, files")
                         .setPageSize(pagesize).execute();
