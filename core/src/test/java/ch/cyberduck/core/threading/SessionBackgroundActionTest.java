@@ -78,7 +78,7 @@ public class SessionBackgroundActionTest {
         }
         assertFalse(a.hasFailed());
         assertNull(a.getException());
-        assertEquals(PreferencesFactory.get().getInteger("connection.retry"), a.retry());
+        assertEquals(PreferencesFactory.get().getInteger("connection.retry"), a.retry(new BackgroundException()));
     }
 
     @Test
@@ -122,7 +122,7 @@ public class SessionBackgroundActionTest {
         }
         assertTrue(a.hasFailed());
         assertNotNull(a.getException());
-        assertEquals(PreferencesFactory.get().getInteger("connection.retry"), a.retry());
+        assertEquals(PreferencesFactory.get().getInteger("connection.retry"), a.retry(failure));
     }
 
     @Test
@@ -166,7 +166,7 @@ public class SessionBackgroundActionTest {
         }
         assertFalse(a.hasFailed());
         assertNull(a.getException());
-        assertEquals(PreferencesFactory.get().getInteger("connection.retry"), a.retry());
+        assertEquals(PreferencesFactory.get().getInteger("connection.retry"), a.retry(failure));
     }
 
     @Test
@@ -195,6 +195,6 @@ public class SessionBackgroundActionTest {
                 throw failure;
             }
         };
-        assertEquals(PreferencesFactory.get().getInteger("connection.retry"), a.retry());
+        assertEquals(PreferencesFactory.get().getInteger("connection.retry"), a.retry(failure));
     }
 }

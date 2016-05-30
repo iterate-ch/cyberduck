@@ -153,8 +153,9 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
      * account the number of times already tried.
      *
      * @return Greater than zero if a failed action should be repeated again
+     * @param failure Failure
      */
-    protected int retry() {
+    protected int retry(final BackgroundException failure) throws BackgroundException {
         // The initial connection attempt does not count
         return PreferencesFactory.get().getInteger("connection.retry") - repeat;
     }
@@ -192,12 +193,12 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
             exception = failure;
             failed = true;
             if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
-                if(this.retry() > 0) {
+                if(this.retry(failure) > 0) {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Retry failed background action %s", this));
                     }
                     // This is an automated retry. Wait some time first.
-                    this.pause();
+                    this.pause(failure);
                     if(!this.isCanceled()) {
                         repeat++;
                         // Re-run the action with the previous lock used
@@ -243,9 +244,10 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     /**
      * Idle this action for some time. Blocks the caller.
+     * @param failure Failure
      */
-    protected void pause() {
-        final int attempt = this.retry();
+    protected void pause(final BackgroundException failure) throws BackgroundException {
+        final int attempt = this.retry(failure);
         final BackgroundActionPauser pauser = new BackgroundActionPauser(new BackgroundActionPauser.Callback() {
             @Override
             public boolean isCanceled() {
