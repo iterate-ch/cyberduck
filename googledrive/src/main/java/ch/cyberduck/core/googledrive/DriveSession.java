@@ -52,6 +52,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.Collections;
 
+import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleOAuthConstants;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
@@ -81,6 +82,8 @@ public class DriveSession extends HttpSession<Drive> {
     private final UseragentProvider useragent
             = new PreferencesUseragentProvider();
 
+    private Credential credential;
+
     public DriveSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
@@ -92,7 +95,8 @@ public class DriveSession extends HttpSession<Drive> {
             @Override
             public void initialize(HttpRequest request) throws IOException {
                 request.setSuppressUserAgentSuffix(true);
-                tokens.initialize(request);
+                // Add bearer token to request
+                credential.initialize(request);
             }
         })
                 .setApplicationName(useragent.get())
@@ -102,7 +106,7 @@ public class DriveSession extends HttpSession<Drive> {
     @Override
     public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
                       final Cache<Path> cache) throws BackgroundException {
-        tokens.authorize(this, keychain, prompt);
+        credential = tokens.authorize(this, keychain, prompt);
         if(host.getCredentials().isPassed()) {
             log.warn(String.format("Skip verifying credentials with previous successful authentication event for %s", this));
             return;
@@ -128,6 +132,10 @@ public class DriveSession extends HttpSession<Drive> {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         return new DriveListService(this).list(directory, listener);
+    }
+
+    public Credential getTokens() {
+        return credential;
     }
 
     @Override

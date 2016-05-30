@@ -46,7 +46,6 @@ import com.google.api.client.auth.oauth2.TokenErrorResponse;
 import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.auth.oauth2.TokenResponseException;
 import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.apache.ApacheHttpTransport;
 import com.google.api.client.json.JsonFactory;
@@ -73,8 +72,6 @@ public class OAuth2AuthorizationService {
 
     private static final String OOB_REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob";
 
-    private Credential tokens;
-
     private final List<String> scopes;
 
     /**
@@ -91,13 +88,14 @@ public class OAuth2AuthorizationService {
         this.scopes = scopes;
     }
 
-    public Tokens authorize(final HttpSession<?> session, final HostPasswordStore keychain,
-                            final LoginCallback prompt) throws BackgroundException {
+    public Credential authorize(final HttpSession<?> session, final HostPasswordStore keychain,
+                                final LoginCallback prompt) throws BackgroundException {
 
         final HttpConnectionPoolBuilder pool = session.getBuilder();
         final ApacheHttpTransport transport = new ApacheHttpTransport(pool.build(session).build());
         final Host host = session.getHost();
         final Tokens saved = this.find(keychain, host);
+        final Credential tokens;
         if(saved.validate()) {
             tokens = new Credential.Builder(method)
                     .setTransport(transport)
@@ -145,7 +143,7 @@ public class OAuth2AuthorizationService {
                 throw new OAuthExceptionMappingService().map(e);
             }
         }
-        return new Tokens(tokens.getAccessToken(), tokens.getRefreshToken(), tokens.getExpirationTimeMilliseconds());
+        return tokens;
     }
 
     protected Tokens find(final HostPasswordStore keychain, final Host host) {
@@ -207,16 +205,7 @@ public class OAuth2AuthorizationService {
         return this;
     }
 
-    /**
-     * Add bearer token to request
-     *
-     * @param request HTTP request
-     */
-    public void initialize(final HttpRequest request) throws IOException {
-        tokens.initialize(request);
-    }
-
-    public final class Tokens {
+    private final class Tokens {
         public final String accesstoken;
         public final String refreshtoken;
         public final Long expiry;
