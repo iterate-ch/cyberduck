@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,17 +13,16 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
-using System;
-using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Controller;
-using Ch.Cyberduck.Ui.Winforms.Taskdialog;
+using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
 using ch.cyberduck.core.transfer;
-using ch.cyberduck.ui;
+using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Ui.Controller;
+using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 
 namespace Ch.Cyberduck.Ui.Winforms.Threading
 {
@@ -48,32 +47,28 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
             {
                 AtomicBoolean c = new AtomicBoolean(true);
                 _controller.Invoke(delegate
+                {
+                    DialogResult result = _controller.View.CommandBox(LocaleFactory.localizedString("Error"),
+                        failure.getMessage() ?? LocaleFactory.localizedString("Unknown"),
+                        failure.getDetail() ?? LocaleFactory.localizedString("Unknown"),
+                        null,
+                        null,
+                        LocaleFactory.localizedString("Always"),
+                        LocaleFactory.localizedString("Continue", "Credentials"), true, SysIcons.Warning,
+                        SysIcons.Information,
+                        delegate(int opt, bool verificationChecked)
+                        {
+                            if (verificationChecked)
+                            {
+                                _supressed = true;
+                                _option = c.Value;
+                            }
+                        });
+                    if (result == DialogResult.Cancel)
                     {
-                        _controller.View.CommandBox(LocaleFactory.localizedString("Error"),
-                                                    failure.getMessage() ?? LocaleFactory.localizedString("Unknown"),
-                                                    failure.getDetail() ?? LocaleFactory.localizedString("Unknown"),
-                                                    null,
-                                                    null,
-                                                    LocaleFactory.localizedString("Always"),
-                                                    String.Format("{0}|{1}",
-                                                                  LocaleFactory.localizedString("Continue",
-                                                                                                "Credentials"),
-                                                                  LocaleFactory.localizedString("Cancel")), false,
-                                                    SysIcons.Warning, SysIcons.Information,
-                                                    delegate(int opt, bool verificationChecked)
-                                                        {
-                                                            if (opt == 1)
-                                                            {
-                                                                c.SetValue(false);
-                                                            }
-
-                                                            if (verificationChecked)
-                                                            {
-                                                                _supressed = true;
-                                                                _option = c.Value;
-                                                            }
-                                                        });
-                    }, true);
+                        c.SetValue(false);
+                    }
+                }, true);
                 return c.Value;
             }
             // Abort
