@@ -69,6 +69,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
 
+import com.google.api.client.auth.oauth2.Credential;
+
 public class GoogleStorageSession extends S3Session {
     private static final Logger log = Logger.getLogger(GoogleStorageSession.class);
 
@@ -135,9 +137,8 @@ public class GoogleStorageSession extends S3Session {
                         preferences.getProperty("google.storage.oauth.secret")),
                 preferences.getProperty("application.name"));
 
-        final OAuth2AuthorizationService.Tokens tokens = this.tokens.authorize(
-                this, keychain, prompt);
-        oauth.setOAuth2Tokens(new OAuth2Tokens(tokens.accesstoken, tokens.refreshtoken, new Date(tokens.expiry)));
+        final Credential tokens = this.tokens.authorize(this, keychain, prompt);
+        oauth.setOAuth2Tokens(new OAuth2Tokens(tokens.getAccessToken(), tokens.getRefreshToken(), new Date(tokens.getExpirationTimeMilliseconds())));
 
         client.setProviderCredentials(oauth);
 
