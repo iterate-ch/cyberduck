@@ -21,12 +21,14 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.ResponseOutputStream;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -86,9 +88,13 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<B2FileResponse> imp
                 @Override
                 public B2FileResponse call(final AbstractHttpEntity entity) throws BackgroundException {
                     try {
+                        final Checksum checksum = status.getChecksum();
+                        if(null == checksum) {
+                            throw new InteroperabilityException(String.format("Missing SHA1 checksum for file %s", file.getName()));
+                        }
                         return session.getClient().uploadFile(uploadUrl,
                                 containerService.getKey(file),
-                                entity, status.getChecksum().toString(),
+                                entity, checksum.toString(),
                                 status.getMime(), Collections.emptyMap());
                     }
                     catch(B2ApiException e) {

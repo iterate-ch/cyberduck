@@ -26,9 +26,6 @@ import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public class OverwriteFilter extends AbstractCopyFilter {
 
     public OverwriteFilter(final Session<?> source, final Session<?> destination, final Map<Path, Path> files) {
