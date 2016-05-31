@@ -26,7 +26,6 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AclPermission;
@@ -40,7 +39,6 @@ import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -204,7 +202,7 @@ public class GoogleStorageSessionTest {
         session.close();
     }
 
-    @Test(expected = InteroperabilityException.class)
+    @Test(expected = LoginFailureException.class)
     public void testProjectIdNoAuthorization() throws Exception {
         final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
                 "stellar-perigee-775", ""
@@ -219,29 +217,6 @@ public class GoogleStorageSessionTest {
                 credentials.setPassword("");
             }
         }, new DisabledCancelCallback());
-        session.close();
-    }
-
-    @Test
-    @Ignore
-    public void testProjectIdNewFormat() throws Exception {
-        final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
-                "stellar-perigee-775", ""
-        ));
-        final GoogleStorageSession session = new GoogleStorageSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore() {
-            @Override
-            public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
-                if(user.equals("Google OAuth2 Access Token")) {
-                    return System.getProperties().getProperty("google.accesstoken");
-                }
-                if(user.equals("Google OAuth2 Refresh Token")) {
-                    return System.getProperties().getProperty("google.refreshtoken");
-                }
-                return null;
-            }
-        }, new DisabledLoginCallback(), new DisabledCancelCallback());
         session.close();
     }
 }

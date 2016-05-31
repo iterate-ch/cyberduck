@@ -65,7 +65,7 @@ public class DriveSessionTest {
 
     @Test
     public void testConnect() throws Exception {
-        final Host host = new Host(new DriveProtocol(), "www.googleapis.com", new Credentials());
+        final Host host = new Host(new DriveProtocol(), "www.googleapis.com", new Credentials("u"));
         final DriveSession session = new DriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override
@@ -82,7 +82,6 @@ public class DriveSessionTest {
                         if(user.equals("Google Drive OAuth2 Refresh Token")) {
                             return System.getProperties().getProperty("googledrive.refreshtoken");
                         }
-                        fail();
                         return null;
                     }
 

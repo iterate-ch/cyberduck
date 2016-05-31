@@ -23,8 +23,6 @@ import ch.cyberduck.core.exception.NotfoundException;
 
 import java.io.IOException;
 
-import com.google.api.client.auth.oauth2.TokenErrorResponse;
-import com.google.api.client.auth.oauth2.TokenResponseException;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpResponseException;
 
@@ -32,12 +30,6 @@ public class DriveExceptionMappingService extends DefaultIOExceptionMappingServi
 
     @Override
     public BackgroundException map(final IOException failure) {
-        if(failure instanceof TokenResponseException) {
-            final TokenErrorResponse details = ((TokenResponseException) failure).getDetails();
-            final StringBuilder buffer = new StringBuilder();
-            this.append(buffer, details.getError());
-            return new LoginFailureException(buffer.toString(), failure);
-        }
         final StringBuilder buffer = new StringBuilder();
         if(failure instanceof GoogleJsonResponseException) {
             final GoogleJsonResponseException error = (GoogleJsonResponseException) failure;

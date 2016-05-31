@@ -22,6 +22,7 @@
         <module>importer</module>
         <module>importer/dll</module>
         <!-- Protocols -->
+        <module>oauth</module>
         <module>udt</module>
         <module>irods</module>
         <module>spectra</module>
@@ -189,6 +190,16 @@
                 <groupId>joda-time</groupId>
                 <artifactId>joda-time</artifactId>
                 <version>2.9.3</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.oauth-client</groupId>
+                <artifactId>google-oauth-client</artifactId>
+                <version>1.22.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.http-client</groupId>
+                <artifactId>google-http-client-gson</artifactId>
+                <version>1.22.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
