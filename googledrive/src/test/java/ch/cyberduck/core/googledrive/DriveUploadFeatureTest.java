@@ -86,7 +86,7 @@ public class DriveUploadFeatureTest {
         );
         final DriveUploadFeature upload = new DriveUploadFeature(session);
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                new DisabledProgressListener(), status, new DisabledConnectionCallback());
+                status, new DisabledConnectionCallback());
         test.attributes().setVersionId(new DriveFileidProvider(session).getFileid(test));
         assertTrue(session.getFeature(Find.class).find(test));
         assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize(), 0L);
