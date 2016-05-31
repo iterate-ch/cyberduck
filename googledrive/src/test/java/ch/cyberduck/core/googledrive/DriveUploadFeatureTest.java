@@ -20,7 +20,6 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.http.HttpConnectionPoolBuilder;
-import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
@@ -44,7 +43,7 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class DriveWriteFeatureTest {
+public class DriveUploadFeatureTest {
 
     @Test
     public void testWrite() throws Exception {
@@ -85,9 +84,9 @@ public class DriveWriteFeatureTest {
         final HttpConnectionPoolBuilder builder = new HttpConnectionPoolBuilder(host, new ThreadLocalHostnameDelegatingTrustManager(
                 new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager(), new DisabledProxyFinder()
         );
-        final HttpUploadFeature upload = new DriveUploadFeature(session);
+        final DriveUploadFeature upload = new DriveUploadFeature(session);
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                status, new DisabledConnectionCallback());
+                new DisabledProgressListener(), status, new DisabledConnectionCallback());
         test.attributes().setVersionId(new DriveFileidProvider(session).getFileid(test));
         assertTrue(session.getFeature(Find.class).find(test));
         assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize(), 0L);
