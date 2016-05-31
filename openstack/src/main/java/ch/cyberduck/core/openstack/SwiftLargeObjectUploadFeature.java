@@ -210,7 +210,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                         .skip(offset);
                 try {
                     if(overall.isCanceled()) {
-                        return null;
+                        throw new ConnectionCanceledException();
                     }
                     return SwiftLargeObjectUploadFeature.super.upload(
                             segment, local, throttle, listener, status, overall, new StreamProgress() {

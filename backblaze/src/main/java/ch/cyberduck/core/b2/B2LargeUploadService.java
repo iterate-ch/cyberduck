@@ -217,7 +217,7 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
                         .skip(offset);
                 try {
                     if(overall.isCanceled()) {
-                        return null;
+                        throw new ConnectionCanceledException();
                     }
                     status.setChecksum(ChecksumComputeFactory.get(HashAlgorithm.sha1).compute(
                             StreamCopier.skip(new BoundedInputStream(local.getInputStream(), offset + length), offset)

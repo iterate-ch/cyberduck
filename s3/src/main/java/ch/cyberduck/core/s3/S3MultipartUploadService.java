@@ -241,7 +241,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                         .parameters(requestParameters);
                 try {
                     if(overall.isCanceled()) {
-                        return null;
+                        throw new ConnectionCanceledException();
                     }
                     switch(session.getSignatureVersion()) {
                         case AWS4HMACSHA256:
