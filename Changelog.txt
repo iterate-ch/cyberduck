@@ -3,6 +3,9 @@ http://cyberduck.io/
 
 Changelog. Last modified: $Date$
 
+5.1 [https://trac.cyberduck.io/milestone/5.1]
+- [Bugfix] Support authenticating with multiple accounts (Google Drive) (#9567)
+
 5.0 [https://trac.cyberduck.io/milestone/5.0]
 - [Feature] Updated user interface; new monochrome toolbar icons (Mac)
 - [Feature] Support for Google Drive (#6976)
