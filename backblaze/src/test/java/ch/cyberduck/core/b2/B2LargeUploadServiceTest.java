@@ -19,7 +19,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
@@ -130,7 +129,7 @@ public class B2LargeUploadServiceTest {
                 @Override
                 public void sent(final long bytes) {
                     count += bytes;
-                    if(count >= 5242880L) {
+                    if(count >= 5 * 1024L * 1024L) {
                         throw new RuntimeException();
                     }
                 }
@@ -141,18 +140,17 @@ public class B2LargeUploadServiceTest {
             interrupt.set(true);
         }
         assertTrue(interrupt.get());
-        assertEquals(5242880L, status.getOffset(), 0L);
+        assertEquals(0L, status.getOffset(), 0L);
         assertFalse(status.isComplete());
 
         final TransferStatus append = new TransferStatus().append(true).length(random.length);
         new B2LargeUploadService(session, 100 * 1024L * 1024L, 1).upload(test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
                 new DisabledLoginCallback());
+        assertTrue(new B2FindFeature(session).find(test));
+        assertEquals(random.length, new B2AttributesFeature(session).find(test).getSize());
         assertEquals(random.length, append.getOffset(), 0L);
         assertTrue(append.isComplete());
-        assertTrue(new B2FindFeature(session).find(test));
-        assertEquals(random.length, session.list(bucket,
-                new DisabledListProgressListener()).get(test).attributes().getSize());
         final byte[] buffer = new byte[random.length];
         final InputStream in = new B2ReadFeature(session).read(test, new TransferStatus());
         IOUtils.readFully(in, buffer);
@@ -205,8 +203,8 @@ public class B2LargeUploadServiceTest {
             interrupt.set(true);
         }
         assertTrue(interrupt.get());
-        assertEquals(101 * 1024 * 1024L, status.getOffset(), 0L);
-//        assertFalse(status.isComplete());
+        assertEquals(100L * 1024L * 1024L, status.getOffset(), 0L);
+        assertFalse(status.isComplete());
 
         final TransferStatus append = new TransferStatus().append(true).length(random.length);
         new B2LargeUploadService(session, 100 * 1024L * 1024L, 1).upload(test, local,
