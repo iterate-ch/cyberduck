@@ -74,7 +74,7 @@ public class SingleTransferWorkerTest {
             @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
                 if(type == Upload.class) {
-                    return (T) new SwiftLargeObjectUploadFeature(this, 1024L * 1024L) {
+                    return (T) new SwiftLargeObjectUploadFeature(this, 1024L * 1024L, 5) {
                         @Override
                         protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
                             if(failed.get()) {

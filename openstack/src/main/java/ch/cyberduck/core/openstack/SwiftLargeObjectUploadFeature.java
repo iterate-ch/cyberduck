@@ -33,7 +33,6 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.DefaultThreadPool;
 import ch.cyberduck.core.threading.RetryCallable;
 import ch.cyberduck.core.threading.ThreadPool;
@@ -75,14 +74,14 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
 
     private SwiftRegionService regionService;
 
-    public SwiftLargeObjectUploadFeature(final SwiftSession session, final Long segmentSize) {
-        this(session, new SwiftRegionService(session), segmentSize);
+    public SwiftLargeObjectUploadFeature(final SwiftSession session, final Long segmentSize, final Integer concurrency) {
+        this(session, new SwiftRegionService(session), segmentSize, concurrency);
     }
 
     public SwiftLargeObjectUploadFeature(final SwiftSession session, final SwiftRegionService regionService,
-                                         final Long segmentSize) {
+                                         final Long segmentSize, final Integer concurrency) {
         this(session, regionService, new SwiftObjectListService(session, regionService), new SwiftSegmentService(session, regionService), new SwiftWriteFeature(session, regionService),
-                segmentSize, PreferencesFactory.get().getInteger("openstack.upload.largeobject.concurrency"));
+                segmentSize, concurrency);
     }
 
     public SwiftLargeObjectUploadFeature(final SwiftSession session,

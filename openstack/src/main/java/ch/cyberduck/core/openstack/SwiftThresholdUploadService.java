@@ -64,7 +64,8 @@ public class SwiftThresholdUploadService implements Upload {
         this.session = session;
         this.regionService = regionService;
         this.threshold = threshold;
-        this.largeObjectUploadFeature = new SwiftLargeObjectUploadFeature(session, regionService, segment);
+        this.largeObjectUploadFeature = new SwiftLargeObjectUploadFeature(session, regionService, segment,
+                PreferencesFactory.get().getInteger("openstack.upload.largeobject.concurrency"));
         this.smallObjectUploadFeature = new SwiftSmallObjectUploadFeature(session, regionService);
     }
 

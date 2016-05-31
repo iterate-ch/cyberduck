@@ -10,6 +10,7 @@ import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
@@ -32,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import ch.iterate.openstack.swift.model.StorageObject;
 
@@ -39,6 +41,132 @@ import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class SwiftLargeObjectUploadFeatureTest {
+
+    @Test
+    public void testAppendNoPartCompleted() throws Exception {
+        final SwiftSession session = new SwiftSession(
+                new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
+                        new Credentials(
+                                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret"))));
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("DFW");
+        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final int length = 2 * 1024 * 1024;
+        final byte[] random = new byte[length];
+        new Random().nextBytes(random);
+        IOUtils.write(random, local.getOutputStream(false));
+        final TransferStatus status = new TransferStatus();
+        status.setLength(random.length);
+        final AtomicBoolean interrupt = new AtomicBoolean();
+        try {
+            new SwiftLargeObjectUploadFeature(session, 1 * 1024L * 1024L, 1).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener() {
+                long count;
+
+                @Override
+                public void sent(final long bytes) {
+                    count += bytes;
+                    if(count >= 32768L) {
+                        throw new RuntimeException();
+                    }
+                }
+            }, status, new DisabledLoginCallback());
+        }
+        catch(BackgroundException e) {
+            // Expected
+            interrupt.set(true);
+        }
+        assertTrue(interrupt.get());
+        assertEquals(0L, status.getOffset(), 0L);
+        assertFalse(status.isComplete());
+
+        final TransferStatus append = new TransferStatus().append(true).length(random.length);
+        new SwiftLargeObjectUploadFeature(session, 1 * 1024L * 1024L, 1).upload(test, local,
+                new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
+                new DisabledLoginCallback());
+        assertTrue(new SwiftFindFeature(session).find(test));
+        assertEquals(random.length, new SwiftAttributesFeature(session).find(test).getSize());
+        assertEquals(random.length, append.getOffset(), 0L);
+        assertTrue(append.isComplete());
+        final byte[] buffer = new byte[random.length];
+        final InputStream in = new SwiftReadFeature(session, new SwiftRegionService(session)).read(test, new TransferStatus());
+        IOUtils.readFully(in, buffer);
+        in.close();
+        assertArrayEquals(random, buffer);
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+                //
+            }
+        });
+        local.delete();
+        session.close();
+    }
+
+    @Test
+    public void testAppendSecondPart() throws Exception {
+        final SwiftSession session = new SwiftSession(
+                new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
+                        new Credentials(
+                                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret"))));
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("DFW");
+        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final int length = 2 * 1024 * 1024;
+        final byte[] random = new byte[length];
+        new Random().nextBytes(random);
+        IOUtils.write(random, local.getOutputStream(false));
+        final TransferStatus status = new TransferStatus();
+        status.setLength(random.length);
+        final AtomicBoolean interrupt = new AtomicBoolean();
+        try {
+            new SwiftLargeObjectUploadFeature(session, 1 * 1024L * 1024L, 1).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener() {
+                long count;
+
+                @Override
+                public void sent(final long bytes) {
+                    count += bytes;
+                    if(count >= 1.1 * 1024L * 1024L) {
+                        throw new RuntimeException();
+                    }
+                }
+            }, status, new DisabledLoginCallback());
+        }
+        catch(BackgroundException e) {
+            // Expected
+            interrupt.set(true);
+        }
+        assertTrue(interrupt.get());
+        assertEquals(1 * 1024L * 1024L, status.getOffset(), 0L);
+        assertFalse(status.isComplete());
+
+        final TransferStatus append = new TransferStatus().append(true).length(random.length);
+        new SwiftLargeObjectUploadFeature(session, 1 * 1024L * 1024L, 1).upload(test, local,
+                new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
+                new DisabledLoginCallback());
+        assertEquals(1 * 1024L * 1024L, append.getOffset(), 0L);
+        assertTrue(append.isComplete());
+        assertTrue(new SwiftFindFeature(session).find(test));
+        assertEquals(2 * 1024L * 1024L, new SwiftAttributesFeature(session).find(test).getSize(), 0L);
+        final byte[] buffer = new byte[random.length];
+        final InputStream in = new SwiftReadFeature(session, new SwiftRegionService(session)).read(test, new TransferStatus());
+        IOUtils.readFully(in, buffer);
+        in.close();
+        assertArrayEquals(random, buffer);
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+                //
+            }
+        });
+        local.delete();
+        session.close();
+    }
 
     @Test
     public void testUpload() throws Exception {
