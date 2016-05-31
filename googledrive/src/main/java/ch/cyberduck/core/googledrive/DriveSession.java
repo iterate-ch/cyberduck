@@ -73,12 +73,6 @@ public class DriveSession extends HttpSession<Drive> {
     private final Preferences preferences
             = PreferencesFactory.get();
 
-    private final OAuth2AuthorizationService tokens = new OAuth2AuthorizationService(
-            GoogleOAuthConstants.TOKEN_SERVER_URL, GoogleOAuthConstants.AUTHORIZATION_SERVER_URL,
-            preferences.getProperty("google.drive.client.id"),
-            preferences.getProperty("google.drive.client.secret"),
-            Collections.singletonList(DriveScopes.DRIVE)).withLegacyPrefix(host.getProtocol().getDescription());
-
     private final UseragentProvider useragent
             = new PreferencesUseragentProvider();
 
@@ -106,7 +100,13 @@ public class DriveSession extends HttpSession<Drive> {
     @Override
     public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
                       final Cache<Path> cache) throws BackgroundException {
-        credential = tokens.authorize(this, keychain, prompt);
+        final OAuth2AuthorizationService service = new OAuth2AuthorizationService(keychain,
+                GoogleOAuthConstants.TOKEN_SERVER_URL, GoogleOAuthConstants.AUTHORIZATION_SERVER_URL,
+                preferences.getProperty("google.drive.client.id"),
+                preferences.getProperty("google.drive.client.secret"),
+                Collections.singletonList(DriveScopes.DRIVE))
+                .withLegacyPrefix(host.getProtocol().getDescription());
+        credential = service.authorize(this, prompt);
         if(host.getCredentials().isPassed()) {
             log.warn(String.format("Skip verifying credentials with previous successful authentication event for %s", this));
             return;
