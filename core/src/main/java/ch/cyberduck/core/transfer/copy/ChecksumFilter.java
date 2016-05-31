@@ -33,9 +33,6 @@ import org.apache.log4j.Logger;
 import java.util.Map;
 import java.util.Objects;
 
-/**
- * @version $Id$
- */
 public class ChecksumFilter extends AbstractCopyFilter {
     private static final Logger log = Logger.getLogger(ChecksumFilter.class);
 

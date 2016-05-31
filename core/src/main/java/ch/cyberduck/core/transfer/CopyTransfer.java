@@ -270,7 +270,6 @@ public class CopyTransfer extends Transfer {
         OutputStream out = null;
         try {
             if(file.isFile()) {
-                status.setChecksum(file.attributes().getChecksum());
                 in = new ThrottledInputStream(session.getFeature(Read.class).read(file, status), throttle);
                 // Make sure to use S3MultipartWriteFeature, see #9362
                 out = new ThrottledOutputStream(target.getFeature(Write.class).write(copy, status), throttle);
