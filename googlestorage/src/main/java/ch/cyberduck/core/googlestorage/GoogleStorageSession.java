@@ -18,9 +18,11 @@ package ch.cyberduck.core.googlestorage;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -35,12 +37,14 @@ import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.http.HttpConnectionPoolBuilder;
 import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
+import ch.cyberduck.core.s3.RequestEntityRestStorageService;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.s3.S3SingleUploadService;
@@ -49,24 +53,23 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.log4j.Logger;
 import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.ServiceException;
+import org.jets3t.service.acl.AccessControlList;
 import org.jets3t.service.impl.rest.AccessControlListHandler;
 import org.jets3t.service.impl.rest.GSAccessControlListHandler;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
+import org.jets3t.service.model.StorageBucket;
 import org.jets3t.service.model.WebsiteConfig;
-import org.jets3t.service.security.OAuth2Credentials;
-import org.jets3t.service.security.OAuth2Tokens;
 import org.jets3t.service.security.ProviderCredentials;
 import org.jets3t.service.utils.oauth.OAuthConstants;
-import org.jets3t.service.utils.oauth.OAuthUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
-import java.util.Date;
 import java.util.EnumSet;
 
 import com.google.api.client.auth.oauth2.Credential;
@@ -76,13 +79,6 @@ public class GoogleStorageSession extends S3Session {
 
     private Preferences preferences
             = PreferencesFactory.get();
-
-    public final OAuth2AuthorizationService tokens = new OAuth2AuthorizationService(OAuthConstants.GSOAuth2_10.Endpoints.Token,
-            OAuthConstants.GSOAuth2_10.Endpoints.Authorization,
-            preferences.getProperty("google.storage.oauth.clientid"),
-            preferences.getProperty("google.storage.oauth.secret"),
-            Collections.singletonList(OAuthConstants.GSOAuth2_10.Scopes.FullControl.toString())
-    ).withLegacyPrefix("Google");
 
     public GoogleStorageSession(final Host h) {
         super(h);
@@ -105,22 +101,20 @@ public class GoogleStorageSession extends S3Session {
     }
 
     @Override
+    public RequestEntityRestStorageService connect(final HostKeyCallback key) throws BackgroundException {
+        return new OAuth2RequestEntityRestStorageService(this, this.configure(), builder, this);
+    }
+
+    @Override
     protected boolean authorize(final HttpUriRequest request, final ProviderCredentials credentials)
             throws ServiceException {
-        if(credentials instanceof OAuth2Credentials) {
+        if(credentials instanceof OAuth2ProviderCredentials) {
             request.setHeader("x-goog-api-version", "2");
-            OAuth2Tokens tokens;
-            try {
-                tokens = ((OAuth2Credentials) credentials).getOAuth2Tokens();
+            final Credential tokens = ((OAuth2ProviderCredentials) credentials).getTokens();
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Authorizing service request with OAuth2 access token: %s", tokens.getAccessToken()));
             }
-            catch(IOException e) {
-                throw new ServiceException(e.getMessage(), e);
-            }
-            if(tokens == null) {
-                throw new ServiceException("Cannot authenticate using OAuth2 until initial tokens are provided");
-            }
-            log.debug("Authorizing service request with OAuth2 access token: " + tokens.getAccessToken());
-            request.setHeader("Authorization", "OAuth " + tokens.getAccessToken());
+            request.setHeader("Authorization", String.format("OAuth %s", tokens.getAccessToken()));
             return true;
         }
         return false;
@@ -129,18 +123,17 @@ public class GoogleStorageSession extends S3Session {
     @Override
     public void login(final HostPasswordStore keychain, final LoginCallback prompt,
                       final CancelCallback cancel, final Cache<Path> cache) throws BackgroundException {
-        // Project ID needs OAuth2 authentication
-        final OAuth2Credentials oauth = new OAuth2Credentials(
-                new OAuthUtils(client.getHttpClient(),
-                        OAuthUtils.OAuthImplementation.GOOGLE_STORAGE_OAUTH2_10,
-                        preferences.getProperty("google.storage.oauth.clientid"),
-                        preferences.getProperty("google.storage.oauth.secret")),
-                preferences.getProperty("application.name"));
 
-        final Credential tokens = this.tokens.authorize(this, keychain, prompt);
-        oauth.setOAuth2Tokens(new OAuth2Tokens(tokens.getAccessToken(), tokens.getRefreshToken(), new Date(tokens.getExpirationTimeMilliseconds())));
+        final Credential tokens = new OAuth2AuthorizationService(keychain,
+                OAuthConstants.GSOAuth2_10.Endpoints.Token,
+                OAuthConstants.GSOAuth2_10.Endpoints.Authorization,
+                preferences.getProperty("google.storage.oauth.clientid"),
+                preferences.getProperty("google.storage.oauth.secret"),
+                Collections.singletonList(OAuthConstants.GSOAuth2_10.Scopes.FullControl.toString())
+        ).withLegacyPrefix("Google").authorize(this, prompt);
 
-        client.setProviderCredentials(oauth);
+        client.setProviderCredentials(new OAuth2ProviderCredentials(tokens, preferences.getProperty("google.storage.oauth.clientid"),
+                preferences.getProperty("google.storage.oauth.secret")));
 
         if(host.getCredentials().isPassed()) {
             log.warn(String.format("Skip verifying credentials with previous successful authentication event for %s", this));
@@ -201,12 +194,63 @@ public class GoogleStorageSession extends S3Session {
         return "x-goog-meta-";
     }
 
-    @Override
-    protected String getProjectId() {
-        if(client.getProviderCredentials() instanceof OAuth2Credentials) {
-            return host.getCredentials().getUsername();
+    private static final class OAuth2ProviderCredentials extends ProviderCredentials {
+        private final Credential tokens;
+
+        public OAuth2ProviderCredentials(final Credential tokens, final String clientId, final String clientSecret) {
+            super(clientId, clientSecret);
+            this.tokens = tokens;
         }
-        return null;
+
+        @Override
+        protected String getTypeName() {
+            return StringUtils.EMPTY;
+        }
+
+        @Override
+        protected String getVersionPrefix() {
+            return StringUtils.EMPTY;
+        }
+
+        public Credential getTokens() {
+            return tokens;
+        }
+    }
+
+    private final class OAuth2RequestEntityRestStorageService extends RequestEntityRestStorageService {
+        public OAuth2RequestEntityRestStorageService(final GoogleStorageSession session, final Jets3tProperties configuration, final HttpConnectionPoolBuilder pool,
+                                                     final TranscriptListener listener) {
+            super(session, configuration, pool, listener);
+        }
+
+        @Override
+        protected boolean isRecoverable403(final HttpUriRequest httpRequest, final Exception exception) {
+            final Credential tokens = ((OAuth2ProviderCredentials) getProviderCredentials()).getTokens();
+            try {
+                if(tokens.refreshToken()) {
+                    return true;
+                }
+            }
+            catch(IOException e) {
+                log.warn(String.format("Failure refreshing OAuth2 tokens. %s", e.getMessage()));
+                return false;
+            }
+            return super.isRecoverable403(httpRequest, exception);
+        }
+
+        @Override
+        protected StorageBucket createBucketImpl(String bucketName, String location,
+                                                 AccessControlList acl) throws ServiceException {
+            return super.createBucketImpl(bucketName, location, acl,
+                    Collections.singletonMap("x-goog-project-id", host.getCredentials().getUsername()));
+        }
+
+        @Override
+        protected StorageBucket[] listAllBucketsImpl() throws ServiceException {
+            return super.listAllBucketsImpl(
+                    Collections.singletonMap("x-goog-project-id", host.getCredentials().getUsername()));
+        }
+
     }
 
     @Override

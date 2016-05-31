@@ -34,25 +34,16 @@ import org.jets3t.service.Constants;
 import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.ServiceException;
-import org.jets3t.service.acl.AccessControlList;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
-import org.jets3t.service.model.StorageBucket;
 import org.jets3t.service.model.StorageBucketLoggingStatus;
 import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.model.WebsiteConfig;
 import org.jets3t.service.security.AWSCredentials;
-import org.jets3t.service.security.OAuth2Credentials;
-import org.jets3t.service.security.OAuth2Tokens;
 
-import java.io.IOException;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Map;
 
-/**
- * Exposing protected methods
- */
 public class RequestEntityRestStorageService extends RestS3Service {
     private static final Logger log = Logger.getLogger(RequestEntityRestStorageService.class);
 
@@ -222,43 +213,6 @@ public class RequestEntityRestStorageService extends RestS3Service {
             return;
         }
         super.authorizeHttpRequest(httpMethod, context, forceRequestSignatureVersion);
-    }
-
-    @Override
-    protected boolean isRecoverable403(HttpUriRequest httpRequest, Exception exception) {
-        if(getProviderCredentials() instanceof OAuth2Credentials) {
-            OAuth2Tokens tokens;
-            try {
-                tokens = ((OAuth2Credentials) getProviderCredentials()).getOAuth2Tokens();
-            }
-            catch(IOException e) {
-                return false;
-            }
-            if(tokens != null) {
-                tokens.expireAccessToken();
-                return true;
-            }
-        }
-        return super.isRecoverable403(httpRequest, exception);
-    }
-
-    @Override
-    protected StorageBucket createBucketImpl(String bucketName, String location,
-                                             AccessControlList acl) throws ServiceException {
-        if(StringUtils.isNotBlank(session.getProjectId())) {
-            return super.createBucketImpl(bucketName, location, acl,
-                    Collections.<String, Object>singletonMap("x-goog-project-id", session.getProjectId()));
-        }
-        return super.createBucketImpl(bucketName, location, acl);
-    }
-
-    @Override
-    protected StorageBucket[] listAllBucketsImpl() throws ServiceException {
-        if(StringUtils.isNotBlank(session.getProjectId())) {
-            return super.listAllBucketsImpl(
-                    Collections.<String, Object>singletonMap("x-goog-project-id", session.getProjectId()));
-        }
-        return super.listAllBucketsImpl();
     }
 
     @Override

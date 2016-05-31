@@ -144,10 +144,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         return "x-amz-meta-";
     }
 
-    protected String getProjectId() {
-        return null;
-    }
-
     protected Jets3tProperties configure() {
         final Jets3tProperties configuration = new Jets3tProperties();
         if(log.isDebugEnabled()) {

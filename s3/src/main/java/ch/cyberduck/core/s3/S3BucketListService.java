@@ -101,7 +101,7 @@ public class S3BucketListService implements RootListService {
                 else {
                     final List<Path> buckets = new ArrayList<Path>();
                     // List all buckets owned
-                    for(StorageBucket b : session.getClient().listAllBucketsImpl()) {
+                    for(StorageBucket b : session.getClient().listAllBuckets()) {
                         final Path bucket = new Path(b.getName(), EnumSet.of(Path.Type.volume, Path.Type.directory));
                         if(b.getOwner() != null) {
                             // Null if the owner is not available
