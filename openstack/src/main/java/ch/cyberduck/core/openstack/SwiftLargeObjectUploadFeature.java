@@ -157,10 +157,12 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         }
         catch(InterruptedException e) {
             log.error("Part upload failed with interrupt failure");
+            status.setCanceled();
             throw new ConnectionCanceledException(e);
         }
         catch(ExecutionException e) {
             log.warn(String.format("Part upload failed with execution failure %s", e.getMessage()));
+            status.setCanceled();
             if(e.getCause() instanceof BackgroundException) {
                 throw (BackgroundException) e.getCause();
             }
