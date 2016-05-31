@@ -57,6 +57,8 @@ import com.google.api.client.json.gson.GsonFactory;
 public class OAuth2AuthorizationService {
     private static final Logger log = Logger.getLogger(OAuth2AuthorizationService.class);
 
+    private static final String OOB_REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob";
+
     private final Preferences preferences
             = PreferencesFactory.get();
 
@@ -74,11 +76,11 @@ public class OAuth2AuthorizationService {
 
     public final BrowserLauncher browser = BrowserLauncherFactory.get();
 
+    private final List<String> scopes;
+
     private Credential.AccessMethod method = BearerToken.authorizationHeaderAccessMethod();
 
-    private static final String OOB_REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob";
-
-    private final List<String> scopes;
+    private String redirectUri = OOB_REDIRECT_URI;
 
     /**
      * Prefix for saved entries in keychain.
@@ -126,7 +128,7 @@ public class OAuth2AuthorizationService {
                     .setScopes(scopes)
                     .build();
             // Direct the user to an authorization page to grant access to their protected data.
-            final String url = flow.newAuthorizationUrl().setRedirectUri(OOB_REDIRECT_URI).build();
+            final String url = flow.newAuthorizationUrl().setRedirectUri(redirectUri).build();
             browser.open(url);
             prompt.prompt(host, host.getCredentials(),
                     LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"), url,
@@ -135,7 +137,7 @@ public class OAuth2AuthorizationService {
             try {
                 // Swap the given authorization token for access/refresh tokens
                 final TokenResponse response = flow.newTokenRequest(host.getCredentials().getPassword())
-                        .setRedirectUri(OOB_REDIRECT_URI).execute();
+                        .setRedirectUri(redirectUri).execute();
                 tokens = new Credential.Builder(method)
                         .setTransport(transport)
                         .setClientAuthentication(new ClientParametersAuthentication(clientid, clientsecret))
@@ -144,6 +146,10 @@ public class OAuth2AuthorizationService {
                         .addRefreshListener(new SavingCredentialRefreshListener(host))
                         .build()
                         .setFromTokenResponse(response);
+
+                // Save
+                save(host, new Tokens(tokens.getAccessToken(), tokens.getRefreshToken(),
+                        Duration.ofSeconds(tokens.getExpiresInSeconds()).toMillis()));
             }
             catch(IOException e) {
                 throw new OAuthExceptionMappingService().map(e);
@@ -200,6 +206,11 @@ public class OAuth2AuthorizationService {
 
     public OAuth2AuthorizationService withMethod(final Credential.AccessMethod method) {
         this.method = method;
+        return this;
+    }
+
+    public OAuth2AuthorizationService withRedirectUri(final String redirectUri) {
+        this.redirectUri = redirectUri;
         return this;
     }
 
