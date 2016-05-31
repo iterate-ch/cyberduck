@@ -116,16 +116,12 @@ public class AzureWriteFeature implements Write {
             final BlobOutputStream out = blob.openOutputStream(AccessCondition.generateEmptyCondition(), options, context);
             return new ProxyOutputStream(out) {
                 @Override
-                public void close() throws IOException {
-                    try {
-                        super.close();
+                protected void handleIOException(final IOException e) throws IOException {
+                    if(StringUtils.equals(SR.STREAM_CLOSED, e.getMessage())) {
+                        log.warn(String.format("Ignore failure %s", e));
+                        return;
                     }
-                    catch(IOException e) {
-                        if(StringUtils.equals(SR.STREAM_CLOSED, e.getMessage())) {
-                            return;
-                        }
-                        throw e;
-                    }
+                    throw e;
                 }
             };
         }

@@ -28,6 +28,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.ProxyInputStream;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,6 +44,7 @@ import com.microsoft.azure.storage.blob.CloudBlockBlob;
 import com.microsoft.azure.storage.core.SR;
 
 public class AzureReadFeature implements Read {
+    private static final Logger log = Logger.getLogger(AzureReadFeature.class);
 
     private AzureSession session;
 
@@ -81,16 +83,12 @@ public class AzureReadFeature implements Read {
             }
             return new ProxyInputStream(in) {
                 @Override
-                public void close() throws IOException {
-                    try {
-                        super.close();
+                protected void handleIOException(final IOException e) throws IOException {
+                    if(StringUtils.equals(SR.STREAM_CLOSED, e.getMessage())) {
+                        log.warn(String.format("Ignore failure %s", e));
+                        return;
                     }
-                    catch(IOException e) {
-                        if(StringUtils.equals(SR.STREAM_CLOSED, e.getMessage())) {
-                            return;
-                        }
-                        throw e;
-                    }
+                    throw e;
                 }
             };
         }
