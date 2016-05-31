@@ -29,8 +29,6 @@ import java.util.List;
 
 /**
  * A sortable list with a map to lookup values by key.
- *
- * @version $Id$
  */
 public class AttributedList<E extends Referenceable> extends ArrayList<E> {
     private static final Logger log = Logger.getLogger(AttributedList.class);
@@ -79,6 +77,7 @@ public class AttributedList<E extends Referenceable> extends ArrayList<E> {
         this.addAll(collection);
     }
 
+    @SuppressWarnings("unchecked")
     public static <T extends Referenceable> AttributedList<T> emptyList() {
         return (AttributedList<T>) EMPTY;
     }
