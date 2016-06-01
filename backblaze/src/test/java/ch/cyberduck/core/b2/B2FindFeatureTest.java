@@ -16,6 +16,7 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -34,6 +35,8 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
+
+import synapticloop.b2.response.B2StartLargeFileResponse;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -62,5 +65,24 @@ public class B2FindFeatureTest {
                 //
             }
         });
+    }
+
+    @Test
+    public void testFindLargeUpload() throws Exception {
+        final B2Session session = new B2Session(
+                new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
+                        new Credentials(
+                                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
+                        )));
+        final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final B2StartLargeFileResponse startResponse = session.getClient().startLargeFileUpload(
+                new B2FileidProvider(session).getFileid(bucket),
+                file.getName(), null, Collections.emptyMap());
+        assertTrue(new B2FindFeature(session).find(file));
+        session.getClient().cancelLargeFileUpload(startResponse.getFileId());
+        session.close();
     }
 }

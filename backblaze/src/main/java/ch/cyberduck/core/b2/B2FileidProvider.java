@@ -65,7 +65,7 @@ public class B2FileidProvider implements IdProvider {
                     if(file.isFile()) {
                         if(StringUtils.equals(containerService.getKey(file), info.getFileName())) {
                             switch(info.getAction()) {
-                                case upload:
+                                default:
                                     return info.getFileId();
                             }
                         }
