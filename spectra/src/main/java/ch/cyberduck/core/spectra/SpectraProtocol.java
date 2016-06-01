@@ -50,6 +50,11 @@ public class SpectraProtocol extends AbstractProtocol {
     }
 
     @Override
+    public String getPrefix() {
+        return String.format("%s.%s", SpectraProtocol.class.getPackage().getName(), "Spectra");
+    }
+
+    @Override
     public boolean isHostnameConfigurable() {
         return true;
     }
