@@ -25,7 +25,6 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.http.HttpConnectionPoolBuilder;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.local.BrowserLauncher;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
@@ -49,6 +48,7 @@ import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.auth.oauth2.TokenResponseException;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpResponseException;
+import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.apache.ApacheHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
@@ -61,10 +61,10 @@ public class OAuth2AuthorizationService {
     private final Preferences preferences
             = PreferencesFactory.get();
 
-    private final JsonFactory json = new GsonFactory();
+    private final JsonFactory json
+            = new GsonFactory();
 
-    private final HttpSession<?> session;
-
+    private final Host bookmark;
     private final String tokenServerUrl;
 
     private final String authorizationServerUrl;
@@ -73,11 +73,13 @@ public class OAuth2AuthorizationService {
 
     private final String clientsecret;
 
-    public final BrowserLauncher browser = BrowserLauncherFactory.get();
+    public final BrowserLauncher browser
+            = BrowserLauncherFactory.get();
 
     private final List<String> scopes;
 
-    private Credential.AccessMethod method = BearerToken.authorizationHeaderAccessMethod();
+    private Credential.AccessMethod method
+            = BearerToken.authorizationHeaderAccessMethod();
 
     private String redirectUri = OOB_REDIRECT_URI;
 
@@ -86,14 +88,20 @@ public class OAuth2AuthorizationService {
      */
     private String legacyPrefix;
 
-    private final ApacheHttpTransport transport;
+    private final HttpTransport transport;
 
     public OAuth2AuthorizationService(final HttpSession<?> session,
                                       final String tokenServerUrl, final String authorizationServerUrl,
                                       final String clientid, final String clientsecret, final List<String> scopes) {
-        this.session = session;
-        final HttpConnectionPoolBuilder pool = session.getBuilder();
-        this.transport = new ApacheHttpTransport(pool.build(session).build());
+        this(new ApacheHttpTransport(session.getBuilder().build(session).build()), session.getHost(),
+                tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes);
+    }
+
+    public OAuth2AuthorizationService(final HttpTransport transport, final Host bookmark,
+                                      final String tokenServerUrl, final String authorizationServerUrl,
+                                      final String clientid, final String clientsecret, final List<String> scopes) {
+        this.transport = transport;
+        this.bookmark = bookmark;
         this.tokenServerUrl = tokenServerUrl;
         this.authorizationServerUrl = authorizationServerUrl;
         this.clientid = clientid;
@@ -103,8 +111,7 @@ public class OAuth2AuthorizationService {
 
     public Credential authorize(final HostPasswordStore keychain, final LoginCallback prompt) throws BackgroundException {
 
-        final Host host = session.getHost();
-        final Tokens saved = this.find(keychain, host);
+        final Tokens saved = this.find(keychain, bookmark);
         final Credential tokens;
         if(saved.validate()) {
             tokens = new Credential.Builder(method)
@@ -112,7 +119,7 @@ public class OAuth2AuthorizationService {
                     .setClientAuthentication(new ClientParametersAuthentication(clientid, clientsecret))
                     .setTokenServerEncodedUrl(tokenServerUrl)
                     .setJsonFactory(json)
-                    .addRefreshListener(new SavingCredentialRefreshListener(keychain, host))
+                    .addRefreshListener(new SavingCredentialRefreshListener(keychain, bookmark))
                     .build()
                     .setAccessToken(saved.accesstoken)
                     .setRefreshToken(saved.refreshtoken)
@@ -133,25 +140,25 @@ public class OAuth2AuthorizationService {
             // Direct the user to an authorization page to grant access to their protected data.
             final String url = flow.newAuthorizationUrl().setRedirectUri(redirectUri).build();
             browser.open(url);
-            prompt.prompt(host, host.getCredentials(),
+            prompt.prompt(bookmark, bookmark.getCredentials(),
                     LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"), url,
                     new LoginOptions().keychain(false).user(false)
             );
             try {
                 // Swap the given authorization token for access/refresh tokens
-                final TokenResponse response = flow.newTokenRequest(host.getCredentials().getPassword())
+                final TokenResponse response = flow.newTokenRequest(bookmark.getCredentials().getPassword())
                         .setRedirectUri(redirectUri).execute();
                 tokens = new Credential.Builder(method)
                         .setTransport(transport)
                         .setClientAuthentication(new ClientParametersAuthentication(clientid, clientsecret))
                         .setTokenServerEncodedUrl(tokenServerUrl)
                         .setJsonFactory(json)
-                        .addRefreshListener(new SavingCredentialRefreshListener(keychain, host))
+                        .addRefreshListener(new SavingCredentialRefreshListener(keychain, bookmark))
                         .build()
                         .setFromTokenResponse(response);
 
                 // Save
-                save(keychain, host, new Tokens(
+                save(keychain, bookmark, new Tokens(
                         tokens.getAccessToken(), tokens.getRefreshToken(), tokens.getExpirationTimeMilliseconds()));
             }
             catch(IOException e) {
