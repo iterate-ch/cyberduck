@@ -20,6 +20,8 @@
         <key>Protocol</key>
         <string>hubic</string>
         <key>Vendor</key>
-        <string>hubic</string>
+        <string>ovh</string>
+        <key>Description</key>
+        <string>hubiC (OVH)</string>
     </dict>
 </plist>
