@@ -782,7 +782,7 @@ public abstract class Preferences {
         defaults.put("google.docs.delete.trash", String.valueOf(false));
 
         defaults.put("b2.bucket.acl.default", "allPrivate");
-        defaults.put("b2.listing.chunksize", String.valueOf(1000));
+        defaults.put("b2.listing.chunksize", String.valueOf(100));
         defaults.put("b2.upload.checksum", String.valueOf(true));
 
         defaults.put("b2.upload.largeobject", String.valueOf(true));
