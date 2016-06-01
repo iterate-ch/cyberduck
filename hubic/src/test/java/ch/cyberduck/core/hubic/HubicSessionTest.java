@@ -15,6 +15,7 @@ package ch.cyberduck.core.hubic;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -32,7 +33,8 @@ public class HubicSessionTest {
 
     @Test(expected = LoginFailureException.class)
     public void testConnectInvalidRefreshToken() throws Exception {
-        final HubicSession session = new HubicSession(new Host(new HubicProtocol()));
+        final HubicSession session = new HubicSession(new Host(new HubicProtocol(),
+                new HubicProtocol().getDefaultHostname(), new Credentials("u@domain")));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         try {
             session.login(new DisabledPasswordStore() {
@@ -46,6 +48,26 @@ public class HubicSessionTest {
             assertEquals("Invalid refresh token. Please contact your web hosting service provider for assistance.", e.getDetail());
             throw e;
         }
+        session.close();
+    }
+
+    @Test
+    public void testConnectRefreshToken() throws Exception {
+        final HubicSession session = new HubicSession(new Host(new HubicProtocol(),
+                new HubicProtocol().getDefaultHostname(), new Credentials("u@domain")));
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore() {
+            @Override
+            public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
+                if(user.equals("hubiC (u@domain) OAuth2 Access Token")) {
+                    return "invalid";
+                }
+                if(user.equals("hubiC (u@domain) OAuth2 Refresh Token")) {
+                    return System.getProperties().getProperty("hubic.refreshtoken");
+                }
+                return null;
+            }
+        }, new DisabledLoginCallback(), new DisabledCancelCallback());
         session.close();
     }
 }
