@@ -89,7 +89,6 @@ public interface Protocol extends Comparable<Protocol> {
             }
         },
         irods,
-        spectra,
         b2;
 
         /**

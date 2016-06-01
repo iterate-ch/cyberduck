@@ -45,6 +45,11 @@ public class SpectraProtocol extends AbstractProtocol {
     }
 
     @Override
+    public Type getType() {
+        return Type.s3;
+    }
+
+    @Override
     public boolean isHostnameConfigurable() {
         return true;
     }

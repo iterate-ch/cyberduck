@@ -27,9 +27,6 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.Set;
 
-/**
- * @version $Id$
- */
 public abstract class AbstractProtocol implements Protocol {
 
     @Override
@@ -93,7 +90,7 @@ public abstract class AbstractProtocol implements Protocol {
      */
     @Override
     public boolean isPortConfigurable() {
-        return true;
+        return StringUtils.isBlank(this.getDefaultHostname());
     }
 
     @Override
