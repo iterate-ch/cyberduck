@@ -268,7 +268,7 @@ public class OAuth2AuthorizationService {
             if(failure instanceof TokenResponseException) {
                 final TokenErrorResponse details = ((TokenResponseException) failure).getDetails();
                 final StringBuilder buffer = new StringBuilder();
-                this.append(buffer, details.getError());
+                this.append(buffer, details.getErrorDescription());
                 return new LoginFailureException(buffer.toString(), failure);
             }
             final StringBuilder buffer = new StringBuilder();
