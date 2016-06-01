@@ -42,6 +42,7 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import synapticloop.b2.response.B2FileResponse;
 
@@ -348,6 +349,67 @@ public class B2ObjectListServiceTest {
         assertTrue(list.contains(folder1));
 
         new B2DeleteFeature(session).delete(Arrays.asList(file1, folder1, bucket), new DisabledLoginCallback(), new Delete.Callback() {
+            @Override
+            public void delete(final Path file) {
+                //
+            }
+        });
+        session.close();
+    }
+
+    @Test
+    public void testMarkerOptimization() throws Exception {
+        final B2Session session = new B2Session(
+                new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
+                        new Credentials(
+                                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
+                        )));
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path bucket = new Path(String.format("test-%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory, Path.Type.volume));
+        new B2DirectoryFeature(session).mkdir(bucket);
+
+//        a0.txt
+//        folder1/file1.txt
+//        folder1/file2.txt [...]
+//        folder1/file1000000.txt
+//        folder2/file1.txt
+//        z0.txt
+
+        final Path file1 = new Path(bucket, "a0", EnumSet.of(Path.Type.file));
+        final Path file2 = new Path(bucket, "z0", EnumSet.of(Path.Type.file));
+        final Path folder = new Path(bucket, "folder1", EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        new B2DirectoryFeature(session).mkdir(folder);
+        final Path file3 = new Path(folder, "file1", EnumSet.of(Path.Type.file));
+        new B2TouchFeature(session).touch(file1);
+        new B2TouchFeature(session).touch(file2);
+        new B2TouchFeature(session).touch(file3);
+
+        final AtomicBoolean skipped = new AtomicBoolean();
+        final AttributedList<Path> list = new B2ObjectListService(session, 1) {
+            @Override
+            protected boolean skip(final String filename, final Path directory) {
+                final boolean skip = super.skip(filename, directory);
+                switch(filename) {
+                    case "folder1":
+                        assertTrue(skip);
+                        skipped.set(true);
+                        break;
+                    case "folder1/file1":
+                        assertTrue(skip);
+                        skipped.set(true);
+                        break;
+                    default:
+                        assertFalse(skip);
+                        break;
+                }
+                return skip;
+            }
+        }.list(bucket, new DisabledListProgressListener());
+        assertEquals(3, list.size());
+        assertTrue(skipped.get());
+
+        new B2DeleteFeature(session).delete(Arrays.asList(file1, file2, file3, folder, bucket), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {
                 //

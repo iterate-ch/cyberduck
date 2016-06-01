@@ -117,13 +117,24 @@ public class B2ObjectListService implements ListService {
                 objects.add(new Path(directory, PathNormalizer.name(file.getFileName()), EnumSet.of(Path.Type.file), attributes));
             }
         }
+        if(null == response.getNextFileName()) {
+            return new Marker(response.getNextFileName(), response.getNextFileId());
+        }
+        if(this.skip(PathNormalizer.parent(response.getNextFileName(), Path.DELIMITER), directory)) {
+            // Because the list of files is sorted in ASCII table order. The character after ‘/‘ in the ASCII table is ‘0’
+            log.warn(String.format("Advance marker to %s", String.format("%s0", response.getNextFileName())));
+            return new Marker(String.format("%s0", response.getNextFileName()), null);
+        }
         return new Marker(response.getNextFileName(), response.getNextFileId());
     }
 
+    protected boolean skip(final String filename, final Path directory) {
+        return !StringUtils.equals(StringUtils.removeEnd(filename, PathNormalizer.name(B2DirectoryFeature.PLACEHOLDER)),
+                containerService.isContainer(directory) ? String.valueOf(Path.DELIMITER) : containerService.getKey(directory));
+    }
+
     protected PathAttributes parse(final Path directory, final B2FileInfoResponse response, final Map<String, Integer> revisions) {
-        if(!StringUtils.equals(PathNormalizer.parent(
-                StringUtils.removeEnd(response.getFileName(), PathNormalizer.name(B2DirectoryFeature.PLACEHOLDER)), Path.DELIMITER),
-                containerService.isContainer(directory) ? String.valueOf(Path.DELIMITER) : containerService.getKey(directory))) {
+        if(this.skip(PathNormalizer.parent(response.getFileName(), Path.DELIMITER), directory)) {
             log.warn(String.format("Skip file %s", response));
             return null;
         }
@@ -157,8 +168,7 @@ public class B2ObjectListService implements ListService {
         // Look for same parent directory
         String name = null;
         String parent = StringUtils.removeEnd(filename, B2DirectoryFeature.PLACEHOLDER);
-        while(!StringUtils.equals(parent, containerService.isContainer(directory) ?
-                String.valueOf(Path.DELIMITER) : containerService.getKey(directory))) {
+        while(this.skip(parent, directory)) {
             name = PathNormalizer.name(parent);
             parent = PathNormalizer.parent(parent, Path.DELIMITER);
             if(null == parent) {
