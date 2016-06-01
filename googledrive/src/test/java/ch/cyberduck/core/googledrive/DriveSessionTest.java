@@ -50,7 +50,7 @@ public class DriveSessionTest {
                     credentials.setPassword("t");
                     return;
                 }
-                if("Invalid_grant. Please contact your web hosting service provider for assistance.".equals(reason)) {
+                if("Code was already redeemed. Please contact your web hosting service provider for assistance.".equals(reason)) {
                     throw new LoginCanceledException();
                 }
                 fail();
