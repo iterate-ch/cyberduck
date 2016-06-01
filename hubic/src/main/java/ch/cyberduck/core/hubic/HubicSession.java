@@ -37,6 +37,7 @@ import javax.net.SocketFactory;
 import java.io.IOException;
 import java.util.Collections;
 
+import ch.iterate.openstack.swift.exception.AuthorizationException;
 import ch.iterate.openstack.swift.exception.GenericException;
 import com.google.api.client.auth.oauth2.Credential;
 
@@ -71,8 +72,15 @@ public class HubicSession extends SwiftSession {
                       final Cache<Path> cache) throws BackgroundException {
         final Credential tokens = authorizationService.authorize(keychain, prompt);
         try {
-            client.authenticate(new HubicAuthenticationRequest(tokens.getAccessToken()),
-                    new HubicAuthenticationResponseHandler());
+            try {
+                client.authenticate(new HubicAuthenticationRequest(tokens.getAccessToken()),
+                        new HubicAuthenticationResponseHandler());
+            }
+            catch(AuthorizationException e) {
+                authorizationService.refresh(tokens);
+                client.authenticate(new HubicAuthenticationRequest(tokens.getAccessToken()),
+                        new HubicAuthenticationResponseHandler());
+            }
         }
         catch(GenericException e) {
             throw new SwiftExceptionMappingService().map(e);
