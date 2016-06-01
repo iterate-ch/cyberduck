@@ -78,13 +78,7 @@ public class DriveSession extends HttpSession<Drive> {
 
     private Credential credential;
 
-    private final OAuth2AuthorizationService authorizationService
-            = new OAuth2AuthorizationService(this,
-            GoogleOAuthConstants.TOKEN_SERVER_URL, GoogleOAuthConstants.AUTHORIZATION_SERVER_URL,
-            preferences.getProperty("google.drive.client.id"),
-            preferences.getProperty("google.drive.client.secret"),
-            Collections.singletonList(DriveScopes.DRIVE))
-            .withLegacyPrefix(host.getProtocol().getDescription());
+    private OAuth2AuthorizationService authorizationService;
 
     public DriveSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
@@ -108,6 +102,12 @@ public class DriveSession extends HttpSession<Drive> {
     @Override
     public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
                       final Cache<Path> cache) throws BackgroundException {
+        authorizationService = new OAuth2AuthorizationService(transport, host,
+                GoogleOAuthConstants.TOKEN_SERVER_URL, GoogleOAuthConstants.AUTHORIZATION_SERVER_URL,
+                preferences.getProperty("google.drive.client.id"),
+                preferences.getProperty("google.drive.client.secret"),
+                Collections.singletonList(DriveScopes.DRIVE))
+                .withLegacyPrefix(host.getProtocol().getDescription());
         credential = authorizationService.authorize(keychain, prompt);
         if(host.getCredentials().isPassed()) {
             log.warn(String.format("Skip verifying credentials with previous successful authentication event for %s", this));
