@@ -124,7 +124,9 @@ public class OAuth2AuthorizationService {
                     .setAccessToken(saved.accesstoken)
                     .setRefreshToken(saved.refreshtoken)
                     .setExpirationTimeMilliseconds(saved.expiry);
-            this.refresh(tokens);
+            if(this.isExpired(tokens)) {
+                this.refresh(tokens);
+            }
         }
         else {
             // Start OAuth2 flow within browser
@@ -169,16 +171,14 @@ public class OAuth2AuthorizationService {
     }
 
     public void refresh(final Credential tokens) throws BackgroundException {
-        if(this.isExpired(tokens)) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Refresh expired tokens %s", tokens));
-            }
-            try {
-                tokens.refreshToken();
-            }
-            catch(IOException e) {
-                throw new OAuthExceptionMappingService().map(e);
-            }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Refresh expired tokens %s", tokens));
+        }
+        try {
+            tokens.refreshToken();
+        }
+        catch(IOException e) {
+            throw new OAuthExceptionMappingService().map(e);
         }
     }
 
