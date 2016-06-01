@@ -63,7 +63,7 @@ public class OAuth2AuthorizationService {
 
     private final JsonFactory json = new GsonFactory();
 
-    private final HostPasswordStore keychain;
+    private final HttpSession<?> session;
 
     private final String tokenServerUrl;
 
@@ -86,9 +86,14 @@ public class OAuth2AuthorizationService {
      */
     private String legacyPrefix;
 
-    public OAuth2AuthorizationService(final HostPasswordStore keychain, final String tokenServerUrl, final String authorizationServerUrl,
+    private final ApacheHttpTransport transport;
+
+    public OAuth2AuthorizationService(final HttpSession<?> session,
+                                      final String tokenServerUrl, final String authorizationServerUrl,
                                       final String clientid, final String clientsecret, final List<String> scopes) {
-        this.keychain = keychain;
+        this.session = session;
+        final HttpConnectionPoolBuilder pool = session.getBuilder();
+        this.transport = new ApacheHttpTransport(pool.build(session).build());
         this.tokenServerUrl = tokenServerUrl;
         this.authorizationServerUrl = authorizationServerUrl;
         this.clientid = clientid;
@@ -96,12 +101,10 @@ public class OAuth2AuthorizationService {
         this.scopes = scopes;
     }
 
-    public Credential authorize(final HttpSession<?> session, final LoginCallback prompt) throws BackgroundException {
+    public Credential authorize(final HostPasswordStore keychain, final LoginCallback prompt) throws BackgroundException {
 
-        final HttpConnectionPoolBuilder pool = session.getBuilder();
-        final ApacheHttpTransport transport = new ApacheHttpTransport(pool.build(session).build());
         final Host host = session.getHost();
-        final Tokens saved = this.find(host);
+        final Tokens saved = this.find(keychain, host);
         final Credential tokens;
         if(saved.validate()) {
             tokens = new Credential.Builder(method)
@@ -109,11 +112,12 @@ public class OAuth2AuthorizationService {
                     .setClientAuthentication(new ClientParametersAuthentication(clientid, clientsecret))
                     .setTokenServerEncodedUrl(tokenServerUrl)
                     .setJsonFactory(json)
-                    .addRefreshListener(new SavingCredentialRefreshListener(host))
+                    .addRefreshListener(new SavingCredentialRefreshListener(keychain, host))
                     .build()
                     .setAccessToken(saved.accesstoken)
                     .setRefreshToken(saved.refreshtoken)
                     .setExpirationTimeMilliseconds(saved.expiry);
+            this.refresh(tokens);
         }
         else {
             // Start OAuth2 flow within browser
@@ -142,12 +146,13 @@ public class OAuth2AuthorizationService {
                         .setClientAuthentication(new ClientParametersAuthentication(clientid, clientsecret))
                         .setTokenServerEncodedUrl(tokenServerUrl)
                         .setJsonFactory(json)
-                        .addRefreshListener(new SavingCredentialRefreshListener(host))
+                        .addRefreshListener(new SavingCredentialRefreshListener(keychain, host))
                         .build()
                         .setFromTokenResponse(response);
 
                 // Save
-                save(host, new Tokens(tokens.getAccessToken(), tokens.getRefreshToken(), tokens.getExpirationTimeMilliseconds()));
+                save(keychain, host, new Tokens(
+                        tokens.getAccessToken(), tokens.getRefreshToken(), tokens.getExpirationTimeMilliseconds()));
             }
             catch(IOException e) {
                 throw new OAuthExceptionMappingService().map(e);
@@ -156,7 +161,21 @@ public class OAuth2AuthorizationService {
         return tokens;
     }
 
-    private Tokens find(final Host host) {
+    public void refresh(final Credential tokens) throws BackgroundException {
+        if(this.isExpired(tokens)) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Refresh expired tokens %s", tokens));
+            }
+            try {
+                tokens.refreshToken();
+            }
+            catch(IOException e) {
+                throw new OAuthExceptionMappingService().map(e);
+            }
+        }
+    }
+
+    private Tokens find(final HostPasswordStore keychain, final Host host) {
         final long expiry = preferences.getLong(String.format("%s.oauth.expiry", host.getProtocol().getIdentifier()));
         final Tokens tokens = new Tokens(keychain.getPassword(host.getProtocol().getScheme(),
                 host.getPort(), URI.create(tokenServerUrl).getHost(),
@@ -179,7 +198,7 @@ public class OAuth2AuthorizationService {
         return tokens;
     }
 
-    private void save(final Host host, final Tokens tokens) {
+    private void save(final HostPasswordStore keychain, final Host host, final Tokens tokens) {
         final String prefix = String.format("%s (%s)", host.getProtocol().getDescription(), host.getCredentials().getUsername());
         keychain.addPassword(host.getProtocol().getScheme(),
                 host.getPort(), URI.create(tokenServerUrl).getHost(),
@@ -266,14 +285,16 @@ public class OAuth2AuthorizationService {
 
     private final class SavingCredentialRefreshListener implements CredentialRefreshListener {
         private final Host host;
+        private final HostPasswordStore keychain;
 
-        public SavingCredentialRefreshListener(final Host host) {
+        public SavingCredentialRefreshListener(final HostPasswordStore keychain, final Host host) {
+            this.keychain = keychain;
             this.host = host;
         }
 
         @Override
         public void onTokenResponse(final Credential credential, final TokenResponse tokenResponse) throws IOException {
-            save(host, new Tokens(tokenResponse.getAccessToken(), tokenResponse.getRefreshToken(),
+            save(keychain, host, new Tokens(tokenResponse.getAccessToken(), tokenResponse.getRefreshToken(),
                     credential.getExpirationTimeMilliseconds()));
         }
 

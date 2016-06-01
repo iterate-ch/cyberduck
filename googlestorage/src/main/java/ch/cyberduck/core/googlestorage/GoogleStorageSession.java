@@ -80,6 +80,14 @@ public class GoogleStorageSession extends S3Session {
     private Preferences preferences
             = PreferencesFactory.get();
 
+    private final OAuth2AuthorizationService authorizationService = new OAuth2AuthorizationService(this,
+            OAuthConstants.GSOAuth2_10.Endpoints.Token,
+            OAuthConstants.GSOAuth2_10.Endpoints.Authorization,
+            preferences.getProperty("google.storage.oauth.clientid"),
+            preferences.getProperty("google.storage.oauth.secret"),
+            Collections.singletonList(OAuthConstants.GSOAuth2_10.Scopes.FullControl.toString())
+    ).withLegacyPrefix("Google");
+
     public GoogleStorageSession(final Host h) {
         super(h);
     }
@@ -106,8 +114,7 @@ public class GoogleStorageSession extends S3Session {
     }
 
     @Override
-    protected boolean authorize(final HttpUriRequest request, final ProviderCredentials credentials)
-            throws ServiceException {
+    protected boolean authorize(final HttpUriRequest request, final ProviderCredentials credentials) throws ServiceException {
         if(credentials instanceof OAuth2ProviderCredentials) {
             request.setHeader("x-goog-api-version", "2");
             final Credential tokens = ((OAuth2ProviderCredentials) credentials).getTokens();
@@ -124,13 +131,7 @@ public class GoogleStorageSession extends S3Session {
     public void login(final HostPasswordStore keychain, final LoginCallback prompt,
                       final CancelCallback cancel, final Cache<Path> cache) throws BackgroundException {
 
-        final Credential tokens = new OAuth2AuthorizationService(keychain,
-                OAuthConstants.GSOAuth2_10.Endpoints.Token,
-                OAuthConstants.GSOAuth2_10.Endpoints.Authorization,
-                preferences.getProperty("google.storage.oauth.clientid"),
-                preferences.getProperty("google.storage.oauth.secret"),
-                Collections.singletonList(OAuthConstants.GSOAuth2_10.Scopes.FullControl.toString())
-        ).withLegacyPrefix("Google").authorize(this, prompt);
+        final Credential tokens = authorizationService.authorize(keychain, prompt);
 
         client.setProviderCredentials(new OAuth2ProviderCredentials(tokens, preferences.getProperty("google.storage.oauth.clientid"),
                 preferences.getProperty("google.storage.oauth.secret")));

@@ -42,6 +42,13 @@ import com.google.api.client.auth.oauth2.Credential;
 
 public class HubicSession extends SwiftSession {
     private static final Logger log = Logger.getLogger(HubicSession.class);
+    public final OAuth2AuthorizationService authorizationService = new OAuth2AuthorizationService(this,
+            "https://api.hubic.com/oauth/token",
+            "https://api.hubic.com/oauth/auth",
+            PreferencesFactory.get().getProperty("hubic.oauth.clientid"),
+            PreferencesFactory.get().getProperty("hubic.oauth.secret"),
+            Collections.singletonList("credentials.r")
+    ).withRedirectUri("https://cyberduck.io/oauth");
 
     public HubicSession(final Host host) {
         super(host);
@@ -62,13 +69,7 @@ public class HubicSession extends SwiftSession {
     @Override
     public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
                       final Cache<Path> cache) throws BackgroundException {
-        final Credential tokens = new OAuth2AuthorizationService(keychain,
-                "https://api.hubic.com/oauth/token",
-                "https://api.hubic.com/oauth/auth",
-                PreferencesFactory.get().getProperty("hubic.oauth.clientid"),
-                PreferencesFactory.get().getProperty("hubic.oauth.secret"),
-                Collections.singletonList("credentials.r")
-        ).withRedirectUri("https://cyberduck.io/oauth").authorize(this, prompt);
+        final Credential tokens = authorizationService.authorize(keychain, prompt);
         try {
             client.authenticate(new HubicAuthenticationRequest(tokens.getAccessToken()),
                     new HubicAuthenticationResponseHandler());
