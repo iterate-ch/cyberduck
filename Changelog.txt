@@ -4,6 +4,7 @@ http://cyberduck.io/
 Changelog. Last modified: $Date$
 
 5.1 [https://trac.cyberduck.io/milestone/5.1]
+- [Feature] Support for hubiC (OVH) (OpenStack Swift) (#7764)
 - [Bugfix] Support authenticating with multiple accounts (Google Drive) (#9567)
 
 5.0 [https://trac.cyberduck.io/milestone/5.0]
