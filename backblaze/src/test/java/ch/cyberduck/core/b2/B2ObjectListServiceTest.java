@@ -284,41 +284,42 @@ public class B2ObjectListServiceTest {
 
     @Test
     public void testFindPlaceholder() throws Exception {
+        final B2ObjectListService service = new B2ObjectListService(null);
         {
             final Path directory = new Path("/bucket/1-d", EnumSet.of(Path.Type.directory, Path.Type.volume));
             final String filename = "1-d/2-d/3-f";
             assertEquals(new Path("/bucket/1-d/2-d", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
-                    new B2ObjectListService(null).virtual(directory, filename));
+                    service.virtual(directory, filename));
         }
         {
             final Path directory = new Path("/bucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
             final String filename = "1-d/2-d/.bzEmpty";
             assertEquals(new Path("/bucket/1-d", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
-                    new B2ObjectListService(null).virtual(directory, filename));
+                    service.virtual(directory, filename));
         }
         {
             final Path directory = new Path("/bucket/1-d", EnumSet.of(Path.Type.directory, Path.Type.volume));
             final String filename = "1-d/2-d/.bzEmpty";
             assertEquals(new Path("/bucket/1-d/2-d", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
-                    new B2ObjectListService(null).virtual(directory, filename));
+                    service.virtual(directory, filename));
         }
         {
             final Path directory = new Path("/bucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
             final String filename = "1-d/2-f";
             assertEquals(new Path("/bucket/1-d", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
-                    new B2ObjectListService(null).virtual(directory, filename));
+                    service.virtual(directory, filename));
         }
         {
             final Path directory = new Path("/bucket/1-d", EnumSet.of(Path.Type.directory, Path.Type.volume));
             final String filename = "1-d/.bzEmpty";
             assertEquals(new Path("/bucket/1-d", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
-                    new B2ObjectListService(null).virtual(directory, filename));
+                    service.virtual(directory, filename));
         }
         {
             final Path directory = new Path("/bucket/1-d", EnumSet.of(Path.Type.directory, Path.Type.volume));
             final String filename = "1-f";
             assertEquals(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
-                    new B2ObjectListService(null).virtual(directory, filename));
+                    service.virtual(directory, filename));
         }
     }
 
