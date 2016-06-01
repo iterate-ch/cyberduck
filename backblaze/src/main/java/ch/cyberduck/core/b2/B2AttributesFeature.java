@@ -24,6 +24,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.io.Checksum;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,6 +54,9 @@ public class B2AttributesFeature implements Attributes {
             return this.toAttributes(info);
         }
         catch(B2ApiException e) {
+            if(StringUtils.equals("file_state_none", e.getMessage())) {
+                return PathAttributes.EMPTY;
+            }
             throw new B2ExceptionMappingService(session).map("Failure to read attributes of {0}", e, file);
         }
         catch(IOException e) {
