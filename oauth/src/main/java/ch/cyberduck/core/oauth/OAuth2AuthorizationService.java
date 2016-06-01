@@ -64,7 +64,6 @@ public class OAuth2AuthorizationService {
     private final JsonFactory json
             = new GsonFactory();
 
-    private final Host bookmark;
     private final String tokenServerUrl;
 
     private final String authorizationServerUrl;
@@ -93,15 +92,14 @@ public class OAuth2AuthorizationService {
     public OAuth2AuthorizationService(final HttpSession<?> session,
                                       final String tokenServerUrl, final String authorizationServerUrl,
                                       final String clientid, final String clientsecret, final List<String> scopes) {
-        this(new ApacheHttpTransport(session.getBuilder().build(session).build()), session.getHost(),
+        this(new ApacheHttpTransport(session.getBuilder().build(session).build()),
                 tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes);
     }
 
-    public OAuth2AuthorizationService(final HttpTransport transport, final Host bookmark,
+    public OAuth2AuthorizationService(final HttpTransport transport,
                                       final String tokenServerUrl, final String authorizationServerUrl,
                                       final String clientid, final String clientsecret, final List<String> scopes) {
         this.transport = transport;
-        this.bookmark = bookmark;
         this.tokenServerUrl = tokenServerUrl;
         this.authorizationServerUrl = authorizationServerUrl;
         this.clientid = clientid;
@@ -109,7 +107,7 @@ public class OAuth2AuthorizationService {
         this.scopes = scopes;
     }
 
-    public Credential authorize(final HostPasswordStore keychain, final LoginCallback prompt) throws BackgroundException {
+    public Credential authorize(final Host bookmark, final HostPasswordStore keychain, final LoginCallback prompt) throws BackgroundException {
 
         final Tokens saved = this.find(keychain, bookmark);
         final Credential tokens;

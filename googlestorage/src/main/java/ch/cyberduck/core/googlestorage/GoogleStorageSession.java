@@ -131,7 +131,7 @@ public class GoogleStorageSession extends S3Session {
     public void login(final HostPasswordStore keychain, final LoginCallback prompt,
                       final CancelCallback cancel, final Cache<Path> cache) throws BackgroundException {
 
-        final Credential tokens = authorizationService.authorize(keychain, prompt);
+        final Credential tokens = authorizationService.authorize(host, keychain, prompt);
 
         client.setProviderCredentials(new OAuth2ProviderCredentials(tokens, preferences.getProperty("google.storage.oauth.clientid"),
                 preferences.getProperty("google.storage.oauth.secret")));
@@ -142,7 +142,6 @@ public class GoogleStorageSession extends S3Session {
         }
         // List all buckets and cache
         try {
-            // List all buckets and cache
             final Path root = new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.directory, Path.Type.volume));
             cache.put(root, this.list(root, new DisabledListProgressListener()));
         }

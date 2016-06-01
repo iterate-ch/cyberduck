@@ -86,7 +86,13 @@ public class DriveSession extends HttpSession<Drive> {
 
     @Override
     protected Drive connect(final HostKeyCallback callback) throws BackgroundException {
-        transport = new ApacheHttpTransport(builder.build(this).build());
+        this.transport = new ApacheHttpTransport(builder.build(this).build());
+        this.authorizationService = new OAuth2AuthorizationService(transport,
+                GoogleOAuthConstants.TOKEN_SERVER_URL, GoogleOAuthConstants.AUTHORIZATION_SERVER_URL,
+                preferences.getProperty("google.drive.client.id"),
+                preferences.getProperty("google.drive.client.secret"),
+                Collections.singletonList(DriveScopes.DRIVE))
+                .withLegacyPrefix(host.getProtocol().getDescription());
         return new Drive.Builder(transport, json, new HttpRequestInitializer() {
             @Override
             public void initialize(HttpRequest request) throws IOException {
@@ -102,13 +108,7 @@ public class DriveSession extends HttpSession<Drive> {
     @Override
     public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
                       final Cache<Path> cache) throws BackgroundException {
-        authorizationService = new OAuth2AuthorizationService(transport, host,
-                GoogleOAuthConstants.TOKEN_SERVER_URL, GoogleOAuthConstants.AUTHORIZATION_SERVER_URL,
-                preferences.getProperty("google.drive.client.id"),
-                preferences.getProperty("google.drive.client.secret"),
-                Collections.singletonList(DriveScopes.DRIVE))
-                .withLegacyPrefix(host.getProtocol().getDescription());
-        credential = authorizationService.authorize(keychain, prompt);
+        credential = authorizationService.authorize(host, keychain, prompt);
         if(host.getCredentials().isPassed()) {
             log.warn(String.format("Skip verifying credentials with previous successful authentication event for %s", this));
             return;

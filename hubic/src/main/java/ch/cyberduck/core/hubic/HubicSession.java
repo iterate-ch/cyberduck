@@ -70,7 +70,7 @@ public class HubicSession extends SwiftSession {
     @Override
     public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
                       final Cache<Path> cache) throws BackgroundException {
-        final Credential tokens = authorizationService.authorize(keychain, prompt);
+        final Credential tokens = authorizationService.authorize(host, keychain, prompt);
         try {
             try {
                 client.authenticate(new HubicAuthenticationRequest(tokens.getAccessToken()),
