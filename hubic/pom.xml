@@ -1,6 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2002-2015 David Kocher. All rights reserved.
-  ~ http://cyberduck.ch/
+  ~ Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+  ~ https://cyberduck.io/
   ~
   ~ This program is free software; you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
@@ -11,24 +12,30 @@
   ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
   ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   ~ GNU General Public License for more details.
-  ~
-  ~ Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
+        <groupId>ch.cyberduck</groupId>
         <version>5.1-SNAPSHOT</version>
     </parent>
-    <artifactId>openstack</artifactId>
+
+    <artifactId>hubic</artifactId>
     <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
             <groupId>ch.cyberduck</groupId>
-            <artifactId>core</artifactId>
+            <artifactId>openstack</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>oauth</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -38,12 +45,5 @@
             <scope>test</scope>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>ch.iterate.openstack</groupId>
-            <artifactId>swift</artifactId>
-            <version>2.5.7</version>
-        </dependency>
     </dependencies>
-
 </project>
-

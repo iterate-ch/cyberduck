@@ -47,6 +47,7 @@
         <module>cli/linux</module>
         <module>cli/windows</module>
         <module>cli/osx</module>
+        <module>hubic</module>
     </modules>
 
     <scm>

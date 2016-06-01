@@ -39,6 +39,7 @@ using ch.cyberduck.core.irods;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.notification;
 using ch.cyberduck.core.openstack;
+using ch.cyberduck.core.hubic;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.s3;
 using ch.cyberduck.core.serializer;
@@ -95,7 +96,7 @@ namespace Ch.Cyberduck.Ui.Controller
             PreferencesFactory.set(new SettingsDictionaryPreferences());
             ProtocolFactory.register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(),
                 new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(), new GoogleStorageProtocol(),
-                new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new B2Protocol(), new DriveProtocol());
+                new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new B2Protocol(), new DriveProtocol(), new HubicProtocol());
 
             if (!Debugger.IsAttached)
             {

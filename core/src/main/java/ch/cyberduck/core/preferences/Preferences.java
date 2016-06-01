@@ -690,6 +690,9 @@ public abstract class Preferences {
         defaults.put("google.storage.oauth.clientid", "996125414232.apps.googleusercontent.com");
         defaults.put("google.storage.oauth.secret", "YdaFjo2t74-Q0sThsXgeTv3l");
 
+        defaults.put("hubic.oauth.clientid", "api_hubic_Hoh1lpzGzsLxUV6VKI3BuiFcyJECBEPH");
+        defaults.put("hubic.oauth.secret", "IIm0EkjdyPquS9SpIZXAdNlGbcf3mL9s3UiOFLnWLeTxLosjvAHGIbomvAcBZQb2");
+
         final int month = 60 * 60 * 24 * 30; //30 days in seconds
         defaults.put("s3.cache.seconds", String.valueOf(month));
 

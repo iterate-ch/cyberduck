@@ -25,7 +25,6 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.http.HttpConnectionPoolBuilder;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.local.BrowserLauncher;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
@@ -37,7 +36,6 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URI;
-import java.time.Duration;
 import java.util.List;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
@@ -50,6 +48,7 @@ import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.auth.oauth2.TokenResponseException;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpResponseException;
+import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.apache.ApacheHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
@@ -57,12 +56,13 @@ import com.google.api.client.json.gson.GsonFactory;
 public class OAuth2AuthorizationService {
     private static final Logger log = Logger.getLogger(OAuth2AuthorizationService.class);
 
+    private static final String OOB_REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob";
+
     private final Preferences preferences
             = PreferencesFactory.get();
 
-    private final JsonFactory json = new GsonFactory();
-
-    private final HostPasswordStore keychain;
+    private final JsonFactory json
+            = new GsonFactory();
 
     private final String tokenServerUrl;
 
@@ -72,22 +72,34 @@ public class OAuth2AuthorizationService {
 
     private final String clientsecret;
 
-    public final BrowserLauncher browser = BrowserLauncherFactory.get();
-
-    private Credential.AccessMethod method = BearerToken.authorizationHeaderAccessMethod();
-
-    private static final String OOB_REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob";
+    public final BrowserLauncher browser
+            = BrowserLauncherFactory.get();
 
     private final List<String> scopes;
+
+    private Credential.AccessMethod method
+            = BearerToken.authorizationHeaderAccessMethod();
+
+    private String redirectUri = OOB_REDIRECT_URI;
 
     /**
      * Prefix for saved entries in keychain.
      */
     private String legacyPrefix;
 
-    public OAuth2AuthorizationService(final HostPasswordStore keychain, final String tokenServerUrl, final String authorizationServerUrl,
+    private final HttpTransport transport;
+
+    public OAuth2AuthorizationService(final HttpSession<?> session,
+                                      final String tokenServerUrl, final String authorizationServerUrl,
                                       final String clientid, final String clientsecret, final List<String> scopes) {
-        this.keychain = keychain;
+        this(new ApacheHttpTransport(session.getBuilder().build(session).build()),
+                tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes);
+    }
+
+    public OAuth2AuthorizationService(final HttpTransport transport,
+                                      final String tokenServerUrl, final String authorizationServerUrl,
+                                      final String clientid, final String clientsecret, final List<String> scopes) {
+        this.transport = transport;
         this.tokenServerUrl = tokenServerUrl;
         this.authorizationServerUrl = authorizationServerUrl;
         this.clientid = clientid;
@@ -95,12 +107,9 @@ public class OAuth2AuthorizationService {
         this.scopes = scopes;
     }
 
-    public Credential authorize(final HttpSession<?> session, final LoginCallback prompt) throws BackgroundException {
+    public Credential authorize(final Host bookmark, final HostPasswordStore keychain, final LoginCallback prompt) throws BackgroundException {
 
-        final HttpConnectionPoolBuilder pool = session.getBuilder();
-        final ApacheHttpTransport transport = new ApacheHttpTransport(pool.build(session).build());
-        final Host host = session.getHost();
-        final Tokens saved = this.find(host);
+        final Tokens saved = this.find(keychain, bookmark);
         final Credential tokens;
         if(saved.validate()) {
             tokens = new Credential.Builder(method)
@@ -108,11 +117,14 @@ public class OAuth2AuthorizationService {
                     .setClientAuthentication(new ClientParametersAuthentication(clientid, clientsecret))
                     .setTokenServerEncodedUrl(tokenServerUrl)
                     .setJsonFactory(json)
-                    .addRefreshListener(new SavingCredentialRefreshListener(host))
+                    .addRefreshListener(new SavingCredentialRefreshListener(keychain, bookmark))
                     .build()
                     .setAccessToken(saved.accesstoken)
                     .setRefreshToken(saved.refreshtoken)
                     .setExpirationTimeMilliseconds(saved.expiry);
+            if(this.isExpired(tokens)) {
+                this.refresh(tokens);
+            }
         }
         else {
             // Start OAuth2 flow within browser
@@ -126,24 +138,28 @@ public class OAuth2AuthorizationService {
                     .setScopes(scopes)
                     .build();
             // Direct the user to an authorization page to grant access to their protected data.
-            final String url = flow.newAuthorizationUrl().setRedirectUri(OOB_REDIRECT_URI).build();
+            final String url = flow.newAuthorizationUrl().setRedirectUri(redirectUri).build();
             browser.open(url);
-            prompt.prompt(host, host.getCredentials(),
+            prompt.prompt(bookmark, bookmark.getCredentials(),
                     LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"), url,
                     new LoginOptions().keychain(false).user(false)
             );
             try {
                 // Swap the given authorization token for access/refresh tokens
-                final TokenResponse response = flow.newTokenRequest(host.getCredentials().getPassword())
-                        .setRedirectUri(OOB_REDIRECT_URI).execute();
+                final TokenResponse response = flow.newTokenRequest(bookmark.getCredentials().getPassword())
+                        .setRedirectUri(redirectUri).execute();
                 tokens = new Credential.Builder(method)
                         .setTransport(transport)
                         .setClientAuthentication(new ClientParametersAuthentication(clientid, clientsecret))
                         .setTokenServerEncodedUrl(tokenServerUrl)
                         .setJsonFactory(json)
-                        .addRefreshListener(new SavingCredentialRefreshListener(host))
+                        .addRefreshListener(new SavingCredentialRefreshListener(keychain, bookmark))
                         .build()
                         .setFromTokenResponse(response);
+
+                // Save
+                save(keychain, bookmark, new Tokens(
+                        tokens.getAccessToken(), tokens.getRefreshToken(), tokens.getExpirationTimeMilliseconds()));
             }
             catch(IOException e) {
                 throw new OAuthExceptionMappingService().map(e);
@@ -152,7 +168,19 @@ public class OAuth2AuthorizationService {
         return tokens;
     }
 
-    private Tokens find(final Host host) {
+    public void refresh(final Credential tokens) throws BackgroundException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Refresh expired tokens %s", tokens));
+        }
+        try {
+            tokens.refreshToken();
+        }
+        catch(IOException e) {
+            throw new OAuthExceptionMappingService().map(e);
+        }
+    }
+
+    private Tokens find(final HostPasswordStore keychain, final Host host) {
         final long expiry = preferences.getLong(String.format("%s.oauth.expiry", host.getProtocol().getIdentifier()));
         final Tokens tokens = new Tokens(keychain.getPassword(host.getProtocol().getScheme(),
                 host.getPort(), URI.create(tokenServerUrl).getHost(),
@@ -175,7 +203,7 @@ public class OAuth2AuthorizationService {
         return tokens;
     }
 
-    private void save(final Host host, final Tokens tokens) {
+    private void save(final HostPasswordStore keychain, final Host host, final Tokens tokens) {
         final String prefix = String.format("%s (%s)", host.getProtocol().getDescription(), host.getCredentials().getUsername());
         keychain.addPassword(host.getProtocol().getScheme(),
                 host.getPort(), URI.create(tokenServerUrl).getHost(),
@@ -200,6 +228,11 @@ public class OAuth2AuthorizationService {
 
     public OAuth2AuthorizationService withMethod(final Credential.AccessMethod method) {
         this.method = method;
+        return this;
+    }
+
+    public OAuth2AuthorizationService withRedirectUri(final String redirectUri) {
+        this.redirectUri = redirectUri;
         return this;
     }
 
@@ -233,7 +266,7 @@ public class OAuth2AuthorizationService {
             if(failure instanceof TokenResponseException) {
                 final TokenErrorResponse details = ((TokenResponseException) failure).getDetails();
                 final StringBuilder buffer = new StringBuilder();
-                this.append(buffer, details.getError());
+                this.append(buffer, details.getErrorDescription());
                 return new LoginFailureException(buffer.toString(), failure);
             }
             final StringBuilder buffer = new StringBuilder();
@@ -257,20 +290,26 @@ public class OAuth2AuthorizationService {
 
     private final class SavingCredentialRefreshListener implements CredentialRefreshListener {
         private final Host host;
+        private final HostPasswordStore keychain;
 
-        public SavingCredentialRefreshListener(final Host host) {
+        public SavingCredentialRefreshListener(final HostPasswordStore keychain, final Host host) {
+            this.keychain = keychain;
             this.host = host;
         }
 
         @Override
         public void onTokenResponse(final Credential credential, final TokenResponse tokenResponse) throws IOException {
-            save(host, new Tokens(tokenResponse.getAccessToken(), tokenResponse.getRefreshToken(),
-                    Duration.ofSeconds(tokenResponse.getExpiresInSeconds()).toMillis()));
+            save(keychain, host, new Tokens(tokenResponse.getAccessToken(), tokenResponse.getRefreshToken(),
+                    credential.getExpirationTimeMilliseconds()));
         }
 
         @Override
         public void onTokenErrorResponse(final Credential credential, final TokenErrorResponse tokenErrorResponse) throws IOException {
             log.warn(String.format("Failure with OAuth2 token response %s", tokenErrorResponse.getError()));
         }
+    }
+
+    public boolean isExpired(final Credential tokens) {
+        return tokens.getExpirationTimeMilliseconds() >= System.currentTimeMillis();
     }
 }
