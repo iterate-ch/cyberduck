@@ -37,7 +37,6 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URI;
-import java.time.Duration;
 import java.util.List;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
@@ -148,8 +147,7 @@ public class OAuth2AuthorizationService {
                         .setFromTokenResponse(response);
 
                 // Save
-                save(host, new Tokens(tokens.getAccessToken(), tokens.getRefreshToken(),
-                        Duration.ofSeconds(tokens.getExpiresInSeconds()).toMillis()));
+                save(host, new Tokens(tokens.getAccessToken(), tokens.getRefreshToken(), tokens.getExpirationTimeMilliseconds()));
             }
             catch(IOException e) {
                 throw new OAuthExceptionMappingService().map(e);
@@ -276,12 +274,16 @@ public class OAuth2AuthorizationService {
         @Override
         public void onTokenResponse(final Credential credential, final TokenResponse tokenResponse) throws IOException {
             save(host, new Tokens(tokenResponse.getAccessToken(), tokenResponse.getRefreshToken(),
-                    Duration.ofSeconds(tokenResponse.getExpiresInSeconds()).toMillis()));
+                    credential.getExpirationTimeMilliseconds()));
         }
 
         @Override
         public void onTokenErrorResponse(final Credential credential, final TokenErrorResponse tokenErrorResponse) throws IOException {
             log.warn(String.format("Failure with OAuth2 token response %s", tokenErrorResponse.getError()));
         }
+    }
+
+    public boolean isExpired(final Credential tokens) {
+        return tokens.getExpirationTimeMilliseconds() >= System.currentTimeMillis();
     }
 }
