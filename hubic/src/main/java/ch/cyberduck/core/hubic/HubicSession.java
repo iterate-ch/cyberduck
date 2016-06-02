@@ -21,6 +21,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.openstack.SwiftExceptionMappingService;
@@ -88,5 +89,13 @@ public class HubicSession extends SwiftSession {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
+    }
+
+    @Override
+    public <T> T getFeature(final Class<T> type) {
+        if(type == DistributionConfiguration.class) {
+            return null;
+        }
+        return super.getFeature(type);
     }
 }
