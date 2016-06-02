@@ -123,8 +123,9 @@ public class DriveReadFeatureTest {
                 }, new DisabledProgressListener(),
                 new DisabledTranscriptListener()).connect(session, PathCache.empty());
 
-        final Path test = new Path(new DriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final String name = "ä-" + UUID.randomUUID().toString();
+        final Path test = new Path(new DriveHomeFinderService(session).find(), name, EnumSet.of(Path.Type.file));
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
         final byte[] content = RandomStringUtils.random(1000).getBytes();
         final OutputStream out = local.getOutputStream(false);
         assertNotNull(out);

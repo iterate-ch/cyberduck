@@ -39,6 +39,7 @@ import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.AbstractHttpEntity;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.protocol.HTTP;
@@ -47,7 +48,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-import com.google.api.client.json.Json;
+import static com.google.api.client.json.Json.MEDIA_TYPE;
 
 public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> {
     private static final Logger log = Logger.getLogger(DriveWriteFeature.class);
@@ -102,11 +103,12 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> {
                         // Set to the media MIME type of the upload data to be transferred in subsequent requests.
                         request.addHeader("X-Upload-Content-Type", status.getMime());
                     }
-                    request.addHeader(HTTP.CONTENT_TYPE, Json.MEDIA_TYPE);
+                    request.addHeader(HTTP.CONTENT_TYPE, MEDIA_TYPE);
                     request.addHeader(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", session.getTokens().getAccessToken()));
                     request.setEntity(new StringEntity("{\"name\": \""
                             + file.getName() + "\", \"parents\": [\""
-                            + new DriveFileidProvider(session).getFileid(file.getParent()) + "\"]}"));
+                            + new DriveFileidProvider(session).getFileid(file.getParent()) + "\"]}",
+                            ContentType.create("application/json", "UTF-8")));
                     final CloseableHttpClient client = session.getBuilder().build(new DisabledTranscriptListener()).build();
                     final CloseableHttpResponse response = client.execute(request);
                     try {
