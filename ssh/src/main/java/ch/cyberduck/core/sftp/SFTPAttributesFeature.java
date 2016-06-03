@@ -28,7 +28,6 @@ import ch.cyberduck.core.features.Attributes;
 import java.io.IOException;
 
 import net.schmizz.sshj.sftp.FileAttributes;
-import net.schmizz.sshj.sftp.FileMode;
 
 /**
  * @version $Id$
@@ -79,8 +78,10 @@ public class SFTPAttributesFeature implements Attributes {
 
     public PathAttributes convert(final FileAttributes stat) {
         final PathAttributes attributes = new PathAttributes();
-        if(stat.getType().equals(FileMode.Type.REGULAR)) {
-            attributes.setSize(stat.getSize());
+        switch(stat.getType()) {
+            case REGULAR:
+            case UNKNOWN:
+                attributes.setSize(stat.getSize());
         }
         if(0 != stat.getMode().getPermissionsMask()) {
             attributes.setPermission(new Permission(Integer.toString(stat.getMode().getPermissionsMask(), 8)));
