@@ -132,9 +132,15 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
                 // We can default to Standard if not specified
                 scheme = AuthScheme.STANDARD;
             }
-            final IRODSAccount account = IRODSAccount.instance(host.getHostname(), host.getPort(),
-                    user, credentials.getPassword(), new IRODSHomeFinderService(this).find().getAbsolute(),
-                    region, resource, scheme);
+            final IRODSAccount account;
+            try {
+                account = IRODSAccount.instance(host.getHostname(), host.getPort(),
+                        user, credentials.getPassword(), new IRODSHomeFinderService(this).find().getAbsolute(),
+                        region, resource, scheme);
+            }
+            catch(IllegalArgumentException e) {
+                throw new LoginFailureException(e.getMessage(), e);
+            }
 
             final IRODSAccessObjectFactory factory = client.getIRODSAccessObjectFactory();
             final AuthResponse auth = factory.authenticateIRODSAccount(account);

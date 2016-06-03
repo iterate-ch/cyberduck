@@ -38,10 +38,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-/**
- * @version $Id$
- */
-public final class Profile implements Protocol, Serializable {
+public class Profile implements Protocol, Serializable {
     private static final Logger log = Logger.getLogger(Profile.class);
 
     private Deserializer<String> dict;
