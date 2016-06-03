@@ -96,8 +96,10 @@ public class B2ObjectListService implements ListService {
         for(B2FileInfoResponse file : response.getFiles()) {
             final PathAttributes attributes = this.parse(directory, file, revisions);
             if(attributes == null) {
+                // File is descendant but not directly from working directory
                 final Path virtual = this.virtual(directory, file.getFileName());
                 if(virtual.isChild(directory)) {
+                    // Found same root
                     if(revisions.containsKey(containerService.getKey(virtual))) {
                         continue;
                     }
@@ -133,8 +135,14 @@ public class B2ObjectListService implements ListService {
                 containerService.isContainer(directory) ? String.valueOf(Path.DELIMITER) : containerService.getKey(directory));
     }
 
+    /**
+     * @param directory Working directory
+     * @param response  List filenames response from server
+     * @param revisions Counter for equal filenames
+     * @return Null when respone filename is not child of working directory directory
+     */
     protected PathAttributes parse(final Path directory, final B2FileInfoResponse response, final Map<String, Integer> revisions) {
-        if(this.skip(PathNormalizer.parent(response.getFileName(), Path.DELIMITER), directory)) {
+        if(this.skip(PathNormalizer.parent(StringUtils.removeEnd(response.getFileName(), PathNormalizer.name(B2DirectoryFeature.PLACEHOLDER)), Path.DELIMITER), directory)) {
             log.warn(String.format("Skip file %s", response));
             return null;
         }
@@ -164,6 +172,13 @@ public class B2ObjectListService implements ListService {
         return attributes;
     }
 
+    /**
+     * Find placeholder name that is child of current working directory for the filename passed.
+     *
+     * @param directory Working directory
+     * @param filename  Filename
+     * @return Placeholder directory name
+     */
     protected Path virtual(final Path directory, final String filename) {
         // Look for same parent directory
         String name = null;
