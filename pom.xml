@@ -202,6 +202,13 @@
                 <artifactId>google-http-client-gson</artifactId>
                 <version>1.22.0</version>
             </dependency>
+            <dependency>
+                <groupId>com.amazonaws</groupId>
+                <artifactId>aws-java-sdk-bom</artifactId>
+                <version>1.10.43</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
