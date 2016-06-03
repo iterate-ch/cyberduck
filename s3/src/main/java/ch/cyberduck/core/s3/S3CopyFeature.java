@@ -48,7 +48,7 @@ public class S3CopyFeature implements Copy {
 
     @Override
     public void copy(final Path source, final Path copy) throws BackgroundException {
-        if(source.isFile()) {
+        if(source.isFile() || source.isPlaceholder()) {
             // Keep same storage class
             final String storageClass = source.attributes().getStorageClass();
             // Keep encryption setting

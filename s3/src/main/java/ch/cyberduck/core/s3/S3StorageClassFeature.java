@@ -36,20 +36,13 @@ public class S3StorageClassFeature implements Redundancy {
 
     private final S3Session session;
 
-    private final S3AccessControlListFeature accessControlListFeature;
-
     private final Preferences preferences = PreferencesFactory.get();
 
     private final PathContainerService containerService
             = new S3PathContainerService();
 
     public S3StorageClassFeature(final S3Session session) {
-        this(session, (S3AccessControlListFeature) session.getFeature(AclPermission.class));
-    }
-
-    public S3StorageClassFeature(final S3Session session, final S3AccessControlListFeature accessControlListFeature) {
         this.session = session;
-        this.accessControlListFeature = accessControlListFeature;
     }
 
     @Override
@@ -94,13 +87,14 @@ public class S3StorageClassFeature implements Redundancy {
         }
         if(file.isFile() || file.isPlaceholder()) {
             final S3ThresholdCopyFeature copy = new S3ThresholdCopyFeature(session);
-            if(null == accessControlListFeature) {
+            final AclPermission feature = session.getFeature(AclPermission.class);
+            if(null == feature) {
                 copy.copy(file, file, redundancy, new S3EncryptionFeature(session).getEncryption(file),
                         Acl.EMPTY);
             }
             else {
                 copy.copy(file, file, redundancy, new S3EncryptionFeature(session).getEncryption(file),
-                        accessControlListFeature.getPermission(file));
+                        feature.getPermission(file));
             }
         }
     }
