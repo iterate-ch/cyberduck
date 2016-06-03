@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Encryption;
+import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.DefaultThreadPool;
 import ch.cyberduck.core.threading.ThreadPool;
@@ -83,7 +84,9 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
             destination.setServerSideEncryptionAlgorithm(encryption.algorithm);
             // Set custom key id stored in KMS
             destination.setServerSideEncryptionKmsKeyId(encryption.key);
-            destination.setAcl(accessControlListFeature.convert(acl));
+            if(null != accessControlListFeature) {
+                destination.setAcl(accessControlListFeature.convert(acl));
+            }
             try {
                 final List<MultipartPart> completed = new ArrayList<MultipartPart>();
                 // ID for the initiated multipart upload.
@@ -97,11 +100,7 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
                 long remaining = size;
                 long offset = 0;
                 final List<Future<MultipartPart>> parts = new ArrayList<Future<MultipartPart>>();
-                if(0 == remaining) {
-                    parts.add(this.submit(source, multipart, 1, offset, 0L));
-                }
                 for(int partNumber = 1; remaining > 0; partNumber++) {
-                    boolean skip = false;
                     // Last part can be less than 5 MB. Adjust part size.
                     final Long length = Math.min(Math.max((size / S3DefaultMultipartService.MAXIMUM_UPLOAD_PARTS), partsize), remaining);
                     // Submit to queue
@@ -153,8 +152,10 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
             @Override
             public MultipartPart call() throws BackgroundException {
                 try {
+                    final HttpRange range = HttpRange.byLength(offset, length);
                     final MultipartPart part = session.getClient().multipartUploadPartCopy(multipart, partNumber,
-                            containerService.getContainer(source).getName(), containerService.getKey(source));
+                            containerService.getContainer(source).getName(), containerService.getKey(source),
+                            null, null, null, null, range.getStart(), range.getEnd(), source.attributes().getVersionId());
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Received response %s for part number %d", part, partNumber));
                     }
