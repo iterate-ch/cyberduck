@@ -50,10 +50,7 @@ public class DriveSessionTest {
                     credentials.setPassword("t");
                     return;
                 }
-                if("Code was already redeemed. Please contact your web hosting service provider for assistance.".equals(reason)) {
-                    throw new LoginCanceledException();
-                }
-                fail();
+                throw new LoginCanceledException();
             }
         }, new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener(),
