@@ -39,9 +39,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public class S3AttributesFeature implements Attributes {
     private static final Logger log = Logger.getLogger(S3AttributesFeature.class);
 

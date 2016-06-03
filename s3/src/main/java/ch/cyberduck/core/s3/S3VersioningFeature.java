@@ -42,9 +42,6 @@ import org.jets3t.service.model.S3Object;
 import java.util.Collections;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public class S3VersioningFeature implements Versioning {
     private static final Logger log = Logger.getLogger(S3VersioningFeature.class);
 

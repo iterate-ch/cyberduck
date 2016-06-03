@@ -22,9 +22,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-/**
- * @version $Id$
- */
 public final class MultifactorCredentials extends Credentials {
 
     public MultifactorCredentials() {
