@@ -19,6 +19,5 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
 public interface Copy {
-
     void copy(Path source, Path copy) throws BackgroundException;
 }
