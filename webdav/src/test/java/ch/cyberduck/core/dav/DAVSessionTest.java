@@ -49,9 +49,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class DAVSessionTest {
 
@@ -193,7 +190,7 @@ public class DAVSessionTest {
             session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         }
         catch(BackgroundException e) {
-            assertEquals("Method Not Allowed. Please contact your web hosting service provider for assistance.", e.getDetail());
+            assertEquals("Unexpected response (405 Method Not Allowed). Please contact your web hosting service provider for assistance.", e.getDetail());
             throw e;
         }
     }
