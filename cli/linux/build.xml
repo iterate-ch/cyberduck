@@ -30,7 +30,7 @@
     <property name="deb.postinstall" value="${build.bundles}/package/linux/postinst"/>
     <property name="deb.postrm" value="${build.bundles}/package/linux/postrm"/>
 
-    <target name="fx" if="platform.linux">
+    <target name="build" depends="version">
         <copy file="${setup}/rpm/duck.spec" todir="${rpm.spec}"/>
         <copy file="${setup}/deb/duck.control" tofile="${deb.control}"/>
         <copy file="${setup}/deb/duck.postinstall" tofile="${deb.postinstall}"/>
@@ -104,6 +104,4 @@
             </fx:resources>
         </fx:deploy>
     </target>
-
-    <target name="build" depends="version,fx" />
 </project>

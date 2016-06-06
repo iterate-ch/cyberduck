@@ -32,7 +32,7 @@
     <property name="chocolatey.source" value="${setup}/chocolatey"/>
     <property name="chocolatey.target" value="${build.deploy}"/>
 
-    <target name="build" depends="version" if="platform.windows">
+    <target name="build" depends="version">
         <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
             <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
         </taskdef>

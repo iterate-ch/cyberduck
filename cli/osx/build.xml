@@ -36,7 +36,7 @@
     <import file="../../codesign.xml"/>
     <import file="../../archive.xml"/>
 
-    <target name="build" depends="version,source-tar" if="platform.mac">
+    <target name="build" depends="version,source-tar">
         <echo message="Building ${cli.bundle} with configuration ${xcode.configuration}"/>
         <local name="build.settings"/>
         <property name="build.settings"
