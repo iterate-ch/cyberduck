@@ -18,9 +18,6 @@ package ch.cyberduck.core.aquaticprime;
  * feedback@cyberduck.ch
  */
 
-/**
- * @version $Id:$
- */
 public interface LicenseVerifier {
 
     public boolean verify();

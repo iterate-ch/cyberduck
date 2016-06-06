@@ -54,9 +54,6 @@ import com.dd.plist.NSObject;
 import com.dd.plist.PropertyListFormatException;
 import com.dd.plist.XMLPropertyListParser;
 
-/**
- * @version $Id$
- */
 public class DonationKey extends AbstractLicense implements LicenseVerifier {
     private static final Logger log = Logger.getLogger(DonationKey.class);
 

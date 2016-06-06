@@ -30,9 +30,6 @@ import org.apache.log4j.Logger;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class DonationKeyFactory extends LicenseFactory {
     private static final Logger log = Logger.getLogger(DonationKeyFactory.class);
 
