@@ -37,6 +37,7 @@ import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.codec.binary.Hex;
+import org.apache.http.client.HttpResponseException;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -82,6 +83,9 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
             final Output response = out.getResponse();
             this.post(file, digest, response);
             return response;
+        }
+        catch(HttpResponseException e) {
+            throw new HttpResponseExceptionMappingService().map("Upload {0} failed", e, file);
         }
         catch(IOException e) {
             throw new HttpExceptionMappingService().map("Upload {0} failed", e, file);
