@@ -37,11 +37,11 @@ import ch.cyberduck.core.s3.S3EncryptionFeature;
 import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.s3.S3Session;
 
+import com.amazonaws.services.kms.model.AliasListEntry;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Callable;
 
 import com.amazonaws.AmazonClientException;
@@ -162,10 +162,17 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
                     );
                     try {
                         final Set<Algorithm> keys = new HashSet<Algorithm>();
-                        for(KeyListEntry entry : client.listKeys().getKeys()) {
+                        final Map<String, String> aliases = new HashMap<String, String>();
+                        for (AliasListEntry entry : client.listAliases().getAliases()) {
+                            aliases.put(entry.getAliasArn(), entry.getAliasName());
+                        }
+                        for (KeyListEntry entry : client.listKeys().getKeys()) {
                             keys.add(new Algorithm(SSE_KMS_DEFAULT.algorithm, entry.getKeyArn()) {
                                 @Override
                                 public String getDescription() {
+                                    if (aliases.containsKey(entry.getKeyArn())) {
+                                        return String.format("SSE-KMS (%s - %s)", aliases.get(entry.getKeyArn()), entry.getKeyArn());
+                                    }
                                     return String.format("SSE-KMS (%s)", entry.getKeyArn());
                                 }
                             });
