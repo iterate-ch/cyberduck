@@ -166,11 +166,11 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
                     try {
                         final Map<String, String> aliases = new HashMap<String, String>();
                         for(AliasListEntry entry : client.listAliases().getAliases()) {
-                            aliases.put(entry.getAliasArn(), entry.getAliasName());
+                            aliases.put(entry.getTargetKeyId(), entry.getAliasName());
                         }
                         final Set<Algorithm> keys = new HashSet<Algorithm>();
                         for(KeyListEntry entry : client.listKeys().getKeys()) {
-                            keys.add(new AliasedAlgorithm(entry, aliases.get(entry.getKeyArn())));
+                            keys.add(new AliasedAlgorithm(entry, aliases.get(entry.getKeyId())));
                         }
                         return keys;
                     }
