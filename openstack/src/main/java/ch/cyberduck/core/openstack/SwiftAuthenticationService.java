@@ -44,9 +44,6 @@ import ch.iterate.openstack.swift.method.Authentication20UsernamePasswordTenantI
 import ch.iterate.openstack.swift.method.Authentication3UsernamePasswordProjectRequest;
 import ch.iterate.openstack.swift.method.AuthenticationRequest;
 
-/**
- * @version $Id$
- */
 public class SwiftAuthenticationService {
     private static final Logger log = Logger.getLogger(SwiftAuthenticationService.class);
 

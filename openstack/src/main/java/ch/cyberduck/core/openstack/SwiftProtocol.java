@@ -22,9 +22,6 @@ import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
 
-/**
- * @version $Id$
- */
 public class SwiftProtocol extends AbstractProtocol {
     @Override
     public String getName() {

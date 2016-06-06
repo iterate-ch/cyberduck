@@ -34,9 +34,6 @@ import java.util.List;
 
 import ch.iterate.openstack.swift.exception.GenericException;
 
-/**
- * @version $Id$
- */
 public class SwiftDeleteFeature implements Delete {
     private static final Logger log = Logger.getLogger(SwiftDeleteFeature.class);
 

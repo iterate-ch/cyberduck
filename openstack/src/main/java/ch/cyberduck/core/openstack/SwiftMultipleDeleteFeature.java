@@ -37,9 +37,6 @@ import java.util.Map;
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.Region;
 
-/**
- * @version $Id$
- */
 public class SwiftMultipleDeleteFeature implements Delete {
 
     private SwiftSession session;

@@ -47,9 +47,6 @@ import ch.iterate.openstack.swift.model.Container;
 import ch.iterate.openstack.swift.model.ContainerInfo;
 import ch.iterate.openstack.swift.model.Region;
 
-/**
- * @version $Id$
- */
 public class SwiftContainerListService implements RootListService {
     private static final Logger log = Logger.getLogger(SwiftContainerListService.class);
 

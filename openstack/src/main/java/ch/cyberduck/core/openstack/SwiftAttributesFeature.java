@@ -41,9 +41,6 @@ import ch.iterate.openstack.swift.model.ContainerInfo;
 import ch.iterate.openstack.swift.model.ObjectMetadata;
 import ch.iterate.openstack.swift.model.Region;
 
-/**
- * @version $Id$
- */
 public class SwiftAttributesFeature implements Attributes {
     private static final Logger log = Logger.getLogger(SwiftAttributesFeature.class);
 

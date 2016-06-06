@@ -53,9 +53,6 @@ import ch.iterate.openstack.swift.exception.NotFoundException;
 import ch.iterate.openstack.swift.model.CDNContainer;
 import ch.iterate.openstack.swift.model.ContainerMetadata;
 
-/**
- * @version $Id$
- */
 public class SwiftDistributionConfiguration implements DistributionConfiguration, Index, DistributionLogging {
     private static final Logger log = Logger.getLogger(SwiftDistributionConfiguration.class);
 

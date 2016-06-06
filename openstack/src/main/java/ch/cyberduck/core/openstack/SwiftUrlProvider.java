@@ -54,9 +54,6 @@ import java.util.concurrent.TimeUnit;
 import ch.iterate.openstack.swift.model.AccountInfo;
 import ch.iterate.openstack.swift.model.Region;
 
-/**
- * @version $Id$
- */
 public class SwiftUrlProvider implements UrlProvider {
     private static final Logger log = Logger.getLogger(SwiftUrlProvider.class);
 

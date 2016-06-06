@@ -33,10 +33,6 @@ import java.security.NoSuchAlgorithmException;
 
 import ch.iterate.openstack.swift.model.StorageObject;
 
-/**
- * @author Joel Wright <joel.wright@sohonet.com>
- * @version $Id$
- */
 public class SwiftSmallObjectUploadFeature extends HttpUploadFeature<StorageObject, MessageDigest> {
     private static final Logger log = Logger.getLogger(SwiftSmallObjectUploadFeature.class);
 

@@ -25,9 +25,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
 
-/**
- * @version $Id$
- */
 public class SwiftFindFeature implements Find {
 
     private SwiftMetadataFeature feature;

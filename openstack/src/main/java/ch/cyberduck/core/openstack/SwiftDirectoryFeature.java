@@ -31,9 +31,6 @@ import java.util.Collections;
 
 import ch.iterate.openstack.swift.exception.GenericException;
 
-/**
- * @version $Id$
- */
 public class SwiftDirectoryFeature implements Directory {
 
     private SwiftSession session;

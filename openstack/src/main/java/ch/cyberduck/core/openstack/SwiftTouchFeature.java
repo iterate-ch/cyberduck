@@ -30,9 +30,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Collections;
 
-/**
- * @version $Id$
- */
 public class SwiftTouchFeature implements Touch {
 
     private SwiftSession session;

@@ -45,9 +45,6 @@ import ch.iterate.openstack.swift.model.StorageObject;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-/**
- * @version $Id$
- */
 public class SwiftSegmentService {
     private static final Logger log = Logger.getLogger(SwiftSegmentService.class);
 

@@ -44,9 +44,6 @@ import ch.iterate.openstack.swift.exception.AuthorizationException;
 import ch.iterate.openstack.swift.exception.ContainerNotFoundException;
 import ch.iterate.openstack.swift.model.Region;
 
-/**
- * @version $Id$
- */
 public class SwiftLocationFeature implements Location {
     private static final Logger log = Logger.getLogger(SwiftLocationFeature.class);
 

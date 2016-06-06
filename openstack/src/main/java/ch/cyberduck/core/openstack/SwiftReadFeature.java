@@ -34,9 +34,6 @@ import java.io.InputStream;
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.io.ContentLengthInputStream;
 
-/**
- * @version $Id$
- */
 public class SwiftReadFeature implements Read {
     private static final Logger log = Logger.getLogger(SwiftReadFeature.class);
 
