@@ -40,13 +40,16 @@ import ch.cyberduck.core.s3.S3Session;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.services.kms.AWSKMSClient;
+import com.amazonaws.services.kms.model.AliasListEntry;
 import com.amazonaws.services.kms.model.KeyListEntry;
 
 public class KMSEncryptionFeature extends S3EncryptionFeature {
@@ -161,14 +164,13 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
                             }, configuration
                     );
                     try {
+                        final Map<String, String> aliases = new HashMap<String, String>();
+                        for(AliasListEntry entry : client.listAliases().getAliases()) {
+                            aliases.put(entry.getTargetKeyId(), entry.getAliasName());
+                        }
                         final Set<Algorithm> keys = new HashSet<Algorithm>();
                         for(KeyListEntry entry : client.listKeys().getKeys()) {
-                            keys.add(new Algorithm(SSE_KMS_DEFAULT.algorithm, entry.getKeyArn()) {
-                                @Override
-                                public String getDescription() {
-                                    return String.format("SSE-KMS (%s)", entry.getKeyArn());
-                                }
-                            });
+                            keys.add(new AliasedAlgorithm(entry, aliases.get(entry.getKeyId())));
                         }
                         return keys;
                     }
@@ -197,4 +199,23 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
             return "SSE-KMS";
         }
     };
+
+    private static class AliasedAlgorithm extends Algorithm {
+        private final KeyListEntry entry;
+        private final String alias;
+
+        public AliasedAlgorithm(final KeyListEntry entry, final String alias) {
+            super(KMSEncryptionFeature.SSE_KMS_DEFAULT.algorithm, entry.getKeyArn());
+            this.entry = entry;
+            this.alias = alias;
+        }
+
+        @Override
+        public String getDescription() {
+            if(StringUtils.isBlank(alias)) {
+                return String.format("SSE-KMS (%s)", entry.getKeyArn());
+            }
+            return String.format("SSE-KMS (%s - %s)", alias, entry.getKeyArn());
+        }
+    }
 }
