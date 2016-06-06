@@ -37,7 +37,13 @@ public class DAVAttributesFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path(UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
         final DAVAttributesFeature f = new DAVAttributesFeature(session);
-        f.find(test);
+        try {
+            f.find(test);
+        }
+        catch(NotfoundException e) {
+            assertEquals("Unexpected response (404 Not Found). Please contact your web hosting service provider for assistance.", e.getDetail());
+            throw e;
+        }
     }
 
     @Test

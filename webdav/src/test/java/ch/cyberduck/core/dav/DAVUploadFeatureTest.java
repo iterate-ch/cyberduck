@@ -27,9 +27,11 @@ import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -48,9 +50,6 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class DAVUploadFeatureTest {
 
@@ -63,6 +62,35 @@ public class DAVUploadFeatureTest {
     @Test
     public void testDigest() throws Exception {
         assertNull(new DAVUploadFeature(new DAVSession(new Host(new DAVProtocol(), "h"))).digest());
+    }
+
+    @Test(expected = AccessDeniedException.class)
+    public void testAccessDenied() throws Exception {
+        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
+                System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
+        ));
+        host.setDefaultPath("/dav/basic");
+        final DAVSession session = new DAVSession(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final TransferStatus status = new TransferStatus();
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        new DefaultLocalTouchFeature().touch(local);
+        final Path test = new Path(new Path("/dav/accessdenied", EnumSet.of(Path.Type.directory)), "nosuchname", EnumSet.of(Path.Type.file));
+        try {
+            new DAVUploadFeature(new DAVWriteFeature(session)).upload(
+                    test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                    status,
+                    new DisabledConnectionCallback());
+        }
+        catch(AccessDeniedException e) {
+            assertEquals("Unexpected response (403 Forbidden). Please contact your web hosting service provider for assistance.", e.getDetail());
+            throw e;
+        }
+        finally {
+            local.delete();
+            session.close();
+        }
     }
 
     @Test
