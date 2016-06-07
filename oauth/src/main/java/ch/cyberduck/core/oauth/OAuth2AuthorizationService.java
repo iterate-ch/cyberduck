@@ -300,7 +300,7 @@ public class OAuth2AuthorizationService {
 
         @Override
         public void onTokenResponse(final Credential credential, final TokenResponse tokenResponse) throws IOException {
-            save(keychain, host, new Tokens(tokenResponse.getAccessToken(), tokenResponse.getRefreshToken(),
+            save(keychain, host, new Tokens(credential.getAccessToken(), credential.getRefreshToken(),
                     credential.getExpirationTimeMilliseconds()));
         }
 
