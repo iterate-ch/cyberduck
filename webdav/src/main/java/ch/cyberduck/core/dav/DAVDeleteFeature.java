@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
+import ch.cyberduck.core.shared.ThreadedDeleteFeature;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,10 +31,7 @@ import java.util.List;
 
 import com.github.sardine.impl.SardineException;
 
-/**
- * @version $Id$
- */
-public class DAVDeleteFeature implements Delete {
+public class DAVDeleteFeature extends ThreadedDeleteFeature implements Delete {
 
     private DAVSession session;
 
@@ -55,17 +53,23 @@ public class DAVDeleteFeature implements Delete {
             if(skip) {
                 continue;
             }
-            callback.delete(file);
-            try {
-                session.getClient().delete(new DAVPathEncoder().encode(file));
-            }
-            catch(SardineException e) {
-                throw new DAVExceptionMappingService().map("Cannot delete {0}", e, file);
-            }
-            catch(IOException e) {
-                throw new HttpExceptionMappingService().map(e, file);
-            }
             deleted.add(file);
+            this.submit(file, new Implementation() {
+                @Override
+                public void delete(final Path file) throws BackgroundException {
+                    callback.delete(file);
+                    try {
+                        session.getClient().delete(new DAVPathEncoder().encode(file));
+                    }
+                    catch(SardineException e) {
+                        throw new DAVExceptionMappingService().map("Cannot delete {0}", e, file);
+                    }
+                    catch(IOException e) {
+                        throw new HttpExceptionMappingService().map(e, file);
+                    }
+                }
+            });
         }
+        this.await();
     }
 }
