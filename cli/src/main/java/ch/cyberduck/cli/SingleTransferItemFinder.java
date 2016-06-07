@@ -28,9 +28,6 @@ import org.apache.commons.cli.CommandLine;
 import java.util.Collections;
 import java.util.Set;
 
-/**
- * @version $Id$
- */
 public class SingleTransferItemFinder implements TransferItemFinder {
 
     private WorkdirPrefixer prefixer

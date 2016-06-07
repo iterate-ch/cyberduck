@@ -18,9 +18,6 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
-/**
- * @version $Id$
- */
 public enum TerminalAction {
     help,
     version,

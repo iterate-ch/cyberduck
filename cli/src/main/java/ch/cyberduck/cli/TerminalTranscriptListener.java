@@ -22,9 +22,6 @@ import ch.cyberduck.core.TranscriptListener;
 
 import org.fusesource.jansi.Ansi;
 
-/**
- * @version $Id$
- */
 public class TerminalTranscriptListener implements TranscriptListener {
 
     private final Console console = new Console();

@@ -22,9 +22,6 @@ import ch.cyberduck.core.aquaticprime.License;
 import ch.cyberduck.core.aquaticprime.LicenseFactory;
 import ch.cyberduck.core.preferences.Preferences;
 
-/**
- * @version $Id$
- */
 public final class TerminalVersionPrinter {
 
     private TerminalVersionPrinter() {

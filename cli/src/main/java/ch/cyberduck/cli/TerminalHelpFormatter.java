@@ -24,9 +24,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.PrintWriter;
 
-/**
- * @version $Id$
- */
 public final class TerminalHelpFormatter extends HelpFormatter {
 
     private static final int DEFAULT_WIDTH = 200;

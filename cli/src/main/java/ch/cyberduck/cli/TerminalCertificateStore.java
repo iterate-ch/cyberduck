@@ -31,9 +31,6 @@ import java.util.List;
 
 import com.amazonaws.util.StringUtils;
 
-/**
- * @version $Id$
- */
 public class TerminalCertificateStore extends DefaultCertificateStore {
 
     private final Console console = new Console();

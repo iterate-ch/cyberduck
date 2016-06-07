@@ -30,9 +30,6 @@ import java.math.RoundingMode;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicLong;
 
-/**
- * @version $Id$
- */
 public class TerminalStreamListener implements StreamListener {
 
     private TransferSpeedometer meter;

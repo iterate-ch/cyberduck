@@ -30,9 +30,6 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 
-/**
- * @version $Id$
- */
 public class TerminalTransferBackgroundAction extends TransferBackgroundAction {
 
     public TerminalTransferBackgroundAction(final TerminalController controller,

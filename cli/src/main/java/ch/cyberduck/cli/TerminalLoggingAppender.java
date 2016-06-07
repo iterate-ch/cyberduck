@@ -23,9 +23,6 @@ import org.apache.log4j.Layout;
 import org.apache.log4j.spi.LoggingEvent;
 import org.fusesource.jansi.Ansi;
 
-/**
- * @version $Id$
- */
 public class TerminalLoggingAppender extends AppenderSkeleton {
 
     private final Console console = new Console();

@@ -33,9 +33,6 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-/**
- * @version $Id$
- */
 public class TerminalPreferences extends MemoryPreferences {
     private static final Logger log = Logger.getLogger(TerminalPreferences.class);
 

@@ -29,9 +29,6 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Collections;
 import java.util.Set;
 
-/**
- * @version $Id$
- */
 public class DownloadTransferItemFinder implements TransferItemFinder {
 
     @Override

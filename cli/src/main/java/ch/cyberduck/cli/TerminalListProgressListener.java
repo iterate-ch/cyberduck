@@ -31,9 +31,6 @@ import org.fusesource.jansi.Ansi;
 
 import java.text.MessageFormat;
 
-/**
- * @version $Id$
- */
 public class TerminalListProgressListener extends LimitedListProgressListener {
 
     private Console console = new Console();

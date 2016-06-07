@@ -33,9 +33,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public final class TerminalTransferFactory {
 
     public Transfer create(final CommandLine input, final Host host, final Path remote, final List<TransferItem> items)

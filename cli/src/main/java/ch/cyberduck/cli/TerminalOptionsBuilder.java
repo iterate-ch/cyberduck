@@ -27,9 +27,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
 
-/**
- * @version $Id$
- */
 public final class TerminalOptionsBuilder {
 
     private TerminalOptionsBuilder() {
