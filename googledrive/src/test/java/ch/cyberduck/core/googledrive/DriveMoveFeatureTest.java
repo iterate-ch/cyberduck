@@ -38,7 +38,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
@@ -138,7 +137,7 @@ public class DriveMoveFeatureTest {
         assertFalse(find.find(sourceFile));
         assertTrue(find.find(targetDirectory));
         assertTrue(find.find(targetFile));
-        new DriveDeleteFeature(session).delete(Collections.singletonList(targetDirectory), new DisabledLoginCallback(), new Delete.Callback() {
+        new DriveDeleteFeature(session).delete(Arrays.asList(targetFile, targetDirectory), new DisabledLoginCallback(), new Delete.Callback() {
             @Override
             public void delete(final Path file) {
             }
