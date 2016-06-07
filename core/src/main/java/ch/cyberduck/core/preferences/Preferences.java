@@ -383,6 +383,9 @@ public abstract class Preferences {
         defaults.put("browser.filesize.decimal", String.valueOf(false));
         defaults.put("browser.date.natural", String.valueOf(true));
 
+        defaults.put("browser.delete.concurrency", String.valueOf(10));
+
+
         defaults.put("info.toggle.permission", String.valueOf(1));
         defaults.put("info.toggle.distribution", String.valueOf(0));
         defaults.put("info.toggle.s3", String.valueOf(0));
@@ -792,8 +795,6 @@ public abstract class Preferences {
         defaults.put("b2.upload.largeobject.threshold", String.valueOf(200 * 1024L * 1024L)); // 200MB
         // Each part can be anywhere from 100MB to 5GB in size
         defaults.put("b2.upload.largeobject.size", String.valueOf(100 * 1024L * 1024L));
-
-        defaults.put("b2.delete.concurrency", String.valueOf(10));
 
         defaults.put("b2.metadata.default", StringUtils.EMPTY);
 
