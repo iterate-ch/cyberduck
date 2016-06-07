@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.shared.ThreadedDeleteFeature;
 
 import org.irods.jargon.core.exception.JargonException;
 import org.irods.jargon.core.pub.io.IRODSFile;
@@ -29,10 +30,7 @@ import org.irods.jargon.core.pub.io.IRODSFile;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @version $Id$
- */
-public class IRODSDeleteFeature implements Delete {
+public class IRODSDeleteFeature extends ThreadedDeleteFeature implements Delete {
 
     private IRODSSession session;
 
@@ -54,23 +52,29 @@ public class IRODSDeleteFeature implements Delete {
             if(skip) {
                 continue;
             }
-            callback.delete(file);
-            try {
-                final IRODSFile f = session.filesystem().getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
-                if(!f.exists()) {
-                    throw new NotfoundException(String.format("%s doesn't exist", file.getAbsolute()));
-                }
-                if(f.isFile()) {
-                    session.filesystem().fileDeleteForce(f);
-                }
-                else if(f.isDirectory()) {
-                    session.filesystem().directoryDeleteForce(f);
-                }
-            }
-            catch(JargonException e) {
-                throw new IRODSExceptionMappingService().map("Cannot delete {0}", e, file);
-            }
             deleted.add(file);
+            this.submit(file, new Implementation() {
+                @Override
+                public void delete(final Path file) throws BackgroundException {
+                    callback.delete(file);
+                    try {
+                        final IRODSFile f = session.filesystem().getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
+                        if(!f.exists()) {
+                            throw new NotfoundException(String.format("%s doesn't exist", file.getAbsolute()));
+                        }
+                        if(f.isFile()) {
+                            session.filesystem().fileDeleteForce(f);
+                        }
+                        else if(f.isDirectory()) {
+                            session.filesystem().directoryDeleteForce(f);
+                        }
+                    }
+                    catch(JargonException e) {
+                        throw new IRODSExceptionMappingService().map("Cannot delete {0}", e, file);
+                    }
+                }
+            });
         }
+        this.await();
     }
 }
