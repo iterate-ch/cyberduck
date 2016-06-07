@@ -26,9 +26,6 @@ import ch.cyberduck.core.local.Application;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class DefaultEditorFactory extends EditorFactory {
 
     @Override

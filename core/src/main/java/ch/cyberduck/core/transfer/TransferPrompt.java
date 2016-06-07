@@ -20,9 +20,6 @@ package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.ProgressListener;
 
-/**
- * @version $Id$
- */
 public interface TransferPrompt extends ProgressListener {
 
     /**

@@ -27,9 +27,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id$
- */
 public class DownloadDirectoryFinder implements DirectoryFinder {
     private static final Logger log = Logger.getLogger(DownloadDirectoryFinder.class);
 

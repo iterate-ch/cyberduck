@@ -24,9 +24,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id$
- */
 public class SizeComparisonService implements ComparisonService {
     private static final Logger log = Logger.getLogger(SizeComparisonService.class);
 

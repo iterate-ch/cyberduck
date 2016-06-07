@@ -18,7 +18,4 @@ package ch.cyberduck.core.local;
  * feedback@cyberduck.io
  */
 
-/**
- * @version $Id$
- */
 public class NullFileDescriptor extends AbstractFileDescriptor {}

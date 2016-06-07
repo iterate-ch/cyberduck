@@ -24,9 +24,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Locale;
 
-/**
- * @version $Id$
- */
 public class PreferencesRedirectCallback implements RedirectCallback {
 
     @Override

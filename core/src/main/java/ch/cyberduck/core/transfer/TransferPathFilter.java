@@ -24,9 +24,6 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 
-/**
- * @version $Id$
- */
 public interface TransferPathFilter {
 
     TransferPathFilter withCache(final PathCache cache);

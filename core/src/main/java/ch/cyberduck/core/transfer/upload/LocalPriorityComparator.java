@@ -21,9 +21,6 @@ import ch.cyberduck.core.Local;
 
 import java.util.Comparator;
 
-/**
- * @version $Id$
- */
 public class LocalPriorityComparator implements Comparator<Local> {
 
     @Override

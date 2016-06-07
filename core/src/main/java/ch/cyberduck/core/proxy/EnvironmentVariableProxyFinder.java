@@ -10,9 +10,6 @@ import org.apache.log4j.Logger;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-/**
- * @version $Id$
- */
 public class EnvironmentVariableProxyFinder implements ProxyFinder {
     private static final Logger log = Logger.getLogger(EnvironmentVariableProxyFinder.class);
 

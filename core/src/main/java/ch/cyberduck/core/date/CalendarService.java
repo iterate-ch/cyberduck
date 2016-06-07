@@ -22,9 +22,6 @@ import org.apache.log4j.Logger;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-/**
- * @version $Id$
- */
 public class CalendarService implements DateDomainService<Calendar> {
     private static final Logger log = Logger.getLogger(CalendarService.class);
 

@@ -20,9 +20,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.i18n.Locale;
 
-/**
- * @version $Id$
- */
 public class DisabledLocale implements Locale {
 
     @Override

@@ -18,9 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-/**
- * @version $Id$
- */
 public abstract class AbstractCollectionListener<L> implements CollectionListener<L> {
 
     @Override

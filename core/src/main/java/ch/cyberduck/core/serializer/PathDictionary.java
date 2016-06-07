@@ -25,9 +25,6 @@ import ch.cyberduck.core.PathAttributes;
 
 import java.util.EnumSet;
 
-/**
- * @version $Id$
- */
 public class PathDictionary {
 
     private DeserializerFactory deserializer;

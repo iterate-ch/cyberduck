@@ -18,9 +18,6 @@ package ch.cyberduck.core.local;
  * feedback@cyberduck.io
  */
 
-/**
- * @version $Id$
- */
 public class DisabledBrowserLauncher implements BrowserLauncher {
     @Override
     public boolean open(final String url) {

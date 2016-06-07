@@ -24,9 +24,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public interface Purge {
 
     /**

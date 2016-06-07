@@ -20,9 +20,6 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.Path;
 
-/**
- * @version $Id$
- */
 public interface FileDescriptor {
 
     /**

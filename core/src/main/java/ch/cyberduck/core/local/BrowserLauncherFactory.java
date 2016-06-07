@@ -20,9 +20,6 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.Factory;
 
-/**
- * @version $Id$
- */
 public class BrowserLauncherFactory extends Factory<BrowserLauncher> {
 
     public BrowserLauncherFactory() {

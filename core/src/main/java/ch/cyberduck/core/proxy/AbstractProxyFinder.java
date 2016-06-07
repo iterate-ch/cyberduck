@@ -23,9 +23,6 @@ import org.apache.log4j.Logger;
 
 import java.util.regex.PatternSyntaxException;
 
-/**
- * @version $Id$
- */
 public abstract class AbstractProxyFinder implements ProxyFinder {
     private static final Logger log = Logger.getLogger(AbstractProxyFinder.class);
 

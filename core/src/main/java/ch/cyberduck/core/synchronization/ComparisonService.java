@@ -22,9 +22,6 @@ import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 
-/**
- * @version $Id$
- */
 public interface ComparisonService {
 
     Comparison compare(PathAttributes file, LocalAttributes local) throws BackgroundException;

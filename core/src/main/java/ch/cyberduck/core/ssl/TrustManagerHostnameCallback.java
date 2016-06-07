@@ -17,9 +17,6 @@ package ch.cyberduck.core.ssl;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-/**
- * @version $Id$
- */
 public interface TrustManagerHostnameCallback {
     /**
      * @return Hostname to use when validating server certificate.

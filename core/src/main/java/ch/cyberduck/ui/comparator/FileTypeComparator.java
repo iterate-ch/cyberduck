@@ -26,9 +26,6 @@ import ch.cyberduck.core.local.FileDescriptorFactory;
 import java.text.Collator;
 import java.util.Locale;
 
-/**
- * @version $Id$
- */
 public class FileTypeComparator extends BrowserComparator {
     private static final long serialVersionUID = 3354482708309574292L;
 

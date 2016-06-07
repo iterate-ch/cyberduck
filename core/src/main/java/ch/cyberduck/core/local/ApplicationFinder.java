@@ -20,9 +20,6 @@ package ch.cyberduck.core.local;
 
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public interface ApplicationFinder {
 
     /**

@@ -18,9 +18,6 @@ package ch.cyberduck.core.transfer;
  *  dkocher@cyberduck.ch
  */
 
-/**
- * @version $Id$
- */
 public class NullTransferFilter implements TransferFilter {
 
     @Override

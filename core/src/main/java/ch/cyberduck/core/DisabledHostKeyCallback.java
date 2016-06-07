@@ -23,9 +23,6 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import java.security.PublicKey;
 
-/**
- * @version $Id$
- */
 public class DisabledHostKeyCallback implements HostKeyCallback {
 
     @Override

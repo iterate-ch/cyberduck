@@ -19,9 +19,6 @@ package ch.cyberduck.core.transfer.symlink;
 
 import ch.cyberduck.core.Path;
 
-/**
- * @version $Id$
- */
 public class DisabledDownloadSymlinkResolver extends AbstractSymlinkResolver<Path> {
 
     @Override

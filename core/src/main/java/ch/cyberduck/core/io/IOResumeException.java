@@ -20,9 +20,6 @@ package ch.cyberduck.core.io;
 
 import java.io.IOException;
 
-/**
- * @version $Id$
- */
 public class IOResumeException extends IOException {
 
     private static final long serialVersionUID = -312412837701506092L;

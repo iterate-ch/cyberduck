@@ -21,9 +21,6 @@ package ch.cyberduck.core.serializer;
 import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.Permission;
 
-/**
- * @version $Id$
- */
 public class PermissionDictionary {
 
     private DeserializerFactory deserializer;

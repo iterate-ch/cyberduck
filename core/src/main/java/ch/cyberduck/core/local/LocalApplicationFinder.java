@@ -22,9 +22,6 @@ import ch.cyberduck.core.LocalFactory;
 
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class LocalApplicationFinder implements ApplicationFinder {
     @Override
     public List<Application> findAll(final String filename) {

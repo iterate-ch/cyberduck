@@ -20,9 +20,6 @@ package ch.cyberduck.core.ssl;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.idna.PunycodeConverter;
 
-/**
- * @version $Id$
- */
 public class DefaultTrustManagerHostnameCallback implements TrustManagerHostnameCallback {
 
     private Host host;

@@ -39,9 +39,6 @@ import java.util.concurrent.CountDownLatch;
 
 import static java.nio.file.StandardWatchEventKinds.*;
 
-/**
- * @version $Id$
- */
 public final class FileWatcher {
     private static Logger log = Logger.getLogger(FileWatcher.class);
 

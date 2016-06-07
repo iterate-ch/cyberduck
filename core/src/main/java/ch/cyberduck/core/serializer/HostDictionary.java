@@ -32,9 +32,6 @@ import java.util.Date;
 import java.util.EnumSet;
 import java.util.TimeZone;
 
-/**
- * @version $Id$
- */
 public class HostDictionary {
     private static final Logger log = Logger.getLogger(HostDictionary.class);
 

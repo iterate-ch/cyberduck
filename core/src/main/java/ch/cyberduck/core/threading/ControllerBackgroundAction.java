@@ -30,9 +30,6 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
-/**
- * @version $Id$
- */
 public abstract class ControllerBackgroundAction<T> extends SessionBackgroundAction<T> {
 
     private final BackgroundActionListener listener;

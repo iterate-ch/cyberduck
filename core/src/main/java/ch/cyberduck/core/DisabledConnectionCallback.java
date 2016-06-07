@@ -20,9 +20,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
-/**
- * @version $Id$
- */
 public class DisabledConnectionCallback implements ConnectionCallback {
     @Override
     public void warn(final Protocol protocol, final String title, final String message,

@@ -45,9 +45,6 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
     private static final Logger log = Logger.getLogger(CertificateStoreX509KeyManager.class);
 

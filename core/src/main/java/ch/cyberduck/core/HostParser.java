@@ -28,9 +28,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.regex.Pattern;
 
-/**
- * @version $Id$
- */
 public final class HostParser {
     private static final Logger log = Logger.getLogger(HostParser.class);
 

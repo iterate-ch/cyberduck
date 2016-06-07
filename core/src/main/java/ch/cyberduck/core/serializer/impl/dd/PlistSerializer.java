@@ -27,9 +27,6 @@ import java.util.List;
 import com.dd.plist.NSArray;
 import com.dd.plist.NSDictionary;
 
-/**
- * @version $Id$
- */
 public class PlistSerializer implements Serializer {
 
     final NSDictionary dict;

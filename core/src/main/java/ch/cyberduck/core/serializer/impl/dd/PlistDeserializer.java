@@ -30,9 +30,6 @@ import com.dd.plist.NSDictionary;
 import com.dd.plist.NSObject;
 import com.dd.plist.NSString;
 
-/**
- * @version $Id$
- */
 public class PlistDeserializer implements Deserializer<NSDictionary> {
     private static final Logger log = Logger.getLogger(PlistDeserializer.class);
 

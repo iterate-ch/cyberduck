@@ -20,9 +20,6 @@ package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-/**
- * @version $Id$
- */
 public final class TransferOptions {
 
     /**

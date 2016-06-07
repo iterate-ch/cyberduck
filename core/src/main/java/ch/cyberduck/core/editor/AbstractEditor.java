@@ -47,9 +47,6 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.text.MessageFormat;
 
-/**
- * @version $Id$
- */
 public abstract class AbstractEditor implements Editor {
     private static final Logger log = Logger.getLogger(AbstractEditor.class);
 

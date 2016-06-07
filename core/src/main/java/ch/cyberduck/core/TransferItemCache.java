@@ -19,9 +19,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.transfer.TransferItem;
 
-/**
- * @version $Id$
- */
 public class TransferItemCache extends Cache<TransferItem> {
 
     public static TransferItemCache empty() {

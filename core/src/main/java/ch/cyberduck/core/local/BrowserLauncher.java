@@ -18,9 +18,6 @@ package ch.cyberduck.core.local;
  * dkocher@cyberduck.ch
  */
 
-/**
- * @version $Id$
- */
 public interface BrowserLauncher {
     boolean open(String url);
 }

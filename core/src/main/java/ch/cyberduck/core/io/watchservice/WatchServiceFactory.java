@@ -20,9 +20,6 @@ package ch.cyberduck.core.io.watchservice;
 
 import ch.cyberduck.core.Factory;
 
-/**
- * @version $Id$
- */
 public class WatchServiceFactory extends Factory<RegisterWatchService> {
 
     protected WatchServiceFactory() {

@@ -20,9 +20,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.serializer.Serializer;
 
-/**
- * @version $Id$
- */
 public interface Serializable {
 
     /**

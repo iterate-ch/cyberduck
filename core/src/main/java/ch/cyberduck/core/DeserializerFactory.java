@@ -27,9 +27,6 @@ import org.apache.commons.lang3.reflect.ConstructorUtils;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-/**
- * @version $Id$
- */
 public class DeserializerFactory<T> extends Factory<Deserializer> {
 
     private static final Preferences preferences

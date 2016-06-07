@@ -30,9 +30,6 @@ import org.apache.commons.lang3.reflect.ConstructorUtils;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-/**
- * @version $Id$
- */
 public class FilesystemFactory extends Factory<Filesystem> {
 
     private static final Preferences preferences

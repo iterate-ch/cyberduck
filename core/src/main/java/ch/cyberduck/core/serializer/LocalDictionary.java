@@ -24,9 +24,6 @@ import ch.cyberduck.core.LocalFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
-/**
- * @version $Id$
- */
 public class LocalDictionary {
 
     private DeserializerFactory deserializer;

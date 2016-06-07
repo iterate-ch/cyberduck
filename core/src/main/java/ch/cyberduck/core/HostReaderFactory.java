@@ -20,9 +20,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.serializer.Reader;
 
-/**
- * @version $Id$
- */
 public class HostReaderFactory extends Factory<Reader<Host>> {
 
     protected HostReaderFactory() {

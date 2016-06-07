@@ -25,9 +25,6 @@ import ch.cyberduck.core.serializer.ProfileDictionary;
 
 import com.dd.plist.NSDictionary;
 
-/**
- * @version $Id$
- */
 public class ProfilePlistReader extends PlistReader<Profile> {
 
     private final DeserializerFactory deserializer;

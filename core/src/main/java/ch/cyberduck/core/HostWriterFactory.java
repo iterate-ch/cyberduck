@@ -20,9 +20,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.serializer.Writer;
 
-/**
- * @version $Id$
- */
 public class HostWriterFactory extends Factory<Writer<Host>> {
 
     protected HostWriterFactory() {

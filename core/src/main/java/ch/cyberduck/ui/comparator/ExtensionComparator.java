@@ -26,9 +26,6 @@ import org.apache.commons.lang3.StringUtils;
 import java.text.Collator;
 import java.util.Locale;
 
-/**
- * @version $Id$
- */
 public class ExtensionComparator extends BrowserComparator {
     private static final long serialVersionUID = -7930478156003767294L;
 

@@ -20,9 +20,6 @@ package ch.cyberduck.core;
 
 import org.apache.commons.lang3.StringUtils;
 
-/**
- * @version $Id$
- */
 public final class BookmarkNameProvider {
 
     private BookmarkNameProvider() {

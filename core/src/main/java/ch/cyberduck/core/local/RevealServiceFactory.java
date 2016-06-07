@@ -20,9 +20,6 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.Factory;
 
-/**
- * @version $Id$
- */
 public class RevealServiceFactory extends Factory<RevealService> {
 
     public RevealServiceFactory() {

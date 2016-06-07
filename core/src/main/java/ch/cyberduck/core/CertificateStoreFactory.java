@@ -26,9 +26,6 @@ import org.apache.log4j.Logger;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-/**
- * @version $Id$
- */
 public class CertificateStoreFactory extends Factory<CertificateStore> {
     private static final Logger log = Logger.getLogger(CertificateStoreFactory.class);
 

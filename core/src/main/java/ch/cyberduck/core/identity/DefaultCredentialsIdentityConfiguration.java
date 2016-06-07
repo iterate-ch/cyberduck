@@ -24,9 +24,6 @@ import ch.cyberduck.core.PasswordStoreFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
-/**
- * @version $Id$
- */
 public class DefaultCredentialsIdentityConfiguration extends AbstractIdentityConfiguration {
 
     private Host host;

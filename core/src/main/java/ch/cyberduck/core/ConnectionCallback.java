@@ -20,9 +20,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
-/**
- * @version $Id$
- */
 public interface ConnectionCallback {
     /**
      * Display warning sheet. Block connection until decision is made.

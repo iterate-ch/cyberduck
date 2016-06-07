@@ -20,9 +20,6 @@ package ch.cyberduck.core;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id$
- */
 public abstract class HostPasswordStore implements PasswordStore {
     private static final Logger log = Logger.getLogger(HostPasswordStore.class);
 

@@ -38,9 +38,6 @@ import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-/**
- * @version $Id$
- */
 public final class TransferQueue {
     private static final Logger log = Logger.getLogger(TransferQueue.class);
 

@@ -22,9 +22,6 @@ import ch.cyberduck.core.Serializable;
 
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public interface Serializer {
 
     /**

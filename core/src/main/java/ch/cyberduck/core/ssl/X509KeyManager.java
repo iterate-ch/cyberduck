@@ -21,9 +21,6 @@ package ch.cyberduck.core.ssl;
 import java.security.Principal;
 import java.security.cert.X509Certificate;
 
-/**
- * @version $Id$
- */
 public interface X509KeyManager extends javax.net.ssl.X509KeyManager {
 
     /**

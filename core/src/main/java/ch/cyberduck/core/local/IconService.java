@@ -21,9 +21,6 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-/**
- * @version $Id$
- */
 public interface IconService {
 
     /**

@@ -21,9 +21,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.BackgroundException;
 
-/**
- * @version $Id$
- */
 public interface IdentityConfiguration {
 
     /**

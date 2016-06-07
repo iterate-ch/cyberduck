@@ -17,8 +17,5 @@ package ch.cyberduck.core.cdn.features;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-/**
- * @version $Id$
- */
 public interface DistributionLogging {
 }

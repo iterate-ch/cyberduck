@@ -28,9 +28,6 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import java.text.MessageFormat;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class ReadSizeWorker extends Worker<Long> {
 
     /**

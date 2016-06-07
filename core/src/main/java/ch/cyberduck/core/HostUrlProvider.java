@@ -21,9 +21,6 @@ import ch.cyberduck.core.idna.PunycodeConverter;
 
 import org.apache.commons.lang3.StringUtils;
 
-/**
- * @version $Id$
- */
 public class HostUrlProvider {
 
     private boolean username;

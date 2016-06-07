@@ -18,9 +18,6 @@ package ch.cyberduck.core.transfer;
  * feedback@cyberduck.io
  */
 
-/**
- * @version $Id$
- */
 public class DisabledTransferItemCallback implements TransferItemCallback {
 
     @Override

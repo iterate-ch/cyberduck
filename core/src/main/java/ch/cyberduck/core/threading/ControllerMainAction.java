@@ -20,9 +20,6 @@ package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.Controller;
 
-/**
- * @version $Id$
- */
 public abstract class ControllerMainAction extends MainAction {
 
     private Controller controller;

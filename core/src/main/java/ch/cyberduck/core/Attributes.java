@@ -20,9 +20,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.io.Checksum;
 
-/**
- * @version $Id$
- */
 public abstract class Attributes {
 
     /**

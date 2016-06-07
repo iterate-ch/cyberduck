@@ -27,9 +27,6 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 
-/**
- * @version $Id$
- */
 public class ExecApplicationLauncher implements ApplicationLauncher {
     private static final Logger log = Logger.getLogger(ExecApplicationLauncher.class);
 

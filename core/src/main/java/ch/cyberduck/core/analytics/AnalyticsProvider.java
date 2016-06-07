@@ -22,9 +22,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Scheme;
 
-/**
- * @version $Id$
- */
 public interface AnalyticsProvider {
 
     /**

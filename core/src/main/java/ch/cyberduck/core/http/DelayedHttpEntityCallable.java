@@ -23,9 +23,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.http.entity.AbstractHttpEntity;
 
-/**
- * @version $Id$
- */
 public interface DelayedHttpEntityCallable<T> {
     T call(AbstractHttpEntity entity) throws BackgroundException;
 

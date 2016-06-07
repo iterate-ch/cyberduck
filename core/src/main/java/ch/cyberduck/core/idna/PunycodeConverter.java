@@ -24,9 +24,6 @@ import org.apache.log4j.Logger;
 
 import java.net.IDN;
 
-/**
- * @version $Id$
- */
 public class PunycodeConverter {
     private static final Logger log = Logger.getLogger(PunycodeConverter.class);
 

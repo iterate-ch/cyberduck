@@ -20,9 +20,6 @@ package ch.cyberduck.core;
 
 import java.util.Comparator;
 
-/**
- * @version $Id$
- */
 public class NullComparator<V> implements Comparator<V>, java.io.Serializable {
     private static final long serialVersionUID = 2663541696462558462L;
 

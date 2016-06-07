@@ -22,9 +22,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.commons.lang3.StringUtils;
 
-/**
- * @version $Id$
- */
 public class TildePathExpander {
 
     public static final String PREFIX

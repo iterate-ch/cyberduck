@@ -25,9 +25,6 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.net.Socket;
 
-/**
- * @version $Id$
- */
 public class DefaultSocketConfigurator implements SocketConfigurator {
     private static final Logger log = Logger.getLogger(DefaultSocketConfigurator.class);
 

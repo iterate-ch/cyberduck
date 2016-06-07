@@ -20,9 +20,6 @@ package ch.cyberduck.core.date;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-/**
- * @version $Id$
- */
 public class RFC1123DateFormatter extends AbstractDateFormatter {
 
     /**

@@ -23,9 +23,6 @@ import ch.cyberduck.core.Path;
 
 import org.apache.commons.lang3.StringUtils;
 
-/**
- * @version $Id$
- */
 public class RegionComparator extends BrowserComparator {
     private static final long serialVersionUID = -3411022739897657092L;
 

@@ -22,9 +22,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.AlertCallback;
 
-/**
- * @version $Id$
- */
 public class NotificationAlertCallback implements AlertCallback {
 
     private NotificationService growl = NotificationServiceFactory.get();

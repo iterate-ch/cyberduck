@@ -24,9 +24,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id$
- */
 public final class BackgroundActionRegistry extends Collection<BackgroundAction> implements BackgroundActionListener {
     private static final Logger log = Logger.getLogger(BackgroundActionRegistry.class);
 

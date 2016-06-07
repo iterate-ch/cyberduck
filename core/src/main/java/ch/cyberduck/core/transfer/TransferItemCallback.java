@@ -18,9 +18,6 @@ package ch.cyberduck.core.transfer;
  * feedback@cyberduck.io
  */
 
-/**
- * @version $Id$
- */
 public interface TransferItemCallback {
     void complete(final TransferItem item);
 }

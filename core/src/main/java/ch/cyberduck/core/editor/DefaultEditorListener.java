@@ -27,9 +27,6 @@ import ch.cyberduck.core.transfer.Transfer;
 
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id$
- */
 public class DefaultEditorListener implements FileWatcherListener {
     private static final Logger log = Logger.getLogger(DefaultEditorListener.class);
 

@@ -28,9 +28,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import java.io.File;
 import java.util.UUID;
 
-/**
- * @version $Id$
- */
 public class TemporaryFileService {
 
     private final String delimiter

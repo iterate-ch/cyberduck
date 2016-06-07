@@ -29,9 +29,6 @@ import org.apache.log4j.Logger;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-/**
- * @version $Id$
- */
 public class TransferPromptControllerFactory extends Factory<TransferPrompt> {
     private static final Logger log = Logger.getLogger(TransferPromptControllerFactory.class);
 

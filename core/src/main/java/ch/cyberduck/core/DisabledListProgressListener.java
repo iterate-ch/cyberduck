@@ -19,9 +19,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.ListCanceledException;
 
-/**
- * @version $Id$
- */
 public class DisabledListProgressListener implements ListProgressListener {
 
     @Override

@@ -18,9 +18,6 @@ package ch.cyberduck.core.local;
  * feedback@cyberduck.io
  */
 
-/**
- * @version $Id$
- */
 public class DisabledApplicationQuitCallback implements ApplicationQuitCallback {
     @Override
     public void callback() {

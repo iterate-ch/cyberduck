@@ -25,9 +25,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
 
-/**
- * @version $Id$
- */
 public class MappingMimeTypeService implements MimeTypeService {
     private static final Logger log = Logger.getLogger(MappingMimeTypeService.class);
 

@@ -30,9 +30,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
-/**
- * @version $Id$
- */
 public class Collection<E> extends ArrayList<E> implements CollectionListener<E> {
     private static final Logger log = Logger.getLogger(Collection.class);
 

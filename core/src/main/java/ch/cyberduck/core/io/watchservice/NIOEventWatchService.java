@@ -28,9 +28,6 @@ import java.nio.file.WatchService;
 import java.nio.file.Watchable;
 import java.util.concurrent.TimeUnit;
 
-/**
- * @version $Id$
- */
 public class NIOEventWatchService implements RegisterWatchService {
     private static final Logger log = Logger.getLogger(NIOEventWatchService.class);
 

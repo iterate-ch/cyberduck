@@ -23,9 +23,6 @@ import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 
-/**
- * @version $Id$
- */
 public final class PathPasteboard extends Collection<Path> implements Pasteboard<Path> {
     private static final long serialVersionUID = -6390582952938739270L;
 

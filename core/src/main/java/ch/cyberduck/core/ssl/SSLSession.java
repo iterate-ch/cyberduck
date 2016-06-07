@@ -30,9 +30,6 @@ import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public abstract class SSLSession<C> extends Session<C> {
     private static final Logger log = Logger.getLogger(SSLSession.class);
 

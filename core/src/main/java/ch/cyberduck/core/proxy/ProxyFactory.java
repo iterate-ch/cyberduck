@@ -21,9 +21,6 @@ package ch.cyberduck.core.proxy;
 
 import ch.cyberduck.core.Factory;
 
-/**
- * @version $Id$
- */
 public class ProxyFactory extends Factory<ProxyFinder> {
 
     protected ProxyFactory() {

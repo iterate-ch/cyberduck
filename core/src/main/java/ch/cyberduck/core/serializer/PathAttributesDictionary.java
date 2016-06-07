@@ -23,9 +23,6 @@ import ch.cyberduck.core.PathAttributes;
 
 import java.util.Collections;
 
-/**
- * @version $Id$
- */
 public class PathAttributesDictionary {
 
     private DeserializerFactory deserializer;

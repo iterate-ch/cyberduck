@@ -21,9 +21,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-/**
- * @version $Id$
- */
 public class UploadRegexPriorityComparator extends LocalPriorityComparator {
 
     private String pattern;

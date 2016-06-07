@@ -20,9 +20,6 @@ package ch.cyberduck.core.transfer;
 
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id$
- */
 public class TransferSpeedometer extends Speedometer {
     private static final Logger log = Logger.getLogger(TransferSpeedometer.class);
 

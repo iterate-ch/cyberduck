@@ -33,9 +33,6 @@ import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class TransferPromptListWorker extends Worker<List<TransferItem>> {
     private static final Logger log = Logger.getLogger(TransferPromptListWorker.class);
 

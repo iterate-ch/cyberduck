@@ -20,9 +20,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-/**
- * @version $Id$
- */
 public class SleepPreventerFactory extends Factory<SleepPreventer> {
 
     protected SleepPreventerFactory() {

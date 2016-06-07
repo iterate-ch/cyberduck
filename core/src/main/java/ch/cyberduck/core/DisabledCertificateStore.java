@@ -23,9 +23,6 @@ import java.security.Principal;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class DisabledCertificateStore implements CertificateStore {
 
     @Override

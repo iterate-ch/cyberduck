@@ -32,9 +32,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class ReadAclWorker extends Worker<List<Acl.UserAndRole>> {
 
     private List<Path> files;

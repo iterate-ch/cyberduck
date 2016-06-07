@@ -25,9 +25,6 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import java.security.PublicKey;
 
-/**
- * @version $Id$
- */
 public interface HostKeyCallback {
 
     boolean verify(String hostname, int port, PublicKey key)

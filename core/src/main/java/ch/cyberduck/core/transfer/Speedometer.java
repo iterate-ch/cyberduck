@@ -29,9 +29,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.MessageFormat;
 
-/**
- * @version $Id$
- */
 public class Speedometer {
 
     /**

@@ -21,9 +21,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.serializer.Writer;
 
-/**
- * @version $Id$
- */
 public class ProfileWriterFactory extends Factory<Writer<Profile>> {
 
     protected ProfileWriterFactory() {

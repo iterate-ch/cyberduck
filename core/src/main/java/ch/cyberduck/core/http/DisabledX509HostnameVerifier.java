@@ -5,9 +5,6 @@ import org.apache.log4j.Logger;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
 
-/**
- * @version $Id$
- */
 public class DisabledX509HostnameVerifier implements HostnameVerifier {
     private static final Logger log = Logger.getLogger(DisabledX509HostnameVerifier.class);
 

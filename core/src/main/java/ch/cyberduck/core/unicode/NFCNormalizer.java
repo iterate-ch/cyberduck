@@ -22,9 +22,6 @@ import org.apache.log4j.Logger;
 
 import java.text.Normalizer;
 
-/**
- * @version $Id$
- */
 public class NFCNormalizer {
     private static final Logger log = Logger.getLogger(NFCNormalizer.class);
 

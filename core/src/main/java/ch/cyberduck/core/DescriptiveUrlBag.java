@@ -20,9 +20,6 @@ package ch.cyberduck.core;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 
-/**
- * @version $Id$
- */
 public class DescriptiveUrlBag extends LinkedHashSet<DescriptiveUrl> {
     private static final long serialVersionUID = 6056908616987839368L;
 

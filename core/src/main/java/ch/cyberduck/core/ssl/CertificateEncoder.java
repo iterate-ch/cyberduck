@@ -21,9 +21,6 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public interface CertificateEncoder {
     Object[] encode(List<X509Certificate> certificates) throws CertificateException;
 }

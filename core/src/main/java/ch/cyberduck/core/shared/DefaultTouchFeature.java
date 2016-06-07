@@ -33,9 +33,6 @@ import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-/**
- * @version $Id$
- */
 public class DefaultTouchFeature implements Touch {
 
     private MimeTypeService mapping

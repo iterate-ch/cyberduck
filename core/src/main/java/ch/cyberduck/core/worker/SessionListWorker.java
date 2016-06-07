@@ -31,9 +31,6 @@ import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 
-/**
- * @version $Id$
- */
 public class SessionListWorker extends Worker<AttributedList<Path>> implements ListProgressListener {
     private static final Logger log = Logger.getLogger(SessionListWorker.class);
 

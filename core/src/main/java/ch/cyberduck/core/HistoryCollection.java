@@ -26,9 +26,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 
-/**
- * @version $Id$
- */
 public class HistoryCollection extends AbstractFolderHostCollection {
     private static final long serialVersionUID = 2270155702956300755L;
 

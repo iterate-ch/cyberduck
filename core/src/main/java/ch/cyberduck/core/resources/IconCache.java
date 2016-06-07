@@ -22,9 +22,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.local.Application;
 
-/**
- * @version $Id$
- */
 public interface IconCache<I> {
 
     I iconNamed(String name, Integer width, Integer height);

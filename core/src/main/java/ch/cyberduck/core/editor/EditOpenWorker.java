@@ -47,9 +47,6 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.text.MessageFormat;
 
-/**
- * @version $Id$
- */
 public class EditOpenWorker extends Worker<Transfer> {
     private static final Logger log = Logger.getLogger(EditOpenWorker.class);
 

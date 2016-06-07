@@ -32,9 +32,6 @@ import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class DefaultCertificateStore implements CertificateStore {
 
     private final DefaultHostnameVerifier verifier

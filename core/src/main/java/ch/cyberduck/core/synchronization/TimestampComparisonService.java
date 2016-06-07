@@ -28,9 +28,6 @@ import org.apache.log4j.Logger;
 
 import java.util.TimeZone;
 
-/**
- * @version $Id$
- */
 public class TimestampComparisonService implements ComparisonService {
     private static final Logger log = Logger.getLogger(TimestampComparisonService.class);
 

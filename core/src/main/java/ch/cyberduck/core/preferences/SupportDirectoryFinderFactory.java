@@ -20,9 +20,6 @@ package ch.cyberduck.core.preferences;
 
 import ch.cyberduck.core.Factory;
 
-/**
- * @version $Id$
- */
 public class SupportDirectoryFinderFactory extends Factory<SupportDirectoryFinder> {
 
     protected SupportDirectoryFinderFactory() {

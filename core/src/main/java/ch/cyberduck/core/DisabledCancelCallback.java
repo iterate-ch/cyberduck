@@ -21,9 +21,6 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.threading.CancelCallback;
 
-/**
- * @version $Id$
- */
 public class DisabledCancelCallback implements CancelCallback {
 
     @Override

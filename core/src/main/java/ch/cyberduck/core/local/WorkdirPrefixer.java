@@ -23,9 +23,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
-/**
- * @version $Id$
- */
 public class WorkdirPrefixer {
 
     private final WorkingDirectoryFinder finder

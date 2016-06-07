@@ -21,9 +21,6 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.serializer.Reader;
 import ch.cyberduck.core.transfer.Transfer;
 
-/**
- * @version $Id$
- */
 public class TransferReaderFactory extends Factory<Reader<Transfer>> {
 
     protected TransferReaderFactory() {

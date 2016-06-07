@@ -23,9 +23,6 @@ import ch.cyberduck.core.serializer.Serializer;
 import java.util.EnumSet;
 import java.util.Objects;
 
-/**
- * @version $Id$
- */
 public class Path extends AbstractPath implements Referenceable, Serializable {
 
     /**

@@ -30,9 +30,6 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 
-/**
- * @version $Id$
- */
 public class DefaultX509TrustManager extends AbstractX509TrustManager {
     private static final Logger log = Logger.getLogger(DefaultX509TrustManager.class);
 

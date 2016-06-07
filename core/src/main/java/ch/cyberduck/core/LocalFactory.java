@@ -25,9 +25,6 @@ import org.apache.commons.lang3.reflect.ConstructorUtils;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-/**
- * @version $Id$
- */
 public final class LocalFactory extends Factory<Local> {
 
     @Override

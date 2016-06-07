@@ -39,9 +39,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public class TransferPromptFilterWorker extends Worker<Map<TransferItem, TransferStatus>> {
     private static final Logger log = Logger.getLogger(TransferPromptFilterWorker.class);
 

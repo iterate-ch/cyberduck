@@ -20,9 +20,6 @@ package ch.cyberduck.core.socket;
 import java.io.IOException;
 import java.net.Socket;
 
-/**
- * @version $Id$
- */
 public interface SocketConfigurator {
 
     void configure(Socket socket) throws IOException;

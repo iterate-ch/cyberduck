@@ -33,9 +33,6 @@ import java.net.SocketException;
 import java.net.SocketImpl;
 import java.nio.charset.Charset;
 
-/**
- * @version $Id$
- */
 public class HttpProxyAwareSocket extends Socket {
 
     private final Proxy proxy;

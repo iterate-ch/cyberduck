@@ -23,9 +23,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id$
- */
 public class DisabledAlertCallback implements AlertCallback {
     private static final Logger log = Logger.getLogger(AbstractBackgroundAction.class);
 

@@ -23,9 +23,6 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 
-/**
- * @version $Id$
- */
 public class DisabledMoveFeature implements Move {
 
     @Override

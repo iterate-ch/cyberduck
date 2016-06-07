@@ -26,9 +26,6 @@ import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 
-/**
- * @version $Id$
- */
 public class LibcWorkingDirectoryFinder implements WorkingDirectoryFinder {
     private static final Logger log = Logger.getLogger(LibcWorkingDirectoryFinder.class);
 

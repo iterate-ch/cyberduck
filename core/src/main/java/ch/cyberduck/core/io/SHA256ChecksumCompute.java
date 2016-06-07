@@ -24,9 +24,6 @@ import org.apache.commons.codec.binary.Hex;
 
 import java.io.InputStream;
 
-/**
- * @version $Id$
- */
 public class SHA256ChecksumCompute extends AbstractChecksumCompute {
 
     @Override

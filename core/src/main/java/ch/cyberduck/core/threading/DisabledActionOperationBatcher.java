@@ -18,9 +18,6 @@ package ch.cyberduck.core.threading;
  * feedback@cyberduck.io
  */
 
-/**
- * @version $Id$
- */
 public class DisabledActionOperationBatcher implements ActionOperationBatcher {
     public void operate() {
         //

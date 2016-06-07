@@ -24,9 +24,6 @@ import java.net.InetAddress;
 import java.net.Proxy;
 import java.net.Socket;
 
-/**
- * @version $Id$
- */
 public class HttpProxySocketFactory extends DefaultSocketFactory {
 
     private final Proxy proxy;

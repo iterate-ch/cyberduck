@@ -21,9 +21,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.threading.CancelCallback;
 
-/**
- * @version $Id$
- */
 public interface LoginService {
 
     /**

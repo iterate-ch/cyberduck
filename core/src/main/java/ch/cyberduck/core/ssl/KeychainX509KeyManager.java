@@ -29,9 +29,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public class KeychainX509KeyManager extends CertificateStoreX509KeyManager implements X509KeyManager {
 
     private Map<Key, String> memory

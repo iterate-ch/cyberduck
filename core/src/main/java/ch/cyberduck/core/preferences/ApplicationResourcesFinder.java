@@ -20,9 +20,6 @@ package ch.cyberduck.core.preferences;
 
 import ch.cyberduck.core.Local;
 
-/**
- * @version $Id$
- */
 public interface ApplicationResourcesFinder {
     Local find();
 }

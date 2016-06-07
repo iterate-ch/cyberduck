@@ -24,9 +24,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
-/**
- * @version $Id$
- */
 public class DefaultProviderHelpService implements ProviderHelpService {
 
     private final BrowserLauncher launcher = BrowserLauncherFactory.get();

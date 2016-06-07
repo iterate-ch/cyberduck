@@ -18,9 +18,6 @@ package ch.cyberduck.core.i18n;
  *  dkocher@cyberduck.ch
  */
 
-/**
- * @version $Id$
- */
 public interface Locale {
 
     void setDefault(String language);

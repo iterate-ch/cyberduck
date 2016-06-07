@@ -22,9 +22,6 @@ import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 
-/**
- * @version $Id$
- */
 public class ProxyHostUrlProvider extends HostUrlProvider {
 
     public ProxyHostUrlProvider() {

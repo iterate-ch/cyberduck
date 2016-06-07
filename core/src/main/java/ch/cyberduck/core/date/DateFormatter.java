@@ -20,9 +20,6 @@ package ch.cyberduck.core.date;
 import java.util.Date;
 import java.util.TimeZone;
 
-/**
- * @version $Id$
- */
 public interface DateFormatter {
 
     String format(Date input, TimeZone zone);

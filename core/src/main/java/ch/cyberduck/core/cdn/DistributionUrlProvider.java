@@ -33,9 +33,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class DistributionUrlProvider implements UrlProvider {
 
     private Distribution distribution;

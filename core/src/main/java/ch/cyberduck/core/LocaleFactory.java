@@ -22,9 +22,6 @@ import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 
-/**
- * @version $Id$
- */
 public class LocaleFactory extends Factory<Locale> {
 
     public LocaleFactory() {

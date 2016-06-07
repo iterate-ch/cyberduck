@@ -23,9 +23,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.EnumSet;
 
-/**
- * @version $Id$
- */
 public abstract class AbstractPath {
 
     /**

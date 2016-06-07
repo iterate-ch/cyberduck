@@ -21,9 +21,6 @@ package ch.cyberduck.core.local;
 import java.io.File;
 import java.nio.file.WatchEvent;
 
-/**
- * @version $Id$
- */
 public interface FileWatcherCallback {
 
     void callback(WatchEvent<File> event);

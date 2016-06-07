@@ -27,9 +27,6 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 
-/**
- * @version $Id$
- */
 public class CertificateStoreX509TrustManager extends AbstractX509TrustManager {
     private static Logger log = Logger.getLogger(CertificateStoreX509TrustManager.class);
 

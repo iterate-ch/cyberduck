@@ -27,9 +27,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * @version $Id$
- */
 public abstract class Worker<T> {
 
     private AtomicBoolean canceled

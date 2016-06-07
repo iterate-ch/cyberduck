@@ -42,9 +42,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * @version $Id$
- */
 public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
     private static final Logger log = Logger.getLogger(CustomTrustSSLProtocolSocketFactory.class);
 

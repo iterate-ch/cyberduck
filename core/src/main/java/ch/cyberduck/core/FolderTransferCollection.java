@@ -35,9 +35,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class FolderTransferCollection extends Collection<Transfer> {
     private static final Logger log = Logger.getLogger(FolderTransferCollection.class);
 

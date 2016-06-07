@@ -32,9 +32,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class ReadPermissionWorker extends Worker<List<Permission>> {
 
     /**

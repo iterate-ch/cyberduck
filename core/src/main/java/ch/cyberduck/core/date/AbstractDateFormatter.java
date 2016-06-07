@@ -22,9 +22,6 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.TimeZone;
 
-/**
- * @version $Id$
- */
 public abstract class AbstractDateFormatter implements DateFormatter {
 
     private final DateFormat format;

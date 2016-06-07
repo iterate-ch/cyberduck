@@ -22,9 +22,6 @@ import ch.cyberduck.core.LocaleFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
-/**
- * @version $Id$
- */
 public class Application {
 
     public static final Application notfound

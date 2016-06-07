@@ -20,9 +20,6 @@ package ch.cyberduck.core.serializer;
 
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public interface Deserializer<T> {
 
     /**

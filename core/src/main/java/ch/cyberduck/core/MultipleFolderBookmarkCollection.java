@@ -24,9 +24,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id$
- */
 public class MultipleFolderBookmarkCollection extends Collection<FolderBookmarkCollection> implements EditableCollection {
     private static final Logger log = Logger.getLogger(FolderBookmarkCollection.class);
 

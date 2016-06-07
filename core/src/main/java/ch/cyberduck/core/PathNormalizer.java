@@ -25,9 +25,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public final class PathNormalizer {
 
     private PathNormalizer() {

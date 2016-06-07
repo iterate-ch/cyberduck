@@ -27,9 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public abstract class TransferAction {
 
     private static final Map<String, TransferAction> registry

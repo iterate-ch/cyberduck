@@ -25,9 +25,6 @@ import ch.cyberduck.core.features.Directory;
 
 import java.text.MessageFormat;
 
-/**
- * @version $Id$
- */
 public class CreateDirectoryWorker extends Worker<Boolean> {
 
     private Path folder;

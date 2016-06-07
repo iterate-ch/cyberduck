@@ -25,9 +25,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public class CopyRootPathsNormalizer implements RootPathsNormalizer<Map<Path, Path>> {
     private static final Logger log = Logger.getLogger(CopyRootPathsNormalizer.class);
 
