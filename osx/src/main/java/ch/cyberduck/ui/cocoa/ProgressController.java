@@ -58,9 +58,6 @@ import java.text.MessageFormat;
 import java.util.Date;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class ProgressController extends BundleController implements TransferListener, ProgressListener {
 
     private final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();

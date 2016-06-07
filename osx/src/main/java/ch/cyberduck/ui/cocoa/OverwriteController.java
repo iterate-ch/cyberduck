@@ -28,9 +28,6 @@ import ch.cyberduck.core.threading.MainAction;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class OverwriteController extends ProxyController {
 
     private final BrowserController parent;

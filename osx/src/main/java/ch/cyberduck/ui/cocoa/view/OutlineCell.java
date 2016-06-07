@@ -23,9 +23,6 @@ import ch.cyberduck.binding.application.NSTextFieldCell;
 
 import org.rococoa.ObjCClass;
 
-/**
- * @version $Id$
- */
 public abstract class OutlineCell extends NSTextFieldCell {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("CDOutlineCell", _Class.class);
 

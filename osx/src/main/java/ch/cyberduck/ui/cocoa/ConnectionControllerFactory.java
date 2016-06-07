@@ -22,9 +22,6 @@ import ch.cyberduck.binding.application.NSApplication;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public final class ConnectionControllerFactory {
 
     private static final Map<WindowController, ConnectionController> open

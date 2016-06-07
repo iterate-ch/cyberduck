@@ -21,9 +21,6 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.transfer.UploadTransfer;
 
-/**
- * @version $Id$
- */
 public class UploadPromptController extends TransferPromptController {
 
     public UploadPromptController(final WindowController parent, final UploadTransfer transfer, final Session session) {

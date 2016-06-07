@@ -23,9 +23,6 @@ import ch.cyberduck.binding.application.NSView;
 
 import org.rococoa.ID;
 
-/**
- * @version $Id$
- */
 public interface OutlineViewCellDelegate {
     NSView outlineView_viewForTableColumn_item(NSTableView view, NSTableColumn column, ID item);
 }

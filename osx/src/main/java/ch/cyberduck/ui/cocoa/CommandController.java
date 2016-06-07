@@ -44,9 +44,6 @@ import ch.cyberduck.core.threading.WindowMainAction;
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-/**
- * @version $Id$
- */
 public class CommandController extends SheetController implements TranscriptListener, NSLayoutManager.Delegate {
 
     @Outlet

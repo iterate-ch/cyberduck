@@ -40,9 +40,6 @@ import org.rococoa.cocoa.foundation.NSRect;
 
 import java.util.Comparator;
 
-/**
- * @version $Id$
- */
 public class GotoController extends AlertController {
 
     @Outlet

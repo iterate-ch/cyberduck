@@ -25,9 +25,6 @@ import ch.cyberduck.core.threading.MainAction;
 import org.apache.log4j.Logger;
 import org.rococoa.ID;
 
-/**
- * @version $Id$
- */
 public class ProxyController extends AbstractController {
     private static final Logger log = Logger.getLogger(ProxyController.class);
 

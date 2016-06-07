@@ -79,9 +79,6 @@ import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-/**
- * @version $Id$
- */
 public class PreferencesController extends ToolbarWindowController {
     private static Logger log = Logger.getLogger(PreferencesController.class);
 

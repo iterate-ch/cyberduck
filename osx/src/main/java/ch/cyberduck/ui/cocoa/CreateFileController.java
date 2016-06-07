@@ -33,9 +33,6 @@ import ch.cyberduck.ui.browser.UploadTargetFinder;
 import java.util.Collections;
 import java.util.EnumSet;
 
-/**
- * @version $Id$
- */
 public class CreateFileController extends FileController {
 
     public CreateFileController(final BrowserController parent, final Cache<Path> cache) {

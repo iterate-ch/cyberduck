@@ -21,9 +21,6 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 
-/**
- * @version $Id$
- */
 public class DownloadPromptController extends TransferPromptController {
 
     public DownloadPromptController(final WindowController parent, final DownloadTransfer transfer, final Session session) {

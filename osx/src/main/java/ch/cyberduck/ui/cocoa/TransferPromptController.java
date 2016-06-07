@@ -59,9 +59,6 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.text.MessageFormat;
 
-/**
- * @version $Id$
- */
 public abstract class TransferPromptController extends SheetController
         implements TransferPrompt, ProgressListener, TranscriptListener {
     private static final Logger log = Logger.getLogger(TransferPromptController.class);

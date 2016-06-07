@@ -86,9 +86,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * @version $Id$
- */
 public abstract class BrowserTableDataSource extends ProxyController implements NSDraggingSource {
     private static final Logger log = Logger.getLogger(BrowserTableDataSource.class);
 

@@ -31,9 +31,6 @@ import ch.cyberduck.core.threading.BackgroundActionListener;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 
-/**
- * @version $Id$
- */
 public class TaskController extends BundleController {
 
     private BackgroundAction task;

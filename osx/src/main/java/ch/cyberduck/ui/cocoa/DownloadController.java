@@ -39,9 +39,6 @@ import org.rococoa.cocoa.foundation.NSRect;
 
 import java.util.EnumSet;
 
-/**
- * @version $Id$
- */
 public class DownloadController extends AlertController {
 
     protected NSTextField urlField

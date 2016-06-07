@@ -41,9 +41,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public final class ActivityController extends WindowController {
     private static Logger log = Logger.getLogger(ActivityController.class);
 

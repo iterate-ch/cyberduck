@@ -37,9 +37,6 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
-/**
- * @version $Id$
- */
 public class FolderController extends FileController {
 
     @Outlet

@@ -36,9 +36,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
-/**
- * @version $Id$
- */
 public abstract class SheetController extends WindowController implements SheetCallback {
     private static Logger log = Logger.getLogger(SheetController.class);
 

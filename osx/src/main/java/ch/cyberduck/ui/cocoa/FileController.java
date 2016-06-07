@@ -36,9 +36,6 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.EnumSet;
 
-/**
- * @version $Id$
- */
 public abstract class FileController extends AlertController {
 
     @Outlet

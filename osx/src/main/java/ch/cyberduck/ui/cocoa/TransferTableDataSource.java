@@ -52,9 +52,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public class TransferTableDataSource extends ListDataSource {
     private static Logger log = Logger.getLogger(TransferTableDataSource.class);
 

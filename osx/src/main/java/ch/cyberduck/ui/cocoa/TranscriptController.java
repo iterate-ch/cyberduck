@@ -33,9 +33,6 @@ import ch.cyberduck.core.threading.ControllerMainAction;
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-/**
- * @version $Id$
- */
 public abstract class TranscriptController extends BundleController implements TranscriptListener {
 
     protected static final NSDictionary FIXED_WITH_FONT_REQUEST_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(

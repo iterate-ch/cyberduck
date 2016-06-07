@@ -29,9 +29,6 @@ import org.rococoa.ID;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 
-/**
- * @version $Id$
- */
 public abstract class AbstractMenuDelegate extends ProxyController implements NSMenu.Delegate, NSMenu.Validation {
     private static final Logger log = Logger.getLogger(AbstractMenuDelegate.class);
 

@@ -36,9 +36,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public class MoveController extends ProxyController {
 
     private final Preferences preferences

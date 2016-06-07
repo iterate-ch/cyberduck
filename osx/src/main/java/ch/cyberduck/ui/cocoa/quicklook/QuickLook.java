@@ -23,9 +23,6 @@ import ch.cyberduck.core.Local;
 
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public interface QuickLook {
 
     /**

@@ -34,9 +34,6 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-/**
- * @version $Id$
- */
 public abstract class ListDataSource extends ProxyController implements NSTableView.DataSource, NSDraggingSource {
     private static Logger log = Logger.getLogger(ListDataSource.class);
 

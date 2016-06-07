@@ -23,9 +23,6 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 
-/**
- * @version $Id$
- */
 public class DownloadPromptModel extends TransferPromptModel {
 
     public DownloadPromptModel(final TransferPromptController c, final Session session,

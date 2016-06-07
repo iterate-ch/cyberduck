@@ -33,9 +33,6 @@ import ch.cyberduck.core.threading.FailureDiagnostics;
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.cocoa.foundation.NSRect;
 
-/**
- * @version $Id$
- */
 public class PanelAlertCallback implements AlertCallback {
 
     private final WindowController controller;

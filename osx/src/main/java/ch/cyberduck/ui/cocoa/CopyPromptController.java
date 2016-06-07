@@ -20,9 +20,6 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.transfer.CopyTransfer;
 
-/**
- * @version $Id$
- */
 public class CopyPromptController extends TransferPromptController {
 
     public CopyPromptController(final WindowController parent, final CopyTransfer transfer, final Session session) {

@@ -26,9 +26,6 @@ import ch.cyberduck.core.http.RedirectCallback;
 
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id$
- */
 public class PromptRedirectCallback implements RedirectCallback {
     private static final Logger log = Logger.getLogger(PromptRedirectCallback.class);
 

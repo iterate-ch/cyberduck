@@ -51,9 +51,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * @version $Id$
- */
 public abstract class WindowController extends BundleController implements NSWindow.Delegate {
     private static Logger log = Logger.getLogger(WindowController.class);
 

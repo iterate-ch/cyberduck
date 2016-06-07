@@ -4,9 +4,6 @@ import ch.cyberduck.binding.application.NSToolbarItem;
 
 import org.rococoa.Selector;
 
-/**
- * @version $Id$
- */
 public interface ToolbarValidator {
 
     boolean validate(NSToolbarItem item);

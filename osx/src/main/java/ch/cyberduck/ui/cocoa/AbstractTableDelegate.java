@@ -33,9 +33,6 @@ import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.util.Comparator;
 
-/**
- * @version $Id$
- */
 public abstract class AbstractTableDelegate<E> extends ProxyController implements TableDelegate<E> {
 
     private NSTableColumn selectedColumn;

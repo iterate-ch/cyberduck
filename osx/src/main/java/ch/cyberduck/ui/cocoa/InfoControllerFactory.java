@@ -8,9 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public final class InfoControllerFactory {
 
     private static Map<BrowserController, InfoController> open

@@ -46,9 +46,6 @@ import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.util.Date;
 
-/**
- * @version $Id$
- */
 public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
     private static final Logger log = Logger.getLogger(HistoryMenuDelegate.class);
 

@@ -26,9 +26,6 @@ import ch.cyberduck.core.transfer.SyncTransfer;
 
 import org.apache.commons.lang3.StringUtils;
 
-/**
- * @version $Id$
- */
 public class SyncPromptController extends TransferPromptController {
 
     private final TableColumnFactory tableColumnsFactory

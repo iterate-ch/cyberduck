@@ -29,9 +29,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class ArchiveController extends ProxyController {
 
     private BrowserController parent;
