@@ -152,8 +152,8 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
      * The number of times a new connection attempt should be made. Takes into
      * account the number of times already tried.
      *
-     * @return Greater than zero if a failed action should be repeated again
      * @param failure Failure
+     * @return Greater than zero if a failed action should be repeated again
      */
     protected int retry(final BackgroundException failure) throws BackgroundException {
         // The initial connection attempt does not count
@@ -231,6 +231,9 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     @Override
     public boolean alert() {
         if(this.hasFailed() && !this.isCanceled()) {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Display alert for failure %s", exception));
+            }
             // Display alert if the action was not canceled intentionally
             return alert.alert(session.getHost(), exception, transcript);
         }
@@ -244,6 +247,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     /**
      * Idle this action for some time. Blocks the caller.
+     *
      * @param failure Failure
      */
     protected void pause(final BackgroundException failure) throws BackgroundException {
