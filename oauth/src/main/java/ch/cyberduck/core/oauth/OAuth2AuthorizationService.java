@@ -182,12 +182,13 @@ public class OAuth2AuthorizationService {
 
     private Tokens find(final HostPasswordStore keychain, final Host host) {
         final long expiry = preferences.getLong(String.format("%s.oauth.expiry", host.getProtocol().getIdentifier()));
+        final String prefix = String.format("%s (%s)", host.getProtocol().getDescription(), host.getCredentials().getUsername());
         final Tokens tokens = new Tokens(keychain.getPassword(host.getProtocol().getScheme(),
                 host.getPort(), URI.create(tokenServerUrl).getHost(),
-                String.format("%s OAuth2 Access Token", String.format("%s (%s)", host.getProtocol().getDescription(), host.getCredentials().getUsername()))),
+                String.format("%s OAuth2 Access Token", prefix)),
                 keychain.getPassword(host.getProtocol().getScheme(),
                         host.getPort(), URI.create(tokenServerUrl).getHost(),
-                        String.format("%s OAuth2 Refresh Token", String.format("%s (%s)", host.getProtocol().getDescription(), host.getCredentials().getUsername()))),
+                        String.format("%s OAuth2 Refresh Token", prefix)),
                 expiry);
         if(!tokens.validate()) {
             if(legacyPrefix != null) {
@@ -205,25 +206,25 @@ public class OAuth2AuthorizationService {
 
     private void save(final HostPasswordStore keychain, final Host host, final Tokens tokens) {
         final String prefix = String.format("%s (%s)", host.getProtocol().getDescription(), host.getCredentials().getUsername());
-        keychain.addPassword(host.getProtocol().getScheme(),
-                host.getPort(), URI.create(tokenServerUrl).getHost(),
-                String.format("%s OAuth2 Access Token", prefix), tokens.accesstoken);
-        keychain.addPassword(host.getProtocol().getScheme(),
-                host.getPort(), URI.create(tokenServerUrl).getHost(),
-                String.format("%s OAuth2 Refresh Token", prefix), tokens.refreshtoken);
+        if(StringUtils.isNotBlank(tokens.accesstoken)) {
+            keychain.addPassword(host.getProtocol().getScheme(),
+                    host.getPort(), URI.create(tokenServerUrl).getHost(),
+                    String.format("%s OAuth2 Access Token", prefix), tokens.accesstoken);
+        }
+        if(StringUtils.isNotBlank(tokens.refreshtoken)) {
+            keychain.addPassword(host.getProtocol().getScheme(),
+                    host.getPort(), URI.create(tokenServerUrl).getHost(),
+                    String.format("%s OAuth2 Refresh Token", prefix), tokens.refreshtoken);
+        }
         // Save expiry
         preferences.setProperty(String.format("%s.oauth.expiry", host.getProtocol().getIdentifier()), tokens.expiry);
     }
 
     private String getPrefix(final Host host) {
-        final String prefix;
         if(null == legacyPrefix) {
-            prefix = String.format("%s (%s)", host.getProtocol().getDescription(), host.getCredentials().getUsername());
+            return String.format("%s (%s)", host.getProtocol().getDescription(), host.getCredentials().getUsername());
         }
-        else {
-            prefix = legacyPrefix;
-        }
-        return prefix;
+        return legacyPrefix;
     }
 
     public OAuth2AuthorizationService withMethod(final Credential.AccessMethod method) {
