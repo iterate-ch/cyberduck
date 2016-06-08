@@ -47,17 +47,5 @@ namespace Ch.Cyberduck.Properties {
                 this["UpgradeSettings"] = value;
             }
         }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string UiSettings {
-            get {
-                return ((string)(this["UiSettings"]));
-            }
-            set {
-                this["UiSettings"] = value;
-            }
-        }
     }
 }
