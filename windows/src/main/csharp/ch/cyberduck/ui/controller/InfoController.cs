@@ -38,6 +38,7 @@ using ch.cyberduck.core.s3;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.core.worker;
 using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Core.Resources;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using Ch.Cyberduck.Ui.Winforms.Threading;
 using java.lang;
@@ -190,14 +191,14 @@ namespace Ch.Cyberduck.Ui.Controller
                 // Set icon of cloud service provider
                 View.ToolbarS3Label = session.getHost().getProtocol().getName();
                 View.ToolbarS3Image =
-                    IconCache.Instance.GetProtocolImages(32).Images[session.getHost().getProtocol().getProvider()];
+                    IconCache.Instance.GetProtocolImages(32)[session.getHost().getProtocol().getProvider()];
             }
             else
             {
                 // Currently these settings are only available for Amazon S3
                 View.ToolbarS3Label = new S3Protocol().getName();
                 View.ToolbarS3Image =
-                    IconCache.Instance.GetProtocolImages(32).Images[new S3Protocol().getProvider()];
+                    IconCache.Instance.GetProtocolImages(32)[new S3Protocol().getProvider()];
             }
             //ACL or permission view
             View.AclPanel = session.getFeature(typeof (AclPermission)) != null;
@@ -215,7 +216,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 View.ToolbarDistributionEnabled = false;
                 View.ToolbarDistributionImage =
-                    IconCache.Instance.GetProtocolImages(32).Images[new S3Protocol().getProvider()];
+                    IconCache.Instance.GetProtocolImages(32)[new S3Protocol().getProvider()];
             }
             else
             {
@@ -224,12 +225,12 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (distribution)
                 {
                     View.ToolbarDistributionImage =
-                        IconCache.Instance.GetProtocolImages(32).Images[session.getHost().getProtocol().getProvider()];
+                        IconCache.Instance.GetProtocolImages(32)[session.getHost().getProtocol().getProvider()];
                 }
                 else
                 {
                     View.ToolbarDistributionImage =
-                        IconCache.Instance.GetProtocolImages(32).Images[new S3Protocol().getProvider()];
+                        IconCache.Instance.GetProtocolImages(32)[new S3Protocol().getProvider()];
                 }
             }
             if (anonymous)

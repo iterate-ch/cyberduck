@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2015 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,12 +13,15 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
+using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.local;
+using Ch.Cyberduck.Core.Resources;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 
@@ -79,6 +82,18 @@ namespace Ch.Cyberduck.Ui.Core
                 return null;
             }
             return "<A HREF=\"" + help + "\">" + LocaleFactory.localizedString("Help", "Main") + "</A>";
+        }
+
+        public static ImageList ToImageList(IDictionary<string, Bitmap> dict)
+        {
+            ImageList images = new ImageList();
+            images.ImageSize = new Size(16, 16);
+            images.ColorDepth = ColorDepth.Depth32Bit;
+            foreach (var icon in IconCache.Instance.GetProtocolIcons())
+            {
+                images.Images.Add(icon.Key, icon.Value);
+            }
+            return images;
         }
     }
 }

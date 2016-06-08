@@ -125,7 +125,14 @@
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\OSVersion.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\preferences\RoamingSupportDirectoryFinder.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\preferences\AssemblyApplicationResourcesFinder.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\properties\Settings.Designer.cs">
+      <DependentUpon>Settings.settings</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\preferences\SettingsDictionary.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\preferences\CorePreferences.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\resources\IconCache.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\RFC2253.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\SerializableDictionary.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\Shell32.cs" />
@@ -135,12 +142,29 @@
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\diagnostics\TcpReachability.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\Utils.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\urlhandler\URLSchemeHandlerConfiguration.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\ResourcesBundle.Designer.cs">
+      <DependentUpon>ResourcesBundle.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="core\target\AssemblyInfo.cs" />
     <!-- add localizations -->
+    <EmbeddedResource Include="core\src\main\csharp\ch\cyberduck\ResourcesBundle.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ResourcesBundle.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="i18n\src\main\resources\*.lproj\*.strings" />
     <EmbeddedResource Include="i18n\src\main\resources\*.lproj\*.strings.1" />
     <EmbeddedResource Include="i18n\src\main\resources\*.lproj\*.txt" />
     <!-- <EmbeddedResource Include="lib\Sparkle.framework\Versions\A\Resources\*.lproj\Sparkle.strings" /> -->
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="core\src\main\csharp\ch\cyberduck\properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

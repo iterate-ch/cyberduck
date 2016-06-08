@@ -22,7 +22,7 @@ namespace Ch.Cyberduck {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class ResourcesBundle {
+    public class ResourcesBundle {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,10 +36,10 @@ namespace Ch.Cyberduck {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Ch.Cyberduck.ResourcesBundle", typeof(ResourcesBundle).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Core.core.src.main.csharp.ch.cyberduck.ResourcesBundle", typeof(ResourcesBundle).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -51,7 +51,7 @@ namespace Ch.Cyberduck {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap add {
+        public static System.Drawing.Bitmap add {
             get {
                 object obj = ResourceManager.GetObject("add", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -73,7 +73,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap addPressed {
+        public static System.Drawing.Bitmap addPressed {
             get {
                 object obj = ResourceManager.GetObject("addPressed", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -83,7 +83,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap advanced {
+        public static System.Drawing.Bitmap advanced {
             get {
                 object obj = ResourceManager.GetObject("advanced", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -93,7 +93,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap alert {
+        public static System.Drawing.Bitmap alert {
             get {
                 object obj = ResourceManager.GetObject("alert", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -103,7 +103,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap aliasbadge {
+        public static System.Drawing.Bitmap aliasbadge {
             get {
                 object obj = ResourceManager.GetObject("aliasbadge", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -113,7 +113,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap azure {
+        public static System.Drawing.Bitmap azure {
             get {
                 object obj = ResourceManager.GetObject("azure", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -123,7 +123,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap bandwidth {
+        public static System.Drawing.Bitmap bandwidth {
             get {
                 object obj = ResourceManager.GetObject("bandwidth", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -133,7 +133,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap bookmark {
+        public static System.Drawing.Bitmap bookmark {
             get {
                 object obj = ResourceManager.GetObject("bookmark", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -143,7 +143,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap bookmarks {
+        public static System.Drawing.Bitmap bookmarks {
             get {
                 object obj = ResourceManager.GetObject("bookmarks", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -153,7 +153,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap browser {
+        public static System.Drawing.Bitmap browser {
             get {
                 object obj = ResourceManager.GetObject("browser", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -163,7 +163,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap clean {
+        public static System.Drawing.Bitmap clean {
             get {
                 object obj = ResourceManager.GetObject("clean", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -173,7 +173,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap cleanall {
+        public static System.Drawing.Bitmap cleanall {
             get {
                 object obj = ResourceManager.GetObject("cleanall", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -183,7 +183,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap connect {
+        public static System.Drawing.Bitmap connect {
             get {
                 object obj = ResourceManager.GetObject("connect", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -193,7 +193,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap connection {
+        public static System.Drawing.Bitmap connection {
             get {
                 object obj = ResourceManager.GetObject("connection", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -219,7 +219,7 @@ namespace Ch.Cyberduck {
         ///\
         ///	Third Party Software\ [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string Credits {
+        public static string Credits {
             get {
                 return ResourceManager.GetString("Credits", resourceCulture);
             }
@@ -228,7 +228,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon cyberduck {
+        public static System.Drawing.Icon cyberduck {
             get {
                 object obj = ResourceManager.GetObject("cyberduck", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -238,7 +238,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap delete {
+        public static System.Drawing.Bitmap delete {
             get {
                 object obj = ResourceManager.GetObject("delete", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -248,7 +248,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap download {
+        public static System.Drawing.Bitmap download {
             get {
                 object obj = ResourceManager.GetObject("download", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -258,7 +258,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap dropfolderbadge {
+        public static System.Drawing.Bitmap dropfolderbadge {
             get {
                 object obj = ResourceManager.GetObject("dropfolderbadge", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -268,7 +268,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap edit {
+        public static System.Drawing.Bitmap edit {
             get {
                 object obj = ResourceManager.GetObject("edit", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -278,7 +278,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap editPressed {
+        public static System.Drawing.Bitmap editPressed {
             get {
                 object obj = ResourceManager.GetObject("editPressed", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -288,7 +288,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap eject {
+        public static System.Drawing.Bitmap eject {
             get {
                 object obj = ResourceManager.GetObject("eject", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -298,7 +298,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap executable {
+        public static System.Drawing.Bitmap executable {
             get {
                 object obj = ResourceManager.GetObject("executable", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -308,7 +308,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap ftp {
+        public static System.Drawing.Bitmap ftp {
             get {
                 object obj = ResourceManager.GetObject("ftp", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -318,7 +318,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap gear {
+        public static System.Drawing.Bitmap gear {
             get {
                 object obj = ResourceManager.GetObject("gear", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -328,7 +328,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap general {
+        public static System.Drawing.Bitmap general {
             get {
                 object obj = ResourceManager.GetObject("general", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -338,7 +338,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap googledrive {
+        public static System.Drawing.Bitmap googledrive {
             get {
                 object obj = ResourceManager.GetObject("googledrive", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -348,7 +348,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap googlestorage {
+        public static System.Drawing.Bitmap googlestorage {
             get {
                 object obj = ResourceManager.GetObject("googlestorage", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -358,7 +358,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap greenArrow1 {
+        public static System.Drawing.Bitmap greenArrow1 {
             get {
                 object obj = ResourceManager.GetObject("greenArrow1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -368,7 +368,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap greenArrow2 {
+        public static System.Drawing.Bitmap greenArrow2 {
             get {
                 object obj = ResourceManager.GetObject("greenArrow2", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -378,7 +378,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap history {
+        public static System.Drawing.Bitmap history {
             get {
                 object obj = ResourceManager.GetObject("history", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -388,7 +388,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap info {
+        public static System.Drawing.Bitmap info {
             get {
                 object obj = ResourceManager.GetObject("info", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -398,7 +398,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap language {
+        public static System.Drawing.Bitmap language {
             get {
                 object obj = ResourceManager.GetObject("language", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -408,7 +408,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap locked {
+        public static System.Drawing.Bitmap locked {
             get {
                 object obj = ResourceManager.GetObject("locked", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -418,7 +418,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap log {
+        public static System.Drawing.Bitmap log {
             get {
                 object obj = ResourceManager.GetObject("log", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -428,7 +428,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon multiple {
+        public static System.Drawing.Icon multiple {
             get {
                 object obj = ResourceManager.GetObject("multiple", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -438,7 +438,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap nav_backward {
+        public static System.Drawing.Bitmap nav_backward {
             get {
                 object obj = ResourceManager.GetObject("nav-backward", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -448,7 +448,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap nav_forward {
+        public static System.Drawing.Bitmap nav_forward {
             get {
                 object obj = ResourceManager.GetObject("nav-forward", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -458,7 +458,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap nav_up {
+        public static System.Drawing.Bitmap nav_up {
             get {
                 object obj = ResourceManager.GetObject("nav-up", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -468,7 +468,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap newfolder {
+        public static System.Drawing.Bitmap newfolder {
             get {
                 object obj = ResourceManager.GetObject("newfolder", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -478,7 +478,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap notfound {
+        public static System.Drawing.Bitmap notfound {
             get {
                 object obj = ResourceManager.GetObject("notfound", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -488,7 +488,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap open {
+        public static System.Drawing.Bitmap open {
             get {
                 object obj = ResourceManager.GetObject("open", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -498,7 +498,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap outline {
+        public static System.Drawing.Bitmap outline {
             get {
                 object obj = ResourceManager.GetObject("outline", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -508,7 +508,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap pencil {
+        public static System.Drawing.Bitmap pencil {
             get {
                 object obj = ResourceManager.GetObject("pencil", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -518,7 +518,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap permissions {
+        public static System.Drawing.Bitmap permissions {
             get {
                 object obj = ResourceManager.GetObject("permissions", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -528,7 +528,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap plus {
+        public static System.Drawing.Bitmap plus {
             get {
                 object obj = ResourceManager.GetObject("plus", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -538,7 +538,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap privatefolderbadge {
+        public static System.Drawing.Bitmap privatefolderbadge {
             get {
                 object obj = ResourceManager.GetObject("privatefolderbadge", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -548,7 +548,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap queue {
+        public static System.Drawing.Bitmap queue {
             get {
                 object obj = ResourceManager.GetObject("queue", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -558,7 +558,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap readonlyfolderbadge {
+        public static System.Drawing.Bitmap readonlyfolderbadge {
             get {
                 object obj = ResourceManager.GetObject("readonlyfolderbadge", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -568,7 +568,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap reload {
+        public static System.Drawing.Bitmap reload {
             get {
                 object obj = ResourceManager.GetObject("reload", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -578,7 +578,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap remove {
+        public static System.Drawing.Bitmap remove {
             get {
                 object obj = ResourceManager.GetObject("remove", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -588,7 +588,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap removePressed {
+        public static System.Drawing.Bitmap removePressed {
             get {
                 object obj = ResourceManager.GetObject("removePressed", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -598,7 +598,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap rendezvous {
+        public static System.Drawing.Bitmap rendezvous {
             get {
                 object obj = ResourceManager.GetObject("rendezvous", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -608,7 +608,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap resume {
+        public static System.Drawing.Bitmap resume {
             get {
                 object obj = ResourceManager.GetObject("resume", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -618,7 +618,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap reveal {
+        public static System.Drawing.Bitmap reveal {
             get {
                 object obj = ResourceManager.GetObject("reveal", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -628,7 +628,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap s3 {
+        public static System.Drawing.Bitmap s3 {
             get {
                 object obj = ResourceManager.GetObject("s3", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -638,7 +638,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap search_active {
+        public static System.Drawing.Bitmap search_active {
             get {
                 object obj = ResourceManager.GetObject("search-active", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -648,7 +648,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap search_inactive {
+        public static System.Drawing.Bitmap search_inactive {
             get {
                 object obj = ResourceManager.GetObject("search-inactive", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -658,7 +658,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap site {
+        public static System.Drawing.Bitmap site {
             get {
                 object obj = ResourceManager.GetObject("site", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -668,7 +668,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap statusGreen {
+        public static System.Drawing.Bitmap statusGreen {
             get {
                 object obj = ResourceManager.GetObject("statusGreen", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -678,7 +678,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap statusRed {
+        public static System.Drawing.Bitmap statusRed {
             get {
                 object obj = ResourceManager.GetObject("statusRed", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -688,7 +688,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap statusYellow {
+        public static System.Drawing.Bitmap statusYellow {
             get {
                 object obj = ResourceManager.GetObject("statusYellow", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -698,7 +698,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap stop {
+        public static System.Drawing.Bitmap stop {
             get {
                 object obj = ResourceManager.GetObject("stop", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -708,7 +708,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap swift {
+        public static System.Drawing.Bitmap swift {
             get {
                 object obj = ResourceManager.GetObject("swift", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -718,7 +718,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap sync {
+        public static System.Drawing.Bitmap sync {
             get {
                 object obj = ResourceManager.GetObject("sync", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -728,7 +728,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap throbber {
+        public static System.Drawing.Bitmap throbber {
             get {
                 object obj = ResourceManager.GetObject("throbber", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -738,7 +738,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap throbber_small {
+        public static System.Drawing.Bitmap throbber_small {
             get {
                 object obj = ResourceManager.GetObject("throbber_small", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -748,7 +748,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap transfer_download {
+        public static System.Drawing.Bitmap transfer_download {
             get {
                 object obj = ResourceManager.GetObject("transfer-download", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -758,7 +758,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap transfer_upload {
+        public static System.Drawing.Bitmap transfer_upload {
             get {
                 object obj = ResourceManager.GetObject("transfer-upload", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -768,7 +768,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap trash {
+        public static System.Drawing.Bitmap trash {
             get {
                 object obj = ResourceManager.GetObject("trash", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -778,7 +778,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap turtle {
+        public static System.Drawing.Bitmap turtle {
             get {
                 object obj = ResourceManager.GetObject("turtle", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -788,7 +788,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap unlocked {
+        public static System.Drawing.Bitmap unlocked {
             get {
                 object obj = ResourceManager.GetObject("unlocked", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -798,7 +798,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap update {
+        public static System.Drawing.Bitmap update {
             get {
                 object obj = ResourceManager.GetObject("update", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -808,7 +808,7 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap upload {
+        public static System.Drawing.Bitmap upload {
             get {
                 object obj = ResourceManager.GetObject("upload", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));

@@ -29,6 +29,7 @@ using ch.cyberduck.core.ssl;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.core.transfer;
 using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Core.Resources;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using org.apache.log4j;
@@ -419,7 +420,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 else
                 {
-                    View.FileIcon = ResourcesBundle.multiple.ToBitmap();
+                    View.FileIcon = IconCache.Instance.IconForName("multiple", 0);
                 }
             }
             else

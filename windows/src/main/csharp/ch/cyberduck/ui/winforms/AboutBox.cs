@@ -24,7 +24,7 @@ using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.updater;
-using Ch.Cyberduck.Ui.Controller;
+using Ch.Cyberduck.Core.Resources;
 using Ch.Cyberduck.Ui.Core;
 using Path = System.IO.Path;
 using Utils = Ch.Cyberduck.Core.Utils;

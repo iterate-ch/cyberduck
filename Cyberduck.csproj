@@ -251,12 +251,6 @@
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\threading\DialogRecursiveCallback.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\threading\DialogTransferErrorCallback.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\UserDefaultsDateFormatter.cs" />
-    <EmbeddedResource Include="windows\src\main\csharp\ch\cyberduck\ResourcesBundle.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <SubType>Designer</SubType>
-      <LastGenOutput>ResourcesBundle.Designer.cs</LastGenOutput>
-      <LogicalName>Ch.Cyberduck.ResourcesBundle.resources</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\AboutBox.resx">
       <DependentUpon>AboutBox.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -340,17 +334,6 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\properties\Settings.cs" />
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ResourcesBundle.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ResourcesBundle.resx</DependentUpon>
-    </Compile>
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\ActivityController.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\AsyncController.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\BookmarkController.cs" />
@@ -373,7 +356,6 @@
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\IBookmarkManagerView.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\IBookmarkView.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\IBrowserView.cs" />
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\IconCache.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\IConnectionView.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\ICreateFilePromptView.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\IDonationView.cs" />
@@ -574,12 +556,6 @@
       <DependentUpon>TransferPromptForm.cs</DependentUpon>
     </Compile>
     <None Include="windows\src\main\csharp\ch\cyberduck\properties\app.manifest" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="windows\src\main\csharp\ch\cyberduck\properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

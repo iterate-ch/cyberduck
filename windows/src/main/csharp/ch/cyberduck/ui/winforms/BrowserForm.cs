@@ -34,6 +34,7 @@ using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.ui.comparator;
 using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Core.Resources;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Core;
 using Ch.Cyberduck.Ui.Winforms.Commondialog;
@@ -74,14 +75,17 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             ToolStripManager.RenderMode = ToolStripManagerRenderMode.System;
 
-            BookmarkMenuCollectionListener bookmarkMenuCollectionListener = new BookmarkMenuCollectionListener(this);
+            BookmarkMenuCollectionListener bookmarkMenuCollectionListener = new BookmarkMenuCollectionListener(this,
+                ProtocolIconsImageList().Images);
             BookmarkCollection.defaultCollection().addListener(bookmarkMenuCollectionListener);
             MenuCollectionListener historyMenuCollectionListener = new MenuCollectionListener(this, historyMainMenuItem,
                 HistoryCollection.defaultCollection(),
-                LocaleFactory.localizedString("No recently connected servers available"));
+                LocaleFactory.localizedString("No recently connected servers available"),
+                ProtocolIconsImageList().Images);
             HistoryCollection.defaultCollection().addListener(historyMenuCollectionListener);
             MenuCollectionListener bonjourMenuCollectionListener = new MenuCollectionListener(this, bonjourMainMenuItem,
-                RendezvousCollection.defaultCollection(), LocaleFactory.localizedString("No Bonjour services available"));
+                RendezvousCollection.defaultCollection(), LocaleFactory.localizedString("No Bonjour services available"),
+                ProtocolIconsImageList().Images);
             RendezvousCollection.defaultCollection().addListener(bonjourMenuCollectionListener);
 
             if (!DesignMode)
@@ -1027,7 +1031,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             IActiveMenu menu = ActiveMenu.GetInstance(this);
             ActiveButton button = new ActiveButton();
-            button.Font = new Font(base.Font.FontFamily, 7.5F, FontStyle.Bold);
+            button.Font = new Font(Font.FontFamily, 7.5F, FontStyle.Bold);
             button.ForeColor = Color.White;
             button.BackColor = Color.Firebrick;
             button.FlatAppearance.BorderSize = 0;
@@ -1571,7 +1575,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             Commands.Add(
                 new ToolStripItem[]
                 {
-                    newBookmarkToolStripMenuItem, newBookmarkContextToolStripMenuItem, newBookmarkContextToolStripMenuItem1,
+                    newBookmarkToolStripMenuItem, newBookmarkContextToolStripMenuItem,
+                    newBookmarkContextToolStripMenuItem1,
                     newBookmarkToolStripButton
                 },
                 new[] {newBookmarkContextMenuItem, newBookmarkMainMenuItem, newBookmarkBrowserContextMenuItem},
@@ -1584,7 +1589,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             Commands.Add(
                 new ToolStripItem[]
                 {
-                    deleteBookmarkToolStripMenuItem, deleteBookmarkContextToolStripMenuItem1, deleteBookmarkToolStripButton
+                    deleteBookmarkToolStripMenuItem, deleteBookmarkContextToolStripMenuItem1,
+                    deleteBookmarkToolStripButton
                 }, new[] {deleteBookmarkContextMenuItem, deleteBookmarkMainMenuItem}, (sender, args) => DeleteBookmark(),
                 () => ValidateDeleteBookmark());
             Commands.Add(new ToolStripItem[] {duplicateBookmarkToolStripMenuItem1, duplicateBookmarkToolStripMenuItem},
@@ -2231,7 +2237,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             bookmarkToolStripMenuItem.DropDownItems.Clear();
             bookmarkToolStripMenuItem.DropDownItems.AddRange(fix.ToArray());
 
-            ImageList.ImageCollection icons = IconCache.Instance.GetProtocolIcons().Images;
+            ImageList.ImageCollection icons = ProtocolIconsImageList().Images;
 
             List<ToolStripItem> items = new List<ToolStripItem>();
             foreach (Host bookmark in bookmarks)
@@ -2252,7 +2258,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             historyMenuStrip.Items.Clear();
             if (history.Count > 0)
             {
-                ImageList.ImageCollection icons = IconCache.Instance.GetProtocolIcons().Images;
+                ImageList.ImageCollection icons = ProtocolIconsImageList().Images;
 
                 List<ToolStripItem> items = new List<ToolStripItem>();
                 foreach (Host h in history)
@@ -2367,12 +2373,13 @@ namespace Ch.Cyberduck.Ui.Winforms
         private class BookmarkMenuCollectionListener : CollectionListener
         {
             private readonly BrowserForm _form;
-            private readonly ImageList.ImageCollection _icons = IconCache.Instance.GetProtocolIcons().Images;
+            private readonly ImageList.ImageCollection _icons;
             private int _bookmarkStartPosition;
 
-            public BookmarkMenuCollectionListener(BrowserForm f)
+            public BookmarkMenuCollectionListener(BrowserForm f, ImageList.ImageCollection icons)
             {
                 _form = f;
+                _icons = icons;
                 if (BookmarkCollection.defaultCollection().size() > 0)
                 {
                     BuildMenuItems();
@@ -2825,15 +2832,17 @@ namespace Ch.Cyberduck.Ui.Winforms
             private readonly AbstractHostCollection _collection;
             private readonly String _empty;
             private readonly BrowserForm _form;
-            private readonly ImageList.ImageCollection _icons = IconCache.Instance.GetProtocolIcons().Images;
+            private readonly ImageList.ImageCollection _icons;
             private readonly MenuItem _menu;
 
-            public MenuCollectionListener(BrowserForm f, MenuItem menu, AbstractHostCollection collection, String empty)
+            public MenuCollectionListener(BrowserForm f, MenuItem menu, AbstractHostCollection collection, String empty,
+                ImageList.ImageCollection icons)
             {
                 _form = f;
                 _menu = menu;
                 _collection = collection;
                 _empty = empty;
+                _icons = icons;
                 if (_collection.size() > 0)
                 {
                     BuildMenuItems();

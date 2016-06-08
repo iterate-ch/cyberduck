@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System;
@@ -22,7 +22,7 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
 using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Core.Preferences;
+using Ch.Cyberduck.Core.Resources;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using org.apache.log4j;
 using StructureMap;
@@ -33,12 +33,12 @@ namespace Ch.Cyberduck.Ui.Controller
     {
         private static readonly Logger Log = Logger.getLogger(typeof (PromptLoginController).FullName);
         private readonly WindowController _browser;
+        private Host _bookmark;
         private Credentials _credentials;
         private LoginOptions _options;
-        private Host _bookmark;
 
-        private HostPasswordStore keychain
-                = PasswordStoreFactory.get();
+        private readonly HostPasswordStore keychain
+            = PasswordStoreFactory.get();
 
         public PromptLoginController(WindowController c)
         {
@@ -160,7 +160,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (Utils.IsNotBlank(_credentials.getUsername()))
             {
                 String password = keychain.getPassword(_bookmark.getProtocol().getScheme(),
-                        _bookmark.getPort(), _bookmark.getHostname(), _credentials.getUsername());
+                    _bookmark.getPort(), _bookmark.getHostname(), _credentials.getUsername());
                 if (Utils.IsNotBlank(password))
                 {
                     View.Password = password;
