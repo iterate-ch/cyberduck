@@ -1,6 +1,6 @@
 // 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,8 +13,9 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
+
 using System;
 using System.ComponentModel;
 using System.Drawing;
@@ -22,7 +23,6 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.Windows.Forms;
 using Ch.Cyberduck.Core.Resources;
-using Ch.Cyberduck.Ui.Controller;
 
 namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
 {
@@ -37,8 +37,6 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
         private const int TOP_MARGIN = 10;
         private Image imgArrow1;
         private Image imgArrow2;
-
-        private eButtonState m_State = eButtonState.Normal;
         private bool m_autoHeight = true;
 
         //--------------------------------------------------------------------------------
@@ -49,10 +47,12 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
         // SmallFont is the font used for secondary lines
         private Font m_smallFont;
 
+        private eButtonState m_State = eButtonState.Normal;
+
         public CommandButton()
         {
             InitializeComponent();
-            base.Font = new Font("Arial", 11.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            Font = new Font("Arial", 11.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
             m_smallFont = new Font("Arial", 8F, FontStyle.Regular, GraphicsUnit.Point, 0);
         }
 
@@ -128,7 +128,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
             int x = LEFT_MARGIN + ARROW_WIDTH + 5;
             SizeF mzSize = new SizeF(Width - x - LEFT_MARGIN, 5000.0F); // presume RIGHT_MARGIN = LEFT_MARGIN
             Graphics g = Graphics.FromHwnd(Handle);
-            SizeF textSize = g.MeasureString(GetLargeText(), base.Font, mzSize);
+            SizeF textSize = g.MeasureString(GetLargeText(), Font, mzSize);
             return textSize;
         }
 
@@ -163,7 +163,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
             LinearGradientMode mode = LinearGradientMode.Vertical;
 
             Rectangle newRect = new Rectangle(ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width - 1,
-                                              ClientRectangle.Height - 1);
+                ClientRectangle.Height - 1);
             Color text_color = SystemColors.WindowText;
 
             Image img = imgArrow1;
@@ -174,7 +174,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
                 {
                     case eButtonState.Normal:
                         e.Graphics.FillRectangle(Brushes.White, newRect);
-                        if (base.Focused)
+                        if (Focused)
                             e.Graphics.DrawRectangle(new Pen(Color.SkyBlue, 1), newRect);
                         else
                             e.Graphics.DrawRectangle(new Pen(Color.White, 1), newRect);
@@ -210,17 +210,17 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
 
             SizeF szL = GetLargeTextSizeF();
             //e.Graphics.DrawString(largetext, base.Font, new SolidBrush(text_color), new RectangleF(new PointF(LEFT_MARGIN + imgArrow1.Width + 5, TOP_MARGIN), szL));
-            TextRenderer.DrawText(e.Graphics, largetext, base.Font,
-                                  new Rectangle(LEFT_MARGIN + imgArrow1.Width + 5, TOP_MARGIN, (int) szL.Width,
-                                                (int) szL.Height), text_color, TextFormatFlags.Default);
+            TextRenderer.DrawText(e.Graphics, largetext, Font,
+                new Rectangle(LEFT_MARGIN + imgArrow1.Width + 5, TOP_MARGIN, (int) szL.Width,
+                    (int) szL.Height), text_color, TextFormatFlags.Default);
 
             if (smalltext != String.Empty)
             {
                 SizeF szS = GetSmallTextSizeF();
                 e.Graphics.DrawString(smalltext, m_smallFont, new SolidBrush(text_color),
-                                      new RectangleF(
-                                          new PointF(LEFT_MARGIN + imgArrow1.Width + 8, TOP_MARGIN + (int) szL.Height),
-                                          szS));
+                    new RectangleF(
+                        new PointF(LEFT_MARGIN + imgArrow1.Width + 8, TOP_MARGIN + (int) szL.Height),
+                        szS));
             }
 
             e.Graphics.DrawImage(img, new Point(LEFT_MARGIN, TOP_MARGIN + (int) (szL.Height/2) - (img.Height/2)));
