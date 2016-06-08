@@ -56,7 +56,7 @@
             <include name="tools/*.ps1"/>
             <replacefilter token="${VERSION}" value="${version}"/>
             <replacefilter token="${REVISION}" value="${revision}"/>
-            <replacefilter token="${FEED}" value="${${sparkle.feed}}"/>
+            <replacefilter token="${FEED}" value="${sparkle.feed}"/>
         </replace>
         <exec executable="${cpack.bin}" dir="${chocolatey.target}" failonerror="true"/>
     </target>
