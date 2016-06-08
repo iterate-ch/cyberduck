@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.Outlet;
+import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.*;
 import ch.cyberduck.binding.foundation.NSAppleScript;
 import ch.cyberduck.binding.foundation.NSArray;

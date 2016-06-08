@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.SheetCallback;

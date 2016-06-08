@@ -1,26 +1,26 @@
-package ch.cyberduck.ui.cocoa;
+package ch.cyberduck.binding;
 
 /*
- *  Copyright (c) 2007 David Kocher. All rights reserved.
- *  http://cyberduck.ch/
+ * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  Bug fixes, suggestions and comments should be sent to:
- *  dkocher@cyberduck.ch
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  */
 
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSColor;
 import ch.cyberduck.binding.application.NSFont;
+import ch.cyberduck.binding.application.NSMutableParagraphStyle;
+import ch.cyberduck.binding.application.NSParagraphStyle;
+import ch.cyberduck.binding.application.NSText;
 import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSAttributedString;
@@ -33,13 +33,38 @@ import org.apache.log4j.Logger;
 public abstract class BundleController extends ProxyController {
     private static Logger log = Logger.getLogger(BundleController.class);
 
+    public static final NSMutableParagraphStyle PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE;
+    public static final NSMutableParagraphStyle PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL;
+    public static final NSMutableParagraphStyle PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL;
+
+    static {
+        PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE = NSMutableParagraphStyle.paragraphStyle();
+        PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE.setParagraphStyle(NSParagraphStyle.defaultParagraphStyle());
+        PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE.setAlignment(NSText.NSLeftTextAlignment);
+        PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE.setLineBreakMode(NSParagraphStyle.NSLineBreakByTruncatingMiddle);
+    }
+
+    static {
+        PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL = NSMutableParagraphStyle.paragraphStyle();
+        PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL.setParagraphStyle(NSParagraphStyle.defaultParagraphStyle());
+        PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL.setAlignment(NSText.NSLeftTextAlignment);
+        PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL.setLineBreakMode(NSParagraphStyle.NSLineBreakByTruncatingTail);
+    }
+
+    static {
+        PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL = NSMutableParagraphStyle.paragraphStyle();
+        PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL.setParagraphStyle(NSParagraphStyle.defaultParagraphStyle());
+        PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL.setAlignment(NSText.NSRightTextAlignment);
+        PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL.setLineBreakMode(NSParagraphStyle.NSLineBreakByTruncatingTail);
+    }
+
     public static final NSDictionary TRUNCATE_MIDDLE_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
-            NSArray.arrayWithObject(TableCellAttributes.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE),
+            NSArray.arrayWithObject(PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE),
             NSArray.arrayWithObject(NSAttributedString.ParagraphStyleAttributeName)
     );
 
     public static final NSDictionary LABEL_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
-            NSArray.arrayWithObject(TableCellAttributes.PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL),
+            NSArray.arrayWithObject(PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL),
             NSArray.arrayWithObject(NSAttributedString.ParagraphStyleAttributeName)
     );
 
@@ -50,7 +75,7 @@ public abstract class BundleController extends ProxyController {
 
     protected static final NSDictionary MENU_HELP_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
             NSArray.arrayWithObjects(NSFont.userFontOfSize(NSFont.smallSystemFontSize()), NSColor.darkGrayColor(),
-                    TableCellAttributes.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE),
+                    PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE),
             NSArray.arrayWithObjects(NSAttributedString.FontAttributeName, NSAttributedString.ForegroundColorAttributeName,
                     NSAttributedString.ParagraphStyleAttributeName)
     );

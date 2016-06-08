@@ -1,5 +1,6 @@
 package ch.cyberduck.ui.cocoa;
 
+import ch.cyberduck.binding.HyperlinkAttributedStringFactory;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Local;
 
@@ -7,9 +8,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * @version $Id$
- */
 public class HyperlinkAttributedStringFactoryTest {
 
     @Test

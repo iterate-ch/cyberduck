@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSOutlineView;
 import ch.cyberduck.binding.application.NSTableColumn;
 import ch.cyberduck.binding.application.NSText;

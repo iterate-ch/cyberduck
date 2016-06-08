@@ -18,12 +18,14 @@ package ch.cyberduck.ui.cocoa;
  *  feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.bonjour.RendezvousResponder;
 import ch.cyberduck.core.logging.SystemLogAppender;
+import ch.cyberduck.core.preferences.ApplicationPreferences;
 import ch.cyberduck.core.sparkle.SparklePeriodicUpdateChecker;
 import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.AlertTransferErrorCallback;
 import ch.cyberduck.core.updater.DisabledPeriodicUpdater;
-import ch.cyberduck.preferences.ApplicationPreferences;
+import ch.cyberduck.ui.browser.Column;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
@@ -32,6 +34,7 @@ public class ApplicationUserDefaultsPreferences extends ApplicationPreferences {
 
     @Override
     protected void setDefaults() {
+        // Parent defaults
         super.setDefaults();
 
         if(null == Updater.getFeed()) {
@@ -48,8 +51,33 @@ public class ApplicationUserDefaultsPreferences extends ApplicationPreferences {
         defaults.put("factory.transferpromptcallback.upload.class", UploadPromptController.class.getName());
         defaults.put("factory.transferpromptcallback.copy.class", CopyPromptController.class.getName());
         defaults.put("factory.transferpromptcallback.sync.class", SyncPromptController.class.getName());
-    }
+        defaults.put("factory.rendezvous.class", RendezvousResponder.class.getName());
 
+        defaults.put(String.format("browser.column.%s", Column.icon.name()), String.valueOf(true));
+        defaults.put(String.format("browser.column.%s.width", Column.icon.name()), String.valueOf(20));
+        defaults.put(String.format("browser.column.%s", Column.filename.name()), String.valueOf(true));
+        defaults.put(String.format("browser.column.%s.width", Column.filename.name()), String.valueOf(250));
+        defaults.put(String.format("browser.column.%s", Column.kind.name()), String.valueOf(false));
+        defaults.put(String.format("browser.column.%s.width", Column.kind.name()), String.valueOf(80));
+        defaults.put(String.format("browser.column.%s", Column.extension.name()), String.valueOf(false));
+        defaults.put(String.format("browser.column.%s.width", Column.extension.name()), String.valueOf(80));
+        defaults.put(String.format("browser.column.%s", Column.size.name()), String.valueOf(true));
+        defaults.put(String.format("browser.column.%s.width", Column.size.name()), String.valueOf(80));
+        defaults.put(String.format("browser.column.%s", Column.modified.name()), String.valueOf(true));
+        defaults.put(String.format("browser.column.%s.width", Column.modified.name()), String.valueOf(150));
+        defaults.put(String.format("browser.column.%s", Column.owner.name()), String.valueOf(false));
+        defaults.put(String.format("browser.column.%s.width", Column.owner.name()), String.valueOf(80));
+        defaults.put(String.format("browser.column.%s", Column.group.name()), String.valueOf(false));
+        defaults.put(String.format("browser.column.%s.width", Column.group.name()), String.valueOf(80));
+        defaults.put(String.format("browser.column.%s", Column.permission.name()), String.valueOf(false));
+        defaults.put(String.format("browser.column.%s.width", Column.permission.name()), String.valueOf(100));
+        defaults.put(String.format("browser.column.%s", Column.region.name()), String.valueOf(false));
+        defaults.put(String.format("browser.column.%s.width", Column.region.name()), String.valueOf(80));
+        defaults.put(String.format("browser.column.%s", Column.version.name()), String.valueOf(false));
+        defaults.put(String.format("browser.column.%s.width", Column.version.name()), String.valueOf(80));
+
+        defaults.put("browser.sort.column", Column.filename.name());
+    }
     @Override
     protected void post() {
         super.post();

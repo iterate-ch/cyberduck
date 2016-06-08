@@ -43,7 +43,6 @@ import java.util.List;
 /**
  * Concrete subclass using the Cocoa Preferences classes. The NSUserDefaults class is thread-safe.
  *
- * @version $Id$
  * @see ch.cyberduck.binding.foundation.NSUserDefaults
  */
 public class UserDefaultsPreferences extends Preferences {

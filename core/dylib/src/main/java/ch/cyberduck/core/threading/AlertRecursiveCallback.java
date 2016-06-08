@@ -15,6 +15,8 @@ package ch.cyberduck.core.threading;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.binding.AlertController;
+import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.NSWindow;
@@ -22,8 +24,6 @@ import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.worker.Worker;
-import ch.cyberduck.ui.cocoa.AlertController;
-import ch.cyberduck.ui.cocoa.WindowController;
 
 import java.text.MessageFormat;
 import java.util.concurrent.atomic.AtomicBoolean;
