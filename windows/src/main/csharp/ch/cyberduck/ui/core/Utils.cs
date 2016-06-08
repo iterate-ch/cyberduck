@@ -83,17 +83,5 @@ namespace Ch.Cyberduck.Ui.Core
             }
             return "<A HREF=\"" + help + "\">" + LocaleFactory.localizedString("Help", "Main") + "</A>";
         }
-
-        public static ImageList ToImageList(IDictionary<string, Bitmap> dict)
-        {
-            ImageList images = new ImageList();
-            images.ImageSize = new Size(16, 16);
-            images.ColorDepth = ColorDepth.Depth32Bit;
-            foreach (var icon in IconCache.Instance.GetProtocolIcons())
-            {
-                images.Images.Add(icon.Key, icon.Value);
-            }
-            return images;
-        }
     }
 }
