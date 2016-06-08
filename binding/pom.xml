@@ -26,6 +26,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.rococoa</groupId>
             <artifactId>rococoa-core</artifactId>
             <version>0.8.2</version>

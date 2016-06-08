@@ -18,6 +18,9 @@ package ch.cyberduck.ui.cocoa;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.binding.AlertController;
+import ch.cyberduck.binding.SheetController;
+import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.LocaleFactory;

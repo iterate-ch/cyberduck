@@ -1,5 +1,6 @@
 package ch.cyberduck.ui.cocoa;
 
+import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;

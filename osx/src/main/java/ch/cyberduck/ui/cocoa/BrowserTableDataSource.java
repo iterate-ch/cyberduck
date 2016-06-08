@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.NSApplication;
 import ch.cyberduck.binding.application.NSDraggingInfo;
 import ch.cyberduck.binding.application.NSDraggingSource;

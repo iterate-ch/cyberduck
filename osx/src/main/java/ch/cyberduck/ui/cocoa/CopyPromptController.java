@@ -17,6 +17,7 @@ package ch.cyberduck.ui.cocoa;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.transfer.CopyTransfer;
 

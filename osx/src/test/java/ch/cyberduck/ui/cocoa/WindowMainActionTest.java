@@ -1,5 +1,6 @@
 package ch.cyberduck.ui.cocoa;
 
+import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.core.threading.WindowMainAction;
 
 import org.junit.Test;
