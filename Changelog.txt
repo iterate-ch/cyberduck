@@ -3,6 +3,11 @@ http://cyberduck.io/
 
 Changelog. Last modified: $Date$
 
+5.0.2 [https://trac.cyberduck.io/milestone/5.0.2]
+- [Feature] Deleting multiple files concurrently (#9585)
+- [Bugfix] Fail to list directory with equals symbol in path (S3) (#9574)
+- [Bugfix] Failure to launch program (CLI Linux) (#9586)
+
 5.0.1 [https://trac.cyberduck.io/milestone/5.0.1]
 - [Feature] Support for hubiC (OVH) (OpenStack Swift) (#7764)
 - [Bugfix] Support authenticating with multiple accounts (Google Drive) (#9567)
