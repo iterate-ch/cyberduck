@@ -17,6 +17,7 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Host;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.jets3t.service.utils.SignatureUtils;
@@ -49,7 +50,7 @@ public class S3PresignedUrlProviderTest {
     public void testCreateEuWest() throws Exception {
         final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         expiry.add(Calendar.MILLISECOND, (int) TimeUnit.DAYS.toMillis(7));
-        final String url = new S3PresignedUrlProvider().create(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"),
+        final String url = new S3PresignedUrlProvider().create(new Host(new S3Protocol()), System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"),
                 "test-eu-west-1-cyberduck", "eu-west-1", "f", expiry.getTimeInMillis());
         assertNotNull(url);
         final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
@@ -60,7 +61,7 @@ public class S3PresignedUrlProviderTest {
     public void testCreateEuCentral() throws Exception {
         final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         expiry.add(Calendar.MILLISECOND, (int) TimeUnit.DAYS.toMillis(7));
-        final String url = new S3PresignedUrlProvider().create(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"),
+        final String url = new S3PresignedUrlProvider().create(new Host(new S3Protocol()), System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"),
                 "test-eu-central-1-cyberduck", "eu-central-1", "f", expiry.getTimeInMillis());
         assertNotNull(url);
         final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
@@ -72,7 +73,7 @@ public class S3PresignedUrlProviderTest {
     public void testCreateEuCentralAtSign() throws Exception {
         final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         expiry.add(Calendar.MILLISECOND, (int) TimeUnit.DAYS.toMillis(7));
-        final String url = new S3PresignedUrlProvider().create(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"),
+        final String url = new S3PresignedUrlProvider().create(new Host(new S3Protocol()), System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"),
                 "test-eu-central-1-cyberduck", "eu-central-1", "@f", expiry.getTimeInMillis());
         assertNotNull(url);
         final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
@@ -83,10 +84,20 @@ public class S3PresignedUrlProviderTest {
     public void testCreateDefault() throws Exception {
         final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         expiry.add(Calendar.MILLISECOND, (int) TimeUnit.DAYS.toMillis(7));
-        final String url = new S3PresignedUrlProvider().create(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"),
+        final String url = new S3PresignedUrlProvider().create(new Host(new S3Protocol()), System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"),
                 "test-us-east-1-cyberduck", null, "f", expiry.getTimeInMillis());
         assertNotNull(url);
         final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
         assertEquals(404, connection.getResponseCode());
+    }
+
+    @Test
+    public void testCustomHostname() throws Exception {
+        final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        expiry.add(Calendar.MILLISECOND, (int) TimeUnit.DAYS.toMillis(7));
+        final String url = new S3PresignedUrlProvider().create(new Host(new S3Protocol(), "h"), System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"),
+                "test-us-east-1-cyberduck", null, "f", expiry.getTimeInMillis());
+        assertNotNull(url);
+        assertEquals("test-us-east-1-cyberduck.h", URI.create(url).getHost());
     }
 }

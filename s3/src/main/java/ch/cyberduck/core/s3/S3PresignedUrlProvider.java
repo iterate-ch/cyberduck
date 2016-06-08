@@ -18,6 +18,7 @@ package ch.cyberduck.core.s3;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.PathContainerService;
 
 import org.apache.commons.lang3.StringUtils;
@@ -35,12 +36,13 @@ public class S3PresignedUrlProvider {
      * Generates a signed URL string that will grant access to an S3 resource (bucket or object)
      * to whoever uses the URL up until the time specified.
      *
+     * @param host   Hostname
      * @param bucket the name of the bucket to include in the URL, must be a valid bucket name.
      * @param key    the name of the object to include in the URL, if null only the bucket name is used.
      * @param expiry Milliseconds
      * @return a URL signed in such a way as to grant access to an S3 resource to whoever uses it.
      */
-    public String create(final String user, final String secret,
+    public String create(final Host host, final String user, final String secret,
                          final String bucket, final String region, final String key,
                          final long expiry) {
         final String requestSignatureVersion;
@@ -50,7 +52,12 @@ public class S3PresignedUrlProvider {
         else {
             requestSignatureVersion = S3Protocol.AuthenticationHeaderSignatureVersion.AWS2.toString();
         }
-        return new RestS3Service(new AWSCredentials(user, secret)).createSignedUrlUsingSignatureVersion(requestSignatureVersion,
+        return new RestS3Service(new AWSCredentials(user, secret)) {
+            @Override
+            public String getEndpoint() {
+                return host.getHostname();
+            }
+        }.createSignedUrlUsingSignatureVersion(requestSignatureVersion,
                 region, "GET", bucket, key, null, null, expiry / 1000, false, true, false);
     }
 }
