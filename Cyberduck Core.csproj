@@ -131,7 +131,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\preferences\SettingsDictionary.cs" />
-    <Compile Include="core\src\main\csharp\ch\cyberduck\core\preferences\CorePreferences.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\preferences\SettingsDictionaryPreferences.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\resources\IconCache.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\RFC2253.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\SerializableDictionary.cs" />

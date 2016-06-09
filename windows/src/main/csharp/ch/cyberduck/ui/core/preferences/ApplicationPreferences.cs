@@ -34,9 +34,9 @@ using org.apache.log4j;
 
 namespace Ch.Cyberduck.Ui.Core.Preferences
 {
-    public class SettingsDictionaryPreferences : CorePreferences
+    public class ApplicationPreferences : SettingsDictionaryPreferences
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (SettingsDictionaryPreferences).FullName);
+        private static readonly Logger Log = Logger.getLogger(typeof (ApplicationPreferences).FullName);
 
         protected override void setFactories()
         {

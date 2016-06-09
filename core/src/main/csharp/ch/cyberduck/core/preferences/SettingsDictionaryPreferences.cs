@@ -33,9 +33,9 @@ using sun.security.mscapi;
 
 namespace Ch.Cyberduck.Core.Preferences
 {
-    public class CorePreferences : ch.cyberduck.core.preferences.Preferences
+    public class SettingsDictionaryPreferences : ch.cyberduck.core.preferences.Preferences
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (CorePreferences).FullName);
+        private static readonly Logger Log = Logger.getLogger(typeof (SettingsDictionaryPreferences).FullName);
         private SettingsDictionary _settings;
 
         /// <summary>

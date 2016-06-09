@@ -93,7 +93,7 @@ namespace Ch.Cyberduck.Ui.Controller
         static MainController()
         {
             StructureMapBootstrapper.Bootstrap();
-            PreferencesFactory.set(new SettingsDictionaryPreferences());
+            PreferencesFactory.set(new ApplicationPreferences());
             ProtocolFactory.register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(),
                 new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(), new GoogleStorageProtocol(),
                 new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new B2Protocol(), new DriveProtocol(), new HubicProtocol());
