@@ -34,26 +34,25 @@ using ch.cyberduck.core.dav;
 using ch.cyberduck.core.ftp;
 using ch.cyberduck.core.googledrive;
 using ch.cyberduck.core.googlestorage;
+using ch.cyberduck.core.hubic;
 using ch.cyberduck.core.importer;
 using ch.cyberduck.core.irods;
-using ch.cyberduck.core.local;
 using ch.cyberduck.core.notification;
 using ch.cyberduck.core.openstack;
-using ch.cyberduck.core.hubic;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.s3;
 using ch.cyberduck.core.serializer;
 using ch.cyberduck.core.sftp;
 using ch.cyberduck.core.spectra;
 using ch.cyberduck.core.urlhandler;
-using Ch.Cyberduck.Core.Urlhandler;
+using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Core;
 using Ch.Cyberduck.Ui.Core.Preferences;
 using Ch.Cyberduck.Ui.Sparkle;
-using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using java.util;
 using Microsoft.VisualBasic.ApplicationServices;
 using org.apache.log4j;
+using Application = ch.cyberduck.core.local.Application;
 using ArrayList = System.Collections.ArrayList;
 using Path = System.IO.Path;
 using UnhandledExceptionEventArgs = System.UnhandledExceptionEventArgs;
@@ -71,8 +70,6 @@ namespace Ch.Cyberduck.Ui.Controller
         private static MainController _application;
         private static JumpListManager _jumpListManager;
         private readonly BaseController _controller = new BaseController();
-        private WinSparkle.win_sparkle_can_shutdown_callback_t _canShutdownCallback;
-        private WinSparkle.win_sparkle_shutdown_request_callback_t _shutdownRequestCallback;
 
         /// <summary>
         /// Saved browsers
@@ -88,6 +85,9 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <see cref="http://msdn.microsoft.com/en-us/library/system.stathreadattribute.aspx"/>
         private BrowserController _bc;
 
+        private WinSparkle.win_sparkle_can_shutdown_callback_t _canShutdownCallback;
+        private WinSparkle.win_sparkle_shutdown_request_callback_t _shutdownRequestCallback;
+
         private WindowsPeriodicUpdateChecker _updater;
 
         static MainController()
@@ -96,7 +96,8 @@ namespace Ch.Cyberduck.Ui.Controller
             PreferencesFactory.set(new ApplicationPreferences());
             ProtocolFactory.register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(),
                 new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(), new GoogleStorageProtocol(),
-                new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new B2Protocol(), new DriveProtocol(), new HubicProtocol());
+                new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new B2Protocol(), new DriveProtocol(),
+                new HubicProtocol());
 
             if (!Debugger.IsAttached)
             {
@@ -235,7 +236,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         {
                             f.copy(LocalFactory.get(PreferencesFactory.get().getProperty("application.support.path"),
                                 f.getName()));
-                            if (DialogResult.OK ==
+                            if (TaskDialogSimpleResult.Ok ==
                                 _bc.InfoBox(license.ToString(),
                                     LocaleFactory.localizedString(
                                         "Thanks for your support! Your contribution helps to further advance development to make Cyberduck even better.",
@@ -244,7 +245,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                         "Your donation key has been copied to the Application Support folder.",
                                         "License"),
                                     String.Format("{0}", LocaleFactory.localizedString("Continue", "License")), null,
-                                    false))
+                                    false).Result)
                             {
                                 foreach (BrowserController controller in new List<BrowserController>(Browsers))
                                 {
@@ -254,13 +255,13 @@ namespace Ch.Cyberduck.Ui.Controller
                         }
                         else
                         {
-                            if (DialogResult.OK ==
+                            if (TaskDialogSimpleResult.Ok ==
                                 _bc.WarningBox(LocaleFactory.localizedString("Not a valid donation key", "License"),
                                     LocaleFactory.localizedString("Not a valid donation key", "License"),
                                     LocaleFactory.localizedString("This donation key does not appear to be valid.",
                                         "License"), null,
                                     String.Format("{0}", LocaleFactory.localizedString("Continue", "License")), false,
-                                    PreferencesFactory.get().getProperty("website.help") + "/faq", delegate { }))
+                                    PreferencesFactory.get().getProperty("website.help") + "/faq", delegate { }).Result)
                             {
                                 ;
                             }
@@ -400,7 +401,9 @@ namespace Ch.Cyberduck.Ui.Controller
                 PreferencesFactory.get().getInteger("uses") > 0)
             {
                 var handler = SchemeHandlerFactory.get();
-                if (!handler.isDefaultHandler(Arrays.asList(Scheme.ftp, Scheme.ftps, Scheme.sftp), new ch.cyberduck.core.local.Application(System.Windows.Forms.Application.ExecutablePath)))
+                if (
+                    !handler.isDefaultHandler(Arrays.asList(Scheme.ftp, Scheme.ftps, Scheme.sftp),
+                        new Application(System.Windows.Forms.Application.ExecutablePath)))
                 {
                     Utils.CommandBox(LocaleFactory.localizedString("Default Protocol Handler", "Preferences"),
                         LocaleFactory.localizedString(
@@ -410,7 +413,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             "Configuration"),
                         String.Format("{0}|{1}", LocaleFactory.localizedString("Change", "Configuration"),
                             LocaleFactory.localizedString("Cancel", "Configuration")), false,
-                        LocaleFactory.localizedString("Don't ask again", "Configuration"), SysIcons.Question,
+                        LocaleFactory.localizedString("Don't ask again", "Configuration"), TaskDialogIcon.Question,
                         delegate(int option, bool verificationChecked)
                         {
                             if (verificationChecked)
@@ -421,7 +424,8 @@ namespace Ch.Cyberduck.Ui.Controller
                             switch (option)
                             {
                                 case 0:
-                                    handler.setDefaultHandler(Arrays.asList(Scheme.ftp, Scheme.ftps, Scheme.sftp), new ch.cyberduck.core.local.Application(System.Windows.Forms.Application.ExecutablePath));
+                                    handler.setDefaultHandler(Arrays.asList(Scheme.ftp, Scheme.ftps, Scheme.sftp),
+                                        new Application(System.Windows.Forms.Application.ExecutablePath));
                                     break;
                             }
                         });
@@ -466,7 +470,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                     "{0} bookmarks found. Do you want to add these to your bookmarks?", "Configuration"),
                                 c.size()),
                             String.Format("{0}", LocaleFactory.localizedString("Import", "Configuration")), true,
-                            LocaleFactory.localizedString("Don't ask again", "Configuration"), SysIcons.Question,
+                            LocaleFactory.localizedString("Don't ask again", "Configuration"), TaskDialogIcon.Question,
                             delegate(int option, bool verificationChecked)
                             {
                                 if (verificationChecked)
@@ -685,7 +689,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             null,
                             String.Format("{0}|{1}", LocaleFactory.localizedString("Review…"),
                                 LocaleFactory.localizedString("Quit Anyway")), true,
-                            LocaleFactory.localizedString("Don't ask again", "Configuration"), SysIcons.Warning,
+                            LocaleFactory.localizedString("Don't ask again", "Configuration"), TaskDialogIcon.Warning,
                             delegate(int option, bool verificationChecked)
                             {
                                 if (verificationChecked)

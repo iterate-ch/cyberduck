@@ -125,6 +125,17 @@
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\OSVersion.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\preferences\RoamingSupportDirectoryFinder.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\preferences\AssemblyApplicationResourcesFinder.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\taskdialog\ActiveTaskDialog.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\taskdialog\Localization.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\taskdialog\NativeMethods.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\taskdialog\SafeNativeMethods.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\taskdialog\TaskDialog.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\taskdialog\TaskDialogEvents.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\taskdialog\TaskDialogInterop.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\taskdialog\TaskDialogResult.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\taskdialog\TaskDialogTypes.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\taskdialog\UnsafeNativeMethods.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\taskdialog\Win32Types.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\properties\Settings.Designer.cs">
       <DependentUpon>Settings.settings</DependentUpon>
       <AutoGen>True</AutoGen>

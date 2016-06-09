@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,17 +13,16 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System;
 using System.Security.Cryptography.X509Certificates;
-using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
 using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Core.Ssl;
-using Ch.Cyberduck.Ui.Winforms.Taskdialog;
+using Ch.Cyberduck.Core.TaskDialog;
 using java.io;
 using java.security;
 using java.security.cert;
@@ -80,20 +79,26 @@ namespace Ch.Cyberduck.Ui.Core
             {
                 while (true)
                 {
-                    TaskDialog d = new TaskDialog();
-                    DialogResult r =
-                        d.ShowCommandBox(LocaleFactory.localizedString("This certificate is not valid", "Keychain"),
-                            LocaleFactory.localizedString("This certificate is not valid", "Keychain"),
-                            errorFromChainStatus, null, null, LocaleFactory.localizedString("Always Trust", "Keychain"),
-                            String.Format("{0}|{1}|{2}", LocaleFactory.localizedString("Continue", "Credentials"),
-                                LocaleFactory.localizedString("Disconnect"),
-                                LocaleFactory.localizedString("Show Certificate", "Keychain")), false, SysIcons.Warning,
-                            SysIcons.Information);
-                    if (r == DialogResult.OK)
+                    TaskDialogResult r =
+                        TaskDialog.Show(
+                            title: LocaleFactory.localizedString("This certificate is not valid", "Keychain"),
+                            mainInstruction: LocaleFactory.localizedString("This certificate is not valid", "Keychain"),
+                            content: errorFromChainStatus,
+                            commandLinks:
+                                new string[]
+                                {
+                                    LocaleFactory.localizedString("Continue", "Credentials"),
+                                    LocaleFactory.localizedString("Disconnect"),
+                                    LocaleFactory.localizedString("Show Certificate", "Keychain")
+                                },
+                            mainIcon: TaskDialogIcon.Warning,
+                            verificationText: LocaleFactory.localizedString("Always Trust", "Keychain"),
+                            footerIcon: TaskDialogIcon.Information);
+                    if (r.Result == TaskDialogSimpleResult.Ok)
                     {
-                        if (d.CommandButtonResult == 0)
+                        if (r.CommandButtonResult == 0)
                         {
-                            if (d.VerificationChecked)
+                            if (r.VerificationChecked.Value)
                             {
                                 if (certError)
                                 {
@@ -105,11 +110,11 @@ namespace Ch.Cyberduck.Ui.Core
                             }
                             return true;
                         }
-                        if (d.CommandButtonResult == 1)
+                        if (r.CommandButtonResult == 1)
                         {
                             return false;
                         }
-                        if (d.CommandButtonResult == 2)
+                        if (r.CommandButtonResult == 2)
                         {
                             X509Certificate2UI.DisplayCertificate(serverCert);
                         }

@@ -25,9 +25,9 @@ using System.Windows.Forms;
 using BrightIdeasSoftware;
 using ch.cyberduck.core;
 using Ch.Cyberduck.Core.Resources;
+using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Core;
-using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -150,16 +150,15 @@ namespace Ch.Cyberduck.Ui.Winforms
             get { return new ContextMenu[0]; }
         }
 
-        public virtual DialogResult MessageBox(string title, string message, string content, string expandedInfo,
-            string help,
-            string verificationText, DialogResponseHandler handler)
+        public virtual TaskDialogResult MessageBox(string title, string message, string content, string expandedInfo,
+            string help, string verificationText, DialogResponseHandler handler)
         {
             return Utils.MessageBox(this, title, message, content, expandedInfo, help, verificationText, handler);
         }
 
-        public virtual DialogResult CommandBox(string title, string mainInstruction, string content, string expandedInfo,
-            string help, string verificationText, string commandButtons, bool showCancelButton, SysIcons mainIcon,
-            SysIcons footerIcon, DialogResponseHandler handler)
+        public virtual TaskDialogResult CommandBox(string title, string mainInstruction, string content,
+            string expandedInfo, string help, string verificationText, string commandButtons, bool showCancelButton,
+            TaskDialogIcon mainIcon, TaskDialogIcon footerIcon, DialogResponseHandler handler)
         {
             return Utils.CommandBox(this, title, mainInstruction, content, expandedInfo, help, verificationText,
                 commandButtons, showCancelButton, mainIcon, footerIcon, handler);
@@ -278,12 +277,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             return ShowDialog();
         }
 
-        public virtual DialogResult MessageBox(string title, string message, string content, TaskDialogButtons buttons,
-            SysIcons icons)
+        public virtual TaskDialogResult MessageBox(string title, string message, string content,
+            TaskDialogCommonButtons buttons, TaskDialogIcon icon)
         {
-            //BringToFront();
-            TaskDialog dialog = new TaskDialog();
-            return dialog.MessageBox(this, title, message, content, buttons, icons);
+            return TaskDialog.Show(title: title, mainInstruction: message, content: content, commonButtons: buttons,
+                mainIcon: icon);
         }
 
         private void OnApplicationIdle(object sender, EventArgs e)

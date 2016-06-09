@@ -319,10 +319,6 @@
       <DependentUpon>PromptForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\taskdialog\TaskDialogForm.resx">
-      <DependentUpon>TaskDialogForm.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\TransferForm.resx">
       <DependentUpon>TransferForm.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -517,26 +513,6 @@
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\PromptForm.Designer.cs">
       <DependentUpon>PromptForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\taskdialog\CommandButton.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\taskdialog\CommandButton.Designer.cs">
-      <DependentUpon>CommandButton.cs</DependentUpon>
-    </Compile>
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\taskdialog\TaskDialog.cs" />
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\taskdialog\TaskDialogForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\taskdialog\TaskDialogForm.designer.cs">
-      <DependentUpon>TaskDialogForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\taskdialog\VistaActiveTaskDialog.cs" />
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\taskdialog\VistaTaskDialog.cs" />
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\taskdialog\VistaTaskDialogCommonDialog.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\taskdialog\VistaTaskDialogNotificationArgs.cs" />
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\taskdialog\VistaUnsafeNativeMethods.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\ToolbarBaseForm.cs">
       <SubType>Form</SubType>
     </Compile>

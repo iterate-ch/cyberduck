@@ -11,7 +11,7 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-//  
+// 
 // Bug fixes, suggestions and comments should be sent to:
 // feedback@cyberduck.io
 // 
@@ -21,10 +21,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
-using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.preferences;
-using Ch.Cyberduck.Ui.Winforms.Taskdialog;
+using Ch.Cyberduck.Core.TaskDialog;
 using ExceptionReporting.Core;
 using Path = System.IO.Path;
 
@@ -61,18 +60,22 @@ namespace Ch.Cyberduck.Ui.Core
             {
                 outfile.Write(report.ToString());
             }
-            TaskDialog prompt = new TaskDialog();
-            DialogResult result =
-                prompt.ShowCommandBox(LocaleFactory.localizedString("Do you want to report the last crash?", "Crash"),
-                    LocaleFactory.localizedString("Do you want to report the last crash?", "Crash"),
-                    LocaleFactory.localizedString(
-                        "The application %@ has recently crashed. To help improve it, you can send the crash log to the author.",
-                        "Crash").Replace("%@", PreferencesFactory.get().getProperty("application.name")),
-                    String.Format("{0}|{1}", LocaleFactory.localizedString("Send", "Crash"),
-                        LocaleFactory.localizedString("Don't Send", "Crash")), false, SysIcons.Error);
-            if (DialogResult.OK == result)
+            TaskDialogResult result =
+                TaskDialog.Show(title: LocaleFactory.localizedString("Do you want to report the last crash?", "Crash"),
+                    mainInstruction: LocaleFactory.localizedString("Do you want to report the last crash?", "Crash"),
+                    content:
+                        LocaleFactory.localizedString(
+                            "The application %@ has recently crashed. To help improve it, you can send the crash log to the author.",
+                            "Crash").Replace("%@", PreferencesFactory.get().getProperty("application.name")),
+                    commandLinks:
+                        new string[]
+                        {
+                            LocaleFactory.localizedString("Send", "Crash"),
+                            LocaleFactory.localizedString("Don't Send", "Crash")
+                        }, mainIcon: TaskDialogIcon.Error);
+            if (result.Result == TaskDialogSimpleResult.Ok)
             {
-                if (0 == prompt.CommandButtonResult)
+                if (0 == result.CommandButtonResult)
                 {
                     Post(report.ToString());
                 }
@@ -85,7 +88,7 @@ namespace Ch.Cyberduck.Ui.Core
             string revision = PreferencesFactory.get().getProperty("application.revision");
 
             //this might take some time as the WebRequest tries to detect the proxy settings first
-            this.MultipartFormDataPost(
+            MultipartFormDataPost(
                 PreferencesFactory.get().getProperty("website.crash") +
                 String.Format("?revision={0}&os={1}", revision, Environment.OSVersion),
                 String.Format("{0} ({1})", PreferencesFactory.get().getProperty("application.name"), revision),

@@ -23,7 +23,7 @@ using ch.cyberduck.core.exception;
 using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Resources;
-using Ch.Cyberduck.Ui.Winforms.Taskdialog;
+using Ch.Cyberduck.Core.TaskDialog;
 using org.apache.log4j;
 using StructureMap;
 
@@ -33,12 +33,12 @@ namespace Ch.Cyberduck.Ui.Controller
     {
         private static readonly Logger Log = Logger.getLogger(typeof (PromptLoginController).FullName);
         private readonly WindowController _browser;
+
+        private readonly HostPasswordStore keychain = PasswordStoreFactory.get();
+
         private Host _bookmark;
         private Credentials _credentials;
         private LoginOptions _options;
-
-        private readonly HostPasswordStore keychain
-            = PasswordStoreFactory.get();
 
         public PromptLoginController(WindowController c)
         {
@@ -53,7 +53,7 @@ namespace Ch.Cyberduck.Ui.Controller
             AsyncController.AsyncDelegate d = delegate
             {
                 _browser.CommandBox(title, title, message, String.Format("{0}|{1}", continueButton, disconnectButton),
-                    false, LocaleFactory.localizedString("Don't show again", "Credentials"), SysIcons.Question,
+                    false, LocaleFactory.localizedString("Don't show again", "Credentials"), TaskDialogIcon.Question,
                     PreferencesFactory.get().getProperty("website.help") + "/" + protocol.getScheme().name(),
                     delegate(int option, Boolean verificationChecked)
                     {
@@ -159,8 +159,8 @@ namespace Ch.Cyberduck.Ui.Controller
             _credentials.setUsername(View.Username);
             if (Utils.IsNotBlank(_credentials.getUsername()))
             {
-                String password = keychain.getPassword(_bookmark.getProtocol().getScheme(),
-                    _bookmark.getPort(), _bookmark.getHostname(), _credentials.getUsername());
+                String password = keychain.getPassword(_bookmark.getProtocol().getScheme(), _bookmark.getPort(),
+                    _bookmark.getHostname(), _credentials.getUsername());
                 if (Utils.IsNotBlank(password))
                 {
                     View.Password = password;

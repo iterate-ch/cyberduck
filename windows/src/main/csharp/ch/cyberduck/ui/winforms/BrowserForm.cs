@@ -35,11 +35,11 @@ using ch.cyberduck.core.preferences;
 using ch.cyberduck.ui.comparator;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Resources;
+using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Core;
 using Ch.Cyberduck.Ui.Winforms.Commondialog;
 using Ch.Cyberduck.Ui.Winforms.Controls;
-using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using org.apache.commons.io;
 using org.apache.commons.lang3;
 using org.apache.log4j;
@@ -466,7 +466,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             }
             catch (Exception e)
             {
-                MessageBox(LocaleFactory.localizedString("Error"), null, e.Message, TaskDialogButtons.OK, SysIcons.Error);
+                MessageBox(LocaleFactory.localizedString("Error"), null, e.Message, TaskDialogCommonButtons.OK,
+                    TaskDialogIcon.Error);
                 Log.error("Exception while upload selection", e);
             }
             string[] paths = dialog.SelectedPaths;
@@ -1575,8 +1576,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             Commands.Add(
                 new ToolStripItem[]
                 {
-                    newBookmarkToolStripMenuItem, newBookmarkContextToolStripMenuItem,
-                    newBookmarkContextToolStripMenuItem1,
+                    newBookmarkToolStripMenuItem, newBookmarkContextToolStripMenuItem, newBookmarkContextToolStripMenuItem1,
                     newBookmarkToolStripButton
                 },
                 new[] {newBookmarkContextMenuItem, newBookmarkMainMenuItem, newBookmarkBrowserContextMenuItem},
@@ -1589,8 +1589,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             Commands.Add(
                 new ToolStripItem[]
                 {
-                    deleteBookmarkToolStripMenuItem, deleteBookmarkContextToolStripMenuItem1,
-                    deleteBookmarkToolStripButton
+                    deleteBookmarkToolStripMenuItem, deleteBookmarkContextToolStripMenuItem1, deleteBookmarkToolStripButton
                 }, new[] {deleteBookmarkContextMenuItem, deleteBookmarkMainMenuItem}, (sender, args) => DeleteBookmark(),
                 () => ValidateDeleteBookmark());
             Commands.Add(new ToolStripItem[] {duplicateBookmarkToolStripMenuItem1, duplicateBookmarkToolStripMenuItem},

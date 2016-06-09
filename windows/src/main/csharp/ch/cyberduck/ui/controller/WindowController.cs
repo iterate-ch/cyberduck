@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,15 +13,15 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System.Windows.Forms;
-using Ch.Cyberduck.Ui.Winforms.Taskdialog;
-using Ch.Cyberduck.Ui.Winforms.Threading;
 using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
 using ch.cyberduck.core.threading;
+using Ch.Cyberduck.Core.TaskDialog;
+using Ch.Cyberduck.Ui.Winforms.Threading;
 using java.lang;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -122,7 +122,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         protected virtual void Invalidate()
         {
-            base.invalidate();
+            invalidate();
         }
 
         /// <summary>
@@ -133,7 +133,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="detail"></param>
         /// <param name="help"></param>
         /// <returns></returns>
-        public DialogResult MessageBox(string title, string message, string detail, string help)
+        public TaskDialogResult MessageBox(string title, string message, string detail, string help)
         {
             return View.MessageBox(title, message, detail, null, help, null, delegate { });
         }
@@ -147,11 +147,11 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="commandButtons"></param>
         /// <param name="showCancelButton"></param>
         /// <returns></returns>
-        public DialogResult QuestionBox(string title, string message, string detail, string commandButtons,
-                                        bool showCancelButton)
+        public TaskDialogResult QuestionBox(string title, string message, string detail, string commandButtons,
+            bool showCancelButton)
         {
-            return CommandBox(title, message, detail, commandButtons, showCancelButton, null, SysIcons.Question,
-                              delegate { });
+            return CommandBox(title, message, detail, commandButtons, showCancelButton, null, TaskDialogIcon.Question,
+                delegate { });
         }
 
         /// <summary>
@@ -165,12 +165,11 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="showCancelButton"></param>
         /// <param name="help"></param>
         /// <returns></returns>
-        public DialogResult WarningBox(string title, string message, string detail, string expanded,
-                                       string commandButtons, bool showCancelButton, string help,
-                                       DialogResponseHandler handler)
+        public TaskDialogResult WarningBox(string title, string message, string detail, string expanded,
+            string commandButtons, bool showCancelButton, string help, DialogResponseHandler handler)
         {
             return View.CommandBox(title, message, detail, expanded, help, null, commandButtons, showCancelButton,
-                                   SysIcons.Warning, SysIcons.Information, handler);
+                TaskDialogIcon.Warning, TaskDialogIcon.Information, handler);
         }
 
         /// <summary>
@@ -184,11 +183,11 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="showCancelButton"></param>
         /// <param name="mainIcon"></param>
         /// <returns></returns>
-        public DialogResult InfoBox(string title, string message, string detail, string commandButtons,
-                                    string verificationText, bool showCancelButton)
+        public TaskDialogResult InfoBox(string title, string message, string detail, string commandButtons,
+            string verificationText, bool showCancelButton)
         {
             return CommandBox(title, message, detail, commandButtons, showCancelButton, verificationText,
-                              SysIcons.Information, null, delegate { });
+                TaskDialogIcon.Information, null, delegate { });
         }
 
         /// <summary>
@@ -203,12 +202,11 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="mainIcon"></param>
         /// <param name="handler"></param>
         /// <returns></returns>
-        public DialogResult CommandBox(string title, string message, string detail, string commandButtons,
-                                       bool showCancelButton, string verificationText, SysIcons mainIcon,
-                                       DialogResponseHandler handler)
+        public TaskDialogResult CommandBox(string title, string message, string detail, string commandButtons,
+            bool showCancelButton, string verificationText, TaskDialogIcon mainIcon, DialogResponseHandler handler)
         {
             return CommandBox(title, message, detail, commandButtons, showCancelButton, verificationText, mainIcon, null,
-                              handler);
+                handler);
         }
 
         /// <summary>
@@ -224,12 +222,12 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="help">Help URL</param>
         /// <param name="handler"></param>
         /// <returns></returns>
-        public DialogResult CommandBox(string title, string message, string detail, string commandButtons,
-                                       bool showCancelButton, string verificationText, SysIcons mainIcon, string help,
-                                       DialogResponseHandler handler)
+        public TaskDialogResult CommandBox(string title, string message, string detail, string commandButtons,
+            bool showCancelButton, string verificationText, TaskDialogIcon mainIcon, string help,
+            DialogResponseHandler handler)
         {
             return View.CommandBox(title, message, detail, null, help, verificationText, commandButtons,
-                                   showCancelButton, mainIcon, SysIcons.Information, handler);
+                showCancelButton, mainIcon, TaskDialogIcon.Information, handler);
         }
     }
 }
