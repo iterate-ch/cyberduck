@@ -30,7 +30,7 @@ using java.util;
 using org.apache.log4j;
 using X509Certificate = java.security.cert.X509Certificate;
 
-namespace Ch.Cyberduck.Ui.Core
+namespace Ch.Cyberduck.Core
 {
     public class SystemCertificateStore : CertificateStore
     {
@@ -80,7 +80,7 @@ namespace Ch.Cyberduck.Ui.Core
                 while (true)
                 {
                     TaskDialogResult r =
-                        TaskDialog.Show(
+                        TaskDialog.TaskDialog.Show(
                             title: LocaleFactory.localizedString("This certificate is not valid", "Keychain"),
                             mainInstruction: LocaleFactory.localizedString("This certificate is not valid", "Keychain"),
                             content: errorFromChainStatus,
@@ -230,7 +230,7 @@ namespace Ch.Cyberduck.Ui.Core
         private bool CheckForException(string hostname, X509Certificate2 cert)
         {
             string accCert = PreferencesFactory.get().getProperty(hostname + ".certificate.accept");
-            if (Cyberduck.Core.Utils.IsNotBlank(accCert))
+            if (Utils.IsNotBlank(accCert))
             {
                 return accCert.Equals(cert.SubjectName.Name);
             }

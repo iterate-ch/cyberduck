@@ -374,7 +374,6 @@
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\SyncPromptController.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\SyncPromptModel.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\growl\ToolstripNotificationService.cs" />
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\core\SystemCertificateStore.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\core\CrashReporter.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\core\TaskbarApplicationBadgeLabeler.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\controls\ReadOnlyRichTextBox.cs">
