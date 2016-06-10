@@ -30,8 +30,15 @@
     <import file="../../codesign.xml"/>
     <import file="../../archive.xml"/>
 
-    <target name="build" depends="version,source-tar">
+    <target name="build" depends="version">
         <echo message="Building ${cli.bundle} with configuration ${xcode.configuration}"/>
+        <antcall target="tar">
+            <param name="directory" value="${home}"/>
+            <param name="source" value="."/>
+            <param name="target" value="duck-src-${version}.${revision}.tar.gz"/>
+        </antcall>
+        <echo message="Calculating SHA256..."/>
+        <checksum file="${build.deploy}/duck-src-${version}.${revision}.tar.gz" algorithm="sha-256" property="source.sha256"/>
         <local name="build.settings"/>
         <property name="build.settings"
                   value="${build.xcodeoptions} RUNTIME_SOURCE=${runtime.dependency} VERSION=${version} REVISION=${revision} COPYRIGHT='${copyright}'"/>
