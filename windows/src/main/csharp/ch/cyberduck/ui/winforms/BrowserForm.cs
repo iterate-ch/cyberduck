@@ -35,6 +35,7 @@ using ch.cyberduck.core.preferences;
 using ch.cyberduck.ui.comparator;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Resources;
+using Ch.Cyberduck.Core.Sparkle;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Core;
@@ -1700,9 +1701,9 @@ namespace Ch.Cyberduck.Ui.Winforms
                 (sender, args) => new AboutBox().ShowDialog(), () => true);
             Commands.Add(new ToolStripItem[] {licenseToolStripMenuItem}, new[] {licenseMainMenuItem},
                 (sender, args) => ApplicationLauncherFactory.get().open(LocalFactory.get("License.txt")), () => true);
-            bool HasUpdatePrivilges = new WindowsPeriodicUpdateChecker().hasUpdatePrivileges();
+            bool HasUpdatePrivilges = new WinSparklePeriodicUpdateChecker().hasUpdatePrivileges();
             Commands.Add(new ToolStripItem[] {checkToolStripMenuItem}, new[] {updateMainMenuItem},
-                (sender, args) => new WindowsPeriodicUpdateChecker().check(false), () => HasUpdatePrivilges);
+                (sender, args) => new WinSparklePeriodicUpdateChecker().check(false), () => HasUpdatePrivilges);
         }
 
         private void ConfigureGoCommands()

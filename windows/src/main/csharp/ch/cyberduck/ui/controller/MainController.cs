@@ -45,10 +45,10 @@ using ch.cyberduck.core.serializer;
 using ch.cyberduck.core.sftp;
 using ch.cyberduck.core.spectra;
 using ch.cyberduck.core.urlhandler;
+using Ch.Cyberduck.Core.Sparkle;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Core;
 using Ch.Cyberduck.Ui.Core.Preferences;
-using Ch.Cyberduck.Ui.Sparkle;
 using java.util;
 using Microsoft.VisualBasic.ApplicationServices;
 using org.apache.log4j;
@@ -88,7 +88,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private WinSparkle.win_sparkle_can_shutdown_callback_t _canShutdownCallback;
         private WinSparkle.win_sparkle_shutdown_request_callback_t _shutdownRequestCallback;
 
-        private WindowsPeriodicUpdateChecker _updater;
+        private WinSparklePeriodicUpdateChecker _updater;
 
         static MainController()
         {
@@ -498,11 +498,11 @@ namespace Ch.Cyberduck.Ui.Controller
             // register callbacks
             _canShutdownCallback = CanShutdownCallback;
             _shutdownRequestCallback = ShutdownRequestCallback;
-            WindowsPeriodicUpdateChecker.SetCanShutdownCallback(_canShutdownCallback);
-            WindowsPeriodicUpdateChecker.SetShutdownRequestCallback(_shutdownRequestCallback);
+            WinSparklePeriodicUpdateChecker.SetCanShutdownCallback(_canShutdownCallback);
+            WinSparklePeriodicUpdateChecker.SetShutdownRequestCallback(_shutdownRequestCallback);
             if (PreferencesFactory.get().getBoolean("update.check"))
             {
-                _updater = new WindowsPeriodicUpdateChecker();
+                _updater = new WinSparklePeriodicUpdateChecker();
                 if (_updater.hasUpdatePrivileges())
                 {
                     DateTime lastCheck = new DateTime(PreferencesFactory.get().getLong("update.check.last"));

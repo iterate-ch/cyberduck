@@ -125,6 +125,8 @@
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\OSVersion.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\preferences\RoamingSupportDirectoryFinder.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\preferences\AssemblyApplicationResourcesFinder.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\sparkle\WinSparkle.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\sparkle\WinSparklePeriodicUpdateChecker.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\SystemCertificateStore.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\taskdialog\ActiveTaskDialog.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\taskdialog\Localization.cs" />
