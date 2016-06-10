@@ -35,6 +35,9 @@
     <Reference Include="core">
       <HintPath>core\dll\target\Cyberduck.Core.dll</HintPath>
     </Reference>
+    <Reference Include="ExceptionReporter.WinForms">
+      <HintPath>..\mountainduck\windows\cbfs-test\target\lib\ExceptionReporter.WinForms.dll</HintPath>
+    </Reference>
     <Reference Include="IKVM.OpenJDK.Beans">
       <HintPath>core\native\target\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Beans.dll</HintPath>
     </Reference>
@@ -104,6 +107,7 @@
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\AtomicBoolean.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\collections\IndexedLinkedList.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\collections\LRUCache.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\CrashReporter.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\DataProtector.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\editor\SystemEditorFactory.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\editor\SystemWatchEditor.cs" />

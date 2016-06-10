@@ -45,9 +45,9 @@ using ch.cyberduck.core.serializer;
 using ch.cyberduck.core.sftp;
 using ch.cyberduck.core.spectra;
 using ch.cyberduck.core.urlhandler;
+using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Sparkle;
 using Ch.Cyberduck.Core.TaskDialog;
-using Ch.Cyberduck.Ui.Core;
 using Ch.Cyberduck.Ui.Core.Preferences;
 using java.util;
 using Microsoft.VisualBasic.ApplicationServices;
@@ -56,6 +56,7 @@ using Application = ch.cyberduck.core.local.Application;
 using ArrayList = System.Collections.ArrayList;
 using Path = System.IO.Path;
 using UnhandledExceptionEventArgs = System.UnhandledExceptionEventArgs;
+using Utils = Ch.Cyberduck.Ui.Core.Utils;
 
 namespace Ch.Cyberduck.Ui.Controller
 {

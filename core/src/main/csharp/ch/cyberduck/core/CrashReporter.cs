@@ -27,7 +27,7 @@ using Ch.Cyberduck.Core.TaskDialog;
 using ExceptionReporting.Core;
 using Path = System.IO.Path;
 
-namespace Ch.Cyberduck.Ui.Core
+namespace Ch.Cyberduck.Core
 {
     public class CrashReporter
     {
@@ -61,7 +61,8 @@ namespace Ch.Cyberduck.Ui.Core
                 outfile.Write(report.ToString());
             }
             TaskDialogResult result =
-                TaskDialog.Show(title: LocaleFactory.localizedString("Do you want to report the last crash?", "Crash"),
+                TaskDialog.TaskDialog.Show(
+                    title: LocaleFactory.localizedString("Do you want to report the last crash?", "Crash"),
                     mainInstruction: LocaleFactory.localizedString("Do you want to report the last crash?", "Crash"),
                     content:
                         LocaleFactory.localizedString(
