@@ -148,9 +148,8 @@ namespace Ch.Cyberduck.Ui.Controller
                     TaskDialogResult result =
                         _instance.QuestionBox(LocaleFactory.localizedString("Transfer in progress"),
                             LocaleFactory.localizedString("There are files currently being transferred. Quit anyway?"),
-                            null, String.Format("{0}", LocaleFactory.localizedString("Exit")), true //Cancel
-                            );
-                    if (result.Result == TaskDialogSimpleResult.Ok)
+                            null, String.Format("{0}", LocaleFactory.localizedString("Exit")), true);
+                    if (result.CommandButtonResult == 0)
                     {
                         // Quit
                         for (int i = 0; i < _instance.getActions().size(); i++)

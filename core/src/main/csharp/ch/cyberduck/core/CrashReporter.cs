@@ -74,12 +74,9 @@ namespace Ch.Cyberduck.Core
                             LocaleFactory.localizedString("Send", "Crash"),
                             LocaleFactory.localizedString("Don't Send", "Crash")
                         }, mainIcon: TaskDialogIcon.Error);
-            if (result.Result == TaskDialogSimpleResult.Ok)
+            if (result.CommandButtonResult == 0)
             {
-                if (0 == result.CommandButtonResult)
-                {
-                    Post(report.ToString());
-                }
+                Post(report.ToString());
             }
         }
 

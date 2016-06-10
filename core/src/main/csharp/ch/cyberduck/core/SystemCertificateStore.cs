@@ -94,30 +94,27 @@ namespace Ch.Cyberduck.Core
                             mainIcon: TaskDialogIcon.Warning,
                             verificationText: LocaleFactory.localizedString("Always Trust", "Keychain"),
                             footerIcon: TaskDialogIcon.Information);
-                    if (r.Result == TaskDialogSimpleResult.Ok)
+                    if (r.CommandButtonResult == 0)
                     {
-                        if (r.CommandButtonResult == 0)
+                        if (r.VerificationChecked.Value)
                         {
-                            if (r.VerificationChecked.Value)
+                            if (certError)
                             {
-                                if (certError)
-                                {
-                                    //todo can we use the Trusted People and Third Party Certificate Authority Store? Currently X509Chain is the problem.
-                                    AddCertificate(serverCert, StoreName.Root);
-                                }
-                                PreferencesFactory.get()
-                                    .setProperty(hostName + ".certificate.accept", serverCert.SubjectName.Name);
+                                //todo can we use the Trusted People and Third Party Certificate Authority Store? Currently X509Chain is the problem.
+                                AddCertificate(serverCert, StoreName.Root);
                             }
-                            return true;
+                            PreferencesFactory.get()
+                                .setProperty(hostName + ".certificate.accept", serverCert.SubjectName.Name);
                         }
-                        if (r.CommandButtonResult == 1)
-                        {
-                            return false;
-                        }
-                        if (r.CommandButtonResult == 2)
-                        {
-                            X509Certificate2UI.DisplayCertificate(serverCert);
-                        }
+                        return true;
+                    }
+                    if (r.CommandButtonResult == 1)
+                    {
+                        return false;
+                    }
+                    if (r.CommandButtonResult == 2)
+                    {
+                        X509Certificate2UI.DisplayCertificate(serverCert);
                     }
                 }
             }

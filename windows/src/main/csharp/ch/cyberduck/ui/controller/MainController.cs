@@ -237,35 +237,26 @@ namespace Ch.Cyberduck.Ui.Controller
                         {
                             f.copy(LocalFactory.get(PreferencesFactory.get().getProperty("application.support.path"),
                                 f.getName()));
-                            if (TaskDialogSimpleResult.Ok ==
-                                _bc.InfoBox(license.ToString(),
-                                    LocaleFactory.localizedString(
-                                        "Thanks for your support! Your contribution helps to further advance development to make Cyberduck even better.",
-                                        "License"),
-                                    LocaleFactory.localizedString(
-                                        "Your donation key has been copied to the Application Support folder.",
-                                        "License"),
-                                    String.Format("{0}", LocaleFactory.localizedString("Continue", "License")), null,
-                                    false).Result)
+                            _bc.InfoBox(license.ToString(),
+                                LocaleFactory.localizedString(
+                                    "Thanks for your support! Your contribution helps to further advance development to make Cyberduck even better.",
+                                    "License"),
+                                LocaleFactory.localizedString(
+                                    "Your donation key has been copied to the Application Support folder.", "License"),
+                                String.Format("{0}", LocaleFactory.localizedString("Continue", "License")), null, false);
+                            foreach (BrowserController controller in new List<BrowserController>(Browsers))
                             {
-                                foreach (BrowserController controller in new List<BrowserController>(Browsers))
-                                {
-                                    controller.RemoveDonateButton();
-                                }
+                                controller.RemoveDonateButton();
                             }
                         }
                         else
                         {
-                            if (TaskDialogSimpleResult.Ok ==
-                                _bc.WarningBox(LocaleFactory.localizedString("Not a valid donation key", "License"),
-                                    LocaleFactory.localizedString("Not a valid donation key", "License"),
-                                    LocaleFactory.localizedString("This donation key does not appear to be valid.",
-                                        "License"), null,
-                                    String.Format("{0}", LocaleFactory.localizedString("Continue", "License")), false,
-                                    PreferencesFactory.get().getProperty("website.help") + "/faq", delegate { }).Result)
-                            {
-                                ;
-                            }
+                            _bc.WarningBox(LocaleFactory.localizedString("Not a valid donation key", "License"),
+                                LocaleFactory.localizedString("Not a valid donation key", "License"),
+                                LocaleFactory.localizedString("This donation key does not appear to be valid.",
+                                    "License"), null,
+                                String.Format("{0}", LocaleFactory.localizedString("Continue", "License")), false,
+                                PreferencesFactory.get().getProperty("website.help") + "/faq", delegate { });
                         }
                     }
                     else if ("cyberduckprofile".Equals(f.getExtension()))
