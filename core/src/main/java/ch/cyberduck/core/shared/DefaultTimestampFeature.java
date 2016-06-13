@@ -1,4 +1,4 @@
-package ch.cyberduck.core.features;
+package ch.cyberduck.core.shared;
 
 /*
  * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
@@ -16,11 +16,12 @@ package ch.cyberduck.core.features;
  */
 
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Timestamp;
 
-public interface Timestamp {
-    void setTimestamp(Path file, Long modified) throws BackgroundException;
+public abstract class DefaultTimestampFeature implements Timestamp {
 
-    Long getDefault(Local file);
+    @Override
+    public Long getDefault(final Local file) {
+        return file.attributes().getModificationDate();
+    }
 }
