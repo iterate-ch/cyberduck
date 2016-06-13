@@ -107,8 +107,8 @@ public class Terminal {
 
     private Options options;
 
-    public Terminal(final Preferences defaults, final Options options, final CommandLine input) {
-        this.preferences = defaults;
+    public Terminal(final TerminalPreferences defaults, final Options options, final CommandLine input) {
+        this.preferences = defaults.withDefaults(input);
         ProtocolFactory.register(
                 new FTPProtocol(),
                 new FTPTLSProtocol(),
@@ -149,7 +149,7 @@ public class Terminal {
         open(args, new TerminalPreferences());
     }
 
-    protected static void open(final String[] args, final Preferences defaults) {
+    protected static void open(final String[] args, final TerminalPreferences defaults) {
         // Register preferences
         PreferencesFactory.set(defaults);
         final Options options = TerminalOptionsBuilder.options();
