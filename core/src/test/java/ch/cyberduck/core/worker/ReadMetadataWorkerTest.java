@@ -34,6 +34,7 @@ public class ReadMetadataWorkerTest {
         };
         assertTrue(worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
+            @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
                 if(type == Headers.class) {
                     return (T) new Headers() {
@@ -72,6 +73,7 @@ public class ReadMetadataWorkerTest {
         };
         final Map<String, String> map = worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
+            @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
                 if(type == Headers.class) {
                     return (T) new Headers() {
@@ -124,6 +126,7 @@ public class ReadMetadataWorkerTest {
         };
         final Map<String, String> map = worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
+            @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
                 if(type == Headers.class) {
                     return (T) new Headers() {

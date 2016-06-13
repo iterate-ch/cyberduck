@@ -15,6 +15,7 @@
 package ch.cyberduck.cli;
 
 import ch.cyberduck.core.Factory;
+import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.editor.DefaultEditorFactory;
 import ch.cyberduck.core.i18n.RegexLocale;
 import ch.cyberduck.core.local.ExecApplicationLauncher;
@@ -26,6 +27,7 @@ import ch.cyberduck.core.proxy.EnvironmentVariableProxyFinder;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 
+import org.apache.commons.cli.CommandLine;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -120,6 +122,16 @@ public class TerminalPreferences extends MemoryPreferences {
 
         defaults.put("queue.copy.action", TransferAction.comparison.name());
         defaults.put("queue.copy.reload.action", TransferAction.comparison.name());
+    }
+
+    public TerminalPreferences withDefaults(final CommandLine input) {
+        if(input.hasOption(TerminalOptionsBuilder.Params.chmod.name())) {
+            final Permission permission = new Permission(input.getOptionValue(TerminalOptionsBuilder.Params.chmod.name()));
+            defaults.put("queue.upload.permissions.change", String.valueOf(true));
+            defaults.put("queue.upload.permissions.default", String.valueOf(true));
+            defaults.put("queue.upload.permissions.file.default", permission.getMode());
+        }
+        return this;
     }
 
     @Override

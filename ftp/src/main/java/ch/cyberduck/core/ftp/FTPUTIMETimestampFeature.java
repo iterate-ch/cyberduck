@@ -21,6 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.date.MDTMSecondsDateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Timestamp;
+import ch.cyberduck.core.shared.DefaultTimestampFeature;
 
 import org.apache.log4j.Logger;
 
@@ -28,10 +29,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.TimeZone;
 
-/**
- * @version $Id$
- */
-public class FTPUTIMETimestampFeature implements Timestamp {
+public class FTPUTIMETimestampFeature extends DefaultTimestampFeature implements Timestamp {
     private static final Logger log = Logger.getLogger(FTPUTIMETimestampFeature.class);
 
     private FTPSession session;

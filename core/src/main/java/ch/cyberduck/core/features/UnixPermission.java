@@ -15,6 +15,7 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -26,4 +27,6 @@ public interface UnixPermission {
     void setUnixGroup(Path file, String group) throws BackgroundException;
 
     void setUnixPermission(Path file, Permission permission) throws BackgroundException;
+
+    Permission getDefault(Local file);
 }

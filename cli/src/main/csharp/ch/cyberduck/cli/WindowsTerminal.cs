@@ -25,8 +25,8 @@ namespace Ch.Cyberduck.Cli
 {
     internal class WindowsTerminal : Terminal
     {
-        public WindowsTerminal(Options options, CommandLine input)
-            : base(new WindowsTerminalPreferences(), options, input)
+        public WindowsTerminal(TerminalPreferences defaults, Options options, CommandLine input)
+            : base(defaults, options, input)
         {
         }
 
@@ -36,9 +36,7 @@ namespace Ch.Cyberduck.Cli
             java.lang.System.setProperty("file.encoding", "UTF-8");
             Console.OutputEncoding = System.Text.Encoding.UTF8;
 
-            Preferences defaults = new WindowsTerminalPreferences();
-            PreferencesFactory.set(defaults);
-            open(args, defaults);
+            open(args, new WindowsTerminalPreferences());
         }
     }
 }

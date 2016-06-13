@@ -20,7 +20,6 @@ import org.junit.Test;
 
 import java.io.OutputStream;
 import java.nio.charset.Charset;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -48,7 +47,7 @@ public class DownloadTransferTest {
                 return children;
             }
         };
-        assertEquals(Collections.<TransferItem>singletonList(new TransferItem(new Path("/t/c", EnumSet.of(Path.Type.file)), new NullLocal("t", "c"))),
+        assertEquals(Collections.singletonList(new TransferItem(new Path("/t/c", EnumSet.of(Path.Type.file)), new NullLocal("t", "c"))),
                 t.list(session, root, new NullLocal("t") {
                     @Override
                     public boolean exists() {
@@ -229,7 +228,7 @@ public class DownloadTransferTest {
 
             @Override
             public AttributedList<Local> list() throws LocalAccessDeniedException {
-                return new AttributedList<Local>(Arrays.<Local>asList(new NullLocal("p", "a")));
+                return new AttributedList<Local>(Collections.singletonList(new NullLocal("p", "a")));
             }
         });
         final AtomicBoolean prompt = new AtomicBoolean();
@@ -254,7 +253,7 @@ public class DownloadTransferTest {
 
             @Override
             public AttributedList<Local> list() throws LocalAccessDeniedException {
-                return new AttributedList<Local>(Arrays.<Local>asList(new NullLocal("p", "a")));
+                return new AttributedList<Local>(Collections.singletonList(new NullLocal("p", "a")));
             }
         });
         final AtomicBoolean prompt = new AtomicBoolean();
@@ -279,7 +278,7 @@ public class DownloadTransferTest {
 
             @Override
             public AttributedList<Local> list() throws LocalAccessDeniedException {
-                return new AttributedList<Local>(Arrays.<Local>asList(new NullLocal("p", "a")));
+                return new AttributedList<Local>(Collections.singletonList(new NullLocal("p", "a")));
             }
         });
         final AtomicBoolean prompt = new AtomicBoolean();
@@ -304,7 +303,7 @@ public class DownloadTransferTest {
 
             @Override
             public AttributedList<Local> list() throws LocalAccessDeniedException {
-                return new AttributedList<Local>(Arrays.<Local>asList(new NullLocal("p", "a")));
+                return new AttributedList<Local>(Collections.singletonList(new NullLocal("p", "a")));
             }
         });
         final AtomicBoolean prompt = new AtomicBoolean();

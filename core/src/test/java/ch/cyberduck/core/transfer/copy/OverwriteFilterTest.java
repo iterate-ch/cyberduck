@@ -11,6 +11,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.shared.DefaultTimestampFeature;
+import ch.cyberduck.core.shared.DefaultUnixPermissionFeature;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
@@ -22,9 +24,6 @@ import java.util.HashMap;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 public class OverwriteFilterTest {
 
     @Test
@@ -55,6 +54,7 @@ public class OverwriteFilterTest {
         };
         AbstractCopyFilter f = new OverwriteFilter(new NullSession(new Host(new TestProtocol())), new NullSession(new Host(new TestProtocol())) {
             @Override
+            @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
                 if(type.equals(Find.class)) {
                     return (T) find;
@@ -104,9 +104,10 @@ public class OverwriteFilterTest {
         files.put(source, target);
         OverwriteFilter f = new OverwriteFilter(new NullSession(new Host(new TestProtocol())), new NullSession(new Host(new TestProtocol())) {
             @Override
+            @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
                 if(type.equals(Timestamp.class)) {
-                    return (T) new Timestamp() {
+                    return (T) new DefaultTimestampFeature() {
 
                         @Override
                         public void setTimestamp(final Path file, final Long modified) throws BackgroundException {
@@ -116,7 +117,7 @@ public class OverwriteFilterTest {
                     };
                 }
                 if(type.equals(UnixPermission.class)) {
-                    return (T) new UnixPermission() {
+                    return (T) new DefaultUnixPermissionFeature() {
                         @Override
                         public void setUnixOwner(final Path file, final String owner) throws BackgroundException {
                             throw new UnsupportedOperationException();

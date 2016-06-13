@@ -16,6 +16,7 @@ package ch.cyberduck.core.features;
  */
 
 import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
@@ -39,4 +40,6 @@ public interface AclPermission {
      * @return A list of role names.
      */
     List<Acl.Role> getAvailableAclRoles(List<Path> files);
+
+    Acl getDefault(Local file);
 }

@@ -1,5 +1,8 @@
+package ch.cyberduck.core.shared;
+
 /*
  * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -12,21 +15,13 @@
  * GNU General Public License for more details.
  */
 
-package ch.cyberduck.cli;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.features.Timestamp;
 
-import ch.cyberduck.core.preferences.ApplicationTerminalPreferences;
+public abstract class DefaultTimestampFeature implements Timestamp {
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Options;
-
-import java.io.IOException;
-
-public class ApplicationTerminal extends Terminal {
-    public ApplicationTerminal(final TerminalPreferences defaults, final Options options, final CommandLine input) {
-        super(defaults, options, input);
-    }
-
-    public static void main(final String... args) throws IOException {
-        open(args, new ApplicationTerminalPreferences());
+    @Override
+    public Long getDefault(final Local file) {
+        return file.attributes().getModificationDate();
     }
 }

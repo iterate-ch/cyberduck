@@ -29,9 +29,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 public class RenameExistingFilterTest {
 
     @Test
@@ -53,6 +50,7 @@ public class RenameExistingFilterTest {
         final AtomicBoolean c = new AtomicBoolean();
         final RenameExistingFilter f = new RenameExistingFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host(new TestProtocol())) {
             @Override
+            @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
                 if(type == Move.class) {
                     return (T) new Move() {
@@ -123,6 +121,7 @@ public class RenameExistingFilterTest {
         };
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
+            @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
                 if(type.equals(Move.class)) {
                     return (T) new Move() {
@@ -225,6 +224,7 @@ public class RenameExistingFilterTest {
         };
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
+            @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
                 if(type.equals(Move.class)) {
                     return (T) new Move() {

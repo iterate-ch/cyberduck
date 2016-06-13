@@ -66,6 +66,12 @@ public final class TerminalOptionsBuilder {
                 .isRequired(false)
                 .create());
         options.addOption(OptionBuilder
+                .withDescription("Set explicit permission from octal mode value for uploaded file")
+                .withLongOpt(Params.chmod.name())
+                .hasArgs(1).withArgName("<mode>").withValueSeparator(' ')
+                .isRequired(false)
+                .create());
+        options.addOption(OptionBuilder
                 .withDescription("Copy between servers")
                 .withLongOpt(TerminalAction.copy.name())
                 .hasArgs(2).withArgName("url> <url").withValueSeparator(' ')
@@ -217,6 +223,7 @@ public final class TerminalOptionsBuilder {
         username,
         password,
         identity,
-        application
+        application,
+        chmod
     }
 }

@@ -168,24 +168,15 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             status.setLength(0L);
         }
         if(options.permissions) {
-            final Permission permission;
-            if(status.isExists()) {
-                permission = status.getRemote().getPermission();
-            }
-            else {
-                if(preferences.getBoolean("queue.upload.permissions.default")) {
-                    if(local.isFile()) {
-                        permission = new Permission(
-                                preferences.getInteger("queue.upload.permissions.file.default"));
-                    }
-                    else {
-                        permission = new Permission(
-                                preferences.getInteger("queue.upload.permissions.folder.default"));
-                    }
+            Permission permission = Permission.EMPTY;
+            final UnixPermission feature = session.getFeature(UnixPermission.class);
+            if(feature != null) {
+                if(status.isExists()) {
+                    // Already set when reading attributes of file
+                    permission = status.getRemote().getPermission();
                 }
                 else {
-                    // Read permissions from local file
-                    permission = local.attributes().getPermission();
+                    permission = feature.getDefault(local);
                 }
             }
             // Setting target UNIX permissions in transfer status
@@ -193,45 +184,24 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         }
         if(options.acl) {
             Acl acl = Acl.EMPTY;
-            if(status.isExists()) {
-                final AclPermission feature = session.getFeature(AclPermission.class);
-                if(feature != null) {
+            final AclPermission feature = session.getFeature(AclPermission.class);
+            if(feature != null) {
+                if(status.isExists()) {
                     acl = feature.getPermission(file);
                 }
-            }
-            else {
-                final Permission permission;
-                if(preferences.getBoolean("queue.upload.permissions.default")) {
-                    if(local.isFile()) {
-                        permission = new Permission(
-                                preferences.getInteger("queue.upload.permissions.file.default"));
-                    }
-                    else {
-                        permission = new Permission(
-                                preferences.getInteger("queue.upload.permissions.folder.default"));
-                    }
-                }
                 else {
-                    // Read permissions from local file
-                    permission = local.attributes().getPermission();
-                }
-                acl = new Acl();
-                if(permission.getOther().implies(Permission.Action.read)) {
-                    acl.addAll(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ));
-                }
-                if(permission.getGroup().implies(Permission.Action.read)) {
-                    acl.addAll(new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED), new Acl.Role(Acl.Role.READ));
-                }
-                if(permission.getGroup().implies(Permission.Action.write)) {
-                    acl.addAll(new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED), new Acl.Role(Acl.Role.WRITE));
+                    acl = feature.getDefault(local);
                 }
             }
             // Setting target ACL in transfer status
             status.setAcl(acl);
         }
         if(options.timestamp) {
-            // Read timestamps from local file
-            status.setTimestamp(local.attributes().getModificationDate());
+            final Timestamp feature = session.getFeature(Timestamp.class);
+            if(feature != null) {
+                // Read timestamps from local file
+                status.setTimestamp(feature.getDefault(local));
+            }
         }
         if(options.metadata) {
             final Headers feature = session.getFeature(Headers.class);

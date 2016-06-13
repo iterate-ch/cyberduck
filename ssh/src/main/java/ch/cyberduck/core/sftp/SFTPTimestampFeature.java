@@ -20,15 +20,13 @@ package ch.cyberduck.core.sftp;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Timestamp;
+import ch.cyberduck.core.shared.DefaultTimestampFeature;
 
 import java.io.IOException;
 
 import net.schmizz.sshj.sftp.FileAttributes;
 
-/**
- * @version $Id$
- */
-public class SFTPTimestampFeature implements Timestamp {
+public class SFTPTimestampFeature extends DefaultTimestampFeature implements Timestamp {
 
     private SFTPSession session;
 
@@ -41,7 +39,7 @@ public class SFTPTimestampFeature implements Timestamp {
         try {
             // We must both set the accessed and modified time. See AttribFlags.SSH_FILEXFER_ATTR_V3_ACMODTIME
             final FileAttributes attrs = new FileAttributes.Builder().withAtimeMtime(
-                    System.currentTimeMillis() / 1000, modified/1000
+                    System.currentTimeMillis() / 1000, modified / 1000
             ).build();
             session.sftp().setAttributes(file.getAbsolute(), attrs);
         }
