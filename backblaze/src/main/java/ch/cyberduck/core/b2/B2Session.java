@@ -87,6 +87,9 @@ public class B2Session extends HttpSession<B2ApiClient> {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
+        finally {
+            super.logout();
+        }
     }
 
     @Override

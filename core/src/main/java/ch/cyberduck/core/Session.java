@@ -181,11 +181,14 @@ public abstract class Session<C> implements TranscriptListener {
         }
     }
 
+    protected void logout() throws BackgroundException {
+        // Nullify password on disconnect. Some implementations that do not swap credentials with a token require the password while connected.
+        host.getCredentials().setPassword(null);
+    }
+
     /**
      * Close the connection to the remote host. Subsequent calls to #getClient() must return null.
      */
-    protected abstract void logout() throws BackgroundException;
-
     protected void disconnect() {
         state = State.closed;
     }
