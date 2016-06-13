@@ -34,7 +34,7 @@ public abstract class ExecutorServiceThreadPool<T> implements ThreadPool<T> {
 
     private final ExecutorCompletionService<T> completion;
 
-    private final AtomicInteger counter = new AtomicInteger();
+    private final AtomicInteger size = new AtomicInteger();
 
     public ExecutorServiceThreadPool(final ExecutorService pool) {
         this.pool = pool;
@@ -65,11 +65,15 @@ public abstract class ExecutorServiceThreadPool<T> implements ThreadPool<T> {
 
     @Override
     public void await() throws BackgroundException {
-        for(int i = 0; i < counter.get(); i++) {
+        while(size.get() > 0) {
             try {
-                log.info(String.format("Await completion of task %d of %d", i, counter.get()));
-                final Future<T> task = completion.take();
-                task.get();
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Await completion for %d submitted tasks in queue", size.get()));
+                }
+                final T value = completion.take().get();
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Finished task with return value %s", value));
+                }
             }
             catch(InterruptedException e) {
                 throw new ConnectionCanceledException(e);
@@ -81,6 +85,9 @@ public abstract class ExecutorServiceThreadPool<T> implements ThreadPool<T> {
                 }
                 throw new BackgroundException(e);
             }
+            finally {
+                size.decrementAndGet();
+            }
         }
     }
 
@@ -91,7 +98,7 @@ public abstract class ExecutorServiceThreadPool<T> implements ThreadPool<T> {
     @Override
     public Future<T> execute(final Callable<T> command) {
         final Future<T> future = completion.submit(command);
-        counter.incrementAndGet();
+        size.incrementAndGet();
         return future;
     }
 }
