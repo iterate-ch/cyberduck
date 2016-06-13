@@ -16,7 +16,6 @@ package ch.cyberduck.cli;
 
 import ch.cyberduck.core.preferences.ApplicationTerminalPreferences;
 import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
@@ -24,17 +23,11 @@ import org.apache.commons.cli.Options;
 import java.io.IOException;
 
 public class ApplicationTerminal extends Terminal {
-    public ApplicationTerminal(final Options options, final CommandLine input) {
-        super(options, input);
-    }
-
     public ApplicationTerminal(final Preferences defaults, final Options options, final CommandLine input) {
         super(defaults, options, input);
     }
 
     public static void main(final String... args) throws IOException {
-        final Preferences defaults = new ApplicationTerminalPreferences();
-        PreferencesFactory.set(defaults);
-        open(args, defaults);
+        open(args, new ApplicationTerminalPreferences());
     }
 }

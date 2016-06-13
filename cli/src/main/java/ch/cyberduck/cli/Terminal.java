@@ -107,10 +107,6 @@ public class Terminal {
 
     private Options options;
 
-    public Terminal(final Options options, final CommandLine input) {
-        this(new TerminalPreferences(), options, input);
-    }
-
     public Terminal(final Preferences defaults, final Options options, final CommandLine input) {
         this.preferences = defaults;
         ProtocolFactory.register(
@@ -150,12 +146,12 @@ public class Terminal {
      * @param args Command line arguments
      */
     public static void main(final String... args) throws IOException {
-        final TerminalPreferences defaults = new TerminalPreferences();
-        PreferencesFactory.set(defaults);
-        open(args, defaults);
+        open(args, new TerminalPreferences());
     }
 
     protected static void open(final String[] args, final Preferences defaults) {
+        // Register preferences
+        PreferencesFactory.set(defaults);
         final Options options = TerminalOptionsBuilder.options();
         final Console console = new Console();
         try {
