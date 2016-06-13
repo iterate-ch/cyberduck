@@ -21,6 +21,7 @@ using System.Security.Cryptography.X509Certificates;
 using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
 using ch.cyberduck.core.preferences;
+using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Ssl;
 using Ch.Cyberduck.Core.TaskDialog;
 using java.io;
@@ -30,11 +31,61 @@ using java.util;
 using org.apache.log4j;
 using X509Certificate = java.security.cert.X509Certificate;
 
-namespace Ch.Cyberduck.Core
+namespace ch.iterate.mountainduck.windows.Controller.Preferences
 {
     public class SystemCertificateStore : CertificateStore
     {
         private static readonly Logger Log = Logger.getLogger(typeof (SystemCertificateStore).FullName);
+
+        public X509Certificate choose(string[] keyTypes, Principal[] issuers, string hostname, string prompt)
+        {
+            X509Store store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
+            try
+            {
+                store.Open(OpenFlags.ReadOnly);
+                X509Certificate2Collection found = new X509Certificate2Collection();
+                foreach (Principal issuer in issuers)
+                {
+                    // JBA 20141028, windows is expecting EMAILADDRESS in issuer name, but the rfc1779 emmits it as an OID, which makes it not match
+                    // this is not the best way to fix the issue, but I can't find anyway to get an X500Principal to not emit EMAILADDRESS as an OID
+                    string rfc1779 = issuer.toString()
+                        .Replace("EMAILADDRESS=", "E=")
+                        .Replace("ST=", "S=")
+                        .Replace("SP=", "S=");
+                    Log.debug("Query certificate store for issuer name " + rfc1779);
+
+                    X509Certificate2Collection certificates =
+                        store.Certificates.Find(X509FindType.FindByIssuerDistinguishedName, rfc1779, true);
+                    found.AddRange(certificates);
+                    foreach (X509Certificate2 certificate in certificates)
+                    {
+                        Log.debug("Found certificate with DN " + certificate.IssuerName.Name);
+                    }
+                }
+                X509Certificate2Collection selected = X509Certificate2UI.SelectFromCollection(found,
+                    LocaleFactory.localizedString("Choose"), prompt, X509SelectionFlag.SingleSelection);
+                foreach (X509Certificate2 c in selected)
+                {
+                    return ConvertCertificate(c);
+                }
+                throw new ConnectionCanceledException();
+            }
+            finally
+            {
+                store.Close();
+            }
+        }
+
+        public bool display(List certificates)
+        {
+            if (certificates.isEmpty())
+            {
+                return false;
+            }
+            X509Certificate2 cert = ConvertCertificate(certificates.iterator().next() as X509Certificate);
+            X509Certificate2UI.DisplayCertificate(cert);
+            return true;
+        }
 
         public bool isTrusted(String hostName, List certs)
         {
@@ -77,26 +128,48 @@ namespace Ch.Cyberduck.Core
 
             if (null != errorFromChainStatus)
             {
-                while (true)
+                // Title: LocaleFactory.localizedString("This certificate is not valid", "Keychain")
+                // Main Instruction: LocaleFactory.localizedString("This certificate is not valid", "Keychain")
+                // Content: errorFromChainStatus
+                // Verification Text: LocaleFactory.localizedString("Always Trust", "Keychain")
+                // CommandButtons: { LocaleFactory.localizedString("Continue", "Credentials"), LocaleFactory.localizedString("Disconnect"), LocaleFactory.localizedString("Show Certificate", "Keychain") }
+                // ShowCancelButton: false
+                // Main Icon: Warning
+                // Footer Icon: Information
+
+                TaskDialogResult result =
+                    TaskDialog.Show(title: LocaleFactory.localizedString("This certificate is not valid", "Keychain"),
+                        mainInstruction: LocaleFactory.localizedString("This certificate is not valid", "Keychain"),
+                        verificationText: LocaleFactory.localizedString("Always Trust", "Keychain"),
+                        content: errorFromChainStatus,
+                        commandLinks:
+                            new string[]
+                            {
+                                LocaleFactory.localizedString("Continue", "Credentials"),
+                                LocaleFactory.localizedString("Disconnect"),
+                                LocaleFactory.localizedString("Show Certificate", "Keychain")
+                            },
+                        mainIcon: TaskDialogIcon.Warning, footerIcon: TaskDialogIcon.Information,
+                        callback: (dialog, args, data) =>
+                        {
+                            switch (args.Notification)
+                            {
+                                case TaskDialogNotification.ButtonClicked:
+                                    if (args.ButtonIndex == 2)
+                                    {
+                                        X509Certificate2UI.DisplayCertificate(serverCert);
+                                        return true;
+                                    }
+                                    break;
+                            }
+                            return false;
+                        });
+
+                if (result.Result == TaskDialogSimpleResult.Ok)
                 {
-                    TaskDialogResult r =
-                        TaskDialog.TaskDialog.Show(
-                            title: LocaleFactory.localizedString("This certificate is not valid", "Keychain"),
-                            mainInstruction: LocaleFactory.localizedString("This certificate is not valid", "Keychain"),
-                            content: errorFromChainStatus,
-                            commandLinks:
-                                new string[]
-                                {
-                                    LocaleFactory.localizedString("Continue", "Credentials"),
-                                    LocaleFactory.localizedString("Disconnect"),
-                                    LocaleFactory.localizedString("Show Certificate", "Keychain")
-                                },
-                            mainIcon: TaskDialogIcon.Warning,
-                            verificationText: LocaleFactory.localizedString("Always Trust", "Keychain"),
-                            footerIcon: TaskDialogIcon.Information);
-                    if (r.CommandButtonResult == 0)
+                    if (result.CommandButtonResult == 0)
                     {
-                        if (r.VerificationChecked.Value)
+                        if (result.VerificationChecked == true)
                         {
                             if (certError)
                             {
@@ -108,67 +181,13 @@ namespace Ch.Cyberduck.Core
                         }
                         return true;
                     }
-                    if (r.CommandButtonResult == 1)
+                    if (result.CommandButtonResult == 1)
                     {
                         return false;
                     }
-                    if (r.CommandButtonResult == 2)
-                    {
-                        X509Certificate2UI.DisplayCertificate(serverCert);
-                    }
                 }
             }
             return true;
-        }
-
-        public bool display(List certificates)
-        {
-            if (certificates.isEmpty())
-            {
-                return false;
-            }
-            X509Certificate2 cert = ConvertCertificate(certificates.iterator().next() as X509Certificate);
-            X509Certificate2UI.DisplayCertificate(cert);
-            return true;
-        }
-
-        public X509Certificate choose(string[] keyTypes, Principal[] issuers, string hostname, string prompt)
-        {
-            X509Store store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
-            try
-            {
-                store.Open(OpenFlags.ReadOnly);
-                X509Certificate2Collection found = new X509Certificate2Collection();
-                foreach (Principal issuer in issuers)
-                {
-                    // JBA 20141028, windows is expecting EMAILADDRESS in issuer name, but the rfc1779 emmits it as an OID, which makes it not match
-                    // this is not the best way to fix the issue, but I can't find anyway to get an X500Principal to not emit EMAILADDRESS as an OID
-                    string rfc1779 = issuer.toString()
-                        .Replace("EMAILADDRESS=", "E=")
-                        .Replace("ST=", "S=")
-                        .Replace("SP=", "S=");
-                    Log.debug("Query certificate store for issuer name " + rfc1779);
-
-                    X509Certificate2Collection certificates =
-                        store.Certificates.Find(X509FindType.FindByIssuerDistinguishedName, rfc1779, true);
-                    found.AddRange(certificates);
-                    foreach (X509Certificate2 certificate in certificates)
-                    {
-                        Log.debug("Found certificate with DN " + certificate.IssuerName.Name);
-                    }
-                }
-                X509Certificate2Collection selected = X509Certificate2UI.SelectFromCollection(found,
-                    LocaleFactory.localizedString("Choose"), prompt, X509SelectionFlag.SingleSelection);
-                foreach (X509Certificate2 c in selected)
-                {
-                    return ConvertCertificate(c);
-                }
-                throw new ConnectionCanceledException();
-            }
-            finally
-            {
-                store.Close();
-            }
         }
 
         public static X509Certificate2 ConvertCertificate(X509Certificate certificate)
@@ -180,6 +199,31 @@ namespace Ch.Cyberduck.Core
         {
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
             return (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(certificate.RawData));
+        }
+
+        private void AddCertificate(X509Certificate2 cert, StoreName storeName)
+        {
+            Log.debug("Add certificate:" + cert.SubjectName.Name);
+            X509Store store = new X509Store(storeName, StoreLocation.CurrentUser);
+            try
+            {
+                store.Open(OpenFlags.ReadWrite);
+                store.Add(cert);
+            }
+            finally
+            {
+                store.Close();
+            }
+        }
+
+        private bool CheckForException(string hostname, X509Certificate2 cert)
+        {
+            string accCert = PreferencesFactory.get().getProperty(hostname + ".certificate.accept");
+            if (Utils.IsNotBlank(accCert))
+            {
+                return accCert.Equals(cert.SubjectName.Name);
+            }
+            return false;
         }
 
         private string GetErrorFromChainStatus(X509Chain chain, string hostName)
@@ -222,31 +266,6 @@ namespace Ch.Cyberduck.Core
                         "Keychain").Replace("%@", hostName);
             }
             return error;
-        }
-
-        private bool CheckForException(string hostname, X509Certificate2 cert)
-        {
-            string accCert = PreferencesFactory.get().getProperty(hostname + ".certificate.accept");
-            if (Utils.IsNotBlank(accCert))
-            {
-                return accCert.Equals(cert.SubjectName.Name);
-            }
-            return false;
-        }
-
-        private void AddCertificate(X509Certificate2 cert, StoreName storeName)
-        {
-            Log.debug("Add certificate:" + cert.SubjectName.Name);
-            X509Store store = new X509Store(storeName, StoreLocation.CurrentUser);
-            try
-            {
-                store.Open(OpenFlags.ReadWrite);
-                store.Add(cert);
-            }
-            finally
-            {
-                store.Close();
-            }
         }
     }
 }
