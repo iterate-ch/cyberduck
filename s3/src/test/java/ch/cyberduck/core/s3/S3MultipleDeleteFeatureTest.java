@@ -62,11 +62,7 @@ public class S3MultipleDeleteFeatureTest {
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test);
         assertTrue(new S3FindFeature(session).find(test));
-        new S3MultipleDeleteFeature(session).delete(Arrays.asList(test, test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3MultipleDeleteFeature(session).delete(Arrays.asList(test, test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session).find(test));
         session.close();
     }
@@ -86,11 +82,7 @@ public class S3MultipleDeleteFeatureTest {
         test.setType(EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         assertTrue(new S3FindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
-        new S3MultipleDeleteFeature(session).delete(Arrays.asList(test, test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3MultipleDeleteFeature(session).delete(Arrays.asList(test, test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session).find(test));
         session.close();
     }
@@ -108,11 +100,7 @@ public class S3MultipleDeleteFeatureTest {
         new S3DirectoryFeature(session).mkdir(container);
         assertTrue(new S3FindFeature(session).find(container));
         new S3MultipleDeleteFeature(session).delete(Arrays.asList(container,
-                new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+                new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session).find(container));
         session.close();
     }
@@ -145,10 +133,6 @@ public class S3MultipleDeleteFeatureTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume));
-        new S3MultipleDeleteFeature(session).delete(Arrays.asList(container, container), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3MultipleDeleteFeature(session).delete(Arrays.asList(container, container), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

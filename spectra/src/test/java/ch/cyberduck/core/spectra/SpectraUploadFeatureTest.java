@@ -88,11 +88,7 @@ public class SpectraUploadFeatureTest {
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
-        new SpectraDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
         session.close();
     }
@@ -144,11 +140,7 @@ public class SpectraUploadFeatureTest {
                 status1, new DisabledConnectionCallback());
         upload.upload(test2, local2, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status2, new DisabledConnectionCallback());
-        new SpectraDeleteFeature(session).delete(Arrays.asList(test1, test2), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new SpectraDeleteFeature(session).delete(Arrays.asList(test1, test2), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local1.delete();
         local2.delete();
         session.close();

@@ -95,11 +95,7 @@ public class KMSEncryptionFeatureTest {
         final Encryption.Algorithm value = feature.getEncryption(test);
         assertEquals("aws:kms", value.algorithm);
         assertNotNull(value.key);
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -121,11 +117,7 @@ public class KMSEncryptionFeatureTest {
         final Encryption.Algorithm value = feature.getEncryption(test);
         assertEquals("aws:kms", value.algorithm);
         assertEquals("arn:aws:kms:eu-west-1:930717317329:key/015fa0af-f95e-483e-8fb6-abffb46fb783", value.key);
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 

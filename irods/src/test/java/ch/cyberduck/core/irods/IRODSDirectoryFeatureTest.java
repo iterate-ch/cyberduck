@@ -72,11 +72,7 @@ public class IRODSDirectoryFeatureTest {
         new IRODSDirectoryFeature(session).mkdir(test);
         assertTrue(session.getFeature(Find.class).find(test));
 
-        session.getFeature(Delete.class).delete(Arrays.asList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        session.getFeature(Delete.class).delete(Arrays.asList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(test));
         session.close();
     }

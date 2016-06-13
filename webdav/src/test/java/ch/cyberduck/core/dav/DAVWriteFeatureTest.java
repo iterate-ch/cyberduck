@@ -84,11 +84,7 @@ public class DAVWriteFeatureTest {
             System.arraycopy(content, 1, reference, 0, content.length - 1);
             assertArrayEquals(reference, buffer);
         }
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -128,11 +124,7 @@ public class DAVWriteFeatureTest {
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
         IOUtils.copy(new DAVReadFeature(session).read(test, new TransferStatus().length(content.length)), out);
         assertArrayEquals(content, out.toByteArray());
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -179,11 +171,7 @@ public class DAVWriteFeatureTest {
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -218,11 +206,7 @@ public class DAVWriteFeatureTest {
         final ByteArrayOutputStream out = new ByteArrayOutputStream(source.length);
         IOUtils.copy(new DAVReadFeature(session).read(test, new TransferStatus().length(source.length)), out);
         assertArrayEquals(source, out.toByteArray());
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -257,11 +241,7 @@ public class DAVWriteFeatureTest {
         final ByteArrayOutputStream out = new ByteArrayOutputStream(source.length);
         IOUtils.copy(new DAVReadFeature(session).read(test, new TransferStatus().length(source.length)), out);
         assertArrayEquals(source, out.toByteArray());
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test(expected = AccessDeniedException.class)
@@ -313,11 +293,7 @@ public class DAVWriteFeatureTest {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature(session).touch(test);
         assertTrue(feature.append(test, 0L, PathCache.empty()).append);
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -355,10 +331,6 @@ public class DAVWriteFeatureTest {
         assertTrue(redirected.get());
         new DAVDeleteFeature(session).delete(Collections.singletonList(
                 new Path(new DefaultHomeFinderService(session).find(), name, EnumSet.of(Path.Type.file))
-        ), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        ), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

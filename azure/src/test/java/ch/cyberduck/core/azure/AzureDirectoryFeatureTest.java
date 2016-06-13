@@ -40,11 +40,7 @@ public class AzureDirectoryFeatureTest {
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new AzureDirectoryFeature(session, null).mkdir(container);
         assertTrue(new AzureFindFeature(session, null).find(container));
-        new AzureDeleteFeature(session, null).delete(Collections.<Path>singletonList(container), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new AzureDeleteFeature(session, null).delete(Collections.<Path>singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new AzureFindFeature(session, null).find(container));
     }
 
@@ -63,11 +59,7 @@ public class AzureDirectoryFeatureTest {
         new AzureDirectoryFeature(session, null).mkdir(placeholder);
         placeholder.setType(EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         assertTrue(new AzureFindFeature(session, null).find(placeholder));
-        new AzureDeleteFeature(session, null).delete(Collections.<Path>singletonList(placeholder), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new AzureDeleteFeature(session, null).delete(Collections.<Path>singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new AzureFindFeature(session, null).find(placeholder));
     }
 }

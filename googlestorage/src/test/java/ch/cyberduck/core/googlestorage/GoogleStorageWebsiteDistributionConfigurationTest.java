@@ -132,11 +132,7 @@ public class GoogleStorageWebsiteDistributionConfigurationTest {
         new GoogleStorageBucketCreateService(session).create(bucket, "US");
         configuration.write(bucket, new Distribution(null, Distribution.WEBSITE, true), new DisabledLoginCallback());
         assertTrue(configuration.read(bucket, Distribution.WEBSITE, new DisabledLoginCallback()).isEnabled());
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(bucket), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 

@@ -94,11 +94,7 @@ public class B2LargeUploadServiceTest {
         in.close();
         buffer.close();
         assertArrayEquals(content, buffer.toByteArray());
-        new B2DeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new B2DeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
         session.close();
     }

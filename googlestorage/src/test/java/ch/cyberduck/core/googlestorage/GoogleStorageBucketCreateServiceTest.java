@@ -64,11 +64,7 @@ public class GoogleStorageBucketCreateServiceTest {
         final Path bucket = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new GoogleStorageBucketCreateService(session).create(bucket, "US");
         assertTrue(session.getFeature(Find.class).find(bucket));
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(bucket), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(bucket));
         session.close();
     }

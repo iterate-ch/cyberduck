@@ -116,11 +116,7 @@ public class S3AccessControlListFeatureTest {
             acl.addAll(new Acl.CanonicalUser("80b9982b7b08045ee86680cc47f43c84bf439494a89ece22b5330f8a49477cf6"), new Acl.Role(Acl.Role.FULL));
             assertEquals(acl, f.getPermission(test));
         }
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -139,11 +135,7 @@ public class S3AccessControlListFeatureTest {
         new S3TouchFeature(session).touch(test);
         final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
         assertNotNull(f.getPermission(test));
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -161,11 +153,7 @@ public class S3AccessControlListFeatureTest {
         new S3DirectoryFeature(session).mkdir(placeholder);
         final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
         assertNotNull(f.getPermission(placeholder));
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(placeholder), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 

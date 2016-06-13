@@ -60,11 +60,7 @@ public class SwiftCopyFeatureTest {
         new SwiftCopyFeature(session).copy(test, copy);
         assertTrue(new SwiftFindFeature(session).find(test));
         assertTrue(new SwiftFindFeature(session).find(copy));
-        new SwiftDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new SwiftDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

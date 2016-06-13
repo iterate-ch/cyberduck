@@ -101,11 +101,7 @@ public class SwiftDistributionConfigurationTest {
         new SwiftDirectoryFeature(session).mkdir(container, "ORD", new TransferStatus());
         configuration.write(container, new Distribution(Distribution.DOWNLOAD, true), new DisabledLoginCallback());
         assertTrue(configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginCallback()).isEnabled());
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

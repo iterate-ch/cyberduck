@@ -60,11 +60,7 @@ public class SFTPTouchFeatureTest {
         final AttributedList<Path> list = session.list(home, new DisabledListProgressListener());
         assertTrue(list.contains(test));
         assertEquals("664", list.get(test).attributes().getPermission().getMode());
-        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

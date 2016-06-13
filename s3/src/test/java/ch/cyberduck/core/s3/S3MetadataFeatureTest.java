@@ -71,11 +71,7 @@ public class S3MetadataFeatureTest {
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test);
         final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("Content-Type"));
         assertEquals("text/plain", metadata.get("Content-Type"));
@@ -116,11 +112,7 @@ public class S3MetadataFeatureTest {
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, storage.getClass(test));
         assertEquals("AES256", encryption.getEncryption(test).algorithm);
 
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -142,11 +134,7 @@ public class S3MetadataFeatureTest {
         final Map<String, String> metadata = feature.getMetadata(test);
         assertTrue(metadata.containsKey("Content-Type"));
         assertEquals("text/plain", metadata.get("Content-Type"));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

@@ -46,11 +46,7 @@ public class FTPUnixPermissionFeatureTest {
         new DefaultTouchFeature(session).touch(test);
         new FTPUnixPermissionFeature(session).setUnixPermission(test, new Permission(666));
         assertEquals("666", session.list(home, new DisabledListProgressListener()).get(test).attributes().getPermission().getMode());
-        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

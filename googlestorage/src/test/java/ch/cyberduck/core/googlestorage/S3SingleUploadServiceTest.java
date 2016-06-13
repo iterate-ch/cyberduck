@@ -88,11 +88,7 @@ public class S3SingleUploadServiceTest {
         final PathAttributes attributes = session.list(container,
                 new DisabledListProgressListener()).get(test).attributes();
         assertEquals(random.getBytes().length, attributes.getSize());
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
         session.close();
     }

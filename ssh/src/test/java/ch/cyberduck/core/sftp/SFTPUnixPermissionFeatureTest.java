@@ -149,11 +149,7 @@ public class SFTPUnixPermissionFeatureTest {
         assertEquals(new Permission(Permission.Action.all, Permission.Action.read, Permission.Action.read,
                 false, false, true), new SFTPListService(session).list(test.getParent(), new DisabledListProgressListener()).get(
                 test).attributes().getPermission());
-        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

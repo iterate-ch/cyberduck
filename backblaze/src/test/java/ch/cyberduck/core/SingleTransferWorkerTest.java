@@ -117,10 +117,6 @@ public class SingleTransferWorkerTest {
         assertEquals(100 * 1024 * 1024 + 1, new B2AttributesFeature(session).find(test).getSize());
         assertEquals(100 * 1024 * 1024 + 1, counter.getSent(), 0L);
         assertTrue(failed.get());
-        new B2DeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new B2DeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

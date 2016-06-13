@@ -102,12 +102,7 @@ public class SwiftThresholdUploadService implements Upload {
         final Object checksum = feature.upload(file, local, throttle, listener, status, callback);
         if(!segments.isEmpty()) {
             // Clean up any old segments
-            new SwiftMultipleDeleteFeature(session).delete(segments, new DisabledLoginCallback(), new Delete.Callback() {
-                @Override
-                public void delete(final Path file) {
-                    //
-                }
-            });
+            new SwiftMultipleDeleteFeature(session).delete(segments, new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
         return checksum;
     }

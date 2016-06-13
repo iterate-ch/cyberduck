@@ -188,11 +188,7 @@ public class B2ReadFeatureTest {
         System.arraycopy(content, 100, reference, 0, content.length - 100);
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
-        new B2DeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new B2DeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -232,11 +228,7 @@ public class B2ReadFeatureTest {
         System.arraycopy(content, 100, reference, 0, content.length - 100);
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
-        new B2DeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new B2DeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

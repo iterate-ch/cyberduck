@@ -95,11 +95,7 @@ public class SFTPReadFeatureTest {
             in.close();
             assertArrayEquals(content, buffer.toByteArray());
         }
-        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -137,11 +133,7 @@ public class SFTPReadFeatureTest {
             System.arraycopy(content, 100, reference, 0, content.length - 100);
             assertArrayEquals(reference, buffer.toByteArray());
         }
-        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

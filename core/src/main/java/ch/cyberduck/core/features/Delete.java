@@ -27,4 +27,11 @@ public interface Delete {
     interface Callback {
         void delete(Path file);
     }
+
+    class DisabledCallback implements Callback {
+        @Override
+        public void delete(final Path file) {
+            //
+        }
+    }
 }

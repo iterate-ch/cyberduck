@@ -60,18 +60,10 @@ public class FTPMoveFeatureTest {
         final Path test = new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature(session).touch(test);
         final Path target = new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new FTPMoveFeature(session).move(test, target, false, new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new FTPMoveFeature(session).move(test, target, false, new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(test));
         assertTrue(session.getFeature(Find.class).find(target));
-        new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -88,18 +80,10 @@ public class FTPMoveFeatureTest {
         new DefaultTouchFeature(session).touch(test);
         final Path target = new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature(session).touch(target);
-        new FTPMoveFeature(session).move(test, target, false, new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new FTPMoveFeature(session).move(test, target, false, new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(test));
         assertTrue(session.getFeature(Find.class).find(target));
-        new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -113,11 +97,7 @@ public class FTPMoveFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final DefaultHomeFinderService workdir = new FTPWorkdirService(session);
         final Path test = new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new FTPMoveFeature(session).move(test, new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), false, new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new FTPMoveFeature(session).move(test, new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), false, new Delete.DisabledCallback());
         session.close();
     }
 }

@@ -102,11 +102,7 @@ public class SpectraReadFeatureTest {
         new StreamCopier(status, status).transfer(in, buffer);
         assertArrayEquals(content, buffer.toByteArray());
         in.close();
-        new SpectraDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new SpectraDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 

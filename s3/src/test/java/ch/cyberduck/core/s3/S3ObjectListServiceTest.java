@@ -199,11 +199,7 @@ public class S3ObjectListServiceTest {
         placeholder.setType(EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         final AttributedList<Path> list = new S3ObjectListService(session).list(placeholder, new DisabledListProgressListener());
         assertTrue(list.isEmpty());
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 

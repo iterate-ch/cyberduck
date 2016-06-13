@@ -71,18 +71,10 @@ public class S3MultipartCopyFeatureTest {
         feature.copy(test, copy);
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(content.length, new S3AttributesFeature(session).find(test).getSize());
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertTrue(new S3FindFeature(session).find(copy));
         assertEquals(content.length, new S3AttributesFeature(session).find(copy).getSize());
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -111,18 +103,10 @@ public class S3MultipartCopyFeatureTest {
         feature.copy(test, copy);
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(content.length, new S3AttributesFeature(session).find(test).getSize());
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertTrue(new S3FindFeature(session).find(copy));
         assertEquals(content.length, new S3AttributesFeature(session).find(copy).getSize());
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

@@ -92,11 +92,7 @@ public class S3SingleUploadServiceTest {
         final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertEquals("text/plain", metadata.get("Content-Type"));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
         session.close();
     }
@@ -133,11 +129,7 @@ public class S3SingleUploadServiceTest {
         assertEquals("text/plain", metadata.get("Content-Type"));
         assertEquals("aws:kms", metadata.get("server-side-encryption"));
         assertNotNull(metadata.get("server-side-encryption-aws-kms-key-id"));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
         session.close();
     }
@@ -173,11 +165,7 @@ public class S3SingleUploadServiceTest {
         final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertEquals("text/plain", metadata.get("Content-Type"));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
         session.close();
     }

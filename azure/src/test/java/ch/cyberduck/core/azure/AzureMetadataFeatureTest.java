@@ -46,11 +46,7 @@ public class AzureMetadataFeatureTest {
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("Test"));
         assertEquals(v, metadata.get("Test"));
-        new AzureDeleteFeature(session, null).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new AzureDeleteFeature(session, null).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -75,11 +71,7 @@ public class AzureMetadataFeatureTest {
         // Make sure content type is not deleted
         assertTrue(metadata.containsKey("Content-Type"));
         assertEquals("application/octet-stream", metadata.get("Content-Type"));
-        new AzureDeleteFeature(session, null).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new AzureDeleteFeature(session, null).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

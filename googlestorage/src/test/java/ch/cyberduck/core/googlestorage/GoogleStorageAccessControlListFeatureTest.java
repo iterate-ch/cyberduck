@@ -72,11 +72,7 @@ public class GoogleStorageAccessControlListFeatureTest {
         f.setPermission(test, acl);
         acl.addAll(new Acl.CanonicalUser("00b4903a976d2139c3b4ffbe7c61eccdb69e545fde42445d455befdad73b1455", "dkocher"), new Acl.Role(Acl.Role.FULL));
         assertEquals(acl, f.getPermission(test));
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 

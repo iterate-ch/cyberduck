@@ -55,11 +55,7 @@ public class S3DefaultDeleteFeatureTest {
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test);
         assertTrue(new S3FindFeature(session).find(test));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session).find(test));
         session.close();
     }
@@ -79,11 +75,7 @@ public class S3DefaultDeleteFeatureTest {
         test.setType(EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         assertTrue(new S3FindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session).find(test));
         session.close();
     }
@@ -101,11 +93,7 @@ public class S3DefaultDeleteFeatureTest {
         container.attributes().setRegion("US");
         new S3DirectoryFeature(session).mkdir(container);
         assertTrue(new S3FindFeature(session).find(container));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session).find(container));
         session.close();
     }
@@ -122,10 +110,6 @@ public class S3DefaultDeleteFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

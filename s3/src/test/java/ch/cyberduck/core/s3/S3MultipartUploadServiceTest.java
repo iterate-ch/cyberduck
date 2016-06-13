@@ -362,11 +362,7 @@ public class S3MultipartUploadServiceTest {
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(random, buffer);
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
         session.close();
     }

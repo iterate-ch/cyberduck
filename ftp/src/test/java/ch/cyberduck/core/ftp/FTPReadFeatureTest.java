@@ -96,11 +96,7 @@ public class FTPReadFeatureTest {
             in.close();
             assertArrayEquals(content, buffer.toByteArray());
         }
-        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -132,11 +128,7 @@ public class FTPReadFeatureTest {
         System.arraycopy(content, 100, reference, 0, content.length - 100 - 1);
         assertArrayEquals(reference, download.toByteArray());
         in.close();
-        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -159,11 +151,7 @@ public class FTPReadFeatureTest {
         in.close();
         // Make sure subsequent PWD command works
         assertEquals(workdir, new FTPWorkdirService(session).find());
-        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -192,11 +180,7 @@ public class FTPReadFeatureTest {
         in.close();
         // Make sure subsequent PWD command works
         assertEquals(workdir, new FTPWorkdirService(session).find());
-        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 

@@ -67,18 +67,10 @@ public class S3MoveFeatureTest {
         new S3TouchFeature(session).touch(test);
         assertTrue(new S3FindFeature(session).find(test));
         final Path renamed = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new S3MoveFeature(session).move(test, renamed, false, new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3MoveFeature(session).move(test, renamed, false, new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session).find(test));
         assertTrue(new S3FindFeature(session).find(renamed));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

@@ -81,11 +81,7 @@ public class SwiftWriteFeatureTest {
         assertFalse(metadata.isEmpty());
         assertEquals("text/plain", metadata.get("Content-Type"));
         assertEquals("duck", metadata.get("X-Object-Meta-C"));
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 

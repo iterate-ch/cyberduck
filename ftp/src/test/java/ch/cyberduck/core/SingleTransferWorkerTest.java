@@ -121,10 +121,6 @@ public class SingleTransferWorkerTest {
         assertEquals(62768L, counter.getSent(), 0L);
         assertEquals(62768L, new DefaultAttributesFeature(session).find(test).getSize());
         assertTrue(failed.get());
-        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

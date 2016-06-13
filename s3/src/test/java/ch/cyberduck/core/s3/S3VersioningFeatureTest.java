@@ -90,11 +90,7 @@ public class S3VersioningFeatureTest {
         final Versioning feature = new S3VersioningFeature(session);
         feature.setConfiguration(container, new DisabledLoginCallback(), new VersioningConfiguration(true, false));
         assertTrue(feature.getConfiguration(container).isEnabled());
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(container), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 

@@ -72,18 +72,10 @@ public class IRODSMoveFeatureTest {
         final Path destination = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new IRODSDirectoryFeature(session).mkdir(source);
         new IRODSDirectoryFeature(session).mkdir(destination);
-        new IRODSMoveFeature(session).move(source, destination, true, new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new IRODSMoveFeature(session).move(source, destination, true, new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(source));
         assertTrue(session.getFeature(Find.class).find(destination));
-        session.getFeature(Delete.class).delete(Arrays.asList(destination), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        session.getFeature(Delete.class).delete(Arrays.asList(destination), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(destination));
         session.close();
     }
@@ -104,18 +96,10 @@ public class IRODSMoveFeatureTest {
         final Path destination = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new IRODSTouchFeature(session).touch(source);
         new IRODSTouchFeature(session).touch(destination);
-        new IRODSMoveFeature(session).move(source, destination, true, new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new IRODSMoveFeature(session).move(source, destination, true, new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(source));
         assertTrue(session.getFeature(Find.class).find(destination));
-        session.getFeature(Delete.class).delete(Arrays.asList(destination), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        session.getFeature(Delete.class).delete(Arrays.asList(destination), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(destination));
         session.close();
     }
@@ -137,10 +121,6 @@ public class IRODSMoveFeatureTest {
         assertFalse(session.getFeature(Find.class).find(source));
         assertFalse(session.getFeature(Find.class).find(destination));
 
-        new IRODSMoveFeature(session).move(source, destination, false, new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new IRODSMoveFeature(session).move(source, destination, false, new Delete.DisabledCallback());
     }
 }

@@ -51,11 +51,7 @@ public class S3TouchFeatureTest {
         final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertEquals("text/plain", metadata.get("Content-Type"));
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session).find(test));
         session.close();
     }
@@ -109,11 +105,7 @@ public class S3TouchFeatureTest {
             service.touch(test);
             list.add(test);
         }
-        new S3MultipleDeleteFeature(session).delete(list, new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3MultipleDeleteFeature(session).delete(list, new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

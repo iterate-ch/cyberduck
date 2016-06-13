@@ -87,11 +87,7 @@ public class SwiftReadFeatureTest {
         System.arraycopy(content, 100, reference, 0, content.length - 100);
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
-        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -130,11 +126,7 @@ public class SwiftReadFeatureTest {
         System.arraycopy(content, 100, reference, 0, content.length - 100);
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
-        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 

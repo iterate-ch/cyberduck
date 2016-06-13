@@ -64,11 +64,7 @@ public class S3EncryptionFeatureTest {
         final Encryption.Algorithm value = feature.getEncryption(test);
         assertEquals("AES256", value.algorithm);
         assertNull(value.key);
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -89,11 +85,7 @@ public class S3EncryptionFeatureTest {
         final Encryption.Algorithm value = feature.getEncryption(test);
         assertEquals("AES256", value.algorithm);
         assertNull(value.key);
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

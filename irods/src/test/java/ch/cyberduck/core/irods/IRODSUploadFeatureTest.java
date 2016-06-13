@@ -108,11 +108,7 @@ public class IRODSUploadFeatureTest {
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
-        new IRODSDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new IRODSDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
         session.close();
     }
@@ -149,11 +145,7 @@ public class IRODSUploadFeatureTest {
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
-        new IRODSDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new IRODSDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 

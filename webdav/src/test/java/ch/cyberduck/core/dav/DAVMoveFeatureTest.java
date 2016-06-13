@@ -63,18 +63,10 @@ public class DAVMoveFeatureTest {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature(session).touch(test);
         final Path target = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new DAVMoveFeature(session).move(test, target, false, new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new DAVMoveFeature(session).move(test, target, false, new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(test));
         assertTrue(session.getFeature(Find.class).find(target));
-        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -90,18 +82,10 @@ public class DAVMoveFeatureTest {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new DAVDirectoryFeature(session).mkdir(test);
         final Path target = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new DAVMoveFeature(session).move(test, target, false, new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new DAVMoveFeature(session).move(test, target, false, new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(test));
         assertTrue(session.getFeature(Find.class).find(target));
-        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -117,18 +101,10 @@ public class DAVMoveFeatureTest {
         new DefaultTouchFeature(session).touch(test);
         final Path target = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature(session).touch(target);
-        new DAVMoveFeature(session).move(test, target, true, new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new DAVMoveFeature(session).move(test, target, true, new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(test));
         assertTrue(session.getFeature(Find.class).find(target));
-        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test(expected = NotfoundException.class)
@@ -141,10 +117,6 @@ public class DAVMoveFeatureTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new DAVMoveFeature(session).move(test, new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), false, new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new DAVMoveFeature(session).move(test, new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), false, new Delete.DisabledCallback());
     }
 }

@@ -79,18 +79,10 @@ public class DriveMoveFeatureTest {
         final Path folder = new Path(new DriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new DriveDirectoryFeature(session).mkdir(folder);
         final Path target = new Path(folder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new DriveMoveFeature(session).move(test, target, false, new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new DriveMoveFeature(session).move(test, target, false, new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(test));
         assertTrue(session.getFeature(Find.class).find(target));
-        new DriveDeleteFeature(session).delete(Arrays.asList(target, folder), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new DriveDeleteFeature(session).delete(Arrays.asList(target, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -127,20 +119,12 @@ public class DriveMoveFeatureTest {
         final Path sourceFile = new Path(sourceDirectory, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DriveTouchFeature(session).touch(sourceFile);
         final Path targetFile = new Path(targetDirectory, sourceFile.getName(), EnumSet.of(Path.Type.file));
-        new DriveMoveFeature(session).move(sourceDirectory, targetDirectory, false, new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new DriveMoveFeature(session).move(sourceDirectory, targetDirectory, false, new Delete.DisabledCallback());
         final Find find = session.getFeature(Find.class);
         assertFalse(find.find(sourceDirectory));
         assertFalse(find.find(sourceFile));
         assertTrue(find.find(targetDirectory));
         assertTrue(find.find(targetFile));
-        new DriveDeleteFeature(session).delete(Arrays.asList(targetFile, targetDirectory), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new DriveDeleteFeature(session).delete(Arrays.asList(targetFile, targetDirectory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

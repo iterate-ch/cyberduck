@@ -82,11 +82,7 @@ public class SwiftMetadataFeatureTest {
         assertTrue(metadata.containsKey("X-Object-Meta-Test"));
         assertEquals(v, metadata.get("X-Object-Meta-Test"));
         assertEquals("text/plain", metadata.get("Content-Type"));
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

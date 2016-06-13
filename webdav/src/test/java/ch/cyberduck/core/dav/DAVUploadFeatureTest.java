@@ -128,11 +128,7 @@ public class DAVUploadFeatureTest {
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
         session.close();
     }

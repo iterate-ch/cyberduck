@@ -75,11 +75,7 @@ public class AzureWriteFeatureTest {
         // Test double close
         overwrite.close();
         assertEquals("overwrite".getBytes("UTF-8").length, new AzureAttributesFeature(session, context).find(test).getSize());
-        new AzureDeleteFeature(session, context).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new AzureDeleteFeature(session, context).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

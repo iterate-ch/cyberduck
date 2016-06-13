@@ -74,11 +74,7 @@ public class FTPWriteFeatureTest {
             System.arraycopy(content, 1, reference, 0, content.length - 1);
             assertArrayEquals(reference, buffer);
         }
-        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -116,11 +112,7 @@ public class FTPWriteFeatureTest {
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
         IOUtils.copy(new FTPReadFeature(session).read(test, new TransferStatus().length(content.length)), out);
         assertArrayEquals(content, out.toByteArray());
-        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -163,11 +155,7 @@ public class FTPWriteFeatureTest {
         assertArrayEquals(content, out.toByteArray());
         assertTrue(new DefaultFindFeature(session).find(test));
         assertEquals(content.length, new DefaultAttributesFeature(session).find(test).getSize());
-        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
 
@@ -196,10 +184,6 @@ public class FTPWriteFeatureTest {
         final Path f = new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature(session).touch(f);
         assertEquals(true, new FTPWriteFeature(session).append(f, 0L, PathCache.empty()).append);
-        new FTPDeleteFeature(session).delete(Collections.singletonList(f), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new FTPDeleteFeature(session).delete(Collections.singletonList(f), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

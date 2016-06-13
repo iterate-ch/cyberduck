@@ -57,11 +57,7 @@ public class S3AttributesFeatureTest {
         catch(NotfoundException e) {
             // Expected
         }
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -115,11 +111,7 @@ public class S3AttributesFeatureTest {
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         new S3DirectoryFeature(session).mkdir(test);
         final PathAttributes attributes = new S3AttributesFeature(session).find(test);
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertEquals(0L, attributes.getSize());
         assertEquals(Checksum.parse("d41d8cd98f00b204e9800998ecf8427e"), attributes.getChecksum());
         assertNotNull(attributes.getModificationDate());

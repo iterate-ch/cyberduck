@@ -116,11 +116,7 @@ public class B2WriteFeatureTest {
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
-        new B2DeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new B2DeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

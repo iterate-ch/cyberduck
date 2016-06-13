@@ -92,11 +92,7 @@ public class SwiftUrlProviderTest {
             assertNotNull(s);
             assertNotEquals(DescriptiveUrl.EMPTY, s);
         }
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 

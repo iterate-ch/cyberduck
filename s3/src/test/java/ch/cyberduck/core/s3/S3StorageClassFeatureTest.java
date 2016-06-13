@@ -85,11 +85,7 @@ public class S3StorageClassFeatureTest {
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, feature.getClass(test));
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, session.list(container,
                 new DisabledListProgressListener()).get(test).attributes().getStorageClass());
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -111,11 +107,7 @@ public class S3StorageClassFeatureTest {
         assertEquals("STANDARD_IA", feature.getClass(test));
         feature.setClass(test, S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, feature.getClass(test));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

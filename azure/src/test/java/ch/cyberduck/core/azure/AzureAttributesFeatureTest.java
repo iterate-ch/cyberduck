@@ -59,11 +59,7 @@ public class AzureAttributesFeatureTest {
         assertEquals(0L, attributes.getSize());
         assertNull(attributes.getChecksum());
         assertNotNull(attributes.getETag());
-        new AzureDeleteFeature(session, null).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new AzureDeleteFeature(session, null).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

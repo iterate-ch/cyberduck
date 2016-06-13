@@ -92,11 +92,7 @@ public class DefaultUploadFeatureTest {
         in.close();
         assertArrayEquals(content, buffer);
         final Delete delete = session.getFeature(Delete.class);
-        delete.delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        delete.delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
         session.close();
     }

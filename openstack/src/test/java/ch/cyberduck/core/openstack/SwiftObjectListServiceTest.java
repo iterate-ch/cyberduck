@@ -105,11 +105,7 @@ public class SwiftObjectListServiceTest {
         new SwiftDirectoryFeature(session).mkdir(placeholder);
         final AttributedList<Path> list = new SwiftObjectListService(session).list(placeholder, new DisabledListProgressListener());
         assertTrue(list.isEmpty());
-        new SwiftDeleteFeature(session).delete(Arrays.asList(placeholder), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new SwiftDeleteFeature(session).delete(Arrays.asList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -131,11 +127,7 @@ public class SwiftObjectListServiceTest {
         assertTrue(list.contains(placeholder));
         assertTrue(list.contains(new Path(container, name, EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
         assertSame(list.get(placeholder), list.get(new Path(container, name, EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
-        new SwiftDeleteFeature(session).delete(Arrays.asList(placeholder), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new SwiftDeleteFeature(session).delete(Arrays.asList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -174,11 +166,7 @@ public class SwiftObjectListServiceTest {
             assertTrue(list.contains(child));
             assertEquals(EnumSet.of(Path.Type.file), list.get(child).getType());
         }
-        new SwiftDeleteFeature(session).delete(Arrays.asList(base, child), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new SwiftDeleteFeature(session).delete(Arrays.asList(base, child), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

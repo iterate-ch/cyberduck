@@ -76,11 +76,7 @@ public class AzureReadFeatureTest {
         in.close();
         // Test double close
         in.close();
-        new AzureDeleteFeature(session, null).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new AzureDeleteFeature(session, null).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

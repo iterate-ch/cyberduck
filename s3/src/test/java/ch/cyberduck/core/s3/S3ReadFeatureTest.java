@@ -76,11 +76,7 @@ public class S3ReadFeatureTest {
         System.arraycopy(content, 100, reference, 0, content.length - 100);
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -113,11 +109,7 @@ public class S3ReadFeatureTest {
         System.arraycopy(content, 100, reference, 0, content.length - 100);
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -144,11 +136,7 @@ public class S3ReadFeatureTest {
         assertEquals(content.length, status.getOffset());
         assertEquals(content.length, status.getLength());
         in.close();
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -172,11 +160,7 @@ public class S3ReadFeatureTest {
         final CountingInputStream in = new CountingInputStream(new S3ReadFeature(session).read(file, status));
         in.close();
         assertEquals(0L, in.getByteCount(), 0L);
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

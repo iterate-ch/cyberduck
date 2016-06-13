@@ -82,11 +82,7 @@ public class DriveCopyFeatureTest {
         new DriveCopyFeature(session).copy(test, copy);
         assertTrue(session.getFeature(Find.class).find(test));
         assertTrue(session.getFeature(Find.class).find(copy));
-        new DriveDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new DriveDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

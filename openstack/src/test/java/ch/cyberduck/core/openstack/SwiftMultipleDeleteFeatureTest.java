@@ -48,11 +48,7 @@ public class SwiftMultipleDeleteFeatureTest {
         new SwiftTouchFeature(session).touch(test2);
         assertTrue(new SwiftFindFeature(session).find(test1));
         assertTrue(new SwiftFindFeature(session).find(test2));
-        new SwiftMultipleDeleteFeature(session).delete(Arrays.asList(test1, test2), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new SwiftMultipleDeleteFeature(session).delete(Arrays.asList(test1, test2), new DisabledLoginCallback(), new Delete.DisabledCallback());
         Thread.sleep(1000L);
         assertFalse(new SwiftFindFeature(session).find(test1));
         assertFalse(new SwiftFindFeature(session).find(test2));
@@ -73,10 +69,6 @@ public class SwiftMultipleDeleteFeatureTest {
         new SwiftMultipleDeleteFeature(session).delete(Arrays.asList(
                 new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)),
                 new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))
-        ), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        ), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

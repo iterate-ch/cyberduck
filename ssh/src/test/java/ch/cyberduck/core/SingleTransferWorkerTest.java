@@ -121,10 +121,6 @@ public class SingleTransferWorkerTest {
         assertEquals(62768L, counter.getSent(), 0L);
         assertTrue(failed.get());
         assertEquals(62768L, new SFTPAttributesFeature(session).find(test).getSize());
-        new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
