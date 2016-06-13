@@ -71,6 +71,8 @@ public class UploadTransfer extends Transfer {
     private PathCache cache
             = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
+    private UploadFilterOptions options = new UploadFilterOptions();
+
     public UploadTransfer(final Host host, final Path root, final Local local) {
         this(host, Collections.singletonList(new TransferItem(root, local)),
                 PreferencesFactory.get().getBoolean("queue.upload.skip.enable") ? new UploadRegexFilter() : new NullFilter<Local>());
@@ -99,6 +101,11 @@ public class UploadTransfer extends Transfer {
     @Override
     public Transfer withCache(final PathCache cache) {
         this.cache = cache;
+        return this;
+    }
+
+    public Transfer withOptions(final UploadFilterOptions options) {
+        this.options = options;
         return this;
     }
 
@@ -139,8 +146,9 @@ public class UploadTransfer extends Transfer {
         }
         final Symlink symlink = session.getFeature(Symlink.class);
         final UploadSymlinkResolver resolver = new UploadSymlinkResolver(symlink, roots);
-        final UploadFilterOptions options = new UploadFilterOptions();
-        options.withTemporary(options.temporary && session.getFeature(Write.class).temporary());
+        if(options.temporary) {
+            options.withTemporary(session.getFeature(Write.class).temporary());
+        }
         if(action.equals(TransferAction.resume)) {
             return new ResumeFilter(resolver, session, options).withCache(cache);
         }

@@ -74,6 +74,8 @@ public class DownloadTransfer extends Transfer {
 
     private DownloadSymlinkResolver symlinkResolver;
 
+    private DownloadFilterOptions options = new DownloadFilterOptions();
+
     public DownloadTransfer(final Host host, final Path root, final Local local) {
         this(host, Collections.singletonList(new TransferItem(root, local)),
                 PreferencesFactory.get().getBoolean("queue.download.skip.enable") ? new DownloadRegexFilter() : new DownloadDuplicateFilter());
@@ -103,6 +105,11 @@ public class DownloadTransfer extends Transfer {
     @Override
     public DownloadTransfer withCache(final PathCache cache) {
         this.cache = cache;
+        return this;
+    }
+
+    public Transfer withOptions(final DownloadFilterOptions options) {
+        this.options = options;
         return this;
     }
 
@@ -148,7 +155,6 @@ public class DownloadTransfer extends Transfer {
             log.debug(String.format("Filter transfer with action %s", action));
         }
         final DownloadSymlinkResolver resolver = new DownloadSymlinkResolver(roots);
-        final DownloadFilterOptions options = new DownloadFilterOptions();
         if(action.equals(TransferAction.resume)) {
             return new ResumeFilter(resolver, session, options).withCache(cache);
         }
