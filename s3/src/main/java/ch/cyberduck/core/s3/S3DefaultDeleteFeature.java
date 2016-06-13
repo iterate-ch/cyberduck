@@ -23,13 +23,15 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.shared.ThreadedDeleteFeature;
 
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class S3DefaultDeleteFeature implements Delete {
+public class S3DefaultDeleteFeature extends ThreadedDeleteFeature implements Delete {
     private static final Logger log = Logger.getLogger(S3DefaultDeleteFeature.class);
 
     private S3Session session;
@@ -42,24 +44,39 @@ public class S3DefaultDeleteFeature implements Delete {
     }
 
     public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
+        final List<Path> containers = new ArrayList<Path>();
         for(Path file : files) {
+            if(containerService.isContainer(file)) {
+                containers.add(file);
+                continue;
+            }
+            this.submit(file, new Implementation() {
+                @Override
+                public void delete(final Path file) throws BackgroundException {
+                    callback.delete(file);
+                    try {
+                        // Always returning 204 even if the key does not exist. Does not return 404 for non-existing keys
+                        session.getClient().deleteObject(containerService.getContainer(file).getName(), containerService.getKey(file));
+                    }
+                    catch(ServiceException e) {
+                        try {
+                            throw new S3ExceptionMappingService().map("Cannot delete {0}", e, file);
+                        }
+                        catch(NotfoundException n) {
+                            log.warn(String.format("Ignore missing placeholder object %s", file));
+                        }
+                    }
+                }
+            });
+        }
+        this.await();
+        for(Path file : containers) {
             callback.delete(file);
             try {
-                if(containerService.isContainer(file)) {
-                    session.getClient().deleteBucket(containerService.getContainer(file).getName());
-                }
-                else {
-                    // Always returning 204 even if the key does not exist. Does not return 404 for non-existing keys
-                    session.getClient().deleteObject(containerService.getContainer(file).getName(), containerService.getKey(file));
-                }
+                session.getClient().deleteBucket(containerService.getContainer(file).getName());
             }
             catch(ServiceException e) {
-                try {
-                    throw new S3ExceptionMappingService().map("Cannot delete {0}", e, file);
-                }
-                catch(NotfoundException n) {
-                    // Ignore
-                }
+                throw new S3ExceptionMappingService().map("Cannot delete {0}", e, file);
             }
         }
     }
