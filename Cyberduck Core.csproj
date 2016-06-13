@@ -36,7 +36,7 @@
       <HintPath>core\dll\target\Cyberduck.Core.dll</HintPath>
     </Reference>
     <Reference Include="ExceptionReporter.WinForms">
-      <HintPath>..\mountainduck\windows\cbfs-test\target\lib\ExceptionReporter.WinForms.dll</HintPath>
+      <HintPath>core\dll\target\ExceptionReporter.WinForms.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.Beans">
       <HintPath>core\native\target\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Beans.dll</HintPath>
