@@ -66,7 +66,7 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
 
     private final B2Session session;
 
-    private final ThreadPool pool;
+    private final ThreadPool<B2UploadPartResponse> pool;
 
     private Long partSize;
 
@@ -91,7 +91,7 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
         super(writer);
         this.session = session;
         this.partSize = partSize;
-        this.pool = new DefaultThreadPool(concurrency, "largeupload");
+        this.pool = new DefaultThreadPool<B2UploadPartResponse>(concurrency, "largeupload");
     }
 
     @Override

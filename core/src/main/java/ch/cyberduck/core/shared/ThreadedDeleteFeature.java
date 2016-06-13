@@ -17,7 +17,6 @@ package ch.cyberduck.core.shared;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.DefaultThreadPool;
@@ -25,24 +24,19 @@ import ch.cyberduck.core.threading.ThreadPool;
 
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 public abstract class ThreadedDeleteFeature implements Delete {
     private static final Logger log = Logger.getLogger(ThreadedDeleteFeature.class);
 
-    private final ThreadPool pool;
-
-    private final List<Future<Void>> pending = new ArrayList<>();
+    private final ThreadPool<Void> pool;
 
     public ThreadedDeleteFeature() {
-        this(new DefaultThreadPool(PreferencesFactory.get().getInteger("browser.delete.concurrency"), "delete"));
+        this(new DefaultThreadPool<Void>(PreferencesFactory.get().getInteger("browser.delete.concurrency"), "delete"));
     }
 
-    public ThreadedDeleteFeature(final ThreadPool pool) {
+    public ThreadedDeleteFeature(final ThreadPool<Void> pool) {
         this.pool = pool;
     }
 
@@ -50,35 +44,24 @@ public abstract class ThreadedDeleteFeature implements Delete {
         if(log.isInfoEnabled()) {
             log.info(String.format("Submit %s for delete", file));
         }
-        final Future<Void> future = pool.execute(new Callable<Void>() {
+        return pool.execute(new Callable<Void>() {
             @Override
             public Void call() throws BackgroundException {
                 feature.delete(file);
                 return null;
             }
         });
-        pending.add(future);
-        return future;
     }
 
+    /**
+     * Await and shutdown
+     */
     protected void await() throws BackgroundException {
         try {
-            for(Future<Void> f : pending) {
-                f.get();
-            }
-        }
-        catch(InterruptedException e) {
-            throw new ConnectionCanceledException(e);
-        }
-        catch(ExecutionException e) {
-            log.warn(String.format("Delete failed with execution failure %s", e.getMessage()));
-            if(e.getCause() instanceof BackgroundException) {
-                throw (BackgroundException) e.getCause();
-            }
-            throw new BackgroundException(e);
+            pool.await();
         }
         finally {
-            pool.shutdown();
+            pool.shutdown(true);
         }
     }
 
