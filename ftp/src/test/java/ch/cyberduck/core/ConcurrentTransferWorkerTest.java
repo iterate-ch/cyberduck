@@ -125,6 +125,11 @@ public class ConcurrentTransferWorkerTest {
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
                 new LoginConnectionService(new DisabledLoginCallback() {
                     @Override
+                    public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                        credentials.setPassword("test");
+                    }
+
+                    @Override
                     public void warn(final Protocol protocol, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
                         //
                     }
