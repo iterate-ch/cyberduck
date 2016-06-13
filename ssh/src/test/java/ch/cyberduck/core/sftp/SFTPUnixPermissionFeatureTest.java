@@ -100,22 +100,14 @@ public class SFTPUnixPermissionFeatureTest {
             new SFTPTouchFeature(session).touch(file);
             new SFTPUnixPermissionFeature(session).setUnixPermission(file, new Permission(666));
             assertEquals("666", session.list(home, new DisabledListProgressListener()).get(file).attributes().getPermission().getMode());
-            new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(file), new DisabledLoginCallback(), new Delete.Callback() {
-                @Override
-                public void delete(final Path file) {
-                }
-            });
+            new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
         {
             final Path directory = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
             new SFTPDirectoryFeature(session).mkdir(directory);
             new SFTPUnixPermissionFeature(session).setUnixPermission(directory, new Permission(666));
             assertEquals("666", session.list(home, new DisabledListProgressListener()).get(directory).attributes().getPermission().getMode());
-            new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(directory), new DisabledLoginCallback(), new Delete.Callback() {
-                @Override
-                public void delete(final Path file) {
-                }
-            });
+            new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
         session.close();
     }

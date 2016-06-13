@@ -63,11 +63,7 @@ public class S3DirectoryFeatureTest {
             test.attributes().setRegion(region.getIdentifier());
             feature.mkdir(test, region.getIdentifier(), new TransferStatus());
             assertTrue(new S3FindFeature(session).find(test));
-            new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-                @Override
-                public void delete(final Path file) {
-                }
-            });
+            new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
         session.close();
     }

@@ -65,11 +65,7 @@ public class SwiftDirectoryFeatureTest {
         for(Region region : session.getClient().getRegions()) {
             feature.mkdir(container, region.getRegionId(), new TransferStatus());
             assertTrue(new SwiftFindFeature(session).find(container));
-            new SwiftDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.Callback() {
-                @Override
-                public void delete(final Path file) {
-                }
-            });
+            new SwiftDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
             assertFalse(new SwiftFindFeature(session).find(container));
         }
         session.close();

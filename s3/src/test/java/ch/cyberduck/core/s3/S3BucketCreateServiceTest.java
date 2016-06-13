@@ -57,11 +57,7 @@ public class S3BucketCreateServiceTest {
             create.create(bucket, region.getIdentifier());
             bucket.attributes().setRegion(region.getIdentifier());
             assertTrue(find.find(bucket));
-            delete.delete(Collections.<Path>singletonList(bucket), new DisabledLoginCallback(), new Delete.Callback() {
-                @Override
-                public void delete(final Path file) {
-                }
-            });
+            delete.delete(Collections.<Path>singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
             assertFalse(find.find(bucket));
         }
         session.close();

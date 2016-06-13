@@ -68,11 +68,7 @@ public class KMSEncryptionFeatureTest {
             feature.setEncryption(test, KMSEncryptionFeature.SSE_KMS_DEFAULT);
         }
         finally {
-            new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-                @Override
-                public void delete(final Path file) {
-                }
-            });
+            new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
         session.close();
     }

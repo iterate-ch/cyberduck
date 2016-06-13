@@ -67,11 +67,7 @@ public class SFTPCompressFeatureTest {
             assertTrue(new SFTPFindFeature(session).find(test));
             new SFTPDeleteFeature(session).delete(Collections.singletonList(archive.getArchive(
                     Collections.<Path>singletonList(test)
-            )), new DisabledLoginCallback(), new Delete.Callback() {
-                @Override
-                public void delete(final Path file) {
-                }
-            });
+            )), new DisabledLoginCallback(), new Delete.DisabledCallback());
             new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(),
                     new Delete.Callback() {
                         @Override

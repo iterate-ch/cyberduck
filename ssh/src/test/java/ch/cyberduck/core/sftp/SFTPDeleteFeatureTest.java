@@ -50,11 +50,7 @@ public class SFTPDeleteFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path(new SFTPHomeDirectoryService(session).find(), "t", EnumSet.of(Path.Type.file));
         try {
-            new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-                @Override
-                public void delete(final Path file) {
-                }
-            });
+            new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
         catch(NotfoundException e) {
             assertEquals("Cannot delete t.",
@@ -63,5 +59,15 @@ public class SFTPDeleteFeatureTest {
                     e.getDetail());
             throw e;
         }
+    }
+
+    public void testDeleteFolder() throws Exception {
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
+                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
+        ));
+        final SFTPSession session = new SFTPSession(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path test = new Path(new SFTPHomeDirectoryService(session).find(), "t", EnumSet.of(Path.Type.file));
     }
 }
