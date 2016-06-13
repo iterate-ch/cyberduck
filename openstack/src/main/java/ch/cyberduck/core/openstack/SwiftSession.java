@@ -69,6 +69,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 import ch.iterate.openstack.swift.Client;
 import ch.iterate.openstack.swift.exception.GenericException;
@@ -159,29 +160,25 @@ public class SwiftSession extends HttpSession<Client> {
                 return;
             }
             if(preferences.getBoolean("openstack.account.preload")) {
-                final ThreadPool pool = new DefaultThreadPool("accounts");
+                final ThreadPool<AccountInfo> pool = new DefaultThreadPool<AccountInfo>("accounts");
                 try {
-                    pool.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            for(Region region : client.getRegions()) {
-                                try {
-                                    final AccountInfo info = client.getAccountInfo(region);
-                                    if(log.isInfoEnabled()) {
-                                        log.info(String.format("Signing key is %s", info.getTempUrlKey()));
-                                    }
-                                    accounts.put(region, info);
+                    for(Region region : client.getRegions()) {
+                        pool.execute(new Callable<AccountInfo>() {
+                            @Override
+                            public AccountInfo call() throws IOException {
+                                final AccountInfo info = client.getAccountInfo(region);
+                                if(log.isInfoEnabled()) {
+                                    log.info(String.format("Signing key is %s", info.getTempUrlKey()));
                                 }
-                                catch(IOException e) {
-                                    log.warn(String.format("Failure loading account info for region %s", region));
-                                }
+                                accounts.put(region, info);
+                                return info;
                             }
-                        }
-                    });
+                        });
+                    }
                 }
                 finally {
                     // Shutdown gracefully
-                    pool.shutdown();
+                    pool.shutdown(true);
                 }
             }
         }

@@ -44,7 +44,7 @@ public final class FileWatcher {
 
     private RegisterWatchService monitor;
 
-    private ThreadPool pool;
+    private ThreadPool<Boolean> pool;
 
     public FileWatcher() {
         this(WatchServiceFactory.get());
@@ -52,7 +52,7 @@ public final class FileWatcher {
 
     public FileWatcher(final RegisterWatchService monitor) {
         this.monitor = monitor;
-        this.pool = new DefaultThreadPool(1, "watcher");
+        this.pool = new DefaultThreadPool<Boolean>(1, "watcher");
     }
 
     public CountDownLatch register(final Local file, final FileWatcherListener listener) throws IOException {

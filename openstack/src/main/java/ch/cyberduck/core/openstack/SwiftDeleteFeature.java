@@ -19,7 +19,6 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -71,9 +70,10 @@ public class SwiftDeleteFeature implements Delete {
                     final List<Path> segments = segmentService.list(file);
                     session.getClient().deleteObject(regionService.lookup(file),
                             containerService.getContainer(file).getName(), containerService.getKey(file));
-                    if(!segments.isEmpty()) {
-                        // Clean up any old segments
-                        new SwiftMultipleDeleteFeature(session).delete(segments, new DisabledLoginCallback(), callback);
+                    // Clean up any old segments
+                    for(Path segment : segments) {
+                        session.getClient().deleteObject(regionService.lookup(segment),
+                                containerService.getContainer(segment).getName(), containerService.getKey(segment));
                     }
                 }
                 else if(file.isDirectory()) {
