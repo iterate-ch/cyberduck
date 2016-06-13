@@ -32,8 +32,10 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 
@@ -59,8 +61,10 @@ public class SFTPDeleteFeatureTest {
                     e.getDetail());
             throw e;
         }
+        session.close();
     }
 
+    @Test
     public void testDeleteFolder() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
                 System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
@@ -68,6 +72,11 @@ public class SFTPDeleteFeatureTest {
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path test = new Path(new SFTPHomeDirectoryService(session).find(), "t", EnumSet.of(Path.Type.file));
+        final Path folder = new Path(new SFTPHomeDirectoryService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        new SFTPDirectoryFeature(session).mkdir(folder);
+        final Path file = new Path(folder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        new SFTPTouchFeature(session).touch(file);
+        new SFTPDeleteFeature(session).delete(Arrays.asList(folder, file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.close();
     }
 }
