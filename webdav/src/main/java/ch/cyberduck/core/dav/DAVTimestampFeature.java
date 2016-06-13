@@ -20,6 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Timestamp;
+import ch.cyberduck.core.shared.DefaultTimestampFeature;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
@@ -29,7 +30,7 @@ import java.util.TimeZone;
 import com.github.sardine.impl.SardineException;
 import com.github.sardine.util.SardineUtil;
 
-public class DAVTimestampFeature implements Timestamp {
+public class DAVTimestampFeature extends DefaultTimestampFeature implements Timestamp {
 
     private final DAVSession session;
 

@@ -26,6 +26,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Versioning;
+import ch.cyberduck.core.shared.DefaultAclFeature;
 
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
@@ -41,7 +42,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class S3AccessControlListFeature implements AclPermission {
+public class S3AccessControlListFeature extends DefaultAclFeature implements AclPermission {
     private static final Logger log = Logger.getLogger(S3AccessControlListFeature.class);
 
     private S3Session session;

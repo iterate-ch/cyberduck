@@ -21,16 +21,14 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.date.MDTMSecondsDateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Timestamp;
+import ch.cyberduck.core.shared.DefaultTimestampFeature;
 
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.TimeZone;
 
-/**
- * @version $Id$
- */
-public class FTPMFMTTimestampFeature implements Timestamp {
+public class FTPMFMTTimestampFeature extends DefaultTimestampFeature implements Timestamp {
     private static final Logger log = Logger.getLogger(FTPMFMTTimestampFeature.class);
 
     private FTPSession session;

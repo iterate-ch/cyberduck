@@ -23,12 +23,13 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Location;
+import ch.cyberduck.core.shared.DefaultAclFeature;
 
 import org.jets3t.service.acl.Permission;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,7 +37,7 @@ import java.util.Set;
 import synapticloop.b2.BucketType;
 import synapticloop.b2.exception.B2ApiException;
 
-public class B2BucketTypeFeature implements AclPermission, Location {
+public class B2BucketTypeFeature extends DefaultAclFeature implements AclPermission, Location {
 
     private final PathContainerService containerService
             = new B2PathContainerService();
@@ -77,14 +78,14 @@ public class B2BucketTypeFeature implements AclPermission, Location {
 
     @Override
     public List<Acl.User> getAvailableAclUsers() {
-        return new ArrayList<Acl.User>(Arrays.asList(
+        return new ArrayList<Acl.User>(Collections.singletonList(
                 new Acl.GroupUser(Acl.GroupUser.EVERYONE, false))
         );
     }
 
     @Override
     public List<Acl.Role> getAvailableAclRoles(final List<Path> files) {
-        return Arrays.asList(
+        return Collections.singletonList(
                 new Acl.Role(Permission.PERMISSION_READ.toString()));
     }
 
@@ -108,7 +109,6 @@ public class B2BucketTypeFeature implements AclPermission, Location {
         }
         return new B2BucketTypeName(BucketType.allPrivate);
     }
-
 
     public static final class B2BucketTypeName extends Name {
 
