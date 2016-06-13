@@ -164,7 +164,12 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
 
     @Override
     protected void logout() throws BackgroundException {
-        context.getSendingRequestEventHandler().removeListener(listener);
+        try {
+            context.getSendingRequestEventHandler().removeListener(listener);
+        }
+        finally {
+            super.logout();
+        }
     }
 
     @Override
