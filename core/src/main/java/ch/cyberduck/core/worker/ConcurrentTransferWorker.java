@@ -33,8 +33,9 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.BackgroundActionPauser;
 import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
+import ch.cyberduck.core.threading.DefaultThreadPool;
 import ch.cyberduck.core.threading.FailureDiagnostics;
-import ch.cyberduck.core.threading.NamedThreadFactory;
+import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferItemCallback;
@@ -49,13 +50,6 @@ import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.NoSuchElementException;
-import java.util.concurrent.CompletionService;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class ConcurrentTransferWorker extends AbstractTransferWorker {
     private static final Logger log = Logger.getLogger(ConcurrentTransferWorker.class);
@@ -64,9 +58,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
 
     private final GenericObjectPool<Session> pool;
 
-    private final CompletionService<TransferStatus> completion;
-
-    private final AtomicInteger size = new AtomicInteger();
+    private final ThreadPool<TransferStatus> completion;
 
     private final ProgressListener progress;
 
@@ -120,9 +112,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
                 return sb.toString();
             }
         };
-        completion = new ExecutorCompletionService<TransferStatus>(
-                Executors.newFixedThreadPool(connections, new NamedThreadFactory("transfer")),
-                new LinkedBlockingQueue<Future<TransferStatus>>());
+        completion = new DefaultThreadPool<TransferStatus>(connections, "transfer");
     }
 
     @Override
@@ -208,36 +198,12 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         if(log.isInfoEnabled()) {
             log.info(String.format("Submit %s to pool", callable));
         }
-        completion.submit(callable);
-        size.incrementAndGet();
+        completion.execute(callable);
     }
 
     @Override
     public void await() throws BackgroundException {
-        while(size.get() > 0) {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Await termination for %d submitted tasks in queue", size.get()));
-            }
-            try {
-                final TransferStatus status = completion.take().get();
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Finished %s", status));
-                }
-            }
-            catch(InterruptedException e) {
-                throw new ConnectionCanceledException(e);
-            }
-            catch(ExecutionException e) {
-                final Throwable cause = e.getCause();
-                if(cause instanceof BackgroundException) {
-                    throw (BackgroundException) cause;
-                }
-                throw new BackgroundException(cause);
-            }
-            finally {
-                size.decrementAndGet();
-            }
-        }
+        completion.await();
     }
 
     @Override
@@ -289,7 +255,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("ConcurrentTransferWorker{");
-        sb.append("size=").append(size);
+        sb.append("completion=").append(completion);
         sb.append(", pool=").append(pool);
         sb.append('}');
         return sb.toString();
