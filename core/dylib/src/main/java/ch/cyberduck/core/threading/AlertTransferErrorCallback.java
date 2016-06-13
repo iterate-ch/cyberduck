@@ -18,6 +18,8 @@ package ch.cyberduck.core.threading;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.binding.AlertController;
+import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.NSWindow;
@@ -25,8 +27,6 @@ import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
-import ch.cyberduck.ui.cocoa.AlertController;
-import ch.cyberduck.ui.cocoa.WindowController;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 

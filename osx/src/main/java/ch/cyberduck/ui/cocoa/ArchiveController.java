@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.core.Archive;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;

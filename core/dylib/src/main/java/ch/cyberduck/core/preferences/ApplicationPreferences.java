@@ -1,11 +1,25 @@
-package ch.cyberduck.preferences;
+package ch.cyberduck.core.preferences;
+
+/*
+ * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
 
 import ch.cyberduck.core.ApplescriptTerminalService;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.IOKitSleepPreventer;
 import ch.cyberduck.core.Keychain;
 import ch.cyberduck.core.aquaticprime.ReceiptFactory;
-import ch.cyberduck.core.bonjour.RendezvousResponder;
 import ch.cyberduck.core.diagnostics.SystemConfigurationReachability;
 import ch.cyberduck.core.editor.FSEventWatchEditorFactory;
 import ch.cyberduck.core.i18n.BundleLocale;
@@ -24,16 +38,11 @@ import ch.cyberduck.core.local.WorkspaceIconService;
 import ch.cyberduck.core.local.WorkspaceRevealService;
 import ch.cyberduck.core.local.WorkspaceSymlinkFeature;
 import ch.cyberduck.core.notification.NotificationCenter;
-import ch.cyberduck.core.preferences.BundleApplicationResourcesFinder;
-import ch.cyberduck.core.preferences.SecurityApplicationGroupSupportDirectoryFinder;
-import ch.cyberduck.core.preferences.UserDefaultsPreferences;
 import ch.cyberduck.core.proxy.SystemConfigurationProxy;
 import ch.cyberduck.core.resources.NSImageIconCache;
 import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
-import ch.cyberduck.core.threading.DispatchThreadPool;
 import ch.cyberduck.core.urlhandler.LaunchServicesSchemeHandler;
-import ch.cyberduck.ui.browser.Column;
 
 public class ApplicationPreferences extends UserDefaultsPreferences {
 
@@ -51,7 +60,6 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
         defaults.put("factory.proxy.class", SystemConfigurationProxy.class.getName());
         defaults.put("factory.sleeppreventer.class", IOKitSleepPreventer.class.getName());
         defaults.put("factory.reachability.class", SystemConfigurationReachability.class.getName());
-        defaults.put("factory.rendezvous.class", RendezvousResponder.class.getName());
 
         defaults.put("factory.applicationfinder.class", LaunchServicesApplicationFinder.class.getName());
         defaults.put("factory.applicationlauncher.class", WorkspaceApplicationLauncher.class.getName());
@@ -81,37 +89,5 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
         else {
             defaults.put("factory.bookmarkresolver.class", DisabledFilesystemBookmarkResolver.class.getName());
         }
-        defaults.put("factory.threadpool.class", DispatchThreadPool.class.getName());
-    }
-
-    @Override
-    protected void setDefaults() {
-        // Parent defaults
-        super.setDefaults();
-
-        defaults.put(String.format("browser.column.%s", Column.icon.name()), String.valueOf(true));
-        defaults.put(String.format("browser.column.%s.width", Column.icon.name()), String.valueOf(20));
-        defaults.put(String.format("browser.column.%s", Column.filename.name()), String.valueOf(true));
-        defaults.put(String.format("browser.column.%s.width", Column.filename.name()), String.valueOf(250));
-        defaults.put(String.format("browser.column.%s", Column.kind.name()), String.valueOf(false));
-        defaults.put(String.format("browser.column.%s.width", Column.kind.name()), String.valueOf(80));
-        defaults.put(String.format("browser.column.%s", Column.extension.name()), String.valueOf(false));
-        defaults.put(String.format("browser.column.%s.width", Column.extension.name()), String.valueOf(80));
-        defaults.put(String.format("browser.column.%s", Column.size.name()), String.valueOf(true));
-        defaults.put(String.format("browser.column.%s.width", Column.size.name()), String.valueOf(80));
-        defaults.put(String.format("browser.column.%s", Column.modified.name()), String.valueOf(true));
-        defaults.put(String.format("browser.column.%s.width", Column.modified.name()), String.valueOf(150));
-        defaults.put(String.format("browser.column.%s", Column.owner.name()), String.valueOf(false));
-        defaults.put(String.format("browser.column.%s.width", Column.owner.name()), String.valueOf(80));
-        defaults.put(String.format("browser.column.%s", Column.group.name()), String.valueOf(false));
-        defaults.put(String.format("browser.column.%s.width", Column.group.name()), String.valueOf(80));
-        defaults.put(String.format("browser.column.%s", Column.permission.name()), String.valueOf(false));
-        defaults.put(String.format("browser.column.%s.width", Column.permission.name()), String.valueOf(100));
-        defaults.put(String.format("browser.column.%s", Column.region.name()), String.valueOf(false));
-        defaults.put(String.format("browser.column.%s.width", Column.region.name()), String.valueOf(80));
-        defaults.put(String.format("browser.column.%s", Column.version.name()), String.valueOf(false));
-        defaults.put(String.format("browser.column.%s.width", Column.version.name()), String.valueOf(80));
-
-        defaults.put("browser.sort.column", Column.filename.name());
     }
 }

@@ -1,25 +1,20 @@
-package ch.cyberduck.ui.cocoa;
+package ch.cyberduck.binding;
 
 /*
- *  Copyright (c) 2005 David Kocher. All rights reserved.
- *  http://cyberduck.ch/
+ * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  Bug fixes, suggestions and comments should be sent to:
- *  dkocher@cyberduck.ch
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  */
 
-import ch.cyberduck.binding.Action;
-import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSCell;
@@ -35,11 +30,17 @@ import ch.cyberduck.binding.application.WindowListener;
 import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.binding.foundation.NSNotification;
+import ch.cyberduck.core.DefaultProviderHelpService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.diagnostics.ReachabilityFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
+import ch.cyberduck.core.notification.NotificationAlertCallback;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.threading.AlertCallback;
+import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
+import ch.cyberduck.core.threading.FailureDiagnostics;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -52,7 +53,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public abstract class WindowController extends BundleController implements NSWindow.Delegate {
-    private static Logger log = Logger.getLogger(WindowController.class);
+    private static final Logger log = Logger.getLogger(WindowController.class);
 
     protected static final String DEFAULT = LocaleFactory.localizedString("Default");
 
@@ -335,6 +336,55 @@ public abstract class WindowController extends BundleController implements NSWin
     public void printOperationDidRun_success_contextInfo(NSPrintOperation op, boolean success, ID contextInfo) {
         if(!success) {
             log.warn(String.format("Printing failed for context %s", contextInfo));
+        }
+    }
+
+    private static final class PanelAlertCallback implements AlertCallback {
+
+        private final WindowController controller;
+
+        private final FailureDiagnostics<Exception> diagnostics
+                = new DefaultFailureDiagnostics();
+
+        private final NotificationAlertCallback notification
+                = new NotificationAlertCallback();
+
+        public PanelAlertCallback(final WindowController controller) {
+            this.controller = controller;
+        }
+
+        @Override
+        public boolean alert(final Host host, final BackgroundException failure, final StringBuilder log) {
+            notification.alert(host, failure, log);
+            if(controller.isVisible()) {
+                final NSAlert alert = NSAlert.alert(
+                        null == failure.getMessage() ? LocaleFactory.localizedString("Unknown") : failure.getMessage(),
+                        null == failure.getDetail() ? LocaleFactory.localizedString("Unknown") : failure.getDetail(),
+                        LocaleFactory.localizedString("Try Again", "Alert"), // default button
+                        diagnostics.determine(failure) == FailureDiagnostics.Type.network
+                                ? LocaleFactory.localizedString("Network Diagnostics", "Alert") : null, //other button
+                        LocaleFactory.localizedString("Cancel", "Alert") // alternate button
+                );
+                alert.setShowsHelp(true);
+                final AlertController c = new AlertController(controller, alert) {
+                    @Override
+                    public void callback(final int returncode) {
+                        if(returncode == ALTERNATE_OPTION) {
+                            ReachabilityFactory.get().diagnose(host);
+                        }
+                    }
+
+                    @Override
+                    protected void help() {
+                        new DefaultProviderHelpService().help(host.getProtocol());
+                    }
+                };
+                c.beginSheet();
+                if(c.returnCode() == SheetCallback.DEFAULT_OPTION) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

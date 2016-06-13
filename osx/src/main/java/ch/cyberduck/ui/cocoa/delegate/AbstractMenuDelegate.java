@@ -18,10 +18,10 @@ package ch.cyberduck.ui.cocoa.delegate;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.NSEvent;
 import ch.cyberduck.binding.application.NSMenu;
 import ch.cyberduck.binding.application.NSMenuItem;
-import ch.cyberduck.ui.cocoa.ProxyController;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;

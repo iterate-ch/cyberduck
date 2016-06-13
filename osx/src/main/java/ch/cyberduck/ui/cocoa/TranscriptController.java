@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.BundleController;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.application.NSColor;
 import ch.cyberduck.binding.application.NSFont;

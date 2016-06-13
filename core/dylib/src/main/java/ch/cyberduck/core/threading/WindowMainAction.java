@@ -17,7 +17,7 @@ package ch.cyberduck.core.threading;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.WindowController;
+import ch.cyberduck.binding.WindowController;
 
 public abstract class WindowMainAction extends ControllerMainAction {
 

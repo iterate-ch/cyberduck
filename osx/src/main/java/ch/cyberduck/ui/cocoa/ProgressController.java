@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.binding.Action;
+import ch.cyberduck.binding.BundleController;
 import ch.cyberduck.binding.Delegate;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.application.NSCell;
@@ -192,7 +193,7 @@ public class ProgressController extends BundleController implements TransferList
     private static final NSDictionary NORMAL_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
             NSArray.arrayWithObjects(
                     NSFont.systemFontOfSize(NSFont.smallSystemFontSize()),
-                    TableCellAttributes.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL),
+                    BundleController.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL),
             NSArray.arrayWithObjects(
                     NSAttributedString.FontAttributeName,
                     NSAttributedString.ParagraphStyleAttributeName)
@@ -202,7 +203,7 @@ public class ProgressController extends BundleController implements TransferList
             NSArray.arrayWithObjects(
                     NSFont.systemFontOfSize(NSFont.smallSystemFontSize()),
                     NSColor.whiteColor(),
-                    TableCellAttributes.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL),
+                    BundleController.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL),
             NSArray.arrayWithObjects(
                     NSAttributedString.FontAttributeName,
                     NSAttributedString.ForegroundColorAttributeName,

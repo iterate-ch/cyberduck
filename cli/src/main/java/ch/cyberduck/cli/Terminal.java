@@ -33,6 +33,7 @@ import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.googledrive.DriveProtocol;
 import ch.cyberduck.core.googlestorage.GoogleStorageProtocol;
+import ch.cyberduck.core.hubic.HubicProtocol;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.irods.IRODSProtocol;
 import ch.cyberduck.core.local.Application;
@@ -125,7 +126,8 @@ public class Terminal {
                 new IRODSProtocol(),
                 new SpectraProtocol(),
                 new B2Protocol(),
-                new DriveProtocol()
+                new DriveProtocol(),
+                new HubicProtocol()
         );
         this.options = options;
         if(log.isInfoEnabled()) {

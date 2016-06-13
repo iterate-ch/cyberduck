@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.transfer.UploadTransfer;
 
