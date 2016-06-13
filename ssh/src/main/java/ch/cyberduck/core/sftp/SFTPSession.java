@@ -358,6 +358,9 @@ public class SFTPSession extends Session<SSHClient> {
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map(e);
         }
+        finally {
+            super.logout();
+        }
     }
 
     @Override

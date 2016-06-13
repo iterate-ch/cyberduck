@@ -121,6 +121,9 @@ public class FTPSession extends SSLSession<FTPClient> {
         catch(IOException e) {
             throw new FTPExceptionMappingService().map(e);
         }
+        finally {
+            super.logout();
+        }
     }
 
     @Override

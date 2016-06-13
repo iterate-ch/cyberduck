@@ -165,6 +165,9 @@ public class DAVSession extends HttpSession<DAVClient> {
         catch(IOException e) {
             throw new HttpExceptionMappingService().map(e);
         }
+        finally {
+            super.logout();
+        }
     }
 
     @Override
