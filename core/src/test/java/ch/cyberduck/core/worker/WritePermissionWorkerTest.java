@@ -28,6 +28,7 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.shared.DefaultUnixPermissionFeature;
 
 import org.junit.Test;
 
@@ -57,9 +58,10 @@ public class WritePermissionWorkerTest {
             }
 
             @Override
+            @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
                 if(type == UnixPermission.class) {
-                    return (T) new UnixPermission() {
+                    return (T) new DefaultUnixPermissionFeature() {
                         @Override
                         public void setUnixOwner(final Path file, final String owner) throws BackgroundException {
                             throw new UnsupportedOperationException();
@@ -110,9 +112,10 @@ public class WritePermissionWorkerTest {
             }
 
             @Override
+            @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
                 if(type == UnixPermission.class) {
-                    return (T) new UnixPermission() {
+                    return (T) new DefaultUnixPermissionFeature() {
                         @Override
                         public void setUnixOwner(final Path file, final String owner) throws BackgroundException {
                             throw new UnsupportedOperationException();
@@ -168,9 +171,10 @@ public class WritePermissionWorkerTest {
             }
 
             @Override
+            @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
                 if(type == UnixPermission.class) {
-                    return (T) new UnixPermission() {
+                    return (T) new DefaultUnixPermissionFeature() {
                         @Override
                         public void setUnixOwner(final Path file, final String owner) throws BackgroundException {
                             throw new UnsupportedOperationException();
@@ -217,9 +221,10 @@ public class WritePermissionWorkerTest {
             }
 
             @Override
+            @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
                 if(type == UnixPermission.class) {
-                    return (T) new UnixPermission() {
+                    return (T) new DefaultUnixPermissionFeature() {
                         @Override
                         public void setUnixOwner(final Path file, final String owner) throws BackgroundException {
                             throw new UnsupportedOperationException();

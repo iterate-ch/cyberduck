@@ -32,6 +32,7 @@ public class DeleteWorkerTest {
     public void testCompile() throws Exception {
         final Session session = new NullSession(new Host(new TestProtocol())) {
             @Override
+            @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
                 return (T) new Delete() {
                     @Override
@@ -71,6 +72,7 @@ public class DeleteWorkerTest {
     public void testSymlink() throws Exception {
         final Session session = new NullSession(new Host(new TestProtocol())) {
             @Override
+            @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
                 return (T) new Delete() {
                     @Override

@@ -24,6 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.shared.DefaultAclFeature;
 
 import org.junit.Test;
 
@@ -48,9 +49,10 @@ public class ReadAclWorkerTest {
         };
         assertEquals(1, worker.run(new NullSession(new Host(new TestProtocol())) {
                     @Override
+                    @SuppressWarnings("unchecked")
                     public <T> T getFeature(final Class<T> type) {
                         if(type == AclPermission.class) {
-                            return (T) new AclPermission() {
+                            return (T) new DefaultAclFeature() {
                                 @Override
                                 public Acl getPermission(final Path file) throws BackgroundException {
                                     return new Acl(new Acl.DomainUser("a"), new Acl.Role("r"));

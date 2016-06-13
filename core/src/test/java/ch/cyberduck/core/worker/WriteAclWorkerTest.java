@@ -8,6 +8,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.shared.DefaultAclFeature;
 
 import org.junit.Test;
 
@@ -34,9 +35,10 @@ public class WriteAclWorkerTest {
         };
         worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
+            @SuppressWarnings("unchecked")
             public <T> T getFeature(Class<T> type) {
                 if(type.equals(AclPermission.class)) {
-                    return (T) new AclPermission() {
+                    return (T) new DefaultAclFeature() {
                         @Override
                         public Acl getPermission(final Path file) throws BackgroundException {
                             fail();
@@ -76,9 +78,10 @@ public class WriteAclWorkerTest {
         };
         worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
+            @SuppressWarnings("unchecked")
             public <T> T getFeature(Class<T> type) {
                 if(type.equals(AclPermission.class)) {
-                    return (T) new AclPermission() {
+                    return (T) new DefaultAclFeature() {
                         @Override
                         public Acl getPermission(final Path file) throws BackgroundException {
                             fail();
@@ -119,9 +122,10 @@ public class WriteAclWorkerTest {
         };
         worker.run(new NullSession(new Host(new TestProtocol())) {
                        @Override
+                       @SuppressWarnings("unchecked")
                        public <T> T getFeature(Class<T> type) {
                            if(type.equals(AclPermission.class)) {
-                               return (T) new AclPermission() {
+                               return (T) new DefaultAclFeature() {
                                    @Override
                                    public Acl getPermission(final Path file) throws BackgroundException {
                                        fail();

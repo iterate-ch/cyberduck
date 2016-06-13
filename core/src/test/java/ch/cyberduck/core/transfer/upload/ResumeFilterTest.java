@@ -25,9 +25,6 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 public class ResumeFilterTest {
 
     @Test
@@ -56,6 +53,7 @@ public class ResumeFilterTest {
         final Path file = new Path("t", EnumSet.of(Path.Type.file));
         final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host(new TestProtocol())) {
             @Override
+            @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
                 if(type == Find.class) {
                     return (T) new Find() {

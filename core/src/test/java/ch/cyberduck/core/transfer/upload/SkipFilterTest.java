@@ -23,15 +23,13 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-/**
- * @version $Id$
- */
 public class SkipFilterTest {
 
     @Test
     public void testAccept() throws Exception {
         SkipFilter f = new SkipFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host(new TestProtocol())) {
             @Override
+            @SuppressWarnings("unchecked")
             public <T> T getFeature(Class<T> type) {
                 if(type == Find.class) {
                     return (T) new Find() {
