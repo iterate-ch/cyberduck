@@ -40,17 +40,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import ch.iterate.openstack.swift.Client;
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.Container;
-import ch.iterate.openstack.swift.model.ContainerInfo;
 import ch.iterate.openstack.swift.model.Region;
 
 public class SwiftContainerListService implements RootListService {
     private static final Logger log = Logger.getLogger(SwiftContainerListService.class);
-
-    private final ThreadPool pool = new DefaultThreadPool("cdn");
 
     private SwiftSession session;
 
@@ -115,39 +113,50 @@ public class SwiftContainerListService implements RootListService {
                 while(!chunk.isEmpty());
                 if(cdn) {
                     final DistributionConfiguration feature = new SwiftDistributionConfiguration(session, regionService);
-                    for(final Path container : containers) {
-                        pool.execute(new Runnable() {
-                            @Override
-                            public void run() {
-                                for(Distribution.Method method : feature.getMethods(container)) {
-                                    try {
-                                        final Distribution distribution = feature.read(container, method, new DisabledLoginCallback());
-                                        if(log.isInfoEnabled()) {
-                                            log.info(String.format("Cached distribution %s", distribution));
+                    final ThreadPool<Void> pool = new DefaultThreadPool<Void>(2, "cdn");
+                    try {
+                        for(final Path container : containers) {
+                            pool.execute(new Callable<Void>() {
+                                @Override
+                                public Void call() {
+                                    for(Distribution.Method method : feature.getMethods(container)) {
+                                        try {
+                                            final Distribution distribution = feature.read(container, method, new DisabledLoginCallback());
+                                            if(log.isInfoEnabled()) {
+                                                log.info(String.format("Cached distribution %s", distribution));
+                                            }
+                                        }
+                                        catch(BackgroundException e) {
+                                            log.warn(String.format("Failure caching CDN configuration for container %s %s", container, e.getMessage()));
                                         }
                                     }
-                                    catch(BackgroundException e) {
-                                        log.warn(String.format("Failure caching CDN configuration for container %s %s", container, e.getMessage()));
-                                    }
+                                    return null;
                                 }
-                            }
-                        });
+                            });
+                        }
+                    }
+                    finally {
+                        // Shutdown gracefully
+                        pool.shutdown(true);
                     }
                 }
                 if(size) {
-                    for(final Path container : containers) {
-                        pool.execute(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    final ContainerInfo info = client.getContainerInfo(r, container.getName());
-                                    container.attributes().setSize(info.getTotalSize());
+                    final ThreadPool<Long> pool = new DefaultThreadPool<Long>(2, "container");
+                    try {
+                        for(final Path container : containers) {
+                            pool.execute(new Callable<Long>() {
+                                @Override
+                                public Long call() throws IOException {
+                                    final long size = client.getContainerInfo(r, container.getName()).getTotalSize();
+                                    container.attributes().setSize(size);
+                                    return size;
                                 }
-                                catch(IOException e) {
-                                    log.warn(String.format("Failure reading info for container %s %s", container, e.getMessage()));
-                                }
-                            }
-                        });
+                            });
+                        }
+                    }
+                    finally {
+                        // Shutdown gracefully
+                        pool.shutdown(true);
                     }
                 }
             }
@@ -159,10 +168,6 @@ public class SwiftContainerListService implements RootListService {
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
-        }
-        finally {
-            // Shutdown gracefully
-            pool.shutdown();
         }
     }
 }

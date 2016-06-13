@@ -15,21 +15,30 @@ package ch.cyberduck.core.threading;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
+
 import org.apache.log4j.Logger;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public abstract class ExecutorServiceThreadPool implements ThreadPool {
+public abstract class ExecutorServiceThreadPool<T> implements ThreadPool<T> {
     private static final Logger log = Logger.getLogger(ExecutorServiceThreadPool.class);
 
     private final ExecutorService pool;
 
+    private final ExecutorCompletionService<T> completion;
+
+    private final AtomicInteger size = new AtomicInteger();
+
     public ExecutorServiceThreadPool(final ExecutorService pool) {
         this.pool = pool;
+        this.completion = new ExecutorCompletionService<T>(pool);
     }
 
     @Override
@@ -37,6 +46,12 @@ public abstract class ExecutorServiceThreadPool implements ThreadPool {
         if(gracefully) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Shutdown pool %s gracefully", pool));
+            }
+            try {
+                this.await();
+            }
+            catch(BackgroundException e) {
+                log.error(String.format("Ignore failure of executed task in shutdown. %s", e.getMessage()));
             }
             pool.shutdown();
         }
@@ -49,26 +64,31 @@ public abstract class ExecutorServiceThreadPool implements ThreadPool {
     }
 
     @Override
-    public void await(long timeout, TimeUnit unit) {
-        try {
-            pool.awaitTermination(timeout, unit);
+    public void await() throws BackgroundException {
+        while(size.get() > 0) {
+            try {
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Await completion for %d submitted tasks in queue", size.get()));
+                }
+                final T value = completion.take().get();
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Finished task with return value %s", value));
+                }
+            }
+            catch(InterruptedException e) {
+                throw new ConnectionCanceledException(e);
+            }
+            catch(ExecutionException e) {
+                log.warn(String.format("Delete failed with execution failure %s", e.getMessage()));
+                if(e.getCause() instanceof BackgroundException) {
+                    throw (BackgroundException) e.getCause();
+                }
+                throw new BackgroundException(e);
+            }
+            finally {
+                size.decrementAndGet();
+            }
         }
-        catch(InterruptedException e) {
-            log.warn(e.getMessage());
-        }
-    }
-
-    @Override
-    public void shutdown() {
-        this.shutdown(true);
-    }
-
-    /**
-     * @param command Action to run in its own executor thread
-     */
-    @Override
-    public void execute(final Runnable command) {
-        pool.execute(command);
     }
 
     /**
@@ -76,7 +96,9 @@ public abstract class ExecutorServiceThreadPool implements ThreadPool {
      * @return Future result
      */
     @Override
-    public <T> Future<T> execute(final Callable<T> command) throws RejectedExecutionException {
-        return pool.submit(command);
+    public Future<T> execute(final Callable<T> command) {
+        final Future<T> future = completion.submit(command);
+        size.incrementAndGet();
+        return future;
     }
 }

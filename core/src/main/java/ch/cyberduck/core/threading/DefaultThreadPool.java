@@ -27,7 +27,7 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class DefaultThreadPool extends ExecutorServiceThreadPool implements ThreadPool {
+public class DefaultThreadPool<T> extends ExecutorServiceThreadPool<T> {
     private static final Logger log = Logger.getLogger(DefaultThreadPool.class);
 
     /**

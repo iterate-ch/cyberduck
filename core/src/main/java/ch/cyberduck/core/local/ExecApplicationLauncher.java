@@ -32,8 +32,8 @@ public class ExecApplicationLauncher implements ApplicationLauncher {
 
     private final Runtime runtime = Runtime.getRuntime();
 
-    private ThreadPool pool
-            = new DefaultThreadPool(1, "process");
+    private ThreadPool<Boolean> pool
+            = new DefaultThreadPool<Boolean>(1, "process");
 
     @Override
     public boolean open(final Local file) {

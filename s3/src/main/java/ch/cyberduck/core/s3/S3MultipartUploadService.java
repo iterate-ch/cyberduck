@@ -79,7 +79,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
     /**
      * At any point, at most <tt>nThreads</tt> threads will be active processing tasks.
      */
-    private ThreadPool pool;
+    private ThreadPool<MultipartPart> pool;
 
     /**
      * A split smaller than 5M is not allowed
@@ -97,7 +97,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
     public S3MultipartUploadService(final S3Session session, final Long partsize, final Integer concurrency) {
         super(new S3WriteFeature(session));
         this.session = session;
-        this.pool = new DefaultThreadPool(concurrency, "multipart");
+        this.pool = new DefaultThreadPool<MultipartPart>(concurrency, "multipart");
         this.multipartService = new S3DefaultMultipartService(session);
         this.partsize = partsize;
     }

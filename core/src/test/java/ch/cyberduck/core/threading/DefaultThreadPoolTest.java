@@ -25,32 +25,29 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-/**
- * @version $Id$
- */
 public class DefaultThreadPoolTest {
 
     @Test(expected = RejectedExecutionException.class)
     public void testShutdown() throws Exception {
-        final DefaultThreadPool p = new DefaultThreadPool();
-        p.shutdown();
-        p.execute(new Runnable() {
+        final DefaultThreadPool<Void> p = new DefaultThreadPool<Void>();
+        p.shutdown(true);
+        p.execute(new Callable<Void>() {
             @Override
-            public void run() {
+            public Void call() {
                 fail();
+                return null;
             }
         });
     }
 
     @Test
     public void testGracefulShutdown() throws Exception {
-        final DefaultThreadPool pool = new DefaultThreadPool();
+        final DefaultThreadPool<Integer> pool = new DefaultThreadPool<Integer>();
         final AtomicInteger counter = new AtomicInteger(10);
         for(int i = 0; i < 10; i++) {
             pool.execute(new Callable<Integer>() {
@@ -62,13 +59,12 @@ public class DefaultThreadPoolTest {
             });
         }
         pool.shutdown(true);
-        pool.await(1000L, TimeUnit.SECONDS);
         assertEquals(0, counter.get());
     }
 
     @Test
     public void testExecute() throws Exception {
-        final DefaultThreadPool p = new DefaultThreadPool();
+        final DefaultThreadPool<Object> p = new DefaultThreadPool<Object>();
         final Object r = new Object();
         assertEquals(r, p.execute(new Callable<Object>() {
             @Override
@@ -80,7 +76,7 @@ public class DefaultThreadPoolTest {
 
     @Test
     public void testFifoOrderSingleThread() throws Exception {
-        final DefaultThreadPool p = new DefaultThreadPool();
+        final DefaultThreadPool<Integer> p = new DefaultThreadPool<Integer>();
         final List<Future<Integer>> wait = new ArrayList<Future<Integer>>();
         final AtomicInteger counter = new AtomicInteger(0);
         for(int i = 0; i < 1000; i++) {

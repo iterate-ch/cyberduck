@@ -69,8 +69,10 @@ public class S3MultipleDeleteFeature implements Delete {
         }
         else {
             final Map<Path, List<ObjectKeyAndVersion>> map = new HashMap<Path, List<ObjectKeyAndVersion>>();
+            final List<Path> containers = new ArrayList<Path>();
             for(Path file : files) {
                 if(containerService.isContainer(file)) {
+                    containers.add(file);
                     continue;
                 }
                 callback.delete(file);
@@ -91,16 +93,14 @@ public class S3MultipleDeleteFeature implements Delete {
                 final List<ObjectKeyAndVersion> keys = entry.getValue();
                 this.delete(container, keys, prompt);
             }
-            for(Path file : files) {
-                if(containerService.isContainer(file)) {
-                    callback.delete(file);
-                    // Finally delete bucket itself
-                    try {
-                        session.getClient().deleteBucket(containerService.getContainer(file).getName());
-                    }
-                    catch(ServiceException e) {
-                        throw new S3ExceptionMappingService().map("Cannot delete {0}", e, file);
-                    }
+            for(Path file : containers) {
+                callback.delete(file);
+                // Finally delete bucket itself
+                try {
+                    session.getClient().deleteBucket(containerService.getContainer(file).getName());
+                }
+                catch(ServiceException e) {
+                    throw new S3ExceptionMappingService().map("Cannot delete {0}", e, file);
                 }
             }
         }
