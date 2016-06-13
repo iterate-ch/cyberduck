@@ -21,7 +21,6 @@ using System.Security.Cryptography.X509Certificates;
 using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
 using ch.cyberduck.core.preferences;
-using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Ssl;
 using Ch.Cyberduck.Core.TaskDialog;
 using java.io;
@@ -31,7 +30,7 @@ using java.util;
 using org.apache.log4j;
 using X509Certificate = java.security.cert.X509Certificate;
 
-namespace ch.iterate.mountainduck.windows.Controller.Preferences
+namespace Ch.Cyberduck.Core
 {
     public class SystemCertificateStore : CertificateStore
     {
@@ -138,7 +137,8 @@ namespace ch.iterate.mountainduck.windows.Controller.Preferences
                 // Footer Icon: Information
 
                 TaskDialogResult result =
-                    TaskDialog.Show(title: LocaleFactory.localizedString("This certificate is not valid", "Keychain"),
+                    TaskDialog.TaskDialog.Show(
+                        title: LocaleFactory.localizedString("This certificate is not valid", "Keychain"),
                         mainInstruction: LocaleFactory.localizedString("This certificate is not valid", "Keychain"),
                         verificationText: LocaleFactory.localizedString("Always Trust", "Keychain"),
                         content: errorFromChainStatus,
