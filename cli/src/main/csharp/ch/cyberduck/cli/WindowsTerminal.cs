@@ -25,6 +25,11 @@ namespace Ch.Cyberduck.Cli
 {
     internal class WindowsTerminal : Terminal
     {
+        public WindowsTerminal(TerminalPreferences defaults, Options options, CommandLine input)
+            : base(defaults, options, input)
+        {
+        }
+
         private static void Main(string[] args)
         {
             // set UTF-8 encoding, tested in mintty (cygwin, babun) and cmd.exe
