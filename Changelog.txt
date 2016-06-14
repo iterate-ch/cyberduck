@@ -5,6 +5,7 @@ Changelog. Last modified: $Date$
 
 5.0.3 [https://trac.cyberduck.io/milestone/5.0.3]
 - [Feature] Deleting multiple files concurrently (#9585)
+- [Feature] Set modification date in metadata for uploads (Backblaze B2)
 
 5.0.2 [https://trac.cyberduck.io/milestone/5.0.2]
 - [Bugfix] Fail to list directory with equals symbol in path (S3) (#9574)
