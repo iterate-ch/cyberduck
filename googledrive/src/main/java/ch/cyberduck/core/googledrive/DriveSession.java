@@ -34,6 +34,7 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
@@ -178,6 +179,9 @@ public class DriveSession extends HttpSession<Drive> {
         }
         if(type == IdProvider.class) {
             return (T) new DriveFileidProvider(this);
+        }
+        if(type == Quota.class) {
+            return (T) new DriveQuotaFeature(this);
         }
         return super.getFeature(type);
     }
