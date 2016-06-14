@@ -27,6 +27,8 @@ import java.util.Map;
 
 public class B2MetadataFeature implements Headers {
 
+    public static final String X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS = "X-Bz-Info-src_last_modified_millis";
+
     private final PathContainerService containerService
             = new B2PathContainerService();
 
@@ -39,7 +41,7 @@ public class B2MetadataFeature implements Headers {
     @Override
     public Map<String, String> getDefault(final Local file) {
         final Map<String, String> metadata = PreferencesFactory.get().getMap("b2.metadata.default");
-        metadata.put("X-Bz-Info-src_last_modified_millis", String.valueOf(file.attributes().getModificationDate()));
+        metadata.put(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(file.attributes().getModificationDate()));
         return metadata;
     }
 
