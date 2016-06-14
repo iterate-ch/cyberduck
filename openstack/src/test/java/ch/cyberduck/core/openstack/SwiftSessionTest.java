@@ -3,7 +3,6 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Encryption;
@@ -21,9 +20,6 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class SwiftSessionTest {
 
@@ -105,27 +101,5 @@ public class SwiftSessionTest {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-    }
-
-    @Test
-    public void testConnectEvault() throws Exception {
-        final SwiftProtocol protocol = new SwiftProtocol();
-        final Host host = new Host(protocol, "auth.lts2.evault.com", new Credentials(
-                System.getProperties().getProperty("evault.openstack.key"), System.getProperties().getProperty("evault.openstack.secret")
-        ));
-        final SwiftSession session = new SwiftSession(host);
-        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback() {
-            @Override
-            public void prompt(Host bookmark, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
-                //
-            }
-        }, new DisabledCancelCallback());
-        assertTrue(session.isConnected());
-        session.close();
-        assertFalse(session.isConnected());
-        assertEquals(Session.State.closed, session.getState());
     }
 }
