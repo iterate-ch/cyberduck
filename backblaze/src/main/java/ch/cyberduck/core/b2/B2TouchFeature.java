@@ -29,6 +29,8 @@ import java.util.Collections;
 
 import synapticloop.b2.exception.B2ApiException;
 
+import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS;
+
 public class B2TouchFeature implements Touch {
 
     private PathContainerService containerService
@@ -47,7 +49,11 @@ public class B2TouchFeature implements Touch {
                     new B2FileidProvider(session).getFileid(containerService.getContainer(file)),
                     containerService.getKey(file),
                     new ByteArrayEntity(new byte[0]), "da39a3ee5e6b4b0d3255bfef95601890afd80709",
-                    new MappingMimeTypeService().getMime(file.getName()), Collections.emptyMap());
+                    new MappingMimeTypeService().getMime(file.getName()),
+                    Collections.singletonMap(
+                            X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(System.currentTimeMillis())
+                    )
+            );
         }
         catch(B2ApiException e) {
             throw new B2ExceptionMappingService(session).map("Cannot create folder {0}", e, file);
