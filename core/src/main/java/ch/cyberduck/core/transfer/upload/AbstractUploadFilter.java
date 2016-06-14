@@ -210,7 +210,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                     status.setMetadata(feature.getMetadata(file));
                 }
                 else {
-                    status.setMetadata(feature.getDefault());
+                    status.setMetadata(feature.getDefault(local));
                 }
             }
         }

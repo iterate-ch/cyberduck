@@ -37,7 +37,6 @@ import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.Collections;
 
 import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2FileResponse;
@@ -95,7 +94,8 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<B2FileResponse> imp
                         return session.getClient().uploadFile(uploadUrl,
                                 containerService.getKey(file),
                                 entity, checksum.toString(),
-                                status.getMime(), Collections.emptyMap());
+                                status.getMime(),
+                                status.getMetadata());
                     }
                     catch(B2ApiException e) {
                         urls.remove();
