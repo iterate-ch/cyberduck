@@ -18,6 +18,7 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -56,7 +57,7 @@ public class AzureMetadataFeature implements Headers {
     }
 
     @Override
-    public Map<String, String> getDefault() {
+    public Map<String, String> getDefault(final Local local) {
         return PreferencesFactory.get().getMap("azure.metadata.default");
     }
 

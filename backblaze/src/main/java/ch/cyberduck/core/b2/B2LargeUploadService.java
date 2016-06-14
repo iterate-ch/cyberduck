@@ -42,7 +42,6 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -112,7 +111,7 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
                 final List<B2FileInfoResponse> uploads = partService.find(file);
                 if(uploads.isEmpty()) {
                     fileid = session.getClient().startLargeFileUpload(new B2FileidProvider(session).getFileid(containerService.getContainer(file)),
-                            containerService.getKey(file), status.getMime(), Collections.emptyMap()).getFileId();
+                            containerService.getKey(file), status.getMime(), status.getMetadata()).getFileId();
                 }
                 else {
                     fileid = uploads.iterator().next().getFileId();
@@ -121,7 +120,7 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
             }
             else {
                 fileid = session.getClient().startLargeFileUpload(new B2FileidProvider(session).getFileid(containerService.getContainer(file)),
-                        containerService.getKey(file), status.getMime(), Collections.emptyMap()).getFileId();
+                        containerService.getKey(file), status.getMime(), status.getMetadata()).getFileId();
             }
             // Save file id for use in part referencing this
             file.attributes().setVersionId(fileid);
