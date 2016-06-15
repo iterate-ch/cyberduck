@@ -31,9 +31,6 @@ import org.irods.jargon.core.pub.io.PackingIrodsInputStream;
 
 import java.io.InputStream;
 
-/**
- * @version $Id$
- */
 public class IRODSReadFeature implements Read {
 
     private IRODSSession session;

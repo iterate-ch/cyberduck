@@ -37,9 +37,6 @@ import org.irods.jargon.core.pub.io.IRODSFile;
 import java.io.File;
 import java.util.EnumSet;
 
-/**
- * @version $Id$
- */
 public class IRODSListService implements ListService {
 
     private IRODSSession session;

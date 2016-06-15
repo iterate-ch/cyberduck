@@ -25,9 +25,6 @@ import org.irods.jargon.core.exception.JargonException;
 import org.irods.jargon.core.transfer.TransferControlBlock;
 import org.irods.jargon.core.transfer.TransferStatusCallbackListener;
 
-/**
- * @version $Id$
- */
 public class DefaultTransferStatusCallbackListener implements TransferStatusCallbackListener {
     private static final Logger log = Logger.getLogger(DefaultTransferStatusCallbackListener.class);
 

@@ -30,9 +30,6 @@ import org.irods.jargon.core.transfer.DefaultTransferControlBlock;
 import org.irods.jargon.core.transfer.TransferStatus;
 import org.irods.jargon.core.transfer.TransferStatusCallbackListener;
 
-/**
- * @version $Id$
- */
 public class IRODSCopyFeature implements Copy {
 
     private IRODSSession session;

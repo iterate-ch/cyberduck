@@ -31,9 +31,6 @@ import org.irods.jargon.core.pub.io.PackingIrodsOutputStream;
 import java.io.FileNotFoundException;
 import java.io.OutputStream;
 
-/**
- * @version $Id$
- */
 public class IRODSWriteFeature extends AppendWriteFeature {
 
     private IRODSSession session;

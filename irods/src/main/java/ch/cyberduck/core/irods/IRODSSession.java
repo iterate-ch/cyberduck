@@ -58,9 +58,6 @@ import org.irods.jargon.core.pub.IRODSFileSystemAO;
 
 import java.text.MessageFormat;
 
-/**
- * @version $Id$
- */
 public class IRODSSession extends SSLSession<IRODSFileSystem> {
     private static final Logger log = Logger.getLogger(IRODSSession.class);
 

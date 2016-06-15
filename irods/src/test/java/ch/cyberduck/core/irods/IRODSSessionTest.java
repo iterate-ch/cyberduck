@@ -40,9 +40,6 @@ import org.junit.experimental.categories.Category;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class IRODSSessionTest {
 
