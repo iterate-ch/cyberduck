@@ -48,9 +48,6 @@ import net.schmizz.sshj.common.SSHRuntimeException;
 import net.schmizz.sshj.transport.verification.OpenSSHKnownHosts;
 
 
-/**
- * @version $Id$
- */
 public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier {
     private static Logger log = Logger.getLogger(OpenSSHHostKeyVerifier.class);
 

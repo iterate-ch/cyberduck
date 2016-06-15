@@ -28,9 +28,6 @@ import com.jcraft.jsch.agentproxy.Identity;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 public class PageantAuthenticatorTest {
 
     @Test

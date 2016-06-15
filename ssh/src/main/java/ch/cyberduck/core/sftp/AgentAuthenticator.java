@@ -23,9 +23,6 @@ import java.util.Collection;
 import com.jcraft.jsch.agentproxy.AgentProxy;
 import com.jcraft.jsch.agentproxy.Identity;
 
-/**
- * @version $Id$
- */
 public abstract class AgentAuthenticator {
 
     public abstract Collection<Identity> getIdentities();

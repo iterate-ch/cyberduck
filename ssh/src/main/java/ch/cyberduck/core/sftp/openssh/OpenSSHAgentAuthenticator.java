@@ -33,9 +33,6 @@ import com.jcraft.jsch.agentproxy.Identity;
 import com.jcraft.jsch.agentproxy.connector.SSHAgentConnector;
 import com.jcraft.jsch.agentproxy.usocket.JNAUSocketFactory;
 
-/**
- * @version $Id$
- */
 public class OpenSSHAgentAuthenticator extends AgentAuthenticator {
     private static final Logger log = Logger.getLogger(OpenSSHAgentAuthenticator.class);
 

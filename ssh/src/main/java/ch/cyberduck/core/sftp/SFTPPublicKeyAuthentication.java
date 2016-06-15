@@ -43,9 +43,6 @@ import net.schmizz.sshj.userauth.keyprovider.PuTTYKeyFile;
 import net.schmizz.sshj.userauth.password.PasswordFinder;
 import net.schmizz.sshj.userauth.password.Resource;
 
-/**
- * @version $Id$
- */
 public class SFTPPublicKeyAuthentication implements SFTPAuthentication {
     private static final Logger log = Logger.getLogger(SFTPPublicKeyAuthentication.class);
 

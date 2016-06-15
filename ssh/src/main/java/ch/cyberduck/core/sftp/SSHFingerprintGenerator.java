@@ -27,9 +27,6 @@ import java.security.PublicKey;
 
 import net.schmizz.sshj.common.Buffer;
 
-/**
- * @version $Id$
- */
 public class SSHFingerprintGenerator {
 
     /**

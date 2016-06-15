@@ -34,9 +34,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import net.schmizz.sshj.sftp.OpenMode;
 import net.schmizz.sshj.sftp.RemoteFile;
 
-/**
- * @version $Id$
- */
 public class SFTPWriteFeature extends AppendWriteFeature {
     private static final Logger log = Logger.getLogger(SFTPWriteFeature.class);
 

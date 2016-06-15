@@ -36,9 +36,6 @@ import java.nio.charset.Charset;
 
 import net.schmizz.sshj.connection.channel.direct.Session;
 
-/**
- * @version $Id$
- */
 public class SFTPCommandFeature implements Command {
     private static final Logger log = Logger.getLogger(SFTPCommandFeature.class);
 

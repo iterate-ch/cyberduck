@@ -29,9 +29,6 @@ import java.io.IOException;
 
 import net.schmizz.sshj.sftp.FileAttributes;
 
-/**
- * @version $Id$
- */
 public class SFTPAttributesFeature implements Attributes {
 
     private SFTPSession session;

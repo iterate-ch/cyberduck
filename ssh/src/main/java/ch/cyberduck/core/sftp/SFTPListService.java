@@ -38,9 +38,6 @@ import net.schmizz.sshj.sftp.RemoteResourceFilter;
 import net.schmizz.sshj.sftp.RemoteResourceInfo;
 import net.schmizz.sshj.sftp.SFTPException;
 
-/**
- * @version $Id$
- */
 public class SFTPListService implements ListService {
     private static final Logger log = Logger.getLogger(SFTPListService.class);
 

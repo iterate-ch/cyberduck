@@ -23,9 +23,6 @@ import ch.cyberduck.core.features.Symlink;
 
 import java.io.IOException;
 
-/**
- * @version $Id$
- */
 public class SFTPSymlinkFeature implements Symlink {
 
     private SFTPSession session;

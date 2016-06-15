@@ -16,9 +16,6 @@ import net.schmizz.sshj.common.SecurityUtils;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 public class OpenSSHHostKeyVerifierTest {
 
     @Test

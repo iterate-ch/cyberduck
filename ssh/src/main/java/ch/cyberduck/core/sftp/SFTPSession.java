@@ -81,9 +81,6 @@ import net.schmizz.sshj.transport.compression.ZlibCompression;
 import net.schmizz.sshj.transport.verification.AlgorithmsVerifier;
 import net.schmizz.sshj.transport.verification.HostKeyVerifier;
 
-/**
- * @version $Id$
- */
 public class SFTPSession extends Session<SSHClient> {
     private static final Logger log = Logger.getLogger(SFTPSession.class);
 

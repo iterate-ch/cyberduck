@@ -26,9 +26,6 @@ import ch.cyberduck.core.features.Find;
 
 import java.io.IOException;
 
-/**
- * @version $Id$
- */
 public class SFTPFindFeature implements Find {
 
     private SFTPSession session;
