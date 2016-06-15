@@ -26,9 +26,6 @@ import ch.iterate.openstack.swift.method.AuthenticationRequest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class SwiftAuthenticationServiceTest {
 

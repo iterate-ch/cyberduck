@@ -19,9 +19,6 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class SwiftDistributionPurgeFeatureTest {
 

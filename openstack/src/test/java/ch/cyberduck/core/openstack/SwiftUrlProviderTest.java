@@ -47,9 +47,6 @@ import ch.iterate.openstack.swift.model.Region;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class SwiftUrlProviderTest {
 

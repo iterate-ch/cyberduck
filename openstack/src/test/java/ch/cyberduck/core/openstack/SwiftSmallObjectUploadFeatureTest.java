@@ -33,9 +33,6 @@ import ch.iterate.openstack.swift.model.StorageObject;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class SwiftSmallObjectUploadFeatureTest {
 

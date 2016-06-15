@@ -29,9 +29,6 @@ import ch.iterate.openstack.swift.Client;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class SwiftFindFeatureTest {
 

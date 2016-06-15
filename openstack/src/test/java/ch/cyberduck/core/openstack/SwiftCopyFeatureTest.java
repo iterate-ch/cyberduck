@@ -37,9 +37,6 @@ import java.util.UUID;
 
 import static org.junit.Assert.assertTrue;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class SwiftCopyFeatureTest {
 
