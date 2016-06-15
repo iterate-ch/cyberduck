@@ -163,7 +163,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Clear exist flag for file %s", file));
                 }
-                status.rename(renamed).exists(false);
+                status.rename(renamed);
             }
             status.setMime(mapping.getMime(file.getName()));
         }
