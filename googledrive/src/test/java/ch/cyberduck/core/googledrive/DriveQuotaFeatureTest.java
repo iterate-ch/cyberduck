@@ -33,8 +33,7 @@ import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class DriveQuotaFeatureTest {
     @Test
@@ -68,6 +67,8 @@ public class DriveQuotaFeatureTest {
         final Quota.Space quota = new DriveQuotaFeature(session).get();
         assertNotNull(quota.available);
         assertNotNull(quota.used);
+        assertNotEquals(0L, quota.available, 0L);
+        assertNotEquals(0L, quota.used, 0L);
         session.close();
     }
 }
