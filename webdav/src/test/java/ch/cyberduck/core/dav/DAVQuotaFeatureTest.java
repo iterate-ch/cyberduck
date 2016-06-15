@@ -47,7 +47,7 @@ public class DAVQuotaFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Quota.Space quota = new DAVQuotaFeature(session).get();
         assertNotNull(quota);
-        assertEquals(0L, quota.available, 0L);
+        assertEquals(Long.MAX_VALUE, quota.available, 0L);
         assertEquals(0L, quota.used, 0L);
     }
 
@@ -62,7 +62,7 @@ public class DAVQuotaFeatureTest {
         final Path test = new Path(UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
         final Quota.Space quota = new DAVQuotaFeature(session).get();
         assertNotNull(quota);
-        assertEquals(0L, quota.available, 0L);
+        assertEquals(Long.MAX_VALUE, quota.available, 0L);
         assertEquals(0L, quota.used, 0L);
     }
 }
