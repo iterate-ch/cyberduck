@@ -43,9 +43,6 @@ import com.github.sardine.DavResource;
 import com.github.sardine.impl.SardineException;
 import com.github.sardine.impl.handler.HeadersResponseHandler;
 
-/**
- * @version $Id$
- */
 public class DAVAttributesFeature implements Attributes {
     private static final Logger log = Logger.getLogger(DAVAttributesFeature.class);
 

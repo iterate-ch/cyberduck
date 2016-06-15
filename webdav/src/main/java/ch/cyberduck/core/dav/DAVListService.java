@@ -35,9 +35,6 @@ import java.util.List;
 import com.github.sardine.DavResource;
 import com.github.sardine.impl.SardineException;
 
-/**
- * @version $Id$
- */
 public class DAVListService implements ListService {
 
     private DAVSession session;
