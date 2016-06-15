@@ -126,12 +126,14 @@ public class RenameExistingFilterTest {
                 if(type.equals(Move.class)) {
                     return (T) new Move() {
                         @Override
-                        public void move(final Path f, final Path renamed, boolean exists, final Delete.Callback callback) throws BackgroundException {
+                        public void move(final Path source, final Path target, boolean exists, final Delete.Callback callback) throws BackgroundException {
                             if(moved.incrementAndGet() == 1) {
-                                assertEquals(file, f);
+                                // Rename existing target file
+                                assertEquals(file, source);
                             }
                             else if(moved.get() == 2) {
-                                assertEquals(file, renamed);
+                                // Move temporary renamed file in place
+                                assertEquals(file, target);
                             }
                             else {
                                 fail();
