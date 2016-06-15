@@ -24,9 +24,6 @@ import org.apache.log4j.Logger;
 
 import java.util.TimeZone;
 
-/**
- * @version $Id$
- */
 public class FTPParserSelector {
     private static final Logger log = Logger.getLogger(FTPParserSelector.class);
 

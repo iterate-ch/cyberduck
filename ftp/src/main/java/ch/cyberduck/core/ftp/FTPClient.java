@@ -52,9 +52,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * @version $Id$
- */
 public class FTPClient extends FTPSClient {
     private static final Logger log = Logger.getLogger(FTPClient.class);
 

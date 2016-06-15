@@ -31,9 +31,6 @@ import java.util.Calendar;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-/**
- * @version $Id$
- */
 public class MicrosoftFTPEntryParserTest {
 
     private FTPFileEntryParser parser;

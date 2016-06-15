@@ -45,9 +45,6 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class FTPAttributesFeatureTest {
 

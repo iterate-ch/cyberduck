@@ -37,9 +37,6 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.TimeZone;
 
-/**
- * @version $Id$
- */
 public class FTPParserFactory implements FTPFileEntryParserFactory {
 
     public CompositeFileEntryParser createFileEntryParser(final FTPClientConfig config) throws ParserInitializationException {

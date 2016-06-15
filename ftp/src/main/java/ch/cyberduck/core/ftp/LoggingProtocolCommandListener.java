@@ -25,9 +25,6 @@ import org.apache.commons.net.ProtocolCommandEvent;
 import org.apache.commons.net.ProtocolCommandListener;
 import org.apache.commons.net.ftp.FTPCmd;
 
-/**
- * @version $Id$
- */
 public class LoggingProtocolCommandListener implements ProtocolCommandListener, TranscriptListener {
 
     private final TranscriptListener transcript;

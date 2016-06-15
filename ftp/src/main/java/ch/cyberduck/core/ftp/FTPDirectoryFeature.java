@@ -24,9 +24,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 
-/**
- * @version $Id$
- */
 public class FTPDirectoryFeature implements Directory {
 
     private FTPSession session;

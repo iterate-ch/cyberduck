@@ -52,9 +52,6 @@ import java.util.UUID;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertNotNull;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class DefaultDownloadFeatureTest {
 

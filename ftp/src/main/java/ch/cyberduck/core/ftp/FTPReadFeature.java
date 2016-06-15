@@ -32,9 +32,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * @version $Id$
- */
 public class FTPReadFeature implements Read {
     private static final Logger log = Logger.getLogger(FTPReadFeature.class);
 

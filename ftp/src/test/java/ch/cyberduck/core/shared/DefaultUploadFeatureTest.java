@@ -49,9 +49,6 @@ import java.util.UUID;
 
 import static org.junit.Assert.assertArrayEquals;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 
 public class DefaultUploadFeatureTest {

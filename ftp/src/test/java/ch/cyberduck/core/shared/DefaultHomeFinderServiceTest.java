@@ -19,9 +19,6 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class DefaultHomeFinderServiceTest {
 

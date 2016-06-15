@@ -21,9 +21,6 @@ package ch.cyberduck.core.ftp.parser;
 
 import org.apache.commons.net.ftp.FTPFile;
 
-/**
- * @version $Id$
- */
 public class UnitreeFTPEntryParser extends CommonUnixFTPEntryParser {
 
     private static final String REGEX =

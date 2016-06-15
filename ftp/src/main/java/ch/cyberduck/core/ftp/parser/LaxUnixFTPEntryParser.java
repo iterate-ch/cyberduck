@@ -23,9 +23,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.FTPFile;
 
-/**
- * @version $Id$
- */
 public class LaxUnixFTPEntryParser extends CommonUnixFTPEntryParser {
 
     private static final String REGEX_WHITESPACE_AWARE =

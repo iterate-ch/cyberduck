@@ -34,9 +34,6 @@ import java.util.Calendar;
 import java.util.EnumSet;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class FTPListResponseReader implements FTPDataResponseReader {
     private static final Logger log = Logger.getLogger(FTPListResponseReader.class);
 

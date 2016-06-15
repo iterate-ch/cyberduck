@@ -29,9 +29,6 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.Collections;
 
-/**
- * @version $Id$
- */
 public class FTPMoveFeature implements Move {
     private static final Logger log = Logger.getLogger(FTPMoveFeature.class);
 

@@ -29,9 +29,6 @@ import java.util.Calendar;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 public class HPTru64ParserTest {
 
     private FTPFileEntryParser parser;
