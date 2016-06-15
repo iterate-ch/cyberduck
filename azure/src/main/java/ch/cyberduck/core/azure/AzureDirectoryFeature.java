@@ -38,9 +38,6 @@ import com.microsoft.azure.storage.blob.BlobRequestOptions;
 import com.microsoft.azure.storage.blob.CloudBlobContainer;
 import com.microsoft.azure.storage.blob.CloudBlockBlob;
 
-/**
- * @version $Id$
- */
 public class AzureDirectoryFeature implements Directory {
 
     private AzureSession session;

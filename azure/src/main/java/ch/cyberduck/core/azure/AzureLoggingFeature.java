@@ -31,9 +31,6 @@ import com.microsoft.azure.storage.OperationContext;
 import com.microsoft.azure.storage.ServiceProperties;
 import com.microsoft.azure.storage.StorageException;
 
-/**
- * @version $Id$
- */
 public class AzureLoggingFeature implements Logging {
 
     private AzureSession session;

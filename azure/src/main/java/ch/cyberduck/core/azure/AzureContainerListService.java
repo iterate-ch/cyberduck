@@ -40,9 +40,6 @@ import com.microsoft.azure.storage.blob.BlobRequestOptions;
 import com.microsoft.azure.storage.blob.CloudBlobContainer;
 import com.microsoft.azure.storage.blob.ContainerListingDetails;
 
-/**
- * @version $Id$
- */
 public class AzureContainerListService implements RootListService {
 
     private AzureSession session;

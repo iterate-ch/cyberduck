@@ -36,9 +36,6 @@ import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.BlobRequestOptions;
 import com.microsoft.azure.storage.blob.CloudBlockBlob;
 
-/**
- * @version $Id$
- */
 public class AzureCopyFeature implements Copy {
     private static final Logger log = Logger.getLogger(AzureCopyFeature.class);
 

@@ -48,9 +48,6 @@ import com.microsoft.azure.storage.blob.CloudBlobContainer;
 import com.microsoft.azure.storage.blob.CloudBlobDirectory;
 import com.microsoft.azure.storage.blob.ListBlobItem;
 
-/**
- * @version $Id$
- */
 public class AzureObjectListService implements ListService {
 
     private AzureSession session;

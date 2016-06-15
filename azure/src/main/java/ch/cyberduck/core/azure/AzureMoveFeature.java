@@ -30,9 +30,6 @@ import java.util.Collections;
 
 import com.microsoft.azure.storage.OperationContext;
 
-/**
- * @version $Id$
- */
 public class AzureMoveFeature implements Move {
 
     private AzureSession session;
