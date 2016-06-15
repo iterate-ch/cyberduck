@@ -70,7 +70,12 @@ public class SFTPWriteFeature extends AppendWriteFeature {
                         flags = EnumSet.of(OpenMode.CREAT, OpenMode.TRUNC, OpenMode.WRITE);
                     }
                     else {
-                        flags = EnumSet.of(OpenMode.TRUNC, OpenMode.WRITE);
+                        if(status.isRename()) {
+                            flags = EnumSet.of(OpenMode.CREAT, OpenMode.TRUNC, OpenMode.WRITE);
+                        }
+                        else {
+                            flags = EnumSet.of(OpenMode.TRUNC, OpenMode.WRITE);
+                        }
                     }
                 }
                 else {
