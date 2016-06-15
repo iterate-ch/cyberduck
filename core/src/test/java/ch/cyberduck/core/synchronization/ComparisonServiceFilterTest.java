@@ -25,9 +25,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-/**
- * @version $Id$
- */
 public class ComparisonServiceFilterTest {
 
     @Test

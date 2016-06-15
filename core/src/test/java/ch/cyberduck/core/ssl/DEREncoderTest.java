@@ -27,9 +27,6 @@ import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * @version $Id$
- */
 public class DEREncoderTest {
 
     @Test

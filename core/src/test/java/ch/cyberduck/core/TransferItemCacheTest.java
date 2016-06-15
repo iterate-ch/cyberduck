@@ -26,9 +26,6 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-/**
- * @version $Id$
- */
 public class TransferItemCacheTest {
 
     @Test

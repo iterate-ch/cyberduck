@@ -38,9 +38,6 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-/**
- * @version $Id$
- */
 public class WritePermissionWorkerTest {
 
     @Test

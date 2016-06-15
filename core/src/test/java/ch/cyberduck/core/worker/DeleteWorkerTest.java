@@ -23,9 +23,6 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 public class DeleteWorkerTest {
 
     @Test

@@ -21,9 +21,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
 
-/**
- * @version $Id$
- */
 public class DisabledBrowserLauncherTest {
 
     @Test

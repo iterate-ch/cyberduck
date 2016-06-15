@@ -38,9 +38,6 @@ import java.net.SocketTimeoutException;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 public class SessionBackgroundActionTest {
 
     @Test

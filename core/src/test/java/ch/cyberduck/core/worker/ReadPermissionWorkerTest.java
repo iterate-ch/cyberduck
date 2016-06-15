@@ -31,9 +31,6 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * @version $Id$
- */
 public class ReadPermissionWorkerTest {
 
 

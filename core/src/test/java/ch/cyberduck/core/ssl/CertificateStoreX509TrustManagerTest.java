@@ -12,9 +12,6 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class CertificateStoreX509TrustManagerTest {
 
     @Test(expected = CertificateException.class)

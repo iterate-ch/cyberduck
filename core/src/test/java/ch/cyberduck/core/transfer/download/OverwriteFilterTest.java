@@ -19,9 +19,6 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 public class OverwriteFilterTest {
 
     @Test

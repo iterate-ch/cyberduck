@@ -14,9 +14,6 @@ import org.apache.commons.io.output.NullOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-/**
- * @version $Id$
- */
 public class NullSession extends Session<Void> {
 
     public NullSession(Host h) {

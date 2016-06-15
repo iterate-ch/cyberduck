@@ -8,9 +8,6 @@ import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
-/**
- * @version $Id$
- */
 public class DefaultX509TrustManagerTest {
 
     @Test(expected = CertificateExpiredException.class)

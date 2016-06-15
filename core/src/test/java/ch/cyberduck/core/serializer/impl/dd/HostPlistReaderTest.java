@@ -29,9 +29,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 public class HostPlistReaderTest {
 
     @Test(expected = LocalAccessDeniedException.class)

@@ -11,9 +11,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 public class KeychainLoginServiceTest {
 
     @Test(expected = LoginCanceledException.class)

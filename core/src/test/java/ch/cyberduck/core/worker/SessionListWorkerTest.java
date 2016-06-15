@@ -25,9 +25,6 @@ import java.util.concurrent.Future;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 public class SessionListWorkerTest {
 
     @Test

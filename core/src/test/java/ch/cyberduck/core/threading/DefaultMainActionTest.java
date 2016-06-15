@@ -22,9 +22,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertNotSame;
 
-/**
- * @version $Id$
- */
 public class DefaultMainActionTest {
 
     @Test

@@ -25,9 +25,6 @@ import org.junit.Test;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 
-/**
- * @version $Id$
- */
 public class CertificateStoreFactoryTest {
 
     public void testGet() throws Exception {

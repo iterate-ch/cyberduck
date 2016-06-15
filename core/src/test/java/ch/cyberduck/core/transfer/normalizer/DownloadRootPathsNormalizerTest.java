@@ -2,7 +2,6 @@ package ch.cyberduck.core.transfer.normalizer;
 
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.local.TemporaryFileService;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferItem;
 
@@ -15,9 +14,6 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * @version $Id$
- */
 public class DownloadRootPathsNormalizerTest {
 
     @Test

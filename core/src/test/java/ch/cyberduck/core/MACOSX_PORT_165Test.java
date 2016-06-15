@@ -9,9 +9,6 @@ import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * @version $Id$
- */
 public class MACOSX_PORT_165Test {
 
     @Test

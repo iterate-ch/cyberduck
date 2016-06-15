@@ -22,9 +22,6 @@ import ch.cyberduck.core.PathCache;
 
 import org.junit.Test;
 
-/**
- * @version $Id$
- */
 public class FilesystemFactoryTest {
 
     @Test(expected = FactoryException.class)

@@ -21,9 +21,6 @@ import ch.cyberduck.core.FactoryException;
 
 import org.junit.Test;
 
-/**
- * @version $Id$
- */
 public class RevealServiceFactoryTest {
 
     @Test(expected = FactoryException.class)

@@ -7,9 +7,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
 
-/**
- * @version $Id$
- */
 public class ResolveCanceledExceptionTest {
 
     @Test

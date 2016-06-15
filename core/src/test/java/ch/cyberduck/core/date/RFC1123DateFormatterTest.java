@@ -6,9 +6,6 @@ import java.util.TimeZone;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * @version $Id$
- */
 public class RFC1123DateFormatterTest {
 
     @Test
