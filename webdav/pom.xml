@@ -37,9 +37,9 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.github.lookfirst</groupId>
+            <groupId>ch.iterate.webdav</groupId>
             <artifactId>sardine</artifactId>
-            <version>5.7</version>
+            <version>5.8.1</version>
         </dependency>
     </dependencies>
 </project>
