@@ -17,9 +17,6 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class S3BucketListServiceTest {
 

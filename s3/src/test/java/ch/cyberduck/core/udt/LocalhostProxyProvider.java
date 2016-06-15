@@ -26,9 +26,6 @@ import ch.cyberduck.core.features.Location;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class LocalhostProxyProvider implements UDTProxyProvider {
 
     @Override

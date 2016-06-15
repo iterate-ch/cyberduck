@@ -26,9 +26,6 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-/**
- * @version $Id$
- */
 @Ignore
 @Category(IntegrationTest.class)
 public class CustomOriginCloudFrontDistributionConfigurationTest {

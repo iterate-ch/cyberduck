@@ -27,9 +27,6 @@ import ch.cyberduck.core.exception.NotfoundException;
 import org.apache.http.HttpStatus;
 import org.jets3t.service.CloudFrontServiceException;
 
-/**
- * @version $Id$
- */
 public class CloudFrontServiceExceptionMappingService extends AbstractExceptionMappingService<CloudFrontServiceException> {
 
     @Override

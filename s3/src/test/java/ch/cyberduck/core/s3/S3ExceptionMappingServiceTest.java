@@ -36,9 +36,6 @@ import java.security.cert.CertificateException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-/**
- * @version $Id$
- */
 public class S3ExceptionMappingServiceTest {
 
     @Test

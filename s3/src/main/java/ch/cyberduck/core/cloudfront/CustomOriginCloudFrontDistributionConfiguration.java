@@ -41,9 +41,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-/**
- * @version $Id$
- */
 public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontDistributionConfiguration {
     private static final Logger log = Logger.getLogger(CustomOriginCloudFrontDistributionConfiguration.class);
 

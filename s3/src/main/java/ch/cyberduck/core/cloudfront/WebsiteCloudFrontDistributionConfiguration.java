@@ -48,9 +48,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistributionConfiguration {
 
     private Preferences preferences
