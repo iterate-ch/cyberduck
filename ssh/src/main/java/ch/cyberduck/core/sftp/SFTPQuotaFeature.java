@@ -40,7 +40,7 @@ public class SFTPQuotaFeature implements Quota {
                 return new Space(0L, Long.MAX_VALUE);
             }
         };
-        command.send("df -k . | awk '{print $2, $3}'", new DisabledProgressListener(),
+        command.send("df -k . | awk '{print $3, $4}'", new DisabledProgressListener(),
                 new TranscriptListener() {
                     @Override
                     public void log(final boolean request, final String output) {
@@ -48,7 +48,7 @@ public class SFTPQuotaFeature implements Quota {
                             final String[] numbers = StringUtils.split(output, ' ');
                             if(numbers.length == 2) {
                                 try {
-                                    quota.set(new Space(Long.valueOf(numbers[0]), Long.valueOf(numbers[1])));
+                                    quota.set(new Space(Long.valueOf(numbers[0]) * 1024L, Long.valueOf(numbers[1]) * 1024L));
                                 }
                                 catch(NumberFormatException e) {
                                     log.warn(String.format("Ignore line %s", output));
