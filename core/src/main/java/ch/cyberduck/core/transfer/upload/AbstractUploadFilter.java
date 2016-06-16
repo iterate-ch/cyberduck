@@ -160,6 +160,9 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                         MessageFormat.format(preferences.getProperty("queue.upload.file.temporary.format"),
                                 file.getName(), UUID.randomUUID().toString()), file.getType());
                 // File attributes should not change after calculate the hash code of the file reference
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Clear exist flag for file %s", file));
+                }
                 status.rename(renamed);
             }
             status.setMime(mapping.getMime(file.getName()));
