@@ -33,6 +33,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Timestamp;
@@ -420,6 +421,9 @@ public class SFTPSession extends Session<SSHClient> {
         }
         if(type == Home.class) {
             return (T) new SFTPHomeDirectoryService(this);
+        }
+        if(type == Quota.class) {
+            return (T) new SFTPQuotaFeature(this);
         }
         return super.getFeature(type);
     }

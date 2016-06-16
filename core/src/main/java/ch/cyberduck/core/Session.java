@@ -24,6 +24,7 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Search;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
@@ -38,6 +39,7 @@ import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.shared.DisabledMoveFeature;
+import ch.cyberduck.core.shared.DisabledQuotaFeature;
 import ch.cyberduck.core.shared.NullFileidProvider;
 import ch.cyberduck.core.threading.CancelCallback;
 
@@ -323,6 +325,9 @@ public abstract class Session<C> implements TranscriptListener {
         }
         if(type == IdProvider.class) {
             return (T) new NullFileidProvider();
+        }
+        if(type == Quota.class) {
+            return (T) new DisabledQuotaFeature();
         }
         return null;
     }

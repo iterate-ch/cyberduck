@@ -40,6 +40,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Upload;
@@ -324,6 +325,9 @@ public class DAVSession extends HttpSession<DAVClient> {
         }
         if(type == Timestamp.class) {
             return (T) new DAVTimestampFeature(this);
+        }
+        if(type == Quota.class) {
+            return (T) new DAVQuotaFeature(this);
         }
         return super.getFeature(type);
     }
