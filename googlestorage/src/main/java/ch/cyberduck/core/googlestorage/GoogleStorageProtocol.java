@@ -55,7 +55,7 @@ public final class GoogleStorageProtocol extends AbstractProtocol {
 
     @Override
     public String disk() {
-        return "googlestorage";
+        return String.format("%s.tiff", "googlestorage");
     }
 
     @Override
