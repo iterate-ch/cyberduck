@@ -19,7 +19,7 @@
     <parent>
         <artifactId>parent</artifactId>
         <groupId>ch.cyberduck</groupId>
-        <version>5.1-SNAPSHOT</version>
+        <version>5.0.3</version>
     </parent>
 
     <artifactId>udt</artifactId>
