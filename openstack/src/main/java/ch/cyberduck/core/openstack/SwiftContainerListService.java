@@ -79,7 +79,7 @@ public class SwiftContainerListService implements RootListService {
     }
 
     @Override
-    public List<Path> list(final ListProgressListener listener) throws BackgroundException {
+    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("List containers for %s", session));
         }
@@ -106,8 +106,7 @@ public class SwiftContainerListService implements RootListService {
                                 EnumSet.of(Path.Type.volume, Path.Type.directory), attributes));
                         marker = f.getName();
                     }
-                    listener.chunk(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
-                            containers);
+                    listener.chunk(directory, containers);
                 }
                 while(!chunk.isEmpty());
                 if(cdn) {
@@ -162,8 +161,7 @@ public class SwiftContainerListService implements RootListService {
             return containers;
         }
         catch(GenericException e) {
-            throw new SwiftExceptionMappingService().map("Listing directory {0} failed", e,
-                    new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)));
+            throw new SwiftExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);

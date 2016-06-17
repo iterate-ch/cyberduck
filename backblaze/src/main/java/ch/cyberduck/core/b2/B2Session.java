@@ -95,7 +95,7 @@ public class B2Session extends HttpSession<B2ApiClient> {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         if(directory.isRoot()) {
-            return new AttributedList<Path>(new B2BucketListService(this).list(listener));
+            return new B2BucketListService(this).list(directory, listener);
         }
         else {
             return new B2ObjectListService(this).list(directory, listener);

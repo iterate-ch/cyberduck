@@ -132,7 +132,8 @@ public class S3DefaultMultipartServiceTest {
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        for(Path container : new S3BucketListService(session).list(new DisabledListProgressListener())) {
+        for(Path container : new S3BucketListService(session).list(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
+                new DisabledListProgressListener())) {
             final Path key = new Path(container, "/", EnumSet.of(Path.Type.file));
             final S3DefaultMultipartService service = new S3DefaultMultipartService(session);
             for(MultipartUpload part : service.find(key)) {

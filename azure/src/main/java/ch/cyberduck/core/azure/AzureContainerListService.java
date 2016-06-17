@@ -53,7 +53,7 @@ public class AzureContainerListService implements RootListService {
     }
 
     @Override
-    public AttributedList<Path> list(final ListProgressListener listener) throws BackgroundException {
+    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         ResultSegment<CloudBlobContainer> result;
         ResultContinuation token = null;
         try {
@@ -71,16 +71,14 @@ public class AzureContainerListService implements RootListService {
                     containers.add(new Path(String.format("/%s", container.getName()),
                             EnumSet.of(Path.Type.volume, Path.Type.directory), attributes));
                 }
-                listener.chunk(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
-                        containers);
+                listener.chunk(directory, containers);
                 token = result.getContinuationToken();
             }
             while(result.getHasMoreResults());
             return containers;
         }
         catch(StorageException e) {
-            throw new AzureExceptionMappingService().map("Listing directory {0} failed", e,
-                    new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)));
+            throw new AzureExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
     }
 }

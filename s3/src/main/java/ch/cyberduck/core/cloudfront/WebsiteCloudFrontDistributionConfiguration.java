@@ -46,6 +46,7 @@ import org.jets3t.service.utils.ServiceUtils;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 
 public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistributionConfiguration {
@@ -110,7 +111,8 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
                 // http://example-bucket.s3-website-us-east-1.amazonaws.com/
                 distribution.setUrl(URI.create(String.format("%s://%s", method.getScheme(), this.getWebsiteHostname(container))));
                 distribution.setIndexDocument(configuration.getIndexDocumentSuffix());
-                distribution.setContainers(new S3BucketListService(session).list(new DisabledListProgressListener()));
+                distribution.setContainers(new S3BucketListService(session).list(
+                        new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener()));
                 return distribution;
             }
             catch(ServiceException e) {

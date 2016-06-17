@@ -29,7 +29,6 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.EnumSet;
-import java.util.List;
 
 import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2BucketResponse;
@@ -47,7 +46,7 @@ public class B2BucketListService implements RootListService {
     }
 
     @Override
-    public List<Path> list(final ListProgressListener listener) throws BackgroundException {
+    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> buckets = new AttributedList<Path>();
             for(B2BucketResponse bucket : session.getClient().listBuckets()) {
@@ -60,12 +59,11 @@ public class B2BucketListService implements RootListService {
                 }
                 buckets.add(new Path(bucket.getBucketName(), EnumSet.of(Path.Type.directory, Path.Type.volume), attributes));
             }
-            listener.chunk(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), buckets);
+            listener.chunk(directory, buckets);
             return buckets;
         }
         catch(B2ApiException e) {
-            throw new B2ExceptionMappingService(session).map("Listing directory {0} failed", e,
-                    new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)));
+            throw new B2ExceptionMappingService(session).map("Listing directory {0} failed", e, directory);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);

@@ -175,7 +175,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         if(directory.isRoot()) {
-            return new AttributedList<Path>(new AzureContainerListService(this, context).list(listener));
+            return new AzureContainerListService(this, context).list(directory, listener);
         }
         else {
             return new AzureObjectListService(this, context).list(directory, listener);
