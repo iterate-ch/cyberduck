@@ -42,7 +42,7 @@ public class SessionBackgroundActionTest {
 
     @Test
     public void testGetExceptionConnectionCanceledException() throws Exception {
-        SessionBackgroundAction a = new SessionBackgroundAction(null, PathCache.empty(), new DisabledAlertCallback() {
+        SessionBackgroundAction<Void> a = new SessionBackgroundAction<Void>(null, PathCache.empty(), new DisabledAlertCallback() {
         }, new ProgressListener() {
             @Override
             public void message(final String message) {
@@ -62,7 +62,7 @@ public class SessionBackgroundActionTest {
             }
 
             @Override
-            public Object run() throws BackgroundException {
+            public Void run() throws BackgroundException {
                 throw new ConnectionCanceledException();
             }
         };
@@ -81,7 +81,7 @@ public class SessionBackgroundActionTest {
     @Test
     public void testGetExceptionFailure() throws Exception {
         final BackgroundException failure = new BackgroundException(new RuntimeException());
-        SessionBackgroundAction a = new SessionBackgroundAction(new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty(), new AlertCallback() {
+        SessionBackgroundAction<Void> a = new SessionBackgroundAction<Void>(new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty(), new AlertCallback() {
             @Override
             public boolean alert(final Host repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
                 assertEquals(failure, f);
@@ -106,7 +106,7 @@ public class SessionBackgroundActionTest {
             }
 
             @Override
-            public Object run() throws BackgroundException {
+            public Void run() throws BackgroundException {
                 throw failure;
             }
         };
@@ -125,7 +125,7 @@ public class SessionBackgroundActionTest {
     @Test
     public void testGetExceptionLoginCanceledException() throws Exception {
         final BackgroundException failure = new LoginCanceledException();
-        SessionBackgroundAction a = new SessionBackgroundAction(new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty(), new AlertCallback() {
+        SessionBackgroundAction<Void> a = new SessionBackgroundAction<Void>(new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty(), new AlertCallback() {
             @Override
             public boolean alert(final Host repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
                 assertEquals(failure, f);
@@ -150,7 +150,7 @@ public class SessionBackgroundActionTest {
             }
 
             @Override
-            public Object run() throws BackgroundException {
+            public Void run() throws BackgroundException {
                 throw failure;
             }
         };
@@ -169,7 +169,7 @@ public class SessionBackgroundActionTest {
     @Test
     public void testRetrySocket() throws Exception {
         final BackgroundException failure = new BackgroundException(new SocketTimeoutException(""));
-        SessionBackgroundAction a = new SessionBackgroundAction(new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty(), new AlertCallback() {
+        SessionBackgroundAction<Void> a = new SessionBackgroundAction<Void>(new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty(), new AlertCallback() {
             @Override
             public boolean alert(final Host repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
                 assertEquals(failure, f);
@@ -188,7 +188,7 @@ public class SessionBackgroundActionTest {
         }, new DisabledLoginCallback(), new DisabledHostKeyCallback()
         ) {
             @Override
-            public Object run() throws BackgroundException {
+            public Void run() throws BackgroundException {
                 throw failure;
             }
         };
