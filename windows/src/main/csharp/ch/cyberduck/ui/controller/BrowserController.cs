@@ -41,9 +41,10 @@ using ch.cyberduck.ui.browser;
 using ch.cyberduck.ui.comparator;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Local;
+using Ch.Cyberduck.Core.Resources;
+using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using Ch.Cyberduck.Ui.Winforms;
-using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using java.lang;
 using java.util;
 using org.apache.log4j;
@@ -443,12 +444,12 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 else
                 {
-                    DialogResult result =
+                    TaskDialogResult result =
                         QuestionBox(String.Format(LocaleFactory.localizedString("Search for {0}"), input),
                             String.Format(LocaleFactory.localizedString("Do you want to search in {0} recursively?"),
                                 Workdir.getName()), null, String.Format("{0}", LocaleFactory.localizedString("Search")),
                             true);
-                    if (result == DialogResult.OK)
+                    if (result.CommandButtonResult == 0)
                     {
                         background(new SearchAction(this));
                     }
@@ -1255,10 +1256,10 @@ namespace Ch.Cyberduck.Ui.Controller
                     break;
                 }
             }
-            DialogResult result = QuestionBox(LocaleFactory.localizedString("Delete Bookmark"),
+            TaskDialogResult result = QuestionBox(LocaleFactory.localizedString("Delete Bookmark"),
                 LocaleFactory.localizedString("Do you want to delete the selected bookmark?"), alertText.ToString(),
                 String.Format("{0}", LocaleFactory.localizedString("Delete")), true);
-            if (result == DialogResult.OK)
+            if (result.CommandButtonResult == 0)
             {
                 _bookmarkModel.Source.removeAll(Utils.ConvertToJavaList(selected));
             }
@@ -2678,12 +2679,12 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 if (PreferencesFactory.get().getBoolean("browser.disconnect.confirm"))
                 {
-                    DialogResult result = CommandBox(LocaleFactory.localizedString("Disconnect"),
+                    TaskDialogResult result = CommandBox(LocaleFactory.localizedString("Disconnect"),
                         String.Format(LocaleFactory.localizedString("Disconnect from {0}"),
                             Session.getHost().getHostname()),
                         LocaleFactory.localizedString("The connection will be closed."),
                         String.Format("{0}", LocaleFactory.localizedString("Disconnect")), true,
-                        LocaleFactory.localizedString("Don't ask again", "Configuration"), SysIcons.Question,
+                        LocaleFactory.localizedString("Don't ask again", "Configuration"), TaskDialogIcon.Question,
                         delegate(int option, bool verificationChecked)
                         {
                             if (verificationChecked)
@@ -2698,7 +2699,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                     break;
                             }
                         });
-                    return DialogResult.OK == result;
+                    return result.Result != TaskDialogSimpleResult.Cancel;
                 }
             }
             UnmountImpl(disconnected);
@@ -2806,7 +2807,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         rename
                             ? LocaleFactory.localizedString("Rename", "Transfer")
                             : LocaleFactory.localizedString("Move", "Transfer")), true,
-                    LocaleFactory.localizedString("Don't ask again", "Configuration"), SysIcons.Question,
+                    LocaleFactory.localizedString("Don't ask again", "Configuration"), TaskDialogIcon.Question,
                     delegate(int option, bool verificationChecked)
                     {
                         if (verificationChecked)
@@ -2856,9 +2857,9 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 content.Append("\n" + Character.toString('\u2022') + " ...)");
             }
-            DialogResult r = QuestionBox(LocaleFactory.localizedString("Delete"), alertText.ToString(),
-                content.ToString(), String.Format("{0}", LocaleFactory.localizedString("Delete")), true);
-            if (r == DialogResult.OK)
+            TaskDialogResult r = QuestionBox(LocaleFactory.localizedString("Delete"), alertText.ToString(),
+                content.ToString(), String.Format("{0}", LocaleFactory.localizedString("Delete")), true); 
+            if (r.CommandButtonResult == 0)
             {
                 DeletePathsImpl(normalized);
             }
@@ -2917,9 +2918,9 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             if (shouldWarn)
             {
-                DialogResult r = QuestionBox(LocaleFactory.localizedString("Overwrite"), alertText.ToString(),
+                TaskDialogResult r = QuestionBox(LocaleFactory.localizedString("Overwrite"), alertText.ToString(),
                     content.ToString(), String.Format("{0}", LocaleFactory.localizedString("Overwrite")), true);
-                return r == DialogResult.OK;
+                return r.CommandButtonResult == 0;
             }
             else
             {

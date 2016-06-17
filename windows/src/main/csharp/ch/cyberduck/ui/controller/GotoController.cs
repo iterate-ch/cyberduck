@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,15 +13,16 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using Ch.Cyberduck.Core;
 using ch.cyberduck.core;
 using ch.cyberduck.core.features;
+using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Core.Resources;
 
 namespace Ch.Cyberduck.Ui.Controller
 {

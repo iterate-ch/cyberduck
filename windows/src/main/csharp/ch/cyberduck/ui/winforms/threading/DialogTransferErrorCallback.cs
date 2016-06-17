@@ -16,13 +16,12 @@
 // feedback@cyberduck.io
 // 
 
-using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
 using ch.cyberduck.core.transfer;
 using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller;
-using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 
 namespace Ch.Cyberduck.Ui.Winforms.Threading
 {
@@ -48,15 +47,12 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
                 AtomicBoolean c = new AtomicBoolean(true);
                 _controller.Invoke(delegate
                 {
-                    DialogResult result = _controller.View.CommandBox(LocaleFactory.localizedString("Error"),
+                    TaskDialogResult result = _controller.View.CommandBox(LocaleFactory.localizedString("Error"),
                         failure.getMessage() ?? LocaleFactory.localizedString("Unknown"),
-                        failure.getDetail() ?? LocaleFactory.localizedString("Unknown"),
-                        null,
-                        null,
+                        failure.getDetail() ?? LocaleFactory.localizedString("Unknown"), null, null,
                         LocaleFactory.localizedString("Always"),
-                        LocaleFactory.localizedString("Continue", "Credentials"), true, SysIcons.Warning,
-                        SysIcons.Information,
-                        delegate(int opt, bool verificationChecked)
+                        LocaleFactory.localizedString("Continue", "Credentials"), true, TaskDialogIcon.Warning,
+                        TaskDialogIcon.Information, delegate(int opt, bool verificationChecked)
                         {
                             if (verificationChecked)
                             {
@@ -64,7 +60,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
                                 _option = c.Value;
                             }
                         });
-                    if (result == DialogResult.Cancel)
+                    if (result.Result == TaskDialogSimpleResult.Cancel)
                     {
                         c.SetValue(false);
                     }

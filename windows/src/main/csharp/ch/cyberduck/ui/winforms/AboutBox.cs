@@ -24,10 +24,10 @@ using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.updater;
-using Ch.Cyberduck.Ui.Controller;
-using Ch.Cyberduck.Ui.Core;
+using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Core.Resources;
+using Ch.Cyberduck.Core.Sparkle;
 using Path = System.IO.Path;
-using Utils = Ch.Cyberduck.Core.Utils;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -58,7 +58,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             ackButton.Click +=
                 delegate { ApplicationLauncherFactory.get().open(LocalFactory.get("Acknowledgments.rtf")); };
-            PeriodicUpdateChecker updater = new WindowsPeriodicUpdateChecker();
+            PeriodicUpdateChecker updater = new WinSparklePeriodicUpdateChecker();
             updateButton.Enabled = updater.hasUpdatePrivileges();
             updateButton.Click += delegate { updater.check(false); };
         }

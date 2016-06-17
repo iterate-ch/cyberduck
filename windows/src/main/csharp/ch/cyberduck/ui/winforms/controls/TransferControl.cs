@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,15 +13,15 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller;
-using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 
 namespace Ch.Cyberduck.Ui.Winforms.Controls
 {
@@ -55,10 +55,10 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
             progressBar.DoubleClick += DelegateOnDoubleClick;
 
             filesComboBox.Click += delegate
-                {
-                    _focusRemoveAllowed = false;
-                    OnClick(EventArgs.Empty);
-                };
+            {
+                _focusRemoveAllowed = false;
+                OnClick(EventArgs.Empty);
+            };
             filesComboBox.LostFocus += delegate { _focusRemoveAllowed = true; };
             progressBar.MarqueeAnimationSpeed = 50;
 
@@ -233,24 +233,23 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
             return DialogResult.None;
         }
 
-        public DialogResult MessageBox(string title, string message, string content, string expandedInfo, string help,
-                                       string verificationText, DialogResponseHandler handler)
+        public TaskDialogResult MessageBox(string title, string message, string content, string expandedInfo,
+            string help, string verificationText, DialogResponseHandler handler)
         {
-            return DialogResult.None;
+            return TaskDialogResult.Empty;
         }
 
-        public DialogResult MessageBox(string title, string message, string content, TaskDialogButtons buttons,
-                                       SysIcons icons)
+        public TaskDialogResult MessageBox(string title, string message, string content, TaskDialogCommonButtons buttons,
+            TaskDialogIcon icons)
         {
-            return DialogResult.None;
+            return TaskDialogResult.Empty;
         }
 
-        public DialogResult CommandBox(string title, string mainInstruction, string content, string expandedInfo,
-                                       string help, string verificationText, string commandButtons,
-                                       bool showCancelButton, SysIcons mainIcon, SysIcons footerIcon,
-                                       DialogResponseHandler handler)
+        public TaskDialogResult CommandBox(string title, string mainInstruction, string content, string expandedInfo,
+            string help, string verificationText, string commandButtons, bool showCancelButton, TaskDialogIcon mainIcon,
+            TaskDialogIcon footerIcon, DialogResponseHandler handler)
         {
-            return DialogResult.None;
+            return TaskDialogResult.Empty;
         }
 
         public event VoidHandler ViewShownEvent = delegate { };

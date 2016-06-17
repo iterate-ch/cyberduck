@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,12 +13,12 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System.ComponentModel;
 using System.Windows.Forms;
-using Ch.Cyberduck.Ui.Winforms.Taskdialog;
+using Ch.Cyberduck.Core.TaskDialog;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -44,14 +44,15 @@ namespace Ch.Cyberduck.Ui.Controller
         DialogResult ShowDialog(IWin32Window owner);
         DialogResult ShowDialog(IView owner);
 
-        DialogResult MessageBox(string title, string message, string content, string expandedInfo, string help,
-                                string verificationText, DialogResponseHandler handler);
+        TaskDialogResult MessageBox(string title, string message, string content, string expandedInfo, string help,
+            string verificationText, DialogResponseHandler handler);
 
-        DialogResult MessageBox(string title, string message, string content, TaskDialogButtons buttons, SysIcons icons);
+        TaskDialogResult MessageBox(string title, string message, string content, TaskDialogCommonButtons buttons,
+            TaskDialogIcon icons);
 
-        DialogResult CommandBox(string title, string mainInstruction, string content, string expandedInfo, string help,
-                                string verificationText, string commandButtons, bool showCancelButton, SysIcons mainIcon,
-                                SysIcons footerIcon, DialogResponseHandler handler);
+        TaskDialogResult CommandBox(string title, string mainInstruction, string content, string expandedInfo, string help,
+            string verificationText, string commandButtons, bool showCancelButton, TaskDialogIcon mainIcon,
+            TaskDialogIcon footerIcon, DialogResponseHandler handler);
 
         //todo evtl. extend form that implements these events
         event VoidHandler PositionSizeRestoredEvent;

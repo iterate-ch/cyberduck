@@ -21,15 +21,14 @@ using System.Runtime.InteropServices;
 using System.Security.Principal;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.updater;
-using Ch.Cyberduck.Ui.Sparkle;
 using java.time;
 using org.apache.log4j;
 
-namespace Ch.Cyberduck.Ui.Core
+namespace Ch.Cyberduck.Core.Sparkle
 {
-    public class WindowsPeriodicUpdateChecker : AbstractPeriodicUpdateChecker
+    public class WinSparklePeriodicUpdateChecker : AbstractPeriodicUpdateChecker
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (WindowsPeriodicUpdateChecker).Name);
+        private static readonly Logger Log = Logger.getLogger(typeof (WinSparklePeriodicUpdateChecker).Name);
         private readonly ch.cyberduck.core.preferences.Preferences _preferences = PreferencesFactory.get();
 
         [DllImport("advapi32.dll", SetLastError = true)]
