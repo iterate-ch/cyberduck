@@ -203,20 +203,6 @@ public class S3SessionTest {
     }
 
     @Test
-    public void testConnectInteroperabilityEvault() throws Exception {
-        final Host host = new Host(new S3Protocol(), "s3.lts2.evault.com", new Credentials(
-                System.getProperties().getProperty("evault.s3.key"), System.getProperties().getProperty("evault.s3.secret")
-        ));
-        final S3Session session = new S3Session(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        assertTrue(session.isConnected());
-        final PathCache cache = new PathCache(1);
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), cache);
-        assertTrue(cache.containsKey(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume))));
-        session.close();
-    }
-
-    @Test
     public void testFeatures() throws Exception {
         final S3Session aws = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
         assertNotNull(aws.getFeature(Copy.class));
