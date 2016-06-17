@@ -33,7 +33,6 @@ import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.StorageBucket;
 import org.jets3t.service.utils.ServiceUtils;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -68,25 +67,30 @@ public class S3BucketListService implements RootListService {
                 if(StringUtils.isEmpty(this.getContainer(session.getHost()))) {
                     if(StringUtils.isNotBlank(session.getHost().getDefaultPath())) {
                         if(containerService.isContainer(new Path(session.getHost().getDefaultPath(), EnumSet.of(Path.Type.directory)))) {
-                            final Path container = containerService.getContainer(
+                            final Path bucket = containerService.getContainer(
                                     new Path(session.getHost().getDefaultPath(), EnumSet.of(Path.Type.directory))
                             );
                             log.info(String.format("Using default %s path to determine bucket name %s",
-                                    session.getHost().getDefaultPath(), container));
-                            return Collections.singletonList(container);
+                                    session.getHost().getDefaultPath(), bucket));
+                            final AttributedList<Path> buckets = new AttributedList<>(Collections.singletonList(bucket));
+                            listener.chunk(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
+                                    buckets);
+                            return buckets;
                         }
                     }
                     log.warn(String.format("No bucket name given in hostname %s", session.getHost().getHostname()));
                     final Path bucket = new Path(session.getHost().getHostname(), EnumSet.of(Path.Type.volume, Path.Type.directory));
+                    final AttributedList<Path> buckets = new AttributedList<>(Collections.singletonList(bucket));
                     listener.chunk(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
-                            new AttributedList<>(Collections.singletonList(bucket)));
-                    return Collections.singletonList(bucket);
+                            buckets);
+                    return buckets;
                 }
                 else {
                     final Path bucket = new Path(this.getContainer(session.getHost()), EnumSet.of(Path.Type.volume, Path.Type.directory));
+                    final AttributedList<Path> buckets = new AttributedList<>(Collections.singletonList(bucket));
                     listener.chunk(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
-                            new AttributedList<>(Collections.singletonList(bucket)));
-                    return Collections.singletonList(bucket);
+                            buckets);
+                    return buckets;
                 }
             }
             else {
@@ -94,12 +98,13 @@ public class S3BucketListService implements RootListService {
                 final String bucketname = this.getContainer(session.getHost());
                 if(StringUtils.isNotEmpty(bucketname)) {
                     final Path bucket = new Path(bucketname, EnumSet.of(Path.Type.volume, Path.Type.directory));
+                    final AttributedList<Path> buckets = new AttributedList<>(Collections.singletonList(bucket));
                     listener.chunk(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
-                            new AttributedList<>(Collections.singletonList(bucket)));
-                    return Collections.singletonList(bucket);
+                            buckets);
+                    return buckets;
                 }
                 else {
-                    final List<Path> buckets = new ArrayList<Path>();
+                    final AttributedList<Path> buckets = new AttributedList<Path>();
                     // List all buckets owned
                     for(StorageBucket b : session.getClient().listAllBuckets()) {
                         final Path bucket = new Path(b.getName(), EnumSet.of(Path.Type.volume, Path.Type.directory));
@@ -127,7 +132,7 @@ public class S3BucketListService implements RootListService {
                         }
                         buckets.add(bucket);
                         listener.chunk(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
-                                new AttributedList<Path>(buckets));
+                                buckets);
                     }
                     return buckets;
                 }

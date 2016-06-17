@@ -37,7 +37,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -85,7 +84,7 @@ public class SwiftContainerListService implements RootListService {
             log.debug(String.format("List containers for %s", session));
         }
         try {
-            final List<Path> containers = new ArrayList<Path>();
+            final AttributedList<Path> containers = new AttributedList<Path>();
             final int limit = preferences.getInteger("openstack.list.container.limit");
             final Client client = session.getClient();
             for(final Region r : client.getRegions()) {
@@ -108,7 +107,7 @@ public class SwiftContainerListService implements RootListService {
                         marker = f.getName();
                     }
                     listener.chunk(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
-                            new AttributedList<Path>(containers));
+                            containers);
                 }
                 while(!chunk.isEmpty());
                 if(cdn) {

@@ -27,9 +27,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.List;
 
 import com.microsoft.azure.storage.OperationContext;
 import com.microsoft.azure.storage.ResultContinuation;
@@ -55,11 +53,11 @@ public class AzureContainerListService implements RootListService {
     }
 
     @Override
-    public List<Path> list(final ListProgressListener listener) throws BackgroundException {
+    public AttributedList<Path> list(final ListProgressListener listener) throws BackgroundException {
         ResultSegment<CloudBlobContainer> result;
         ResultContinuation token = null;
         try {
-            final List<Path> containers = new ArrayList<Path>();
+            final AttributedList<Path> containers = new AttributedList<Path>();
             do {
                 final BlobRequestOptions options = new BlobRequestOptions();
                 options.setRetryPolicyFactory(new RetryNoRetry());
@@ -74,7 +72,7 @@ public class AzureContainerListService implements RootListService {
                             EnumSet.of(Path.Type.volume, Path.Type.directory), attributes));
                 }
                 listener.chunk(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
-                        new AttributedList<Path>(containers));
+                        containers);
                 token = result.getContinuationToken();
             }
             while(result.getHasMoreResults());
