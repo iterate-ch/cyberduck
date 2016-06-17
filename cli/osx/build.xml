@@ -38,7 +38,8 @@
             <param name="target" value="duck-src-${version}.${revision}.tar.gz"/>
         </antcall>
         <echo message="Calculating SHA256..."/>
-        <checksum file="${build.deploy}/duck-src-${version}.${revision}.tar.gz" algorithm="sha-256" property="source.sha256"/>
+        <checksum file="${build.deploy}/duck-src-${version}.${revision}.tar.gz"
+                  algorithm="sha-256" property="source.sha256"/>
         <local name="build.settings"/>
         <property name="build.settings"
                   value="${build.xcodeoptions} RUNTIME_SOURCE=${runtime.dependency} VERSION=${version} REVISION=${revision} COPYRIGHT='${copyright}'"/>
@@ -72,7 +73,7 @@
             </fileset>
         </foreach>
         <checksum file="${build.deploy}/duck-${version}.${revision}.tar.gz"
-                  algorithm="sha1" property="archive.sha1"/>
+                  algorithm="sha-256" property="archive.sha256"/>
         <copy todir="${build.deploy}" overwrite="true">
             <fileset dir="${setup}/brew">
                 <include name="*.rb"/>
@@ -82,7 +83,7 @@
             <include name="*.rb"/>
             <replacefilter token="${REVISION}" value="${revision}"/>
             <replacefilter token="${VERSION}" value="${version}"/>
-            <replacefilter token="${ARCHIVE.SHA1}" value="${archive.sha1}"/>
+            <replacefilter token="${ARCHIVE.SHA256}" value="${archive.sha256}"/>
             <replacefilter token="${ARCHIVE}"
                            value="https://dist.duck.sh/${sparkle.feed}/duck-${version}.${revision}.tar.gz"/>
             <replacefilter token="${SOURCE.SHA256}" value="${source.sha256}"/>
