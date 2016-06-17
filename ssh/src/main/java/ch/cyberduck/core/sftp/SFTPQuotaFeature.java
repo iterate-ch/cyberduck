@@ -48,7 +48,7 @@ public class SFTPQuotaFeature implements Quota {
                             final String[] numbers = StringUtils.split(output, ' ');
                             if(numbers.length == 2) {
                                 try {
-                                    quota.set(new Space(Long.valueOf(numbers[0]) * 1024L, Long.valueOf(numbers[1]) * 1024L));
+                                    quota.set(new Space(Long.valueOf(numbers[0]) * 1000L, Long.valueOf(numbers[1]) * 1000L));
                                 }
                                 catch(NumberFormatException e) {
                                     log.warn(String.format("Ignore line %s", output));
