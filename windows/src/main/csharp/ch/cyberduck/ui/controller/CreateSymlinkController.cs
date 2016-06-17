@@ -23,6 +23,7 @@ using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.features;
 using ch.cyberduck.core.preferences;
+using Ch.Cyberduck.Core.Resources;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using java.util;
 

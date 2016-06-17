@@ -19,7 +19,6 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.io;
@@ -29,8 +28,9 @@ using ch.cyberduck.core.ssl;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.core.transfer;
 using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Core.Resources;
+using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller.Threading;
-using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using org.apache.log4j;
 using StructureMap;
 
@@ -145,11 +145,11 @@ namespace Ch.Cyberduck.Ui.Controller
                 PreferencesFactory.get().setProperty("queue.window.open.default", _instance.Visible);
                 if (TransferCollection.defaultCollection().numberOfRunningTransfers() > 0)
                 {
-                    DialogResult result = _instance.QuestionBox(LocaleFactory.localizedString("Transfer in progress"),
-                        LocaleFactory.localizedString("There are files currently being transferred. Quit anyway?"), null,
-                        String.Format("{0}", LocaleFactory.localizedString("Exit")), true //Cancel
-                        );
-                    if (DialogResult.OK == result)
+                    TaskDialogResult result =
+                        _instance.QuestionBox(LocaleFactory.localizedString("Transfer in progress"),
+                            LocaleFactory.localizedString("There are files currently being transferred. Quit anyway?"),
+                            null, String.Format("{0}", LocaleFactory.localizedString("Exit")), true);
+                    if (result.CommandButtonResult == 0)
                     {
                         // Quit
                         for (int i = 0; i < _instance.getActions().size(); i++)
@@ -419,7 +419,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 else
                 {
-                    View.FileIcon = ResourcesBundle.multiple.ToBitmap();
+                    View.FileIcon = IconCache.Instance.IconForName("multiple", 0);
                 }
             }
             else
@@ -608,7 +608,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     CommandBox(LocaleFactory.localizedString("Clean Up"),
                         LocaleFactory.localizedString("Remove completed transfers from list."), null,
                         LocaleFactory.localizedString("Clean Up"), true,
-                        LocaleFactory.localizedString("Don't ask again", "Configuration"), SysIcons.Question,
+                        LocaleFactory.localizedString("Don't ask again", "Configuration"), TaskDialogIcon.Question,
                         delegate(int option, bool verificationChecked)
                         {
                             if (verificationChecked)

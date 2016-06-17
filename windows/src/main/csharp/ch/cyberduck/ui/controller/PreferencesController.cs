@@ -28,7 +28,8 @@ using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.s3;
 using ch.cyberduck.core.transfer;
-using Ch.Cyberduck.Ui.Core;
+using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Core.Sparkle;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using java.util;
@@ -36,7 +37,6 @@ using java.util.regex;
 using org.apache.log4j;
 using org.jets3t.service.model;
 using StructureMap;
-using Utils = Ch.Cyberduck.Core.Utils;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -281,7 +281,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_CheckForUpdateEvent()
         {
-            new WindowsPeriodicUpdateChecker().check(false);
+            new WinSparklePeriodicUpdateChecker().check(false);
         }
 
         private void View_AutomaticUpdateChangedEvent()
@@ -1012,7 +1012,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             #region Update
 
-            View.UpdateEnabled = new WindowsPeriodicUpdateChecker().hasUpdatePrivileges();
+            View.UpdateEnabled = new WinSparklePeriodicUpdateChecker().hasUpdatePrivileges();
             View.AutomaticUpdateCheck = PreferencesFactory.get().getBoolean("update.check");
             long lastCheck = PreferencesFactory.get().getLong("update.check.last");
             View.LastUpdateCheck = 0 == lastCheck
@@ -1056,11 +1056,11 @@ namespace Ch.Cyberduck.Ui.Controller
         private void PopulateDefaultEncryption()
         {
             IList<KeyValuePair<string, string>> algorithms = new List<KeyValuePair<string, string>>();
-            algorithms.Add(new KeyValuePair<string, string>(Encryption.Algorithm.NONE.ToString(), 
+            algorithms.Add(new KeyValuePair<string, string>(Encryption.Algorithm.NONE.ToString(),
                 LocaleFactory.localizedString("None")));
-            algorithms.Add(new KeyValuePair<string, string>(S3EncryptionFeature.SSE_AES256.ToString(), 
+            algorithms.Add(new KeyValuePair<string, string>(S3EncryptionFeature.SSE_AES256.ToString(),
                 LocaleFactory.localizedString(S3EncryptionFeature.SSE_AES256.getDescription(), "S3")));
-            algorithms.Add(new KeyValuePair<string, string>(KMSEncryptionFeature.SSE_KMS_DEFAULT.ToString(), 
+            algorithms.Add(new KeyValuePair<string, string>(KMSEncryptionFeature.SSE_KMS_DEFAULT.ToString(),
                 LocaleFactory.localizedString(KMSEncryptionFeature.SSE_KMS_DEFAULT.getDescription(), "S3")));
             View.PopulateDefaultEncryption(algorithms);
         }

@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System;
@@ -38,7 +38,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             //focus nickname
             Load += (sender, args) => textBoxServer.Focus();
 
-            protocol.ICImageList = IconCache.Instance.GetProtocolIcons();
+            protocol.ICImageList = ProtocolIconsImageList();
 
             toggleOptionsLabel.Text = "        " + LocaleFactory.localizedString("More Options", "Bookmark");
             toggleOptionsLabel.ImageIndex = (_expanded ? 1 : 4);

@@ -25,6 +25,7 @@ using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.ui.browser;
 using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Core.Resources;
 using Ch.Cyberduck.Ui.Winforms;
 using java.util;
 
@@ -51,7 +52,7 @@ namespace Ch.Cyberduck.Ui.Controller
         }
 
         public IEnumerable<Path> ChildrenGetter(object folder)
-        {            
+        {
             AttributedList list = _cache.get((Path) folder)
                 .filter(_controller.FilenameComparator, _controller.FilenameFilter);
             for (int i = 0; i < list.size(); i++)

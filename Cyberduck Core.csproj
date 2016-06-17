@@ -35,6 +35,9 @@
     <Reference Include="core">
       <HintPath>core\dll\target\Cyberduck.Core.dll</HintPath>
     </Reference>
+    <Reference Include="ExceptionReporter.WinForms">
+      <HintPath>core\dll\target\ExceptionReporter.WinForms.dll</HintPath>
+    </Reference>
     <Reference Include="IKVM.OpenJDK.Beans">
       <HintPath>core\native\target\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Beans.dll</HintPath>
     </Reference>
@@ -104,6 +107,7 @@
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\AtomicBoolean.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\collections\IndexedLinkedList.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\collections\LRUCache.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\CrashReporter.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\DataProtector.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\editor\SystemEditorFactory.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\editor\SystemWatchEditor.cs" />
@@ -125,7 +129,28 @@
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\OSVersion.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\preferences\RoamingSupportDirectoryFinder.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\preferences\AssemblyApplicationResourcesFinder.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\sparkle\WinSparkle.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\sparkle\WinSparklePeriodicUpdateChecker.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\SystemCertificateStore.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\taskdialog\ActiveTaskDialog.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\taskdialog\Localization.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\taskdialog\NativeMethods.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\taskdialog\SafeNativeMethods.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\taskdialog\TaskDialog.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\taskdialog\TaskDialogEvents.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\taskdialog\TaskDialogInterop.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\taskdialog\TaskDialogResult.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\taskdialog\TaskDialogTypes.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\taskdialog\UnsafeNativeMethods.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\taskdialog\Win32Types.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\properties\Settings.Designer.cs">
+      <DependentUpon>Settings.settings</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\preferences\SettingsDictionary.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\preferences\SettingsDictionaryPreferences.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\resources\IconCache.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\RFC2253.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\SerializableDictionary.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\Shell32.cs" />
@@ -135,12 +160,29 @@
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\diagnostics\TcpReachability.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\Utils.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\urlhandler\URLSchemeHandlerConfiguration.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\ResourcesBundle.Designer.cs">
+      <DependentUpon>ResourcesBundle.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="core\target\AssemblyInfo.cs" />
     <!-- add localizations -->
+    <EmbeddedResource Include="core\src\main\csharp\ch\cyberduck\ResourcesBundle.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ResourcesBundle.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="i18n\src\main\resources\*.lproj\*.strings" />
     <EmbeddedResource Include="i18n\src\main\resources\*.lproj\*.strings.1" />
     <EmbeddedResource Include="i18n\src\main\resources\*.lproj\*.txt" />
     <!-- <EmbeddedResource Include="lib\Sparkle.framework\Versions\A\Resources\*.lproj\Sparkle.strings" /> -->
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="core\src\main\csharp\ch\cyberduck\properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -17,12 +17,11 @@
 // 
 
 using System;
-using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.worker;
 using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller;
-using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 
 namespace Ch.Cyberduck.Ui.Winforms.Threading
 {
@@ -48,18 +47,15 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
                 AtomicBoolean c = new AtomicBoolean(false);
                 _controller.Invoke(delegate
                 {
-                    DialogResult result =
+                    TaskDialogResult result =
                         _controller.View.CommandBox(LocaleFactory.localizedString("Apply changes recursively"),
                             LocaleFactory.localizedString("Apply changes recursively"),
                             String.Format(
                                 LocaleFactory.localizedString(
-                                    "Do you want to set {0} on {1} recursively for all contained files?"),
-                                value, directory.getName()),
-                            null, null,
-                            LocaleFactory.localizedString("Always"),
-                            LocaleFactory.localizedString("Continue", "Credentials"), true, SysIcons.Warning,
-                            SysIcons.Information,
-                            delegate(int opt, bool verificationChecked)
+                                    "Do you want to set {0} on {1} recursively for all contained files?"), value,
+                                directory.getName()), null, null, LocaleFactory.localizedString("Always"),
+                            LocaleFactory.localizedString("Continue", "Credentials"), true, TaskDialogIcon.Warning,
+                            TaskDialogIcon.Information, delegate(int opt, bool verificationChecked)
                             {
                                 if (verificationChecked)
                                 {
@@ -67,7 +63,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
                                     _option = c.Value;
                                 }
                             });
-                    if (result == DialogResult.Cancel)
+                    if (result.Result == TaskDialogSimpleResult.Cancel)
                     {
                         c.SetValue(false);
                     }

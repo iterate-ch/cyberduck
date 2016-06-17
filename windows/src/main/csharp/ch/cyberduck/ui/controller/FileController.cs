@@ -19,6 +19,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 using ch.cyberduck.core;
+using Ch.Cyberduck.Core.Resources;
 using java.util;
 
 namespace Ch.Cyberduck.Ui.Controller

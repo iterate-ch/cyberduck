@@ -25,6 +25,7 @@ using ch.cyberduck.core.features;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.core.worker;
 using ch.cyberduck.ui.browser;
+using Ch.Cyberduck.Core.Resources;
 using java.util;
 using Boolean = java.lang.Boolean;
 

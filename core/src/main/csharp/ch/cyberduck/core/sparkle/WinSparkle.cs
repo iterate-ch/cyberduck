@@ -19,7 +19,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace Ch.Cyberduck.Ui.Sparkle
+namespace Ch.Cyberduck.Core.Sparkle
 {
     public class WinSparkle
     {

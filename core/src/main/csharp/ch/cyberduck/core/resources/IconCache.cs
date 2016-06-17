@@ -1,20 +1,20 @@
 ﻿// 
-// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
-// 
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-// 
+//
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
-// 
+// feedback@cyberduck.io
+//
 
 using System;
 using System.Collections.Generic;
@@ -23,16 +23,15 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
-using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Core.Collections;
 using ch.cyberduck.core;
 using ch.cyberduck.core.preferences;
+using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Core.Collections;
 using org.apache.commons.io;
 using org.apache.log4j;
 using Path = ch.cyberduck.core.Path;
 
-namespace Ch.Cyberduck.Ui.Controller
+namespace Ch.Cyberduck.Core.Resources
 {
     /// <summary>
     /// Provides static methods to read images for both folders and files. Does not provide any caching actually.
@@ -68,12 +67,13 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly TypedLRUCache<Icon> _iconCache =
             new TypedLRUCache<Icon>(PreferencesFactory.get().getInteger("icon.cache.size"));
 
-        private readonly Dictionary<int, ImageList> _protocolImages = new Dictionary<int, ImageList>();
+        private readonly Dictionary<int, IDictionary<String, Bitmap>> _protocolImages =
+            new Dictionary<int, IDictionary<String, Bitmap>>();
 
         /// <summary>
         /// 16x16 protocol icons
         /// </summary>
-        private ImageList _protocolIcons;
+        private IDictionary<String, Bitmap> _protocolIcons;
 
         public static IconCache Instance
         {
@@ -194,7 +194,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 else
                 {
                     object obj = ResourcesBundle.ResourceManager.GetObject(FilenameUtils.getBaseName(name),
-                                                                           ResourcesBundle.Culture);
+                        ResourcesBundle.Culture);
                     if (obj is Icon)
                     {
                         image = (new Icon(obj as Icon, size, size)).ToBitmap();
@@ -355,34 +355,29 @@ namespace Ch.Cyberduck.Ui.Controller
             return GetFileIconFromExtension(filename, false, size, linkOverlay);
         }
 
-        public ImageList GetProtocolImages(int size)
+        public IDictionary<String, Bitmap> GetProtocolImages(int size)
         {
-            ImageList list;
-            if (!_protocolImages.TryGetValue(size, out list))
+            IDictionary<String, Bitmap> dict;
+            if (!_protocolImages.TryGetValue(size, out dict))
             {
-                list = new ImageList();
-                list.ImageSize = new Size(size, size);
-                list.ColorDepth = ColorDepth.Depth32Bit;
+                dict = new Dictionary<string, Bitmap>();
                 foreach (Protocol p in ProtocolFactory.getEnabledProtocols().toArray(new Protocol[] {}))
                 {
-                    list.Images.Add(p.getProvider(), IconForName(p.disk(), size));
+                    dict[p.getProvider()] = IconForName(p.disk(), size);
                 }
-                _protocolImages.Add(size, list);
+                _protocolImages.Add(size, dict);
             }
-            return list;
+            return dict;
         }
 
-        public ImageList GetProtocolIcons()
+        public IDictionary<String, Bitmap> GetProtocolIcons()
         {
             if (null == _protocolIcons)
             {
-                _protocolIcons = new ImageList();
-                _protocolIcons.ImageSize = new Size(16, 16);
-                _protocolIcons.ColorDepth = ColorDepth.Depth32Bit;
-                _protocolIcons.Images.Clear();
+                _protocolIcons = new Dictionary<string, Bitmap>();
                 foreach (Protocol p in ProtocolFactory.getEnabledProtocols().toArray(new Protocol[] {}))
                 {
-                    _protocolIcons.Images.Add(p.getProvider(), IconForName(p.icon(), 16));
+                    _protocolIcons[p.getProvider()] = IconForName(p.icon(), 16);
                 }
             }
             return _protocolIcons;
@@ -430,7 +425,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
 
                 IntPtr hSuccess = Shell32.SHGetFileInfo(filename, fileAttributes, ref shfi, (uint) Marshal.SizeOf(shfi),
-                                                        flags);
+                    flags);
                 if (hSuccess != IntPtr.Zero)
                 {
                     // Copy (clone) the returned icon to a new object, thus allowing us to clean-up properly
@@ -469,7 +464,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     flags += Shell32.SHGFI_LARGEICON;
                 }
                 IntPtr hSuccess = Shell32.SHGetFileInfo(filename, Shell32.FILE_ATTRIBUTE_NORMAL, ref shfi,
-                                                        (uint) Marshal.SizeOf(shfi), flags);
+                    (uint) Marshal.SizeOf(shfi), flags);
                 if (hSuccess != IntPtr.Zero)
                 {
                     // Copy (clone) the returned icon to a new object, thus allowing us to clean-up properly
@@ -510,7 +505,7 @@ namespace Ch.Cyberduck.Ui.Controller
             // Get the folder icon
             Shell32.SHFILEINFO shfi = new Shell32.SHFILEINFO();
             IntPtr hSuccess = Shell32.SHGetFileInfo("_unknown", Shell32.FILE_ATTRIBUTE_DIRECTORY, ref shfi,
-                                                    (uint) Marshal.SizeOf(shfi), flags);
+                (uint) Marshal.SizeOf(shfi), flags);
             if (hSuccess != IntPtr.Zero)
             {
                 Icon.FromHandle(shfi.hIcon); // Load the icon from an HICON handle

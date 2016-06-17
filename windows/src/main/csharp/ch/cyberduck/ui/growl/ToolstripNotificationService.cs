@@ -25,8 +25,8 @@ using ch.cyberduck.core.local;
 using ch.cyberduck.core.notification;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.updater;
+using Ch.Cyberduck.Core.Sparkle;
 using Ch.Cyberduck.Ui.Controller;
-using Ch.Cyberduck.Ui.Core;
 using Application = System.Windows.Forms.Application;
 
 namespace Ch.Cyberduck.Ui.Growl
@@ -48,7 +48,7 @@ namespace Ch.Cyberduck.Ui.Growl
             {
                 Text = LocaleFactory.get().localize("Check for Update…", "Main")
             };
-            PeriodicUpdateChecker updater = new WindowsPeriodicUpdateChecker();
+            PeriodicUpdateChecker updater = new WinSparklePeriodicUpdateChecker();
             itemUpdate.Enabled = updater.hasUpdatePrivileges();
             itemUpdate.Click += delegate { updater.check(false); };
             ToolStripMenuItem itemDonate = new ToolStripMenuItem
