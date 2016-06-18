@@ -44,6 +44,7 @@ import org.jets3t.service.model.WebsiteConfig;
 
 import java.net.URI;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 
 public class GoogleStorageWebsiteDistributionConfiguration implements DistributionConfiguration, Index {
@@ -103,7 +104,8 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
                 final LoggingConfiguration c = new GoogleStorageLoggingFeature(session).getConfiguration(container);
                 distribution.setLogging(c.isEnabled());
                 distribution.setLoggingContainer(c.getLoggingTarget());
-                distribution.setContainers(new S3BucketListService(session).list(new DisabledListProgressListener()));
+                distribution.setContainers(new S3BucketListService(session).list(
+                        new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener()));
             }
             return distribution;
         }

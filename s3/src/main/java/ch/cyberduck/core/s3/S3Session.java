@@ -234,7 +234,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         if(directory.isRoot()) {
             // List all buckets
-            return new AttributedList<Path>(new S3BucketListService(this, new S3LocationFeature.S3Region(host.getRegion())).list(listener));
+            return new S3BucketListService(this, new S3LocationFeature.S3Region(host.getRegion())).list(directory, listener);
         }
         else {
             return new S3ObjectListService(this).list(directory, listener);

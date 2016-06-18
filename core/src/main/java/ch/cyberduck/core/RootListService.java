@@ -18,10 +18,5 @@ package ch.cyberduck.core;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.exception.BackgroundException;
-
-import java.util.List;
-
-public interface RootListService {
-    List<Path> list(ListProgressListener listener) throws BackgroundException;
+public interface RootListService extends ListService {
 }

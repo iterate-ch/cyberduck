@@ -78,6 +78,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -568,7 +569,9 @@ public class CloudFrontDistributionConfiguration
             distribution.setInvalidationStatus(this.readInvalidationStatus(client, distribution));
         }
         if(this.getFeature(DistributionLogging.class, method) != null) {
-            distribution.setContainers(new S3BucketListService(session).list(new DisabledListProgressListener()));
+            distribution.setContainers(new S3BucketListService(session).list(
+                    new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
+                    new DisabledListProgressListener()));
         }
         return distribution;
     }
