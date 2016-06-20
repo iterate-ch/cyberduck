@@ -58,7 +58,7 @@ public class B2TouchFeature implements Touch {
             );
         }
         catch(B2ApiException e) {
-            throw new B2ExceptionMappingService(session).map("Cannot create folder {0}", e, file);
+            throw new B2ExceptionMappingService(session).map("Cannot create file {0}", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
