@@ -25,8 +25,7 @@ import org.apache.log4j.Logger;
 
 /**
  * Encapsulating UNIX file permissions.
- *
- * @version $Id$
+
  */
 public class Permission implements Serializable {
     public static final Permission EMPTY = new Permission(Action.none, Action.none, Action.none) {

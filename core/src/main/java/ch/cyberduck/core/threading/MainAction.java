@@ -20,14 +20,12 @@ package ch.cyberduck.core.threading;
 
 /**
  * Action to be run on the main thread
- *
- * @version $Id$
  */
 public abstract class MainAction implements Runnable {
 
     /**
      * @return False if the action should not be run anymore because the parent container has
-     *         been invalidated in the mean time.
+     * been invalidated in the mean time.
      */
     public abstract boolean isValid();
 

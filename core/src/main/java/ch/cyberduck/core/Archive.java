@@ -32,8 +32,7 @@ import java.util.Locale;
 
 /**
  * Description of an archive format
- *
- * @version $Id$
+
  */
 public abstract class Archive {
     private static final Logger log = Logger.getLogger(Archive.class);

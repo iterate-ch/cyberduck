@@ -28,8 +28,6 @@ import java.util.List;
 
 /**
  * CDN configuration actions.
- *
- * @version $Id$
  */
 public interface DistributionConfiguration extends UrlProvider {
 

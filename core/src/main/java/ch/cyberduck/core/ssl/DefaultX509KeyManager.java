@@ -35,8 +35,7 @@ import java.security.cert.X509Certificate;
 
 /**
  * Default implementation to choose certificates from key store.
- *
- * @version $Id$
+
  */
 public class DefaultX509KeyManager implements X509KeyManager {
     private static final Logger log = Logger.getLogger(DefaultX509KeyManager.class);

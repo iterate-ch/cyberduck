@@ -33,8 +33,7 @@ import org.apache.log4j.Logger;
  * This implementation is based on the <a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/freenet/freenet/src/freenet/support/io/Bandwidth.java">Bandwidth</a>
  * class from
  * the Freenet project.  It has been simplified and better documented.<p>
- *
- * @version $Id$
+
  */
 public final class BandwidthThrottle {
     private static Logger log = Logger.getLogger(BandwidthThrottle.class);

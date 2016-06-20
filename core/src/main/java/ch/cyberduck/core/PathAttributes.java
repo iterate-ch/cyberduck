@@ -29,8 +29,7 @@ import java.util.Map;
 
 /**
  * Attributes of a remote directory or file.
- *
- * @version $Id$
+
  */
 public class PathAttributes extends Attributes implements Serializable {
 

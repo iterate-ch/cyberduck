@@ -28,8 +28,7 @@ import java.util.Set;
 
 /**
  * Default implementation for certificate trust settings.
- *
- * @version $Id$
+
  */
 public abstract class AbstractX509TrustManager implements X509TrustManager {
     private static final Logger log = Logger.getLogger(AbstractX509TrustManager.class);
