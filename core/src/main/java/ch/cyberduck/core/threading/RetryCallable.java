@@ -43,6 +43,9 @@ public abstract class RetryCallable<T> implements Callable<T> {
 
     private int backoff = preferences.getInteger("connection.retry.delay");
 
+    @Override
+    public abstract T call() throws BackgroundException;
+
     /**
      * @param failure  Failure
      * @param progress Listener
