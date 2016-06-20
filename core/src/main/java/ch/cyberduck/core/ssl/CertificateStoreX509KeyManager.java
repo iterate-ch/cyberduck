@@ -107,7 +107,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
     }
 
     public String[] getClientAliases(final String[] keyTypes, final Principal[] issuers) {
-        if(null == issuers || Arrays.asList(issuers).isEmpty()) {
+        if(null == issuers) {
             log.warn("No issuer subject names provided");
             return null;
         }
@@ -149,7 +149,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
     }
 
     public X509Certificate getCertificate(final String alias, final String[] keyTypes, final Principal[] issuers) {
-        if(null == issuers || Arrays.asList(issuers).isEmpty()) {
+        if(null == issuers) {
             log.warn("No issuer subject names provided");
             return null;
         }
@@ -196,7 +196,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
 
     @Override
     public String chooseClientAlias(final String[] keyTypes, final Principal[] issuers, final Socket socket) {
-        if(null == issuers || Arrays.asList(issuers).isEmpty()) {
+        if(null == issuers) {
             log.warn("No issuer subject names provided");
             return null;
         }
