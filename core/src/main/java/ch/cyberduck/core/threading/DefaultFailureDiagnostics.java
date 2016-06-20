@@ -21,6 +21,7 @@ package ch.cyberduck.core.threading;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.ResolveFailedException;
+import ch.cyberduck.core.exception.SSLNegotiateException;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.NoHttpResponseException;
@@ -48,6 +49,9 @@ public final class DefaultFailureDiagnostics implements FailureDiagnostics<Excep
         }
         if(failure instanceof ResolveFailedException) {
             return Type.network;
+        }
+        if(failure instanceof SSLNegotiateException) {
+            return Type.application;
         }
         for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
             if(cause instanceof SSLException) {

@@ -23,6 +23,7 @@ import ch.cyberduck.core.DefaultSocketExceptionMappingService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.SSLNegotiateException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -36,6 +37,67 @@ import java.security.cert.CertificateException;
 
 public class SSLExceptionMappingService extends AbstractExceptionMappingService<SSLException> {
     private static final Logger log = Logger.getLogger(SSLExceptionMappingService.class);
+
+    /**
+     * close_notify(0),
+     * unexpected_message(10),
+     * bad_record_mac(20),
+     * decryption_failed_RESERVED(21),
+     * record_overflow(22),
+     * decompression_failure(30),
+     * handshake_failure(40),
+     * no_certificate_RESERVED(41),
+     * bad_certificate(42),
+     * unsupported_certificate(43),
+     * certificate_revoked(44),
+     * certificate_expired(45),
+     * certificate_unknown(46),
+     * illegal_parameter(47),
+     * unknown_ca(48),
+     * access_denied(49),
+     * decode_error(50),
+     * decrypt_error(51),
+     * export_restriction_RESERVED(60),
+     * protocol_version(70),
+     * insufficient_security(71),
+     * internal_error(80),
+     * user_canceled(90),
+     * no_renegotiation(100),
+     * unsupported_extension(110),
+     */
+    @Override
+    public BackgroundException map(final SSLException failure) {
+        final StringBuilder buffer = new StringBuilder();
+        for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
+            if(cause instanceof SocketException) {
+                // Map Connection has been shutdown: javax.net.ssl.SSLException: java.net.SocketException: Broken pipe
+                return new DefaultSocketExceptionMappingService().map((SocketException) cause);
+            }
+        }
+        final String message = failure.getMessage();
+        for(Alert alert : Alert.values()) {
+            if(StringUtils.contains(message, alert.name())) {
+                this.append(buffer, alert.getDescription());
+                break;
+            }
+        }
+        if(buffer.length() == 0) {
+            this.append(buffer, message);
+        }
+        if(failure instanceof SSLHandshakeException) {
+            if(ExceptionUtils.getRootCause(failure) instanceof CertificateException) {
+                log.warn(String.format("Ignore certificate failure %s and drop connection", failure.getMessage()));
+                // Server certificate not accepted
+                return new ConnectionCanceledException(failure);
+            }
+            return new SSLNegotiateException(buffer.toString(), failure);
+        }
+        if(ExceptionUtils.getRootCause(failure) instanceof GeneralSecurityException) {
+            this.append(buffer, ExceptionUtils.getRootCause(failure).getMessage());
+            return new InteroperabilityException(buffer.toString(), failure);
+        }
+        return new InteroperabilityException(buffer.toString(), failure);
+    }
 
     private enum Alert {
         close_notify(0),
@@ -129,7 +191,7 @@ public class SSLExceptionMappingService extends AbstractExceptionMappingService<
 
         private int code;
 
-        private Alert(int code) {
+        Alert(int code) {
             this.code = code;
         }
 
@@ -140,65 +202,5 @@ public class SSLExceptionMappingService extends AbstractExceptionMappingService<
         public String getDescription() {
             return StringUtils.capitalize(StringUtils.replaceChars(this.name(), '_', ' '));
         }
-    }
-
-    /**
-     * close_notify(0),
-     * unexpected_message(10),
-     * bad_record_mac(20),
-     * decryption_failed_RESERVED(21),
-     * record_overflow(22),
-     * decompression_failure(30),
-     * handshake_failure(40),
-     * no_certificate_RESERVED(41),
-     * bad_certificate(42),
-     * unsupported_certificate(43),
-     * certificate_revoked(44),
-     * certificate_expired(45),
-     * certificate_unknown(46),
-     * illegal_parameter(47),
-     * unknown_ca(48),
-     * access_denied(49),
-     * decode_error(50),
-     * decrypt_error(51),
-     * export_restriction_RESERVED(60),
-     * protocol_version(70),
-     * insufficient_security(71),
-     * internal_error(80),
-     * user_canceled(90),
-     * no_renegotiation(100),
-     * unsupported_extension(110),
-     */
-    @Override
-    public BackgroundException map(final SSLException failure) {
-        final StringBuilder buffer = new StringBuilder();
-        for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
-            if(cause instanceof SocketException) {
-                // Map Connection has been shutdown: javax.net.ssl.SSLException: java.net.SocketException: Broken pipe
-                return new DefaultSocketExceptionMappingService().map((SocketException) cause);
-            }
-        }
-        if(failure instanceof SSLHandshakeException) {
-            if(ExceptionUtils.getRootCause(failure) instanceof CertificateException) {
-                log.warn(String.format("Ignore certificate failure %s and drop connection", failure.getMessage()));
-                // Server certificate not accepted
-                return new ConnectionCanceledException(failure);
-            }
-        }
-        if(ExceptionUtils.getRootCause(failure) instanceof GeneralSecurityException) {
-            this.append(buffer, ExceptionUtils.getRootCause(failure).getMessage());
-            return new InteroperabilityException(buffer.toString(), failure);
-        }
-        final String message = failure.getMessage();
-        for(Alert alert : Alert.values()) {
-            if(StringUtils.contains(message, alert.name())) {
-                this.append(buffer, alert.getDescription());
-                break;
-            }
-        }
-        if(buffer.length() == 0) {
-            this.append(buffer, message);
-        }
-        return new InteroperabilityException(buffer.toString(), failure);
     }
 }
