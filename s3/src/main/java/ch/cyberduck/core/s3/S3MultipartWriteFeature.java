@@ -96,6 +96,25 @@ public class S3MultipartWriteFeature implements Write {
         };
     }
 
+    @Override
+    public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
+        if(finder.withCache(cache).find(file)) {
+            final PathAttributes attributes = this.attributes.withCache(cache).find(file);
+            return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());
+        }
+        return Write.notfound;
+    }
+
+    @Override
+    public boolean temporary() {
+        return false;
+    }
+
+    @Override
+    public boolean random() {
+        return false;
+    }
+
     private final class MultipartOutputStream extends OutputStream {
         /**
          * Completed parts
@@ -106,10 +125,8 @@ public class S3MultipartWriteFeature implements Write {
         private final MultipartUpload multipart;
         private final Path file;
         private final TransferStatus status;
-
-        private int partNumber;
-
         private final AtomicBoolean close = new AtomicBoolean();
+        private int partNumber;
 
         public MultipartOutputStream(final MultipartUpload multipart, final Path file, final TransferStatus status) {
             this.multipart = multipart;
@@ -131,7 +148,7 @@ public class S3MultipartWriteFeature implements Write {
             try {
                 completed.add(new RetryCallable<MultipartPart>() {
                     @Override
-                    public MultipartPart call() throws Exception {
+                    public MultipartPart call() throws BackgroundException {
                         try {
                             final Map<String, String> parameters = new HashMap<String, String>();
                             parameters.put("uploadId", multipart.getUploadId());
@@ -143,9 +160,14 @@ public class S3MultipartWriteFeature implements Write {
                                     break;
                             }
                             final S3Object part = new S3WriteFeature(session).getDetails(containerService.getKey(file), status);
-                            session.getClient().putObjectWithRequestEntityImpl(
-                                    containerService.getContainer(file).getName(), part,
-                                    new ByteArrayEntity(b, off, len), parameters);
+                            try {
+                                session.getClient().putObjectWithRequestEntityImpl(
+                                        containerService.getContainer(file).getName(), part,
+                                        new ByteArrayEntity(b, off, len), parameters);
+                            }
+                            catch(ServiceException e) {
+                                throw new S3ExceptionMappingService().map("Upload {0} failed", e, file);
+                            }
                             if(log.isDebugEnabled()) {
                                 log.debug(String.format("Saved object %s with checksum %s", file, part.getETag()));
                             }
@@ -216,24 +238,5 @@ public class S3MultipartWriteFeature implements Write {
                 close.set(true);
             }
         }
-    }
-
-    @Override
-    public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
-        if(finder.withCache(cache).find(file)) {
-            final PathAttributes attributes = this.attributes.withCache(cache).find(file);
-            return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());
-        }
-        return Write.notfound;
-    }
-
-    @Override
-    public boolean temporary() {
-        return false;
-    }
-
-    @Override
-    public boolean random() {
-        return false;
     }
 }
