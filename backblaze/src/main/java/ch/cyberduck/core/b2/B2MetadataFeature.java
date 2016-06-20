@@ -27,7 +27,7 @@ import java.util.Map;
 
 public class B2MetadataFeature implements Headers {
 
-    public static final String X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS = "X-Bz-Info-src_last_modified_millis";
+    public static final String X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS = "src_last_modified_millis";
 
     private final PathContainerService containerService
             = new B2PathContainerService();
