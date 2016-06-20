@@ -87,8 +87,6 @@ import java.util.concurrent.Callable;
 
 /**
  * Amazon CloudFront CDN configuration.
- *
- * @version $Id$
  */
 public class CloudFrontDistributionConfiguration
         implements DistributionConfiguration, Purge, Index, DistributionLogging, Cname {
@@ -143,10 +141,6 @@ public class CloudFrontDistributionConfiguration
     @Override
     public String getHostname() {
         return "cloudfront.amazonaws.com";
-    }
-
-    private static interface Authenticated<T> extends Callable<T> {
-        T call() throws BackgroundException;
     }
 
     private <T> T authenticated(final Authenticated<T> run, final LoginCallback prompt) throws BackgroundException {
@@ -591,5 +585,9 @@ public class CloudFrontDistributionConfiguration
         catch(CloudFrontServiceException e) {
             throw new CloudFrontServiceExceptionMappingService().map("Cannot read CDN configuration", e);
         }
+    }
+
+    private interface Authenticated<T> extends Callable<T> {
+        T call() throws BackgroundException;
     }
 }

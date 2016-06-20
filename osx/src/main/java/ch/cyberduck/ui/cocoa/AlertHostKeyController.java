@@ -44,8 +44,6 @@ import net.schmizz.sshj.common.KeyType;
 
 /**
  * Using known_hosts from OpenSSH to store accepted host keys.
- *
- * @version $Id$
  */
 public class AlertHostKeyController extends OpenSSHHostKeyVerifier {
     private static final Logger log = Logger.getLogger(AlertHostKeyController.class);
