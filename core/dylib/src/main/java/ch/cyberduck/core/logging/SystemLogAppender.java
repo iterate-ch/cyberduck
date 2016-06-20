@@ -26,8 +26,7 @@ import org.apache.log4j.spi.LoggingEvent;
 
 /**
  * Redirect to NSLog(). Logs an error message to the Apple System Log facility.
- *
- * @version $Id$
+
  */
 public class SystemLogAppender extends AppenderSkeleton {
 
