@@ -59,12 +59,7 @@ public class DefaultAttributesFeatureTest {
         new B2TouchFeature(session).touch(file);
         // Find without version id set in attributes
         assertNotNull(new DefaultAttributesFeature(session).find(file).getVersionId());
-        new B2DeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        new B2DeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 

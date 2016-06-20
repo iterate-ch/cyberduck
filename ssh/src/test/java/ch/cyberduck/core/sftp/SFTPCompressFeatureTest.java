@@ -41,21 +41,17 @@ public class SFTPCompressFeatureTest {
             final Path workdir = new SFTPHomeDirectoryService(session).find();
             final Path test = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
             session.getFeature(Touch.class).touch(test);
-            feature.archive(archive, workdir, Collections.<Path>singletonList(test), new ProgressListener() {
+            feature.archive(archive, workdir, Collections.singletonList(test), new ProgressListener() {
                 @Override
                 public void message(final String message) {
                     //
                 }
             }, new DisabledTranscriptListener());
-            assertTrue(new SFTPFindFeature(session).find(archive.getArchive(Collections.<Path>singletonList(test))));
+            assertTrue(new SFTPFindFeature(session).find(archive.getArchive(Collections.singletonList(test))));
             new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(),
-                    new Delete.Callback() {
-                        @Override
-                        public void delete(final Path file) {
-                        }
-                    });
+                    new Delete.DisabledCallback());
             assertFalse(new SFTPFindFeature(session).find(test));
-            feature.unarchive(archive, archive.getArchive(Collections.<Path>singletonList(test)), new ProgressListener() {
+            feature.unarchive(archive, archive.getArchive(Collections.singletonList(test)), new ProgressListener() {
                 @Override
                 public void message(final String message) {
                     //
@@ -63,14 +59,10 @@ public class SFTPCompressFeatureTest {
             }, new DisabledTranscriptListener());
             assertTrue(new SFTPFindFeature(session).find(test));
             new SFTPDeleteFeature(session).delete(Collections.singletonList(archive.getArchive(
-                    Collections.<Path>singletonList(test)
+                    Collections.singletonList(test)
             )), new DisabledLoginCallback(), new Delete.DisabledCallback());
             new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(),
-                    new Delete.Callback() {
-                        @Override
-                        public void delete(final Path file) {
-                        }
-                    });
+                    new Delete.DisabledCallback());
         }
         session.close();
     }

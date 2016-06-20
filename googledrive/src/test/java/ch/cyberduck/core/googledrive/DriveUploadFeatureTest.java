@@ -106,12 +106,7 @@ public class DriveUploadFeatureTest {
             assertArrayEquals(reference, buffer);
         }
         new DriveDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(),
-                new Delete.Callback() {
-                    @Override
-                    public void delete(final Path file) {
-                        //
-                    }
-                });
+                new Delete.DisabledCallback());
         session.close();
     }
 }

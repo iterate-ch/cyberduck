@@ -59,12 +59,7 @@ public class B2FindFeatureTest {
         new B2TouchFeature(session).touch(file);
         assertTrue(new B2FindFeature(session).find(file));
         assertFalse(new B2FindFeature(session).find(new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
-        new B2DeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        new B2DeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test

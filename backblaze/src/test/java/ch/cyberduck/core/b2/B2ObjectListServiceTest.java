@@ -78,12 +78,7 @@ public class B2ObjectListServiceTest {
         assertEquals("1", list.get(list.indexOf(file)).attributes().getRevision());
         assertEquals(0L, list.get(list.indexOf(file)).attributes().getSize());
 
-        new B2DeleteFeature(session).delete(Arrays.asList(bucket, file), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        new B2DeleteFeature(session).delete(Arrays.asList(bucket, file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new B2ObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(file));
         session.close();
     }
@@ -110,12 +105,7 @@ public class B2ObjectListServiceTest {
         assertTrue(list.contains(file1));
         assertTrue(list.contains(file2));
 
-        new B2DeleteFeature(session).delete(Arrays.asList(bucket, file1, file2), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        new B2DeleteFeature(session).delete(Arrays.asList(bucket, file1, file2), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -171,12 +161,7 @@ public class B2ObjectListServiceTest {
             assertEquals(bucket, list.get(list.indexOf(file1)).getParent());
         }
 
-        new B2DeleteFeature(session).delete(Arrays.asList(bucket, file1, file2), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        new B2DeleteFeature(session).delete(Arrays.asList(bucket, file1, file2), new DisabledLoginCallback(), new Delete.DisabledCallback());
         {
             final AttributedList<Path> list = new B2ObjectListService(session).list(bucket, new DisabledListProgressListener());
             assertFalse(list.contains(file1));
@@ -215,12 +200,7 @@ public class B2ObjectListServiceTest {
         assertFalse(list.contains(folder1));
         assertEquals(folder1, list.get(file1).getParent());
         assertEquals(folder1, list.get(folder2).getParent());
-        new B2DeleteFeature(session).delete(Arrays.asList(bucket, folder1, file1, folder2, file2), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        new B2DeleteFeature(session).delete(Arrays.asList(bucket, folder1, file1, folder2, file2), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -243,12 +223,7 @@ public class B2ObjectListServiceTest {
         assertEquals(1, list.size());
         assertEquals(folder1, list.iterator().next());
 
-        new B2DeleteFeature(session).delete(Arrays.asList(bucket, file1), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        new B2DeleteFeature(session).delete(Arrays.asList(bucket, file1), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -274,12 +249,7 @@ public class B2ObjectListServiceTest {
         assertEquals(1, list.size());
         assertEquals(folder2, list.iterator().next());
 
-        new B2DeleteFeature(session).delete(Arrays.asList(bucket, file11, file12), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        new B2DeleteFeature(session).delete(Arrays.asList(bucket, file11, file12), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -348,12 +318,7 @@ public class B2ObjectListServiceTest {
         folder1.attributes().setVersionId(new B2FileidProvider(session).getFileid(folder1));
         assertTrue(list.contains(folder1));
 
-        new B2DeleteFeature(session).delete(Arrays.asList(file1, folder1, bucket), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        new B2DeleteFeature(session).delete(Arrays.asList(file1, folder1, bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -409,12 +374,7 @@ public class B2ObjectListServiceTest {
         assertEquals(3, list.size());
         assertTrue(skipped.get());
 
-        new B2DeleteFeature(session).delete(Arrays.asList(file1, file2, file3, folder, bucket), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        new B2DeleteFeature(session).delete(Arrays.asList(file1, file2, file3, folder, bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

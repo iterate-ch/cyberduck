@@ -75,12 +75,7 @@ public class S3MultipartUploadServiceTest {
         final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertEquals("text/plain", metadata.get("Content-Type"));
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
         session.close();
     }
@@ -120,12 +115,7 @@ public class S3MultipartUploadServiceTest {
         assertEquals("text/plain", metadata.get("Content-Type"));
         assertEquals("aws:kms", metadata.get("server-side-encryption"));
         assertNotNull(metadata.get("server-side-encryption-aws-kms-key-id"));
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
         session.close();
     }
@@ -172,12 +162,7 @@ public class S3MultipartUploadServiceTest {
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(random.length, session.list(container,
                 new DisabledListProgressListener()).get(test).attributes().getSize());
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
         session.close();
     }
@@ -208,12 +193,7 @@ public class S3MultipartUploadServiceTest {
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(random.length, session.list(container,
                 new DisabledListProgressListener()).get(test).attributes().getSize());
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
         session.close();
     }
@@ -285,12 +265,7 @@ public class S3MultipartUploadServiceTest {
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(random, buffer);
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
         session.close();
     }
@@ -362,7 +337,7 @@ public class S3MultipartUploadServiceTest {
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(random, buffer);
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
         session.close();
     }

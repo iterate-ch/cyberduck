@@ -62,12 +62,7 @@ public class B2FileidProviderTest {
         catch(NotfoundException e) {
             // Expected
         }
-        new B2DeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        new B2DeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -91,12 +86,7 @@ public class B2FileidProviderTest {
         catch(NotfoundException e) {
             // Expected
         }
-        new B2DeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        new B2DeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
 
     }
 }

@@ -84,12 +84,7 @@ public class DriveFileidProviderTest {
         new DriveTouchFeature(session).touch(test);
         assertNotNull(new DriveFileidProvider(session)
                 .getFileid(test));
-        new DriveDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        new DriveDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

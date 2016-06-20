@@ -50,12 +50,7 @@ public class B2DirectoryFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path bucket = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new B2DirectoryFeature(session).mkdir(bucket);
-        new B2DeleteFeature(session).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        new B2DeleteFeature(session).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test(expected = InteroperabilityException.class)

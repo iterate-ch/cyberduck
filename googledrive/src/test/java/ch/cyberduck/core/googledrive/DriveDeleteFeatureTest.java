@@ -76,11 +76,6 @@ public class DriveDeleteFeatureTest {
                 new DisabledTranscriptListener()).connect(session, PathCache.empty());
         final Path test = new Path(new DriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         test.attributes().setVersionId("n");
-        new DriveDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        new DriveDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

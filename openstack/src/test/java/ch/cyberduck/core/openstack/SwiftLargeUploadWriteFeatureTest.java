@@ -74,12 +74,7 @@ public class SwiftLargeUploadWriteFeatureTest {
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -114,12 +109,7 @@ public class SwiftLargeUploadWriteFeatureTest {
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

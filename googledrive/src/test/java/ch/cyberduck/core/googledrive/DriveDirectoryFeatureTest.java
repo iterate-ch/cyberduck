@@ -79,12 +79,7 @@ public class DriveDirectoryFeatureTest {
         test.attributes().setVersionId(new DriveFileidProvider(session).getFileid(test));
         assertTrue(new DefaultFindFeature(session).find(test));
         new DriveDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(),
-                new Delete.Callback() {
-                    @Override
-                    public void delete(final Path file) {
-                        //
-                    }
-                });
+                new Delete.DisabledCallback());
         assertFalse(new DefaultFindFeature(session).find(test));
         session.close();
     }

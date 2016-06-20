@@ -79,12 +79,7 @@ public class DriveUrlProviderTest {
         assertTrue(provider.toUrl(test).isEmpty());
         new DriveTouchFeature(session).touch(test);
 //        assertFalse(provider.toUrl(test).isEmpty());
-        new DriveDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        new DriveDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

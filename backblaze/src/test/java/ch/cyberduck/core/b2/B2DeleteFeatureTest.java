@@ -67,12 +67,7 @@ public class B2DeleteFeatureTest {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, String.format("%s %s", UUID.randomUUID().toString(), "1"), EnumSet.of(Path.Type.file));
         new B2TouchFeature(session).touch(file);
-        new B2DeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        new B2DeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -89,12 +84,7 @@ public class B2DeleteFeatureTest {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, String.format("%s %s", UUID.randomUUID().toString(), "1"), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         new B2DirectoryFeature(session).mkdir(file);
-        new B2DeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        new B2DeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

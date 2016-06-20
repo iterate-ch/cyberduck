@@ -152,12 +152,7 @@ public class B2LargeUploadServiceTest {
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(random, buffer);
-        new B2DeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        new B2DeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
         session.close();
     }
@@ -215,12 +210,7 @@ public class B2LargeUploadServiceTest {
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(random, buffer);
-        new B2DeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        new B2DeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
         session.close();
     }

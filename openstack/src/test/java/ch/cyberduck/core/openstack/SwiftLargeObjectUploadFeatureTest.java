@@ -95,12 +95,7 @@ public class SwiftLargeObjectUploadFeatureTest {
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(random, buffer);
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
         session.close();
     }
@@ -158,12 +153,7 @@ public class SwiftLargeObjectUploadFeatureTest {
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(random, buffer);
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
         session.close();
     }
@@ -226,7 +216,7 @@ public class SwiftLargeObjectUploadFeatureTest {
         assertEquals(1048576L, segments.get(0).attributes().getSize());
         assertEquals(1048576L, segments.get(1).attributes().getSize());
         assertEquals(1L, segments.get(2).attributes().getSize());
-        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
         session.close();
     }
@@ -295,7 +285,7 @@ public class SwiftLargeObjectUploadFeatureTest {
         assertEquals(1048576L, segments.get(0).attributes().getSize());
         assertEquals(1048576L, segments.get(1).attributes().getSize());
         assertEquals(1L, segments.get(2).attributes().getSize());
-        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
         session.close();
     }

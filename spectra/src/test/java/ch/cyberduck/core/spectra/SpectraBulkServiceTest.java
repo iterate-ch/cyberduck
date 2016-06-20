@@ -71,12 +71,7 @@ public class SpectraBulkServiceTest {
         assertFalse(status.getParameters().isEmpty());
         assertNotNull(status.getParameters().get("job"));
         service.query(Transfer.Type.upload, file, status);
-        new SpectraDeleteFeature(session).delete(new ArrayList<Path>(files.keySet()), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        new SpectraDeleteFeature(session).delete(new ArrayList<Path>(files.keySet()), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -104,12 +99,7 @@ public class SpectraBulkServiceTest {
         assertEquals(1, set.size());
         assertEquals(1, service.query(Transfer.Type.upload, directory, directoryStatus).size());
         assertEquals(1, service.query(Transfer.Type.upload, directory, fileStatus).size());
-        new SpectraDeleteFeature(session).delete(new ArrayList<Path>(files.keySet()), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        new SpectraDeleteFeature(session).delete(new ArrayList<Path>(files.keySet()), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -191,12 +181,7 @@ public class SpectraBulkServiceTest {
         catch(ConflictException e) {
             //
         }
-        new SpectraDeleteFeature(session).delete(new ArrayList<Path>(files.keySet()), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        new SpectraDeleteFeature(session).delete(new ArrayList<Path>(files.keySet()), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -237,12 +222,7 @@ public class SpectraBulkServiceTest {
             assertEquals(100000000000L, list.get(1).getOffset());
             assertEquals("100000000000", list.get(1).getParameters().get("offset"));
         }
-        new SpectraDeleteFeature(session).delete(new ArrayList<Path>(files.keySet()), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        new SpectraDeleteFeature(session).delete(new ArrayList<Path>(files.keySet()), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }
