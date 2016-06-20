@@ -3,6 +3,12 @@ http://cyberduck.io/
 
 Changelog. Last modified: $Date$
 
+5.0.5 [https://trac.cyberduck.io/milestone/5.0.5]
+- [Feature] Set modification date in metadata for uploads (Backblaze B2)
+
+5.0.4 [https://trac.cyberduck.io/milestone/5.0.4]
+- [Bugfix] Allow authentication with client certificate for empty issuer list from server (TLS)
+
 5.0.3 [https://trac.cyberduck.io/milestone/5.0.3]
 - [Feature] Deleting multiple files concurrently (#9585)
 
