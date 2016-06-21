@@ -26,5 +26,11 @@ public interface SessionPool {
 
     void release(Session session);
 
+    void close();
+
     Host getHost();
+
+    interface Callback {
+        boolean isCanceled();
+    }
 }

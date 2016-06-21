@@ -39,6 +39,11 @@ public class SingleSessionPool implements SessionPool {
     }
 
     @Override
+    public void close() {
+        //
+    }
+
+    @Override
     public Host getHost() {
         return session.getHost();
     }
