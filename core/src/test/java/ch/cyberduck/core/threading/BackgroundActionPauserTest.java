@@ -17,12 +17,11 @@ package ch.cyberduck.core.threading;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 public class BackgroundActionPauserTest {
 
@@ -51,15 +50,6 @@ public class BackgroundActionPauserTest {
             public void progress(final Integer delay) {
                 //
             }
-        }).await(new ProgressListener() {
-            String previous;
-
-            @Override
-            public void message(final String message) {
-                assertNotNull(message);
-                assertNotEquals(previous, message);
-                previous = message;
-            }
-        });
+        }).await();
     }
 }
