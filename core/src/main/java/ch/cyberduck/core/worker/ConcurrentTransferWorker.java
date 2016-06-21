@@ -20,21 +20,17 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.ConnectionService;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.pool.DefaultSessionPool;
 import ch.cyberduck.core.pool.SessionPool;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
-import ch.cyberduck.core.threading.BackgroundActionPauser;
-import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
 import ch.cyberduck.core.threading.DefaultThreadPool;
-import ch.cyberduck.core.threading.FailureDiagnostics;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
@@ -44,38 +40,14 @@ import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.pool2.impl.GenericObjectPool;
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.log4j.Logger;
-
-import java.text.MessageFormat;
-import java.util.NoSuchElementException;
 
 public class ConcurrentTransferWorker extends AbstractTransferWorker {
     private static final Logger log = Logger.getLogger(ConcurrentTransferWorker.class);
 
-    private static final long BORROW_MAX_WAIT_INTERVAL = 1000L;
-
-    private final GenericObjectPool<Session> pool;
+    private final SessionPool pool;
 
     private final ThreadPool<TransferStatus> completion;
-
-    private final ProgressListener progress;
-
-    private final FailureDiagnostics<Exception> diagnostics
-            = new DefaultFailureDiagnostics();
-
-    private final int retry;
-
-    /**
-     * The number of times this action has been run
-     */
-    private ThreadLocal<Integer> repeat = new ThreadLocal<Integer>() {
-        @Override
-        protected Integer initialValue() {
-            return 0;
-        }
-    };
 
     public ConcurrentTransferWorker(final ConnectionService connect,
                                     final Transfer transfer, final TransferOptions options,
@@ -85,33 +57,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
                                     final X509TrustManager trust, final X509KeyManager key, final PathCache cache,
                                     final Integer connections) {
         super(transfer, options, prompt, meter, error, transferItemCallback, progressListener, streamListener, connectionCallback);
-        final GenericObjectPoolConfig configuration = new GenericObjectPoolConfig() {
-            @Override
-            public String toString() {
-                final StringBuilder sb = new StringBuilder("GenericObjectPoolConfig{");
-                sb.append("connections=").append(connections);
-                sb.append('}');
-                return sb.toString();
-            }
-        };
-        configuration.setJmxEnabled(false);
-        configuration.setMinIdle(0);
-        configuration.setMaxTotal(connections);
-        configuration.setMaxIdle(connections);
-        configuration.setBlockWhenExhausted(true);
-        configuration.setMaxWaitMillis(BORROW_MAX_WAIT_INTERVAL);
-        progress = progressListener;
-        retry = Integer.max(PreferencesFactory.get().getInteger("connection.retry"), connections);
-        pool = new GenericObjectPool<Session>(
-                new SessionPool(connect, trust, key, cache, transfer.getHost()), configuration) {
-            @Override
-            public String toString() {
-                final StringBuilder sb = new StringBuilder("GenericObjectPool{");
-                sb.append("configuration=").append(configuration);
-                sb.append('}');
-                return sb.toString();
-            }
-        };
+        pool = new DefaultSessionPool(connect, trust, key, cache, progressListener, transfer.getHost(), connections);
         completion = new DefaultThreadPool<TransferStatus>(connections, "transfer");
     }
 
@@ -121,49 +67,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
-            Session session;
-            while(true) {
-                try {
-                    session = pool.borrowObject();
-                    break;
-                }
-                catch(NoSuchElementException e) {
-                    if(this.isCanceled()) {
-                        throw new ConnectionCanceledException(e);
-                    }
-                    if(e.getCause() instanceof BackgroundException) {
-                        final BackgroundException cause = (BackgroundException) e.getCause();
-                        log.warn(String.format("Failure %s obtaining connection for %s", cause, this));
-                        if(diagnostics.determine(cause) == FailureDiagnostics.Type.network) {
-                            // Downgrade pool to single connection
-                            final int max = pool.getMaxTotal() - 1;
-                            log.warn(String.format("Lower maximum pool size to %d connections.", max));
-                            pool.setMaxTotal(max);
-                            pool.setMaxIdle(pool.getMaxIdle() - 1);
-                            if(this.retry()) {
-                                if(log.isInfoEnabled()) {
-                                    log.info(String.format("Connect failed with failure %s", e));
-                                }
-                                // This is an automated retry. Wait some time first.
-                                this.pause();
-                                if(!isCanceled()) {
-                                    repeat.set(repeat.get() + 1);
-                                    // Retry to connect
-                                    continue;
-                                }
-                            }
-                        }
-                        throw cause;
-                    }
-                    if(null == e.getCause()) {
-                        log.warn(String.format("Timeout borrowing session from pool %s. Wait for another %dms", pool, BORROW_MAX_WAIT_INTERVAL));
-                        // Timeout
-                        continue;
-                    }
-                    log.error(String.format("Borrowing session from pool %s failed with %s", pool, e));
-                    throw new BackgroundException(e);
-                }
-            }
+            Session session = pool.borrow();
             if(log.isInfoEnabled()) {
                 log.info(String.format("Borrow session %s from pool", session));
             }
@@ -186,7 +90,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
             log.info(String.format("Release session %s to pool", session));
         }
         try {
-            pool.returnObject(session);
+            pool.release(session);
         }
         catch(IllegalStateException e) {
             log.warn(String.format("Failed to release session %s. %s", session, e.getMessage()));
@@ -220,37 +124,6 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         super.cleanup(result);
     }
 
-
-    /**
-     * The number of times a new connection attempt should be made. Takes into
-     * account the number of times already tried.
-     *
-     * @return Greater than zero if a failed action should be repeated again
-     */
-    protected boolean retry() {
-        // The initial connection attempt does not count
-        return retry - repeat.get() > 0;
-    }
-
-    /**
-     * Idle this action for some time. Blocks the caller.
-     */
-    public void pause() {
-        final int attempt = retry - repeat.get();
-        final BackgroundActionPauser pauser = new BackgroundActionPauser(new BackgroundActionPauser.Callback() {
-            @Override
-            public boolean isCanceled() {
-                return ConcurrentTransferWorker.this.isCanceled();
-            }
-
-            @Override
-            public void progress(final Integer delay) {
-                progress.message(MessageFormat.format(LocaleFactory.localizedString("Retry again in {0} seconds ({1} more attempts)", "Status"),
-                        delay, attempt));
-            }
-        });
-        pauser.await(progress);
-    }
 
     @Override
     public String toString() {
