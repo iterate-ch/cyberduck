@@ -81,7 +81,7 @@ public abstract class RetryCallable<T> implements Callable<T> {
                         progress.message(MessageFormat.format(LocaleFactory.localizedString("Retry again in {0} seconds", "Status"), delay));
                     }
                 }, delay);
-                pause.await(progress);
+                pause.await();
                 return true;
         }
         log.warn(String.format("No retry for failure %s", failure));

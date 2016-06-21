@@ -264,7 +264,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
                         delay, attempt));
             }
         });
-        pauser.await(this);
+        pauser.await();
     }
 
     @Override
