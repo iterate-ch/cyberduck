@@ -19,7 +19,7 @@
     <parent>
         <artifactId>parent</artifactId>
         <groupId>ch.cyberduck</groupId>
-        <version>5.1-SNAPSHOT</version>
+        <version>5.0.5</version>
     </parent>
 
     <artifactId>oauth</artifactId>
