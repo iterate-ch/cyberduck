@@ -103,23 +103,34 @@ import java.util.Set;
 import java.util.TimeZone;
 
 public class InfoController extends ToolbarWindowController {
-    private static Logger log = Logger.getLogger(InfoController.class);
+    private static final Logger log = Logger.getLogger(InfoController.class);
     private static NSPoint cascade = new NSPoint(0, 0);
+
     private final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
+
     private final Session<?> session;
+
     private final Cache<Path> cache;
+
     private final Controller controller;
+
     private final NSComboBoxCell aclPermissionCellPrototype = NSComboBoxCell.comboBoxCell();
+
     /**
      * Selected files
      */
     private List<Path> files;
+
     private FileDescriptor descriptor = FileDescriptorFactory.get();
+
     private LoginCallback prompt = LoginCallbackFactory.get(this);
+
     private PathContainerService containerService
             = new PathContainerService();
+
     private Preferences preferences
             = PreferencesFactory.get();
+
     @Outlet
     private NSTextField filenameField;
     @Outlet
@@ -181,6 +192,7 @@ public class InfoController extends ToolbarWindowController {
     private NSPopUpButton encryptionPopup;
     @Outlet
     private NSButton bucketLoggingButton;
+    @Outlet
     private NSPopUpButton bucketLoggingPopup;
     @Outlet
     private NSButton bucketAnalyticsButton;
@@ -263,6 +275,7 @@ public class InfoController extends ToolbarWindowController {
     private NSButton otherw;
     @Outlet
     private NSButton otherx;
+    @Outlet
     private NSImageView iconImageView;
     @Outlet
     private NSView panelMetadata;
