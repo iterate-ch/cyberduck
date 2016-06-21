@@ -31,9 +31,6 @@ import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id$
- */
 public class PooledSessionFactory extends BasePooledObjectFactory<Session> {
     private static final Logger log = Logger.getLogger(PooledSessionFactory.class);
 
