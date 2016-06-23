@@ -16,6 +16,7 @@
 // feedback@cyberduck.io
 // 
 
+using System;
 using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.local;
@@ -31,17 +32,17 @@ namespace Ch.Cyberduck.Ui.Core
             bool showCancelButton, TaskDialogIcon mainIcon, TaskDialogIcon footerIcon, DialogResponseHandler handler)
         {
             TaskDialogResult result = TaskDialog.Show(
-                owner: owner.Handle, 
+                owner: owner?.Handle ?? IntPtr.Zero,
                 title: title,
-                mainInstruction: mainInstruction, 
-                content: content, 
+                mainInstruction: mainInstruction,
+                content: content,
                 footerText: FormatHelp(help),
-                expandedInfo: expandedInfo, 
+                expandedInfo: expandedInfo,
                 verificationText: verificationText,
                 commandLinks: commandButtons.Split(new char[] {'|'}),
                 commonButtons: showCancelButton ? TaskDialogCommonButtons.Cancel : TaskDialogCommonButtons.None,
-                mainIcon: mainIcon, 
-                footerIcon: footerIcon, 
+                mainIcon: mainIcon,
+                footerIcon: footerIcon,
                 callback: (dialog, args, callbackData) =>
                 {
                     switch (args.Notification)
@@ -83,15 +84,15 @@ namespace Ch.Cyberduck.Ui.Core
             string expandedInfo, string help, string verificationText, DialogResponseHandler handler)
         {
             TaskDialogResult result = TaskDialog.Show(
-                owner: owner.Handle, 
-                title: title, 
+                owner: owner?.Handle ?? IntPtr.Zero,
+                title: title,
                 mainInstruction: message,
-                content: content, 
+                content: content,
                 footerText: FormatHelp(help),
                 expandedInfo: expandedInfo,
                 verificationText: verificationText,
                 commonButtons: TaskDialogCommonButtons.OK,
-                mainIcon: TaskDialogIcon.Information, 
+                mainIcon: TaskDialogIcon.Information,
                 callback: (dialog, args, callbackData) =>
                 {
                     switch (args.Notification)
