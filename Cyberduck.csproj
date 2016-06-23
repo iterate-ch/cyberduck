@@ -607,7 +607,23 @@
     <Copy SourceFiles="@(SunMSCAPI)" DestinationFolder="$(OutputPath)" />
     <Copy SourceFiles="@(ECSupport)" DestinationFolder="$(OutputPath)" />
   </Target>
-  <Target Name="AfterBuild">
+  <Target Name="UsesFrameworkSdk">
+    <GetFrameworkSdkPath>
+      <Output TaskParameter="Path" PropertyName="FrameworkSdkPath" />
+    </GetFrameworkSdkPath>
+    <PropertyGroup>
+      <WinSDK>$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SDKs\Windows\v8.0@InstallationFolder)</WinSDK>
+      <WinSDK Condition="('@(WinSDK)'=='')">$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Kits\Installed Roots@KitsRoot10)</WinSDK>
+    </PropertyGroup>
+  </Target>
+  <Target Name="UsesSignTool" DependsOnTargets="UsesFrameworkSdk">
+    <PropertyGroup>
+      <SignToolPath Condition="('@(SignToolPath)'=='') and Exists('$(FrameworkSdkPath)bin\signtool.exe')">$(FrameworkSdkPath)bin\signtool.exe</SignToolPath>
+      <SignToolPath Condition="('@(SignToolPath)'=='') and Exists('$(WinSDK)\bin\x86\signtool.exe')">$(WinSDK)\bin\x86\signtool.exe</SignToolPath>
+    </PropertyGroup>
+  </Target>
+  <Target Name="AfterBuild" DependsOnTargets="UsesSignTool">
+    <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck&quot; /fd sha256 /tr http://timestamp.globalsign.com/scripts/timestamp.dll /td sha256 /a /sm &quot;$(OutputPath)$(AssemblyName).exe&quot;" Condition="'$(OutputType)' == 'WinExe'"/>
   </Target>
   <PropertyGroup>
     <PreBuildEvent>if exist "$(TargetPath).locked" del "$(TargetPath).locked"
