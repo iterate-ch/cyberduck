@@ -33,7 +33,7 @@ import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.commons.collections.map.LRUMap;
+import org.apache.commons.collections4.map.LRUMap;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3BucketVersioningStatus;
@@ -54,7 +54,7 @@ public class S3VersioningFeature implements Versioning {
 
     @SuppressWarnings("unchecked")
     private Map<Path, VersioningConfiguration> cache
-            = Collections.synchronizedMap(new LRUMap(10));
+            = Collections.synchronizedMap(new LRUMap<Path, VersioningConfiguration>(10));
 
     public S3VersioningFeature(final S3Session session) {
         this(session, (S3AccessControlListFeature) session.getFeature(AclPermission.class));

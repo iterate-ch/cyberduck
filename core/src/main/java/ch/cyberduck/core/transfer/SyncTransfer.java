@@ -39,7 +39,7 @@ import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.synchronization.ComparisonServiceFilter;
 import ch.cyberduck.core.transfer.synchronisation.SynchronizationPathFilter;
 
-import org.apache.commons.collections.map.LRUMap;
+import org.apache.commons.collections4.map.LRUMap;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -71,7 +71,7 @@ public class SyncTransfer extends Transfer {
     private PathCache cache
             = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
-    private Map<TransferItem, Comparison> compareCache = Collections.<TransferItem, Comparison>synchronizedMap(new LRUMap(
+    private Map<TransferItem, Comparison> compareCache = Collections.<TransferItem, Comparison>synchronizedMap(new LRUMap<TransferItem, Comparison>(
             PreferencesFactory.get().getInteger("transfer.cache.size")));
 
     public SyncTransfer(final Host host, final TransferItem item) {

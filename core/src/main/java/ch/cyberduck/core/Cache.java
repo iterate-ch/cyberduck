@@ -18,7 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import org.apache.commons.collections.map.LRUMap;
+import org.apache.commons.collections4.map.LRUMap;
 import org.apache.log4j.Logger;
 
 import java.util.Collections;
@@ -46,7 +46,7 @@ public abstract class Cache<T extends Referenceable> {
         }
         else {
             // Will inflate to the given size
-            impl = Collections.synchronizedMap(new LRUMap(size));
+            impl = Collections.synchronizedMap(new LRUMap<T, AttributedList<T>>(size));
             reverse = Collections.synchronizedMap(new LinkedHashMap<CacheReference, T>());
         }
     }

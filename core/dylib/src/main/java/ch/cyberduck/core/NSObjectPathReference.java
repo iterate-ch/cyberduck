@@ -23,7 +23,7 @@ import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSString;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.commons.collections.map.LRUMap;
+import org.apache.commons.collections4.map.LRUMap;
 
 import java.util.Map;
 
@@ -33,7 +33,7 @@ import java.util.Map;
  */
 public class NSObjectPathReference implements CacheReference<Path> {
 
-    private static Map<Path, NSString> cache = new LRUMap(
+    private static Map<Path, NSString> cache = new LRUMap<Path, NSString>(
             PreferencesFactory.get().getInteger("browser.model.cache.size")
     );
 
