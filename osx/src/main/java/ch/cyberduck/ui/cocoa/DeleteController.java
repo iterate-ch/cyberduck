@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.SheetCallback;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallbackFactory;
 import ch.cyberduck.core.Path;
@@ -88,13 +89,12 @@ public class DeleteController extends ProxyController {
     }
 
     private void run(final List<Path> files) {
-        parent.background(new WorkerBackgroundAction<Boolean>(parent, parent.getSession(), parent.getCache(),
+        final Cache<Path> cache = parent.getCache();
+        parent.background(new WorkerBackgroundAction<Boolean>(parent, parent.getSession(), cache,
                         new DeleteWorker(LoginCallbackFactory.get(parent), files, parent) {
                             @Override
                             public void cleanup(final Boolean done) {
-                                if(done) {
-                                    parent.reload(parent.workdir(), files, Collections.<Path>emptyList());
-                                }
+                                parent.reload(parent.workdir(), files, Collections.<Path>emptyList());
                             }
                         }
                 )

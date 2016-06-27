@@ -3197,12 +3197,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override void cleanup(object result)
                 {
-                    Boolean done = (Boolean) result;
-                    if (done.booleanValue())
-                    {
-                        _controller.Reload(_controller.Workdir, (IList<Path>) Utils.ConvertFromJavaList<Path>(_files),
-                            new List<Path>());
-                    }
+                    _controller.Reload(_controller.Workdir, (IList<Path>) Utils.ConvertFromJavaList<Path>(_files),
+                        new List<Path>());
                 }
             }
         }
