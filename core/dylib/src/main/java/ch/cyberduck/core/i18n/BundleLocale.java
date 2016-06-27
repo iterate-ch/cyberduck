@@ -23,7 +23,7 @@ import ch.cyberduck.core.preferences.BundleApplicationResourcesFinder;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.commons.collections.map.LRUMap;
+import org.apache.commons.collections4.map.LRUMap;
 
 import java.util.Collections;
 import java.util.Map;
@@ -34,7 +34,7 @@ public class BundleLocale implements Locale {
 
     @SuppressWarnings("unchecked")
     private Map<String, String> cache
-            = Collections.<String, String>synchronizedMap(new LRUMap(1000));
+            = Collections.<String, String>synchronizedMap(new LRUMap<String, String>(1000));
 
     public BundleLocale() {
         this(new BundleApplicationResourcesFinder().bundle());

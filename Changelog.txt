@@ -3,6 +3,9 @@ http://cyberduck.io/
 
 Changelog. Last modified: $Date$
 
+5.0.6 [https://trac.cyberduck.io/milestone/5.0.6]
+- [Feature] Signed application executable (Windows)
+
 5.0.5 [https://trac.cyberduck.io/milestone/5.0.5]
 - [Feature] Set modification date in metadata for uploads (Backblaze B2)
 

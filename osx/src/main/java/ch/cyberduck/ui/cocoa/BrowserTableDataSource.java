@@ -69,7 +69,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.ui.browser.Column;
 
-import org.apache.commons.collections.map.LRUMap;
+import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
@@ -94,13 +94,13 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
 
     private AbstractUserDateFormatter dateFormatter = UserDateFormatterFactory.get();
 
-    private IconCache<NSImage> icons = IconCacheFactory.<NSImage>get();
+    private IconCache<NSImage> icons = IconCacheFactory.get();
 
     private FileDescriptor descriptor = FileDescriptorFactory.get();
 
     private final Preferences preferences = PreferencesFactory.get();
 
-    private final Map<Item, NSAttributedString> attributed = new LRUMap(
+    private final Map<Item, NSAttributedString> attributed = new LRUMap<Item, NSAttributedString>(
             preferences.getInteger("browser.model.cache.size")
     );
 
@@ -644,7 +644,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             }
             else {
                 final DownloadTransfer transfer = new DownloadTransfer(controller.getSession().getHost(), downloads);
-                controller.transfer(transfer, Collections.<Path>emptyList());
+                controller.transfer(transfer, Collections.emptyList());
             }
             pasteboard.clear();
         }

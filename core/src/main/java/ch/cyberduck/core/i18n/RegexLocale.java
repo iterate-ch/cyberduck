@@ -21,7 +21,7 @@ package ch.cyberduck.core.i18n;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.preferences.ApplicationResourcesFinderFactory;
 
-import org.apache.commons.collections.map.LRUMap;
+import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
@@ -39,7 +39,7 @@ public class RegexLocale implements Locale {
     private static final Logger log = Logger.getLogger(RegexLocale.class);
 
     private Map<Key, String> cache
-            = Collections.<Key, String>synchronizedMap(new LRUMap(1000));
+            = Collections.<Key, String>synchronizedMap(new LRUMap<Key, String>(1000));
 
     private Local resources;
 
