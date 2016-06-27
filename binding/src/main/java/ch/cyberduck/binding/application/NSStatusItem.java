@@ -21,9 +21,6 @@ import ch.cyberduck.binding.foundation.NSObject;
 
 import org.rococoa.cocoa.CGFloat;
 
-/**
- * @version $Id$
- */
 public abstract class NSStatusItem extends NSObject {
 
     public abstract NSStatusBar statusBar();

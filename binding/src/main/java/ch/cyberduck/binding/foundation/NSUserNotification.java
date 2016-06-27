@@ -23,9 +23,6 @@ import ch.cyberduck.binding.application.NSImage;
 
 import org.rococoa.ObjCClass;
 
-/**
- * @version $Id$
- */
 public abstract class NSUserNotification extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSUserNotification", _Class.class);
 

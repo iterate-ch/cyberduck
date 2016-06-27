@@ -25,9 +25,6 @@ import ch.cyberduck.binding.foundation.NSURL;
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-/**
- * @version $Id$
- */
 public interface NSDraggingSource {
     /**
      * Original signature : <code>NSDragOperation draggingSourceOperationMaskForLocal(BOOL)</code><br>

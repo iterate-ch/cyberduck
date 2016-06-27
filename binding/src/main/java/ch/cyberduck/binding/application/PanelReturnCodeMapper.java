@@ -19,9 +19,6 @@ package ch.cyberduck.binding.application;
 
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id$
- */
 public final class PanelReturnCodeMapper {
     private static Logger log = Logger.getLogger(PanelReturnCodeMapper.class);
 

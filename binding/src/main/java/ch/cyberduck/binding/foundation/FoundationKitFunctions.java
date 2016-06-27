@@ -25,9 +25,6 @@ import org.rococoa.cocoa.foundation.NSSize;
 
 import com.sun.jna.Library;
 
-/**
- * @version $Id$
- */
 public interface FoundationKitFunctions extends Library {
     /**
      * <i>native declaration : /System/Library/Frameworks/ApplicationServices.framework/Headers/../Frameworks/CoreGraphics.framework/Headers/CGGeometry.h:36</i><br>

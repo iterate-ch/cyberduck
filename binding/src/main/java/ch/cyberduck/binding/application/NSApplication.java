@@ -19,7 +19,11 @@ package ch.cyberduck.binding.application;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.binding.foundation.*;
+import ch.cyberduck.binding.foundation.NSArray;
+import ch.cyberduck.binding.foundation.NSDate;
+import ch.cyberduck.binding.foundation.NSDictionary;
+import ch.cyberduck.binding.foundation.NSNotification;
+import ch.cyberduck.binding.foundation.NSObject;
 
 import org.rococoa.ID;
 import org.rococoa.ObjCClass;
@@ -28,9 +32,6 @@ import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-/**
- * @version $Id$
- */
 public abstract class NSApplication extends NSObject {
     private static final _Class CLASS = Rococoa.createClass("NSApplication", _Class.class); //$NON-NLS-1$
 
