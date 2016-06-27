@@ -3195,10 +3195,12 @@ namespace Ch.Cyberduck.Ui.Controller
                     _files = files;
                 }
 
-                public override void cleanup(object result)
+                public override void cleanup(object deleted)
                 {
+                    base.cleanup(deleted);
                     _controller.Reload(_controller.Workdir, (IList<Path>) Utils.ConvertFromJavaList<Path>(_files),
                         new List<Path>());
+
                 }
             }
         }

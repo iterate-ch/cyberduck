@@ -94,6 +94,7 @@ public class DeleteController extends ProxyController {
                 new DeleteWorker(LoginCallbackFactory.get(parent), files, cache, parent) {
                             @Override
                             public void cleanup(final List<Path> deleted) {
+                                super.cleanup(deleted);
                                 parent.reload(parent.workdir(), files, Collections.<Path>emptyList());
                             }
                         }
