@@ -394,12 +394,12 @@ public class Terminal {
         }
         final DeleteWorker worker;
         if(StringUtils.containsAny(remote.getName(), '*')) {
-            worker = new DeleteWorker(new TerminalLoginCallback(reader), files, progress, new DownloadGlobFilter(remote.getName()));
+            worker = new DeleteWorker(new TerminalLoginCallback(reader), files, cache, new DownloadGlobFilter(remote.getName()), progress);
         }
         else {
-            worker = new DeleteWorker(new TerminalLoginCallback(reader), files, progress);
+            worker = new DeleteWorker(new TerminalLoginCallback(reader), files, cache, progress);
         }
-        final SessionBackgroundAction action = new TerminalBackgroundAction<Boolean>(
+        final SessionBackgroundAction action = new TerminalBackgroundAction<List<Path>>(
                 new TerminalLoginService(input, new TerminalLoginCallback(reader)), controller,
                 session, cache, new TerminalHostKeyVerifier(reader), worker);
         this.execute(action);
