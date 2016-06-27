@@ -90,10 +90,10 @@ public class DeleteController extends ProxyController {
 
     private void run(final List<Path> files) {
         final Cache<Path> cache = parent.getCache();
-        parent.background(new WorkerBackgroundAction<Boolean>(parent, parent.getSession(), cache,
-                        new DeleteWorker(LoginCallbackFactory.get(parent), files, parent) {
+        parent.background(new WorkerBackgroundAction<List<Path>>(parent, parent.getSession(), cache,
+                new DeleteWorker(LoginCallbackFactory.get(parent), files, cache, parent) {
                             @Override
-                            public void cleanup(final Boolean done) {
+                            public void cleanup(final List<Path> deleted) {
                                 parent.reload(parent.workdir(), files, Collections.<Path>emptyList());
                             }
                         }

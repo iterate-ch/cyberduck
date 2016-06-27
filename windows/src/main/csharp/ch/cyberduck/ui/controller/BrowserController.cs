@@ -3189,7 +3189,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly List _files;
 
                 public InnerDeleteWorker(BrowserController controller, LoginCallback prompt, List files)
-                    : base(prompt, files, controller)
+                    : base(prompt, files, controller.Cache, controller)
                 {
                     _controller = controller;
                     _files = files;
