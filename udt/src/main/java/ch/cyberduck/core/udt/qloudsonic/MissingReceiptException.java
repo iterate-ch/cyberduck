@@ -21,9 +21,6 @@ package ch.cyberduck.core.udt.qloudsonic;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 
-/**
- * @version $Id$
- */
 public class MissingReceiptException extends BackgroundException {
     private static final long serialVersionUID = -1304616751334985475L;
 

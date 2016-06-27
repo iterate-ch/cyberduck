@@ -28,9 +28,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.io.FilenameUtils;
 
-/**
- * @version $Id$
- */
 public class QloudsonicVoucherFinder extends LicenseFactory {
 
     public QloudsonicVoucherFinder() {

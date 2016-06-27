@@ -24,9 +24,6 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class QloudsonicTestVoucherFinder extends QloudsonicVoucherFinder {
     @Override
     public List<License> open() throws AccessDeniedException {

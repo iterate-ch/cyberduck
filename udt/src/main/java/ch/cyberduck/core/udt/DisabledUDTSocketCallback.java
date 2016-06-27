@@ -17,9 +17,6 @@ package ch.cyberduck.core.udt;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-/**
- * @version $Id$
- */
 public class DisabledUDTSocketCallback implements UDTSocketCallback {
     @Override
     public void socketCreated(UDTSocket socket) {

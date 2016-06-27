@@ -33,9 +33,6 @@ import java.util.concurrent.TimeUnit;
 import com.barchart.udt.ExceptionUDT;
 import com.barchart.udt.net.NetSocketUDT;
 
-/**
- * @version $Id$
- */
 public class UDTSocket extends NetSocketUDT {
     private static final Logger log = Logger.getLogger(UDTSocket.class);
 
