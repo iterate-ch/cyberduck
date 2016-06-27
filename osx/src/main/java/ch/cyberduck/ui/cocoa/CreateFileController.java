@@ -63,15 +63,13 @@ public class CreateFileController extends FileController {
                 new TouchWorker(file) {
                     @Override
                     public void cleanup(final Boolean done) {
-                        if(done) {
-                            if(filename.charAt(0) == '.') {
-                                parent.setShowHiddenFiles(true);
-                            }
-                            parent.reload(parent.workdir(), Collections.singletonList(file), Collections.singletonList(file));
-                            if(edit) {
-                                file.attributes().setSize(0L);
-                                parent.edit(file);
-                            }
+                        if(filename.charAt(0) == '.') {
+                            parent.setShowHiddenFiles(true);
+                        }
+                        parent.reload(parent.workdir(), Collections.singletonList(file), Collections.singletonList(file));
+                        if(edit) {
+                            file.attributes().setSize(0L);
+                            parent.edit(file);
                         }
                     }
                 }));

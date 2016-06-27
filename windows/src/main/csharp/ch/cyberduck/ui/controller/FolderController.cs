@@ -101,16 +101,12 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override void cleanup(object result)
                 {
-                    Boolean done = (Boolean) result;
-                    if (done.booleanValue())
+                    if (_filename.StartsWith("."))
                     {
-                        if (_filename.StartsWith("."))
-                        {
-                            _controller.ShowHiddenFiles = true;
-                        }
-                        List<Path> folders = new List<Path>() {_folder};
-                        _controller.Reload(_controller.Workdir, folders, folders);
+                        _controller.ShowHiddenFiles = true;
                     }
+                    List<Path> folders = new List<Path>() {_folder};
+                    _controller.Reload(_controller.Workdir, folders, folders);
                 }
             }
         }
