@@ -34,9 +34,6 @@ import java.io.InputStreamReader;
 
 import com.google.gson.stream.JsonReader;
 
-/**
- * @version $Id$
- */
 public abstract class ExpandriveBookmarkCollection extends ThirdpartyBookmarkCollection {
     private static final Logger log = Logger.getLogger(ExpandriveBookmarkCollection.class);
 

@@ -21,7 +21,6 @@ package ch.cyberduck.core.importer;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -33,9 +32,6 @@ import ch.cyberduck.core.s3.S3Protocol;
 import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
 
-/**
- * @version $Id$
- */
 public class CrossFtpBookmarkCollection extends XmlBookmarkCollection {
     private static final Logger log = Logger.getLogger(CrossFtpBookmarkCollection.class);
 

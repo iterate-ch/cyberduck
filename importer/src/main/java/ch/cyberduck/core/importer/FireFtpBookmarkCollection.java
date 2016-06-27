@@ -22,7 +22,6 @@ import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.ftp.FTPProtocol;
@@ -43,9 +42,6 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * @version $Id$
- */
 public class FireFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
     private static final Logger log = Logger.getLogger(FireFtpBookmarkCollection.class);
 

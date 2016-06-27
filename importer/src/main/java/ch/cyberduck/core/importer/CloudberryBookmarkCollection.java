@@ -27,9 +27,6 @@ import ch.cyberduck.core.s3.S3Protocol;
 import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
 
-/**
- * @version $Id$
- */
 public abstract class CloudberryBookmarkCollection extends XmlBookmarkCollection {
     private static final Logger log = Logger.getLogger(CloudberryBookmarkCollection.class);
 

@@ -22,9 +22,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-/**
- * @version $Id$
- */
 public class FlashFxp4CommonBookmarkCollection extends FlashFxpBookmarkCollection {
     private static final long serialVersionUID = 7232850508346376727L;
 

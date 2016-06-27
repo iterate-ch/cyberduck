@@ -18,22 +18,19 @@ package ch.cyberduck.core.importer;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.impl.jna.PlistDeserializer;
-import ch.cyberduck.binding.foundation.NSDictionary;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class InterarchyBookmarkCollection extends ThirdpartyBookmarkCollection {
     private static final Logger log = Logger.getLogger(InterarchyBookmarkCollection.class);
 

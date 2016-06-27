@@ -35,9 +35,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
 
-/**
- * @version $Id$
- */
 public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
     private static final Logger log = Logger.getLogger(FilezillaBookmarkCollection.class);
 

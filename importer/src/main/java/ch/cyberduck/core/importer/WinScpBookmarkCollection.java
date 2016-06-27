@@ -39,9 +39,6 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * @version $Id$
- */
 public class WinScpBookmarkCollection extends ThirdpartyBookmarkCollection {
     private static final Logger log = Logger.getLogger(WinScpBookmarkCollection.class);
 

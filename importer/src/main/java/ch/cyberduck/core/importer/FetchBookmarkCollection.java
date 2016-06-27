@@ -30,9 +30,6 @@ import ch.cyberduck.core.serializer.impl.jna.PlistDeserializer;
 
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class FetchBookmarkCollection extends ThirdpartyBookmarkCollection {
 
     private static final long serialVersionUID = -7544710198776572190L;
