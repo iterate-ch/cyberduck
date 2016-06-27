@@ -28,9 +28,6 @@ import ch.cyberduck.core.exception.NotfoundException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id$
- */
 public class BundleApplicationResourcesFinder implements ApplicationResourcesFinder {
     private static final Logger log = Logger.getLogger(BundleApplicationResourcesFinder.class);
 

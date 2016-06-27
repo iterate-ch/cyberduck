@@ -25,9 +25,6 @@ import ch.cyberduck.core.LocaleFactory;
 
 import org.rococoa.Foundation;
 
-/**
- * @version $Id$
- */
 public class NotificationCenter implements NotificationService {
 
     private NSUserNotificationCenter center

@@ -20,9 +20,6 @@ package ch.cyberduck.core.threading;
 
 import org.junit.Test;
 
-/**
- * @version $Id$
- */
 public class AutoreleaseActionOperationBatcherTest {
 
     @Test

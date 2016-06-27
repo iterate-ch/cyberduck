@@ -18,12 +18,9 @@ package ch.cyberduck.core.local;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Local;
 import ch.cyberduck.binding.application.NSWorkspace;
+import ch.cyberduck.core.Local;
 
-/**
- * @version $Id$
- */
 public class WorkspaceRevealService implements RevealService {
 
     @Override

@@ -25,9 +25,6 @@ import ch.cyberduck.core.library.Native;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id$
- */
 public final class LaunchServicesQuarantineService implements QuarantineService {
     private static final Logger log = Logger.getLogger(LaunchServicesQuarantineService.class);
 

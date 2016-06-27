@@ -3,9 +3,6 @@ package ch.cyberduck.core;
 import org.junit.Assert;
 import org.junit.Test;
 
-/**
- * @version $Id$
- */
 public class IOKitSleepPreventerTest {
 
     @Test

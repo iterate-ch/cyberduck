@@ -21,9 +21,6 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.library.Native;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-/**
- * @version $Id$
- */
 public final class IOKitSleepPreventer implements SleepPreventer {
 
     static {

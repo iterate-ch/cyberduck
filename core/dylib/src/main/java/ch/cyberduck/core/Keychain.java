@@ -39,9 +39,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-/**
- * @version $Id$
- */
 public final class Keychain extends HostPasswordStore implements PasswordStore, CertificateStore {
     private static final Logger log = Logger.getLogger(Keychain.class);
 

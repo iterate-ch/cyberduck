@@ -27,9 +27,6 @@ import ch.cyberduck.core.LocalFactory;
 import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-/**
- * @version $Id$
- */
 public class ApplicationSupportDirectoryFinder implements SupportDirectoryFinder {
     private static final Logger log = Logger.getLogger(ApplicationSupportDirectoryFinder.class);
 

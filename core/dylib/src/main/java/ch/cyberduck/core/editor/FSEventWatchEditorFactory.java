@@ -28,9 +28,6 @@ import ch.cyberduck.core.local.ApplicationFinderFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class FSEventWatchEditorFactory extends EditorFactory {
     private final List<Application> editors = new ArrayList<Application>();
 

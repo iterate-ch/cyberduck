@@ -24,9 +24,6 @@ import org.junit.Test;
 
 import java.util.UUID;
 
-/**
- * @version $Id$
- */
 public class WorkspaceApplicationLauncherTest {
 
     @Test
