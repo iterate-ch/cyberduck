@@ -22,9 +22,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.notification.NotificationService;
 import ch.cyberduck.core.notification.NotificationServiceFactory;
 
-/**
- * @version $Id$
- */
 public class NotificationRendezvousListener implements RendezvousListener {
 
     private final Rendezvous bonjour;

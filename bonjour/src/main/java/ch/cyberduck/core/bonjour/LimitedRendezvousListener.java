@@ -28,9 +28,6 @@ import java.net.UnknownHostException;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-/**
- * @version $Id$
- */
 public class LimitedRendezvousListener implements RendezvousListener {
     private static final Logger log = Logger.getLogger(LimitedRendezvousListener.class);
 

@@ -22,9 +22,6 @@ package ch.cyberduck.core.bonjour;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-/**
- * @version $Id$
- */
 public class RendezvousFactory extends Factory<Rendezvous> {
 
     protected RendezvousFactory() {

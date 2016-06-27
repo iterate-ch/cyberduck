@@ -23,9 +23,6 @@ import ch.cyberduck.core.Host;
 
 import java.util.Iterator;
 
-/**
- * @version $Id$
- */
 public interface Rendezvous {
     /**
      * Start browsing for rendezvous servcices for all registered service types
