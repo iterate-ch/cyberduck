@@ -3189,20 +3189,18 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly List _files;
 
                 public InnerDeleteWorker(BrowserController controller, LoginCallback prompt, List files)
-                    : base(prompt, files, controller)
+                    : base(prompt, files, controller.Cache, controller)
                 {
                     _controller = controller;
                     _files = files;
                 }
 
-                public override void cleanup(object result)
+                public override void cleanup(object deleted)
                 {
-                    Boolean done = (Boolean) result;
-                    if (done.booleanValue())
-                    {
-                        _controller.Reload(_controller.Workdir, (IList<Path>) Utils.ConvertFromJavaList<Path>(_files),
-                            new List<Path>());
-                    }
+                    base.cleanup(deleted);
+                    _controller.Reload(_controller.Workdir, (IList<Path>) Utils.ConvertFromJavaList<Path>(_files),
+                        new List<Path>());
+
                 }
             }
         }
