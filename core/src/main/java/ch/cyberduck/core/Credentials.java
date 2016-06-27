@@ -24,8 +24,6 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * Stores the login credentials
- *
- * @version $Id$
  */
 public class Credentials implements Comparable<Credentials> {
 

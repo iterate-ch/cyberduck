@@ -31,7 +31,6 @@ import java.io.InterruptedIOException;
  * see http://www.javaworld.com/javaworld/jw-12-2000/jw-1229-traps.html.
  *
  * @author Christian Plattner
- * @version $Id$
  */
 public class StreamGobbler extends InputStream {
     private final class GobblerThread extends Thread {

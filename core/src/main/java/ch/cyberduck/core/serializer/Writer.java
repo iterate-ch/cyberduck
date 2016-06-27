@@ -24,10 +24,6 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 
 import java.util.Collection;
 
-/**
- * @param <S>
- * @version $Id$
- */
 public interface Writer<S extends Serializable> {
 
     /**

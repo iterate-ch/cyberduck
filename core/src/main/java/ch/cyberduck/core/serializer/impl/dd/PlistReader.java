@@ -38,10 +38,6 @@ import com.dd.plist.NSObject;
 import com.dd.plist.PropertyListFormatException;
 import com.dd.plist.XMLPropertyListParser;
 
-/**
- * @param <S>
- * @version $Id$
- */
 public abstract class PlistReader<S extends Serializable> implements Reader<S> {
     private static Logger log = Logger.getLogger(PlistReader.class);
 
