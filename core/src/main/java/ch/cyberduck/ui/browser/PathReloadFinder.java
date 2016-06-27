@@ -32,9 +32,6 @@ public class PathReloadFinder {
     public Set<Path> find(final List<Path> changed) {
         final Set<Path> folders = new HashSet<Path>();
         for(Path file : changed) {
-            if(file.isDirectory()) {
-                folders.add(file);
-            }
             folders.add(file.getParent());
         }
         return folders;
