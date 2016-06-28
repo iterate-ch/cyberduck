@@ -40,25 +40,27 @@ public class NotificationCenter implements NotificationService {
         //
     }
 
-    @Override
-    public void notify(final String title, final String description) {
+    private NSUserNotification create(final String title, final String description) {
         final NSUserNotification notification = NSUserNotification.notification();
         notification.setTitle(LocaleFactory.localizedString(title, "Status"));
         notification.setInformativeText(description);
         if(notification.respondsToSelector(Foundation.selector("setIdentifier:"))) {
+            // This identifier is unique to a notification. A notification delivered with the same
+            // identifier as an existing notification will replace that notification, rather then display a new one.
             notification.setIdentifier(description);
         }
+        return notification;
+    }
+
+    @Override
+    public void notify(final String title, final String description) {
+        final NSUserNotification notification = this.create(title, description);
         center.scheduleNotification(notification);
     }
 
     @Override
     public void notifyWithImage(final String title, final String description, final String image) {
-        final NSUserNotification notification = NSUserNotification.notification();
-        notification.setTitle(LocaleFactory.localizedString(title, "Status"));
-        notification.setInformativeText(description);
-        if(notification.respondsToSelector(Foundation.selector("setIdentifier:"))) {
-            notification.setIdentifier(description);
-        }
+        final NSUserNotification notification = this.create(title, description);
         notification.setContentImage(NSImage.imageNamed(image));
         center.scheduleNotification(notification);
     }
