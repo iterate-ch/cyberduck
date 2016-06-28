@@ -13,6 +13,7 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
@@ -24,6 +25,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayInputStream;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
@@ -153,6 +155,32 @@ public class S3WriteFeatureTest {
         catch(InteroperabilityException e) {
             assertEquals("A header you provided implies functionality that is not implemented. Please contact your web hosting service provider for assistance.", e.getDetail());
             throw e;
+        }
+        finally {
+            session.close();
+        }
+    }
+
+    @Test
+    public void testWriteAWS4Signature() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                        new Credentials(
+                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+                        )));
+        session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final S3WriteFeature feature = new S3WriteFeature(session);
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume));
+        final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final byte[] content = RandomStringUtils.random(5 * 1024 * 1024).getBytes("UTF-8");
+        final TransferStatus status = new TransferStatus();
+        status.setLength(content.length);
+        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content)));
+        try {
+            feature.write(file, status);
+            new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
         finally {
             session.close();
