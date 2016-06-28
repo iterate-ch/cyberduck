@@ -120,7 +120,8 @@ public class LoginConnectionService implements ConnectionService {
      */
     @Override
     public boolean check(final Session session, final Cache<Path> cache) throws BackgroundException {
-        if(StringUtils.isBlank(session.getHost().getHostname())) {
+        final Host bookmark = session.getHost();
+        if(StringUtils.isBlank(bookmark.getHostname())) {
             throw new ConnectionCanceledException();
         }
         if(session.isConnected()) {
@@ -130,7 +131,6 @@ public class LoginConnectionService implements ConnectionService {
             // Connection already open
             return false;
         }
-        final Host bookmark = session.getHost();
         // Obtain password from keychain or prompt
         login.validate(bookmark,
                 MessageFormat.format(LocaleFactory.localizedString(
@@ -195,7 +195,7 @@ public class LoginConnectionService implements ConnectionService {
                 bookmark.getProtocol().getName()));
 
         // New connection opened
-        notification.notify("Connection opened", session.getHost().getHostname());
+        notification.notify("Connection opened", bookmark.getHostname());
 
         // Update last accessed timestamp
         bookmark.setTimestamp(new Date());

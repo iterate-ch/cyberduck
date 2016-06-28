@@ -218,7 +218,8 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
         finally {
             if(transfer.isReset()) {
                 growl.notify(transfer.isComplete() ?
-                        String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) : "Transfer incomplete", transfer.getName());
+                        String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) :
+                        "Transfer incomplete", transfer.getName());
             }
             sleep.release(lock);
         }

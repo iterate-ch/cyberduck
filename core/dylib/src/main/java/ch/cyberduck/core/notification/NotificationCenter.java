@@ -23,8 +23,6 @@ import ch.cyberduck.binding.foundation.NSUserNotification;
 import ch.cyberduck.binding.foundation.NSUserNotificationCenter;
 import ch.cyberduck.core.LocaleFactory;
 
-import org.rococoa.Foundation;
-
 public class NotificationCenter implements NotificationService {
 
     private NSUserNotificationCenter center
@@ -40,25 +38,22 @@ public class NotificationCenter implements NotificationService {
         //
     }
 
-    @Override
-    public void notify(final String title, final String description) {
+    private NSUserNotification create(final String title, final String description) {
         final NSUserNotification notification = NSUserNotification.notification();
         notification.setTitle(LocaleFactory.localizedString(title, "Status"));
         notification.setInformativeText(description);
-        if(notification.respondsToSelector(Foundation.selector("setIdentifier:"))) {
-            notification.setIdentifier(description);
-        }
+        return notification;
+    }
+
+    @Override
+    public void notify(final String title, final String description) {
+        final NSUserNotification notification = this.create(title, description);
         center.scheduleNotification(notification);
     }
 
     @Override
     public void notifyWithImage(final String title, final String description, final String image) {
-        final NSUserNotification notification = NSUserNotification.notification();
-        notification.setTitle(LocaleFactory.localizedString(title, "Status"));
-        notification.setInformativeText(description);
-        if(notification.respondsToSelector(Foundation.selector("setIdentifier:"))) {
-            notification.setIdentifier(description);
-        }
+        final NSUserNotification notification = this.create(title, description);
         notification.setContentImage(NSImage.imageNamed(image));
         center.scheduleNotification(notification);
     }
