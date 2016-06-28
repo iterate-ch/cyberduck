@@ -23,8 +23,6 @@ import ch.cyberduck.binding.foundation.NSUserNotification;
 import ch.cyberduck.binding.foundation.NSUserNotificationCenter;
 import ch.cyberduck.core.LocaleFactory;
 
-import org.rococoa.Foundation;
-
 public class NotificationCenter implements NotificationService {
 
     private NSUserNotificationCenter center
@@ -44,11 +42,6 @@ public class NotificationCenter implements NotificationService {
         final NSUserNotification notification = NSUserNotification.notification();
         notification.setTitle(LocaleFactory.localizedString(title, "Status"));
         notification.setInformativeText(description);
-        if(notification.respondsToSelector(Foundation.selector("setIdentifier:"))) {
-            // This identifier is unique to a notification. A notification delivered with the same
-            // identifier as an existing notification will replace that notification, rather then display a new one.
-            notification.setIdentifier(description);
-        }
         return notification;
     }
 
