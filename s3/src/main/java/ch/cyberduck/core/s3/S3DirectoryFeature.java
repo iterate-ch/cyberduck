@@ -23,9 +23,12 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Redundancy;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3Object;
@@ -72,6 +75,7 @@ public class S3DirectoryFeature implements Directory {
                     status.setStorageClass(redundancy.getDefault());
                 }
             }
+            status.setChecksum(ChecksumComputeFactory.get(HashAlgorithm.sha256).compute(new NullInputStream(0L)));
             // Add placeholder object
             status.setMime("application/x-directory");
             final S3Object key = write.getDetails(containerService.getKey(file).concat(String.valueOf(Path.DELIMITER)), status);
