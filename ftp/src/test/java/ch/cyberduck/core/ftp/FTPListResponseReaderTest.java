@@ -221,11 +221,12 @@ public class FTPListResponseReaderTest {
         final List<String> lines = new FTPStatListService(null, null).parse(
                 211, new String[]{
                         "211-Status of /:",
-                        "211-drwxr-xr-x   2 matt.harley users80      4096 Jun 21 09:59 cgi-bin",
                         "211-lrwxrwxrwx   1 root     root            1 Jun 21 09:59 public_html -> ."
                 });
         final AttributedList<Path> list = new FTPListResponseReader(new FTPParserSelector().getParser("UNIX"))
                 .read(new Path("/", EnumSet.of(Path.Type.directory)), lines, new DisabledListProgressListener());
-        assertEquals(2, list.size());
+        assertEquals(1, list.size());
+        assertEquals("/public_html", list.get(0).getAbsolute());
+        assertEquals("/public_html", list.get(0).getSymlinkTarget().getAbsolute());
     }
 }
