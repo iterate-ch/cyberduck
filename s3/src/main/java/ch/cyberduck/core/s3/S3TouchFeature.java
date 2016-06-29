@@ -26,8 +26,11 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.io.input.NullInputStream;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3Object;
 
@@ -60,6 +63,8 @@ public class S3TouchFeature implements Touch {
         if(redundancy != null) {
             status.setStorageClass(redundancy.getDefault());
         }
+        status.setChecksum(ChecksumComputeFactory.get(HashAlgorithm.sha256)
+                .compute(new NullInputStream(0L)));
         this.touch(file, status);
     }
 
