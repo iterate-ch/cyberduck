@@ -21,5 +21,7 @@ import ch.cyberduck.core.Path;
 public interface TemporaryFileService {
     Local create(Path file);
 
+    Local create(String uid, Path file);
+
     Local create(String name);
 }

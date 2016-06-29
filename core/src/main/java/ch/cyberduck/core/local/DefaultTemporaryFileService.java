@@ -46,10 +46,11 @@ public class DefaultTemporaryFileService implements TemporaryFileService {
     /**
      * @return Path with /temporary directory/<uid>/shortened absolute parent path/<region><versionid>/filename
      */
-    protected Local create(final String uid, final Path file) {
-        final String name = uid + delimiter + this.shorten(file.getParent().getAbsolute())
+    @Override
+    public Local create(final String uid, final Path file) {
+        final String folder = uid + delimiter + this.shorten(file.getParent().getAbsolute())
                 + delimiter + new DefaultPathReference(file).attributes();
-        return this.create(name, PathNormalizer.name(file.getAbsolute()));
+        return this.create(folder, PathNormalizer.name(file.getAbsolute()));
     }
 
     private Local create(final String folder, final String name) {

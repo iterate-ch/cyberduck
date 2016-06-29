@@ -106,7 +106,7 @@ public abstract class AbstractEditor implements Editor {
         else {
             this.remote = file;
         }
-        this.local = TemporaryFileServiceFactory.get().create(remote);
+        this.local = TemporaryFileServiceFactory.get().create(session.getHost().getUuid(), remote);
         this.session = session;
         this.listener = listener;
     }
