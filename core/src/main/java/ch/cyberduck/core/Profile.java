@@ -21,7 +21,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
 
@@ -206,8 +206,7 @@ public class Profile implements Protocol, Serializable {
             return null;
         }
         final byte[] favicon = Base64.decodeBase64(icon);
-        final Local file = LocalFactory.get(PreferencesFactory.get().getProperty("tmp.dir"),
-                String.format("%s.ico", UUID.randomUUID().toString()));
+        final Local file = TemporaryFileServiceFactory.get().create(String.format("%s.ico", UUID.randomUUID().toString()));
         try {
             final OutputStream out = file.getOutputStream(false);
             try {

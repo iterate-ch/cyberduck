@@ -485,7 +485,7 @@ public class BrowserController extends WindowController
                     continue;
                 }
                 downloads.add(new TransferItem(
-                        path, TemporaryFileServiceFactory.get().create(session.getHost().getUuid(), path)));
+                        path, TemporaryFileServiceFactory.get().create(path)));
             }
             if(downloads.size() > 0) {
                 final Transfer download = new DownloadTransfer(session.getHost(), downloads);
