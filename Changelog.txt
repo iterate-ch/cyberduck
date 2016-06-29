@@ -3,6 +3,10 @@ http://cyberduck.io/
 
 Changelog. Last modified: $Date$
 
+5.0.7 [https://trac.cyberduck.io/milestone/5.0.7]
+- [Bugfix] Missing upload notification after editing file (Mac) (#9596)
+- [Bugfix] Stale entries in directory cache when deleting folder (#9608)
+
 5.0.6 [https://trac.cyberduck.io/milestone/5.0.6]
 - [Feature] Signed application executable (Windows)
 
