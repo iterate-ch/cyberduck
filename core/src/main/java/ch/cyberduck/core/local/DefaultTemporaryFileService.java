@@ -26,6 +26,7 @@ import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.UUID;
 
 public class DefaultTemporaryFileService implements TemporaryFileService {
@@ -54,7 +55,19 @@ public class DefaultTemporaryFileService implements TemporaryFileService {
     }
 
     private Local create(final String folder, final String name) {
-        return LocalFactory.get(new File(PreferencesFactory.get().getProperty("tmp.dir"), folder).getAbsolutePath(), name);
+        final Local file = LocalFactory.get(new File(PreferencesFactory.get().getProperty("tmp.dir"), folder).getAbsolutePath(), name);
+        this.delete(file);
+        this.delete(file.getParent());
+        return file;
+    }
+
+    /**
+     * Delete on exit
+     *
+     * @param file File reference
+     */
+    protected void delete(final Local file) {
+        Paths.get(file.getAbsolute()).toFile().deleteOnExit();
     }
 
     protected String shorten(final String path) {
