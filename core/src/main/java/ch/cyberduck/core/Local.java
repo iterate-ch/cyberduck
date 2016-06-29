@@ -208,15 +208,6 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
         }
     }
 
-    /**
-     * Delete file
-     *
-     * @param deferred On application quit
-     */
-    public void delete(boolean deferred) throws AccessDeniedException {
-        this.delete();
-    }
-
     public AttributedList<Local> list(final Filter<String> filter) throws AccessDeniedException {
         final AttributedList<Local> children = new AttributedList<Local>();
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(path), new DirectoryStream.Filter<Path>() {
