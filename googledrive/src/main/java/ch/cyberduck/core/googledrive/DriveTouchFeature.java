@@ -18,10 +18,6 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.io.ChecksumComputeFactory;
-import ch.cyberduck.core.io.HashAlgorithm;
-
-import org.apache.commons.io.input.NullInputStream;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -47,7 +43,6 @@ public class DriveTouchFeature implements Touch {
         try {
             final Drive.Files.Create insert = session.getClient().files().create(new File()
                     .setName(file.getName())
-                    .setMd5Checksum(ChecksumComputeFactory.get(HashAlgorithm.md5).compute(new NullInputStream(0L)).hash)
                     .setParents(Collections.singletonList(new DriveFileidProvider(session).getFileid(file.getParent()))));
             insert.execute();
         }
