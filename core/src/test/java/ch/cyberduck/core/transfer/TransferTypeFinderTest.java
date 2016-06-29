@@ -15,9 +15,13 @@ package ch.cyberduck.core.transfer;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.NullLocal;
+import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.local.DefaultTemporaryFileService;
 
-import ch.cyberduck.core.local.TemporaryFileService;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -53,8 +57,8 @@ public class TransferTypeFinderTest {
             }
         }, new DownloadTransfer(host,
                 Arrays.asList(
-                        new TransferItem(file, new TemporaryFileService().create(file)),
-                        new TransferItem(file, new TemporaryFileService().create(file))
+                        new TransferItem(file, new DefaultTemporaryFileService().create(file)),
+                        new TransferItem(file, new DefaultTemporaryFileService().create(file))
                 )
         ));
         assertEquals(Host.TransferType.concurrent, type);
@@ -71,8 +75,8 @@ public class TransferTypeFinderTest {
             }
         }, new DownloadTransfer(host,
                 Arrays.asList(
-                        new TransferItem(file, new TemporaryFileService().create(file)),
-                        new TransferItem(file, new TemporaryFileService().create(file))
+                        new TransferItem(file, new DefaultTemporaryFileService().create(file)),
+                        new TransferItem(file, new DefaultTemporaryFileService().create(file))
                 )
         ));
         assertEquals(Host.TransferType.newconnection, type);
