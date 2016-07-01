@@ -26,6 +26,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.irods.jargon.core.exception.JargonException;
 import org.irods.jargon.core.exception.JargonRuntimeException;
+import org.irods.jargon.core.pub.IRODSFileSystemAO;
 import org.irods.jargon.core.pub.io.IRODSFile;
 import org.irods.jargon.core.pub.io.IRODSFileFactory;
 import org.irods.jargon.core.pub.io.PackingIrodsInputStream;
@@ -44,7 +45,8 @@ public class IRODSReadFeature implements Read {
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             try {
-                final IRODSFileFactory factory = session.filesystem().getIRODSFileFactory();
+                final IRODSFileSystemAO fs = session.filesystem();
+                final IRODSFileFactory factory = fs.getIRODSFileFactory();
                 final IRODSFile f = factory.instanceIRODSFile(file.getAbsolute());
                 if(f.exists()) {
                     final InputStream in = new PackingIrodsInputStream(factory.instanceIRODSFileInputStream(f));
