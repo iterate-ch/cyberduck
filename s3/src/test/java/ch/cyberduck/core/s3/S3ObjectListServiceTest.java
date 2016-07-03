@@ -204,6 +204,26 @@ public class S3ObjectListServiceTest {
     }
 
     @Test
+    public void testListPlaceholderTilde() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                        new Credentials(
+                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+                        )));
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("us-east-1");
+        final Path placeholder = new Path(container, String.format("%s~", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory));
+        new S3DirectoryFeature(session).mkdir(placeholder);
+        placeholder.setType(EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        final AttributedList<Path> list = new S3ObjectListService(session).list(placeholder, new DisabledListProgressListener());
+        assertTrue(list.isEmpty());
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.close();
+    }
+
+    @Test
     public void testListAWS4SignatureFrankfurt() throws Exception {
         final S3Session session = new S3Session(
                 new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
