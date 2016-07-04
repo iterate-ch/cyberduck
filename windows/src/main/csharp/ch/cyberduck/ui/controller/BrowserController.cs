@@ -50,7 +50,6 @@ using java.util;
 using org.apache.log4j;
 using StructureMap;
 using Application = ch.cyberduck.core.local.Application;
-using Boolean = java.lang.Boolean;
 using Exception = System.Exception;
 using Path = ch.cyberduck.core.Path;
 using String = System.String;
@@ -1012,8 +1011,9 @@ namespace Ch.Cyberduck.Ui.Controller
                             // Find source browser
                             if (controller.View.Browser.Equals(dropargs.SourceListView))
                             {
-                                controller.transfer(
-                                    new CopyTransfer(controller.Session.getHost(), Session,
+                                transfer(
+                                    new CopyTransfer(controller.Session.getHost(),
+                                        SessionFactory.create(Session.getHost()),
                                         Utils.ConvertToJavaMap(files)), new List<Path>(files.Values), false);
                                 break;
                             }
@@ -2858,7 +2858,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 content.Append("\n" + Character.toString('\u2022') + " ...)");
             }
             TaskDialogResult r = QuestionBox(LocaleFactory.localizedString("Delete"), alertText.ToString(),
-                content.ToString(), String.Format("{0}", LocaleFactory.localizedString("Delete")), true); 
+                content.ToString(), String.Format("{0}", LocaleFactory.localizedString("Delete")), true);
             if (r.CommandButtonResult == 0)
             {
                 DeletePathsImpl(normalized);
@@ -3200,7 +3200,6 @@ namespace Ch.Cyberduck.Ui.Controller
                     base.cleanup(deleted);
                     _controller.Reload(_controller.Workdir, (IList<Path>) Utils.ConvertFromJavaList<Path>(_files),
                         new List<Path>());
-
                 }
             }
         }
