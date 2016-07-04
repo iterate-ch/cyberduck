@@ -924,17 +924,9 @@ namespace Ch.Cyberduck.Ui.Controller
                     args.DropTargetLocation = DropTargetLocation.None;
                     return;
                 }
+
                 foreach (Path sourcePath in args.SourceModels)
                 {
-                    if (args.ListView == args.SourceListView)
-                    {
-                        // Use drag action from user
-                    }
-                    else
-                    {
-                        // If copying between sessions is supported
-                        args.Effect = DragDropEffects.Copy;
-                    }
                     if (sourcePath.isDirectory() && sourcePath.equals(destination))
                     {
                         // Do not allow dragging onto myself.
@@ -956,13 +948,26 @@ namespace Ch.Cyberduck.Ui.Controller
                         args.DropTargetLocation = DropTargetLocation.None;
                         return;
                     }
-                    Move move = (Move) Session.getFeature(typeof (Move));
-                    if (!move.isSupported(sourcePath))
+                }
+                if (args.ListView == args.SourceListView)
+                {
+                    if (args.Effect == DragDropEffects.Move)
                     {
-                        args.Effect = DragDropEffects.None;
-                        args.DropTargetLocation = DropTargetLocation.None;
-                        return;
+                        Move move = (Move) Session.getFeature(typeof (Move));
+                        foreach (Path sourcePath in args.SourceModels)
+                        {
+                            if (!move.isSupported(sourcePath))
+                            {
+                                args.Effect = DragDropEffects.None;
+                                args.DropTargetLocation = DropTargetLocation.None;
+                                return;
+                            }
+                        }
                     }
+                }
+                else
+                {
+                    args.Effect = DragDropEffects.Copy;
                 }
                 if (Workdir == destination)
                 {
