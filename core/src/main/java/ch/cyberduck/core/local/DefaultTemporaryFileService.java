@@ -56,8 +56,8 @@ public class DefaultTemporaryFileService implements TemporaryFileService {
 
     private Local create(final String folder, final String name) {
         final Local file = LocalFactory.get(new File(PreferencesFactory.get().getProperty("tmp.dir"), folder).getAbsolutePath(), name);
-        this.delete(file);
         this.delete(file.getParent());
+        this.delete(file);
         return file;
     }
 
