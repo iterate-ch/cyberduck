@@ -278,6 +278,10 @@ public class OAuth2AuthorizationService {
                     // Invalid Credentials. Refresh the access token using the long-lived refresh token
                     return new LoginFailureException(buffer.toString(), failure);
                 }
+                if(response.getStatusCode() == 400) {
+                    // Invalid Grant
+                    return new LoginFailureException(buffer.toString(), failure);
+                }
                 if(response.getStatusCode() == 403) {
                     return new AccessDeniedException(buffer.toString(), failure);
                 }
