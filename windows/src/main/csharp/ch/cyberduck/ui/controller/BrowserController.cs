@@ -50,7 +50,6 @@ using java.util;
 using org.apache.log4j;
 using StructureMap;
 using Application = ch.cyberduck.core.local.Application;
-using Boolean = java.lang.Boolean;
 using Exception = System.Exception;
 using Path = ch.cyberduck.core.Path;
 using String = System.String;
@@ -925,17 +924,9 @@ namespace Ch.Cyberduck.Ui.Controller
                     args.DropTargetLocation = DropTargetLocation.None;
                     return;
                 }
+
                 foreach (Path sourcePath in args.SourceModels)
                 {
-                    if (args.ListView == args.SourceListView)
-                    {
-                        // Use drag action from user
-                    }
-                    else
-                    {
-                        // If copying between sessions is supported
-                        args.Effect = DragDropEffects.Copy;
-                    }
                     if (sourcePath.isDirectory() && sourcePath.equals(destination))
                     {
                         // Do not allow dragging onto myself.
@@ -957,13 +948,26 @@ namespace Ch.Cyberduck.Ui.Controller
                         args.DropTargetLocation = DropTargetLocation.None;
                         return;
                     }
-                    Move move = (Move) Session.getFeature(typeof (Move));
-                    if (!move.isSupported(sourcePath))
+                }
+                if (args.ListView == args.SourceListView)
+                {
+                    if (args.Effect == DragDropEffects.Move)
                     {
-                        args.Effect = DragDropEffects.None;
-                        args.DropTargetLocation = DropTargetLocation.None;
-                        return;
+                        Move move = (Move) Session.getFeature(typeof (Move));
+                        foreach (Path sourcePath in args.SourceModels)
+                        {
+                            if (!move.isSupported(sourcePath))
+                            {
+                                args.Effect = DragDropEffects.None;
+                                args.DropTargetLocation = DropTargetLocation.None;
+                                return;
+                            }
+                        }
                     }
+                }
+                else
+                {
+                    args.Effect = DragDropEffects.Copy;
                 }
                 if (Workdir == destination)
                 {
@@ -1012,8 +1016,9 @@ namespace Ch.Cyberduck.Ui.Controller
                             // Find source browser
                             if (controller.View.Browser.Equals(dropargs.SourceListView))
                             {
-                                controller.transfer(
-                                    new CopyTransfer(controller.Session.getHost(), Session,
+                                transfer(
+                                    new CopyTransfer(controller.Session.getHost(),
+                                        SessionFactory.create(Session.getHost()),
                                         Utils.ConvertToJavaMap(files)), new List<Path>(files.Values), false);
                                 break;
                             }
@@ -2858,7 +2863,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 content.Append("\n" + Character.toString('\u2022') + " ...)");
             }
             TaskDialogResult r = QuestionBox(LocaleFactory.localizedString("Delete"), alertText.ToString(),
-                content.ToString(), String.Format("{0}", LocaleFactory.localizedString("Delete")), true); 
+                content.ToString(), String.Format("{0}", LocaleFactory.localizedString("Delete")), true);
             if (r.CommandButtonResult == 0)
             {
                 DeletePathsImpl(normalized);
@@ -3200,7 +3205,6 @@ namespace Ch.Cyberduck.Ui.Controller
                     base.cleanup(deleted);
                     _controller.Reload(_controller.Workdir, (IList<Path>) Utils.ConvertFromJavaList<Path>(_files),
                         new List<Path>());
-
                 }
             }
         }
