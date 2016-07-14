@@ -19,8 +19,6 @@ package ch.cyberduck.core.importer;
  */
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.googlestorage.GoogleStorageProtocol;
 import ch.cyberduck.core.s3.S3Protocol;
 
@@ -31,11 +29,6 @@ public abstract class CloudberryBookmarkCollection extends XmlBookmarkCollection
     private static final Logger log = Logger.getLogger(CloudberryBookmarkCollection.class);
 
     private static final long serialVersionUID = 2245328157886337606L;
-
-    @Override
-    protected void parse(Local file) throws AccessDeniedException {
-        this.read(file);
-    }
 
     @Override
     protected AbstractHandler getHandler() {

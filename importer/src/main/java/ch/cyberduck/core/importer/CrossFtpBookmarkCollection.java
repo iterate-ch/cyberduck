@@ -23,7 +23,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -50,11 +49,6 @@ public class CrossFtpBookmarkCollection extends XmlBookmarkCollection {
     @Override
     public Local getFile() {
         return LocalFactory.get(PreferencesFactory.get().getProperty("bookmark.import.crossftp.location"));
-    }
-
-    @Override
-    protected void parse(Local file) throws AccessDeniedException {
-        this.read(file);
     }
 
     @Override

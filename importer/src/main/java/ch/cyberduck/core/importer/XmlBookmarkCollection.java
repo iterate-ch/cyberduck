@@ -75,6 +75,11 @@ public abstract class XmlBookmarkCollection extends ThirdpartyBookmarkCollection
 
     protected abstract AbstractHandler getHandler();
 
+    @Override
+    protected void parse(Local file) throws AccessDeniedException {
+        this.read(file);
+    }
+
     protected void read(final Local child) throws AccessDeniedException {
         try {
             final BufferedReader in = new BufferedReader(new InputStreamReader(child.getInputStream(),

@@ -23,7 +23,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
@@ -61,11 +60,6 @@ public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
     @Override
     public Local getFile() {
         return LocalFactory.get(PreferencesFactory.get().getProperty("bookmark.import.filezilla.location"));
-    }
-
-    @Override
-    protected void parse(Local file) throws AccessDeniedException {
-        this.read(file);
     }
 
     @Override
