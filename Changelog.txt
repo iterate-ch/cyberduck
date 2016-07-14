@@ -3,6 +3,9 @@ http://cyberduck.io/
 
 Changelog. Last modified: $Date$
 
+5.0.9 [https://trac.cyberduck.io/milestone/5.0.9]
+- [Feature] Allow silent application update in background (Mac)
+
 5.0.8 [https://trac.cyberduck.io/milestone/5.0.8]
 - [Feature] Register protocol handler for irods:// (#9614)
 - [Bugfix] Listing directory failure on folder with ~ in path (S3) (#9611)
