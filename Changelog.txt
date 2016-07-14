@@ -5,6 +5,7 @@ Changelog. Last modified: $Date$
 
 5.0.9 [https://trac.cyberduck.io/milestone/5.0.9]
 - [Feature] Allow silent application update in background (Mac)
+- [Bugfix] Allow to select encryption keys from KMS different from default us-east-1 region (S3) (#9617)
 
 5.0.8 [https://trac.cyberduck.io/milestone/5.0.8]
 - [Feature] Register protocol handler for irods:// (#9614)
