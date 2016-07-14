@@ -47,7 +47,7 @@ public class S3EncryptionFeature implements Encryption {
     }
 
     @Override
-    public Set<Algorithm> getKeys(final LoginCallback prompt) throws BackgroundException {
+    public Set<Algorithm> getKeys(final Path file, final LoginCallback prompt) throws BackgroundException {
         return new HashSet<>(Arrays.asList(Algorithm.NONE, SSE_AES256));
     }
 

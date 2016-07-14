@@ -2039,7 +2039,7 @@ public class InfoController extends ToolbarWindowController {
                     }
                     if(session.getFeature(Encryption.class) != null) {
                         // Add additional keys stored in KMS
-                        managedEncryptionKeys = session.getFeature(Encryption.class).getKeys(prompt);
+                        managedEncryptionKeys = session.getFeature(Encryption.class).getKeys(container, prompt);
                         for(final Path file : files) {
                             selectedEncryptionKeys.add(session.getFeature(Encryption.class).getEncryption(file));
                         }

@@ -1797,7 +1797,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         _encryption = algorithm.ToString();
                     }
                     // Add additional keys stored in KMS
-                    Set keys = encryptionFeature.getKeys(_infoController._prompt);
+                    Set keys = encryptionFeature.getKeys(_container, _infoController._prompt);
                     Iterator iterator = keys.iterator();
                     while (iterator.hasNext())
                     {
