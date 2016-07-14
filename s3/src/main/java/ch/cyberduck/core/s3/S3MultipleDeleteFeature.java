@@ -72,6 +72,12 @@ public class S3MultipleDeleteFeature implements Delete {
                 continue;
             }
             callback.delete(file);
+            if(file.getType().contains(Path.Type.upload)) {
+                // In-progress multipart upload
+                multipartService.delete(new MultipartUpload(file.attributes().getVersionId(),
+                        containerService.getContainer(file).getName(), containerService.getKey(file)));
+                continue;
+            }
             final Path container = containerService.getContainer(file);
             final List<ObjectKeyAndVersion> keys = new ArrayList<ObjectKeyAndVersion>();
             // Always returning 204 even if the key does not exist. Does not return 404 for non-existing keys

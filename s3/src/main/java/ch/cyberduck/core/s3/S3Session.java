@@ -28,6 +28,7 @@ import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UrlProvider;
@@ -65,8 +66,11 @@ import org.apache.log4j.Logger;
 import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
+import org.jets3t.service.model.MultipartUpload;
 import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.security.ProviderCredentials;
+
+import java.util.EnumSet;
 
 public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     private static final Logger log = Logger.getLogger(S3Session.class);
@@ -237,7 +241,14 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return new S3BucketListService(this, new S3LocationFeature.S3Region(host.getRegion())).list(directory, listener);
         }
         else {
-            return new S3ObjectListService(this).list(directory, listener);
+            final AttributedList<Path> objects = new S3ObjectListService(this).list(directory, listener);
+            for(MultipartUpload upload : new S3DefaultMultipartService(this).find(directory)) {
+                final PathAttributes attributes = new PathAttributes();
+                attributes.setVersionId(upload.getUploadId());
+                attributes.setModificationDate(upload.getInitiatedDate().getTime());
+                objects.add(new Path(directory, upload.getObjectKey(), EnumSet.of(Path.Type.file, Path.Type.upload), attributes));
+            }
+            return objects;
         }
     }
 
