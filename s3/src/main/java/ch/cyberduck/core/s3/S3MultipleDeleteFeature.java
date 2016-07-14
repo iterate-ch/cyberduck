@@ -64,44 +64,39 @@ public class S3MultipleDeleteFeature implements Delete {
     }
 
     public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
-        if(files.size() == 1) {
-            new S3DefaultDeleteFeature(session).delete(files, prompt, callback);
+        final Map<Path, List<ObjectKeyAndVersion>> map = new HashMap<Path, List<ObjectKeyAndVersion>>();
+        final List<Path> containers = new ArrayList<Path>();
+        for(Path file : files) {
+            if(containerService.isContainer(file)) {
+                containers.add(file);
+                continue;
+            }
+            callback.delete(file);
+            final Path container = containerService.getContainer(file);
+            final List<ObjectKeyAndVersion> keys = new ArrayList<ObjectKeyAndVersion>();
+            // Always returning 204 even if the key does not exist. Does not return 404 for non-existing keys
+            keys.add(new ObjectKeyAndVersion(containerService.getKey(file), file.attributes().getVersionId()));
+            if(map.containsKey(container)) {
+                map.get(container).addAll(keys);
+            }
+            else {
+                map.put(container, keys);
+            }
         }
-        else {
-            final Map<Path, List<ObjectKeyAndVersion>> map = new HashMap<Path, List<ObjectKeyAndVersion>>();
-            final List<Path> containers = new ArrayList<Path>();
-            for(Path file : files) {
-                if(containerService.isContainer(file)) {
-                    containers.add(file);
-                    continue;
-                }
-                callback.delete(file);
-                final Path container = containerService.getContainer(file);
-                final List<ObjectKeyAndVersion> keys = new ArrayList<ObjectKeyAndVersion>();
-                // Always returning 204 even if the key does not exist. Does not return 404 for non-existing keys
-                keys.add(new ObjectKeyAndVersion(containerService.getKey(file), file.attributes().getVersionId()));
-                if(map.containsKey(container)) {
-                    map.get(container).addAll(keys);
-                }
-                else {
-                    map.put(container, keys);
-                }
+        // Iterate over all containers and delete list of keys
+        for(Map.Entry<Path, List<ObjectKeyAndVersion>> entry : map.entrySet()) {
+            final Path container = entry.getKey();
+            final List<ObjectKeyAndVersion> keys = entry.getValue();
+            this.delete(container, keys, prompt);
+        }
+        for(Path file : containers) {
+            callback.delete(file);
+            // Finally delete bucket itself
+            try {
+                session.getClient().deleteBucket(containerService.getContainer(file).getName());
             }
-            // Iterate over all containers and delete list of keys
-            for(Map.Entry<Path, List<ObjectKeyAndVersion>> entry : map.entrySet()) {
-                final Path container = entry.getKey();
-                final List<ObjectKeyAndVersion> keys = entry.getValue();
-                this.delete(container, keys, prompt);
-            }
-            for(Path file : containers) {
-                callback.delete(file);
-                // Finally delete bucket itself
-                try {
-                    session.getClient().deleteBucket(containerService.getContainer(file).getName());
-                }
-                catch(ServiceException e) {
-                    throw new S3ExceptionMappingService().map("Cannot delete {0}", e, file);
-                }
+            catch(ServiceException e) {
+                throw new S3ExceptionMappingService().map("Cannot delete {0}", e, file);
             }
         }
         for(Path file : files) {
