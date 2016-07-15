@@ -30,10 +30,12 @@ public interface Encryption {
     /**
      * Get list of key names available for use for server side encryption
      *
+     *
+     * @param file Container
      * @param prompt Login callback
      * @return List of key names
      */
-    Set<Algorithm> getKeys(LoginCallback prompt) throws BackgroundException;
+    Set<Algorithm> getKeys(final Path file, LoginCallback prompt) throws BackgroundException;
 
     /**
      * Enable server side encryption for file
@@ -54,7 +56,6 @@ public interface Encryption {
      *
      * @param file File
      * @return Null if not encrypted or server side encryption algorithm used
-     * @throws BackgroundException
      */
     Algorithm getEncryption(Path file) throws BackgroundException;
 

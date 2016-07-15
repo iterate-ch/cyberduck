@@ -15,6 +15,7 @@ package ch.cyberduck.core.kms;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -43,6 +44,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -118,35 +120,71 @@ public class KMSEncryptionFeatureTest {
     }
 
     @Test
-    public void testGetKeys() throws Exception {
-        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-        ));
-        final KMSEncryptionFeature kms = new KMSEncryptionFeature(new S3Session(host));
-        assertFalse(kms.getKeys(new DisabledLoginCallback()).isEmpty());
+    public void testGetKeys_eu_west_1() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                        new Credentials(
+                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+                        )));
+        session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final KMSEncryptionFeature kms = new KMSEncryptionFeature(session);
+        assertFalse(kms.getKeys(new Path("test-eu-west-1-cyberduck", EnumSet.of(Path.Type.volume)), new DisabledLoginCallback()).isEmpty());
+        session.close();
+    }
+
+    @Test
+    public void testGetKeys_ap_southeast_2() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                        new Credentials(
+                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+                        )));
+        session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final KMSEncryptionFeature kms = new KMSEncryptionFeature(session);
+        final Set<Encryption.Algorithm> keys = kms.getKeys(new Path("test-ap-southeast-2-cyberduck", EnumSet.of(Path.Type.volume)), new DisabledLoginCallback());
+        assertTrue(keys.contains(Encryption.Algorithm.NONE));
+        assertTrue(keys.contains(S3EncryptionFeature.SSE_AES256));
+        assertEquals(2, keys.size());
+        session.close();
     }
 
     @Test(expected = LoginCanceledException.class)
     public void testCreateUserAuthenticationFailure() throws Exception {
-        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                "key", "secret"
-        ));
-        new KMSEncryptionFeature(new S3Session(host)).getKeys(new DisabledLoginCallback());
+        final S3Session session = new S3Session(
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                        new Credentials(
+                                "key", "secret"
+                        )));
+        session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        new KMSEncryptionFeature(session).getKeys(new Path("test-eu-west-1-cyberduck", EnumSet.of(Path.Type.volume)), new DisabledLoginCallback());
+        session.close();
     }
 
     @Test(expected = ConnectionTimeoutException.class)
     public void testTimeout() throws Exception {
-        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-        ));
-        final KMSEncryptionFeature kms = new KMSEncryptionFeature(new S3Session(host), 1);
+        final S3Session session = new S3Session(
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                        new Credentials(
+                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+                        )));
+        session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final KMSEncryptionFeature kms = new KMSEncryptionFeature(session, 1);
         try {
-            kms.getKeys(new DisabledLoginCallback());
+            kms.getKeys(new Path("test-eu-west-1-cyberduck", EnumSet.of(Path.Type.volume)), new DisabledLoginCallback());
             fail();
         }
         catch(BackgroundException e) {
             assertTrue(new DefaultFailureDiagnostics().determine(e) == FailureDiagnostics.Type.network);
             throw e;
         }
+        session.close();
+
     }
 }
