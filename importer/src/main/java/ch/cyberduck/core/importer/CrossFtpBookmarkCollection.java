@@ -63,59 +63,59 @@ public class CrossFtpBookmarkCollection extends XmlBookmarkCollection {
         private Host current = null;
 
         @Override
-        public void startElement(String uri, String name, String qName, Attributes attrs) {
-            if(name.equals("site")) {
-                current = new Host(new FTPProtocol(), attrs.getValue("hName"));
-                current.setNickname(attrs.getValue("name"));
-                current.getCredentials().setUsername(attrs.getValue("un"));
-                current.setWebURL(attrs.getValue("wURL"));
-                current.setComment(attrs.getValue("comm"));
-                current.setDefaultPath(attrs.getValue("path"));
-                String protocol = attrs.getValue("ftpPType");
-                try {
-                    switch(Integer.valueOf(protocol)) {
-                        case 1:
-                            current.setProtocol(new FTPProtocol());
-                            break;
-                        case 2:
-                        case 3:
-                        case 4:
-                            current.setProtocol(new FTPTLSProtocol());
-                            break;
-                        case 6:
-                            current.setProtocol(new DAVProtocol());
-                            break;
-                        case 7:
-                            current.setProtocol(new DAVSSLProtocol());
-                            break;
-                        case 8:
-                        case 9:
-                            current.setProtocol(new S3Protocol());
-                            break;
-                    }
-                }
-                catch(NumberFormatException e) {
-                    log.warn("Unknown protocol:" + e.getMessage());
-                }
-                try {
-                    current.setPort(Integer.parseInt(attrs.getValue("port")));
-                }
-                catch(NumberFormatException e) {
-                    log.warn("Invalid Port:" + e.getMessage());
-                }
-            }
-            super.startElement(uri, name, qName, attrs);
-        }
-
-        @Override
         public void startElement(String name, Attributes attrs) {
-            //
+            switch(name) {
+                case "site":
+                    current = new Host(new FTPProtocol(), attrs.getValue("hName"));
+                    current.setNickname(attrs.getValue("name"));
+                    current.getCredentials().setUsername(attrs.getValue("un"));
+                    current.setWebURL(attrs.getValue("wURL"));
+                    current.setComment(attrs.getValue("comm"));
+                    current.setDefaultPath(attrs.getValue("path"));
+                    String protocol = attrs.getValue("ftpPType");
+                    try {
+                        switch(Integer.valueOf(protocol)) {
+                            case 1:
+                                current.setProtocol(new FTPProtocol());
+                                break;
+                            case 2:
+                            case 3:
+                            case 4:
+                                current.setProtocol(new FTPTLSProtocol());
+                                break;
+                            case 6:
+                                current.setProtocol(new DAVProtocol());
+                                break;
+                            case 7:
+                                current.setProtocol(new DAVSSLProtocol());
+                                break;
+                            case 8:
+                            case 9:
+                                current.setProtocol(new S3Protocol());
+                                break;
+                        }
+                        // Reset port to default
+                        current.setPort(-1);
+                    }
+                    catch(NumberFormatException e) {
+                        log.warn("Unknown protocol:" + e.getMessage());
+                    }
+                    try {
+                        current.setPort(Integer.parseInt(attrs.getValue("port")));
+                    }
+                    catch(NumberFormatException e) {
+                        log.warn("Invalid Port:" + e.getMessage());
+                    }
+                    break;
+            }
         }
 
         @Override
         public void endElement(String name, String elementText) {
-            if(name.equals("site")) {
-                add(current);
+            switch(name) {
+                case "site":
+                    add(current);
+                    break;
             }
         }
     }

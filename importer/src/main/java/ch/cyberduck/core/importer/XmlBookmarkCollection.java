@@ -52,7 +52,7 @@ public abstract class XmlBookmarkCollection extends ThirdpartyBookmarkCollection
         private StringBuilder currentText = null;
 
         @Override
-        public void startElement(String uri, String name, String qName, Attributes attrs) {
+        public void startElement(final String uri, final String name, final String qName, final Attributes attrs) {
             this.currentText = new StringBuilder();
             this.startElement(name, attrs);
         }
@@ -60,16 +60,16 @@ public abstract class XmlBookmarkCollection extends ThirdpartyBookmarkCollection
         public abstract void startElement(String name, Attributes attrs);
 
         @Override
-        public void endElement(String uri, String name, String qName) {
-            String elementText = this.currentText.toString();
+        public void endElement(final String uri, final String name, final String qName) {
+            String elementText = currentText.toString();
             this.endElement(name, elementText);
         }
 
         public abstract void endElement(String name, String content);
 
         @Override
-        public void characters(char ch[], int start, int length) {
-            this.currentText.append(ch, start, length);
+        public void characters(final char ch[], final int start, final int length) {
+            currentText.append(ch, start, length);
         }
     }
 
