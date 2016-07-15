@@ -51,7 +51,7 @@ import ch.cyberduck.core.importer.FireFtpBookmarkCollection;
 import ch.cyberduck.core.importer.FlowBookmarkCollection;
 import ch.cyberduck.core.importer.InterarchyBookmarkCollection;
 import ch.cyberduck.core.importer.ThirdpartyBookmarkCollection;
-import ch.cyberduck.core.importer.TransmitBookmarkCollection;
+import ch.cyberduck.core.importer.Transmit4BookmarkCollection;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
@@ -1105,7 +1105,7 @@ public class MainController extends BundleController implements NSApplication.De
             }
 
             private List<ThirdpartyBookmarkCollection> getThirdpartyBookmarks() {
-                return Arrays.asList(new TransmitBookmarkCollection(), new FilezillaBookmarkCollection(), new FetchBookmarkCollection(),
+                return Arrays.asList(new Transmit4BookmarkCollection(), new FilezillaBookmarkCollection(), new FetchBookmarkCollection(),
                         new FlowBookmarkCollection(), new InterarchyBookmarkCollection(), new CrossFtpBookmarkCollection(), new FireFtpBookmarkCollection());
             }
         });
