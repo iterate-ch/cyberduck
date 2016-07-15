@@ -235,4 +235,16 @@ public class SFTPWriteFeatureTest {
         assertEquals(content.length, new DefaultAttributesFeature(session).find(test).getSize());
         new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
+
+
+    @Test
+    public void testUnconfirmedReadsNumber() throws Exception {
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
+                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
+        ));
+        final SFTPSession session = new SFTPSession(host);
+        final SFTPWriteFeature feature = new SFTPWriteFeature(session);
+        assertEquals(33, feature.getMaxUnconfirmedWrites(new TransferStatus().length(TransferStatus.MEGA * 1L)));
+        assertEquals(64, feature.getMaxUnconfirmedWrites(new TransferStatus().length((long) (TransferStatus.GIGA * 1.3))));
+    }
 }

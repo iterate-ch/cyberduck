@@ -79,7 +79,11 @@ public class SFTPReadFeature implements Read {
     }
 
     protected int getMaxUnconfirmedReads(final TransferStatus status) {
-        return (int) (status.getLength() / preferences.getInteger("connection.chunksize")) + 1;
+        if(-1 == status.getLength()) {
+            return preferences.getInteger("sftp.read.maxunconfirmed");
+        }
+        return Integer.min(((int) (status.getLength() / preferences.getInteger("connection.chunksize")) + 1),
+                preferences.getInteger("sftp.read.maxunconfirmed"));
     }
 
     @Override

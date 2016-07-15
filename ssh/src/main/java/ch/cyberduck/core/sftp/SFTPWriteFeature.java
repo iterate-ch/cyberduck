@@ -83,13 +83,7 @@ public class SFTPWriteFeature extends AppendWriteFeature {
                 }
             }
             final RemoteFile handle = session.sftp().open(file.getAbsolute(), flags);
-            final int maxUnconfirmedWrites;
-            if(-1 == status.getLength()) {
-                maxUnconfirmedWrites = preferences.getInteger("sftp.write.maxunconfirmed.default");
-            }
-            else {
-                maxUnconfirmedWrites = (int) (status.getLength() / preferences.getInteger("connection.chunksize")) + 1;
-            }
+            final int maxUnconfirmedWrites = this.getMaxUnconfirmedWrites(status);
             if(log.isInfoEnabled()) {
                 log.info(String.format("Using %d unconfirmed writes", maxUnconfirmedWrites));
             }
@@ -119,6 +113,14 @@ public class SFTPWriteFeature extends AppendWriteFeature {
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map("Upload {0} failed", e, file);
         }
+    }
+
+    protected int getMaxUnconfirmedWrites(final TransferStatus status) {
+        if(-1 == status.getLength()) {
+            return preferences.getInteger("sftp.write.maxunconfirmed");
+        }
+        return Integer.min((int) (status.getLength() / preferences.getInteger("connection.chunksize")) + 1,
+                preferences.getInteger("sftp.write.maxunconfirmed"));
     }
 
     @Override
