@@ -44,8 +44,7 @@ import java.util.EnumSet;
 import java.util.Random;
 import java.util.UUID;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class SFTPReadFeatureTest {
@@ -132,5 +131,14 @@ public class SFTPReadFeatureTest {
         }
         new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
+    }
+
+    @Test
+    public void testUnconfirmedReadsNumber() throws Exception {
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
+                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
+        ));
+        final SFTPSession session = new SFTPSession(host);
+        assertEquals(39673, new SFTPReadFeature(session).getMaxUnconfirmedReads(new TransferStatus().length(1300000000L)));
     }
 }
