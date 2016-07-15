@@ -1,0 +1,135 @@
+<?xml version="1.0" standalone="yes"?>
+<!DOCTYPE database SYSTEM "file:///System/Library/DTDs/CoreData.dtd">
+
+<database>
+    <databaseInfo>
+        <version>134481920</version>
+        <UUID>79EF332F-2600-45D3-A066-E8B1B0351D80</UUID>
+        <nextObjectID>107</nextObjectID>
+        <metadata>
+            <plist version="1.0">
+                <dict>
+                    <key>NSPersistenceFrameworkVersion</key>
+                    <integer>739</integer>
+                    <key>NSStoreModelVersionHashes</key>
+                    <dict>
+                        <key>Collection</key>
+                        <data>
+                            GCUevEHPWmtpyZloR+WjBKH0nSYPq1GlGwUxcaRISDw=
+                        </data>
+                        <key>Favorite</key>
+                        <data>
+                            VFzVY9HdSSjBvztQlhq9EfArF1ANkYIRNcR17a+xZNg=
+                        </data>
+                        <key>HistoryCollection</key>
+                        <data>
+                            Hmok5SMYCPLFb5SOJKJY5wtqAm++/7K7fdGp5TEbxDw=
+                        </data>
+                        <key>Object</key>
+                        <data>
+                            VRlsqgs1MJtfs/7LHgkTHdN1k36dwwzIdR0+Lkvhn/4=
+                        </data>
+                        <key>SecureAttribute</key>
+                        <data>
+                            coGUFuqrt2JJUO/CcPEBuRKU+5LHLD8X69CzRb8dQVU=
+                        </data>
+                        <key>StoreIdentity</key>
+                        <data>
+                            3GQJzN3O9t1cEF9xuRdt/Q48YIZAEyloKZdSjSE0Kmw=
+                        </data>
+                        <key>SyncRecord</key>
+                        <data>
+                            VDtxR3+ZtE308TJaFmTunNWrCHH9hl4Ud1zFt9rZABc=
+                        </data>
+                    </dict>
+                    <key>NSStoreModelVersionHashesVersion</key>
+                    <integer>3</integer>
+                    <key>NSStoreModelVersionIdentifiers</key>
+                    <array>
+                        <string>Favorites105</string>
+                    </array>
+                </dict>
+            </plist>
+        </metadata>
+    </databaseInfo>
+    <object type="STOREIDENTITY" id="z102">
+        <attribute name="modificationdate" type="date">490133055.45752799510955810547</attribute>
+    </object>
+    <object type="HISTORYCOLLECTION" id="z103">
+        <attribute name="maximumcount" type="int32">10</attribute>
+        <attribute name="name" type="string">untitled folder</attribute>
+        <attribute name="index" type="int32">0</attribute>
+        <attribute name="uuidstring" type="string">8C396348-600A-49C9-B782-474F18FC65CF</attribute>
+        <attribute name="modificationdate" type="date">424342460.88363099098205566406</attribute>
+        <attribute name="creationdate" type="date">424342460.87970602512359619141</attribute>
+        <relationship name="secureattributes" type="0/0" destination="SECUREATTRIBUTE"></relationship>
+        <relationship name="favorites" type="0/0" destination="FAVORITE"></relationship>
+    </object>
+    <object type="FAVORITE" id="z104">
+        <attribute name="username" type="string"></attribute>
+        <attribute name="server" type="string">cyberduck.io</attribute>
+        <attribute name="protocol" type="string">FTP</attribute>
+        <attribute name="promptforpassword" type="bool">0</attribute>
+        <attribute name="port" type="int32">0</attribute>
+        <attribute name="passivemodeenabled" type="bool">1</attribute>
+        <attribute name="nickname" type="string">mirror.switch.ch</attribute>
+        <attribute name="initialremotepath" type="string">/pool</attribute>
+        <attribute name="haspassword" type="bool">0</attribute>
+        <attribute name="hasidentity" type="bool">0</attribute>
+        <attribute name="folderlinkingenabled" type="bool">0</attribute>
+        <attribute name="docksendenabled" type="bool">0</attribute>
+        <attribute name="collectionindex" type="int32">0</attribute>
+        <attribute name="uuidstring" type="string">DE94DF58-2E32-43A6-960C-0073AA682200</attribute>
+        <attribute name="modificationdate" type="date">424342460.90940600633621215820</attribute>
+        <attribute name="creationdate" type="date">424342460.90940600633621215820</attribute>
+        <relationship name="collection" type="1/1" destination="COLLECTION" idrefs="z105"></relationship>
+        <relationship name="secureattributes" type="0/0" destination="SECUREATTRIBUTE"></relationship>
+    </object>
+    <object type="COLLECTION" id="z105">
+        <attribute name="name" type="string">Favorites</attribute>
+        <attribute name="index" type="int32">1</attribute>
+        <attribute name="uuidstring" type="string">D638A5E9-2368-412E-88B6-03CD69287610</attribute>
+        <attribute name="modificationdate" type="date">424342460.90362697839736938477</attribute>
+        <attribute name="creationdate" type="date">424342460.90362697839736938477</attribute>
+        <relationship name="secureattributes" type="0/0" destination="SECUREATTRIBUTE"></relationship>
+        <relationship name="favorites" type="0/0" destination="FAVORITE" idrefs="z107 z106 z104"></relationship>
+    </object>
+    <object type="FAVORITE" id="z106">
+        <attribute name="username" type="string">iterate</attribute>
+        <attribute name="server" type="string">cyberduck.io</attribute>
+        <attribute name="protocol" type="string">SFTP</attribute>
+        <attribute name="promptforpassword" type="bool">0</attribute>
+        <attribute name="port" type="int32">0</attribute>
+        <attribute name="passivemodeenabled" type="bool">0</attribute>
+        <attribute name="nickname" type="string">sudo</attribute>
+        <attribute name="haspassword" type="bool">0</attribute>
+        <attribute name="hasidentity" type="bool">0</attribute>
+        <attribute name="folderlinkingenabled" type="bool">0</attribute>
+        <attribute name="docksendenabled" type="bool">0</attribute>
+        <attribute name="collectionindex" type="int32">1</attribute>
+        <attribute name="uuidstring" type="string">14D50948-9C51-42BD-A4A7-74B390764862</attribute>
+        <attribute name="modificationdate" type="date">490132930.24612998962402343750</attribute>
+        <attribute name="creationdate" type="date">490132930.24612998962402343750</attribute>
+        <relationship name="collection" type="1/1" destination="COLLECTION" idrefs="z105"></relationship>
+        <relationship name="secureattributes" type="0/0" destination="SECUREATTRIBUTE"></relationship>
+    </object>
+    <object type="FAVORITE" id="z107">
+        <attribute name="username" type="string">iterate</attribute>
+        <attribute name="server" type="string">cyberduck.io</attribute>
+        <attribute name="protocol" type="string">WebDAVS</attribute>
+        <attribute name="promptforpassword" type="bool">0</attribute>
+        <attribute name="port" type="int32">0</attribute>
+        <attribute name="passivemodeenabled" type="bool">0</attribute>
+        <attribute name="nickname" type="string">dropbox</attribute>
+        <attribute name="haspassword" type="bool">0</attribute>
+        <attribute name="hasidentity" type="bool">0</attribute>
+        <attribute name="folderlinkingenabled" type="bool">0</attribute>
+        <attribute name="docksendenabled" type="bool">0</attribute>
+        <attribute name="collectionindex" type="int32">2</attribute>
+        <attribute name="uuidstring" type="string">453E147A-2182-4DDD-B25B-040D28187116</attribute>
+        <attribute name="modificationdate" type="date">490133041.55218297243118286133</attribute>
+        <attribute name="creationdate" type="date">490133041.55218297243118286133</attribute>
+        <relationship name="collection" type="1/1" destination="COLLECTION" idrefs="z105"></relationship>
+        <relationship name="secureattributes" type="0/0" destination="SECUREATTRIBUTE"></relationship>
+    </object>
+</database>
