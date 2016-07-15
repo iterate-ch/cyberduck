@@ -184,9 +184,13 @@ public class FireFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
             else if("security".equals(name)) {
                 if("authtls".equals(value)) {
                     current.setProtocol(new FTPTLSProtocol());
+                    // Reset port to default
+                    current.setPort(-1);
                 }
                 if("sftp".equals(value)) {
                     current.setProtocol(new SFTPProtocol());
+                    // Reset port to default
+                    current.setPort(-1);
                 }
             }
         }

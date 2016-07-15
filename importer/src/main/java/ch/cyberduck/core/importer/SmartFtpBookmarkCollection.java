@@ -96,83 +96,89 @@ public class SmartFtpBookmarkCollection extends XmlBookmarkCollection {
 
         @Override
         public void endElement(String name, String elementText) {
-            log.debug("endElement:" + name + "," + elementText);
-            if(name.equals("Host")) {
-                current.setHostname(elementText);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("endElement:%s,%s", name, elementText));
             }
-            else if(name.equals("Protocol")) {
-                try {
-                    switch(Integer.parseInt(elementText)) {
-                        case 1:
-                            current.setProtocol(new FTPProtocol());
-                            break;
-                        case 2:
-                        case 3:
-                            current.setProtocol(new FTPTLSProtocol());
-                            break;
-                        case 4:
-                            current.setProtocol(new SFTPProtocol());
-                            break;
+            switch(name) {
+                case "Host":
+                    current.setHostname(elementText);
+                    break;
+                case "Protocol":
+                    try {
+                        switch(Integer.parseInt(elementText)) {
+                            case 1:
+                                current.setProtocol(new FTPProtocol());
+                                break;
+                            case 2:
+                            case 3:
+                                current.setProtocol(new FTPTLSProtocol());
+                                break;
+                            case 4:
+                                current.setProtocol(new SFTPProtocol());
+                                break;
+                        }
+                        // Reset port to default
+                        current.setPort(-1);
                     }
-                }
-                catch(NumberFormatException e) {
-                    log.warn("Unknown Protocol:" + e.getMessage());
-                }
-            }
-            else if(name.equals("Port")) {
-                try {
-                    current.setPort(Integer.parseInt(elementText));
-                }
-                catch(NumberFormatException e) {
-                    log.warn("Invalid Port:" + e.getMessage());
-                }
-            }
-            else if(name.equals("LastConnect")) {
-                try {
-                    current.setTimestamp(new ISO8601DateParser().parse(elementText));
-                }
-                catch(InvalidDateException e) {
-                    log.warn(String.format("Failed to parse timestamp from %s %s", elementText, e.getMessage()));
-                }
-            }
-            else if(name.equals("User")) {
-                current.getCredentials().setUsername(elementText);
-            }
-            else if(name.equals("Name")) {
-                current.setNickname(elementText);
-            }
-            else if(name.equals("DataConnectionMethod")) {
-                try {
-                    switch(Integer.parseInt(elementText)) {
-                        case 0:
-                            current.setFTPConnectMode(FTPConnectMode.active);
-                            break;
-                        case 1:
-                            current.setFTPConnectMode(FTPConnectMode.passive);
-                            break;
+                    catch(NumberFormatException e) {
+                        log.warn("Unknown Protocol:" + e.getMessage());
                     }
-                }
-                catch(NumberFormatException e) {
-                    log.warn("Invalid connect mode:" + e.getMessage());
-                }
-            }
-            else if(name.equals("Description")) {
-                current.setComment(elementText);
-            }
-            else if(name.equals("Path")) {
-                current.setDefaultPath(elementText);
-            }
-            else if(name.equals("HTTP")) {
-                current.setWebURL(elementText);
-            }
-            else if(name.equals("WebRootPath")) {
-                current.setDefaultPath(elementText);
-            }
-            else if(name.equals("PrivateKey")) {
-                current.getCredentials().setIdentity(LocalFactory.get(elementText));
-            }
-            else if(name.equals("FavoriteItem")) {
-                add(current);
+                    break;
+                case "Port":
+                    try {
+                        current.setPort(Integer.parseInt(elementText));
+                    }
+                    catch(NumberFormatException e) {
+                        log.warn("Invalid Port:" + e.getMessage());
+                    }
+                    break;
+                case "LastConnect":
+                    try {
+                        current.setTimestamp(new ISO8601DateParser().parse(elementText));
+                    }
+                    catch(InvalidDateException e) {
+                        log.warn(String.format("Failed to parse timestamp from %s %s", elementText, e.getMessage()));
+                    }
+                    break;
+                case "User":
+                    current.getCredentials().setUsername(elementText);
+                    break;
+                case "Name":
+                    current.setNickname(elementText);
+                    break;
+                case "DataConnectionMethod":
+                    try {
+                        switch(Integer.parseInt(elementText)) {
+                            case 0:
+                                current.setFTPConnectMode(FTPConnectMode.active);
+                                break;
+                            case 1:
+                                current.setFTPConnectMode(FTPConnectMode.passive);
+                                break;
+                        }
+                    }
+                    catch(NumberFormatException e) {
+                        log.warn("Invalid connect mode:" + e.getMessage());
+                    }
+                    break;
+                case "Description":
+                    current.setComment(elementText);
+                    break;
+                case "Path":
+                    current.setDefaultPath(elementText);
+                    break;
+                case "HTTP":
+                    current.setWebURL(elementText);
+                    break;
+                case "WebRootPath":
+                    current.setDefaultPath(elementText);
+                    break;
+                case "PrivateKey":
+                    current.getCredentials().setIdentity(LocalFactory.get(elementText));
+                    break;
+                case "FavoriteItem":
+                    add(current);
+                    break;
             }
         }
     }

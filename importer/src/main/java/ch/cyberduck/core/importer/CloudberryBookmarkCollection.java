@@ -19,8 +19,6 @@ package ch.cyberduck.core.importer;
  */
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.googlestorage.GoogleStorageProtocol;
 import ch.cyberduck.core.s3.S3Protocol;
 
@@ -33,11 +31,6 @@ public abstract class CloudberryBookmarkCollection extends XmlBookmarkCollection
     private static final long serialVersionUID = 2245328157886337606L;
 
     @Override
-    protected void parse(Local file) throws AccessDeniedException {
-        this.read(file);
-    }
-
-    @Override
     protected AbstractHandler getHandler() {
         return new ServerHandler();
     }
@@ -45,29 +38,28 @@ public abstract class CloudberryBookmarkCollection extends XmlBookmarkCollection
     private class ServerHandler extends AbstractHandler {
         private Host current = null;
 
-        @Override
-        public void startElement(String uri, String name, String qName, Attributes attrs) {
-            if(name.equals("Settings")) {
-                String type = attrs.getValue("xsi:type");
-                if("GoogleSettings".equals(type)) {
-                    current = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new GoogleStorageProtocol().getDefaultPort());
-                }
-                else if("S3Settings".equals(type)) {
-                    current = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new S3Protocol().getDefaultPort());
-                }
-                else if("DunkelSettings".equals(type)) {
-                    current = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new S3Protocol().getDefaultPort());
-                }
-                else {
-                    log.warn("Unsupported connection type:" + type);
-                }
-            }
-            super.startElement(uri, name, qName, attrs);
-        }
 
         @Override
         public void startElement(String name, Attributes attrs) {
-            //
+            switch(name) {
+                case "Settings":
+                    String type = attrs.getValue("xsi:type");
+                    switch(type) {
+                        case "GoogleSettings":
+                            current = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new GoogleStorageProtocol().getDefaultPort());
+                            break;
+                        case "S3Settings":
+                            current = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new S3Protocol().getDefaultPort());
+                            break;
+                        case "DunkelSettings":
+                            current = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new S3Protocol().getDefaultPort());
+                            break;
+                        default:
+                            log.warn("Unsupported connection type:" + type);
+                            break;
+                    }
+                    break;
+            }
         }
 
         @Override
@@ -75,24 +67,26 @@ public abstract class CloudberryBookmarkCollection extends XmlBookmarkCollection
             if(null == current) {
                 return;
             }
-            if(name.equals("ServicePoint")) {
-                current.setHostname(elementText);
-            }
-            else if(name.equals("AWSKey")) {
-                current.getCredentials().setUsername(elementText);
-            }
-            else if(name.equals("Account")) {
-                current.getCredentials().setUsername(elementText);
-            }
-            else if(name.equals("SharedKey")) {
-                current.getCredentials().setPassword(elementText);
-            }
-            else if(name.equals("Name")) {
-                current.setNickname(elementText);
-            }
-            else if(name.equals("Settings")) {
-                add(current);
-                current = null;
+            switch(name) {
+                case "ServicePoint":
+                    current.setHostname(elementText);
+                    break;
+                case "AWSKey":
+                    current.getCredentials().setUsername(elementText);
+                    break;
+                case "Account":
+                    current.getCredentials().setUsername(elementText);
+                    break;
+                case "SharedKey":
+                    current.getCredentials().setPassword(elementText);
+                    break;
+                case "Name":
+                    current.setNickname(elementText);
+                    break;
+                case "Settings":
+                    add(current);
+                    current = null;
+                    break;
             }
         }
     }

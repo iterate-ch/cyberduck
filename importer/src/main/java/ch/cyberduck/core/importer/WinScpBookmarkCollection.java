@@ -124,6 +124,8 @@ public class WinScpBookmarkCollection extends ThirdpartyBookmarkCollection {
                                         current.setProtocol(new FTPProtocol());
                                         break;
                                 }
+                                // Reset port to default
+                                current.setPort(-1);
                             }
                             catch(NumberFormatException e) {
                                 log.warn("Unknown Protocol:" + e.getMessage());
