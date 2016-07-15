@@ -62,6 +62,15 @@ public abstract class AbstractPath {
             public int legacy() {
                 return 0;
             }
+        },
+        /**
+         * In-progress multipart upload
+         */
+        upload {
+            @Override
+            public int legacy() {
+                return 0;
+            }
         };
 
         public abstract int legacy();
