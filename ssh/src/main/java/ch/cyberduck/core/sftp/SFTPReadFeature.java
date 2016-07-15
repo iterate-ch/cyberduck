@@ -50,8 +50,7 @@ public class SFTPReadFeature implements Read {
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final RemoteFile handle = session.sftp().open(file.getAbsolute(), EnumSet.of(OpenMode.READ));
-            final int maxUnconfirmedReads
-                    = (int) (status.getLength() / preferences.getInteger("connection.chunksize")) + 1;
+            final int maxUnconfirmedReads = this.getMaxUnconfirmedReads(status);
             if(log.isInfoEnabled()) {
                 log.info(String.format("Skipping %d bytes", status.getOffset()));
             }
@@ -77,6 +76,14 @@ public class SFTPReadFeature implements Read {
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map("Download {0} failed", e, file);
         }
+    }
+
+    protected int getMaxUnconfirmedReads(final TransferStatus status) {
+        if(-1 == status.getLength()) {
+            return preferences.getInteger("sftp.read.maxunconfirmed");
+        }
+        return Integer.min(((int) (status.getLength() / preferences.getInteger("connection.chunksize")) + 1),
+                preferences.getInteger("sftp.read.maxunconfirmed"));
     }
 
     @Override
