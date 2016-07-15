@@ -7,6 +7,8 @@ Changelog. Last modified: $Date$
 - [Feature] Allow silent application update in background (Mac)
 - [Feature] Display in-progress multipart uploads in browser (S3)
 - [Bugfix] Allow to select encryption keys from KMS different from default us-east-1 region (S3) (#9617)
+- [Bugfix] Uncomfirmed reads are unbounded (SFTP) (#9603)
+- [Bugfix] Mismatch for MD5 checksum when downloading large object (OpenStack Swift) (#8861)
 
 5.0.8 [https://trac.cyberduck.io/milestone/5.0.8]
 - [Feature] Register protocol handler for irods:// (#9614)
