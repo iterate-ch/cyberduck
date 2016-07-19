@@ -50,29 +50,34 @@ public class B2BucketTypeFeature extends DefaultAclFeature implements AclPermiss
 
     @Override
     public Acl getPermission(final Path file) throws BackgroundException {
-        return containerService.getContainer(file).attributes().getAcl();
+        if(containerService.isContainer(file)) {
+            return containerService.getContainer(file).attributes().getAcl();
+        }
+        return Acl.EMPTY;
     }
 
     @Override
     public void setPermission(final Path file, final Acl acl) throws BackgroundException {
-        try {
-            for(Acl.UserAndRole userAndRole : acl.asList()) {
-                if(userAndRole.getUser() instanceof Acl.GroupUser) {
-                    if(userAndRole.getUser().getIdentifier().equals(Acl.GroupUser.EVERYONE)) {
-                        session.getClient().updateBucket(new B2FileidProvider(session).getFileid(containerService.getContainer(file)),
-                                BucketType.allPublic);
-                        return;
+        if(containerService.isContainer(file)) {
+            try {
+                for(Acl.UserAndRole userAndRole : acl.asList()) {
+                    if(userAndRole.getUser() instanceof Acl.GroupUser) {
+                        if(userAndRole.getUser().getIdentifier().equals(Acl.GroupUser.EVERYONE)) {
+                            session.getClient().updateBucket(new B2FileidProvider(session).getFileid(containerService.getContainer(file)),
+                                    BucketType.allPublic);
+                            return;
+                        }
                     }
                 }
+                session.getClient().updateBucket(new B2FileidProvider(session).getFileid(containerService.getContainer(file)),
+                        BucketType.allPrivate);
             }
-            session.getClient().updateBucket(new B2FileidProvider(session).getFileid(containerService.getContainer(file)),
-                    BucketType.allPrivate);
-        }
-        catch(B2ApiException e) {
-            throw new B2ExceptionMappingService(session).map("Cannot change permissions of {0}", e, file);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+            catch(B2ApiException e) {
+                throw new B2ExceptionMappingService(session).map("Cannot change permissions of {0}", e, file);
+            }
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map(e);
+            }
         }
     }
 
