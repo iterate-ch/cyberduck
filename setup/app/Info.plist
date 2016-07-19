@@ -273,8 +273,6 @@
         <false/>
         <key>${SPARKLE_KEY_PREFIX}EnableSystemProfiling</key>
         <false/>
-        <key>${SPARKLE_KEY_PREFIX}AllowsAutomaticUpdates</key>
-        <false/>
         <key>${SPARKLE_KEY_PREFIX}PublicDSAKeyFile</key>
         <string>update.pem</string>
         <key>${SPARKLE_KEY_PREFIX}ExpectsDSASignature</key>
