@@ -1,7 +1,5 @@
 Cyberduck
-http://cyberduck.io/
-
-Changelog. Last modified: $Date$
+https://cyberduck.io/
 
 5.0.9 [https://trac.cyberduck.io/milestone/5.0.9]
 - [Feature] Allow silent application update in background (Mac)
