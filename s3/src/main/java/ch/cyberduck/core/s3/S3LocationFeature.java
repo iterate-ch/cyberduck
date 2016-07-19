@@ -71,21 +71,23 @@ public class S3LocationFeature implements Location {
         }
         try {
             final String location = session.getClient().getBucketLocation(container.getName());
+            final S3Region region;
             if(StringUtils.isBlank(location)) {
                 log.warn(String.format("No region known for bucket %s", container.getName()));
-                final S3Region region = new S3Region("us-east-1");
+                region = new S3Region("us-east-1");
             }
-            final S3Region region;
-            switch(location) {
-                case "US":
-                    region = new S3Region("us-east-1");
-                    break;
-                case "EU":
-                    region = new S3Region("eu-west-1");
-                    break;
-                default:
-                    region = new S3Region(location);
-                    break;
+            else {
+                switch(location) {
+                    case "US":
+                        region = new S3Region("us-east-1");
+                        break;
+                    case "EU":
+                        region = new S3Region("eu-west-1");
+                        break;
+                    default:
+                        region = new S3Region(location);
+                        break;
+                }
             }
             cache.putRegionForBucketName(container.getName(), region.getIdentifier());
             return region;
