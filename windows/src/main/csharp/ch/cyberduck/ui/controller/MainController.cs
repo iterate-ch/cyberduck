@@ -44,6 +44,7 @@ using ch.cyberduck.core.s3;
 using ch.cyberduck.core.serializer;
 using ch.cyberduck.core.sftp;
 using ch.cyberduck.core.spectra;
+using ch.cyberduck.core.transfer;
 using ch.cyberduck.core.urlhandler;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Sparkle;
@@ -54,7 +55,6 @@ using Microsoft.VisualBasic.ApplicationServices;
 using org.apache.log4j;
 using Application = ch.cyberduck.core.local.Application;
 using ArrayList = System.Collections.ArrayList;
-using Path = System.IO.Path;
 using UnhandledExceptionEventArgs = System.UnhandledExceptionEventArgs;
 using Utils = Ch.Cyberduck.Ui.Core.Utils;
 
@@ -71,6 +71,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private static MainController _application;
         private static JumpListManager _jumpListManager;
         private readonly BaseController _controller = new BaseController();
+        private readonly PathKindDetector _detector = new DefaultPathKindDetector();
 
         /// <summary>
         /// Saved browsers
@@ -225,9 +226,9 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (args.Count > 0)
             {
-                string filename = args[0];
-                Logger.debug("applicationOpenFile:" + filename);
-                Local f = LocalFactory.get(filename);
+                string arg = args[0];
+                Logger.debug("applicationOpenFile:" + arg);
+                Local f = LocalFactory.get(arg);
                 if (f.exists())
                 {
                     if ("cyberducklicense".Equals(f.getExtension()))
@@ -287,6 +288,38 @@ namespace Ch.Cyberduck.Ui.Controller
                             return;
                         }
                         NewBrowser().Mount(bookmark);
+                    }
+                }
+                else
+                {
+                    // it might be an URL
+                    if (Uri.IsWellFormedUriString(arg, UriKind.Absolute))
+                    {
+                        Host h = HostParser.parse(arg);
+                        if (AbstractPath.Type.file == _detector.detect(h.getDefaultPath()))
+                        {
+                            Path file = new Path(h.getDefaultPath(), EnumSet.of(AbstractPath.Type.file));
+                            TransferController.Instance.StartTransfer(new DownloadTransfer(h, file,
+                                LocalFactory.get(PreferencesFactory.get().getProperty("queue.download.folder"),
+                                    file.getName())));
+                        }
+                        else
+                        {
+                            foreach (BrowserController b in Browsers)
+                            {
+                                if (b.IsMounted())
+                                {
+                                    if (
+                                        new HostUrlProvider().get(b.Session.getHost())
+                                            .Equals(new HostUrlProvider().get(h)))
+                                    {
+                                        b.View.BringToFront();
+                                        return;
+                                    }
+                                }
+                            }
+                            NewBrowser().Mount(h);
+                        }
                     }
                 }
             }
@@ -830,7 +863,8 @@ namespace Ch.Cyberduck.Ui.Controller
                             Path = FolderBookmarkCollection.favoritesCollection().getFile(host).getAbsolute(),
                             Title = BookmarkNameProvider.toString(host, true),
                             Category = LocaleFactory.localizedString("History"),
-                            IconLocation = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cyberduck-document.ico"),
+                            IconLocation =
+                                System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cyberduck-document.ico"),
                             IconIndex = 0
                         });
                     }
