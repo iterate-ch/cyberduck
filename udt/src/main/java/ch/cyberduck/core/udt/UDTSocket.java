@@ -70,7 +70,7 @@ public class UDTSocket extends NetSocketUDT {
             }
         }
         catch(InterruptedException e) {
-            final SocketTimeoutException s = new SocketTimeoutException();
+            final SocketTimeoutException s = new SocketTimeoutException(e.getMessage());
             s.initCause(e);
             throw s;
         }
