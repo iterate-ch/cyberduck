@@ -36,6 +36,7 @@ import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.WebsiteCloudFrontDistributionConfiguration;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
@@ -242,12 +243,17 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         else {
             final AttributedList<Path> objects = new S3ObjectListService(this).list(directory, listener);
-            for(MultipartUpload upload : new S3DefaultMultipartService(this).find(directory)) {
-                final PathAttributes attributes = new PathAttributes();
-                attributes.setDuplicate(true);
-                attributes.setVersionId(upload.getUploadId());
-                attributes.setModificationDate(upload.getInitiatedDate().getTime());
-                objects.add(new Path(directory, upload.getObjectKey(), EnumSet.of(Path.Type.file, Path.Type.upload), attributes));
+            try {
+                for(MultipartUpload upload : new S3DefaultMultipartService(this).find(directory)) {
+                    final PathAttributes attributes = new PathAttributes();
+                    attributes.setDuplicate(true);
+                    attributes.setVersionId(upload.getUploadId());
+                    attributes.setModificationDate(upload.getInitiatedDate().getTime());
+                    objects.add(new Path(directory, upload.getObjectKey(), EnumSet.of(Path.Type.file, Path.Type.upload), attributes));
+                }
+            }
+            catch(AccessDeniedException | InteroperabilityException e) {
+                log.warn(String.format("Ignore failure listing incomplete multipart uploads. %s", e.getDetail()));
             }
             return objects;
         }
