@@ -27,6 +27,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.NoHttpResponseException;
 import org.apache.log4j.Logger;
 
+import java.io.EOFException;
 import java.io.InterruptedIOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -91,6 +92,9 @@ public abstract class AbstractExceptionMappingService<T extends Exception> imple
             }
             if(cause instanceof SocketException) {
                 return new DefaultSocketExceptionMappingService().map((SocketException) cause);
+            }
+            if(cause instanceof EOFException) {
+                return new ConnectionRefusedException(buffer.toString(), failure);
             }
             if(cause instanceof UnknownHostException) {
                 return new ConnectionRefusedException(buffer.toString(), failure);
