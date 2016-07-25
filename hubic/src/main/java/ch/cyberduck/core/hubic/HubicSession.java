@@ -44,7 +44,8 @@ import com.google.api.client.auth.oauth2.Credential;
 
 public class HubicSession extends SwiftSession {
     private static final Logger log = Logger.getLogger(HubicSession.class);
-    public final OAuth2AuthorizationService authorizationService = new OAuth2AuthorizationService(this,
+
+    private final OAuth2AuthorizationService authorizationService = new OAuth2AuthorizationService(this,
             "https://api.hubic.com/oauth/token",
             "https://api.hubic.com/oauth/auth",
             PreferencesFactory.get().getProperty("hubic.oauth.clientid"),
