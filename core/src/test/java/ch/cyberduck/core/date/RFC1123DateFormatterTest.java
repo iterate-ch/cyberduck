@@ -8,7 +8,7 @@ import static org.junit.Assert.assertEquals;
 
 public class RFC1123DateFormatterTest {
 
-    @Test
+    @Test(expected = InvalidDateException.class)
     public void testNull() throws Exception {
         assertEquals(null, new RFC1123DateFormatter().parse(null));
     }
