@@ -79,13 +79,7 @@ public class DriveSession extends HttpSession<Drive> {
 
     private Credential credential;
 
-    private final OAuth2AuthorizationService authorizationService
-            = new OAuth2AuthorizationService(transport,
-            GoogleOAuthConstants.TOKEN_SERVER_URL, GoogleOAuthConstants.AUTHORIZATION_SERVER_URL,
-            preferences.getProperty("google.drive.client.id"),
-            preferences.getProperty("google.drive.client.secret"),
-            Collections.singletonList(DriveScopes.DRIVE))
-            .withLegacyPrefix(host.getProtocol().getDescription());
+    private OAuth2AuthorizationService authorizationService;
 
     public DriveSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
@@ -94,6 +88,12 @@ public class DriveSession extends HttpSession<Drive> {
     @Override
     protected Drive connect(final HostKeyCallback callback) throws BackgroundException {
         this.transport = new ApacheHttpTransport(builder.build(this).build());
+        this.authorizationService = new OAuth2AuthorizationService(transport,
+                GoogleOAuthConstants.TOKEN_SERVER_URL, GoogleOAuthConstants.AUTHORIZATION_SERVER_URL,
+                preferences.getProperty("google.drive.client.id"),
+                preferences.getProperty("google.drive.client.secret"),
+                Collections.singletonList(DriveScopes.DRIVE))
+                .withLegacyPrefix(host.getProtocol().getDescription());
         return new Drive.Builder(transport, json, new HttpRequestInitializer() {
             @Override
             public void initialize(HttpRequest request) throws IOException {
