@@ -144,8 +144,6 @@ public abstract class Session<C> implements TranscriptListener {
 
     /**
      * Logout and close client connection
-     *
-     * @throws BackgroundException
      */
     public void close() throws BackgroundException {
         if(log.isDebugEnabled()) {
