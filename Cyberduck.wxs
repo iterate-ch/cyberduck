@@ -280,10 +280,10 @@
           <RegistryValue Type="string" Name="URL Protocol" Value=""/>
           <RegistryValue Type="string" Value="URL:ftp Protocol"/>
           <RegistryKey Key="DefaultIcon">
-            <RegistryValue Type="string" Value="$(var.cyberduck.TargetPath)"/>
+            <RegistryValue Type="string" Value="[INSTALLLOCATION]Cyberduck.exe"/>
           </RegistryKey>
           <RegistryKey Key="shell\open\command">
-            <RegistryValue Type="string" Value="&quot;$(var.cyberduck.TargetPath)&quot; &quot;%1&quot;"/>
+            <RegistryValue Type="string" Value="&quot;[INSTALLLOCATION]Cyberduck.exe&quot; &quot;%1&quot;"/>
           </RegistryKey>
         </RegistryKey>
       </Component>
@@ -294,10 +294,10 @@
           <RegistryValue Type="string" Name="URL Protocol" Value=""/>
           <RegistryValue Type="string" Value="URL:ftps Protocol"/>
           <RegistryKey Key="DefaultIcon">
-            <RegistryValue Type="string" Value="$(var.cyberduck.TargetPath)"/>
+            <RegistryValue Type="string" Value="[INSTALLLOCATION]Cyberduck.exe"/>
           </RegistryKey>
           <RegistryKey Key="shell\open\command">
-            <RegistryValue Type="string" Value="&quot;$(var.cyberduck.TargetPath)&quot; &quot;%1&quot;"/>
+            <RegistryValue Type="string" Value="&quot;[INSTALLLOCATION]Cyberduck.exe&quot; &quot;%1&quot;"/>
           </RegistryKey>
         </RegistryKey>
       </Component>
@@ -308,10 +308,10 @@
           <RegistryValue Type="string" Name="URL Protocol" Value=""/>
           <RegistryValue Type="string" Value="URL:dav Protocol"/>
           <RegistryKey Key="DefaultIcon">
-            <RegistryValue Type="string" Value="$(var.cyberduck.TargetPath)"/>
+            <RegistryValue Type="string" Value="[INSTALLLOCATION]Cyberduck.exe"/>
           </RegistryKey>
           <RegistryKey Key="shell\open\command">
-            <RegistryValue Type="string" Value="&quot;$(var.cyberduck.TargetPath)&quot; &quot;%1&quot;"/>
+            <RegistryValue Type="string" Value="&quot;[INSTALLLOCATION]Cyberduck.exe&quot; &quot;%1&quot;"/>
           </RegistryKey>
         </RegistryKey>
       </Component>
@@ -322,10 +322,10 @@
           <RegistryValue Type="string" Name="URL Protocol" Value=""/>
           <RegistryValue Type="string" Value="URL:davs Protocol"/>
           <RegistryKey Key="DefaultIcon">
-            <RegistryValue Type="string" Value="$(var.cyberduck.TargetPath)"/>
+            <RegistryValue Type="string" Value="[INSTALLLOCATION]Cyberduck.exe"/>
           </RegistryKey>
           <RegistryKey Key="shell\open\command">
-            <RegistryValue Type="string" Value="&quot;$(var.cyberduck.TargetPath)&quot; &quot;%1&quot;"/>
+            <RegistryValue Type="string" Value="&quot;[INSTALLLOCATION]Cyberduck.exe&quot; &quot;%1&quot;"/>
           </RegistryKey>
         </RegistryKey>
       </Component>
@@ -336,10 +336,10 @@
           <RegistryValue Type="string" Name="URL Protocol" Value=""/>
           <RegistryValue Type="string" Value="URL:sftp Protocol"/>
           <RegistryKey Key="DefaultIcon">
-            <RegistryValue Type="string" Value="$(var.cyberduck.TargetPath)"/>
+            <RegistryValue Type="string" Value="[INSTALLLOCATION]Cyberduck.exe"/>
           </RegistryKey>
           <RegistryKey Key="shell\open\command">
-            <RegistryValue Type="string" Value="&quot;$(var.cyberduck.TargetPath)&quot; &quot;%1&quot;"/>
+            <RegistryValue Type="string" Value="&quot;[INSTALLLOCATION]Cyberduck.exe&quot; &quot;%1&quot;"/>
           </RegistryKey>
         </RegistryKey>
       </Component>
@@ -350,10 +350,10 @@
           <RegistryValue Type="string" Name="URL Protocol" Value=""/>
           <RegistryValue Type="string" Value="URL:s3 Protocol"/>
           <RegistryKey Key="DefaultIcon">
-            <RegistryValue Type="string" Value="$(var.cyberduck.TargetPath)"/>
+            <RegistryValue Type="string" Value="[INSTALLLOCATION]Cyberduck.exe"/>
           </RegistryKey>
           <RegistryKey Key="shell\open\command">
-            <RegistryValue Type="string" Value="&quot;$(var.cyberduck.TargetPath)&quot; &quot;%1&quot;"/>
+            <RegistryValue Type="string" Value="&quot;[INSTALLLOCATION]Cyberduck.exe&quot; &quot;%1&quot;"/>
           </RegistryKey>
         </RegistryKey>
       </Component>
@@ -364,10 +364,10 @@
           <RegistryValue Type="string" Name="URL Protocol" Value=""/>
           <RegistryValue Type="string" Value="URL:irods Protocol"/>
           <RegistryKey Key="DefaultIcon">
-            <RegistryValue Type="string" Value="$(var.cyberduck.TargetPath)"/>
+            <RegistryValue Type="string" Value="[INSTALLLOCATION]Cyberduck.exe"/>
           </RegistryKey>
           <RegistryKey Key="shell\open\command">
-            <RegistryValue Type="string" Value="&quot;$(var.cyberduck.TargetPath)&quot; &quot;%1&quot;"/>
+            <RegistryValue Type="string" Value="&quot;[INSTALLLOCATION]Cyberduck.exe&quot; &quot;%1&quot;"/>
           </RegistryKey>
         </RegistryKey>
       </Component>
