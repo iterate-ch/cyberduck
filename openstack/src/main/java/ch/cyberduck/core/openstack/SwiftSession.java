@@ -43,7 +43,6 @@ import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
@@ -258,9 +257,6 @@ public class SwiftSession extends HttpSession<Client> {
         }
         if(type == Home.class) {
             return (T) new SwiftHomeFinderService(this);
-        }
-        if(type == Quota.class) {
-            return (T) new SwiftQuotaFeature(this);
         }
         return super.getFeature(type);
     }
