@@ -8,6 +8,11 @@ import static org.junit.Assert.assertEquals;
 
 public class RFC1123DateFormatterTest {
 
+    @Test(expected = InvalidDateException.class)
+    public void testNull() throws Exception {
+        assertEquals(null, new RFC1123DateFormatter().parse(null));
+    }
+
     @Test
     public void testParse() throws Exception {
         assertEquals(786297600000L, new RFC1123DateFormatter().parse("Thu, 01 Dec 1994 16:00:00 GMT").getTime(), 0L);
