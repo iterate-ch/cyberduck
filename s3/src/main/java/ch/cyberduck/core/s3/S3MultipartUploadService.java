@@ -69,24 +69,21 @@ import java.util.concurrent.Future;
 public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, MessageDigest> {
     private static final Logger log = Logger.getLogger(S3MultipartUploadService.class);
 
-    private S3Session session;
+    private final S3Session session;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new S3PathContainerService();
 
-    private S3DefaultMultipartService multipartService;
-
-    /**
-     * At any point, at most <tt>nThreads</tt> threads will be active processing tasks.
-     */
-    private ThreadPool<MultipartPart> pool;
+    private final S3DefaultMultipartService multipartService;
 
     /**
      * A split smaller than 5M is not allowed
      */
-    private Long partsize;
+    private final Long partsize;
 
-    private Preferences preferences
+    private final Integer concurrency;
+
+    private final Preferences preferences
             = PreferencesFactory.get();
 
     public S3MultipartUploadService(final S3Session session) {
@@ -97,14 +94,15 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
     public S3MultipartUploadService(final S3Session session, final Long partsize, final Integer concurrency) {
         super(new S3WriteFeature(session));
         this.session = session;
-        this.pool = new DefaultThreadPool<MultipartPart>(concurrency, "multipart");
         this.multipartService = new S3DefaultMultipartService(session);
         this.partsize = partsize;
+        this.concurrency = concurrency;
     }
 
     @Override
     public StorageObject upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
                                 final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        final DefaultThreadPool<MultipartPart> pool = new DefaultThreadPool<>(concurrency, "multipart");
         try {
             MultipartUpload multipart = null;
             if(status.isAppend()) {
@@ -159,7 +157,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     final Long length = Math.min(Math.max((status.getLength() / S3DefaultMultipartService.MAXIMUM_UPLOAD_PARTS), partsize), remaining);
                     if(!skip) {
                         // Submit to queue
-                        parts.add(this.submit(file, local, throttle, listener, status, multipart, partNumber, offset, length));
+                        parts.add(this.submit(pool, file, local, throttle, listener, status, multipart, partNumber, offset, length));
                     }
                     remaining -= length;
                     offset += length;
@@ -224,7 +222,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
         }
     }
 
-    private Future<MultipartPart> submit(final Path file, final Local local,
+    private Future<MultipartPart> submit(final ThreadPool<MultipartPart> pool, final Path file, final Local local,
                                          final BandwidthThrottle throttle, final StreamListener listener,
                                          final TransferStatus overall, final MultipartUpload multipart,
                                          final int partNumber, final long offset, final long length) throws BackgroundException {
