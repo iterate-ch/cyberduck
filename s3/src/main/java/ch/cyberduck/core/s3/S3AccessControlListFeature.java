@@ -124,6 +124,9 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
      * @return ACL to write to server
      */
     protected AccessControlList convert(final Acl acl) {
+        if(Acl.EMPTY.equals(acl)) {
+            return null;
+        }
         final AccessControlList list = new AccessControlList();
         list.setOwner(new S3Owner(acl.getOwner().getIdentifier(), acl.getOwner().getDisplayName()));
         list.grantPermission(new CanonicalGrantee(acl.getOwner().getIdentifier()), Permission.PERMISSION_FULL_CONTROL);
