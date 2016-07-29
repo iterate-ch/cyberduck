@@ -24,6 +24,7 @@ import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
@@ -39,6 +40,7 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -51,9 +53,11 @@ import org.apache.log4j.Logger;
 
 import javax.net.SocketFactory;
 import java.io.IOException;
+import java.util.EnumSet;
 
 import synapticloop.b2.B2ApiClient;
 import synapticloop.b2.exception.B2ApiException;
+import synapticloop.b2.response.B2FileInfoResponse;
 
 public class B2Session extends HttpSession<B2ApiClient> {
     private static final Logger log = Logger.getLogger(B2Session.class);
@@ -98,7 +102,17 @@ public class B2Session extends HttpSession<B2ApiClient> {
             return new B2BucketListService(this).list(directory, listener);
         }
         else {
-            return new B2ObjectListService(this).list(directory, listener);
+            final AttributedList<Path> objects = new B2ObjectListService(this).list(directory, listener);
+            for(B2FileInfoResponse upload : new B2LargeUploadPartService(this).find(directory)) {
+                final PathAttributes attributes = new PathAttributes();
+                attributes.setDuplicate(true);
+                attributes.setChecksum(Checksum.parse(upload.getContentSha1()));
+                attributes.setVersionId(upload.getFileId());
+                attributes.setSize(upload.getContentLength());
+                attributes.setModificationDate(upload.getUploadTimestamp());
+                objects.add(new Path(directory, upload.getFileName(), EnumSet.of(Path.Type.file, Path.Type.upload), attributes));
+            }
+            return objects;
         }
     }
 

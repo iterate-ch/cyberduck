@@ -30,12 +30,13 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.UUID;
 
+import synapticloop.b2.response.B2FileInfoResponse;
 import synapticloop.b2.response.B2StartLargeFileResponse;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class B2LargeUploadPartServiceTest {
@@ -55,6 +56,26 @@ public class B2LargeUploadPartServiceTest {
                 new B2FileidProvider(session).getFileid(bucket),
                 file.getName(), null, Collections.emptyMap());
         assertEquals(1, new B2LargeUploadPartService(session).find(file).size());
+        session.getClient().cancelLargeFileUpload(startResponse.getFileId());
+        session.close();
+    }
+
+    @Test
+    public void testFindAllPendingInBucket() throws Exception {
+        final B2Session session = new B2Session(
+                new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
+                        new Credentials(
+                                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
+                        )));
+        final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final B2StartLargeFileResponse startResponse = session.getClient().startLargeFileUpload(
+                new B2FileidProvider(session).getFileid(bucket),
+                file.getName(), null, Collections.emptyMap());
+        final List<B2FileInfoResponse> list = new B2LargeUploadPartService(session).find(bucket);
+        assertFalse(list.isEmpty());
         session.getClient().cancelLargeFileUpload(startResponse.getFileId());
         session.close();
     }
