@@ -108,8 +108,12 @@ public class B2Session extends HttpSession<B2ApiClient> {
                 attributes.setDuplicate(true);
                 attributes.setChecksum(Checksum.parse(upload.getContentSha1()));
                 attributes.setVersionId(upload.getFileId());
-                attributes.setSize(upload.getContentLength());
-                attributes.setModificationDate(upload.getUploadTimestamp());
+                if(upload.getContentLength() != null) {
+                    attributes.setSize(upload.getContentLength());
+                }
+                if(upload.getUploadTimestamp() != null) {
+                    attributes.setModificationDate(upload.getUploadTimestamp());
+                }
                 objects.add(new Path(directory, upload.getFileName(), EnumSet.of(Path.Type.file, Path.Type.upload), attributes));
             }
             return objects;
