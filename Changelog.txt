@@ -1,6 +1,9 @@
 Cyberduck
 https://cyberduck.io/
 
+5.0.11 [https://trac.cyberduck.io/milestone/5.0.11]
+- [Feature] Display in-progress large uploads in browser (Backblaze B2)
+
 5.0.10 [https://trac.cyberduck.io/milestone/5.0.10]
 - [Feature] Handle URL events and open browser or start file transfer (Windows)
 - [Bugfix] Retain container permission when updating ACL after upload complete for file (Backblaze B2)
