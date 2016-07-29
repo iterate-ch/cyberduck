@@ -156,6 +156,7 @@ public class B2ObjectListService implements ListService {
             case hide:
             case start:
                 attributes.setDuplicate(true);
+                attributes.setSize(-1L);
                 break;
         }
         final Integer revision;
