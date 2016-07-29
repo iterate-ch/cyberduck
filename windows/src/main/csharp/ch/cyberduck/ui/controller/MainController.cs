@@ -757,16 +757,12 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public static void Exit(bool updateInProgress)
         {
-            if (updateInProgress)
-            {
-                NotificationServiceFactory.get().unregister();
-                System.Windows.Forms.Application.Exit();
-            }
-            else if (PrepareExit())
+            NotificationServiceFactory.get().unregister();
+            if (!updateInProgress && PrepareExit())
             {
                 ApplicationShouldTerminateAfterDonationPrompt();
-                System.Windows.Forms.Application.Exit();
             }
+            System.Windows.Forms.Application.Exit();
         }
 
         private static BrowserController NewBrowser(bool force, bool show)
