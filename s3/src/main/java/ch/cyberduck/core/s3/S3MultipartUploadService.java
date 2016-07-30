@@ -158,8 +158,8 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     if(!skip) {
                         // Submit to queue
                         parts.add(this.submit(pool, file, local, throttle, listener, status, multipart, partNumber, offset, length));
+                        remaining -= length;
                     }
-                    remaining -= length;
                     offset += length;
                 }
                 for(Future<MultipartPart> future : parts) {
@@ -184,9 +184,9 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 // could take several minutes to complete. Because a request could fail after the initial 200 OK response
                 // has been sent, it is important that you check the response body to determine whether the request succeeded.
                 final MultipartCompleted complete = session.getClient().multipartCompleteUpload(multipart, completed);
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Completed multipart upload for %s with checksum %s",
-                            complete.getObjectKey(), complete.getEtag()));
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Completed multipart upload for %s with %d parts and checksum %s",
+                            complete.getObjectKey(), completed.size(), complete.getEtag()));
                 }
                 final StringBuilder concat = new StringBuilder();
                 for(MultipartPart part : completed) {

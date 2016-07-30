@@ -142,9 +142,9 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                     log.debug(String.format("Segment %s submitted with size %d and offset %d",
                             segment, length, offset));
                 }
+                remaining -= length;
             }
             offset += length;
-            remaining -= length;
         }
         try {
             for(Future<StorageObject> futureSegment : segments) {
@@ -169,6 +169,9 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         }
         // Mark parent status as complete
         status.setComplete();
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Finished large file upload %s with %d parts", file, completed.size()));
+        }
         // Create and upload the large object manifest. It is best to upload all the segments first and
         // then create or update the manifest.
         try {
