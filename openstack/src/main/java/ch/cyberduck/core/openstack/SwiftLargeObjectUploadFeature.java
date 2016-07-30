@@ -117,10 +117,10 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         long remaining = status.getLength();
         long offset = 0;
         for(int segmentNumber = 1; remaining > 0; segmentNumber++) {
+            final Long length = Math.min(segmentSize, remaining);
             // Segment name with left padded segment number
             final Path segment = new Path(containerService.getContainer(file),
-                    segmentService.name(file, status.getLength(), segmentNumber), EnumSet.of(Path.Type.file));
-            final Long length = Math.min(segmentSize, remaining);
+                    segmentService.name(file, length, segmentNumber), EnumSet.of(Path.Type.file));
             if(existingSegments.contains(segment)) {
                 final Path existingSegment = existingSegments.get(existingSegments.indexOf(segment));
                 if(log.isDebugEnabled()) {
