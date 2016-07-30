@@ -21,6 +21,7 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
+import ch.cyberduck.core.exception.ResolveFailedException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -97,7 +98,7 @@ public abstract class AbstractExceptionMappingService<T extends Exception> imple
                 return new ConnectionRefusedException(buffer.toString(), failure);
             }
             if(cause instanceof UnknownHostException) {
-                return new ConnectionRefusedException(buffer.toString(), failure);
+                return new ResolveFailedException(buffer.toString(), failure);
             }
             if(cause instanceof NoHttpResponseException) {
                 return new ConnectionRefusedException(buffer.toString(), failure);
