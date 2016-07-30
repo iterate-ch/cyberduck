@@ -3,6 +3,7 @@ https://cyberduck.io/
 
 5.0.11 [https://trac.cyberduck.io/milestone/5.0.11]
 - [Bugfix] Resuming file transfer starts over and errors out (Backblaze B2) (#9598)
+- [Bugfix] Notification icon persists after application closed (Windows) (#9613)
 
 5.0.10 [https://trac.cyberduck.io/milestone/5.0.10]
 - [Feature] Handle URL events and open browser or start file transfer (Windows)
