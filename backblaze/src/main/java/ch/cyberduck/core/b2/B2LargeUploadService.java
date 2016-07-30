@@ -154,9 +154,9 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
                         log.debug(String.format("Part %s submitted with size %d and offset %d",
                                 partNumber, length, offset));
                     }
+                    remaining -= length;
                 }
                 offset += length;
-                remaining -= length;
             }
             try {
                 for(Future<B2UploadPartResponse> f : parts) {
@@ -190,7 +190,9 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
                 checksums.add(part.getContentSha1());
             }
             final B2FinishLargeFileResponse response = session.getClient().finishLargeFileUpload(fileid, checksums.toArray(new String[checksums.size()]));
-            log.info(String.format("Finished large file upload %s", response.getFileId()));
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Finished large file upload %s with %d parts", file, completed.size()));
+            }
             // Mark parent status as complete
             status.setComplete();
             return null;
