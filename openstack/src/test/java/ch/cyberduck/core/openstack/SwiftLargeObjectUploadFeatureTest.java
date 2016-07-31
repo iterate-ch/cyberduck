@@ -111,7 +111,8 @@ public class SwiftLargeObjectUploadFeatureTest {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final String name = UUID.randomUUID().toString();
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
         final int length = 2 * 1024 * 1024;
         final byte[] random = new byte[length];
         new Random().nextBytes(random);
@@ -120,7 +121,7 @@ public class SwiftLargeObjectUploadFeatureTest {
         status.setLength(random.length);
         final AtomicBoolean interrupt = new AtomicBoolean();
         try {
-            new SwiftLargeObjectUploadFeature(session, 1 * 1024L * 1024L, 1).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener() {
+            new SwiftLargeObjectUploadFeature(session, 1024L * 1024L, 1).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener() {
                 long count;
 
                 @Override
@@ -137,14 +138,14 @@ public class SwiftLargeObjectUploadFeatureTest {
             interrupt.set(true);
         }
         assertTrue(interrupt.get());
-        assertEquals(1 * 1024L * 1024L, status.getOffset(), 0L);
+        assertEquals(1024L * 1024L, status.getOffset(), 0L);
         assertFalse(status.isComplete());
 
-        final TransferStatus append = new TransferStatus().append(true).length(random.length);
-        new SwiftLargeObjectUploadFeature(session, 1 * 1024L * 1024L, 1).upload(test, local,
+        final TransferStatus append = new TransferStatus().append(true).length(1024L * 1024L).skip(1024L * 1024L);
+        new SwiftLargeObjectUploadFeature(session, 1024L * 1024L, 1).upload(test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
                 new DisabledLoginCallback());
-        assertEquals(1 * 1024L * 1024L, append.getOffset(), 0L);
+        assertEquals(2 * 1024L * 1024L, append.getOffset(), 0L);
         assertTrue(append.isComplete());
         assertTrue(new SwiftFindFeature(session).find(test));
         assertEquals(2 * 1024L * 1024L, new SwiftAttributesFeature(session).find(test).getSize(), 0L);

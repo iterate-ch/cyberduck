@@ -133,6 +133,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                     }
                 }
                 stored.setSize(existingSegment.attributes().getSize());
+                offset += existingSegment.attributes().getSize();
                 completed.add(stored);
             }
             else {
@@ -143,8 +144,8 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                             segment, length, offset));
                 }
                 remaining -= length;
+                offset += length;
             }
-            offset += length;
         }
         try {
             for(Future<StorageObject> futureSegment : segments) {
