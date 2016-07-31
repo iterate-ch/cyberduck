@@ -252,11 +252,11 @@ public class S3MultipartUploadServiceTest {
         assertFalse(status.isComplete());
         assertFalse(new S3FindFeature(session).find(test));
 
-        final TransferStatus append = new TransferStatus().append(true).length(random.length);
+        final TransferStatus append = new TransferStatus().append(true).length(2L * 1024L * 1024L).skip(10L * 1024L * 1024L);
         new S3MultipartUploadService(session, 10L * 1024L * 1024L, 1).upload(test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
                 new DisabledConnectionCallback());
-        assertEquals(2L * 1024L * 1024L, append.getOffset(), 0L);
+        assertEquals(12L * 1024L * 1024L, append.getOffset(), 0L);
         assertTrue(append.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(12L * 1024L * 1024L, new S3AttributesFeature(session).find(test).getSize(), 0L);
