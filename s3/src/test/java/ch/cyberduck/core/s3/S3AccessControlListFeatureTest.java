@@ -184,7 +184,9 @@ public class S3AccessControlListFeatureTest {
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
-        f.setPermission(test, Acl.EMPTY);
+        final Acl acl = new Acl();
+        acl.addAll(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ));
+        f.setPermission(test, acl);
     }
 
     @Test
