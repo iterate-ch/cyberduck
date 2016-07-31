@@ -250,7 +250,7 @@ public class SwiftSession extends HttpSession<Client> {
             return (T) cdn;
         }
         if(type == UrlProvider.class) {
-            return (T) new SwiftUrlProvider(this, accounts);
+            return (T) new SwiftUrlProvider(this, accounts, regionService);
         }
         if(type == Attributes.class) {
             return (T) new SwiftAttributesFeature(this, regionService);
