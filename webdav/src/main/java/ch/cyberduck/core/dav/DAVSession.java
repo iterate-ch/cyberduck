@@ -68,7 +68,6 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.ProtocolException;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpHead;
@@ -147,8 +146,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                 return super.getRedirect(request, response, context);
             }
 
-            private HttpUriRequest copyEntity(
-                    final HttpEntityEnclosingRequestBase redirect, final HttpRequest original) {
+            private HttpUriRequest copyEntity(final HttpEntityEnclosingRequestBase redirect, final HttpRequest original) {
                 if(original instanceof HttpEntityEnclosingRequest) {
                     redirect.setEntity(((HttpEntityEnclosingRequest) original).getEntity());
                 }
@@ -244,7 +242,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                 request.setConfig(RequestConfig.copy(context).setRedirectsEnabled(false).build());
                 final Header location = client.execute(request, new ValidatingResponseHandler<Header>() {
                     @Override
-                    public Header handleResponse(final HttpResponse response) throws ClientProtocolException, IOException {
+                    public Header handleResponse(final HttpResponse response) throws IOException {
                         if(response.getStatusLine().getStatusCode() == HttpStatus.SC_MOVED_PERMANENTLY) {
                             return response.getFirstHeader(HttpHeaders.LOCATION);
                         }
