@@ -19,7 +19,7 @@
     <parent>
         <artifactId>parent</artifactId>
         <groupId>ch.cyberduck</groupId>
-        <version>5.0.11</version>
+        <version>5.1.0-SNAPSHOT</version>
     </parent>
     <artifactId>googlestorage</artifactId>
     <packaging>jar</packaging>
