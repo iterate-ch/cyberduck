@@ -90,12 +90,8 @@ public class S3LifecycleConfiguration implements Lifecycle {
             try {
                 throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, bucket);
             }
-            catch(AccessDeniedException l) {
+            catch(AccessDeniedException | InteroperabilityException l) {
                 log.warn(String.format("Missing permission to read lifecycle configuration for %s %s", bucket, e.getMessage()));
-                return LifecycleConfiguration.empty();
-            }
-            catch(InteroperabilityException i) {
-                log.warn(String.format("Not supported to read lifecycle configuration for %s %s", bucket, e.getMessage()));
                 return LifecycleConfiguration.empty();
             }
         }

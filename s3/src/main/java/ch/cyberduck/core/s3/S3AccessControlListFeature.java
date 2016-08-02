@@ -24,6 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.shared.DefaultAclFeature;
@@ -84,7 +85,7 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
             try {
                 throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
             }
-            catch(AccessDeniedException l) {
+            catch(AccessDeniedException | InteroperabilityException l) {
                 log.warn(String.format("Missing permission to read ACL for %s %s", file, e.getMessage()));
                 return Acl.EMPTY;
             }
