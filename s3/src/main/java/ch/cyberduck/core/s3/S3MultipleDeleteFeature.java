@@ -22,7 +22,6 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.collections.Partition;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Versioning;
@@ -44,14 +43,14 @@ import java.util.Map;
 public class S3MultipleDeleteFeature implements Delete {
     private static final Logger log = Logger.getLogger(S3MultipleDeleteFeature.class);
 
-    private S3Session session;
+    private final S3Session session;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new S3PathContainerService();
 
-    private S3MultipartService multipartService;
+    private final S3MultipartService multipartService;
 
-    private Versioning versioningService;
+    private final Versioning versioningService;
 
     public S3MultipleDeleteFeature(final S3Session session) {
         this(session, new S3DefaultMultipartService(session));
@@ -103,20 +102,6 @@ public class S3MultipleDeleteFeature implements Delete {
             }
             catch(ServiceException e) {
                 throw new S3ExceptionMappingService().map("Cannot delete {0}", e, file);
-            }
-        }
-        for(Path file : files) {
-            if(file.isFile()) {
-                try {
-                    // Delete interrupted multipart uploads
-                    for(MultipartUpload upload : multipartService.find(file)) {
-                        multipartService.delete(upload);
-                    }
-                }
-                catch(AccessDeniedException e) {
-                    // Workaround for #9000
-                    log.warn(String.format("Failure looking for multipart uploads. %s", e.getMessage()));
-                }
             }
         }
     }
