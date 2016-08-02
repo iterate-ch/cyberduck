@@ -191,14 +191,14 @@ namespace Ch.Cyberduck.Ui.Controller
                 // Set icon of cloud service provider
                 View.ToolbarS3Label = session.getHost().getProtocol().getName();
                 View.ToolbarS3Image =
-                    IconCache.Instance.GetProtocolImages(32)[session.getHost().getProtocol().getProvider()];
+                    IconCache.Instance.GetProtocolImages(32)[session.getHost().getProtocol().disk()];
             }
             else
             {
                 // Currently these settings are only available for Amazon S3
                 View.ToolbarS3Label = new S3Protocol().getName();
                 View.ToolbarS3Image =
-                    IconCache.Instance.GetProtocolImages(32)[new S3Protocol().getProvider()];
+                    IconCache.Instance.GetProtocolImages(32)[new S3Protocol().disk()];
             }
             //ACL or permission view
             View.AclPanel = session.getFeature(typeof (AclPermission)) != null;
@@ -216,7 +216,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 View.ToolbarDistributionEnabled = false;
                 View.ToolbarDistributionImage =
-                    IconCache.Instance.GetProtocolImages(32)[new S3Protocol().getProvider()];
+                    IconCache.Instance.GetProtocolImages(32)[new S3Protocol().disk()];
             }
             else
             {
@@ -225,12 +225,12 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (distribution)
                 {
                     View.ToolbarDistributionImage =
-                        IconCache.Instance.GetProtocolImages(32)[session.getHost().getProtocol().getProvider()];
+                        IconCache.Instance.GetProtocolImages(32)[session.getHost().getProtocol().disk()];
                 }
                 else
                 {
                     View.ToolbarDistributionImage =
-                        IconCache.Instance.GetProtocolImages(32)[new S3Protocol().getProvider()];
+                        IconCache.Instance.GetProtocolImages(32)[new S3Protocol().disk()];
                 }
             }
             if (anonymous)

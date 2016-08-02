@@ -2952,7 +2952,8 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (CheckOverwrite(selected.Values))
             {
-                CopyTransfer copy = new CopyTransfer(Session.getHost(), Session, Utils.ConvertToJavaMap(selected));
+                CopyTransfer copy = new CopyTransfer(Session.getHost(), SessionFactory.create(Session.getHost()),
+                    Utils.ConvertToJavaMap(selected));
                 List<Path> changed = new List<Path>();
                 changed.AddRange(selected.Values);
                 transfer(copy, changed, true);

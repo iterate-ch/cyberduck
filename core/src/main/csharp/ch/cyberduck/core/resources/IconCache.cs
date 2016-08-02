@@ -363,7 +363,7 @@ namespace Ch.Cyberduck.Core.Resources
                 dict = new Dictionary<string, Bitmap>();
                 foreach (Protocol p in ProtocolFactory.getEnabledProtocols().toArray(new Protocol[] {}))
                 {
-                    dict[p.getProvider()] = IconForName(p.disk(), size);
+                    dict[p.disk()] = IconForName(p.disk(), size);
                 }
                 _protocolImages.Add(size, dict);
             }
