@@ -54,11 +54,16 @@ public class SwiftContainerListService implements RootListService {
     private final Preferences preferences
             = PreferencesFactory.get();
 
-    private final boolean cdn;
+    /**
+     * Preload CDN configuration
+     */
+    private final boolean cdnPreload;
 
-    private final boolean size;
+    /**
+     * Preload container size
+     */
+    private final boolean containerPreload;
 
-    private final SwiftRegionService regionService;
     private final SwiftLocationFeature.SwiftRegion region;
 
     public SwiftContainerListService(final SwiftSession session, final SwiftRegionService regionService, final SwiftLocationFeature.SwiftRegion region) {
@@ -70,12 +75,11 @@ public class SwiftContainerListService implements RootListService {
     public SwiftContainerListService(final SwiftSession session,
                                      final SwiftRegionService regionService,
                                      final SwiftLocationFeature.SwiftRegion region,
-                                     final boolean cdn, final boolean size) {
+                                     final boolean cdnPreload, final boolean containerPreload) {
         this.session = session;
-        this.regionService = regionService;
         this.region = region;
-        this.cdn = cdn;
-        this.size = size;
+        this.cdnPreload = cdnPreload;
+        this.containerPreload = containerPreload;
     }
 
     @Override
@@ -109,7 +113,7 @@ public class SwiftContainerListService implements RootListService {
                     listener.chunk(directory, containers);
                 }
                 while(!chunk.isEmpty());
-                if(cdn) {
+                if(cdnPreload) {
                     final DistributionConfiguration feature = session.getFeature(DistributionConfiguration.class);
                     final ThreadPool<Void> pool = new DefaultThreadPool<Void>(2, "cdn");
                     try {
@@ -138,7 +142,7 @@ public class SwiftContainerListService implements RootListService {
                         pool.shutdown(true);
                     }
                 }
-                if(size) {
+                if(containerPreload) {
                     final ThreadPool<Long> pool = new DefaultThreadPool<Long>(2, "container");
                     try {
                         for(final Path container : containers) {

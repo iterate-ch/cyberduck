@@ -92,6 +92,21 @@ public class SwiftSession extends HttpSession<Client> {
     protected Map<Region, AccountInfo> accounts
             = new HashMap<Region, AccountInfo>();
 
+    /**
+     * Preload account info
+     */
+    private boolean accountPreload = preferences.getBoolean("openstack.account.preload");
+
+    /**
+     * Preload CDN configuration
+     */
+    private boolean cdnPreload = preferences.getBoolean("openstack.cdn.preload");
+
+    /**
+     * Preload container size
+     */
+    private boolean containerPreload = preferences.getBoolean("openstack.container.size.preload");
+
     public SwiftSession(final Host host) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
     }
@@ -162,7 +177,7 @@ public class SwiftSession extends HttpSession<Client> {
                 log.warn(String.format("Skip verifying credentials with previous successful authentication event for %s", this));
                 return;
             }
-            if(preferences.getBoolean("openstack.account.preload")) {
+            if(accountPreload) {
                 final ThreadPool<AccountInfo> pool = new DefaultThreadPool<AccountInfo>("accounts");
                 try {
                     for(Region region : client.getRegions()) {
@@ -197,11 +212,26 @@ public class SwiftSession extends HttpSession<Client> {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         if(directory.isRoot()) {
             return new SwiftContainerListService(this, regionService,
-                    new SwiftLocationFeature.SwiftRegion(host.getRegion())).list(directory, listener);
+                    new SwiftLocationFeature.SwiftRegion(host.getRegion()), cdnPreload, containerPreload).list(directory, listener);
         }
         else {
             return new SwiftObjectListService(this, regionService).list(directory, listener);
         }
+    }
+
+    public SwiftSession withAccountPreload(final boolean preload) {
+        this.accountPreload = preload;
+        return this;
+    }
+
+    public SwiftSession withCdnPreload(final boolean preload) {
+        this.cdnPreload = preload;
+        return this;
+    }
+
+    public SwiftSession withContainerPreload(final boolean preload) {
+        this.containerPreload = preload;
+        return this;
     }
 
     @Override

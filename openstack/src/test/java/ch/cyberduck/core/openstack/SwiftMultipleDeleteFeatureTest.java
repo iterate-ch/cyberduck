@@ -30,13 +30,10 @@ public class SwiftMultipleDeleteFeatureTest {
     public void testDeleteRAX() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
         container.attributes().setRegion("DFW");
-        this.delete(new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
+        final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                 new Credentials(
-                        System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret"))), container);
-    }
-
-    protected void delete(final Host host, final Path container) throws Exception {
-        final SwiftSession session = new SwiftSession(host);
+                        System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")));
+        final SwiftSession session = new SwiftSession(host).withAccountPreload(false).withCdnPreload(false).withContainerPreload(false);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test1 = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
