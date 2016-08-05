@@ -18,9 +18,6 @@ package ch.cyberduck.core.serializer;
  * feedback@cyberduck.ch
  */
 
-/**
- * @version $Id:$
- */
 public class SerializerFormatException extends Exception {
     private static final long serialVersionUID = -905060809210764789L;
 

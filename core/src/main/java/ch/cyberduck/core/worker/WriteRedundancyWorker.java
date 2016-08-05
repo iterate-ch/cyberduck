@@ -29,9 +29,6 @@ import ch.cyberduck.core.features.Redundancy;
 import java.text.MessageFormat;
 import java.util.List;
 
-/**
- * @version $Id:$
- */
 public class WriteRedundancyWorker extends Worker<Boolean> {
 
     /**

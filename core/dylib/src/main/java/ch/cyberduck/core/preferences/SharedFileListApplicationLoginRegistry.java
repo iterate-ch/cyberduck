@@ -27,9 +27,6 @@ import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.FinderSidebarService;
 import ch.cyberduck.core.local.SidebarService;
 
-/**
- * @version $Id:$
- */
 public class SharedFileListApplicationLoginRegistry implements ApplicationLoginRegistry {
 
     private final FinderSidebarService service = new FinderSidebarService(SidebarService.List.login);

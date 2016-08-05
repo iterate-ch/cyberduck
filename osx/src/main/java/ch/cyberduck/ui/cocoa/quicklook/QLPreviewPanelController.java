@@ -19,9 +19,6 @@ package ch.cyberduck.ui.cocoa.quicklook;
  * dkocher@cyberduck.ch
  */
 
-/**
- * @version $Id:$
- */
 public interface QLPreviewPanelController {
 
     /**

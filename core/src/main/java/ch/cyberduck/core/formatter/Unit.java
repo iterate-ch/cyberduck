@@ -18,9 +18,6 @@ package ch.cyberduck.core.formatter;
  * feedback@cyberduck.ch
  */
 
-/**
- * @version $Id:$
- */
 public abstract class Unit {
     private Long multiple;
 

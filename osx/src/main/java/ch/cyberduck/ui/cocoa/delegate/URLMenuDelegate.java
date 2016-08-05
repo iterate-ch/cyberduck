@@ -45,9 +45,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * @version $Id:$
- */
 public abstract class URLMenuDelegate extends AbstractMenuDelegate {
 
     protected static final NSDictionary URL_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(

@@ -20,9 +20,6 @@ package ch.cyberduck.core.local.features;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
 
-/**
- * @version $Id:$
- */
 public interface Symlink {
     void symlink(Local file, String target) throws AccessDeniedException;
 }

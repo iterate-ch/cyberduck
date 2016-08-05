@@ -19,9 +19,6 @@ package ch.cyberduck.core;
 
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id:$
- */
 public class DisabledTranscriptListener implements TranscriptListener {
     private static final Logger log = Logger.getLogger(DisabledTranscriptListener.class);
 

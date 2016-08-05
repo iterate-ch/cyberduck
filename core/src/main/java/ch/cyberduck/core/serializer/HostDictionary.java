@@ -65,15 +65,15 @@ public class HostDictionary {
         final Protocol p = protocols.find(protocolObj.toString());
         if(null != p) {
             final Host bookmark = new Host(p);
-            Object hostnameObj = dict.stringForKey("Hostname");
+            final Object hostnameObj = dict.stringForKey("Hostname");
             if(hostnameObj != null) {
                 bookmark.setHostname(hostnameObj.toString());
             }
-            Object uuidObj = dict.stringForKey("UUID");
+            final Object uuidObj = dict.stringForKey("UUID");
             if(uuidObj != null) {
                 bookmark.setUuid(uuidObj.toString());
             }
-            Object providerObj = dict.stringForKey("Provider");
+            final Object providerObj = dict.stringForKey("Provider");
             if(providerObj != null) {
                 final Protocol provider = ProtocolFactory.forName(providerObj.toString());
                 if(null != provider) {
@@ -83,53 +83,53 @@ public class HostDictionary {
                     log.warn(String.format("Provider %s no more available. Default to %s", providerObj, bookmark.getProtocol()));
                 }
             }
-            Object usernameObj = dict.stringForKey("Username");
+            final Object usernameObj = dict.stringForKey("Username");
             if(usernameObj != null) {
                 bookmark.getCredentials().setUsername(usernameObj.toString());
             }
-            Object cdnCredentialsObj = dict.stringForKey("CDN Credentials");
+            final Object cdnCredentialsObj = dict.stringForKey("CDN Credentials");
             if(cdnCredentialsObj != null) {
                 bookmark.getCdnCredentials().setUsername(cdnCredentialsObj.toString());
             }
             // Legacy
-            String keyObjDeprecated = dict.stringForKey("Private Key File");
+            final String keyObjDeprecated = dict.stringForKey("Private Key File");
             if(keyObjDeprecated != null) {
                 bookmark.getCredentials().setIdentity(LocalFactory.get(keyObjDeprecated));
             }
-            Object keyObj = dict.objectForKey("Private Key File Dictionary");
+            final Object keyObj = dict.objectForKey("Private Key File Dictionary");
             if(keyObj != null) {
                 bookmark.getCredentials().setIdentity(new LocalDictionary(deserializer).deserialize(keyObj));
             }
-            Object portObj = dict.stringForKey("Port");
+            final Object portObj = dict.stringForKey("Port");
             if(portObj != null) {
                 bookmark.setPort(Integer.parseInt(portObj.toString()));
             }
-            Object pathObj = dict.stringForKey("Path");
+            final Object pathObj = dict.stringForKey("Path");
             if(pathObj != null) {
                 bookmark.setDefaultPath(pathObj.toString());
             }
             // Legacy
-            Object workdirObjDeprecated = dict.stringForKey("Workdir");
+            final Object workdirObjDeprecated = dict.stringForKey("Workdir");
             if(workdirObjDeprecated != null) {
                 bookmark.setWorkdir(new Path(workdirObjDeprecated.toString(), EnumSet.of(Path.Type.directory)));
             }
-            Object workdirObj = dict.objectForKey("Workdir Dictionary");
+            final Object workdirObj = dict.objectForKey("Workdir Dictionary");
             if(workdirObj != null) {
                 bookmark.setWorkdir(new PathDictionary(deserializer).deserialize(workdirObj));
             }
-            Object nicknameObj = dict.stringForKey("Nickname");
+            final Object nicknameObj = dict.stringForKey("Nickname");
             if(nicknameObj != null) {
                 bookmark.setNickname(nicknameObj.toString());
             }
-            Object encodingObj = dict.stringForKey("Encoding");
+            final Object encodingObj = dict.stringForKey("Encoding");
             if(encodingObj != null) {
                 bookmark.setEncoding(encodingObj.toString());
             }
-            Object connectModeObj = dict.stringForKey("FTP Connect Mode");
+            final Object connectModeObj = dict.stringForKey("FTP Connect Mode");
             if(connectModeObj != null) {
                 bookmark.setFTPConnectMode(FTPConnectMode.valueOf(connectModeObj.toString()));
             }
-            Object transferObj = dict.stringForKey("Transfer Connection");
+            final Object transferObj = dict.stringForKey("Transfer Connection");
             if(transferObj != null) {
                 bookmark.setTransfer(Host.TransferType.valueOf(transferObj.toString()));
             }
@@ -143,39 +143,39 @@ public class HostDictionary {
                 }
             }
             // Legacy
-            Object downloadObjDeprecated = dict.stringForKey("Download Folder");
+            final Object downloadObjDeprecated = dict.stringForKey("Download Folder");
             if(downloadObjDeprecated != null) {
                 bookmark.setDownloadFolder(LocalFactory.get(downloadObjDeprecated.toString()));
             }
-            Object downloadObj = dict.objectForKey("Download Folder Dictionary");
+            final Object downloadObj = dict.objectForKey("Download Folder Dictionary");
             if(downloadObj != null) {
                 bookmark.setDownloadFolder(new LocalDictionary(deserializer).deserialize(downloadObj));
             }
-            Object uploadObj = dict.objectForKey("Upload Folder Dictionary");
+            final Object uploadObj = dict.objectForKey("Upload Folder Dictionary");
             if(uploadObj != null) {
                 bookmark.setUploadFolder(new LocalDictionary(deserializer).deserialize(uploadObj));
             }
-            Object timezoneObj = dict.stringForKey("Timezone");
+            final Object timezoneObj = dict.stringForKey("Timezone");
             if(timezoneObj != null) {
                 bookmark.setTimezone(TimeZone.getTimeZone(timezoneObj.toString()));
             }
-            Object commentObj = dict.stringForKey("Comment");
+            final Object commentObj = dict.stringForKey("Comment");
             if(commentObj != null) {
                 bookmark.setComment(commentObj.toString());
             }
-            Object urlObj = dict.stringForKey("Web URL");
+            final Object urlObj = dict.stringForKey("Web URL");
             if(urlObj != null) {
                 bookmark.setWebURL(urlObj.toString());
             }
-            Object accessObj = dict.stringForKey("Access Timestamp");
+            final Object accessObj = dict.stringForKey("Access Timestamp");
             if(accessObj != null) {
                 bookmark.setTimestamp(new Date(Long.parseLong(accessObj.toString())));
             }
-            Object volumeObj = dict.stringForKey("Volume");
+            final Object volumeObj = dict.stringForKey("Volume");
             if(volumeObj != null) {
                 bookmark.setVolume(LocalFactory.get(volumeObj.toString()));
             }
-            Object readonlyObj = dict.stringForKey("Readonly");
+            final Object readonlyObj = dict.stringForKey("Readonly");
             if(readonlyObj != null) {
                 bookmark.setReadonly(Boolean.valueOf(readonlyObj.toString()));
             }

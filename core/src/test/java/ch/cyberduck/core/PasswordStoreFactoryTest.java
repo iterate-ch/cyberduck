@@ -22,9 +22,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertSame;
 
-/**
- * @version $Id:$
- */
 public class PasswordStoreFactoryTest {
 
     @Test
