@@ -266,10 +266,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3ReadFeature(this);
         }
         if(type == Write.class) {
-            if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
-                return (T) new S3MultipartWriteFeature(this);
-            }
-            return (T) new S3WriteFeature(this);
+            return (T) new S3MultipartWriteFeature(this);
         }
         if(type == Download.class) {
             return (T) new S3ThresholdDownloadService(this, trust, key, new QloudsonicTransferOption());
