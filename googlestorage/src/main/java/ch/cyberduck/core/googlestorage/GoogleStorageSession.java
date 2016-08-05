@@ -47,6 +47,7 @@ import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.s3.RequestEntityRestStorageService;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3DisabledMultipartService;
+import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.s3.S3SingleUploadService;
 import ch.cyberduck.core.s3.S3WriteFeature;
@@ -103,6 +104,7 @@ public class GoogleStorageSession extends S3Session {
 
     @Override
     protected Jets3tProperties configure() {
+        this.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS2);
         final Jets3tProperties configuration = super.configure();
         configuration.setProperty("s3service.enable-storage-classes", String.valueOf(false));
         configuration.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
