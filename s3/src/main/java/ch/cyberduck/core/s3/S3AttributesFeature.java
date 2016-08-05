@@ -93,7 +93,7 @@ public class S3AttributesFeature implements Attributes {
                         // Fallback to GET if HEAD fails with 400 response
                         try {
                             final S3Object object = session.getClient().getObject(containerService.getContainer(file).getName(),
-                                    containerService.getKey(file), null, null, null, null, 0L, 0L);
+                                    containerService.getKey(file), null, null, null, null, null, null);
                             IOUtils.closeQuietly(object.getDataInputStream());
                             return object;
                         }
