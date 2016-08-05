@@ -121,6 +121,30 @@ public class S3AccessControlListFeatureTest {
     }
 
     @Test
+    public void testWriteMinio() throws Exception {
+        final Host host = new Host(new S3Protocol(), "play.minio.io", 9000, new Credentials(
+                "Q3AM3UQ867SPQQA43P2F", "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG"
+        ));
+        final S3Session session = new S3Session(
+                host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        new S3TouchFeature(session).touch(test);
+        final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
+        {
+            final Acl acl = new Acl();
+            acl.addAll(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ));
+            acl.addAll(new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED), new Acl.Role(Acl.Role.READ));
+            f.setPermission(test, acl);
+        }
+        assertEquals(Acl.EMPTY, f.getPermission(test));
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.close();
+    }
+
+    @Test
     public void testReadWithDelimiter() throws Exception {
         final S3Session session = new S3Session(
                 new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
