@@ -42,7 +42,7 @@ public class SFTPQuotaFeature implements Quota {
             }
         };
         final Path home = new SFTPHomeDirectoryService(session).find();
-        new SFTPCommandFeature(session).send(String.format("df -k %s | awk '{print $3, $4}'", home.getAbsolute()), new DisabledProgressListener(),
+        new SFTPCommandFeature(session).send(String.format("df -Pk %s | awk '{print $3, $4}'", home.getAbsolute()), new DisabledProgressListener(),
                 new TranscriptListener() {
                     @Override
                     public void log(final boolean request, final String output) {
