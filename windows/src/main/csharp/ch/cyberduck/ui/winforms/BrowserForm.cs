@@ -708,14 +708,13 @@ namespace Ch.Cyberduck.Ui.Winforms
         public void AddTranscriptEntry(TranscriptListener.Type request, string entry)
         {
             transcriptBox.SelectionFont = FixedFont;
-            switch (request)
+            if (request == TranscriptListener.Type.request)
             {
-                case request:
-                    transcriptBox.SelectionColor = Color.Black;
-                    break;
-                case response:
-                    transcriptBox.SelectionColor = Color.DarkGray;
-                    break;
+                transcriptBox.SelectionColor = Color.Black;
+            }
+            else if (request == TranscriptListener.Type.response)
+            {
+                transcriptBox.SelectionColor = Color.DarkGray;
             }
             if (transcriptBox.TextLength > 0)
             {
@@ -1577,7 +1576,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             Commands.Add(
                 new ToolStripItem[]
                 {
-                    newBookmarkToolStripMenuItem, newBookmarkContextToolStripMenuItem, newBookmarkContextToolStripMenuItem1,
+                    newBookmarkToolStripMenuItem, newBookmarkContextToolStripMenuItem,
+                    newBookmarkContextToolStripMenuItem1,
                     newBookmarkToolStripButton
                 },
                 new[] {newBookmarkContextMenuItem, newBookmarkMainMenuItem, newBookmarkBrowserContextMenuItem},
@@ -1590,7 +1590,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             Commands.Add(
                 new ToolStripItem[]
                 {
-                    deleteBookmarkToolStripMenuItem, deleteBookmarkContextToolStripMenuItem1, deleteBookmarkToolStripButton
+                    deleteBookmarkToolStripMenuItem, deleteBookmarkContextToolStripMenuItem1,
+                    deleteBookmarkToolStripButton
                 }, new[] {deleteBookmarkContextMenuItem, deleteBookmarkMainMenuItem}, (sender, args) => DeleteBookmark(),
                 () => ValidateDeleteBookmark());
             Commands.Add(new ToolStripItem[] {duplicateBookmarkToolStripMenuItem1, duplicateBookmarkToolStripMenuItem},
