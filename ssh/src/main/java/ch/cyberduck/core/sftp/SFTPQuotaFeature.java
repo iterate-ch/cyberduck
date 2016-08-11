@@ -45,20 +45,21 @@ public class SFTPQuotaFeature implements Quota {
         new SFTPCommandFeature(session).send(String.format("df -Pk %s | awk '{print $3, $4}'", home.getAbsolute()), new DisabledProgressListener(),
                 new TranscriptListener() {
                     @Override
-                    public void log(final boolean request, final String output) {
-                        if(!request) {
-                            final String[] numbers = StringUtils.split(output, ' ');
-                            if(numbers.length == 2) {
-                                try {
-                                    quota.set(new Space(Long.valueOf(numbers[0]) * 1000L, Long.valueOf(numbers[1]) * 1000L));
+                    public void log(final Type request, final String output) {
+                        switch(request) {
+                            case response:
+                                final String[] numbers = StringUtils.split(output, ' ');
+                                if(numbers.length == 2) {
+                                    try {
+                                        quota.set(new Space(Long.valueOf(numbers[0]) * 1000L, Long.valueOf(numbers[1]) * 1000L));
+                                    }
+                                    catch(NumberFormatException e) {
+                                        log.warn(String.format("Ignore line %s", output));
+                                    }
                                 }
-                                catch(NumberFormatException e) {
+                                else {
                                     log.warn(String.format("Ignore line %s", output));
                                 }
-                            }
-                            else {
-                                log.warn(String.format("Ignore line %s", output));
-                            }
                         }
                     }
                 });

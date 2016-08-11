@@ -144,7 +144,7 @@ public class CommandController extends SheetController implements TranscriptList
     }
 
     @Override
-    public void log(boolean request, final String message) {
+    public void log(final Type request, final String message) {
         invoke(new WindowMainAction(this) {
             @Override
             public void run() {

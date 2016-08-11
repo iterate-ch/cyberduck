@@ -218,7 +218,7 @@ namespace Ch.Cyberduck.Ui.Controller
         void RefreshBrowserObject(Path path);
         void RefreshBrowserObjects(List<Path> list);
         void BrowserActiveStateChanged();
-        void AddTranscriptEntry(bool request, string entry);
+        void AddTranscriptEntry(TranscriptListener.Type request, string entry);
         void ClearTranscript();
         void FocusBrowser();
         void RemoveDonateButton();

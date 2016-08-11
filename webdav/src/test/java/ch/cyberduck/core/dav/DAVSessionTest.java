@@ -131,8 +131,9 @@ public class DAVSessionTest {
                 new DisabledPasswordStore(),
                 new DisabledProgressListener(), new DisabledTranscriptListener() {
             @Override
-            public void log(final boolean request, final String message) {
-                if(request) {
+            public void log(final Type request, final String message) {
+                switch(request) {
+                    case request:
                     if(message.contains("CONNECT")) {
                         proxied.set(true);
                     }
@@ -165,11 +166,12 @@ public class DAVSessionTest {
                 new DisabledPasswordStore(),
                 new DisabledProgressListener(), new DisabledTranscriptListener() {
             @Override
-            public void log(final boolean request, final String message) {
-                if(request) {
-                    if(message.contains("CONNECT")) {
-                        proxied.set(true);
-                    }
+            public void log(final Type request, final String message) {
+                switch(request) {
+                    case request:
+                        if(message.contains("CONNECT")) {
+                            proxied.set(true);
+                        }
                 }
             }
         });
@@ -323,11 +325,12 @@ public class DAVSessionTest {
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new TranscriptListener() {
             @Override
-            public void log(final boolean request, final String message) {
-                if(request) {
-                    if(message.contains("Authorization: Digest")) {
-                        fail(message);
-                    }
+            public void log(final Type request, final String message) {
+                switch(request) {
+                    case request:
+                        if(message.contains("Authorization: Digest")) {
+                            fail(message);
+                        }
                 }
             }
         });
@@ -345,11 +348,12 @@ public class DAVSessionTest {
         PreferencesFactory.get().setProperty("webdav.basic.preemptive", false);
         session.open(new DisabledHostKeyCallback(), new TranscriptListener() {
             @Override
-            public void log(final boolean request, final String message) {
-                if(request) {
-                    if(message.contains("Authorization: Basic")) {
-                        fail(message);
-                    }
+            public void log(final Type request, final String message) {
+                switch(request) {
+                    case request:
+                        if(message.contains("Authorization: Basic")) {
+                            fail(message);
+                        }
                 }
             }
         });

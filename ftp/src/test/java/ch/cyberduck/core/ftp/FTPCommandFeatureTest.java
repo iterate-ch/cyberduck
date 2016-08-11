@@ -54,9 +54,10 @@ public class FTPCommandFeatureTest {
             }
         }, new TranscriptListener() {
             @Override
-            public void log(final boolean request, final String message) {
-                if(!request) {
-                    t.append(message);
+            public void log(final Type request, final String message) {
+                switch(request) {
+                    case response:
+                        t.append(message);
                 }
             }
         });

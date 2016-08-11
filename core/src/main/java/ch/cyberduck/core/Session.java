@@ -48,6 +48,8 @@ import org.apache.log4j.Logger;
 public abstract class Session<C> implements TranscriptListener {
     private static final Logger log = Logger.getLogger(Session.class);
 
+    private static final LoggingTranscriptListener transcript = new LoggingTranscriptListener();
+
     /**
      * Encapsulating all the information of the remote host
      */
@@ -273,9 +275,9 @@ public abstract class Session<C> implements TranscriptListener {
      * @see TranscriptListener
      */
     @Override
-    public void log(final boolean request, final String message) {
+    public void log(final Type request, final String message) {
         if(log.isInfoEnabled()) {
-            log.info(message);
+            transcript.log(request, message);
         }
         switch(state) {
             case opening:

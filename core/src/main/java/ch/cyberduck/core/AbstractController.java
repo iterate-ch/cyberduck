@@ -178,7 +178,7 @@ public abstract class AbstractController implements Controller {
     }
 
     @Override
-    public void log(final boolean request, final String message) {
+    public void log(final Type request, final String message) {
         log.trace(message);
     }
 

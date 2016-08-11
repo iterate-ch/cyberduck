@@ -60,7 +60,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         protected abstract string TransferName { get; }
 
-        public override void log(bool request, string message)
+        public override void log(TranscriptListener.Type request, string message)
         {
             //
         }
