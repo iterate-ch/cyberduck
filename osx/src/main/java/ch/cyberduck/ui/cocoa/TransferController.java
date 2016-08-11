@@ -770,7 +770,7 @@ public final class TransferController extends WindowController implements NSTool
     }
 
     @Override
-    public void log(final boolean request, final String message) {
+    public void log(final Type request, final String message) {
         transcript.log(request, message);
     }
 

@@ -705,17 +705,17 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { browser.ActiveGetterPath = value; }
         }
 
-        public void AddTranscriptEntry(bool request, string entry)
+        public void AddTranscriptEntry(TranscriptListener.Type request, string entry)
         {
             transcriptBox.SelectionFont = FixedFont;
-            if (request)
+            switch (request)
             {
-                transcriptBox.SelectionColor = Color.Black;
-            }
-            else
-            {
-                transcriptBox.SelectionColor = Color.DarkGray;
-                transcriptBox.SelectionColor = Color.DarkGray;
+                case request:
+                    transcriptBox.SelectionColor = Color.Black;
+                    break;
+                case response:
+                    transcriptBox.SelectionColor = Color.DarkGray;
+                    break;
             }
             if (transcriptBox.TextLength > 0)
             {

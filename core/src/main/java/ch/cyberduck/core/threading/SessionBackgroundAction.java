@@ -131,7 +131,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
      * Append to the transcript and notify listeners.
      */
     @Override
-    public void log(final boolean request, final String message) {
+    public void log(final Type request, final String message) {
         transcript.append(message).append(LINE_SEPARATOR);
         transcriptListener.log(request, message);
     }

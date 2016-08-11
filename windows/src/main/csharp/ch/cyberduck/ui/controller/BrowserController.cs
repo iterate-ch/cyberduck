@@ -419,7 +419,7 @@ namespace Ch.Cyberduck.Ui.Controller
             Invoke(updateLabel);
         }
 
-        public override void log(bool request, string transcript)
+        public override void log(TranscriptListener.Type request, string transcript)
         {
             if (View.LogDrawerVisible)
             {

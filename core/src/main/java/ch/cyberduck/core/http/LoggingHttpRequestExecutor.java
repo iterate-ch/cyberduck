@@ -56,9 +56,9 @@ public class LoggingHttpRequestExecutor extends HttpRequestExecutor {
 
     @Override
     protected HttpResponse doSendRequest(final HttpRequest request, final HttpClientConnection conn, final HttpContext context) throws IOException, HttpException {
-        listener.log(true, request.getRequestLine().toString());
+        listener.log(TranscriptListener.Type.request, request.getRequestLine().toString());
         for(Header header : request.getAllHeaders()) {
-            listener.log(true, header.toString());
+            listener.log(TranscriptListener.Type.request, header.toString());
         }
         return super.doSendRequest(request, conn, context);
     }
@@ -66,9 +66,9 @@ public class LoggingHttpRequestExecutor extends HttpRequestExecutor {
     @Override
     protected HttpResponse doReceiveResponse(final HttpRequest request, final HttpClientConnection conn, final HttpContext context) throws HttpException, IOException {
         final HttpResponse response = super.doReceiveResponse(request, conn, context);
-        listener.log(false, response.getStatusLine().toString());
+        listener.log(TranscriptListener.Type.response, response.getStatusLine().toString());
         for(Header header : response.getAllHeaders()) {
-            listener.log(false, header.toString());
+            listener.log(TranscriptListener.Type.response, header.toString());
         }
         return response;
     }

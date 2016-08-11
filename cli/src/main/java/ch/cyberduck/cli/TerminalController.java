@@ -53,7 +53,7 @@ public class TerminalController extends AbstractController {
     }
 
     @Override
-    public void log(final boolean request, final String message) {
+    public void log(final Type request, final String message) {
         transcript.log(request, message);
     }
 }

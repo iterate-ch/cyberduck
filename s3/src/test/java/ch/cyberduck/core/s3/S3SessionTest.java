@@ -183,12 +183,13 @@ public class S3SessionTest {
             }
         }, new TranscriptListener() {
             @Override
-            public void log(final boolean request, final String message) {
-                if(request) {
-                    if(message.contains("Host:")) {
-                        assertEquals("Host: cyberduck.io:443", message);
-                        set.set(true);
-                    }
+            public void log(final Type request, final String message) {
+                switch(request) {
+                    case request:
+                        if(message.contains("Host:")) {
+                            assertEquals("Host: cyberduck.io", message);
+                            set.set(true);
+                        }
                 }
             }
         });

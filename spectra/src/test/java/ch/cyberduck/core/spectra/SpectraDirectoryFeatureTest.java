@@ -83,11 +83,12 @@ public class SpectraDirectoryFeatureTest {
         final String name = UUID.randomUUID().toString();
         session.open(new DisabledHostKeyCallback(), new TranscriptListener() {
             @Override
-            public void log(final boolean request, final String message) {
-                if(request) {
-                    if(("PUT /test.cyberduck.ch/" + name + "/ HTTP/1.1").equals(message)) {
-                        b.set(true);
-                    }
+            public void log(final Type request, final String message) {
+                switch(request) {
+                    case request:
+                        if(("PUT /test.cyberduck.ch/" + name + "/ HTTP/1.1").equals(message)) {
+                            b.set(true);
+                        }
                 }
             }
         });

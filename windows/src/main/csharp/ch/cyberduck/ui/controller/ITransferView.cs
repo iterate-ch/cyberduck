@@ -36,7 +36,7 @@ namespace Ch.Cyberduck.Ui.Controller
         void SelectTransfer(IProgressView view);
         void AddTransfer(IProgressView view);
         void RemoveTransfer(IProgressView view);
-        void AddTranscriptEntry(bool request, string entry);
+        void AddTranscriptEntry(Type request, string entry);
         event VoidHandler ResumeEvent;
         event ValidateCommand ValidateResumeEvent;
         event VoidHandler ReloadEvent;

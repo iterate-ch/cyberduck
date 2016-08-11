@@ -300,7 +300,7 @@ public class SFTPSession extends Session<SSHClient> {
         }
         final String banner = client.getUserAuth().getBanner();
         if(StringUtils.isNotBlank(banner)) {
-            this.log(false, banner);
+            this.log(Type.response, banner);
         }
         // Check if authentication is partial
         if(!client.isAuthenticated()) {
@@ -327,7 +327,7 @@ public class SFTPSession extends Session<SSHClient> {
             sftp = new SFTPEngine(client, String.valueOf(Path.DELIMITER)) {
                 @Override
                 public Promise<Response, SFTPException> request(final Request req) throws IOException {
-                    log(true, String.format("%d %s", req.getRequestID(), req.getType()));
+                    log(Type.request, String.format("%d %s", req.getRequestID(), req.getType()));
                     return super.request(req);
                 }
             }.init();
