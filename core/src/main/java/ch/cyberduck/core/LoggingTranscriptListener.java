@@ -19,8 +19,8 @@ import org.apache.log4j.Logger;
 
 public class LoggingTranscriptListener implements TranscriptListener {
 
-    private static final Logger request = Logger.getLogger(LoggingTranscriptListener.class);
-    private static final Logger response = Logger.getLogger(LoggingTranscriptListener.class);
+    private static final Logger request = Logger.getLogger("Request");
+    private static final Logger response = Logger.getLogger("Response");
 
     @Override
     public void log(final Type type, final String message) {
