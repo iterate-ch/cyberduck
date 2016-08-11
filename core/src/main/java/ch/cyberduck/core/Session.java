@@ -276,9 +276,7 @@ public abstract class Session<C> implements TranscriptListener {
      */
     @Override
     public void log(final Type request, final String message) {
-        if(log.isInfoEnabled()) {
-            transcript.log(request, message);
-        }
+        transcript.log(request, message);
         switch(state) {
             case opening:
             case open:
