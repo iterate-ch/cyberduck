@@ -18,6 +18,7 @@
 
 using System;
 using System.IO;
+using System.Threading;
 using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.local;
@@ -36,7 +37,12 @@ namespace Ch.Cyberduck.Core
                 OpenFileDialog selectDialog = new OpenFileDialog();
                 selectDialog.Filter = "PuTTY executable (.exe)|*.exe";
                 selectDialog.FilterIndex = 1;
-                if (selectDialog.ShowDialog() == DialogResult.OK)
+                DialogResult result = DialogResult.None;
+                Thread thread = new Thread(() => result = selectDialog.ShowDialog());
+                thread.SetApartmentState(ApartmentState.STA);
+                thread.Start();
+                thread.Join();
+                if (result == DialogResult.OK)
                 {
                     PreferencesFactory.get().setProperty("terminal.command.ssh", selectDialog.FileName);
                 }
