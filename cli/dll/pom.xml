@@ -20,7 +20,7 @@
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
         <relativePath>../../pom.xml</relativePath>
-        <version>5.1.0-SNAPSHOT</version>
+        <version>5.0.14</version>
     </parent>
     <artifactId>Cyberduck.Cli</artifactId>
     <packaging>pom</packaging>
