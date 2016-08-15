@@ -160,7 +160,7 @@ public class DriveSession extends HttpSession<Drive> {
             return (T) new DriveDirectoryFeature(this);
         }
         if(type == Delete.class) {
-            return (T) new DriveDeleteFeature(this);
+            return (T) new DriveBatchDeleteFeature(this);
         }
         if(type == Move.class) {
             return (T) new DriveMoveFeature(this);
