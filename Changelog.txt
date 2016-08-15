@@ -1,6 +1,9 @@
 Cyberduck
 https://cyberduck.io/
 
+5.0.14 [https://trac.cyberduck.io/milestone/5.0.14]
+- [Feature] Use batch operation to delete multiple files (Google Drive)
+
 5.0.13 [https://trac.cyberduck.io/milestone/5.0.13]
 - [Bugfix] Default to signature version AWS4 when connecting to third party S3 providers
 
