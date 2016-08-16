@@ -21,10 +21,13 @@
             <param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n"/>
         </layout>
     </appender>
-    <logger name="org.apache.http.wire" additivity="false">
-        <level value="error"/>
-    </logger>
     <logger name="ch.cyberduck">
+        <level value="debug"/>
+    </logger>
+    <logger name="ch.cyberduck.transcript.request">
+        <level value="debug"/>
+    </logger>
+    <logger name="ch.cyberduck.transcript.response">
         <level value="debug"/>
     </logger>
     <root>
