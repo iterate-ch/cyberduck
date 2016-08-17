@@ -87,6 +87,9 @@ public class DAVAttributesFeature implements Attributes {
                     if(StringUtils.isNotBlank(resource.getEtag())) {
                         attributes.setETag(resource.getEtag());
                     }
+                    if(StringUtils.isNotBlank(resource.getDisplayName())) {
+                        attributes.setDisplayname(resource.getDisplayName());
+                    }
                     return attributes;
                 }
                 throw new NotfoundException(file.getAbsolute());

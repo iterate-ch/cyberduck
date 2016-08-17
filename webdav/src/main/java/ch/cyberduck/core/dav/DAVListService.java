@@ -67,12 +67,12 @@ public class DAVListService implements ListService {
                 if(StringUtils.isNotBlank(resource.getEtag())) {
                     attributes.setETag(resource.getEtag());
                 }
-                final Path file = new Path(directory, PathNormalizer.name(href),
-                        resource.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file),
-                        attributes);
                 if(StringUtils.isNotBlank(resource.getDisplayName())) {
                     attributes.setDisplayname(resource.getDisplayName());
                 }
+                final Path file = new Path(directory, PathNormalizer.name(href),
+                        resource.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file),
+                        attributes);
                 children.add(file);
                 listener.chunk(directory, children);
             }
