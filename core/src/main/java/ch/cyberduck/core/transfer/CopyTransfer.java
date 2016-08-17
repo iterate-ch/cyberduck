@@ -213,7 +213,11 @@ public class CopyTransfer extends Transfer {
         }
         final Bulk upload = destination.getFeature(Bulk.class);
         if(null != upload) {
-            final Object id = upload.pre(Type.upload, files);
+            final Map<Path, TransferStatus> targets = new HashMap<>();
+            for(Map.Entry<Path, TransferStatus> entry : files.entrySet()) {
+                targets.put(this.files.get(entry.getKey()), entry.getValue());
+            }
+            final Object id = upload.pre(Type.upload, targets);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Obtained bulk id %s for transfer %s", id, this));
             }
