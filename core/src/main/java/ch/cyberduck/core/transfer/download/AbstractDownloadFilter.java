@@ -143,19 +143,6 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             final Path target = file.getSymlinkTarget();
             // Read remote attributes of symlink target
             attributes = attribute.find(target);
-            if(StringUtils.startsWith(attributes.getDisplayname(), "file:")) {
-                final String filename = StringUtils.removeStart(attributes.getDisplayname(), "file:");
-                status.rename(LocalFactory.get(local.getParent(), filename));
-                int no = 0;
-                while(status.getRename().local.exists()) {
-                    no++;
-                    String proposal = String.format("%s-%d", FilenameUtils.getBaseName(filename), no);
-                    if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
-                        proposal += "." + FilenameUtils.getExtension(filename);
-                    }
-                    status.rename(LocalFactory.get(local.getParent(), proposal));
-                }
-            }
             if(!symlinkResolver.resolve(file)) {
                 if(file.isFile()) {
                     // Content length
@@ -170,6 +157,19 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             if(file.isFile()) {
                 // Content length
                 status.setLength(attributes.getSize());
+                if(StringUtils.startsWith(attributes.getDisplayname(), "file:")) {
+                    final String filename = StringUtils.removeStart(attributes.getDisplayname(), "file:");
+                    status.rename(LocalFactory.get(local.getParent(), filename));
+                    int no = 0;
+                    while(status.getRename().local.exists()) {
+                        no++;
+                        String proposal = String.format("%s-%d", FilenameUtils.getBaseName(filename), no);
+                        if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
+                            proposal += "." + FilenameUtils.getExtension(filename);
+                        }
+                        status.rename(LocalFactory.get(local.getParent(), proposal));
+                    }
+                }
             }
         }
         status.setRemote(attributes);
