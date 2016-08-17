@@ -1,6 +1,9 @@
 Cyberduck
 https://cyberduck.io/
 
+5.0.15 [https://trac.cyberduck.io/milestone/5.0.15]
+- [Bugfix] Copy transfer from other connection fails (Spectra S3)
+
 5.0.14 [https://trac.cyberduck.io/milestone/5.0.14]
 - [Feature] Use batch operation to delete multiple files (Google Drive)
 
