@@ -101,6 +101,11 @@ public class PathAttributes extends Attributes implements Serializable {
     private String region;
 
     /**
+     *
+     */
+    private String displayname;
+
+    /**
      * HTTP headers
      */
     private Map<String, String> metadata;
@@ -321,6 +326,14 @@ public class PathAttributes extends Attributes implements Serializable {
 
     public void setRegion(final String region) {
         this.region = region;
+    }
+
+    public String getDisplayname() {
+        return displayname;
+    }
+
+    public void setDisplayname(final String displayname) {
+        this.displayname = displayname;
     }
 
     @Override
