@@ -19,8 +19,17 @@ import org.apache.log4j.Logger;
 
 public class LoggingTranscriptListener implements TranscriptListener {
 
-    private static final Logger request = Logger.getLogger("ch.cyberduck.transcript.request");
-    private static final Logger response = Logger.getLogger("ch.cyberduck.transcript.response");
+    private final Logger request;
+    private final Logger response;
+
+    public LoggingTranscriptListener() {
+        this(Logger.getLogger("ch.cyberduck.transcript.request"), Logger.getLogger("ch.cyberduck.transcript.response"));
+    }
+
+    public LoggingTranscriptListener(final Logger request, final Logger response) {
+        this.request = request;
+        this.response = response;
+    }
 
     @Override
     public void log(final Type type, final String message) {
