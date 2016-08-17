@@ -164,7 +164,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Clear exist flag for file %s", file));
                 }
-                status.rename(renamed);
+                status.temporary(renamed);
             }
             status.setMime(mapping.getMime(file.getName()));
         }
@@ -264,9 +264,9 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         }
         if(status.isComplete()) {
             if(file.isFile()) {
-                if(this.options.temporary) {
+                if(status.getRename().temporary != null) {
                     final Move move = session.getFeature(Move.class);
-                    move.move(status.getRename().remote, file, status.isExists(), new Delete.DisabledCallback());
+                    move.move(status.getRename().temporary, file, status.isExists(), new Delete.DisabledCallback());
                 }
             }
             if(!Permission.EMPTY.equals(status.getPermission())) {
