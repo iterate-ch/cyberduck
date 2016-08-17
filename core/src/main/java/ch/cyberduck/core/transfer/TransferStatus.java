@@ -308,6 +308,11 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         return this;
     }
 
+    public TransferStatus temporary(final Path temporary) {
+        this.rename.temporary = temporary;
+        return this;
+    }
+
     public TransferStatus rename(final Local renamed) {
         this.rename.local = renamed;
         return this;
@@ -483,15 +488,23 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
 
     public static final class Rename {
         /**
-         * Upload target
+         * Temporary upload target
+         */
+        public Path temporary;
+        /**
+         * Renamed upload target
          */
         public Path remote;
+        /**
+         * Renamed local target
+         */
         public Local local;
 
         @Override
         public String toString() {
             final StringBuilder sb = new StringBuilder("Rename{");
             sb.append("local=").append(local);
+            sb.append(", temporary=").append(temporary);
             sb.append(", remote=").append(remote);
             sb.append('}');
             return sb.toString();

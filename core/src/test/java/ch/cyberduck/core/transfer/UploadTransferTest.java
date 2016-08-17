@@ -395,7 +395,9 @@ public class UploadTransferTest {
             public void transfer(final Session<?> session, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback callback, final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
-                assertEquals(table.get(test).getRename().remote, file);
+                assertEquals(test, file);
+                assertNull(table.get(test).getRename().remote);
+                assertNotEquals(table.get(test).getRename().temporary, file);
                 status.setComplete();
                 set.set(true);
             }
