@@ -71,7 +71,7 @@ public class CopyTransfer extends Transfer {
     /**
      * Mapping source to destination files
      */
-    protected final Map<Path, Path> files;
+    protected final Map<Path, Path> mapping;
 
     private Session<?> destination;
 
@@ -84,7 +84,7 @@ public class CopyTransfer extends Transfer {
                         final Map<Path, Path> selected, final BandwidthThrottle bandwidth) {
         super(source, new ArrayList<TransferItem>(), bandwidth);
         this.destination = destination;
-        this.files = new HashMap<Path, Path>(selected);
+        this.mapping = new HashMap<Path, Path>(selected);
         for(Path s : selected.keySet()) {
             roots.add(new TransferItem(s));
         }
@@ -116,8 +116,8 @@ public class CopyTransfer extends Transfer {
         if(destination != null) {
             dict.setObjectForKey(destination.getHost(), "Destination");
         }
-        dict.setListForKey(new ArrayList<Serializable>(files.values()), "Destinations");
-        dict.setListForKey(new ArrayList<Serializable>(files.keySet()), "Roots");
+        dict.setListForKey(new ArrayList<Serializable>(mapping.values()), "Destinations");
+        dict.setListForKey(new ArrayList<Serializable>(mapping.keySet()), "Roots");
         dict.setStringForKey(this.getUuid(), "UUID");
         dict.setStringForKey(String.valueOf(this.getSize()), "Size");
         dict.setStringForKey(String.valueOf(this.getTransferred()), "Current");
@@ -152,7 +152,7 @@ public class CopyTransfer extends Transfer {
         if(action.equals(TransferAction.callback)) {
             for(TransferItem upload : roots) {
                 final Upload write = destination.getFeature(Upload.class);
-                final Path copy = files.get(upload.remote);
+                final Path copy = mapping.get(upload.remote);
                 final Write.Append append = write.append(copy, upload.remote.attributes().getSize(), PathCache.empty());
                 if(append.override || append.append) {
                     // Found remote file
@@ -179,9 +179,9 @@ public class CopyTransfer extends Transfer {
             log.debug(String.format("Filter transfer with action %s", action));
         }
         if(action.equals(TransferAction.comparison)) {
-            return new ChecksumFilter(session, destination, files);
+            return new ChecksumFilter(session, destination, mapping);
         }
-        return new OverwriteFilter(session, destination, files);
+        return new OverwriteFilter(session, destination, mapping);
     }
 
     @Override
@@ -191,9 +191,9 @@ public class CopyTransfer extends Transfer {
             log.debug(String.format("List children for %s", directory));
         }
         final AttributedList<Path> list = session.list(directory, listener).filter(comparator, filter);
-        final Path copy = files.get(directory);
+        final Path copy = mapping.get(directory);
         for(Path p : list) {
-            files.put(p, new Path(copy, p.getName(), p.getType(), p.attributes()));
+            mapping.put(p, new Path(copy, p.getName(), p.getType(), p.attributes()));
         }
         final List<TransferItem> nullified = new ArrayList<TransferItem>();
         for(Path p : list) {
@@ -215,7 +215,7 @@ public class CopyTransfer extends Transfer {
         if(null != upload) {
             final Map<Path, TransferStatus> targets = new HashMap<>();
             for(Map.Entry<Path, TransferStatus> entry : files.entrySet()) {
-                targets.put(this.files.get(entry.getKey()), entry.getValue());
+                targets.put(this.mapping.get(entry.getKey()), entry.getValue());
             }
             final Object id = upload.pre(Type.upload, targets);
             if(log.isDebugEnabled()) {
@@ -232,7 +232,7 @@ public class CopyTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", source, options));
         }
-        final Path copy = files.get(source);
+        final Path copy = mapping.get(source);
         progressListener.message(MessageFormat.format(LocaleFactory.localizedString("Copying {0} to {1}", "Status"),
                 source.getName(), copy.getName()));
         if(source.isFile()) {
