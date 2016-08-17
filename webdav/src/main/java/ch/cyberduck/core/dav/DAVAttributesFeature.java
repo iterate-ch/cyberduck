@@ -89,6 +89,9 @@ public class DAVAttributesFeature implements Attributes {
                         // Setting checksum is disabled. See #8798
                         // attributes.setChecksum(Checksum.parse(resource.getEtag()));
                     }
+                    if(StringUtils.isNotBlank(resource.getDisplayName())) {
+                        attributes.setDisplayname(resource.getDisplayName());
+                    }
                     return attributes;
                 }
                 throw new NotfoundException(file.getAbsolute());
