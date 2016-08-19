@@ -27,7 +27,9 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UserDateFormatterFactory;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
@@ -99,7 +101,12 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
         if(options.acl) {
             final AclPermission feature = sourceSession.getFeature(AclPermission.class);
             if(feature != null) {
-                status.setAcl(feature.getPermission(source));
+                try {
+                    status.setAcl(feature.getPermission(source));
+                }
+                catch(AccessDeniedException | InteroperabilityException e) {
+                    status.setAcl(feature.getDefault(local));
+                }
             }
         }
         // Save checksum and pass to transfer status when copying from file
