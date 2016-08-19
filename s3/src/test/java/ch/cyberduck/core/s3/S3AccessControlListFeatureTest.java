@@ -129,7 +129,8 @@ public class S3AccessControlListFeatureTest {
                 host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path(String.format("CD%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory, Path.Type.volume));
+        new S3BucketCreateService(session).create(container, null);
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test);
         final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
