@@ -44,11 +44,6 @@ public final class S3Protocol extends AbstractProtocol {
     }
 
     @Override
-    public boolean isPortConfigurable() {
-        return false;
-    }
-
-    @Override
     public Scheme getScheme() {
         return Scheme.https;
     }
@@ -60,6 +55,11 @@ public final class S3Protocol extends AbstractProtocol {
 
     @Override
     public boolean isHostnameConfigurable() {
+        return true;
+    }
+
+    @Override
+    public boolean isPortConfigurable() {
         return true;
     }
 
