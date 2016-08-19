@@ -15,8 +15,6 @@
 package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.dav.DAVProtocol;
-import ch.cyberduck.core.s3.S3Protocol;
 
 import org.junit.Test;
 
@@ -34,12 +32,8 @@ public class FTPProtocolTest {
 
     @Test
     public void testConfigurable() {
-        assertTrue(new S3Protocol().isHostnameConfigurable());
-        assertFalse(new S3Protocol().isPortConfigurable());
         assertTrue(new FTPProtocol().isHostnameConfigurable());
         assertTrue(new FTPProtocol().isPortConfigurable());
-        assertTrue(new DAVProtocol().isHostnameConfigurable());
-        assertTrue(new DAVProtocol().isPortConfigurable());
     }
 
     @Test
