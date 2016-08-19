@@ -18,6 +18,7 @@ package ch.cyberduck.core.cloudfront;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -82,7 +83,6 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.Callable;
 
 /**
@@ -421,7 +421,7 @@ public class CloudFrontDistributionConfiguration
         if(log.isDebugEnabled()) {
             log.debug(String.format("Create new %s distribution", distribution.getMethod().toString()));
         }
-        final String originId = UUID.randomUUID().toString();
+        final String originId = String.format("%s-%s", PreferencesFactory.get().getProperty("application.name"), new AlphanumericRandomStringService().random());
         final CacheBehavior cacheBehavior = new CacheBehavior(
                 originId, false, null, CacheBehavior.ViewerProtocolPolicy.ALLOW_ALL, 0L
         );
@@ -477,7 +477,7 @@ public class CloudFrontDistributionConfiguration
         if(log.isDebugEnabled()) {
             log.debug(String.format("Update %s distribution with origin %s", distribution.getMethod().toString(), origin));
         }
-        final String originId = UUID.randomUUID().toString();
+        final String originId = String.format("%s-%s", PreferencesFactory.get().getProperty("application.name"), new AlphanumericRandomStringService().random());
         final CacheBehavior cacheBehavior = new CacheBehavior(
                 originId, false, null, CacheBehavior.ViewerProtocolPolicy.ALLOW_ALL, 0L
         );
