@@ -26,7 +26,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.test.IntegrationTest;
@@ -145,11 +145,17 @@ public class S3AccessControlListFeatureTest {
                 f.setPermission(test, acl);
                 fail();
             }
-            catch(AccessDeniedException e) {
+            catch(InteroperabilityException e) {
                 //
             }
         }
-        assertEquals(Acl.EMPTY, f.getPermission(test));
+        try {
+            assertEquals(Acl.EMPTY, f.getPermission(test));
+            fail();
+        }
+        catch(InteroperabilityException e) {
+            //
+        }
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
