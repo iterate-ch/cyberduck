@@ -22,9 +22,7 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.shared.DefaultAclFeature;
@@ -82,13 +80,7 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
             return Acl.EMPTY;
         }
         catch(ServiceException e) {
-            try {
-                throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
-            }
-            catch(AccessDeniedException | InteroperabilityException l) {
-                log.warn(String.format("Missing permission to read ACL for %s %s", file, e.getMessage()));
-                return Acl.EMPTY;
-            }
+            throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
     }
 
@@ -97,15 +89,13 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
         try {
             final Path container = containerService.getContainer(file);
             if(null == acl.getOwner()) {
-                if(Acl.EMPTY.equals(file.attributes().getAcl())) {
-                    return;
-                }
                 // Read owner from cache
                 acl.setOwner(file.attributes().getAcl().getOwner());
             }
             if(null == acl.getOwner()) {
                 // Read owner from bucket
-                acl.setOwner(this.getPermission(container).getOwner());
+                final Acl permission = this.getPermission(container);
+                acl.setOwner(permission.getOwner());
             }
             if(containerService.isContainer(file)) {
                 session.getClient().putBucketAcl(container.getName(), this.convert(acl));
