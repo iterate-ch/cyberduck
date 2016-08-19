@@ -102,7 +102,11 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
             }
             if(null == acl.getOwner()) {
                 // Read owner from bucket
-                acl.setOwner(this.getPermission(container).getOwner());
+                final Acl permission = this.getPermission(container);
+                if(Acl.EMPTY.equals(permission)) {
+                    throw new AccessDeniedException();
+                }
+                acl.setOwner(permission.getOwner());
             }
             if(containerService.isContainer(file)) {
                 session.getClient().putBucketAcl(container.getName(), this.convert(acl));
