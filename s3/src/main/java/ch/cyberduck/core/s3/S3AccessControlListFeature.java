@@ -97,9 +97,6 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
         try {
             final Path container = containerService.getContainer(file);
             if(null == acl.getOwner()) {
-                if(Acl.EMPTY.equals(file.attributes().getAcl())) {
-                    return;
-                }
                 // Read owner from cache
                 acl.setOwner(file.attributes().getAcl().getOwner());
             }
