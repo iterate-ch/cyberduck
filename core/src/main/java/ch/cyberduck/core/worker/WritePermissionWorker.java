@@ -96,7 +96,7 @@ public class WritePermissionWorker extends Worker<Boolean> {
             }
             this.write(feature, file, modified);
         }
-        else if(callback.recurse(file, permission) && file.isDirectory()) {
+        else if(file.isDirectory() && callback.recurse(file, permission)) {
             // Do not remove executable bit for folders. See #7316
             final Permission modified = new Permission(permission.getMode());
             if(file.attributes().getPermission().getUser().implies(Permission.Action.execute)) {
