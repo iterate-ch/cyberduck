@@ -86,7 +86,6 @@ public class WriteAclWorker extends Worker<Boolean> {
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
                 file.getName(), acl));
         feature.setPermission(file, acl);
-        file.attributes().setAcl(acl);
         if(file.isVolume()) {
             // No recursion when changing container ACL
         }

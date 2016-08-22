@@ -87,7 +87,6 @@ public class WriteRedundancyWorker extends Worker<Boolean> {
             listener.message(MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
                     file.getName()));
             feature.setClass(file, level);
-            file.attributes().setStorageClass(level);
         }
         if(file.isDirectory()) {
             if(callback.recurse(file, level)) {

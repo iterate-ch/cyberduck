@@ -94,11 +94,9 @@ public class WritePermissionWorker extends Worker<Boolean> {
             if(!file.attributes().getPermission().getOther().implies(Permission.Action.execute)) {
                 modified.setOther((modified.getOther().and(Permission.Action.execute.not())));
             }
-            if(!modified.equals(file.attributes().getPermission())) {
-                this.write(feature, file, modified);
-            }
+            this.write(feature, file, modified);
         }
-        else if(file.isDirectory() && callback.recurse(file, permission)) {
+        else if(callback.recurse(file, permission) && file.isDirectory()) {
             // Do not remove executable bit for folders. See #7316
             final Permission modified = new Permission(permission.getMode());
             if(file.attributes().getPermission().getUser().implies(Permission.Action.execute)) {
@@ -110,9 +108,7 @@ public class WritePermissionWorker extends Worker<Boolean> {
             if(file.attributes().getPermission().getOther().implies(Permission.Action.execute)) {
                 modified.setOther(modified.getOther().or(Permission.Action.execute));
             }
-            if(!modified.equals(file.attributes().getPermission())) {
-                this.write(feature, file, modified);
-            }
+            this.write(feature, file, modified);
         }
         else {
             this.write(feature, file, permission);
@@ -134,7 +130,6 @@ public class WritePermissionWorker extends Worker<Boolean> {
             listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
                     file.getName(), merged));
             feature.setUnixPermission(file, merged);
-            file.attributes().setPermission(merged);
         }
     }
 
