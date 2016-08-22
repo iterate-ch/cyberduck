@@ -18,6 +18,7 @@ package ch.cyberduck.core.transfer.upload;
  */
 
 import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.MappingMimeTypeService;
@@ -56,7 +57,6 @@ import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.EnumSet;
-import java.util.UUID;
 
 public abstract class AbstractUploadFilter implements TransferPathFilter {
     private static final Logger log = Logger.getLogger(AbstractUploadFilter.class);
@@ -159,7 +159,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             if(options.temporary) {
                 final Path renamed = new Path(file.getParent(),
                         MessageFormat.format(preferences.getProperty("queue.upload.file.temporary.format"),
-                                file.getName(), UUID.randomUUID().toString()), file.getType());
+                                file.getName(), new AlphanumericRandomStringService().random()), file.getType());
                 // File attributes should not change after calculate the hash code of the file reference
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Clear exist flag for file %s", file));
