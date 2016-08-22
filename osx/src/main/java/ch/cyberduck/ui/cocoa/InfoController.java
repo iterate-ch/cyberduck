@@ -2413,7 +2413,7 @@ public class InfoController extends ToolbarWindowController {
     private void changePermissions(final Permission permission, final boolean recursive) {
         if(this.togglePermissionSettings(false)) {
             controller.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
-                    new WritePermissionWorker(files, permission, recursive, controller) {
+                    new WritePermissionWorker(files, permission, new AlertRecursiveCallback<Permission>(this), controller) {
                                 @Override
                                 public void cleanup(final Boolean v) {
                                     togglePermissionSettings(true);
