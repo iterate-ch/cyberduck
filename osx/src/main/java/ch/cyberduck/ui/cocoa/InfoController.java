@@ -67,6 +67,7 @@ import ch.cyberduck.core.threading.AlertRecursiveCallback;
 import ch.cyberduck.core.threading.BrowserControllerBackgroundAction;
 import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
+import ch.cyberduck.core.worker.BooleanRecursiveCallback;
 import ch.cyberduck.core.worker.CalculateSizeWorker;
 import ch.cyberduck.core.worker.ReadAclWorker;
 import ch.cyberduck.core.worker.ReadMetadataWorker;
@@ -2413,7 +2414,7 @@ public class InfoController extends ToolbarWindowController {
     private void changePermissions(final Permission permission, final boolean recursive) {
         if(this.togglePermissionSettings(false)) {
             controller.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
-                    new WritePermissionWorker(files, permission, new AlertRecursiveCallback<Permission>(this), controller) {
+                    new WritePermissionWorker(files, permission, recursive ? new AlertRecursiveCallback<Permission>(this) : new BooleanRecursiveCallback<Permission>(false), controller) {
                                 @Override
                                 public void cleanup(final Boolean v) {
                                     togglePermissionSettings(true);

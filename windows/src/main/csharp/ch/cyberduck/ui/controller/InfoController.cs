@@ -2705,7 +2705,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public InnerWritePermissionWorker(InfoController infoController, List files, Permission permission,
                     bool recursive)
-                    : base(files, permission, recursive, infoController._controller)
+                    : base(files, permission, recursive ? new DialogRecursiveCallback(infoController) : new BooleanRecursiveCallback(false), infoController._controller)
                 {
                     _infoController = infoController;
                 }
