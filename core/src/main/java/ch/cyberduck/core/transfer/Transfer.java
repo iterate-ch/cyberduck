@@ -29,6 +29,7 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
@@ -42,7 +43,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
 public abstract class Transfer implements Serializable {
@@ -392,7 +392,7 @@ public abstract class Transfer implements Serializable {
 
     public String getUuid() {
         if(null == uuid) {
-            uuid = UUID.randomUUID().toString();
+            uuid = new UUIDRandomStringService().random();
         }
         return uuid;
     }

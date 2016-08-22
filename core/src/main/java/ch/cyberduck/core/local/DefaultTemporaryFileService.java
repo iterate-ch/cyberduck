@@ -23,11 +23,11 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
+import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import java.io.File;
 import java.nio.file.Paths;
-import java.util.UUID;
 
 public class DefaultTemporaryFileService implements TemporaryFileService {
 
@@ -36,12 +36,12 @@ public class DefaultTemporaryFileService implements TemporaryFileService {
 
     @Override
     public Local create(final Path file) {
-        return this.create(UUID.randomUUID().toString(), file);
+        return this.create(new UUIDRandomStringService().toString(), file);
     }
 
     @Override
     public Local create(final String name) {
-        return this.create(UUID.randomUUID().toString(), name);
+        return this.create(new UUIDRandomStringService().toString(), name);
     }
 
     /**

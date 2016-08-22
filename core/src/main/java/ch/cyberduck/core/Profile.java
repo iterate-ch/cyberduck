@@ -37,7 +37,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 public class Profile implements Protocol, Serializable {
     private static final Logger log = Logger.getLogger(Profile.class);
@@ -207,7 +206,7 @@ public class Profile implements Protocol, Serializable {
             return null;
         }
         final byte[] favicon = Base64.decodeBase64(icon);
-        final Local file = TemporaryFileServiceFactory.get().create(String.format("%s.ico", UUID.randomUUID().toString()));
+        final Local file = TemporaryFileServiceFactory.get().create(String.format("%s.ico", new AlphanumericRandomStringService()));
         try {
             new DefaultLocalTouchFeature().touch(file);
             final OutputStream out = file.getOutputStream(false);
