@@ -82,6 +82,11 @@ public class LocalTest {
         assertFalse(l1.isChild(l2));
         assertFalse(l2.isChild(l1));
 
+        l1 = new TestLocal("/p/1");
+        l2 = new TestLocal("/p/2");
+        assertFalse(l1.isChild(l2));
+        assertFalse(l2.isChild(l1));
+
         l1 = new TestLocal("/");
         l2 = new TestLocal("/p");
         assertFalse(l1.isChild(l2));
@@ -114,6 +119,11 @@ public class LocalTest {
 
         wl1 = new WindowsLocal("G:\\");
         wl2 = new WindowsLocal("G:\\p\\1");
+        assertFalse(wl1.isChild(wl2));
+        assertTrue(wl2.isChild(wl1));
+
+        wl1 = new WindowsLocal("G:\\p");
+        wl2 = new WindowsLocal("G:\\p\\1\\2");
         assertFalse(wl1.isChild(wl2));
         assertTrue(wl2.isChild(wl1));
     }
