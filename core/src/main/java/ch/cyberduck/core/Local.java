@@ -414,15 +414,13 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
             // Root cannot be a child of any other path
             return false;
         }
-        if(directory.isRoot()) {
-            // Any other path is a child
-            return true;
-        }
         if(Objects.equals(PathNormalizer.parent(this.getAbsolute(), this.getDelimiter()), PathNormalizer.parent(directory.getAbsolute(), this.getDelimiter()))) {
             // Cannot be a child if the same parent
             return false;
         }
-        for(String parent = PathNormalizer.parent(this.getAbsolute(), this.getDelimiter()); !parent.equals(String.valueOf(this.getDelimiter())); parent = PathNormalizer.parent(parent, this.getDelimiter())) {
+        String parent = this.getAbsolute();
+        while(!parent.equals(String.valueOf(this.getDelimiter()))){
+            parent = PathNormalizer.parent(parent, this.getDelimiter());
             if(parent.equals(directory.getAbsolute())) {
                 return true;
             }
