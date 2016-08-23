@@ -55,12 +55,7 @@ public class WriteMetadataWorker extends Worker<Boolean> {
     protected WriteMetadataWorker(final List<Path> files, final Map<String, String> metadata,
                                   final boolean recursive,
                                   final ProgressListener listener) {
-        this(files, metadata, new RecursiveCallback<String>() {
-            @Override
-            public boolean recurse(final Path directory, final String value) {
-                return recursive;
-            }
-        }, listener);
+        this(files, metadata, new BooleanRecursiveCallback<String>(recursive), listener);
     }
 
     protected WriteMetadataWorker(final List<Path> files, final Map<String, String> metadata,

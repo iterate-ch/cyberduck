@@ -1699,23 +1699,25 @@ namespace Ch.Cyberduck.Ui.Controller
             private readonly Path _container;
             private readonly HashSet<string> _containers = new HashSet<string>();
 
-            private String _encryption;
             private readonly HashSet<KeyValuePair<string, string>> _encryptionKeys =
                 new HashSet<KeyValuePair<string, string>>();
 
             private readonly InfoController _infoController;
             private readonly Path _selected;
 
-            private String _storageClass;
             private readonly HashSet<KeyValuePair<string, string>> _storageClasses =
                 new HashSet<KeyValuePair<string, string>>();
 
             private readonly IInfoView _view;
             private Credentials _credentials;
 
+            private String _encryption;
+
             private LifecycleConfiguration _lifecycle;
             private Location.Name _location;
             private LoggingConfiguration _logging;
+
+            private String _storageClass;
             private VersioningConfiguration _versioning;
 
             public FetchS3BackgroundAction(BrowserController browserController, InfoController infoController)
@@ -1759,7 +1761,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         ((IdentityConfiguration) s.getFeature(typeof (IdentityConfiguration))).getCredentials(
                             ((AnalyticsProvider) s.getFeature(typeof (AnalyticsProvider))).getName());
                 }
-                Redundancy redundancyFeature = (Redundancy)session.getFeature(typeof (Redundancy));
+                Redundancy redundancyFeature = (Redundancy) session.getFeature(typeof (Redundancy));
                 if (redundancyFeature != null)
                 {
                     List list = redundancyFeature.getClasses();
@@ -2695,7 +2697,10 @@ namespace Ch.Cyberduck.Ui.Controller
                 : base(
                     browserController, browserController.Session,
                     new InnerWritePermissionWorker(infoController, Utils.ConvertToJavaList(infoController._files),
-                        permission, recursive))
+                        permission,
+                        recursive
+                            ? (Worker.RecursiveCallback) new DialogRecursiveCallback(infoController)
+                            : new BooleanRecursiveCallback(false)))
             {
             }
 
@@ -2704,8 +2709,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly InfoController _infoController;
 
                 public InnerWritePermissionWorker(InfoController infoController, List files, Permission permission,
-                    bool recursive)
-                    : base(files, permission, recursive, infoController._controller)
+                    RecursiveCallback callback)
+                    : base(files, permission, callback, infoController._controller)
                 {
                     _infoController = infoController;
                 }

@@ -52,12 +52,7 @@ public class WritePermissionWorker extends Worker<Boolean> {
     public WritePermissionWorker(final List<Path> files,
                                  final Permission permission, final boolean recursive,
                                  final ProgressListener listener) {
-        this(files, permission, new RecursiveCallback<Permission>() {
-            @Override
-            public boolean recurse(final Path directory, final Permission value) {
-                return recursive;
-            }
-        }, listener);
+        this(files, permission, new BooleanRecursiveCallback(recursive), listener);
     }
 
     public WritePermissionWorker(final List<Path> files,
@@ -72,8 +67,8 @@ public class WritePermissionWorker extends Worker<Boolean> {
     @Override
     public Boolean run(final Session<?> session) throws BackgroundException {
         final UnixPermission feature = session.getFeature(UnixPermission.class);
-        for(Path next : files) {
-            this.write(session, feature, next);
+        for(Path file : files) {
+            this.write(session, feature, file);
         }
         return true;
     }
@@ -82,47 +77,6 @@ public class WritePermissionWorker extends Worker<Boolean> {
         if(this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
-        if(callback.recurse(file, permission) && file.isFile()) {
-            // Do not write executable bit for files if not already set when recursively updating directory. See #1787
-            final Permission modified = new Permission(permission.getMode());
-            if(!file.attributes().getPermission().getUser().implies(Permission.Action.execute)) {
-                modified.setUser(modified.getUser().and(Permission.Action.execute.not()));
-            }
-            if(!file.attributes().getPermission().getGroup().implies(Permission.Action.execute)) {
-                modified.setGroup(modified.getGroup().and(Permission.Action.execute.not()));
-            }
-            if(!file.attributes().getPermission().getOther().implies(Permission.Action.execute)) {
-                modified.setOther((modified.getOther().and(Permission.Action.execute.not())));
-            }
-            this.write(feature, file, modified);
-        }
-        else if(callback.recurse(file, permission) && file.isDirectory()) {
-            // Do not remove executable bit for folders. See #7316
-            final Permission modified = new Permission(permission.getMode());
-            if(file.attributes().getPermission().getUser().implies(Permission.Action.execute)) {
-                modified.setUser(modified.getUser().or(Permission.Action.execute));
-            }
-            if(file.attributes().getPermission().getGroup().implies(Permission.Action.execute)) {
-                modified.setGroup(modified.getGroup().or(Permission.Action.execute));
-            }
-            if(file.attributes().getPermission().getOther().implies(Permission.Action.execute)) {
-                modified.setOther(modified.getOther().or(Permission.Action.execute));
-            }
-            this.write(feature, file, modified);
-        }
-        else {
-            this.write(feature, file, permission);
-        }
-        if(file.isDirectory()) {
-            if(callback.recurse(file, permission)) {
-                for(Path child : session.list(file, new ActionListProgressListener(this, listener))) {
-                    this.write(session, feature, child);
-                }
-            }
-        }
-    }
-
-    private void write(final UnixPermission feature, final Path file, final Permission permission) throws BackgroundException {
         final Permission previous = file.attributes().getPermission();
         if(!permission.equals(previous)) {
             final Permission merged = new Permission(permission.getUser(), permission.getGroup(), permission.getOther(),
@@ -130,6 +84,13 @@ public class WritePermissionWorker extends Worker<Boolean> {
             listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
                     file.getName(), merged));
             feature.setUnixPermission(file, merged);
+        }
+        if(file.isDirectory()) {
+            if(callback.recurse(file, permission)) {
+                for(Path child : session.list(file, new ActionListProgressListener(this, listener))) {
+                    this.write(session, feature, child);
+                }
+            }
         }
     }
 
@@ -171,4 +132,5 @@ public class WritePermissionWorker extends Worker<Boolean> {
         sb.append('}');
         return sb.toString();
     }
+
 }
