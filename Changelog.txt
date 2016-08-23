@@ -1,6 +1,10 @@
 Cyberduck
 https://cyberduck.io/
 
+5.0.16 [https://trac.cyberduck.io/milestone/5.0.16]
+- [Feature] Prompt when recursively applying permissions (#9657)
+- [Bugfix] Prompt to insert Smart Card when connecting to TLS secured site (Windows) (#8595)
+
 5.0.15 [https://trac.cyberduck.io/milestone/5.0.15]
 - [Bugfix] Copy transfer from other connection fails (Spectra S3)
 
