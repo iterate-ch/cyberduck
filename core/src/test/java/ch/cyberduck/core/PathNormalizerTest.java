@@ -30,8 +30,6 @@ public class PathNormalizerTest {
     public void testParent() throws Exception {
         assertEquals("/", PathNormalizer.parent("/p", '/'));
         assertEquals("/p", PathNormalizer.parent("/p/n", '/'));
-        assertEquals("G:\\", PathNormalizer.parent("G:\\p", '\\'));
-        assertEquals("G:\\p", PathNormalizer.parent("G:\\p\\n", '\\'));
         assertEquals(null, PathNormalizer.parent("/", '/'));
     }
 
