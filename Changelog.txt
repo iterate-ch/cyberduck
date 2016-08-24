@@ -1,21 +1,15 @@
 Cyberduck
 https://cyberduck.io/
 
-5.0.16 [https://trac.cyberduck.io/milestone/5.0.16]
+5.1 [https://trac.cyberduck.io/milestone/5.1]
 - [Feature] Prompt when recursively applying permissions (#9657)
-- [Bugfix] Prompt to insert Smart Card when connecting to TLS secured site (Windows) (#8595)
-
-5.0.15 [https://trac.cyberduck.io/milestone/5.0.15]
-- [Bugfix] Copy transfer from other connection fails (Spectra S3)
-
-5.0.14 [https://trac.cyberduck.io/milestone/5.0.14]
+- [Feature] Default to signature version AWS4 when connecting to third party S3 providers
 - [Feature] Use batch operation to delete multiple files (Google Drive)
-
-5.0.13 [https://trac.cyberduck.io/milestone/5.0.13]
-- [Bugfix] Default to signature version AWS4 when connecting to third party S3 providers
-
-5.0.12 [https://trac.cyberduck.io/milestone/5.0.12]
+- [Bugfix] Prompt to insert Smart Card when connecting to TLS secured site (Windows) (#8595)
+- [Bugfix] Copy transfer from other connection fails (Spectra S3)
 - [Bugfix] Interoperability with Minio (S3)
+- [Bugfix] Repeated prompt to select private key for authentication (App Store) (SFTP)
+- [Bugfix] Repeated prompt for changed host key fingerprint (SFTP)
 
 5.0.11 [https://trac.cyberduck.io/milestone/5.0.11]
 - [Bugfix] Resuming file transfer starts over and errors out (Backblaze B2) (#9598)
