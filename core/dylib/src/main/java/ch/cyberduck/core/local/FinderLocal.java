@@ -136,7 +136,7 @@ public class FinderLocal extends Local {
                 bookmark = resolver.create(this);
             }
             catch(AccessDeniedException e) {
-                log.warn(String.format("Failure resolving bookmark %s. %s", bookmark, e.getDetail()));
+                log.warn(String.format("Failure resolving bookmark for %s. %s", this, e.getDetail()));
             }
         }
         return bookmark;
