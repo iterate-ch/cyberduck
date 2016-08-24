@@ -45,6 +45,9 @@ import ch.cyberduck.core.bonjour.RendezvousFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.importer.CrossFtpBookmarkCollection;
+import ch.cyberduck.core.importer.Expandrive3BookmarkCollection;
+import ch.cyberduck.core.importer.Expandrive4BookmarkCollection;
+import ch.cyberduck.core.importer.Expandrive5BookmarkCollection;
 import ch.cyberduck.core.importer.FetchBookmarkCollection;
 import ch.cyberduck.core.importer.FilezillaBookmarkCollection;
 import ch.cyberduck.core.importer.FireFtpBookmarkCollection;
@@ -1106,7 +1109,8 @@ public class MainController extends BundleController implements NSApplication.De
 
             private List<ThirdpartyBookmarkCollection> getThirdpartyBookmarks() {
                 return Arrays.asList(new Transmit4BookmarkCollection(), new FilezillaBookmarkCollection(), new FetchBookmarkCollection(),
-                        new FlowBookmarkCollection(), new InterarchyBookmarkCollection(), new CrossFtpBookmarkCollection(), new FireFtpBookmarkCollection());
+                        new FlowBookmarkCollection(), new InterarchyBookmarkCollection(), new CrossFtpBookmarkCollection(), new FireFtpBookmarkCollection(),
+                        new Expandrive3BookmarkCollection(), new Expandrive4BookmarkCollection(), new Expandrive5BookmarkCollection());
             }
         });
         if(updater.hasUpdatePrivileges()) {
