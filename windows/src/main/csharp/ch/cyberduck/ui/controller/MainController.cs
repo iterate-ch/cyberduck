@@ -569,7 +569,10 @@ namespace Ch.Cyberduck.Ui.Controller
                 new CloudberryS3BookmarkCollection(),
                 new CloudberryGoogleBookmarkCollection(),
                 new CloudberryAzureBookmarkCollection(),
-                new S3BrowserBookmarkCollection()
+                new S3BrowserBookmarkCollection(),
+                new Expandrive3BookmarkCollection(),
+                new Expandrive4BookmarkCollection(),
+                new Expandrive5BookmarkCollection()
             };
         }
 
