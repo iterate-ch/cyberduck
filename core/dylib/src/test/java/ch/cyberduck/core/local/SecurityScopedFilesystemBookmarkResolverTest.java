@@ -42,7 +42,7 @@ public class SecurityScopedFilesystemBookmarkResolverTest {
         }
     }
 
-    @Test(expected = LocalAccessDeniedException.class)
+    @Test
     public void testCreateFile() throws Exception {
         final String name = UUID.randomUUID().toString();
         Local l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);

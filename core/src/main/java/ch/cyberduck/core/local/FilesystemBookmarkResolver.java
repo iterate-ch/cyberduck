@@ -26,13 +26,14 @@ public interface FilesystemBookmarkResolver<B> {
     /**
      * @param file File outside of sandbox
      * @return Security scoped bookmark
-     * @throws AccessDeniedException
+     * @throws AccessDeniedException Failure resolving bookmark for file
      */
     String create(Local file) throws AccessDeniedException;
 
     /**
      * @param file File outside of sandbox
      * @return Reference to file by bookmark
+     * @throws AccessDeniedException Failure resolving bookmark for file
      */
     B resolve(Local file) throws AccessDeniedException;
 }
