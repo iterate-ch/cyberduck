@@ -21,6 +21,7 @@ import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.UUID;
@@ -43,6 +44,7 @@ public class SecurityScopedFilesystemBookmarkResolverTest {
     }
 
     @Test
+    @Ignore
     public void testCreateFile() throws Exception {
         final String name = UUID.randomUUID().toString();
         Local l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
