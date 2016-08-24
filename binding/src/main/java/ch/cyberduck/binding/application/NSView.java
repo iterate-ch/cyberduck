@@ -33,6 +33,7 @@ import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 public abstract class NSView extends NSResponder {
+    private static final NSView._Class CLASS = org.rococoa.Rococoa.createClass("NSView", NSView._Class.class);
 
     public static final int NSViewNotSizable = 0;
     public static final int NSViewMinXMargin = 1;
@@ -54,7 +55,12 @@ public abstract class NSView extends NSResponder {
         NSFocusRingTypeExterior
     }
 
+    public static NSView create() {
+        return CLASS.alloc().init();
+    }
+
     public interface _Class extends ObjCClass {
+        NSView alloc();
         /**
          * Original signature : <code>NSView* focusView()</code><br>
          * <i>native declaration : :213</i>
@@ -73,6 +79,9 @@ public abstract class NSView extends NSResponder {
          */
         NSObject defaultFocusRingType();
     }
+
+    public abstract NSView init();
+
     /**
      * <i>native declaration : :115</i><br>
      * Conversion Error : NSRect
