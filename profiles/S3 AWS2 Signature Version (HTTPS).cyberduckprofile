@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>Protocol</key>
+        <string>s3</string>
+        <key>Vendor</key>
+        <string>s3-aws2-https</string>
+        <key>Scheme</key>
+        <string>https</string>
+        <key>Description</key>
+        <string>S3 AWS2 Signature Version (HTTPS)</string>
+        <key>Default Port</key>
+        <string>443</string>
+        <key>Hostname Configurable</key>
+        <true/>
+        <key>Port Configurable</key>
+        <true/>
+        <key>Context</key>
+        <string>AWS2</string>
+    </dict>
+</plist>
