@@ -84,7 +84,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             = PreferencesFactory.get();
 
     private S3Protocol.AuthenticationHeaderSignatureVersion authenticationHeaderSignatureVersion
-            = S3Protocol.AuthenticationHeaderSignatureVersion.valueOf(preferences.getProperty("s3.signature.version"));
+            = S3Protocol.AuthenticationHeaderSignatureVersion.getDefault(host.getProtocol());
 
     public S3Session(final Host host) {
         super(host, new LaxHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
@@ -166,7 +166,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         configuration.setProperty("s3service.enable-storage-classes", String.valueOf(true));
         if(StringUtils.isNotBlank(host.getProtocol().getContext())) {
-            if(!Scheme.isURL(host.getProtocol().getContext())) {
+            if(StringUtils.startsWith(host.getProtocol().getContext(), String.valueOf(Path.DELIMITER))) {
                 configuration.setProperty("s3service.s3-endpoint-virtual-path",
                         PathNormalizer.normalize(host.getProtocol().getContext()));
             }
