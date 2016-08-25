@@ -45,8 +45,8 @@
                 <exclude name="*.exe"/>
             </fileset>
         </foreach>
-        <checksum file="${build.deploy}/${app.name}-${version}.${revision}.exe"
-                  algorithm="sha256" property="archive.sha256"/>
+        <checksum file="${build.deploy}/duck-${version}.${revision}.exe"
+                  algorithm="sha-256" property="archive.sha256"/>
         <copy todir="${chocolatey.target}">
             <fileset dir="${chocolatey.source}">
                 <include name="*/**"/>
