@@ -22,6 +22,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.s3.S3LocationFeature;
+import ch.cyberduck.core.s3.S3Protocol;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -117,4 +118,8 @@ public final class GoogleStorageProtocol extends AbstractProtocol {
         return this.icon();
     }
 
+    @Override
+    public String getContext() {
+        return S3Protocol.AuthenticationHeaderSignatureVersion.AWS2.name();
+    }
 }
