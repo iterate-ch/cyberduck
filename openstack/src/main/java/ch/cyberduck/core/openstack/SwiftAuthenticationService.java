@@ -25,7 +25,6 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -47,19 +46,6 @@ import ch.iterate.openstack.swift.method.AuthenticationRequest;
 public class SwiftAuthenticationService {
     private static final Logger log = Logger.getLogger(SwiftAuthenticationService.class);
 
-    /**
-     * Default authentication version.
-     */
-    private String version;
-
-    public SwiftAuthenticationService() {
-        this(PreferencesFactory.get().getProperty("openstack.authentication.context"));
-    }
-
-    public SwiftAuthenticationService(final String version) {
-        this.version = version;
-    }
-
     public Set<? extends AuthenticationRequest> getRequest(final Host host, final LoginCallback prompt)
             throws LoginCanceledException {
         final Credentials credentials = host.getCredentials();
@@ -69,14 +55,7 @@ public class SwiftAuthenticationService {
         if(!(host.getProtocol().getScheme().getPort() == host.getPort())) {
             url.append(":").append(host.getPort());
         }
-        final String context;
-        if(StringUtils.isBlank(host.getProtocol().getContext())) {
-            // Default to 1.0
-            context = PathNormalizer.normalize(version);
-        }
-        else {
-            context = PathNormalizer.normalize(host.getProtocol().getContext());
-        }
+        final String context = PathNormalizer.normalize(host.getProtocol().getContext());
         // Custom authentication context
         url.append(context);
         if(host.getProtocol().getDefaultHostname().endsWith("identity.api.rackspacecloud.com")
