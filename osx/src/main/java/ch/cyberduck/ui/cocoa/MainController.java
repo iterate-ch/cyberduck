@@ -58,6 +58,7 @@ import ch.cyberduck.core.importer.Transmit4BookmarkCollection;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
+import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.notification.NotificationServiceFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -1330,6 +1331,9 @@ public class MainController extends BundleController implements NSApplication.De
             log.debug(String.format("Application will quit with notification %s", notification));
         }
         this.invalidate();
+
+        // Clear temporary files
+        TemporaryFileServiceFactory.get().shutdown();
 
         //Terminating rendezvous discovery
         RendezvousFactory.instance().quit();
