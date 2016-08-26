@@ -24,4 +24,6 @@ public interface TemporaryFileService {
     Local create(String uid, Path file);
 
     Local create(String name);
+
+    void shutdown();
 }

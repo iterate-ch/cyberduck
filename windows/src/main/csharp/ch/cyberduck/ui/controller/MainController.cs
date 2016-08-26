@@ -46,6 +46,7 @@ using ch.cyberduck.core.sftp;
 using ch.cyberduck.core.spectra;
 using ch.cyberduck.core.transfer;
 using ch.cyberduck.core.urlhandler;
+using ch.cyberduck.core.local;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Sparkle;
 using Ch.Cyberduck.Core.TaskDialog;
@@ -137,6 +138,8 @@ namespace Ch.Cyberduck.Ui.Controller
             StartupNextInstance += StartupNextInstanceHandler;
             Shutdown += delegate
             {
+                // Clear temporary files
+                TemporaryFileServiceFactory.get().shutdown();
                 try
                 {
                     RendezvousFactory.instance().quit();
