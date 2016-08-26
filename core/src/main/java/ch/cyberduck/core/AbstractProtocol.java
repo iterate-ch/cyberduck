@@ -59,9 +59,6 @@ public abstract class AbstractProtocol implements Protocol {
         return this.getProvider();
     }
 
-    /**
-     * @return A mounted disk icon to display
-     */
     @Override
     public String disk() {
         return String.format("%s.tiff", this.getIdentifier());
@@ -85,9 +82,7 @@ public abstract class AbstractProtocol implements Protocol {
         return StringUtils.isBlank(this.getDefaultHostname());
     }
 
-    /**
-     * @return False if the port to connect is static.
-     */
+
     @Override
     public boolean isPortConfigurable() {
         return StringUtils.isBlank(this.getDefaultHostname());
@@ -134,27 +129,23 @@ public abstract class AbstractProtocol implements Protocol {
         return PreferencesFactory.get().getProperty("connection.hostname.default");
     }
 
-    /**
-     * @return Available regions for containers
-     */
     @Override
     public Set<Location.Name> getRegions() {
         return Collections.emptySet();
     }
 
-    /**
-     * @return The default port this protocol connects to
-     */
     @Override
     public int getDefaultPort() {
         return this.getScheme().getPort();
     }
 
-    /**
-     * @return Authentication path
-     */
     @Override
     public String getContext() {
+        return null;
+    }
+
+    @Override
+    public String getAuthorization() {
         return null;
     }
 

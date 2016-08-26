@@ -32,14 +32,11 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.proxy.ProxyFinder;
-import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.shared.DefaultDownloadFeature;
 import ch.cyberduck.core.shared.DisabledMoveFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
-
-import org.jets3t.service.Jets3tProperties;
 
 public class SpectraSession extends S3Session {
 
@@ -51,12 +48,6 @@ public class SpectraSession extends S3Session {
 
     public SpectraSession(final Host host, final X509TrustManager trust, final X509KeyManager key, final ProxyFinder proxy) {
         super(host, trust, key, proxy);
-    }
-
-    @Override
-    protected Jets3tProperties configure() {
-        this.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS2);
-        return super.configure();
     }
 
     @Override

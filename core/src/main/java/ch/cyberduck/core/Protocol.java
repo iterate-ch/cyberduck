@@ -217,6 +217,11 @@ public interface Protocol extends Comparable<Protocol> {
     String getContext();
 
     /**
+     * @return Authentication header version
+     */
+    String getAuthorization();
+
+    /**
      * @return Available regions
      */
     Set<Location.Name> getRegions();

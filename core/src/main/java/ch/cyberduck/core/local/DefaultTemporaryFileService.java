@@ -24,12 +24,25 @@ import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.UUIDRandomStringService;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.apache.log4j.Logger;
+
 import java.io.File;
-import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 public class DefaultTemporaryFileService implements TemporaryFileService {
+    private static final Logger log = Logger.getLogger(DefaultTemporaryFileService.class);
+
+    /**
+     * Set of filenames to be deleted on VM exit through a shutdown hook.
+     */
+    private static final Set<Local> files = new LinkedHashSet<>();
 
     private final String delimiter
             = PreferencesFactory.get().getProperty("local.delimiter");
@@ -67,10 +80,24 @@ public class DefaultTemporaryFileService implements TemporaryFileService {
      * @param file File reference
      */
     protected void delete(final Local file) {
-        Paths.get(file.getAbsolute()).toFile().deleteOnExit();
+        files.add(file);
     }
 
     protected String shorten(final String path) {
         return path;
+    }
+
+    @Override
+    public void shutdown() {
+        final List<Local> list = new ArrayList<>(files);
+        Collections.reverse(list);
+        for(Local f : list) {
+            try {
+                f.delete();
+            }
+            catch(AccessDeniedException e) {
+                log.warn(String.format("Failure deleting file %s in shutdown hook. %s", f, e.getMessage()));
+            }
+        }
     }
 }

@@ -1,4 +1,4 @@
-package ch.cyberduck.core.local;
+package ch.cyberduck.core;
 
 /*
  * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
@@ -15,15 +15,19 @@ package ch.cyberduck.core.local;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Path;
+import ch.cyberduck.core.googlestorage.GoogleStorageProtocol;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 
-public interface TemporaryFileService {
-    Local create(Path file);
+import org.junit.Test;
 
-    Local create(String uid, Path file);
+import static org.junit.Assert.assertNotNull;
 
-    Local create(String name);
+public class SessionFactoryTest {
 
-    void shutdown();
+    @Test
+    public void testCreateSession() throws Exception {
+        assertNotNull(SessionFactory.create(new Host(new GoogleStorageProtocol()),
+                new DefaultX509TrustManager(), new DefaultX509KeyManager()));
+    }
 }
