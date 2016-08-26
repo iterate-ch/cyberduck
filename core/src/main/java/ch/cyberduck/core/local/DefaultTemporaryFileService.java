@@ -49,12 +49,12 @@ public class DefaultTemporaryFileService implements TemporaryFileService {
 
     @Override
     public Local create(final Path file) {
-        return this.create(new UUIDRandomStringService().toString(), file);
+        return this.create(new UUIDRandomStringService().random(), file);
     }
 
     @Override
     public Local create(final String name) {
-        return this.create(new UUIDRandomStringService().toString(), name);
+        return this.create(new UUIDRandomStringService().random(), name);
     }
 
     /**
