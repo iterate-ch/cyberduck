@@ -119,7 +119,7 @@ public final class GoogleStorageProtocol extends AbstractProtocol {
     }
 
     @Override
-    public String getContext() {
+    public String getAuthorization() {
         return S3Protocol.AuthenticationHeaderSignatureVersion.AWS2.name();
     }
 }
