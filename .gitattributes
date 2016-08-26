@@ -2165,6 +2165,7 @@ pom/bundle/pom.xml -text
 profiles/B2.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Box.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Cloud.ca[!!-~]Object[!!-~]Store[!!-~]East-1[!!-~]Region.cyberduckprofile -text svneol=unset#application/octet-stream
+profiles/Cynny[!!-~]Space.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/DreamObjects.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Dump[!!-~]Truck.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Dunkel[!!-~]Cloud[!!-~]Storage.cyberduckprofile -text svneol=unset#application/octet-stream
