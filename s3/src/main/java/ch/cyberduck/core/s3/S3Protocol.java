@@ -126,17 +126,12 @@ public final class S3Protocol extends AbstractProtocol {
 
         public static AuthenticationHeaderSignatureVersion getDefault(final Protocol protocol) {
             try {
-                try {
-                    return S3Protocol.AuthenticationHeaderSignatureVersion.valueOf(protocol.getContext());
-                }
-                catch(IllegalArgumentException e) {
-                    log.warn(String.format("Unsupported authentication context %s", protocol.getContext()));
-                    return S3Protocol.AuthenticationHeaderSignatureVersion.valueOf(
-                            PreferencesFactory.get().getProperty("s3.signature.version"));
-                }
+                return S3Protocol.AuthenticationHeaderSignatureVersion.valueOf(protocol.getAuthorization());
             }
             catch(IllegalArgumentException e) {
-                return AuthenticationHeaderSignatureVersion.AWS2;
+                log.warn(String.format("Unsupported authentication context %s", protocol.getAuthorization()));
+                return S3Protocol.AuthenticationHeaderSignatureVersion.valueOf(
+                        PreferencesFactory.get().getProperty("s3.signature.version"));
             }
         }
 
@@ -144,7 +139,7 @@ public final class S3Protocol extends AbstractProtocol {
     }
 
     @Override
-    public String getContext() {
+    public String getAuthorization() {
         return PreferencesFactory.get().getProperty("s3.signature.version");
     }
 }

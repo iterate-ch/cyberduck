@@ -166,7 +166,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         configuration.setProperty("s3service.enable-storage-classes", String.valueOf(true));
         if(StringUtils.isNotBlank(host.getProtocol().getContext())) {
-            if(StringUtils.startsWith(host.getProtocol().getContext(), String.valueOf(Path.DELIMITER))) {
+            if(!Scheme.isURL(host.getProtocol().getContext())) {
                 configuration.setProperty("s3service.s3-endpoint-virtual-path",
                         PathNormalizer.normalize(host.getProtocol().getContext()));
             }

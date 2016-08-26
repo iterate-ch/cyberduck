@@ -253,6 +253,15 @@ public class Profile implements Protocol, Serializable {
     }
 
     @Override
+    public String getAuthorization() {
+        final String v = this.value("Authorization");
+        if(StringUtils.isBlank(v)) {
+            return parent.getAuthorization();
+        }
+        return v;
+    }
+
+    @Override
     public Set<Location.Name> getRegions() {
         final List<String> regions = this.list("Regions");
         final Set<Location.Name> set = new HashSet<Location.Name>();
@@ -350,6 +359,9 @@ public class Profile implements Protocol, Serializable {
         if(this.getContext() != null ? !this.getContext().equals(protocol.getContext()) : protocol.getContext() != null) {
             return false;
         }
+        if(this.getAuthorization() != null ? !this.getAuthorization().equals(protocol.getAuthorization()) : protocol.getAuthorization() != null) {
+            return false;
+        }
         if(this.getProvider() != null ? !this.getProvider().equals(protocol.getProvider()) : protocol.getProvider() != null) {
             return false;
         }
@@ -364,6 +376,7 @@ public class Profile implements Protocol, Serializable {
         int result = this.getIdentifier() != null ? this.getIdentifier().hashCode() : 0;
         result = 31 * result + (this.getScheme() != null ? this.getScheme().hashCode() : 0);
         result = 31 * result + (this.getContext() != null ? this.getContext().hashCode() : 0);
+        result = 31 * result + (this.getAuthorization() != null ? this.getAuthorization().hashCode() : 0);
         result = 31 * result + (this.getProvider() != null ? this.getProvider().hashCode() : 0);
         result = 31 * result + (this.getDefaultHostname() != null ? this.getDefaultHostname().hashCode() : 0);
         return result;
