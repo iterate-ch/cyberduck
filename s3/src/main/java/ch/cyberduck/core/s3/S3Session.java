@@ -85,7 +85,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             = PreferencesFactory.get();
 
     private S3Protocol.AuthenticationHeaderSignatureVersion authenticationHeaderSignatureVersion
-            = S3Protocol.AuthenticationHeaderSignatureVersion.valueOf(preferences.getProperty("s3.signature.version"));
+            = S3Protocol.AuthenticationHeaderSignatureVersion.getDefault(host.getProtocol());
 
     public S3Session(final Host host) {
         super(host, host.getHostname().endsWith(PreferencesFactory.get().getProperty("s3.hostname.default")) ?
