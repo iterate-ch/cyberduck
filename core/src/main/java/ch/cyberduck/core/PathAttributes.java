@@ -172,9 +172,6 @@ public class PathAttributes extends Attributes implements Serializable {
     }
 
     public void setAccessedDate(final long millis) {
-        if(millis < 0) {
-            return;
-        }
         this.accessed = millis;
     }
 
