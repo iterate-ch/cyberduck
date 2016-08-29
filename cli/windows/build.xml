@@ -24,7 +24,7 @@
 
     <property name="cpack.bin" value="${env.ChocolateyInstall}/bin/cpack"/>
 
-    <property name="chocolatey.source" value="${setup}/chocolatey"/>
+    <property name="chocolatey.source" value="${setup}/chocolatey/duck"/>
     <property name="chocolatey.target" value="${build.deploy}"/>
 
     <target name="build" depends="version">
@@ -54,7 +54,7 @@
         </copy>
         <replace dir="${chocolatey.target}" summary="true" encoding="UTF-8">
             <include name="*.nuspec"/>
-            <include name="tools/*.ps1"/>
+            <include name="duck/*.ps1"/>
             <replacefilter token="${VERSION}" value="${version}"/>
             <replacefilter token="${REVISION}" value="${revision}"/>
             <replacefilter token="${FEED}" value="${sparkle.feed}"/>
