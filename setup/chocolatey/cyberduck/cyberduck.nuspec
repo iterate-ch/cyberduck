@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>cyberduck</id>
+    <title>Cyberduck</title>
+    <version>${VERSION}.${REVISION}</version>
+    <authors>David Kocher, Yves Langisch</authors>
+    <owners>cyberduck.io</owners>
+    <summary>Cyberduck is a libre FTP, SFTP, WebDAV, S3, Backblaze B2, Azure &amp; OpenStack Swift browser for Mac and Windows</summary>
+    <description>Cyberduck is a libre FTP, SFTP, WebDAV, S3, Backblaze B2, Azure &amp; OpenStack Swift browser for Mac and Windows</description>
+    <projectUrl>https://cyberduck.io</projectUrl>
+    <tags>cloud ftp sftp webdav s3 openstack swift rackspace backblaze b2 spectralogic</tags>
+    <copyright>Copyright (c) 2002 – 2016 David V. Kocher. Copyright (c) 2011 – 2016 Yves Langisch</copyright>
+    <licenseUrl>http://creativecommons.org/licenses/GPL/2.0/</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <iconUrl>https://cdn.cyberduck.io/img/cyberduck-icon-384.png</iconUrl>
+    <releaseNotes></releaseNotes>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+  </files>
+</package>
