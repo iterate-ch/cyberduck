@@ -348,11 +348,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return null;
         }
         if(type == Redundancy.class) {
-            // Only for AWS
-            if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
             return (T) new S3StorageClassFeature(this);
-        }
-            return null;
         }
         if(type == IdentityConfiguration.class) {
             // Only for AWS
