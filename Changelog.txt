@@ -1,6 +1,11 @@
 Cyberduck
 https://cyberduck.io/
 
+5.1.1 [https://trac.cyberduck.io/milestone/5.1.1]
+- [Feature] Allow connections with AWS2 signature version using connection profile (S3) (#9667)
+- [Bugfix] Cleanup temporary files on application exit
+- [Bugfix] Certificate trust error connecting to os.unil.cloud.switch.ch (S3) (#9668)
+
 5.1 [https://trac.cyberduck.io/milestone/5.1]
 - [Feature] Prompt when recursively applying permissions (#9657)
 - [Feature] Default to signature version AWS4 when connecting to third party S3 providers
