@@ -18,6 +18,7 @@ package ch.cyberduck.core.dropbox;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import com.dropbox.core.DbxException;
 
@@ -31,11 +32,11 @@ public class DropboxDirectoryFeature implements Directory {
 
     @Override
     public void mkdir(final Path file) throws BackgroundException {
-        this.mkdir(file, null);
+        this.mkdir(file, null, null);
     }
 
     @Override
-    public void mkdir(final Path file, final String region) throws BackgroundException {
+    public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
         try {
             session.getClient().files().createFolder(file.getAbsolute());
         }
