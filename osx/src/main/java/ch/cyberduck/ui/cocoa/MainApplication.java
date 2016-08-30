@@ -25,10 +25,10 @@ import ch.cyberduck.core.azure.AzureProtocol;
 import ch.cyberduck.core.b2.B2Protocol;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
+import ch.cyberduck.core.dropbox.DropboxProtocol;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.googledrive.DriveProtocol;
-import ch.cyberduck.core.dropbox.DropboxProtocol;
 import ch.cyberduck.core.googlestorage.GoogleStorageProtocol;
 import ch.cyberduck.core.hubic.HubicProtocol;
 import ch.cyberduck.core.irods.IRODSProtocol;
@@ -82,7 +82,7 @@ public final class MainApplication {
                     new SpectraProtocol(),
                     new B2Protocol(),
                     new DriveProtocol(),
-                    new DropboxProtocol()
+                    new DropboxProtocol(),
                     new DriveProtocol(),
                     new HubicProtocol()
             );
